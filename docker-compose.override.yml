@@ -1,0 +1,111 @@
+version: '3.7'
+
+services:
+  web:
+    depends_on:
+      nextcloud:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c" , "flask db upgrade && flask run --host=0.0.0.0"]
+    volumes:
+      - /tmp/download/:/tmp/download/  # same target as TMP_DOWNLOAD_DIR
+      - /tmp/b3desk/:/tmp/b3desk/  # same target as UPLOAD_DIR
+    env_file:
+      - ${ENV_FILE_OVERRIDE-web.env}
+
+  worker:
+    environment:
+      - FLASK_DEBUG=1
+    env_file:
+      - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
+
+  broker:
+    ports:
+      - 127.0.0.1:6379:6379
+
+  keycloak:
+    container_name: kc
+    image: quay.io/keycloak/keycloak:legacy
+    depends_on:
+      - postgres
+    env_file:
+      - keycloak.env
+    volumes:
+      - ./keycloak/themes/dsfr:/opt/jboss/keycloak/themes/dsfr
+    ports:
+      - 8080:8080
+      - 8443:8443
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+      start_period: 20s
+
+  nextcloud:
+    container_name: nc
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: ./nextcloud
+    env_file:
+      - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NEXTCLOUD_SESSIONTOKEN_KEY
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Pa55w0rd
+      - POSTGRES_HOST=postgres
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=Pa55w0rd
+      - NEXTCLOUD_USER=bbb-visio-user
+      - NEXTCLOUD_USER_PASS=passwordSTRONG
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud  # service name in docker network
+      - NEXTCLOUD_ALLOW_ORIGIN=http://localhost:5000  # allow local browser to pick nextcloud files
+    volumes:
+      - ./nextcloud/html:/var/www/html
+    ports:
+      - 80:80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/login"]
+      start_period: 60s
+
+  tokenmock:
+    container_name: id
+    image: php:7.2-apache
+    depends_on:
+      nextcloud:
+        condition: service_healthy
+    env_file:
+      - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NC_LOGIN_API_KEY and NEXTCLOUD_SESSIONTOKEN_KEY
+    environment:
+      - NC_HOST=http://nextcloud  # nextcloud service in docker network
+    volumes:
+      - ./tokenmock:/var/www/html
+    ports:
+      - 9000:80
+
+  postgres:
+    container_name: db
+    image: postgres
+    env_file:
+      - postgres.env
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - ./postgres/initdb:/docker-entrypoint-initdb.d
+      - ./postgres/data:/var/lib/postgresql/data
+    healthcheck:
+      test: psql -U postgres
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tests:
+    container_name: tests
+    build:
+      context: ./web
+      dockerfile: Dockerfile-tests
+    env_file:
+      - ${ENV_FILE_OVERRIDE-web.env}
+    volumes:
+      - ./web/flaskr:/opt/bbb-visio/flaskr
+      - ./web/tests:/opt/bbb-visio/tests

@@ -1,0 +1,34 @@
+/* Move down content because we have a fixed navbar that is 3.5rem tall */
+body {
+  padding-top: 3.5rem;
+}
+
+.container {
+  max-width: 80%;
+}
+
+#banner {
+  background-image: url(/static/images/apps.png);
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 100%;
+  height: 283px;
+}
+
+#main {
+  min-height: 283px;
+}
+#jumbotron {
+  margin-bottom: 4em;
+  background-color: #f9f8f6;
+}
+#contact {
+  padding: 30px;
+  height: 283px;
+  width: 100%;
+}
+
+#tabs-content {
+  margin: 20px;
+}

@@ -1,0 +1,116 @@
+{% include 'rie.html' %}
+{% if logged_in == true %}
+<div class="grey-section fr-py-3w">
+  <div class="fr-container">
+    <div class="fr-mt-4w fr-grid-row fr-grid-row--center">
+      <div class="fr-col-sm-8 fr-col-md-6 fr-col-lg-4 connected">
+        {% if quick_meeting == true %}
+          <h1 class="fr-h2">{% trans %}Lancer {{ a_meeting }}{% endtrans %}</h1>
+          <a class="fr-btn fr-btn--lg" href="meeting/quick" target="_blank" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">{% trans %}Démarrer {{ a_meeting }} immédiatement{% endtrans %}</a>
+          <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% if stats %}
+    <div class="fr-mt-4w fr-grid-row fr-grid-row--center fr-grid-row--gutters stats-info-container">
+      <div class="fr-col-sm-10 fr-col-md-8">
+        <p class="stats-info">
+          <small>
+            {% trans trimmed count=stats["runningCount"]%}
+            Actuellement, il y a <b>{{ count }}</b> webinaire
+            {% pluralize %}
+            Actuellement, il y a <b>{{ count }}</b> webinaires
+            {% endtrans %}
+            {% trans trimmed count=stats["participantCount"]%}
+            et <b>{{ count }}</b> participant
+            {% pluralize %}
+            et <b>{{ count }}</b> participants
+            {% endtrans %}
+            {% trans %} sur une capacité moyenne pour la plateforme de {{ max_participants }} participants.{% endtrans %}
+          </small>
+        </p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+  <div class="highlight-background {% if mail_meeting %}primary-section{% endif %}{% if not mail_meeting %}secondary-section{% endif %}">
+    <div class="fr-container">
+      <div class="fr-grid-row">
+        <div class="fr-col-md-6">
+          <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h1>
+          <p class="fr-text">{% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}</p>
+          <p><a class="fr-btn" target="_blank" rel="noopener" href="/welcome">{% trans %}Se connecter ou créer un compte{% endtrans %}</a></p>
+          <p></p>
+          {% if stats %} 
+            <p>
+              <small>
+                {% trans trimmed count=stats["runningCount"]%}
+                Actuellement, il y a <b>{{ count }}</b> webinaire
+                {% pluralize %}
+                Actuellement, il y a <b>{{ count }}</b> webinaires
+                {% endtrans %}
+                {% trans trimmed count=stats["participantCount"]%}
+                et <b>{{ count }}</b> participant
+                {% pluralize %}
+                et <b>{{ count }}</b> participants
+                {% endtrans %}
+                {% trans %} sur une capacité moyenne pour la plateforme de {{ max_participants }} participants.{% endtrans %}
+            </small>
+            </p>
+          {% endif %}
+        </div>
+        <div class="fr-col-md-6 image-home">
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if mail_meeting %}
+    <div class="fr-container fr-my-4w">
+      <div class="fr-grid-row">
+        <div class="fr-col-md-9">
+          <h1 class="fr-text--lead fr-text--bold">{% trans %}Démarrer {{ a_meeting }} en ligne immédiatement{% endtrans %}</h1>
+          {% with messages = get_flashed_messages(with_categories=true, category_filter=["error_login","success_login", "warning"]) %}
+            {% if messages %}
+              {% for category,message in messages %}
+                <div class="fr-alert fr-alert--sm fr-alert--{{ 'error' if category == 'error_login' else 'info' }}">
+                  <p>{{ message }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          <p class="fr-text">{% trans %}Recevez par courriel un lien organisateur {{ of_the_meeting }}, actif une semaine, à envoyer aux participants.{% endtrans %}</p>
+          <form action="/meeting/mail" method="POST">
+            {% include 'meeting/csrf.html' %}
+            <div class="fr-input-group fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12 fr-col-md-6">
+                <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre courriel professionnel{% endtrans %}</label>
+                <input type="mail" class="fr-input" id="mail" name="mail"/>
+              </div>
+              <div class="fr-col-12 fr-col-md-6 mail-create-button-container">
+                <button type="submit" class="fr-btn {% if mail_meeting %} fr-btn--secondary {% endif %}" >{% trans %}Créer {{ my_meeting }}{% endtrans %}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="fr-col-md-3">
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <div class="highlight-background secondary-section">
+  <div class="fr-container fr-mt-4w">
+    {% if mail_meeting %}
+
+    <div class="fr-grid-row">
+      <div class="fr-col-md-6">
+        <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous essayez de rejoindre {{ a_meeting }}{% endtrans %}</h1>
+        <p class="fr-text">{% trans %}Pour rejoindre {{ a_meeting_to_which }} vous êtes invité, cliquez sur le lien que vous a transmis l'organisateur/modérateur.{% endtrans %}</p>
+        <p></p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  </div>
+{% endif %}

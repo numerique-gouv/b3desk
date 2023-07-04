@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# deploy the sessiontoken app:
+git clone https://gitlab.octopuce.fr/octopuce-public/nextcloud-sessiontoken.git /var/www/html/apps/sessiontoken
+chown -R www-data: /var/www/html/apps/sessiontoken 
+#
+## install the sessiontoken key in /var/www/html/config/config.php
+HASH=$(php /var/www/html/apps/sessiontoken/hash-apikey.php "$NEXTCLOUD_SESSIONTOKEN_KEY")
+sed -i "/'datadirectory'/a 'sessiontoken_apikey_hash' => '$HASH'," /var/www/html/config/config.php
+#
+## enable the sessiontoken app
+su -p "www-data" -s /bin/sh -c "php occ app:enable sessiontoken"
+
+## install and configure webapppassword
+wget -qO- https://github.com/digital-blueprint/webapppassword/releases/download/v23.1.0/webapppassword.tar.gz | tar xvz -C /var/www/html/apps/
+chown -R www-data: /var/www/html/apps/webapppassword 
+sed -i "/'datadirectory'/a 'webapppassword.origins' => ['$NEXTCLOUD_ALLOW_ORIGIN']," /var/www/html/config/config.php
+su -p "www-data" -s /bin/sh -c "php occ app:enable webapppassword"
+
+# create bbb-visio-user
+su -p "www-data" -s /bin/sh -c "OC_PASS=$NEXTCLOUD_USER_PASS php occ user:add $NEXTCLOUD_USER --password-from-env"
+
+chown -R www-data: /var/www/html/
+
+# finally launch apache :) 
+exec apache2-foreground

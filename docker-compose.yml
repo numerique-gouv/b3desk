@@ -1,0 +1,45 @@
+version: '3.7'
+
+  # These containers are the one needed to make the app work
+  # Other container are available in docker-compose.override.yml if needed  
+  # see documentation [link] for more info
+
+services:
+  web:
+    container_name: web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    # env_file:
+    #   - web.env
+    volumes:
+      - ./web/logs:/var/log
+      - ./web/flaskr:/opt/bbb-visio/flaskr
+      - ./web/instance:/opt/bbb-visio/instance
+      - ./web/migrations:/opt/bbb-visio/migrations
+      - ./web/translations:/opt/bbb-visio/translations
+    ports:
+      - 5000:5000
+
+  worker:
+    container_name: worker
+    depends_on:
+      - broker
+    build:
+      context: ./web
+      dockerfile: Dockerfile-celery
+    # env_file:
+    #   - web.env  # to get shared REDIS_URL
+    # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env
+    environment:
+      - APP=tasks.celery
+    volumes:
+      - ./web/flaskr:/usr/src/app
+    command: celery --app tasks.celery worker --loglevel=info
+
+  broker:
+    container_name: broker
+    image: redis:6-alpine
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      start_period: 5s

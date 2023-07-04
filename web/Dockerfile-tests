@@ -1,0 +1,17 @@
+FROM python:3.8-bullseye
+
+# Install.
+RUN \
+  apt update && \
+  apt -y upgrade && \
+  apt install -y gcc libpq-dev
+
+COPY requirements.app.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+COPY requirements.dev.txt /tmp/requirements.dev.txt
+RUN pip install -r /tmp/requirements.dev.txt
+
+COPY instance/config.py /opt/bbb-visio/instance/config.py
+
+WORKDIR /opt/bbb-visio
+ENTRYPOINT ["pytest"]

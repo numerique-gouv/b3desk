@@ -1,0 +1,1 @@
+subject={% include 'meeting/mailto/mail_subject.txt' %}&body={% include 'meeting/mailto/mail_body.txt' %}

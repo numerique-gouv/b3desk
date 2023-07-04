@@ -1,0 +1,46 @@
+<div class="fr-header__tools">
+  <div class="fr-header__tools-links">
+    <ul class="fr-btns-group">
+      <li>
+        {% for language in LANGUAGES %}
+        <a href="?lang={{ language }}" class="fr-btn">{{ language}}</a>
+        {% endfor %}
+      </li>
+
+      <li>
+        <a class="fr-btn" href="/faq">
+          <span aria-hidden="true" class="ri-information-line fr-mr-1w"></span>
+          {% trans %}Modalités d'accès{% endtrans %}
+        </a>
+      </li>
+      <li>
+          <a class="fr-btn" href="{{ documentation_link.url }}" {{'target=_blank' if documentation_link.is_external }}>
+            <span aria-hidden="true" class="ri-book-line fr-mr-1w"></span>
+            {{ documentation_link.label }}
+          </a>
+      </li>
+      {% if logged_in == true %}
+        <!-- {% if account_management_url is defined and account_management_url|length %}
+        <li class="fr-shortcuts__item">
+          <a href="{{ account_management_url }}" class="fr-link fr-fi-lock-line fr-link--icon-left" target="_self">{{ user.fullname }}</a>
+        </li>
+        {% endif %} -->
+        <li>
+          <a class="fr-btn" href="/logout">
+            <div>
+              <span aria-hidden="true" class="ri-account-circle-line fr-mr-1w"></span>{{ user.fullname }}
+              <br><small>{% trans %}se déconnecter{% endtrans %}</small>
+            </div>
+          </a>
+        </li>
+      {% else %}
+        <li>
+          <a class="fr-btn" href="/welcome">
+            <span aria-hidden="true" class="ri-account-circle-line fr-mr-1w"></span>
+            {% trans %}S’identifier{% endtrans %}
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>

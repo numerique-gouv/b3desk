@@ -1,0 +1,81 @@
+/* `````````````````````
+  BRANCH MEETING_FILES
+````````````````````` */
+.fileslist li::before {
+  content:none;
+}
+.fileslist {
+  width:100%;
+  margin-top:20px;
+}
+
+.fileslist li {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 9%;
+}
+
+.octo_separation {
+  margin: 20px;
+}
+
+.pres_button_parent {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pres_nextcloud_button {
+  /*commented out as should be NC filepicker plugin*/
+  /*background-image: url('../../images/nextcloud.svg');*/
+  background-color: blue;
+  background-repeat: no-repeat;
+  width: 35%;
+  height:13vh;
+}
+
+.padbot {
+  padding-bottom: 15px;
+}
+
+.separation {
+
+border: 1px solid var(--border-default-grey);
+margin-top: 20px;
+
+}
+
+#titleFileColumn {
+  width: 50%;
+}
+
+/* `````````````````````
+  special dropzone styling
+````````````````````` */
+.dropzone .dz-preview .dz-progress {
+  display: none !important;
+}
+
+#dropper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed rgba(0,0,0,0.3);
+}
+
+#addFileButtonsHolder {
+  width: 100%;
+  justify-content: space-around;
+}

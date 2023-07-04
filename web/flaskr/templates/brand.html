@@ -1,0 +1,28 @@
+<div class="fr-header__brand fr-enlarge-link">
+  <div class="fr-header__brand-top">
+      <div class="fr-header__logo">
+          <p class="fr-logo">
+              République
+              <br>Française
+          </p>
+      </div>
+      <div class="fr-header__navbar">
+          <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-616" aria-haspopup="menu" id="button-617" title="Menu">
+              Menu
+          </button>
+      </div>
+  </div>
+  <div class="fr-header__service">
+      <a href="/" title="Accueil - {{ service_title }} - République Française">
+        <!-- Webinaire de l'État -->
+        <p class="fr-header__service-title">
+            {% trans %}{{ service_title }}{% endtrans %}
+            {% if beta %}
+              <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+            {% endif %}
+          </p>
+      </a>
+      <!-- Le service de réunions en ligne pour les agents de l'État -->
+      <p class="fr-header__service-tagline">{% trans %}{{ service_tagline }}{% endtrans %}</p>
+  </div>
+</div>

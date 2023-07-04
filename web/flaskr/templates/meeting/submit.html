@@ -1,0 +1,8 @@
+<div class="fr-mt-4w">
+{% if meeting is not none %}
+  <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Enregistrer{% endtrans %}</button>
+{% else %}
+  <button type="submit" class="fr-btn">{% trans %}Créer{% endtrans %}</button>
+{% endif %}
+  <a class="fr-btn fr-btn--secondary" href="/welcome">{% trans %}Annuler{% endtrans %}</a>
+</div>

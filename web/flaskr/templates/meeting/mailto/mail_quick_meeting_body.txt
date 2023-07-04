@@ -1,0 +1,27 @@
+<html>
+{% trans %}Bonjour,{% endtrans %}
+<br/>
+<br/>
+{% trans %}Vous avez demandé l’organisation d’{{ a_quick_meeting }} au travers du webinaire de l’Etat.{% endtrans %}
+<br/>
+<br/>
+{% trans %}Le lien du webinaire que vous trouvez ci-dessous reste actif et accessible pendant une semaine depuis un navigateur internet sur un ordinateur ou un smartphone :{% endtrans %}
+<br/>
+<br/>
+{% trans %}<a href="{{ moderator_mail_signin_url }}">{{ moderator_mail_signin_url }}</a>{% endtrans %}
+<br/>
+<br/>
+{% trans %}Vous pouvez dès à présent transmettre ce lien de connexion aux participants que vous souhaitez inviter.{% endtrans %}
+<br/>
+<br/>
+{% trans %}Une fois sur la page d’accueil, vous êtes invité à rentrer votre nom complet pour accéder au webinaire.{% endtrans %}
+<br/>
+<br/>
+{% trans %}Vous y êtes !{% endtrans %}
+<br/>
+<br/>
+{% trans %}L’équipe du webinaire de l’Etat vous souhaite un excellent séminaire.{% endtrans %}
+<br/>
+<br/>
+{% trans %}Si vous organisez régulièrement des {{ meeting_label }}s, nous vous conseillons de <a href="{{ welcome_url }}">créer un compte</a> pour organiser et conserver vos {{ meeting_label }}s avec des paramètres sur mesure.{% endtrans %}
+</html>

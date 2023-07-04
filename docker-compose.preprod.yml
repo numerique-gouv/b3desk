@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  web:
+    volumes:
+      - /tmp/download/:/tmp/download/
+      - /tmp/b3desk/:/tmp/b3desk/
+    env_file:
+      - web.env
+
+  worker:
+    environment:
+      - FLASK_DEBUG=1
+    env_file:
+      - web.env
+

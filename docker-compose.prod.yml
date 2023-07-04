@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  web:
+    env_file:
+      - web.env
+
+  worker:
+    env_file:
+      - web.env

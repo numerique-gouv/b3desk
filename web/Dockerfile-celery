@@ -1,0 +1,14 @@
+FROM python:3.8-bullseye
+
+# Install.
+RUN \
+  apt update && \
+  apt -y upgrade
+
+COPY requirements.celery.txt /tmp/requirements.txt
+COPY misc/run_celery.sh /opt/
+RUN chmod u+x /opt/run_celery.sh
+RUN pip install -r /tmp/requirements.txt
+
+WORKDIR /usr/src/app/
+ENTRYPOINT ["/opt/run_celery.sh"]

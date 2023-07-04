@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+    <title>{{title}}</title>
+
+    <!-- DSFR core CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/utility/icons/icons.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toc.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/remixicon/remixicon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spinner.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='presentation/css/all.css') }}">
+    <script>
+    function generatePassWord(n){
+       var result = '';
+       var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+       var charactersLength = characters.length;
+       for ( var i = 0; i < n; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+       }
+       return result;
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="js-modal-page">
+    {% block header %}{% endblock %}
+    <main role="main" id="main" >
+      {% with messages = get_flashed_messages(with_categories=true, category_filter=["error","success", "message", "warning"]) %}
+      {% if messages %}
+        {% for category,message in messages %}
+          <div class="fr-alert fr-alert-sm fr-alert--{{ 'info' if category == 'message' else category }}">
+            <p>{{ message }}</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+      {% block jumbotron %}{% endblock %}
+      <div id='layoutContainer' class="fr-container">
+        <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mt-4w">
+          <div class="fr-col-sm-10 fr-col-md-8 fr-pt-4w">
+            {% block main %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    {% block footer %}{% endblock %}
+
+    <!-- DSFR JavaScript -->
+    <script src="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.module.min.js')}}"></script>
+    <script type="text/javascript" nomodule href="dsfr-1.7/dsfr/dsfr.nomodule.min.js" ></script>
+    <!-- Scampi Modal en attendant la modale GouvFr-->
+    <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
+    {% block js %}{% endblock %}
+  </div>
+  </body>
+</html>

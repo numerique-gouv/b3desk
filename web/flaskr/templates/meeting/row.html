@@ -1,0 +1,66 @@
+<div class="fr-grid-row fr-grid-row--gutters fr-pt-1-5v">
+  {% if shorty %}
+  <div class="fr-col-4">
+    <span class="fr-fi-user-line"></span>
+    <a href="{{ '/meeting/join/'~ meeting.id ~ '/moderator' }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
+    {% if mailto %}
+    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting.moderator_mailto_href }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
+    {% endif %}
+    <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_signin_url }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+  </div>
+  <div class="fr-col-4">
+    <span class="ri-group-line"></span>
+    <a href="{{ '/meeting/join/'~ meeting.id ~ '/attendee' }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Participer à {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
+    {% if mailto %}
+    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting.attendee_mailto_href }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
+    {% endif %}
+    <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_signin_url }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+  </div>
+  <div class="rf-col">
+      <a href="{{ '/meeting/edit/'~ meeting.id }}" class="rf-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="rf-fi-edit-line"></span></a>
+      {% if file_sharing %}
+        <a href="{{ '/meeting/files/'~ meeting.id }}" class="rf-tag" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="rf-fi-file-pdf-line"></span></a>
+      {% endif %}
+      <a href="#"
+      class="js-modal fr-tag"
+      title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
+      aria-label="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}"
+      data-modal-content-id="delete-{{ meeting.id }}"
+      data-modal-title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
+      data-modal-close-text="x"
+      data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></a>
+  </div>
+  {% else %}
+  <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6">
+    <a href="{{ '/meeting/join/'~ meeting.id ~ '/moderator' }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
+    <button
+      class="js-modal fr-btn fr-btn--secondary btn-invite"
+      title="{% trans meeting_name=meeting.name %}Inviter à {{ meeting_name }}{% endtrans %} "
+      data-modal-content-id="share-{{ meeting.id }}"
+      data-modal-title="{% trans meeting_name=meeting.name %}Inviter à {{ meeting_name }}{% endtrans %} "
+      data-modal-close-text="x"
+      data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}">
+      {% trans %}Inviter{% endtrans %}
+    </button>
+  </div>
+  <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
+      {% if recording %}
+        <a href="{{ '/meeting/recordings/'~ meeting.id }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
+          <span class="fr-icon-play-line" aria-hidden="true"></span>
+        </a>
+      {% endif %}
+      <a href="{{ '/meeting/edit/'~ meeting.id }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-icon-edit-line"></span></a>
+      {% if file_sharing %}
+        <a href="{{ '/meeting/files/'~ meeting.id }}" class="fr-btn fr-btn--secondary" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="fr-icon-file-pdf-line"></span></a>
+      {% endif %}
+      <a href="javascript: void()"
+      class="js-modal fr-btn fr-btn--secondary"
+      title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
+      aria-label="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}"
+      data-modal-content-id="delete-{{ meeting.id }}"
+      data-modal-title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
+      data-modal-close-text="x"
+      data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-icon-delete-line" aria-hidden="true"></span></a>
+  </div>
+  {% endif %}
+</div>

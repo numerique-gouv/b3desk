@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+    <title>{{title}}</title>
+
+    <!-- DSFR core CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toc.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/remixicon/remixicon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spinner.css') }}">
+  </head>
+
+  <body>
+    <div id="static-page">
+    {% block header %}{% endblock %}
+    <main role="main" id="main" class="fr-container" >
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-xs-12 fr-col-md-10 fr-col-xl-8 fr-py-7w">
+          {% block main %}{% endblock %}
+        </div>     
+      </div>
+    </main>
+
+    {% block footer %}{% endblock %}
+
+    <!-- DSFR JavaScript -->
+    <script src="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.module.min.js')}}"></script>
+    <script type="text/javascript" nomodule href="dsfr-1.7/dsfr/dsfr.nomodule.min.js" ></script>
+    <!-- Scampi Modal en attendant la modale GouvFr-->
+    <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
+    <!-- minified nc filepicker : from https://github.com/julien-nc/nextcloud-webdav-filepicker -->
+    <!-- <script src="{{ url_for('static', filename='js/filePickerWrapper.js')}}"></script> -->
+    {% block js %}{% endblock %}
+  </div>
+  </body>
+</html>

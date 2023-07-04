@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  web:
+    env_file:
+      - web.env.example
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/home"]
+      start_period: 10s
+      interval: 5s
+
+  nextcloud:
+    env_file:
+      - web.env.example
+    volumes:
+      - ./nextcloud/nextcloudcheck.sh:/var/tmp/nextcloudcheck.sh
+    healthcheck:
+      test: "bash /var/tmp/nextcloudcheck.sh"
+      start_period: 30s
+      interval: 5s
+
+  worker:
+    healthcheck:
+      test: [ "CMD-SHELL", "celery inspect ping | grep pong" ]
+      start_period: 5s
+
+  tokenmock:
+    env_file:
+      - web.env.example
+    healthcheck:
+      test: "bash ./tokencheck.sh"
+      start_period: 5s
+      interval: 5s
+
+  tests:
+    env_file:
+      - web.env.example

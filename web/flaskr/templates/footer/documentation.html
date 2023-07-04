@@ -1,0 +1,96 @@
+{% extends 'static-layout.html' %}
+
+{% block header %}
+    {% include 'header.html' %}
+{% endblock %}
+
+{% block main %}
+ <h1>{% trans %}Documentation{% endtrans %}</h1>
+ <h2>{% trans %}Guides utilisateurs{% endtrans %}</h2>
+ {% if documentation_page_subtitle %}
+  <p>{{ documentation_page_subtitle }}</p>
+  {% endif %}
+ <li><a href="/static/misc/PresentationNouveautes2-4.pdf" title="Présentation des nouveautés de la v2.4" target="_blank" rel="noopener noreferrer"> {% trans %}Présentation des nouveautés de la v2.4{% endtrans %}</a></li>
+ <br>
+ <iframe src="https://podeduc.apps.education.fr/video/0089-big-blue-button-24-les-nouveautes/?is_iframe=true" width="640" height="360" style="padding: 0; margin: 0; border:0"
+    sandbox="allow-scripts allow-same-origin" allowfullscreen></iframe>
+ <br>
+ <li><a href="/static/misc/1.Creer_une_reunion_Improvisee.pdf" title="Créer {{ a_meeting }} improvisée" target="_blank" rel="noopener noreferrer"> {% trans %}Créer {{ an_improvised_meeting }}{% endtrans %}</a></li>
+ <li><a href="/static/misc/2.Participer_a_une_reunion.pdf" title="Participer à {{ a_meeting }}" target="_blank" rel="noopener noreferrer"> {% trans %}Participer à {{ a_meeting }}{% endtrans %} </a></li>
+ <li><a href="/static/misc/3.Creer_et_parametrer_une_salle_de_reunion.pdf" title="Créer et parametrer une salle de {{ a_meeting }}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer et paramétrer une salle de {{ meeting_label }}{% endtrans %} </a></li>
+ <li><a href="/static/misc/4.Activer_le_materiel_dans_le_navigateur.pdf" title="Activer le matériel dans le navigateur" target="_blank" rel="noopener noreferrer"> {% trans %}Activer le matériel dans le navigateur{% endtrans %} </a></li>
+ <li><a href="/static/misc/5.G%C3%A9rer_les_participants.pdf" title="Gérer_les_utilisateurs" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer les utilisateurs{% endtrans %} </a></li>
+ <li><a href="/static/misc/6.G%C3%A9rer_les_documents.pdf" title="Gérer les documents" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer les documents{% endtrans %} </a></li>
+ <li><a href="/static/misc/7.Creer_des_r%C3%A9unions_priv%C3%A9es.pdf" title="Gestion des {{ private_meetings }}" target="_blank" rel="noopener noreferrer"> {% trans %}Gestion des {{ private_meetings }}{% endtrans %} </a></li>
+ <li><a href="/static/misc/8.D%C3%A9l%C3%A9guer_la_cr%C3%A9ation_de_r%C3%A9union.pdf" title="Déléguer la création de {{ meeting_label }}" target="_blank" rel="noopener noreferrer"> {% trans %}Déléguer la création de {{ meeting_label }}{% endtrans %} </a></li>
+ <li><a href="/static/misc/9.Enregistrer_une_r%C3%A9union.pdf" title="Enregistrer {{ a_meeting }}" target="_blank" rel="noopener noreferrer"> {% trans %}Enregistrer {{ a_meeting }}{% endtrans %} </a></li>
+ <li><a href="/static/misc/10.Cr%C3%A9er_un_Sondage.pdf" title="Créer un sondage" target="_blank" rel="noopener noreferrer"> {% trans %}Créer un sondage{% endtrans %} </a></li>
+ <li><a href="/static/misc/11.Joindre_une_reunion_par_telephone.pdf" title="Joindre {{ a_meeting }} par téléphone" target="_blank" rel="noopener noreferrer"> {% trans %}Joindre {{ a_meeting }} par téléphone{% endtrans %}</a></li>
+ <li><a href="/static/misc/12.Afficher_le_tableau_de_bord_activite_participants.pdf" title="Afficher le tableau de bord" target="_blank" rel="noopener noreferrer"> {% trans %}Afficher le tableau de bord{% endtrans %}</a></li>
+ <li><a href="/static/misc/13.G%C3%A9rer_la_mise_en_page.pdf" title="Gérer la mise en page" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer la mise en page{% endtrans %}</a></li>
+ <li><a href="/static/misc/14.PluginControleVolume.pdf" title="Extension contrôle du volume" target="_blank" rel="noopener noreferrer"> {% trans %}Contrôle du volume{% endtrans %}</a></li>
+ <br>
+ <style class="fr-mb-4w">
+      table, th, td {
+      padding: 10px;
+      border: 1px solid black;
+      border-collapse: collapse;
+      }
+ </style>
+<table class="fr-mb-4w">
+  <tr>
+    <th>1 caméra</th>
+    <th>5 caméras</th>
+    <th>10 caméras</th>
+    <th>20 caméras</th>
+    <th>30 caméras</th>
+  </tr>
+  <tr>
+    <td>350 personnes</td>
+    <td>250 personnes</td>
+    <td>150 personnes</td>
+    <td>100 personnes</td>
+    <td>maximum 50 personnes</td>
+  </tr>
+
+</table>
+ <h2>Documentation technique</h2>
+
+ <p>L'ensemble de ces services requiére d'ouverture de ports UDP notamment dans les pare-feux</p>
+
+
+<p>Le service BigBlueButton est composé de 3 types de services :
+  <ul>
+    <li>le service BigBlueButton</li>
+    <li>le service TURN/STUN qui permet, en méthode de contournement, lorsque les ports UDP sont bloqués d'encapsuler le flux UDP dans un flux 443/TCP/DTLS embarqué par les serveurs de web-visio BigBlueButton</li>      
+    <li>le service Scalelite sur des serveurs dédiés qui servent à répartir les salles sur l'ensemble des serveurs BBB</li>
+  </ul>
+</p>
+
+<p>
+Ces ports sont :
+  <ul>
+    <li>Serveurs BBB/scalelite
+      <ul>
+        <li>TCP/IP ports 80/443 (HTTP/HTTPS)</li>
+        <li>UDP la plage de ports 16384 - 32768</li>
+        <li>TCP/IP ports 443 service TURN (TCP/DTLS) dont il faut positionner en exclusion du proxy les FQDN/IP</li>          
+      </ul>
+    </li>
+  </ul>
+</p>
+<br>
+
+<h3>Serveurs TURN</h3>
+<p>Depuis la version 2.6 de BigBlueButton le service TURN est embarqué directement dans chaque serveur BigBlueButton et non plus une grappe de serveurs TURN dédiés.</p>
+
+<h3>Fichiers avec les IP et FQDN des serveurs BBB</h3>
+<ul>
+ <li><a href="/static/misc/ip-fqdn-adm-sort.txt" title="Liste des serveurs BigBlueButton pour l'Éducation" target="_blank" rel="noopener noreferrer"> Visio Éducation</a></li>
+ <li><a href="/static/misc/ip-fqdn-bbb-dinum-sort.txt" title="Liste des serveurs BigBlueButton pour le Webinaire de l'État" target="_blank" rel="noopener noreferrer"> Webinaire </a></li>
+ <li><a href="/static/misc/ip-fqdn-bbb-complet.txt" title="Liste des serveurs BigBlueButton pour l'ensemble des BigBlueBlutton" target="_blank" rel="noopener noreferrer"> Tous </a></li>
+</ul>
+{% endblock %}
+{% block footer %}
+    {% include 'footer.html' %}
+{% endblock %}

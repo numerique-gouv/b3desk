@@ -1,0 +1,28 @@
+{% extends 'static-layout.html' %}
+
+{% block header %}
+    {% include 'header.html' %}
+{% endblock %}
+
+{% block main %}
+    <h1>{% trans %}FAQ - Modalités d'accès{% endtrans %}</h1>
+    <ul class="fr-accordions-group">
+      {% for content in contents %}
+        <section class="fr-accordion">
+            <h3 class="fr-accordion__title">
+                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="fr-accordion-{{ loop.index }}">{{content["title"]}}</button>
+            </h3>
+            <div class="fr-collapse" id="fr-accordion-{{ loop.index }}">
+              <div class="fr-mt-1w">
+                <div class="faq-accordion-content">
+                  {{content["description"]}}
+                </div>
+              </div>
+            </div>
+        </section>
+      {% endfor %}
+    </ul>
+{% endblock %}
+{% block footer %}
+    {% include 'footer.html' %}
+{% endblock %}
