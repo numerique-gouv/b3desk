@@ -72,7 +72,7 @@ Il se déroule alors la chose suivante :
 2. si le salon doit être créé, il est créé ( eh ouais ), il se passe alors 2 choses au niveau des fichiers associés
   - Le fichier noté comme étant celui par défaut est DIRECTEMENT associé au salon, via un fichier XML inséré dans l'appel API 'create' ( doc de référence : https://docs.bigbluebutton.org/development/api#pre-upload-slides )
   - Les autres fichiers sont poussés dans une job queue via celery ( qui communique avec B3desk via redis ). Une requête au BBB va ensuite être lancée sur l'endpoint insertDocument ( doc de référence : https://docs.bigbluebutton.org/development/api#insertdocument )
- 
+
  Le résultat obtenu est une association des fichiers fonctionnelle, un salon qui se lance rapidement, et des fichiers 'secondaires' qui s'uploadent ensuite en background sans bloquer le déroulé du cours. Des notifications dans le salon apparaissent à chaque ajout de fichier.
 
 **Troubleshooting : Si la création du salon part en timeout, il y a probablement un problème de communication entre B3desk et Celery et Redis, bien vérifier les variables d'environnement correspondantes**

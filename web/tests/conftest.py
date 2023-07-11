@@ -1,12 +1,11 @@
 import functools
 import time
-import pytest
-
-from flaskr import create_app
-from flask_migrate import Migrate
-from flask_webtest import TestApp
 
 import flaskr.utils
+import pytest
+from flask_migrate import Migrate
+from flask_webtest import TestApp
+from flaskr import create_app
 
 
 flaskr.utils.secret_key = lambda: "AZERTY"

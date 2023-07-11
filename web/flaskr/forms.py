@@ -1,16 +1,14 @@
 from flask import current_app
 from flask_babel import lazy_gettext
 from flask_wtf import FlaskForm
-from wtforms import (
-    Form,
-    IntegerField,
-    SelectField,
-    StringField,
-    TextAreaField,
-    BooleanField,
-    HiddenField,
-    validators,
-)
+from wtforms import BooleanField
+from wtforms import Form
+from wtforms import HiddenField
+from wtforms import IntegerField
+from wtforms import SelectField
+from wtforms import StringField
+from wtforms import TextAreaField
+from wtforms import validators
 
 
 class JoinMeetingAsRoleForm(Form):

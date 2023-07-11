@@ -1,7 +1,8 @@
 from datetime import date
 
+from flaskr.models import get_or_create_user
+from flaskr.models import User
 from freezegun import freeze_time
-from flaskr.models import User, get_or_create_user
 
 
 def test_get_or_create_user(client_app):

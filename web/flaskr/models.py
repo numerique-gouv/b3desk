@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # +----------------------------------------------------------------------------+
 # | BBB-VISIO                                                                  |
 # +----------------------------------------------------------------------------+
@@ -9,22 +8,22 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-
-from flaskr.tasks import background_upload
-
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_utils import EncryptedType
-
-from flask import current_app, url_for, render_template
-
-from xml.etree import ElementTree
-import requests
 import hashlib
-from datetime import date, datetime, timedelta, timezone
-
-from flaskr.utils import secret_key
 import os
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from xml.etree import ElementTree
+
+import requests
+from flask import current_app
+from flask import render_template
+from flask import url_for
+from flask_sqlalchemy import SQLAlchemy
+from flaskr.tasks import background_upload
+from flaskr.utils import secret_key
+from sqlalchemy_utils import EncryptedType
 
 
 db = SQLAlchemy()
@@ -167,11 +166,11 @@ class User(db.Model):
 
     @property
     def fullname(self):
-        return "%s %s" % (self.given_name, self.family_name)
+        return f"{self.given_name} {self.family_name}"
 
     @property
     def hash(self):
-        s = "%s|%s" % (self.email, secret_key())
+        s = f"{self.email}|{secret_key()}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     @property
@@ -199,12 +198,12 @@ class BBB:
     def get_params_with_checksum(self, action, params):
         request = requests.Request(
             "GET",
-            "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+            "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
             params=params,
         )
         pr = request.prepare()
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-        s = "%s%s" % (
+        s = "{}{}".format(
             pr.url.replace("?", "").replace(
                 current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
             ),
@@ -245,7 +244,7 @@ class BBB:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL hence it was uploaded to nextcloud:
                 filehash = hashlib.sha1(
-                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode("utf-8")
+                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
 
@@ -253,12 +252,12 @@ class BBB:
         params = {"meetingID": self.meeting.meetingID}
         request = requests.Request(
             "POST",
-            "%s/%s" % (BIGBLUEBUTTON_ENDPOINT, insertAction),
+            f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
             params=params,
         )
         pr = request.prepare()
         bigbluebutton_secret = BIGBLUEBUTTON_SECRET
-        s = "%s%s" % (
+        s = "{}{}".format(
             pr.url.replace("?", "").replace(BIGBLUEBUTTON_ENDPOINT + "/", ""),
             bigbluebutton_secret,
         )
@@ -371,7 +370,7 @@ class BBB:
                     xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
                 else:  # file is not URL nor NC hence it was uploaded
                     filehash = hashlib.sha1(
-                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode("utf-8")
+                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                     ).hexdigest()
                     xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
             xml = xml_beg + xml_mid + xml_end
@@ -400,7 +399,7 @@ class BBB:
                     xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
                 else:  # file is not URL nor NC hence it was uploaded
                     filehash = hashlib.sha1(
-                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode("utf-8")
+                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                     ).hexdigest()
                     xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
 
@@ -408,12 +407,12 @@ class BBB:
             params = {"meetingID": self.meeting.meetingID}
             request = requests.Request(
                 "POST",
-                "%s/%s" % (BIGBLUEBUTTON_ENDPOINT, insertAction),
+                f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
                 params=params,
             )
             pr = request.prepare()
             bigbluebutton_secret = BIGBLUEBUTTON_SECRET
-            s = "%s%s" % (
+            s = "{}{}".format(
                 pr.url.replace("?", "").replace(BIGBLUEBUTTON_ENDPOINT + "/", ""),
                 bigbluebutton_secret,
             )
@@ -633,7 +632,7 @@ class Meeting(db.Model):
             fid = "meeting-persistent-%i" % (self.id)
         else:
             fid = "meeting-vanish-%s" % (self.fake_id)
-        return "%s--%s" % (fid, self.user.hash if self.user else "")
+        return "{}--{}".format(fid, self.user.hash if self.user else "")
 
     @property
     def fake_id(self):
@@ -654,7 +653,7 @@ class Meeting(db.Model):
         del self._fake_id
 
     def get_hash(self, role):
-        s = "%s|%s|%s|%s" % (self.meetingID, self.attendeePW, self.name, role)
+        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     def is_meeting_running(self):
@@ -724,7 +723,7 @@ class Meeting(db.Model):
         )
 
     def get_mail_signin_hash(self, meeting_id, expiration_epoch):
-        s = "%s-%s" % (meeting_id, expiration_epoch)
+        s = f"{meeting_id}-{expiration_epoch}"
         return hashlib.sha256(
             s.encode("utf-8") + secret_key().encode("utf-8")
         ).hexdigest()

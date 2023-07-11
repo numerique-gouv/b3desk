@@ -248,7 +248,7 @@ dialog.scampi-modal {
   position: relative;
   padding: 1em;
 }
-.modal-body code {  
+.modal-body code {
   padding:0.5em 1em;
   display: inline-block;
   background-color: #E7E7E7;

@@ -1,8 +1,8 @@
-import pytest
-
 from unittest import mock
 
-from flaskr.models import Meeting, MODERATOR_ONLY_MESSAGE_MAXLENGTH
+import pytest
+from flaskr.models import Meeting
+from flaskr.models import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
 
 @pytest.fixture()

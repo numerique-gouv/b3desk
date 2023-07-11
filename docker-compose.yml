@@ -1,7 +1,7 @@
 version: '3.7'
 
   # These containers are the one needed to make the app work
-  # Other container are available in docker-compose.override.yml if needed  
+  # Other container are available in docker-compose.override.yml if needed
   # see documentation [link] for more info
 
 services:

@@ -1,6 +1,6 @@
 import os
-import requests
 
+import requests
 from celery import Celery
 
 REDIS_URL = os.environ.get("REDIS_URL")

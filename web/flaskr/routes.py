@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # +----------------------------------------------------------------------------+
 # | BBB-VISIO                                                                  |
 # +----------------------------------------------------------------------------+
@@ -9,74 +8,63 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-
-from werkzeug.utils import secure_filename
-
-from webdav3.client import Client as webdavClient
-from webdav3.exceptions import WebDavException
-
+import hashlib
+import os
+import random
+import re
+import secrets
+import smtplib
+import string
+import uuid
+from datetime import date
+from datetime import datetime
+from email.message import EmailMessage
+from email.mime.text import MIMEText
 from pathlib import Path
 
 import filetype
-
-from flask import (
-    current_app,
-    send_from_directory,
-    abort,
-    Blueprint,
-    render_template,
-    send_file,
-    make_response,
-    request,
-    redirect,
-    flash,
-    session,
-    jsonify,
-    url_for,
-)
+import requests
+from flask import abort
+from flask import Blueprint
+from flask import current_app
+from flask import flash
+from flask import jsonify
+from flask import make_response
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import send_file
+from flask import send_from_directory
+from flask import session
+from flask import url_for
 from flask_babel import lazy_gettext
 from flask_pyoidc import OIDCAuthentication
-from flask_pyoidc.provider_configuration import (
-    ProviderConfiguration,
-    ClientMetadata,
-)
+from flask_pyoidc.provider_configuration import ClientMetadata
+from flask_pyoidc.provider_configuration import ProviderConfiguration
 from flask_pyoidc.user_session import UserSession
-from sqlalchemy import exc
-import random
-import hashlib
-import os
-import re
-import smtplib
-import string
-import requests
-import secrets
-import uuid
-
-from datetime import datetime, date
-from email.mime.text import MIMEText
-from email.message import EmailMessage
-from netaddr import IPNetwork, IPAddress
-
-from flaskr.forms import (
-    JoinMeetingAsRoleForm,
-    JoinMeetingForm,
-    JoinMailMeetingForm,
-    ShowMeetingForm,
-    MeetingForm,
-    MeetingFilesForm,
-    MeetingWithRecordForm,
-    EndMeetingForm,
-    RecordingForm,
-)
-from flaskr.models import (
-    get_or_create_user,
-    db,
-    User,
-    Meeting,
-    MeetingFiles,
-    MeetingFilesExternal,
-)
+from flaskr.forms import EndMeetingForm
+from flaskr.forms import JoinMailMeetingForm
+from flaskr.forms import JoinMeetingAsRoleForm
+from flaskr.forms import JoinMeetingForm
+from flaskr.forms import MeetingFilesForm
+from flaskr.forms import MeetingForm
+from flaskr.forms import MeetingWithRecordForm
+from flaskr.forms import RecordingForm
+from flaskr.forms import ShowMeetingForm
+from flaskr.models import db
+from flaskr.models import get_or_create_user
+from flaskr.models import Meeting
+from flaskr.models import MeetingFiles
+from flaskr.models import MeetingFilesExternal
+from flaskr.models import User
 from flaskr.utils import retry_join_meeting
+from netaddr import IPAddress
+from netaddr import IPNetwork
+from sqlalchemy import exc
+from webdav3.client import Client as webdavClient
+from webdav3.exceptions import WebDavException
+from werkzeug.utils import secure_filename
+
 from .common.extensions import cache
 from .templates.content import FAQ_CONTENT
 
@@ -135,7 +123,7 @@ def is_valid_email(email):
 
 def get_random_alphanumeric_string(length):
     letters_and_digits = string.ascii_letters + string.digits
-    result_str = "".join((random.choice(letters_and_digits) for i in range(length)))
+    result_str = "".join(random.choice(letters_and_digits) for i in range(length))
     return result_str
 
 
@@ -156,8 +144,8 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     m.user = user
     m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
     m.fake_id = random_string
-    m.moderatorPW = "%s-%s" % (user.hash, random_string)
-    m.attendeePW = "%s-%s" % (random_string, random_string)
+    m.moderatorPW = f"{user.hash}-{random_string}"
+    m.attendeePW = f"{random_string}-{random_string}"
     m.moderatorOnlyMessage = current_app.config[
         "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
     ]
@@ -294,7 +282,7 @@ def insertDocuments(meeting_id):
     for cur_file in files_title:
         id = add_external_meeting_file_nextcloud(cur_file, meeting_id)
         filehash = hashlib.sha1(
-            f"{secret_key}-1-{id}-{secret_key}".encode("utf-8")
+            f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
         xml_mid += f"<document url='{current_app.config['SERVER_FQDN']}/ncdownload/1/{id}/{filehash}' filename='{cur_file}' />"
 
@@ -303,12 +291,12 @@ def insertDocuments(meeting_id):
     params = {"meetingID": meeting.meetingID}
     request = requests.Request(
         "POST",
-        "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
+        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
         params=params,
     )
     pr = request.prepare()
     bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "%s%s" % (
+    s = "{}{}".format(
         pr.url.replace("?", "").replace(
             current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
         ),
@@ -434,7 +422,7 @@ def get_mail_meeting(random_string=None):
     m = Meeting()
     m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
     m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.moderatorPW = "%s-%s" % (
+    m.moderatorPW = "{}-{}".format(
         random_string,
         random_string,
     )  # it is only usefull for bbb
@@ -1164,7 +1152,7 @@ def insertDoc(token):
     if (
         m
         or m.token
-        != hashlib.sha1(f"{secret_key}{m.id}{secret_key}".encode("utf-8")).hexdigest()
+        != hashlib.sha1(f"{secret_key}{m.id}{secret_key}".encode()).hexdigest()
     ):
         make_response("NOT OK", 500)
 
@@ -1172,13 +1160,13 @@ def insertDoc(token):
     action = "insertDocument"
     req = requests.Request(
         "POST",
-        "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
         params=params,
     )
     headers = {"Content-Type": "application/xml"}
     pr = req.prepare()
     bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "%s%s" % (
+    s = "{}{}".format(
         pr.url.replace("?", "").replace(
             current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
         ),
@@ -1237,7 +1225,7 @@ def ncdownload(isexternal, mfid, mftoken):
     if (
         mftoken
         != hashlib.sha1(
-            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode("utf-8")
+            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
         ).hexdigest()
     ):
         return make_response("Bad token provided, no file matching", 404)
@@ -1533,7 +1521,7 @@ def delete_meeting():
                 flash(
                     "Nous n'avons pas pu supprimer les vidéos de cette "
                     + current_app.config["WORDINGS"]["meeting_label"]
-                    + " : {message}".format(message=message),
+                    + f" : {message}",
                     "error",
                 )
             else:

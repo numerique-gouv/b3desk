@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 from flask_babel import lazy_gettext
 

@@ -48,14 +48,14 @@
 </div>
 <div class="rf-header__navbar">
   <div class="rf-service">
-    <!-- Webinaire de l'État -->    
+    <!-- Webinaire de l'État -->
     <a class="rf-service__title" href="${properties.kcServiceTitle!}">Webinaire de l'État</a>
     <!-- Le service de réunions en ligne pour les agents de l'État -->
     <p class="rf-service__tagline">${properties.kcServiceTagline!}</p>
   </div>
 </div>
       <div class="rf-header__tools">
-  
+
 <div class="rf-shortcuts">
     <ul class="rf-shortcuts__list">
 		  <li class="rf-shortcuts__item">

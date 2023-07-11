@@ -1,12 +1,12 @@
 <?php
 
-// this code will requests : 
+// this code will requests :
 
 // curl -XPOST https://nextcloud.instance.com/apps/sessiontoken/token -d "apikey=ffffffffffffff&user=admin&name=tokenmock"
-// answers : 
+// answers :
 // {"token":"aaa-aaa-aaa-aaa","loginName":"admin","deviceToken":{"id":3,"name":"tokenmock","lastActivity":1677754112,"type":1,"scope":{"filesystem":true}}}
 
-// this code should answer in format : 
+// this code should answer in format :
 // return {"nctoken": None, "nclocator": None, "nclogin": None}
 
 $config=include('./config.php');
