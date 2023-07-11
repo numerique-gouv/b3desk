@@ -7,8 +7,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-cffi = "1.14.0"
-chardet = "3.0.4"
 flask-pyoidc = "3.10.0"
 flask-sqlalchemy = "^3.0.3"
 flask-uploads = "0.2.1"
