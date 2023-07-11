@@ -10,7 +10,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 
-from flask import Flask, render_template, request, session
+from flask import Flask, request, session
 import os
 import logging
 
@@ -79,7 +79,7 @@ def create_app(test_config=None, gunicorn_logging=False):
         from .models import db
 
         db.init_app(app)
-        migrate = Migrate(app, db, compare_type=True)
+        Migrate(app, db, compare_type=True)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)

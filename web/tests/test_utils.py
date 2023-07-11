@@ -7,20 +7,20 @@ def test_retry_join_meeting():
 
     assert (
         flaskr.utils.retry_join_meeting(WAIT_ROOM_URL, "authenticated", "Alice", "")
-        == True
+        is True
     )
-    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "attendee", "", "") == False
-    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "attendee", "Alice", "") == True
-    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "moderator", "", "") == False
-    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "moderator", "Alice", "") == True
-    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "authenticated", "", "") == False
+    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "attendee", "", "") is False
+    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "attendee", "Alice", "") is True
+    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "moderator", "", "") is False
+    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "moderator", "Alice", "") is True
+    assert flaskr.utils.retry_join_meeting(SIGNIN_URL, "authenticated", "", "") is False
     assert (
         flaskr.utils.retry_join_meeting(SIGNIN_URL, "authenticated", "Alice", "")
-        == False
+        is False
     )
     assert (
         flaskr.utils.retry_join_meeting(
             SIGNIN_URL, "authenticated", "Alice", "Service A"
         )
-        == True
+        is True
     )

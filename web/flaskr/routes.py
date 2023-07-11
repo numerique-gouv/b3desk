@@ -13,7 +13,7 @@
 from werkzeug.utils import secure_filename
 
 from webdav3.client import Client as webdavClient
-from webdav3.exceptions import MethodNotSupported, WebDavException
+from webdav3.exceptions import WebDavException
 
 from pathlib import Path
 
@@ -27,7 +27,6 @@ from flask import (
     render_template,
     send_file,
     make_response,
-    Response,
     request,
     redirect,
     flash,
@@ -35,7 +34,6 @@ from flask import (
     jsonify,
     url_for,
 )
-from xml.etree import ElementTree
 from flask_babel import lazy_gettext
 from flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import (
@@ -43,7 +41,7 @@ from flask_pyoidc.provider_configuration import (
     ClientMetadata,
 )
 from flask_pyoidc.user_session import UserSession
-from sqlalchemy import or_, exc
+from sqlalchemy import exc
 import random
 import hashlib
 import os
@@ -51,14 +49,12 @@ import re
 import smtplib
 import string
 import requests
-import shutil
 import secrets
 import uuid
 
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.message import EmailMessage
-from urllib.parse import quote
 from netaddr import IPNetwork, IPAddress
 
 from flaskr.forms import (
@@ -252,7 +248,7 @@ def get_meetings_stats():
         stats_array = [row.split(",") for row in stats_array]
         participantCount = int(stats_array[current_app.config["STATS_INDEX"]][1])
         runningCount = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except Exception as e:
+    except Exception:
         return None
 
     result = {"participantCount": participantCount, "runningCount": runningCount}
@@ -262,18 +258,15 @@ def get_meetings_stats():
 @bp.route("/api/meetings", methods=["GET"])
 @auth.token_auth(provider_name="default")
 def api_meetings():
-    if auth.current_token_identity:
-        current_identity = auth.current_token_identity
-    else:
+    if not auth.current_token_identity:
         return redirect("/")
+
     info = {
         "given_name": auth.current_token_identity["given_name"],
         "family_name": auth.current_token_identity["family_name"],
         "email": auth.current_token_identity["email"],
     }
     user = get_or_create_user(info)
-    fullname = user.fullname
-    stats = get_meetings_stats()
     return {
         "meetings": [
             {
@@ -292,7 +285,7 @@ def api_meetings():
 def insertDocuments(meeting_id):
     from flask import request
 
-    user = get_current_user()
+    get_current_user()
     meeting = Meeting.query.get(meeting_id)
     files_title = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
@@ -316,7 +309,6 @@ def insertDocuments(meeting_id):
         "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
         params=params,
     )
-    headers = {"Content-Type": "application/xml"}
     pr = request.prepare()
     bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
     s = "%s%s" % (
@@ -326,7 +318,7 @@ def insertDocuments(meeting_id):
         bigbluebutton_secret,
     )
     params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-    r = requests.post(
+    requests.post(
         f"{bbb_endpoint}/insertDocument",
         headers={"Content-Type": "application/xml"},
         data=xml,
@@ -482,7 +474,7 @@ def quick_mail_meeting():
         id=email
     )  # this user can probably be removed if we created adock function
     m = get_quick_meeting_from_user_and_random_string(user)
-    signinurl = _send_mail(m, email)
+    _send_mail(m, email)
     flash(
         lazy_gettext("Vous avez reçu un courriel pour vous connecter"), "success_login"
     )
@@ -831,7 +823,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             meetingFile.is_default = False
 
         meetingFile.save()
-        secret_key = current_app.config["SECRET_KEY"]
+        current_app.config["SECRET_KEY"]
         meetingFile.update()
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
         removeDropzoneFile(dropzonePath)
@@ -851,7 +843,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
-    user = get_current_user()
+    get_current_user()
     title = url.rsplit("/", 1)[-1]
 
     # test MAX_SIZE_UPLOAD for 20Mo
@@ -880,7 +872,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     meetingFile.url = url
     meetingFile.is_default = is_default
 
-    getFile = requests.get(url)
+    requests.get(url)
 
     try:
         meetingFile.save()
@@ -911,7 +903,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     try:
         client = webdavClient(options)
         metadata = client.info(path)
-    except WebDavException as exception:
+    except WebDavException:
         user.disable_nextcloud()
         return jsonify(
             status=500,
@@ -932,7 +924,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     meetingFile.meeting_id = meeting_id
     meetingFile.nc_path = path
     meetingFile.is_default = is_default
-    secret_key = current_app.config["SECRET_KEY"]
+    current_app.config["SECRET_KEY"]
 
     try:
         meetingFile.save()
@@ -952,7 +944,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
-    user = get_current_user()
+    get_current_user()
 
     externalMeetingFile = MeetingFilesExternal()
 
@@ -1123,7 +1115,7 @@ def save_meeting():
     )
 
     if meeting.is_meeting_running():
-        end_meeting_form = EndMeetingForm()
+        EndMeetingForm()
         EndMeetingForm.meeting_id.data = meeting.id
         return render_template(
             "meeting/end.html",
@@ -1200,7 +1192,7 @@ def insertDoc(token):
     # xml now use
     xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{current_app.config['SERVER_FQDN']}/ncdownload/{m.id}/{m.download_hash}' filename='m.title' /> </module></modules>"
 
-    r = requests.post(
+    requests.post(
         f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",
         data=xml,
         headers=headers,
@@ -1271,7 +1263,7 @@ def ncdownload(isexternal, mfid, mftoken):
             "local_path": tmpName,
         }
         client.download_sync(**kwargs)
-    except WebDavException as exception:
+    except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
         return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
     # send the downloaded file to the BBB:
@@ -1449,7 +1441,7 @@ def join_mail_meeting():
         return redirect("/")
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
-    user_id = form["user_id"].data
+    form["user_id"].data
     expiration = form["expiration"].data
     h = form["h"].data
 
@@ -1542,7 +1534,7 @@ def delete_meeting():
                 flash(
                     "Nous n'avons pas pu supprimer les vidéos de cette "
                     + current_app.config["WORDINGS"]["meeting_label"]
-                    + " : {message}".format(code=return_code, message=message),
+                    + " : {message}".format(message=message),
                     "error",
                 )
             else:

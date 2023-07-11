@@ -7,7 +7,6 @@ from wtforms import (
     SelectField,
     StringField,
     TextAreaField,
-    MultipleFileField,
     BooleanField,
     HiddenField,
     validators,

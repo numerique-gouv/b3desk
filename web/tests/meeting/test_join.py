@@ -198,7 +198,7 @@ def test_join_meeting_as_role(
 def test_join_meeting_as_role__meeting_not_found(
     client_app, app, authenticated_user, bbb_response
 ):
-    client_app.get(f"/meeting/join/321/attendee", status=404)
+    client_app.get("/meeting/join/321/attendee", status=404)
 
 
 def test_join_meeting_as_role__not_attendee_or_moderator(

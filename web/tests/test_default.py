@@ -39,15 +39,15 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
 
 
 def test_change_language(client_app):
-    response = client_app.get("/faq?lang=fr", status=200)
+    client_app.get("/faq?lang=fr", status=200)
     with client_app.session_transaction() as session:
         assert session["lang"] == "fr"
 
-    response = client_app.get("/faq?lang=uk", status=200)
+    client_app.get("/faq?lang=uk", status=200)
     with client_app.session_transaction() as session:
         assert session["lang"] == "uk"
 
-    response = client_app.get("/faq", status=200)
+    client_app.get("/faq", status=200)
     with client_app.session_transaction() as session:
         assert session["lang"] == "uk"
 

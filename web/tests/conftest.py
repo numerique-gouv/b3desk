@@ -2,7 +2,6 @@ import functools
 import time
 import pytest
 
-from flask import session
 from flaskr import create_app
 from flask_migrate import Migrate
 from flask_webtest import TestApp
@@ -57,7 +56,7 @@ def app(mocker):
         }
     )
     with app.app_context():
-        migrate = Migrate(app, db, compare_type=True)
+        Migrate(app, db, compare_type=True)
         db.create_all()
 
     return app

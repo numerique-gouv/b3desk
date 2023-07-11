@@ -7,7 +7,6 @@ Create Date: 2023-02-28 14:35:21.691915
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 import os
 import sys
