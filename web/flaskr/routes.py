@@ -914,7 +914,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         return jsonify(
             status=500,
             isfrom="nextcloud",
-            msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
+            msg=f"Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
     meetingFile = MeetingFiles()

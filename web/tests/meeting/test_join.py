@@ -62,22 +62,14 @@ def test_auth_attendee_disabled(client_app, app, meeting):
     the attendee authentication step.
     https://github.com/numerique-gouv/b3desk/issues/9
     """
-    # TODO: refactor this test with modern test conventions when #6 is merged
-
     app.config["OIDC_ATTENDEE_ENABLED"] = False
+    meeting_hash = meeting.get_hash("authenticated")
 
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("authenticated")
-
-    url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
-    response = client_app.get(url)
-
-    assert response.status_code == 200
-    form_action_url = "/meeting/join"
-    assert form_action_url in response.data.decode()
+    url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
+    response = client_app.get(
+        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
+    )
+    response.mustcontain("/meeting/join")
 
 
 def test_join_meeting_as_authenticated_attendee(

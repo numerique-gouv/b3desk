@@ -57,6 +57,7 @@ def create_app(test_config=None, gunicorn_logging=False):
             "config": app.config,
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
+            "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
         }
 
@@ -66,10 +67,6 @@ def create_app(test_config=None, gunicorn_logging=False):
     # Protect App Form with CSRF
     csrf = CSRFProtect()
     csrf.init_app(app)
-
-    @app.context_processor
-    def global_processor():
-        return {"LANGUAGES": LANGUAGES}
 
     # init database
     with app.app_context():

@@ -63,4 +63,5 @@ testpaths = "web"
 ignore = [
     "E501",  # line too long
     "E722",  # bare expect
+    "E402",  # import not at the top of the file
 ]
