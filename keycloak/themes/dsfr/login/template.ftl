@@ -198,7 +198,7 @@
                 </p>
                 <p class="rf-footer__content-desc">
                     Le code source est ouvert et les contributions sont bienvenues.
-                    <a title="Voir le code source - nouvelle fenêtre" href="https://github.com/betagouv/visio-bbb/" target="_blank" rel="noopener">Voir le code source</a>
+                    <a title="Voir le code source - nouvelle fenêtre" href="https://github.com/numerique-gouv/b3desk/" target="_blank" rel="noopener">Voir le code source</a>
                 </p>
 
                 <ul class="rf-footer__content-links">
