@@ -58,3 +58,9 @@ extend-exclude = '''
 [tool.pytest.ini_options]
 env_files = ["web.env"]
 testpaths = "web"
+
+[tool.ruff]
+ignore = [
+    "E501",  # line too long
+    "E722",  # bare expect
+]
