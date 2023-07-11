@@ -1,0 +1,73 @@
+name: Check local run
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  test-container:
+    name: Run tests in container
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup git
+      uses: actions/checkout@v3
+
+    - name: Check container tests
+      run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml run --rm tests
+
+  test-local:
+    name: Run test locally
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup git
+        uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r web/requirements.app.txt
+          pip install -r web/requirements.dev.txt
+      - name: Check local environment tests
+        run: pytest --envfile web.env.example
+
+  healthy-containers:
+    name: Check containers run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup git
+        uses: actions/checkout@v3
+
+      - name: Run all containers
+        run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml up -d
+
+      - name: Check postgres health
+        run: /bin/bash healthcheck.sh db 60
+
+      - name: Check keycloak health
+        run: /bin/bash healthcheck.sh kc 60
+
+      - name: Check nextcloud health
+        run: /bin/bash healthcheck.sh nc 60
+
+      - name: Check broker health
+        run: /bin/bash healthcheck.sh broker 60
+
+      - name: Check worker health
+        run: /bin/bash healthcheck.sh worker 60
+
+      - name: Check B3Desk health
+        run: /bin/bash healthcheck.sh web 60
+
+      - name: Check tokenmock health and token content
+        run: /bin/bash healthcheck.sh id 60
