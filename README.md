@@ -27,3 +27,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 ## Installer B3Desk dans un environnement de développement local
 
 Vous pouvez suivre la documentation dans [./CONTRIBUTING.md](./CONTRIBUTING.md) pour installer localement le projet et le tester.
+
+## Licence
+
+Ce logiciel est mis à disposition sous la licence EUPL : https://commission.europa.eu/content/european-union-public-licence_fr
