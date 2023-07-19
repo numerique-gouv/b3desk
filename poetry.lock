@@ -1465,6 +1465,25 @@ pytest = ">=5.0.0"
 python-dotenv = ">=0.9.1"
 
 [[package]]
+name = "pytest-flask"
+version = "1.2.0"
+description = "A set of py.test fixtures to test Flask applications."
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "pytest-flask-1.2.0.tar.gz", hash = "sha256:46fde652f77777bf02dc91205aec4ce20cdf2acbbbd66a918ab91f5c14693d3d"},
+    {file = "pytest_flask-1.2.0-py3-none-any.whl", hash = "sha256:fe25b39ad0db09c3d1fe728edecf97ced85e774c775db259a6d25f0270a4e7c9"},
+]
+
+[package.dependencies]
+Flask = "*"
+pytest = ">=5.2"
+Werkzeug = ">=0.7"
+
+[package.extras]
+docs = ["Sphinx", "sphinx-rtd-theme"]
+
+[[package]]
 name = "pytest-mock"
 version = "3.10.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -1956,4 +1975,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "db46a32b1cf3eaf8b9efde0890780178a015d9ecc56f785c1939702277787a8e"
+content-hash = "7f2302ad2dfe4097e49ce0bf19467ddc2648b8631751fafee661125db40b827d"
