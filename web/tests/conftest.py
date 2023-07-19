@@ -69,18 +69,16 @@ def client_app(app):
 
 @pytest.fixture()
 def meeting(app, user):
-    with app.app_context():
-        meeting = Meeting(user=user)
-        meeting.save()
+    meeting = Meeting(user=user)
+    meeting.save()
 
     yield meeting
 
 
 @pytest.fixture()
 def user(app):
-    with app.app_context():
-        user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
-        user.save()
+    user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
+    user.save()
 
     yield user
 

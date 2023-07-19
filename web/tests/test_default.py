@@ -1,6 +1,3 @@
-from flask import session
-
-
 def test_root__anonymous_user(client_app):
     response = client_app.get("/")
 
@@ -42,20 +39,19 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
 
 
 def test_change_language(client_app):
-    with client_app:
-        response = client_app.get("/faq?lang=fr")
-
-        assert response.status_code == 200
+    response = client_app.get("/faq?lang=fr")
+    assert response.status_code == 200
+    with client_app.session_transaction() as session:
         assert session["lang"] == "fr"
 
-        response = client_app.get("/faq?lang=uk")
-
-        assert response.status_code == 200
+    response = client_app.get("/faq?lang=uk")
+    assert response.status_code == 200
+    with client_app.session_transaction() as session:
         assert session["lang"] == "uk"
 
-        response = client_app.get("/faq")
-
-        assert response.status_code == 200
+    response = client_app.get("/faq")
+    assert response.status_code == 200
+    with client_app.session_transaction() as session:
         assert session["lang"] == "uk"
 
 

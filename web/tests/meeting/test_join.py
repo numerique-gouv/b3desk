@@ -26,11 +26,10 @@ def authenticated_attendee(client_app, user, mocker):
 
 
 def test_signin_meeting(client_app, app, meeting):
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("attendee")
+    user_id = 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_hash("attendee")
 
     url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
     response = client_app.get(url)
@@ -41,11 +40,10 @@ def test_signin_meeting(client_app, app, meeting):
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("authenticated")
+    user_id = 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_hash("authenticated")
 
     url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
     response = client_app.get(url)
@@ -57,9 +55,8 @@ def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
 def test_join_meeting_as_authenticated_attendee(
     client_app, app, meeting, authenticated_attendee
 ):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     url = f"/meeting/join/{meeting_id}/authenticated"
     response = client_app.get(url)
@@ -72,11 +69,10 @@ def test_join_meeting_as_authenticated_attendee(
 def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("authenticated")
+    user_id = 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_hash("authenticated")
 
     response = client_app.post(
         "/meeting/join",
@@ -100,11 +96,10 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
 def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("authenticated")
+    user_id = 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_hash("authenticated")
 
     response = client_app.post(
         "/meeting/join",
@@ -125,12 +120,11 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 
 def test_join_meeting(client_app, app, meeting, bbb_response):
-    with app.app_context():
-        user_id = 1
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_hash("attendee")
-        fullname = "Bob"
+    user_id = 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_hash("attendee")
+    fullname = "Bob"
 
     response = client_app.post(
         "/meeting/join",
@@ -151,13 +145,12 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
 
 
 def test_join_mail_meeting(client_app, app, meeting, bbb_response):
-    with app.app_context():
-        user_id = 1
-        expiration = int(time.time()) + 1000
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        meeting_hash = meeting.get_mail_signin_hash(meeting_id, expiration)
-        fullname = "Bob"
+    user_id = 1
+    expiration = int(time.time()) + 1000
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    meeting_hash = meeting.get_mail_signin_hash(meeting_id, expiration)
+    fullname = "Bob"
 
     response = client_app.post(
         "/meeting/joinmail",
@@ -180,10 +173,9 @@ def test_join_mail_meeting(client_app, app, meeting, bbb_response):
 def test_join_meeting_as_role(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        fullname = "Alice+Cooper"
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    fullname = "Alice+Cooper"
 
     response = client_app.get(f"/meeting/join/{meeting_id}/attendee")
 
@@ -205,9 +197,8 @@ def test_join_meeting_as_role__meeting_not_found(
 def test_join_meeting_as_role__not_attendee_or_moderator(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/join/{meeting_id}/journalist")
 
@@ -216,12 +207,11 @@ def test_join_meeting_as_role__not_attendee_or_moderator(
 
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, meeting):
     fullname_suffix = "Service EN"
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_fake_id = meeting.fake_id
-        user_id = meeting.user.id
-        h = meeting.get_hash("attendee")
-        fullname = "Alice/Cooper"
+    meeting = Meeting.query.get(1)
+    meeting_fake_id = meeting.fake_id
+    user_id = meeting.user.id
+    h = meeting.get_hash("attendee")
+    fullname = "Alice/Cooper"
 
     with app.test_request_context():
         waiting_meeting_url = url_for(
@@ -239,12 +229,11 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
 
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_fake_id = meeting.fake_id
-        user_id = meeting.user.id
-        h = meeting.get_hash("attendee")
-        fullname = "Alice/Cooper"
+    meeting = Meeting.query.get(1)
+    meeting_fake_id = meeting.fake_id
+    user_id = meeting.user.id
+    h = meeting.get_hash("attendee")
+    fullname = "Alice/Cooper"
 
     with app.test_request_context():
         waiting_meeting_url = url_for(

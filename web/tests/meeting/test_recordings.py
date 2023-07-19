@@ -116,9 +116,8 @@ def bbb_getRecordings_response(mocker):
 
 
 def test_get_recordings(app, meeting, bbb_getRecordings_response):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        recordings = meeting.bbb.get_recordings()
+    meeting = Meeting.query.get(1)
+    recordings = meeting.bbb.get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
@@ -158,9 +157,8 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
 
     mocked_bbb_request = mocker.patch("requests.get", return_value=Resp)
 
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.post(
         f"meeting/{meeting_id}/recordings/recording_id",

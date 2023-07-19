@@ -11,9 +11,8 @@ def mocked_is_meeting_running(mocker):
 
 
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/show/{meeting_id}")
 
@@ -24,9 +23,8 @@ def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response
 def test_show_meeting_recording(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/recordings/{meeting_id}")
 
@@ -50,9 +48,8 @@ def test_new_meeting_when_recording_not_configured(client_app, app, authenticate
 
 
 def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/edit/{meeting_id}")
 
@@ -93,38 +90,36 @@ def test_save_new_meeting(
     assert response.status_code == 302
     assert "welcome" in response.location
 
-    with app.app_context():
-        meeting = Meeting.query.get(1)
+    meeting = Meeting.query.get(1)
 
-        assert meeting.user_id == 1
-        assert meeting.name == "Mon meeting de test"
-        assert meeting.welcome == "Bienvenue dans mon meeting de test"
-        assert meeting.maxParticipants == 5
-        assert meeting.duration == 60
-        assert meeting.guestPolicy is True
-        assert meeting.webcamsOnlyForModerator is True
-        assert meeting.muteOnStart is True
-        assert meeting.lockSettingsDisableCam is True
-        assert meeting.lockSettingsDisableMic is True
-        assert meeting.lockSettingsDisablePrivateChat is True
-        assert meeting.lockSettingsDisablePublicChat is True
-        assert meeting.lockSettingsDisableNote is True
-        assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
-        assert meeting.logoutUrl == "https://log.out"
-        assert meeting.moderatorPW == "Motdepasse1"
-        assert meeting.attendeePW == "Motdepasse2"
-        assert meeting.record is True
-        assert meeting.autoStartRecording is True
-        assert meeting.allowStartStopRecording is True
+    assert meeting.user_id == 1
+    assert meeting.name == "Mon meeting de test"
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+    assert meeting.maxParticipants == 5
+    assert meeting.duration == 60
+    assert meeting.guestPolicy is True
+    assert meeting.webcamsOnlyForModerator is True
+    assert meeting.muteOnStart is True
+    assert meeting.lockSettingsDisableCam is True
+    assert meeting.lockSettingsDisableMic is True
+    assert meeting.lockSettingsDisablePrivateChat is True
+    assert meeting.lockSettingsDisablePublicChat is True
+    assert meeting.lockSettingsDisableNote is True
+    assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
+    assert meeting.logoutUrl == "https://log.out"
+    assert meeting.moderatorPW == "Motdepasse1"
+    assert meeting.attendeePW == "Motdepasse2"
+    assert meeting.record is True
+    assert meeting.autoStartRecording is True
+    assert meeting.allowStartStopRecording is True
 
 
 def test_save_existing_meeting(
     app, client_app, authenticated_user, meeting, mocked_is_meeting_running
 ):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-        assert len(Meeting.query.all()) == 1
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
+    assert len(Meeting.query.all()) == 1
 
     data = MEETING_DATA.copy()
     data["id"] = meeting_id
@@ -137,31 +132,30 @@ def test_save_existing_meeting(
     assert response.status_code == 302
     assert "welcome" in response.location
 
-    with app.app_context():
-        assert len(Meeting.query.all()) == 1
+    assert len(Meeting.query.all()) == 1
 
-        meeting = Meeting.query.get(1)
+    meeting = Meeting.query.get(1)
 
-        assert meeting.user_id == 1
-        assert not meeting.name  # Name can not be edited
-        assert meeting.welcome == "Bienvenue dans mon meeting de test"
-        assert meeting.maxParticipants == 5
-        assert meeting.duration == 60
-        assert meeting.guestPolicy is True
-        assert meeting.webcamsOnlyForModerator is True
-        assert meeting.muteOnStart is True
-        assert meeting.lockSettingsDisableCam is True
-        assert meeting.lockSettingsDisableMic is True
-        assert meeting.lockSettingsDisablePrivateChat is True
-        assert meeting.lockSettingsDisablePublicChat is True
-        assert meeting.lockSettingsDisableNote is True
-        assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
-        assert meeting.logoutUrl == "https://log.out"
-        assert meeting.moderatorPW == "Motdepasse1"
-        assert meeting.attendeePW == "Motdepasse2"
-        assert meeting.record is True
-        assert meeting.autoStartRecording is True
-        assert meeting.allowStartStopRecording is True
+    assert meeting.user_id == 1
+    assert not meeting.name  # Name can not be edited
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+    assert meeting.maxParticipants == 5
+    assert meeting.duration == 60
+    assert meeting.guestPolicy is True
+    assert meeting.webcamsOnlyForModerator is True
+    assert meeting.muteOnStart is True
+    assert meeting.lockSettingsDisableCam is True
+    assert meeting.lockSettingsDisableMic is True
+    assert meeting.lockSettingsDisablePrivateChat is True
+    assert meeting.lockSettingsDisablePublicChat is True
+    assert meeting.lockSettingsDisableNote is True
+    assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
+    assert meeting.logoutUrl == "https://log.out"
+    assert meeting.moderatorPW == "Motdepasse1"
+    assert meeting.attendeePW == "Motdepasse2"
+    assert meeting.record is True
+    assert meeting.autoStartRecording is True
+    assert meeting.allowStartStopRecording is True
 
 
 def test_save_moderatorOnlyMessage_too_long(
@@ -183,8 +177,7 @@ def test_save_moderatorOnlyMessage_too_long(
     assert "Le formulaire contient des erreurs" in response_html
     assert moderator_only_message in response_html
     assert "Le message est trop long" in response_html
-    with app.app_context():
-        assert not Meeting.query.all()
+    assert not Meeting.query.all()
 
 
 def test_save_no_recording_by_default(
@@ -197,11 +190,10 @@ def test_save_no_recording_by_default(
     response = client_app.post("/meeting/save", data=data)
 
     assert response.status_code == 302
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        assert meeting.record is False
-        assert meeting.autoStartRecording is False
-        assert meeting.allowStartStopRecording is False
+    meeting = Meeting.query.get(1)
+    assert meeting.record is False
+    assert meeting.autoStartRecording is False
+    assert meeting.allowStartStopRecording is False
 
 
 def test_save_meeting_in_no_recording_environment(
@@ -217,10 +209,9 @@ def test_save_meeting_in_no_recording_environment(
     assert response.status_code == 302
     assert "welcome" in response.location
 
-    with app.app_context():
-        assert len(Meeting.query.all()) == 1
-        meeting = Meeting.query.get(1)
-        assert meeting.record is False
+    assert len(Meeting.query.all()) == 1
+    meeting = Meeting.query.get(1)
+    assert meeting.record is False
 
 
 def test_create(app, meeting, mocker):
@@ -234,7 +225,7 @@ def test_create(app, meeting, mocker):
         "flaskr.tasks.background_upload.delay", return_value=True
     )
 
-    with app.app_context(), app.test_request_context():
+    with app.test_request_context():
         meeting = Meeting.query.get(1)
 
         meeting.name = "My Meeting"
@@ -320,10 +311,9 @@ def test_create_without_logout_url_gets_default(
     )
 
     assert response.status_code == 302
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        assert meeting
-        assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
+    meeting = Meeting.query.get(1)
+    assert meeting
+    assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
 
 def test_create_quick_meeting(app, monkeypatch, user, mocker):
@@ -334,7 +324,7 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
 
     mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocker.patch("flaskr.tasks.background_upload.delay", return_value=True)
-    with app.app_context(), app.test_request_context():
+    with app.test_request_context():
         monkeypatch.setattr("flaskr.models.User.id", 1)
         monkeypatch.setattr("flaskr.models.User.hash", "hash")
         meeting = get_quick_meeting_from_user_and_random_string(user)
@@ -363,9 +353,8 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
 
 def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_response):
     app.config["FILE_SHARING"] = True
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/files/{meeting_id}")
 
@@ -388,9 +377,8 @@ def test_deactivated_meeting_files_cannot_edit(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
     app.config["FILE_SHARING"] = False
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
+    meeting = Meeting.query.get(1)
+    meeting_id = meeting.id
 
     response = client_app.get(f"/meeting/files/{meeting_id}")
 
