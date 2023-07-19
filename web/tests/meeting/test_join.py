@@ -215,7 +215,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
 
     with app.test_request_context():
         waiting_meeting_url = url_for(
-            "waiting_meeting",
+            "routes.waiting_meeting",
             meeting_fake_id=meeting_fake_id,
             user_id=user_id,
             h=h,
@@ -237,7 +237,7 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
 
     with app.test_request_context():
         waiting_meeting_url = url_for(
-            "waiting_meeting",
+            "routes.waiting_meeting",
             meeting_fake_id=meeting_fake_id,
             user_id=user_id,
             h=h,

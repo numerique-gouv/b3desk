@@ -712,7 +712,7 @@ class Meeting(db.Model):
             )
             return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
         return url_for(
-            "waiting_meeting",
+            "routes.waiting_meeting",
             meeting_fake_id=self.fake_id,
             user_id=self.user.id,
             h=self.get_hash(meeting_role),
@@ -722,7 +722,7 @@ class Meeting(db.Model):
 
     def get_signin_url(self, meeting_role):
         return current_app.config["SERVER_FQDN"] + url_for(
-            "signin_meeting",
+            "routes.signin_meeting",
             meeting_fake_id=self.fake_id,
             user_id=self.user.id,
             h=self.get_hash(meeting_role),
@@ -740,7 +740,7 @@ class Meeting(db.Model):
         ]  # remove milliseconds
         hash_param = self.get_mail_signin_hash(self.fake_id, expiration)
         return current_app.config["SERVER_FQDN"] + url_for(
-            "signin_mail_meeting",
+            "routes.signin_mail_meeting",
             meeting_fake_id=self.fake_id,
             expiration=expiration,
             h=hash_param,

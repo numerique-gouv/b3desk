@@ -85,7 +85,7 @@ from .common.extensions import cache
 from .templates.content import FAQ_CONTENT
 
 
-bp = Blueprint("", __name__)
+bp = Blueprint("routes", __name__)
 
 
 user_provider_configuration = ProviderConfiguration(
@@ -95,6 +95,7 @@ user_provider_configuration = ProviderConfiguration(
         client_id=current_app.config["OIDC_CLIENT_ID"],
         client_secret=current_app.config["OIDC_CLIENT_SECRET"],
         token_endpoint_auth_method=current_app.config["OIDC_CLIENT_AUTH_METHOD"],
+        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
     auth_request_params={"scope": current_app.config["OIDC_SCOPES"]},
 )
@@ -107,6 +108,7 @@ attendee_provider_configuration = ProviderConfiguration(
         token_endpoint_auth_method=current_app.config.get(
             "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
         ),
+        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
     auth_request_params={
         "scope": current_app.config.get("OIDC_ATTENDEE_SCOPES")
@@ -675,7 +677,7 @@ def update_recording_name(meeting_id, recording_id):
             )
     else:
         flash("Vous ne pouvez pas modifier cet enregistrement", "error")
-    return redirect(url_for("show_meeting_recording", meeting_id=meeting_id))
+    return redirect(url_for("routes.show_meeting_recording", meeting_id=meeting_id))
 
 
 @bp.route("/meeting/new", methods=["GET"])
@@ -1460,7 +1462,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
 
     if role == "authenticated":
         return redirect(
-            url_for("join_meeting_as_authenticated", meeting_id=meeting_fake_id)
+            url_for("routes.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
     elif not role:
         return redirect("/")
@@ -1586,7 +1588,7 @@ def join_meeting_as_authenticated(meeting_id):
     fullname = get_authenticated_attendee_fullname()
     return redirect(
         url_for(
-            "waiting_meeting",
+            "routes.waiting_meeting",
             meeting_fake_id=meeting_id,
             user_id=meeting.user.id,
             h=meeting.get_hash(role),
