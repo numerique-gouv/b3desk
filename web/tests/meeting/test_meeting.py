@@ -17,7 +17,7 @@ def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response
     response = client_app.get(f"/meeting/show/{meeting_id}")
 
     assert response.status_code == 200
-    assert "<!-- test show meeting -->" in response.data.decode()
+    response.mustcontain("<!-- test show meeting -->")
 
 
 def test_show_meeting_recording(
@@ -29,14 +29,14 @@ def test_show_meeting_recording(
     response = client_app.get(f"/meeting/recordings/{meeting_id}")
 
     assert response.status_code == 200
-    assert "<!-- test show meeting recording -->" in response.data.decode()
+    response.mustcontain("<!-- test show meeting recording -->")
 
 
 def test_new_meeting(client_app, authenticated_user):
     response = client_app.get("/meeting/new")
 
     assert response.status_code == 200
-    assert "<!-- test page wizard -->" in response.data.decode()
+    response.mustcontain("<!-- test page wizard -->")
 
 
 def test_new_meeting_when_recording_not_configured(client_app, app, authenticated_user):
@@ -44,7 +44,7 @@ def test_new_meeting_when_recording_not_configured(client_app, app, authenticate
 
     response = client_app.get("/meeting/new")
 
-    assert "Enregistrement" not in response.get_data(as_text=True)
+    response.mustcontain(no="Enregistrement")
 
 
 def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
@@ -54,7 +54,7 @@ def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response
     response = client_app.get(f"/meeting/edit/{meeting_id}")
 
     assert response.status_code == 200
-    assert "<!-- test page wizard -->" in response.data.decode()
+    response.mustcontain("<!-- test page wizard -->")
 
 
 MEETING_DATA = {
@@ -84,7 +84,7 @@ def test_save_new_meeting(
 ):
     response = client_app.post(
         "/meeting/save",
-        data=MEETING_DATA,
+        MEETING_DATA,
     )
 
     assert response.status_code == 302
@@ -126,7 +126,7 @@ def test_save_existing_meeting(
 
     response = client_app.post(
         "/meeting/save",
-        data=data,
+        data,
     )
 
     assert response.status_code == 302
@@ -167,16 +167,14 @@ def test_save_moderatorOnlyMessage_too_long(
 
     response = client_app.post(
         "/meeting/save",
-        data=data,
-        follow_redirects=True,
+        data,
     )
 
     assert response.status_code == 200
-    response_html = response.get_data(as_text=True)
-    assert "<!-- test page wizard -->" in response_html
-    assert "Le formulaire contient des erreurs" in response_html
-    assert moderator_only_message in response_html
-    assert "Le message est trop long" in response_html
+    response.mustcontain("<!-- test page wizard -->")
+    response.mustcontain("Le formulaire contient des erreurs")
+    response.mustcontain(moderator_only_message)
+    response.mustcontain("Le message est trop long")
     assert not Meeting.query.all()
 
 
@@ -187,7 +185,7 @@ def test_save_no_recording_by_default(
     del data["autoStartRecording"]
     del data["allowStartStopRecording"]
 
-    response = client_app.post("/meeting/save", data=data)
+    response = client_app.post("/meeting/save", data)
 
     assert response.status_code == 302
     meeting = Meeting.query.get(1)
@@ -203,7 +201,7 @@ def test_save_meeting_in_no_recording_environment(
 
     response = client_app.post(
         "/meeting/save",
-        data=MEETING_DATA,
+        MEETING_DATA,
     )
 
     assert response.status_code == 302
@@ -307,7 +305,7 @@ def test_create_without_logout_url_gets_default(
 
     response = client_app.post(
         "/meeting/save",
-        data=data,
+        data,
     )
 
     assert response.status_code == 302
@@ -359,7 +357,7 @@ def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_re
     response = client_app.get(f"/meeting/files/{meeting_id}")
 
     assert response.status_code == 200
-    assert "<!-- test edit meeting files -->" in response.data.decode()
+    response.mustcontain("<!-- test edit meeting files -->")
 
 
 def test_deactivated_meeting_files_cannot_access_files(
@@ -370,7 +368,7 @@ def test_deactivated_meeting_files_cannot_access_files(
     response = client_app.get("/welcome")
 
     assert response.status_code == 200
-    assert "Fichiers associés à " not in response.data.decode()
+    response.mustcontain(no="Fichiers associés à ")
 
 
 def test_deactivated_meeting_files_cannot_edit(

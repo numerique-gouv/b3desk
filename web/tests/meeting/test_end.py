@@ -8,7 +8,7 @@ def test_end_bbb_meeting(app, client_app, authenticated_user, meeting, mocker):
 
     response = client_app.post(
         "/meeting/end",
-        data={"meeting_id": meeting_id},
+        {"meeting_id": meeting_id},
     )
 
     assert mocked_end.called

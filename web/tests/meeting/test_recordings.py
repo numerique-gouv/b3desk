@@ -161,8 +161,8 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     meeting_id = meeting.id
 
     response = client_app.post(
-        f"meeting/{meeting_id}/recordings/recording_id",
-        data={"name": "First recording"},
+        f"/meeting/{meeting_id}/recordings/recording_id",
+        {"name": "First recording"},
     )
 
     bbb_url = mocked_bbb_request.call_args.args

@@ -1,3 +1,6 @@
+from flask import session
+
+
 def test_root__anonymous_user(client_app):
     response = client_app.get("/")
 
@@ -19,10 +22,10 @@ def test_home__anonymous_user(client_app, mocker):
     }
     mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
 
-    response = client_app.get("/home", environ_base={"REMOTE_ADDR": "127.0.0.1"})
+    response = client_app.get("/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 200
-    assert "<!-- test page home -->" in response.data.decode()
+    response.mustcontain("<!-- test page home -->")
 
 
 def test_home__authenticated_user(client_app, mocker, authenticated_user):
@@ -32,10 +35,10 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
     }
     mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
 
-    response = client_app.get("/home", environ_base={"REMOTE_ADDR": "127.0.0.1"})
+    response = client_app.get("/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 200
-    assert "<!-- test page home -->" in response.data.decode()
+    response.mustcontain("<!-- test page home -->")
 
 
 def test_change_language(client_app):
@@ -59,14 +62,14 @@ def test_faq__anonymous_user(client_app):
     response = client_app.get("/faq")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_faq__authenticated_user(client_app, authenticated_user):
     response = client_app.get("/faq")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")
 
 
 def test_documentation__anonymous_user(app, client_app, mocker):
@@ -75,7 +78,7 @@ def test_documentation__anonymous_user(app, client_app, mocker):
     response = client_app.get("/documentation")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_documentation__authenticated_user(app, client_app, authenticated_user):
@@ -84,7 +87,7 @@ def test_documentation__authenticated_user(app, client_app, authenticated_user):
     response = client_app.get("/documentation")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")
 
 
 def test_documentation_with_redirection(app, client_app):
@@ -93,60 +96,60 @@ def test_documentation_with_redirection(app, client_app):
     response = client_app.get("/documentation")
 
     assert response.status_code == 302
-    assert app.config["DOCUMENTATION_LINK"]["url"] in response.data.decode()
+    response.mustcontain(app.config["DOCUMENTATION_LINK"]["url"])
 
 
 def test_accessibilite__anonymous_user(client_app):
     response = client_app.get("/accessibilite")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_accessibilite__authenticated_user(client_app, authenticated_user):
     response = client_app.get("/accessibilite")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")
 
 
 def test_mentions_legales__anonymous_user(client_app):
     response = client_app.get("/mentions_legales")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_mentions_legales__authenticated_user(client_app, authenticated_user):
     response = client_app.get("/mentions_legales")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")
 
 
 def test_cgu__anonymous_user(client_app):
     response = client_app.get("/cgu")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_cgu__authenticated_user(client_app, authenticated_user):
     response = client_app.get("/cgu")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")
 
 
 def test_donnees_personnelles__anonymous_user(client_app):
     response = client_app.get("/donnees_personnelles")
 
     assert response.status_code == 200
-    assert "Alice Cooper" not in response.data.decode()
+    response.mustcontain(no="Alice Cooper")
 
 
 def test_donnees_personnelles__authenticated_user(client_app, authenticated_user):
     response = client_app.get("/donnees_personnelles")
 
     assert response.status_code == 200
-    assert "Alice Cooper" in response.data.decode()
+    response.mustcontain("Alice Cooper")

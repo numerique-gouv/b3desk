@@ -5,6 +5,7 @@ import pytest
 from flask import session
 from flaskr import create_app
 from flask_migrate import Migrate
+from flask_webtest import TestApp
 
 import flaskr.utils
 
@@ -59,12 +60,12 @@ def app(mocker):
         migrate = Migrate(app, db, compare_type=True)
         db.create_all()
 
-    yield app
+    return app
 
 
 @pytest.fixture()
 def client_app(app):
-    return app.test_client()
+    return TestApp(app)
 
 
 @pytest.fixture()

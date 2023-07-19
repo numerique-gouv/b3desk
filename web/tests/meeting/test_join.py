@@ -32,11 +32,11 @@ def test_signin_meeting(client_app, app, meeting):
     meeting_hash = meeting.get_hash("attendee")
 
     url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
-    response = client_app.get(url)
+    response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 200
     form_action_url = "/meeting/join"
-    assert form_action_url in response.data.decode()
+    response.mustcontain(form_action_url)
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
@@ -46,7 +46,7 @@ def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
     meeting_hash = meeting.get_hash("authenticated")
 
     url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
-    response = client_app.get(url)
+    response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 302
     assert response.location.endswith("/meeting/join/1/authenticated")
@@ -76,7 +76,7 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
 
     response = client_app.post(
         "/meeting/join",
-        data={
+        {
             "fullname": "Bob Dylan",
             "meeting_fake_id": meeting_id,
             "user_id": user_id,
@@ -103,7 +103,7 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
     response = client_app.post(
         "/meeting/join",
-        data={
+        {
             "fullname": "toto",
             "meeting_fake_id": meeting_id,
             "user_id": user_id,
@@ -128,7 +128,7 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
 
     response = client_app.post(
         "/meeting/join",
-        data={
+        {
             "fullname": fullname,
             "meeting_fake_id": meeting_id,
             "user_id": user_id,
@@ -154,7 +154,7 @@ def test_join_mail_meeting(client_app, app, meeting, bbb_response):
 
     response = client_app.post(
         "/meeting/joinmail",
-        data={
+        {
             "fullname": fullname,
             "meeting_fake_id": meeting_id,
             "user_id": user_id,
@@ -189,9 +189,7 @@ def test_join_meeting_as_role(
 def test_join_meeting_as_role__meeting_not_found(
     client_app, app, authenticated_user, bbb_response
 ):
-    response = client_app.get(f"/meeting/join/321/attendee")
-
-    assert response.status_code == 404
+    client_app.get(f"/meeting/join/321/attendee", status=404)
 
 
 def test_join_meeting_as_role__not_attendee_or_moderator(
@@ -200,9 +198,7 @@ def test_join_meeting_as_role__not_attendee_or_moderator(
     meeting = Meeting.query.get(1)
     meeting_id = meeting.id
 
-    response = client_app.get(f"/meeting/join/{meeting_id}/journalist")
-
-    assert response.status_code == 404
+    client_app.get(f"/meeting/join/{meeting_id}/journalist", status=404)
 
 
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, meeting):
@@ -225,7 +221,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
     response = client_app.get(waiting_meeting_url)
 
     assert response.status_code == 200
-    assert fullname in response.get_data(as_text=True)
+    response.mustcontain(fullname)
 
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
