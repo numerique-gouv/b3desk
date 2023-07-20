@@ -5,26 +5,6 @@ from flask import url_for
 from flaskr.models import Meeting
 
 
-@pytest.fixture()
-def authenticated_attendee(client_app, user, mocker):
-    with client_app.session_transaction() as session:
-        session["access_token"] = ""
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "attendee"
-        session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
-        session["userinfo"] = {
-            "email": "bob@domain.tld",
-            "family_name": "Dylan",
-            "given_name": "Bob",
-        }
-        session["refresh_token"] = ""
-
-    yield user
-
-
 def test_signin_meeting(client_app, app, meeting):
     user_id = 1
     meeting = Meeting.query.get(1)
