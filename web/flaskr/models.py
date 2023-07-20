@@ -767,8 +767,10 @@ class Meeting(db.Model):
         d["attendee_join_url"] = self.get_join_url("attendee", fullname)
         return d
 
-    def get_role(self, hashed_role):
-        if self.get_hash("attendee") == hashed_role:
+    def get_role(self, hashed_role, user_id=None):
+        if user_id and self.user.id == user_id:
+            return "moderator"
+        elif self.get_hash("attendee") == hashed_role:
             role = "attendee"
         elif self.get_hash("moderator") == hashed_role:
             role = "moderator"

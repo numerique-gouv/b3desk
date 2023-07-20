@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 
-def test_signin_meeting(client_app, app, meeting, user):
+def test_signin_meeting(client_app, app, meeting, user, bbb_response):
     meeting_hash = meeting.get_hash("attendee")
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
@@ -15,6 +15,34 @@ def test_signin_meeting(client_app, app, meeting, user):
 
     join_url = "/meeting/join"
     assert join_url == response.form.action
+
+    response = response.form.submit()
+    url = urlparse(response.location)
+    url_role = parse_qs(url.query)["role"]
+    assert url_role == ["viewer"]
+
+
+def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticated(
+    client_app,
+    app,
+    meeting,
+    authenticated_user,
+    bbb_response,
+):
+    """
+    If the meeting owner are authenticated, they must be automatically
+    promoted moderator in the meeting when clicking on an attendee link.
+    """
+    meeting_hash = meeting.get_hash("attendee")
+    url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
+
+    response = client_app.get(
+        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
+    )
+    response = response.form.submit()
+    url = urlparse(response.location)
+    url_role = parse_qs(url.query)["role"]
+    assert url_role == ["moderator"]
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):

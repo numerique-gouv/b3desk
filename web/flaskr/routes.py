@@ -1452,7 +1452,9 @@ def signin_meeting(meeting_fake_id, user_id, h):
             "success",
         )
         return redirect("/")
-    role = meeting.get_role(h)
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
 
     if role == "authenticated":
         return redirect(
@@ -1484,7 +1486,9 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect("/")
-    role = meeting.get_role(h)
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect("/")
     return render_template(
@@ -1514,7 +1518,9 @@ def join_meeting():
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect("/")
-    role = meeting.get_role(h)
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
     fullname_suffix = form["fullname_suffix"].data
     if role == "authenticated":
         fullname = get_authenticated_attendee_fullname()
