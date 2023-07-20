@@ -22,7 +22,7 @@ class JoinMeetingAsRoleForm(Form):
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
     meeting_fake_id = StringField()
-    user_id = StringField()
+    user_id = IntegerField()
     h = StringField()
     fullname_suffix = StringField()
 
