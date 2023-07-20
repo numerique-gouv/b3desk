@@ -209,6 +209,11 @@ def get_current_user():
     return get_or_create_user(info)
 
 
+def has_user_session():
+    user_session = UserSession(dict(session), "default")
+    return user_session.is_authenticated()
+
+
 def add_mailto_links(meeting_data):
     d = meeting_data
     d["moderator_mailto_href"] = render_template(
@@ -319,8 +324,7 @@ def insertDocuments(meeting_id):
 
 @bp.route("/mentions_legales")
 def mentions_legales():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -340,8 +344,7 @@ def mentions_legales():
 
 @bp.route("/cgu")
 def cgu():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -361,8 +364,7 @@ def cgu():
 
 @bp.route("/donnees_personnelles")
 def donnees_personnelles():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -382,8 +384,7 @@ def donnees_personnelles():
 
 @bp.route("/accessibilite")
 def accessibilite():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -405,8 +406,7 @@ def accessibilite():
 def documentation():
     if current_app.config["DOCUMENTATION_LINK"]["is_external"]:
         return redirect(current_app.config["DOCUMENTATION_LINK"]["url"])
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -424,8 +424,7 @@ def documentation():
 
 @bp.route("/faq")
 def faq():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
+    if has_user_session():
         logged_in = True
         user = get_current_user()
         fullname = user.fullname
@@ -444,12 +443,7 @@ def faq():
 
 @bp.route("/")
 def index():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-    else:
-        logged_in = False
-    if logged_in:
+    if has_user_session():
         return redirect("/welcome")
     else:
         return redirect("/home")
