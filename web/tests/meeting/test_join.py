@@ -1,37 +1,39 @@
 import time
-import pytest
 
 from flask import url_for
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 
 def test_signin_meeting(client_app, app, meeting, user):
     meeting_hash = meeting.get_hash("attendee")
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
-    response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
+    response = client_app.get(
+        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
+    )
 
-    assert response.status_code == 200
-    form_action_url = "/meeting/join"
-    response.mustcontain(form_action_url)
+    join_url = "/meeting/join"
+    assert join_url == response.form.action
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
     meeting_hash = meeting.get_hash("authenticated")
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
-    response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
+    response = client_app.get(
+        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
+    )
 
-    assert response.status_code == 302
-    assert response.location.endswith("/meeting/join/1/authenticated")
+    assert response.location == "/meeting/join/1/authenticated"
 
 
 def test_join_meeting_as_authenticated_attendee(
     client_app, app, meeting, authenticated_attendee
 ):
     url = f"/meeting/join/{meeting.id}/authenticated"
-    response = client_app.get(url)
+    response = client_app.get(url, status=302)
 
-    assert response.status_code == 302
     assert "/meeting/wait/1/creator/1/hash/" in response.location
     assert "Bob%20Dylan" in response.location
 
@@ -50,9 +52,9 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
             "h": meeting_hash,
             "fullname_suffix": "Service",
         },
+        status=302,
     )
 
-    assert response.status_code == 302
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob+Dylan+-+Service&"
         in response.location
@@ -95,9 +97,9 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
             "user_id": meeting.user.id,
             "h": meeting_hash,
         },
+        status=302,
     )
 
-    assert response.status_code == 302
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
         in response.location
@@ -119,9 +121,9 @@ def test_join_mail_meeting(client_app, app, meeting, bbb_response):
             "h": meeting_hash,
             "expiration": expiration,
         },
+        status=302,
     )
 
-    assert response.status_code == 302
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
         in response.location
@@ -133,9 +135,8 @@ def test_join_meeting_as_role(
 ):
     fullname = "Alice+Cooper"
 
-    response = client_app.get(f"/meeting/join/{meeting.id}/attendee")
+    response = client_app.get(f"/meeting/join/{meeting.id}/attendee", status=302)
 
-    assert response.status_code == 302
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
         in response.location
@@ -170,9 +171,8 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
             fullname=fullname,
             fullname_suffix=fullname_suffix,
         )
-    response = client_app.get(waiting_meeting_url)
+    response = client_app.get(waiting_meeting_url, status=200)
 
-    assert response.status_code == 200
     response.mustcontain(fullname)
 
 
@@ -190,6 +190,4 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
             fullname=fullname,
             fullname_suffix="",
         )
-    response = client_app.get(waiting_meeting_url)
-
-    assert response.status_code == 200
+    client_app.get(waiting_meeting_url, status=200)

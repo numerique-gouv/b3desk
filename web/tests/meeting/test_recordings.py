@@ -159,6 +159,7 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     response = client_app.post(
         f"/meeting/{meeting.id}/recordings/recording_id",
         {"name": "First recording"},
+        status=302,
     )
 
     bbb_url = mocked_bbb_request.call_args.args
@@ -167,5 +168,4 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     assert ("meta_name", "First recording") in bbb_params
     assert ("recordID", "recording_id") in bbb_params
 
-    assert response.status_code == 302
     assert f"meeting/recordings/{meeting.id}" in response.location

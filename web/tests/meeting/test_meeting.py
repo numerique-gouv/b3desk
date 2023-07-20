@@ -11,25 +11,22 @@ def mocked_is_meeting_running(mocker):
 
 
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    response = client_app.get(f"/meeting/show/{meeting.id}")
+    response = client_app.get(f"/meeting/show/{meeting.id}", status=200)
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test show meeting -->")
 
 
 def test_show_meeting_recording(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    response = client_app.get(f"/meeting/recordings/{meeting.id}")
+    response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test show meeting recording -->")
 
 
 def test_new_meeting(client_app, authenticated_user):
-    response = client_app.get("/meeting/new")
+    response = client_app.get("/meeting/new", status=200)
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test page wizard -->")
 
 
@@ -42,9 +39,8 @@ def test_new_meeting_when_recording_not_configured(client_app, app, authenticate
 
 
 def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    response = client_app.get(f"/meeting/edit/{meeting.id}")
+    response = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test page wizard -->")
 
 
@@ -76,9 +72,9 @@ def test_save_new_meeting(
     response = client_app.post(
         "/meeting/save",
         MEETING_DATA,
+        status=302,
     )
 
-    assert response.status_code == 302
     assert "welcome" in response.location
 
     meeting = Meeting.query.get(1)
@@ -116,9 +112,9 @@ def test_save_existing_meeting(
     response = client_app.post(
         "/meeting/save",
         data,
+        status=302,
     )
 
-    assert response.status_code == 302
     assert "welcome" in response.location
 
     assert len(Meeting.query.all()) == 1
@@ -157,9 +153,9 @@ def test_save_moderatorOnlyMessage_too_long(
     response = client_app.post(
         "/meeting/save",
         data,
+        status=200,
     )
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test page wizard -->")
     response.mustcontain("Le formulaire contient des erreurs")
     response.mustcontain(moderator_only_message)
@@ -174,9 +170,8 @@ def test_save_no_recording_by_default(
     del data["autoStartRecording"]
     del data["allowStartStopRecording"]
 
-    response = client_app.post("/meeting/save", data)
+    client_app.post("/meeting/save", data, status=302)
 
-    assert response.status_code == 302
     meeting = Meeting.query.get(1)
     assert meeting.record is False
     assert meeting.autoStartRecording is False
@@ -191,9 +186,9 @@ def test_save_meeting_in_no_recording_environment(
     response = client_app.post(
         "/meeting/save",
         MEETING_DATA,
+        status=302,
     )
 
-    assert response.status_code == 302
     assert "welcome" in response.location
 
     assert len(Meeting.query.all()) == 1
@@ -290,12 +285,12 @@ def test_create_without_logout_url_gets_default(
     data = MEETING_DATA.copy()
     del data["logoutUrl"]
 
-    response = client_app.post(
+    client_app.post(
         "/meeting/save",
         data,
+        status=302,
     )
 
-    assert response.status_code == 302
     meeting = Meeting.query.get(1)
     assert meeting
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
@@ -339,9 +334,8 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
 def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_response):
     app.config["FILE_SHARING"] = True
 
-    response = client_app.get(f"/meeting/files/{meeting.id}")
+    response = client_app.get(f"/meeting/files/{meeting.id}", status=200)
 
-    assert response.status_code == 200
     response.mustcontain("<!-- test edit meeting files -->")
 
 
@@ -350,9 +344,8 @@ def test_deactivated_meeting_files_cannot_access_files(
 ):
     app.config["FILE_SHARING"] = False
 
-    response = client_app.get("/welcome")
+    response = client_app.get("/welcome", status=200)
 
-    assert response.status_code == 200
     response.mustcontain(no="Fichiers associés à ")
 
 
@@ -361,7 +354,6 @@ def test_deactivated_meeting_files_cannot_edit(
 ):
     app.config["FILE_SHARING"] = False
 
-    response = client_app.get(f"/meeting/files/{meeting.id}")
+    response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
 
-    assert response.status_code == 302
     assert "welcome" in response.location
