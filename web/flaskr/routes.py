@@ -269,7 +269,7 @@ def api_meetings():
 
 
 # called by NextcloudfilePicker when documents should be added to a running room:
-@bp.route("/meeting/files/<meeting_id>/insertDocuments", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/insertDocuments", methods=["POST"])
 @auth.oidc_auth("default")
 def insertDocuments(meeting_id):
     from flask import request
@@ -598,7 +598,7 @@ def quick_meeting():
     return redirect(m.get_join_url("moderator", fullname, create=True))
 
 
-@bp.route("/meeting/show/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/show/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def show_meeting(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -625,7 +625,7 @@ def show_meeting(meeting_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/recordings/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/recordings/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def show_meeting_recording(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -655,7 +655,7 @@ def show_meeting_recording(meeting_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/<meeting_id>/recordings/<recording_id>", methods=["POST"])
+@bp.route("/meeting/<int:meeting_id>/recordings/<recording_id>", methods=["POST"])
 @auth.oidc_auth("default")
 def update_recording_name(meeting_id, recording_id):
     user = get_current_user()
@@ -704,7 +704,7 @@ def new_meeting():
     )
 
 
-@bp.route("/meeting/edit/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/edit/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def edit_meeting(meeting_id):
     user = get_current_user()
@@ -732,7 +732,7 @@ def edit_meeting(meeting_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/files/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/files/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def edit_meeting_files(meeting_id):
     user = get_current_user()
@@ -776,7 +776,7 @@ def edit_meeting_files(meeting_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/files/<meeting_id>/<file_id>", methods=["GET"])
+@bp.route("/meeting/files/<int:meeting_id>/<int:file_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def download_meeting_files(meeting_id, file_id):
     user = get_current_user()
@@ -788,7 +788,7 @@ def download_meeting_files(meeting_id, file_id):
     fileToSend = None
     if user is not None and meeting.user_id == user.id:
         for curFile in meeting.files:
-            if curFile.id == int(file_id):
+            if curFile.id == file_id:
                 fileToSend = curFile
                 break
         if not fileToSend:
@@ -828,7 +828,7 @@ def download_meeting_files(meeting_id, file_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/files/<meeting_id>/toggledownload", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/toggledownload", methods=["POST"])
 @auth.oidc_auth("default")
 def toggledownload(meeting_id):
     user = get_current_user()
@@ -846,7 +846,7 @@ def toggledownload(meeting_id):
     return redirect("/welcome")
 
 
-@bp.route("/meeting/files/<meeting_id>/default", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/default", methods=["POST"])
 @auth.oidc_auth("default")
 def set_meeting_default_file(meeting_id):
     user = get_current_user()
@@ -1064,7 +1064,7 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
     return externalMeetingFile.id
 
 
-@bp.route("/meeting/files/<meeting_id>", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>", methods=["POST"])
 @auth.oidc_auth("default")
 def add_meeting_files(meeting_id):
     user = get_current_user()
@@ -1097,7 +1097,7 @@ def add_meeting_files(meeting_id):
 
 
 # for dropzone multiple files uploading at once
-@bp.route("/meeting/files/<meeting_id>/dropzone", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/dropzone", methods=["POST"])
 @auth.oidc_auth("default")
 def add_dropzone_files(meeting_id):
     user = get_current_user()
@@ -1262,7 +1262,7 @@ def end_meeting():
     return redirect("/welcome")
 
 
-@bp.route("/meeting/create/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/create/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def create_meeting(meeting_id):
     user = get_current_user()
@@ -1321,7 +1321,7 @@ def insertDoc(token):
     return make_response("ok", 200)
 
 
-@bp.route("/meeting/<meeting_id>/externalUpload")
+@bp.route("/meeting/<int:meeting_id>/externalUpload")
 @auth.oidc_auth("default")
 def externalUpload(meeting_id):
     user = get_current_user()
@@ -1438,7 +1438,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
 
 @bp.route(
-    "/meeting/signin/<meeting_fake_id>/creator/<user_id>/hash/<h>", methods=["GET"]
+    "/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
 )
 def signin_meeting(meeting_fake_id, user_id, h):
     is_rie = any(
@@ -1478,12 +1478,12 @@ def signin_meeting(meeting_fake_id, user_id, h):
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
     methods=["GET"],
     defaults={"fullname_suffix": ""},
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
     methods=["GET"],
 )
 def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
@@ -1580,7 +1580,7 @@ def get_authenticated_attendee_fullname():
     return fullname
 
 
-@bp.route("/meeting/join/<meeting_id>/authenticated", methods=["GET"])
+@bp.route("/meeting/join/<int:meeting_id>/authenticated", methods=["GET"])
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     meeting = Meeting.query.get(meeting_id) or abort(404)
@@ -1598,7 +1598,7 @@ def join_meeting_as_authenticated(meeting_id):
     )
 
 
-@bp.route("/meeting/join/<meeting_id>/<role>", methods=["GET"])
+@bp.route("/meeting/join/<int:meeting_id>/<role>", methods=["GET"])
 @auth.oidc_auth("default")
 def join_meeting_as_role(meeting_id, role):
     user = get_current_user()
