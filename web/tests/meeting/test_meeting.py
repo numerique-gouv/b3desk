@@ -11,10 +11,7 @@ def mocked_is_meeting_running(mocker):
 
 
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-
-    response = client_app.get(f"/meeting/show/{meeting_id}")
+    response = client_app.get(f"/meeting/show/{meeting.id}")
 
     assert response.status_code == 200
     response.mustcontain("<!-- test show meeting -->")
@@ -23,10 +20,7 @@ def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response
 def test_show_meeting_recording(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-
-    response = client_app.get(f"/meeting/recordings/{meeting_id}")
+    response = client_app.get(f"/meeting/recordings/{meeting.id}")
 
     assert response.status_code == 200
     response.mustcontain("<!-- test show meeting recording -->")
@@ -48,10 +42,7 @@ def test_new_meeting_when_recording_not_configured(client_app, app, authenticate
 
 
 def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-
-    response = client_app.get(f"/meeting/edit/{meeting_id}")
+    response = client_app.get(f"/meeting/edit/{meeting.id}")
 
     assert response.status_code == 200
     response.mustcontain("<!-- test page wizard -->")
@@ -117,12 +108,10 @@ def test_save_new_meeting(
 def test_save_existing_meeting(
     app, client_app, authenticated_user, meeting, mocked_is_meeting_running
 ):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     assert len(Meeting.query.all()) == 1
 
     data = MEETING_DATA.copy()
-    data["id"] = meeting_id
+    data["id"] = meeting.id
 
     response = client_app.post(
         "/meeting/save",
@@ -224,8 +213,6 @@ def test_create(app, meeting, mocker):
     )
 
     with app.test_request_context():
-        meeting = Meeting.query.get(1)
-
         meeting.name = "My Meeting"
         meeting.attendeePW = "Password1"
         meeting.moderatorPW = "Password2"
@@ -351,10 +338,8 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
 
 def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_response):
     app.config["FILE_SHARING"] = True
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
 
-    response = client_app.get(f"/meeting/files/{meeting_id}")
+    response = client_app.get(f"/meeting/files/{meeting.id}")
 
     assert response.status_code == 200
     response.mustcontain("<!-- test edit meeting files -->")
@@ -375,10 +360,8 @@ def test_deactivated_meeting_files_cannot_edit(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
     app.config["FILE_SHARING"] = False
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
 
-    response = client_app.get(f"/meeting/files/{meeting_id}")
+    response = client_app.get(f"/meeting/files/{meeting.id}")
 
     assert response.status_code == 302
     assert "welcome" in response.location

@@ -116,7 +116,6 @@ def bbb_getRecordings_response(mocker):
 
 
 def test_get_recordings(app, meeting, bbb_getRecordings_response):
-    meeting = Meeting.query.get(1)
     recordings = meeting.bbb.get_recordings()
 
     assert len(recordings) == 2
@@ -157,11 +156,8 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
 
     mocked_bbb_request = mocker.patch("requests.get", return_value=Resp)
 
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-
     response = client_app.post(
-        f"/meeting/{meeting_id}/recordings/recording_id",
+        f"/meeting/{meeting.id}/recordings/recording_id",
         {"name": "First recording"},
     )
 
@@ -172,4 +168,4 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     assert ("recordID", "recording_id") in bbb_params
 
     assert response.status_code == 302
-    assert f"meeting/recordings/{meeting_id}" in response.location
+    assert f"meeting/recordings/{meeting.id}" in response.location

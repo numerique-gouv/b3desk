@@ -2,16 +2,12 @@ import time
 import pytest
 
 from flask import url_for
-from flaskr.models import Meeting
 
 
-def test_signin_meeting(client_app, app, meeting):
-    user_id = 1
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
+def test_signin_meeting(client_app, app, meeting, user):
     meeting_hash = meeting.get_hash("attendee")
 
-    url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
+    url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 200
@@ -20,12 +16,9 @@ def test_signin_meeting(client_app, app, meeting):
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
-    user_id = 1
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     meeting_hash = meeting.get_hash("authenticated")
 
-    url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
+    url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     response = client_app.get(url, extra_environ={"REMOTE_ADDR": "127.0.0.1"})
 
     assert response.status_code == 302
@@ -35,10 +28,7 @@ def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
 def test_join_meeting_as_authenticated_attendee(
     client_app, app, meeting, authenticated_attendee
 ):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-
-    url = f"/meeting/join/{meeting_id}/authenticated"
+    url = f"/meeting/join/{meeting.id}/authenticated"
     response = client_app.get(url)
 
     assert response.status_code == 302
@@ -49,17 +39,14 @@ def test_join_meeting_as_authenticated_attendee(
 def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    user_id = 1
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     meeting_hash = meeting.get_hash("authenticated")
 
     response = client_app.post(
         "/meeting/join",
         {
             "fullname": "Bob Dylan",
-            "meeting_fake_id": meeting_id,
-            "user_id": user_id,
+            "meeting_fake_id": meeting.id,
+            "user_id": meeting.user.id,
             "h": meeting_hash,
             "fullname_suffix": "Service",
         },
@@ -76,17 +63,14 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
 def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    user_id = 1
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     meeting_hash = meeting.get_hash("authenticated")
 
     response = client_app.post(
         "/meeting/join",
         {
             "fullname": "toto",
-            "meeting_fake_id": meeting_id,
-            "user_id": user_id,
+            "meeting_fake_id": meeting.id,
+            "user_id": meeting.user.id,
             "h": meeting_hash,
             "fullname_suffix": "",
         },
@@ -100,9 +84,6 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 
 def test_join_meeting(client_app, app, meeting, bbb_response):
-    user_id = 1
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     meeting_hash = meeting.get_hash("attendee")
     fullname = "Bob"
 
@@ -110,8 +91,8 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
         "/meeting/join",
         {
             "fullname": fullname,
-            "meeting_fake_id": meeting_id,
-            "user_id": user_id,
+            "meeting_fake_id": meeting.id,
+            "user_id": meeting.user.id,
             "h": meeting_hash,
         },
     )
@@ -125,19 +106,16 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
 
 
 def test_join_mail_meeting(client_app, app, meeting, bbb_response):
-    user_id = 1
     expiration = int(time.time()) + 1000
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
-    meeting_hash = meeting.get_mail_signin_hash(meeting_id, expiration)
+    meeting_hash = meeting.get_mail_signin_hash(meeting.id, expiration)
     fullname = "Bob"
 
     response = client_app.post(
         "/meeting/joinmail",
         {
             "fullname": fullname,
-            "meeting_fake_id": meeting_id,
-            "user_id": user_id,
+            "meeting_fake_id": meeting.id,
+            "user_id": meeting.user.id,
             "h": meeting_hash,
             "expiration": expiration,
         },
@@ -153,11 +131,9 @@ def test_join_mail_meeting(client_app, app, meeting, bbb_response):
 def test_join_meeting_as_role(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
     fullname = "Alice+Cooper"
 
-    response = client_app.get(f"/meeting/join/{meeting_id}/attendee")
+    response = client_app.get(f"/meeting/join/{meeting.id}/attendee")
 
     assert response.status_code == 302
     assert (
@@ -175,17 +151,13 @@ def test_join_meeting_as_role__meeting_not_found(
 def test_join_meeting_as_role__not_attendee_or_moderator(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-    meeting = Meeting.query.get(1)
-    meeting_id = meeting.id
 
-    client_app.get(f"/meeting/join/{meeting_id}/journalist", status=404)
+    client_app.get(f"/meeting/join/{meeting.id}/journalist", status=404)
 
 
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, meeting):
     fullname_suffix = "Service EN"
-    meeting = Meeting.query.get(1)
     meeting_fake_id = meeting.fake_id
-    user_id = meeting.user.id
     h = meeting.get_hash("attendee")
     fullname = "Alice/Cooper"
 
@@ -193,7 +165,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
         waiting_meeting_url = url_for(
             "routes.waiting_meeting",
             meeting_fake_id=meeting_fake_id,
-            user_id=user_id,
+            user_id=meeting.user.id,
             h=h,
             fullname=fullname,
             fullname_suffix=fullname_suffix,
@@ -205,9 +177,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, app, mee
 
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
-    meeting = Meeting.query.get(1)
     meeting_fake_id = meeting.fake_id
-    user_id = meeting.user.id
     h = meeting.get_hash("attendee")
     fullname = "Alice/Cooper"
 
@@ -215,7 +185,7 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, app, meeting):
         waiting_meeting_url = url_for(
             "routes.waiting_meeting",
             meeting_fake_id=meeting_fake_id,
-            user_id=user_id,
+            user_id=meeting.user.id,
             h=h,
             fullname=fullname,
             fullname_suffix="",
