@@ -23,7 +23,7 @@
           <div class="fr-col">
             <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
             {% if role != "authenticated" %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
-            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname is defined %}value="{{ fullname }}" readonly="readonly"{% endif %} />
+            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
           </div>
         </div>
 

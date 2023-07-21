@@ -214,6 +214,21 @@ def has_user_session():
     return user_session.is_authenticated()
 
 
+@bp.context_processor
+def global_processor():
+    if has_user_session():
+        user = get_current_user()
+        return {
+            "user": user,
+            "fullname": user.fullname,
+        }
+    else:
+        return {
+            "user": None,
+            "fullname": "",
+        }
+
+
 def add_mailto_links(meeting_data):
     d = meeting_data
     d["moderator_mailto_href"] = render_template(
@@ -259,8 +274,6 @@ def api_meetings():
     user = get_or_create_user(info)
     fullname = user.fullname
     stats = get_meetings_stats()
-    if user is not None:
-        logged_in = True
     return {
         "meetings": [
             {
@@ -324,19 +337,8 @@ def insertDocuments(meeting_id):
 
 @bp.route("/mentions_legales")
 def mentions_legales():
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/mentions_legales.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -344,19 +346,8 @@ def mentions_legales():
 
 @bp.route("/cgu")
 def cgu():
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/cgu.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -364,19 +355,8 @@ def cgu():
 
 @bp.route("/donnees_personnelles")
 def donnees_personnelles():
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/donnees_personnelles.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -384,19 +364,8 @@ def donnees_personnelles():
 
 @bp.route("/accessibilite")
 def accessibilite():
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/accessibilite.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -406,38 +375,16 @@ def accessibilite():
 def documentation():
     if current_app.config["DOCUMENTATION_LINK"]["is_external"]:
         return redirect(current_app.config["DOCUMENTATION_LINK"]["url"])
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/documentation.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
     )
 
 
 @bp.route("/faq")
 def faq():
-    if has_user_session():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "faq.html",
-        logged_in=logged_in,
-        user=user,
         contents=FAQ_CONTENT,
-        fullname=fullname,
     )
 
 
@@ -471,22 +418,15 @@ def home():
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
-    fullname = user.fullname
     stats = get_meetings_stats()
-    if user is not None:
-        logged_in = True
-
     return render_template(
         "welcome.html",
         title=current_app.config["TITLE"],
-        user=user,
-        fullname=fullname,
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
         meetings=[
-            add_mailto_links(m.get_data_as_dict(fullname)) for m in user.meetings
+            add_mailto_links(m.get_data_as_dict(user.fullname)) for m in user.meetings
         ],
-        logged_in=logged_in,
         can_create_meetings=user.can_create_meetings,
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
         mailto=current_app.config["MAILTO_LINKS"],
@@ -603,17 +543,11 @@ def show_meeting(meeting_id):
         )
         return redirect("/welcome")
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
         return render_template(
             "meeting/show.html",
-            user=user,
-            fullname=fullname,
-            meeting=add_mailto_links(meeting.get_data_as_dict(fullname)),
-            logged_in=logged_in,
+            meeting=add_mailto_links(meeting.get_data_as_dict(user.fullname)),
         )
     flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
     return redirect("/welcome")
@@ -630,19 +564,13 @@ def show_meeting_recording(meeting_id):
         )
         return redirect("/welcome")
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
-        meeting_dict = meeting.get_data_as_dict(fullname, fetch_recording=True)
+        meeting_dict = meeting.get_data_as_dict(user.fullname, fetch_recording=True)
         form = RecordingForm()
         return render_template(
             "meeting/recordings.html",
-            user=user,
-            fullname=fullname,
             meeting=add_mailto_links(meeting_dict),
-            logged_in=logged_in,
             form=form,
         )
     flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
@@ -678,10 +606,6 @@ def update_recording_name(meeting_id, recording_id):
 @auth.oidc_auth("default")
 def new_meeting():
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
-
     if not user.can_create_meetings:
         return redirect("/welcome")
 
@@ -689,12 +613,9 @@ def new_meeting():
 
     return render_template(
         "meeting/wizard.html",
-        user=user,
-        fullname=fullname,
         meeting=None,
         form=form,
         recording=current_app.config["RECORDING"],
-        logged_in=logged_in,
     )
 
 
@@ -702,9 +623,6 @@ def new_meeting():
 @auth.oidc_auth("default")
 def edit_meeting(meeting_id):
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
 
     form = (
@@ -715,12 +633,9 @@ def edit_meeting(meeting_id):
     if meeting and meeting.user_id == user.id:
         return render_template(
             "meeting/wizard.html",
-            user=user,
-            fullname=fullname,
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
-            logged_in=logged_in,
         )
     flash("Vous ne pouvez pas modifier cet élément", "warning")
     return redirect("/welcome")
@@ -730,10 +645,6 @@ def edit_meeting(meeting_id):
 @auth.oidc_auth("default")
 def edit_meeting_files(meeting_id):
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
-
     meeting = Meeting.query.get(meeting_id)
 
     form = MeetingFilesForm()
@@ -758,13 +669,10 @@ def edit_meeting_files(meeting_id):
         if user is not None and meeting.user_id == user.id:
             return render_template(
                 "meeting/filesform.html",
-                user=user,
-                fullname=fullname,
                 meeting=meeting,
                 form=form,
                 fqdn=current_app.config["SERVER_FQDN"],
                 beta=current_app.config["BETA"],
-                logged_in=logged_in,
             )
     flash(lazy_gettext("Vous ne pouvez pas modifier cet élément"), "warning")
     return redirect("/welcome")
@@ -846,8 +754,6 @@ def set_meeting_default_file(meeting_id):
     user = get_current_user()
     data = request.get_json()
 
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
         actual_default_file = meeting.default_file
@@ -1064,9 +970,6 @@ def add_meeting_files(meeting_id):
     user = get_current_user()
     meeting = Meeting.query.get(meeting_id)
 
-    if user is not None:
-        logged_in = True
-
     data = request.get_json()
     is_default = False
     if len(meeting.files) == 0:
@@ -1147,9 +1050,6 @@ def upload(user, meeting_id, file):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     user = get_current_user()
-    if user is not None:
-        logged_in = True
-
     data = request.get_json()
     meeting_file_id = data["id"]
     meetingFile = MeetingFiles()
@@ -1196,12 +1096,9 @@ def save_meeting():
         flash("Le formulaire contient des erreurs", "error")
         return render_template(
             "meeting/wizard.html",
-            user=user,
-            fullname=user.fullname,
             meeting=None if is_new_meeting else Meeting.query.get(form.id.data),
             form=form,
             recording=current_app.config["RECORDING"],
-            logged_in=True,
         )
 
     if is_new_meeting:
@@ -1230,8 +1127,6 @@ def save_meeting():
         EndMeetingForm.meeting_id.data = meeting.id
         return render_template(
             "meeting/end.html",
-            user=user,
-            logged_in=True,
             meeting=meeting,
             form=EndMeetingForm(data={"meeting_id": meeting_id}),
         )
@@ -1326,9 +1221,7 @@ def externalUpload(meeting_id):
         and user is not None
         and meeting.user_id == user.id
     ):
-        return render_template(
-            "meeting/externalUpload.html", user=user, meeting=meeting
-        )
+        return render_template("meeting/externalUpload.html", meeting=meeting)
     else:
         return redirect("/welcome")
 
