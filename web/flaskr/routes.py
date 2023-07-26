@@ -1482,9 +1482,9 @@ def join_mail_meeting():
 def get_authenticated_attendee_fullname():
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info["given_name"]
-    family_name = attendee_info["family_name"]
-    fullname = f"{given_name} {family_name}"
+    given_name = attendee_info.get("given_name", "")
+    family_name = attendee_info.get("family_name", "")
+    fullname = f"{given_name} {family_name}".strip()
     return fullname
 
 
