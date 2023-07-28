@@ -47,6 +47,15 @@ OIDC_REDIRECT_URI = os.environ.get("OIDC_REDIRECT_URI")
 OIDC_SERVICE_NAME = os.environ.get("OIDC_SERVICE_NAME")
 
 # Attendee OIDC Configuration (back to default if empty)
+OIDC_ATTENDEE_ENABLED = os.environ.get("OIDC_ATTENDEE_ENABLED") not in [
+    0,
+    False,
+    "0",
+    "false",
+    "False",
+    "off",
+    "OFF",
+]
 OIDC_ATTENDEE_ISSUER = os.environ.get("OIDC_ATTENDEE_ISSUER") or OIDC_ISSUER
 OIDC_ATTENDEE_CLIENT_ID = os.environ.get("OIDC_ATTENDEE_CLIENT_ID") or OIDC_CLIENT_ID
 OIDC_ATTENDEE_CLIENT_SECRET = (

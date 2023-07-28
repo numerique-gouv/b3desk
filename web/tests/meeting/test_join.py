@@ -54,6 +54,30 @@ def test_signin_meeting_with_authenticated_attendee(client_app, app, meeting):
     assert response.location.endswith("/meeting/join/1/authenticated")
 
 
+def test_auth_attendee_disabled(client_app, app, meeting):
+    """
+    If attendee authentication service is temporarily disabled, we should skip
+    the attendee authentication step.
+    https://github.com/numerique-gouv/b3desk/issues/9
+    """
+    # TODO: refactor this test with modern test conventions when #6 is merged
+
+    app.config["OIDC_ATTENDEE_ENABLED"] = False
+
+    with app.app_context():
+        user_id = 1
+        meeting = Meeting.query.get(1)
+        meeting_id = meeting.id
+        meeting_hash = meeting.get_hash("authenticated")
+
+    url = f"/meeting/signin/{meeting_id}/creator/{user_id}/hash/{meeting_hash}"
+    response = client_app.get(url)
+
+    assert response.status_code == 200
+    form_action_url = "/meeting/join"
+    assert form_action_url in response.data.decode()
+
+
 def test_join_meeting_as_authenticated_attendee(
     client_app, app, meeting, authenticated_attendee
 ):

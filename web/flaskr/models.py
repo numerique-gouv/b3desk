@@ -773,7 +773,11 @@ class Meeting(db.Model):
         elif self.get_hash("moderator") == hashed_role:
             role = "moderator"
         elif self.get_hash("authenticated") == hashed_role:
-            role = "authenticated"
+            role = (
+                "authenticated"
+                if current_app.config["OIDC_ATTENDEE_ENABLED"]
+                else "attendee"
+            )
         else:
             role = None
         return role
