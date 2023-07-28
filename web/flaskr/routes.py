@@ -110,10 +110,7 @@ attendee_provider_configuration = ProviderConfiguration(
         ),
         post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
-    auth_request_params={
-        "scope": current_app.config.get("OIDC_ATTENDEE_SCOPES")
-        or current_app.config["OIDC_SCOPES"]
-    },
+    auth_request_params={"scope": current_app.config["OIDC_ATTENDEE_SCOPES"]},
 )
 
 auth = OIDCAuthentication(

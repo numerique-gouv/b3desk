@@ -32,7 +32,15 @@ OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
 OIDC_USER_INFO_ENABLED = True
 OIDC_OPENID_REALM = os.environ.get("OIDC_OPENID_REALM")
-OIDC_SCOPES = ["openid", "email", "profile"]
+OIDC_SCOPES = (
+    list(map(str.strip, os.environ["OIDC_SCOPES"].split(",")))
+    if os.environ.get("OIDC_SCOPES")
+    else [
+        "openid",
+        "email",
+        "profile",
+    ]
+)
 OIDC_INTROSPECTION_AUTH_METHOD = "client_secret_post"
 OIDC_USERINFO_HTTP_METHOD = os.environ.get("OIDC_USERINFO_HTTP_METHOD")
 OIDC_INFO_REQUESTED_FIELDS = ["email", "given_name", "family_name"]
@@ -69,6 +77,11 @@ OIDC_ATTENDEE_USERINFO_HTTP_METHOD = (
 )
 OIDC_ATTENDEE_SERVICE_NAME = (
     os.environ.get("OIDC_ATTENDEE_SERVICE_NAME") or OIDC_SERVICE_NAME
+)
+OIDC_ATTENDEE_SCOPES = (
+    list(map(str.strip, os.environ["OIDC_ATTENDEE_SCOPES"].split(",")))
+    if os.environ.get("OIDC_ATTENDEE_SCOPES")
+    else OIDC_SCOPES
 )
 
 # Links
