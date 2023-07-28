@@ -1382,15 +1382,18 @@ def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
-    methods=["GET"],
-    defaults={"fullname_suffix": ""},
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
-    methods=["GET"],
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
 )
-def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
+)
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+)
+def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect("/")
@@ -1501,7 +1504,6 @@ def join_meeting_as_authenticated(meeting_id):
             user_id=meeting.user.id,
             h=meeting.get_hash(role),
             fullname=fullname,
-            fullname_suffix="",
         )
     )
 
