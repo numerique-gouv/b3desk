@@ -180,7 +180,6 @@ def test_join_meeting_as_role__meeting_not_found(
 def test_join_meeting_as_role__not_attendee_or_moderator(
     client_app, app, authenticated_user, meeting, bbb_response
 ):
-
     client_app.get(f"/meeting/join/{meeting.id}/journalist", status=404)
 
 
