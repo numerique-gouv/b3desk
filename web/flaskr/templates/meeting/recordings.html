@@ -99,7 +99,7 @@
     <!-- Renommer video -->
     <div class="modal-template" id="rename-video-{{ r.recordID }}">
         <div class="modal-body">
-            <form method="POST" action="{{ url_for('update_recording_name', meeting_id=meeting.id, recording_id=r.recordID) }}">
+            <form method="POST" action="{{ url_for('routes.update_recording_name', meeting_id=meeting.id, recording_id=r.recordID) }}">
                 {% include 'meeting/csrf.html' %}
                 <div class="fr-input-group">
                     {{ form.name.label(class_="fr-label") }}

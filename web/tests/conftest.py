@@ -5,6 +5,7 @@ import pytest
 from flask import session
 from flaskr import create_app
 from flask_migrate import Migrate
+from flask_webtest import TestApp
 
 import flaskr.utils
 
@@ -59,28 +60,26 @@ def app(mocker):
         migrate = Migrate(app, db, compare_type=True)
         db.create_all()
 
-    yield app
+    return app
 
 
 @pytest.fixture()
 def client_app(app):
-    return app.test_client()
+    return TestApp(app)
 
 
 @pytest.fixture()
 def meeting(app, user):
-    with app.app_context():
-        meeting = Meeting(user=user)
-        meeting.save()
+    meeting = Meeting(user=user)
+    meeting.save()
 
     yield meeting
 
 
 @pytest.fixture()
 def user(app):
-    with app.app_context():
-        user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
-        user.save()
+    user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
+    user.save()
 
     yield user
 
@@ -100,6 +99,26 @@ def authenticated_user(client_app, user):
             "family_name": "Cooper",
             "given_name": "Alice",
             "preferred_username": "alice",
+        }
+        session["refresh_token"] = ""
+
+    yield user
+
+
+@pytest.fixture()
+def authenticated_attendee(client_app, user, mocker):
+    with client_app.session_transaction() as session:
+        session["access_token"] = ""
+        session["access_token_expires_at"] = ""
+        session["current_provider"] = "attendee"
+        session["id_token"] = ""
+        session["id_token_jwt"] = ""
+        session["last_authenticated"] = "true"
+        session["last_session_refresh"] = time.time()
+        session["userinfo"] = {
+            "email": "bob@domain.tld",
+            "family_name": "Dylan",
+            "given_name": "Bob",
         }
         session["refresh_token"] = ""
 

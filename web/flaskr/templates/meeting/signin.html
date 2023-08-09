@@ -23,7 +23,7 @@
           <div class="fr-col">
             <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
             {% if role != "authenticated" %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
-            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname is defined %}value="{{ fullname }}" readonly="readonly"{% endif %} />
+            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
           </div>
         </div>
 
@@ -43,6 +43,16 @@
           <div class="fr-col">
             <button type="submit" class="fr-btn fr-btn-primary" >{% trans %}Rejoindre{% endtrans %}</button>
           </div>
+        </div>
+        {% endif %}
+        {% if role != "authenticated" and not user %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col">
+                {% trans %}Vous êtes propriétaire de cette salle ?{% endtrans %}
+                <a href="{{ url_for("routes.authenticate_then_signin_meeting", meeting_fake_id=meeting_fake_id, user_id=user_id, h=h ) }}">
+                    {% trans %}S’identifier{% endtrans %}
+                </a>
+            </div>
         </div>
         {% endif %}
       </div>
