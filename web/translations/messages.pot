@@ -42,7 +42,7 @@ msgstr ""
 
 #: web/flaskr/forms.py:75
 #, python-format
-msgid "Bienvenue dans %(this_meeting)s <u><strong> %%CONFNAME%% </strong></u>."
+msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
 msgstr ""
 
 #: web/flaskr/forms.py:81

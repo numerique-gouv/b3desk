@@ -73,8 +73,9 @@ class MeetingForm(FlaskForm):
             "Ce texte apparait comme message de bienvenue sur le tchat public"
         ),
         default=lazy_gettext(
-            "Bienvenue dans %(this_meeting)s <u><strong> %%CONFNAME%% </strong></u>.",
+            "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
             this_meeting=current_app.config["WORDING_THIS_MEETING"],
+            meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
         validators=[
