@@ -1,7 +1,7 @@
 # Code based on https://github.com/talkpython/data-driven-web-apps-with-flask
 
 from alembic import op
-from sqlalchemy import engine_from_config, inspect
+from sqlalchemy import engine_from_config
 
 from sqlalchemy import MetaData
 
@@ -36,7 +36,7 @@ def table_does_not_exist(table):
 def table_has_column(table, column):
     has_column = False
     print(table, flush=True)
-    if not table in schema:
+    if table not in schema:
         return
     for s_column in schema[table]:
         print("  %s" % s_column, flush=True)

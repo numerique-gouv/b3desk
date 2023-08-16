@@ -1,5 +1,4 @@
 import os
-import time
 import requests
 
 from celery import Celery
@@ -13,7 +12,7 @@ celery.conf.result_backend = f"redis://{REDIS_URL}"
 
 @celery.task(name="background_upload")
 def background_upload(endpoint, xml, params):
-    r = requests.post(
+    requests.post(
         endpoint,
         headers={"Content-Type": "application/xml"},
         data=xml,

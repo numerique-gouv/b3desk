@@ -10,7 +10,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 
-from flask import Flask, render_template, request, session
+from flask import Flask, request, session
 import os
 import logging
 
@@ -57,6 +57,7 @@ def create_app(test_config=None, gunicorn_logging=False):
             "config": app.config,
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
+            "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
         }
 
@@ -67,10 +68,6 @@ def create_app(test_config=None, gunicorn_logging=False):
     csrf = CSRFProtect()
     csrf.init_app(app)
 
-    @app.context_processor
-    def global_processor():
-        return {"LANGUAGES": LANGUAGES}
-
     # init database
     with app.app_context():
         import flaskr.routes
@@ -79,7 +76,7 @@ def create_app(test_config=None, gunicorn_logging=False):
         from .models import db
 
         db.init_app(app)
-        migrate = Migrate(app, db, compare_type=True)
+        Migrate(app, db, compare_type=True)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)

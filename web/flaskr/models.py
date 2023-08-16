@@ -12,14 +12,9 @@
 
 from flaskr.tasks import background_upload
 
-import importlib.util
-import sys
-import signal
-
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import EncryptedType
-from os import fork
 
 from flask import current_app, url_for, render_template
 
@@ -29,6 +24,8 @@ import hashlib
 from datetime import date, datetime, timedelta, timezone
 
 from flaskr.utils import secret_key
+import os
+
 
 db = SQLAlchemy()
 
@@ -63,7 +60,7 @@ def get_user_nc_credentials(username):
         )
         data = response.json()
         return data
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         print("Cannot contact NC, returning None values")
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
@@ -259,7 +256,6 @@ class BBB:
             "%s/%s" % (BIGBLUEBUTTON_ENDPOINT, insertAction),
             params=params,
         )
-        headers = {"Content-Type": "application/xml"}
         pr = request.prepare()
         bigbluebutton_secret = BIGBLUEBUTTON_SECRET
         s = "%s%s" % (
@@ -268,7 +264,7 @@ class BBB:
         )
         params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
 
-        r = requests.post(
+        requests.post(
             f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
             headers={"Content-Type": "application/xml"},
             data=xml,
@@ -415,7 +411,6 @@ class BBB:
                 "%s/%s" % (BIGBLUEBUTTON_ENDPOINT, insertAction),
                 params=params,
             )
-            headers = {"Content-Type": "application/xml"}
             pr = request.prepare()
             bigbluebutton_secret = BIGBLUEBUTTON_SECRET
             s = "%s%s" % (
@@ -423,7 +418,7 @@ class BBB:
                 bigbluebutton_secret,
             )
             params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-            task = background_upload.delay(
+            background_upload.delay(
                 f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}", xml, params
             )
 

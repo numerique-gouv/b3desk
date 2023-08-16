@@ -2,8 +2,6 @@ from datetime import datetime, timezone
 
 import pytest
 
-from flaskr.models import Meeting
-
 
 @pytest.fixture()
 def bbb_getRecordings_response(mocker):
