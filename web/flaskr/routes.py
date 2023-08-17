@@ -106,10 +106,7 @@ attendee_provider_configuration = ProviderConfiguration(
         ),
         post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
-    auth_request_params={
-        "scope": current_app.config.get("OIDC_ATTENDEE_SCOPES")
-        or current_app.config["OIDC_SCOPES"]
-    },
+    auth_request_params={"scope": current_app.config["OIDC_ATTENDEE_SCOPES"]},
 )
 
 auth = OIDCAuthentication(
@@ -1374,15 +1371,18 @@ def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
-    methods=["GET"],
-    defaults={"fullname_suffix": ""},
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
-    methods=["GET"],
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
 )
-def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
+)
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+)
+def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect("/")
@@ -1474,9 +1474,9 @@ def join_mail_meeting():
 def get_authenticated_attendee_fullname():
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info["given_name"]
-    family_name = attendee_info["family_name"]
-    fullname = f"{given_name} {family_name}"
+    given_name = attendee_info.get("given_name", "")
+    family_name = attendee_info.get("family_name", "")
+    fullname = f"{given_name} {family_name}".strip()
     return fullname
 
 
@@ -1493,7 +1493,6 @@ def join_meeting_as_authenticated(meeting_id):
             user_id=meeting.user.id,
             h=meeting.get_hash(role),
             fullname=fullname,
-            fullname_suffix="",
         )
     )
 
