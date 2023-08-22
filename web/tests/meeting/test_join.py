@@ -1,8 +1,8 @@
 import time
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 from flask import url_for
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
 
 
 def test_signin_meeting(client_app, app, meeting, user, bbb_response):

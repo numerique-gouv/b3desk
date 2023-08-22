@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # +----------------------------------------------------------------------------+
 # | BBB-VISIO                                                                  |
 # +----------------------------------------------------------------------------+
@@ -9,14 +8,16 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-
-from flask import Flask, request, session
-import os
 import logging
+import os
 
+from flask import Flask
+from flask import request
+from flask import session
 from flask_babel import Babel
-from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
+
 from .common.extensions import cache
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]

@@ -1,5 +1,4 @@
 # Sample Gunicorn configuration file.
-
 #
 # Server socket
 #

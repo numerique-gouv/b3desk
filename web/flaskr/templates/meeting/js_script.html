@@ -290,7 +290,7 @@ function printout_message(msg){
 
 	div.appendChild(h3);
 	div.appendChild(p);
-	
+
 	nodeToPrepend = document.getElementById('layoutContainer');
 	parentNodeToPrepend = nodeToPrepend.parentNode;
   parentNodeToPrepend.insertBefore(div, nodeToPrepend);
@@ -313,7 +313,7 @@ function close_dialog(id){
   // ]
 
 function link_file_to_meeting(value, from) {
-  
+
   var csrf_token = document.getElementsByName("csrf_token")[0].value
   var post_data = {
           'value': value,

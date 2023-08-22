@@ -18,17 +18,17 @@
           login: nc_login,
           accessToken: nc_token,
         };
-    
+
 	const ncfilepicker = window.createFilePicker('ncfilepicker', ncPickerParams);
 
 	document.addEventListener('filepicker-manually-closed', (e) => {
-	    window.close();	    
+	    window.close();
 	})
-	
+
       document.addEventListener('get-files-path', (e) => {
 	  // the selection is an array with the nextcloud-relative paths of selected files.
           // we POST those data to visio-agent which will then call BBB
-	  
+
       var csrf_token = document.getElementsByName("csrf_token")[0].value
       var post_data = e.detail.selection.map(name => name.slice(1))
       JSON.stringify(post_data);
@@ -53,7 +53,7 @@
               setTimeout(() => window.close(), 100);
           })
           .catch(e => console.log(e))
-        
+
           })
       ncfilepicker.getFilesPath();
 

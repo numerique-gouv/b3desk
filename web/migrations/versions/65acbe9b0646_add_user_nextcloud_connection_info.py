@@ -5,11 +5,11 @@ Revises: 1094e771bd3f
 Create Date: 2023-02-28 14:35:21.691915
 
 """
-from alembic import op
-import sqlalchemy as sa
-
 import os
 import sys
+
+import sqlalchemy as sa
+from alembic import op
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
