@@ -58,8 +58,6 @@ from flaskr.models import MeetingFiles
 from flaskr.models import MeetingFilesExternal
 from flaskr.models import User
 from flaskr.utils import retry_join_meeting
-from netaddr import IPAddress
-from netaddr import IPNetwork
 from sqlalchemy import exc
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
@@ -377,16 +375,10 @@ def index():
 def home():
     if has_user_session():
         return redirect(url_for("routes.welcome"))
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
+
     stats = get_meetings_stats()
     return render_template(
         "index.html",
-        is_rie=is_rie,
         stats=stats,
         mail_meeting=current_app.config["MAIL_MEETING"],
         max_participants=current_app.config["MAX_PARTICIPANTS"],
@@ -1262,12 +1254,6 @@ def ncdownload(isexternal, mfid, mftoken):
     methods=["GET"],
 )
 def signin_mail_meeting(meeting_fake_id, expiration, h):
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
     meeting = get_mail_meeting(meeting_fake_id)
     wordings = current_app.config["WORDINGS"]
 
@@ -1298,7 +1284,6 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         expiration=expiration,
         user_id="fakeuserId",
         h=h,
-        is_rie=is_rie,
         role="moderator",
     )
 
@@ -1307,12 +1292,6 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     "/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
 )
 def signin_meeting(meeting_fake_id, user_id, h):
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
@@ -1340,7 +1319,6 @@ def signin_meeting(meeting_fake_id, user_id, h):
         meeting_fake_id=meeting_fake_id,
         user_id=user_id,
         h=h,
-        is_rie=is_rie,
         role=role,
     )
 
