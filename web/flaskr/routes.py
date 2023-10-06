@@ -375,6 +375,8 @@ def index():
 
 @bp.route("/home")
 def home():
+    if has_user_session():
+        return redirect(url_for("routes.welcome"))
     is_rie = any(
         [
             IPAddress(request.remote_addr) in IPNetwork(network_ip)

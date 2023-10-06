@@ -1,3 +1,6 @@
+from flask import url_for
+
+
 def test_root__anonymous_user(client_app):
     response = client_app.get("/", status=302)
 
@@ -32,10 +35,10 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
     mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
 
     response = client_app.get(
-        "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
+        "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
     )
 
-    response.mustcontain("<!-- test page home -->")
+    assert response.location == url_for("routes.welcome")
 
 
 def test_change_language(client_app):
