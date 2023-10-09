@@ -96,6 +96,7 @@ SERVICE_TITLE = os.environ.get("SERVICE_TITLE")
 SERVICE_TAGLINE = os.environ.get("SERVICE_TAGLINE")
 
 MEETING_LOGOUT_URL = os.environ.get("MEETING_LOGOUT_URL", "")
+SATISFACTION_POLL_URL = os.environ.get("SATISFACTION_POLL_URL")
 
 # Database configuration
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")

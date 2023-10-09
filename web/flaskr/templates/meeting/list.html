@@ -20,10 +20,10 @@
   </div>
   {% include 'meeting/modals.html' %}
   {% endfor %}
-  {% if meetings|length %}
+  {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
     <iframe id="iframe-poll"
       frameborder=0
-      src="https://dinum.evalandgo.com/s/index.php?id=JTk4ciU5Mm0lOTclQjE=&a=JTk2byU5NmglOUUlQUI="
+      src="{{ config.get("SATISFACTION_POLL_URL") }}"
       height="500" scrolling="no"
       sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
   {% endif %}
