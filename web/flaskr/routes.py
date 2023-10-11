@@ -57,7 +57,6 @@ from flaskr.models import Meeting
 from flaskr.models import MeetingFiles
 from flaskr.models import MeetingFilesExternal
 from flaskr.models import User
-from flaskr.utils import retry_join_meeting
 from sqlalchemy import exc
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
@@ -1360,7 +1359,7 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""
     if not role:
         return redirect(url_for("routes.index"))
     return render_template(
-        "meeting/join.html",
+        "meeting/wait.html",
         meeting=meeting,
         meeting_fake_id=meeting_fake_id,
         user_id=user_id,
@@ -1368,9 +1367,6 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
-        retry_join_meeting=retry_join_meeting(
-            request.referrer, role, fullname, fullname_suffix
-        ),
     )
 
 
