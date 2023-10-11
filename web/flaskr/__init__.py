@@ -25,7 +25,27 @@ CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
 
 
-def setup_babel(app):
+def setup_cache(app):
+    cache.init_app(
+        app,
+        config={
+            "CACHE_TYPE": "flask_caching.backends.filesystem",
+            "CACHE_DIR": "/tmp/flask-caching",
+        },
+    )
+
+
+def setup_logging(app, test_config=None, gunicorn_logging=False):
+    if gunicorn_logging:
+        gunicorn_logger = logging.getLogger("gunicorn.error")
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
+    app.config.from_pyfile("config.py")
+    if test_config:
+        app.config.from_mapping(test_config)
+
+
+def setup_i18n(app):
     babel = Babel(app)
 
     @babel.localeselector
@@ -35,24 +55,23 @@ def setup_babel(app):
         return session.get("lang", "fr")
 
 
-def create_app(test_config=None, gunicorn_logging=False):
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    cache.init_app(
-        app,
-        config={
-            "CACHE_TYPE": "flask_caching.backends.filesystem",
-            "CACHE_DIR": "/tmp/flask-caching",
-        },
-    )
-    if gunicorn_logging:
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        app.logger.handlers = gunicorn_logger.handlers
-        app.logger.setLevel(gunicorn_logger.level)
-    app.config.from_pyfile("config.py")
-    if test_config:
-        app.config.from_mapping(test_config)
+def setup_csrf(app):
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
+
+def setup_database(app):
+    with app.app_context():
+        import flaskr.routes
+
+        app.register_blueprint(flaskr.routes.bp)
+        from .models import db
+
+        db.init_app(app)
+        Migrate(app, db, compare_type=True)
+
+
+def setup_jinja(app):
     @app.context_processor
     def global_processor():
         return {
@@ -64,22 +83,16 @@ def create_app(test_config=None, gunicorn_logging=False):
             **app.config["WORDINGS"],
         }
 
-    # translations
-    setup_babel(app)
 
-    # Protect App Form with CSRF
-    csrf = CSRFProtect()
-    csrf.init_app(app)
-
-    # init database
-    with app.app_context():
-        import flaskr.routes
-
-        app.register_blueprint(flaskr.routes.bp)
-        from .models import db
-
-        db.init_app(app)
-        Migrate(app, db, compare_type=True)
+def create_app(test_config=None, gunicorn_logging=False):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    setup_cache(app)
+    setup_logging(app, test_config, gunicorn_logging)
+    setup_i18n(app)
+    setup_csrf(app)
+    setup_database(app)
+    setup_jinja(app)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
