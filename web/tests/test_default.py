@@ -24,7 +24,7 @@ def test_home__anonymous_user(client_app, mocker):
         "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
     )
 
-    response.mustcontain("<!-- test page home -->")
+    assert response.template == "index.html"
 
 
 def test_home__authenticated_user(client_app, mocker, authenticated_user):

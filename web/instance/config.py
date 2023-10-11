@@ -173,17 +173,6 @@ AVAILABLE_WORDINGS = {
         "reunion": lazy_gettext("une réunion à laquelle"),
         "seminaire": "un séminaire auquel",
     },
-    "A_MEETING_ATTENTE": {
-        "cours": lazy_gettext(
-            "Votre cours n'a pas encore été activé par un modérateur "
-        ),
-        "reunion": lazy_gettext(
-            "Votre réunion n'a pas encore été activée par un modérateur "
-        ),
-        "seminaire": lazy_gettext(
-            "Votre séminaire n'a pas encore été activé par un modérateur "
-        ),
-    },
     "WELCOME_PAGE_SUBTITLE": {
         "cours": lazy_gettext(
             "Créez un cours immédiatement avec des réglages standards. Ce cours ne sera pas enregistré dans votre liste de salons."
@@ -232,7 +221,6 @@ WORDING_MEETING_UNDEFINED_ARTICLE = AVAILABLE_WORDINGS["MEETING_UNDEFINED_ARTICL
 WORDING_A_MEETING_TO_WHICH = AVAILABLE_WORDINGS["A_MEETING_TO_WHICH"][
     MEETING_KEY_WORDING
 ]
-WORDING_A_MEETING_ATTENTE = AVAILABLE_WORDINGS["A_MEETING_ATTENTE"][MEETING_KEY_WORDING]
 WELCOME_PAGE_SUBTITLE = AVAILABLE_WORDINGS["WELCOME_PAGE_SUBTITLE"][MEETING_KEY_WORDING]
 MEETING_MAIL_SUBJECT = AVAILABLE_WORDINGS["MEETING_MAIL_SUBJECT"][MEETING_KEY_WORDING]
 
@@ -263,7 +251,6 @@ WORDINGS = {
     "to_the_meeting": WORDING_TO_THE_MEETING,
     "meeting_undefined_article": WORDING_MEETING_UNDEFINED_ARTICLE,
     "a_meeting_to_which": WORDING_A_MEETING_TO_WHICH,
-    "meeting_attente": WORDING_A_MEETING_ATTENTE,
     "welcome_page_subtitle": WELCOME_PAGE_SUBTITLE,
     "documentation_page_subtitle": DOCUMENTATION_PAGE_SUBTITLE,
     "meeting_mail_subject": MEETING_MAIL_SUBJECT,

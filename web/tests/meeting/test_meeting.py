@@ -13,7 +13,7 @@ def mocked_is_meeting_running(mocker):
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
     response = client_app.get(f"/meeting/show/{meeting.id}", status=200)
 
-    response.mustcontain("<!-- test show meeting -->")
+    assert "meeting/show.html" in response.contexts
 
 
 def test_show_meeting_recording(
@@ -21,13 +21,13 @@ def test_show_meeting_recording(
 ):
     response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
 
-    response.mustcontain("<!-- test show meeting recording -->")
+    assert "meeting/recordings.html" in response.contexts
 
 
 def test_new_meeting(client_app, authenticated_user):
     response = client_app.get("/meeting/new", status=200)
 
-    response.mustcontain("<!-- test page wizard -->")
+    assert response.template == "meeting/wizard.html"
 
 
 def test_new_meeting_when_recording_not_configured(client_app, app, authenticated_user):
@@ -41,7 +41,7 @@ def test_new_meeting_when_recording_not_configured(client_app, app, authenticate
 def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
     response = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
 
-    response.mustcontain("<!-- test page wizard -->")
+    assert response.template == "meeting/wizard.html"
 
 
 MEETING_DATA = {
@@ -155,8 +155,8 @@ def test_save_moderatorOnlyMessage_too_long(
         data,
         status=200,
     )
+    assert response.template == "meeting/wizard.html"
 
-    response.mustcontain("<!-- test page wizard -->")
     response.mustcontain("Le formulaire contient des erreurs")
     response.mustcontain(moderator_only_message)
     response.mustcontain("Le message est trop long")
@@ -336,7 +336,7 @@ def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_re
 
     response = client_app.get(f"/meeting/files/{meeting.id}", status=200)
 
-    response.mustcontain("<!-- test edit meeting files -->")
+    assert response.template == "meeting/filesform.html"
 
 
 def test_deactivated_meeting_files_cannot_access_files(

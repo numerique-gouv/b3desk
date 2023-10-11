@@ -1,9 +1,5 @@
 {% extends 'static-layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block main %}
  <h1>{% trans %}Documentation{% endtrans %}</h1>
  <h2>{% trans %}Guides utilisateurs{% endtrans %}</h2>
@@ -90,7 +86,4 @@ Ces ports sont :
  <li><a href="/static/misc/ip-fqdn-bbb-dinum-sort.txt" title="Liste des serveurs BigBlueButton pour le Webinaire de l'État" target="_blank" rel="noopener noreferrer"> Webinaire </a></li>
  <li><a href="/static/misc/ip-fqdn-bbb-complet.txt" title="Liste des serveurs BigBlueButton pour l'ensemble des BigBlueBlutton" target="_blank" rel="noopener noreferrer"> Tous </a></li>
 </ul>
-{% endblock %}
-{% block footer %}
-    {% include 'footer.html' %}
 {% endblock %}
