@@ -17,6 +17,7 @@ from flask import session
 from flask_babel import Babel
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
+from flaskr.utils import is_rie
 
 from .common.extensions import cache
 
@@ -58,6 +59,7 @@ def create_app(test_config=None, gunicorn_logging=False):
             "config": app.config,
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
+            "is_rie": is_rie(),
             "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
         }
