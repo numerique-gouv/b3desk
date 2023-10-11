@@ -1,4 +1,38 @@
+from flask import abort
 from flask import url_for
+
+
+def test_custom_400(client_app):
+    @client_app.app.route("/custom_400")
+    def custom_400():
+        abort(400, "custom error message")
+
+    response = client_app.get("/custom_400", status=400)
+    response.mustcontain("Erreur 400")
+    response.mustcontain("custom error message")
+
+
+def test_custom_404(client_app):
+    response = client_app.get("/invalid-url", status=404)
+    response.mustcontain("Erreur 404")
+
+
+def test_custom_403(client_app):
+    @client_app.app.route("/custom_403")
+    def custom_403():
+        abort(403)
+
+    response = client_app.get("/custom_403", status=403)
+    response.mustcontain("Erreur 403")
+
+
+def test_custom_500(client_app):
+    @client_app.app.route("/custom_500")
+    def custom_500():
+        abort(500)
+
+    response = client_app.get("/custom_500", status=500)
+    response.mustcontain("Erreur 500")
 
 
 def test_root__anonymous_user(client_app):
