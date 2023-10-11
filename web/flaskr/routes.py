@@ -1544,33 +1544,3 @@ def delete_video_meeting():
 @auth.oidc_logout
 def logout():
     return redirect(url_for("routes.index"))
-
-
-@current_app.errorhandler(403)
-def page_not_authorized(e):
-    return (
-        render_template(
-            "errors/403.html",
-        ),
-        403,
-    )
-
-
-@current_app.errorhandler(404)
-def page_not_found(e):
-    return (
-        render_template(
-            "errors/404.html",
-        ),
-        404,
-    )
-
-
-@current_app.errorhandler(500)
-def page_error(e):
-    return (
-        render_template(
-            "errors/500.html",
-        ),
-        500,
-    )

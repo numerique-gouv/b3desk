@@ -84,6 +84,26 @@ def setup_jinja(app):
         }
 
 
+def setup_error_pages(app):
+    from flask import render_template
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return render_template("errors/400.html", error=error), 400
+
+    @app.errorhandler(403)
+    def not_authorized(error):
+        return render_template("errors/403.html", error=error), 403
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template("errors/404.html", error=error), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        return render_template("errors/500.html", error=error), 500
+
+
 def create_app(test_config=None, gunicorn_logging=False):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -93,6 +113,7 @@ def create_app(test_config=None, gunicorn_logging=False):
     setup_csrf(app)
     setup_database(app)
     setup_jinja(app)
+    setup_error_pages(app)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
