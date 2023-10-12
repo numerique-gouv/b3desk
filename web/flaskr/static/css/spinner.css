@@ -17,7 +17,7 @@
     width: 18px;
     height: 18px;
     margin: 0 5px;
-    background-color: var(--background-action-high-blue-france-active);
+    background-color: var(--background-action-high-blue-france);
     display: inline-block;
     border-radius: 100%;
     animation: sk-bouncedelay 1.4s infinite ease-in-out both;
