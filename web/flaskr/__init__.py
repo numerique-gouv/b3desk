@@ -72,10 +72,6 @@ def setup_database(app):
 
 
 def setup_jinja(app):
-    from flaskr.utils import get_git_tag, get_git_commit
-
-    version = get_git_tag() or get_git_commit() or None
-
     @app.context_processor
     def global_processor():
         return {
@@ -83,7 +79,7 @@ def setup_jinja(app):
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
-            "version": version,
+            "version": "1.1.0",
             "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
         }
