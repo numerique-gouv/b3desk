@@ -20,7 +20,7 @@ def has_user_session():
 def get_authenticated_attendee_fullname():
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info.get("given_name", "")
-    family_name = attendee_info.get("family_name", "")
+    given_name = attendee_info.get("given_name", "").title()
+    family_name = attendee_info.get("family_name", "").title()
     fullname = f"{given_name} {family_name}".strip()
     return fullname
