@@ -1042,3 +1042,13 @@ class MainSettings(BaseSettings):
     Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
     Plus d’informations sur https://docs.bigbluebutton.org/development/api/#create
     """
+
+    MATOMO_URL: Optional[str] = None
+    """
+    URL de l’instance de Matomo vers laquelle envoyer des statistiques.
+    """
+
+    MATOMO_SITE_ID: Optional[str] = None
+    """
+    ID de l’instance B3Desk dans Matomo.
+    """
