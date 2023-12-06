@@ -114,6 +114,11 @@ ou bien dans l'environnement Poetry avec pytest (dont certains settings sont dan
 pytest
 ```
 
+Pour tester le code sur les différentes versions de python en cours, et prévenir des incompatibilités avec des versions futures, utilisez :
+```bash
+tox
+```
+
 #### Conventions de code
 
 Le code python doit suivre les conventions de la PEP 8. Dans les dépendance de développement du projet, on retrouve `flake8` et `black`.
