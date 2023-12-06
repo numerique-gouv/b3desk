@@ -81,23 +81,17 @@ def test_join_meeting_as_authenticated_attendee(
     assert "/meeting/wait/1/creator/1/hash/" in response.location
     assert "Bob%20Dylan" in response.location
 
+    response = response.follow()
+
+    assert response.form["fullname"].value == "Bob Dylan"
+
 
 def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    meeting_hash = meeting.get_hash("authenticated")
-
-    response = client_app.post(
-        "/meeting/join",
-        {
-            "fullname": "Bob Dylan",
-            "meeting_fake_id": meeting.id,
-            "user_id": meeting.user.id,
-            "h": meeting_hash,
-            "fullname_suffix": "Service",
-        },
-        status=302,
-    )
+    response = client_app.get(f"/meeting/join/{meeting.id}/authenticated").follow()
+    response.form["fullname_suffix"] = "Service"
+    response = response.form.submit(status=302)
 
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob+Dylan+-+Service&"
@@ -109,18 +103,9 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
 def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
     client_app, app, meeting, authenticated_attendee, bbb_response
 ):
-    meeting_hash = meeting.get_hash("authenticated")
-
-    response = client_app.post(
-        "/meeting/join",
-        {
-            "fullname": "toto",
-            "meeting_fake_id": meeting.id,
-            "user_id": meeting.user.id,
-            "h": meeting_hash,
-            "fullname_suffix": "",
-        },
-    )
+    response = client_app.get(f"/meeting/join/{meeting.id}/authenticated").follow()
+    response.form["fullname"] = "toto"
+    response = response.form.submit()
 
     assert (
         f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob+Dylan&"
@@ -131,22 +116,14 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 def test_join_meeting(client_app, app, meeting, bbb_response):
     meeting_hash = meeting.get_hash("attendee")
-    fullname = "Bob"
-
-    response = client_app.post(
-        "/meeting/join",
-        {
-            "fullname": fullname,
-            "meeting_fake_id": meeting.id,
-            "user_id": meeting.user.id,
-            "h": meeting_hash,
-        },
-        status=302,
+    response = client_app.get(
+        f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     )
+    response.form["fullname"] = "Bob"
+    response = response.form.submit()
 
     assert (
-        f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
-        in response.location
+        f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob" in response.location
     )
     assert "guest" in response.location
 
@@ -154,23 +131,15 @@ def test_join_meeting(client_app, app, meeting, bbb_response):
 def test_join_mail_meeting(client_app, app, meeting, bbb_response):
     expiration = int(time.time()) + 1000
     meeting_hash = meeting.get_mail_signin_hash(meeting.id, expiration)
-    fullname = "Bob"
-
-    response = client_app.post(
-        "/meeting/joinmail",
-        {
-            "fullname": fullname,
-            "meeting_fake_id": meeting.id,
-            "user_id": meeting.user.id,
-            "h": meeting_hash,
-            "expiration": expiration,
-        },
-        status=302,
+    response = client_app.get(
+        f"/meeting/signinmail/{meeting.id}/expiration/{expiration}/hash/{meeting_hash}"
     )
+    response.form["fullname"] = "Bob"
+    response.form["user_id"] = meeting.user.id
+    response = response.form.submit()
 
     assert (
-        f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
-        in response.location
+        f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob" in response.location
     )
 
 
