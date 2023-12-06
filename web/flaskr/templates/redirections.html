@@ -1,7 +1,7 @@
 <div class="fr-grid-row fr-mt-4w">
   <div class="fr-col-md-6">
     <form action="/direct">
-      <a href="/welcome" class="fr-btn fr-btn--lg">{% trans %}Connectez-vous ou créez un compte{% endtrans %}</a>
+        <a href="{{ url_for("routes.welcome") }}" class="fr-btn fr-btn--lg">{% trans %}Connectez-vous ou créez un compte{% endtrans %}</a>
     </form>
   </div>
 </div>

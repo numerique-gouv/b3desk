@@ -4,7 +4,7 @@
   {% else %}
     <h4 class="fr-callout__title">{% trans %}Nouveau webinaire{% endtrans %}</h4>
   {% endif %}
-  <a class="fr-btn" title="Retour au tableau de bord" href="/welcome">
+  <a class="fr-btn" title="Retour au tableau de bord" href="{{ url_for("routes.welcome") }}">
     {% trans %}Retour au tableau de bord{% endtrans %}
   </a>
 </div>

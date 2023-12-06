@@ -1,7 +1,7 @@
 <div class="list-meeting-rooms">
   <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
   {% if can_create_meetings == true %}
-  <p class="fr-text--sm"><a href="/meeting/new" ><span aria-hidden="true" class="ri-add-line"></span> {% trans %}Créer une salle de {{ meeting_label }}</a> vous permet de conserver les réglages et le lien de la salle.{% endtrans %}</p>
+  <p class="fr-text--sm"><a href="{{ url_for("routes.new_meeting") }}" ><span aria-hidden="true" class="ri-add-line"></span> {% trans %}Créer une salle de {{ meeting_label }}</a> vous permet de conserver les réglages et le lien de la salle.{% endtrans %}</p>
   {% else %}
   <div class="fr-highlight error">
     <p class="">

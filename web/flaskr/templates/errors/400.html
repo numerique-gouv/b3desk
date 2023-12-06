@@ -9,7 +9,7 @@
         {% if error %}
             {{ error }}
         {% else %}
-            {% trans %}La requête que vous avez effectué est invalide. Vous pouvez <a href="/">retourner à l’accueil</a>.{% endtrans %}
+        {% trans index_url=url_for("routes.index") %}La requête que vous avez effectué est invalide. Vous pouvez <a href="{{ index_url }}">retourner à l’accueil</a>.{% endtrans %}
         {% endif %}
         </p>
       </div>

@@ -13,7 +13,7 @@
       </div>
   </div>
   <div class="fr-header__service">
-      <a href="/" title="Accueil - {{ service_title }} - République Française">
+      <a href="{{ url_for("routes.index") }}" title="Accueil - {{ service_title }} - République Française">
         <!-- Webinaire de l'État -->
         <p class="fr-header__service-title">
             {% trans %}{{ service_title }}{% endtrans %}

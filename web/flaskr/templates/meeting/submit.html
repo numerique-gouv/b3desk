@@ -4,5 +4,5 @@
 {% else %}
   <button type="submit" class="fr-btn">{% trans %}Créer{% endtrans %}</button>
 {% endif %}
-  <a class="fr-btn fr-btn--secondary" href="/welcome">{% trans %}Annuler{% endtrans %}</a>
+<a class="fr-btn fr-btn--secondary" href="{{ url_for("routes.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
 </div>
