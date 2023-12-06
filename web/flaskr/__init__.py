@@ -18,6 +18,7 @@ from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
+from flaskr.settings import MainSettings
 from flaskr.utils import is_rie
 
 
@@ -25,6 +26,14 @@ CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
 
 cache = Cache()
+
+
+def setup_configuration(app, config=None):
+    app.config.from_pyfile("config.py")
+    if config:
+        app.config.from_mapping(config)
+
+    MainSettings.model_validate(config)
 
 
 def setup_cache(app):
@@ -37,14 +46,11 @@ def setup_cache(app):
     )
 
 
-def setup_logging(app, test_config=None, gunicorn_logging=False):
+def setup_logging(app, gunicorn_logging=False):
     if gunicorn_logging:
         gunicorn_logger = logging.getLogger("gunicorn.error")
         app.logger.handlers = gunicorn_logger.handlers
         app.logger.setLevel(gunicorn_logger.level)
-    app.config.from_pyfile("config.py")
-    if test_config:
-        app.config.from_mapping(test_config)
 
 
 def setup_i18n(app):
@@ -108,10 +114,10 @@ def setup_error_pages(app):
 
 
 def create_app(test_config=None, gunicorn_logging=False):
-    # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    setup_configuration(app, test_config)
     setup_cache(app)
-    setup_logging(app, test_config, gunicorn_logging)
+    setup_logging(app, gunicorn_logging)
     setup_i18n(app)
     setup_csrf(app)
     setup_database(app)

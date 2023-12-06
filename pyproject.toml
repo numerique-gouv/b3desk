@@ -31,6 +31,7 @@ flask-wtf = "^1.1.1"
 redis = "4.4.4"
 requests = "^2.27.1"
 werkzeug = "<2.3"
+pydantic-settings = "^2.1.0"
 
 [tool.poetry.group.dev]
 optional = true
