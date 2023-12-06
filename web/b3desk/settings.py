@@ -136,6 +136,11 @@ class MainSettings(BaseSettings):
     NC_LOGIN_API_KEY: Optional[str] = None
     """Clé d'API Nextcloud."""
 
+    FORCE_HTTPS_ON_EXTERNAL_URLS: bool = False
+    """
+    Force le protocole https pour les URLs Nextcloud.
+    """
+
     UPLOAD_DIR: str
     """Chemin vers le dossier dans lequel seront stockés les fichiers
     téléversés par les utilisateurs."""
