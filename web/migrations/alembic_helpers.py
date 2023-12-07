@@ -20,10 +20,8 @@ def load_schema():
     return db_schema
 
 
-schema = load_schema()
-
-
 def table_does_not_exist(table):
+    schema = load_schema()
     table_does_not_exist_value = True
     for s_table in schema:
         if s_table == table:
@@ -32,6 +30,7 @@ def table_does_not_exist(table):
 
 
 def table_has_column(table, column):
+    schema = load_schema()
     has_column = False
     print(table, flush=True)
     if table not in schema:
