@@ -3,7 +3,7 @@
 
 Frontal OIDC de gestion simplifiée des visioconférences BigBlueButton.
 
-[![Check coverage](https://github.com/numerique-gouv/b3desk/actions/workflows/Test_coverage.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Test_coverage.yml) [![Check lint](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_lint.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_lint.yml) [![Check local run](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_local_run.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_local_run.yml)
+[![Documentation Status](https://readthedocs.org/projects/b3desk/badge/?version=latest)](https://b3desk.readthedocs.io/fr/latest/?badge=latest) [![Check coverage](https://github.com/numerique-gouv/b3desk/actions/workflows/Test_coverage.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Test_coverage.yml) [![Check lint](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_lint.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_lint.yml) [![Check local run](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_local_run.yml/badge.svg)](https://github.com/numerique-gouv/b3desk/actions/workflows/Check_local_run.yml)
 
 B3Desk permet de créer et configurer des visioconférences et de garder ces configurations.
 
