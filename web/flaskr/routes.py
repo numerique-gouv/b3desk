@@ -749,12 +749,10 @@ def removeDropzoneFile(absolutePath):
 def add_meeting_file_dropzone(title, meeting_id, is_default):
     user = get_current_user()
     # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
-    DROPZONE_DIR = current_app.config["UPLOAD_DIR"] + "/dropzone/"
+    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzonePath = os.path.join(
-        DROPZONE_DIR + str(user.id) + "-" + meeting_id + "-" + title
-    )
-    metadata = os.stat(dropzonePath)
+    dropzone_path = os.path.join(DROPZONE_DIR, f"{user.id}-{meeting_id}-{title}")
+    metadata = os.stat(dropzone_path)
     if int(metadata.st_size) > int(current_app.config["MAX_SIZE_UPLOAD"]):
         return jsonify(
             status=500,
@@ -775,7 +773,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         nc_path = os.path.join("/visio-agents/" + title)
         kwargs = {
             "remote_path": nc_path,
-            "local_path": dropzonePath,
+            "local_path": dropzone_path,
         }
         client.upload_sync(**kwargs)
 
@@ -804,7 +802,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         current_app.config["SECRET_KEY"]
         meetingFile.update()
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-        removeDropzoneFile(dropzonePath)
+        removeDropzoneFile(dropzone_path)
         return jsonify(
             status=200,
             isfrom="dropzone",
