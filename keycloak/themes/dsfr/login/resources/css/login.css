@@ -296,14 +296,14 @@ a.zocial  {
 .zocial.stackoverflow:before{ color: inherit; }
 
 /* AgentConnect integration */
-#kc-login.rf-grid-row { 
+#kc-login.rf-grid-row {
     position: relative;
     padding-top: 120px;
     display: flex;
     flex-direction: column;
 }
 
-#kc-login.rf-grid-row .rf-tag-list { 
+#kc-login.rf-grid-row .rf-tag-list {
     align-items: center;
     flex-direction: column;
 }
@@ -313,7 +313,7 @@ a.zocial  {
     padding-right: 0;
 }
 
-#zocial-agentconnect { 
+#zocial-agentconnect {
     background-image: url(../img/logo-AgentConnect.png);
     background-repeat: no-repeat;
     background-position: center;
@@ -326,29 +326,29 @@ a.zocial  {
 	border-radius: 0;
 }
 
-#zocial-agentconnect:hover { 
+#zocial-agentconnect:hover {
     background-image: url(../img/logo-AgentConnect-hover.png);
 }
 
 @media (max-width: 350px) {
-	#zocial-agentconnect { 
+	#zocial-agentconnect {
 		width: 200px;
 	}
-	.zocial-item .AgentConnectLink a { 
+	.zocial-item .AgentConnectLink a {
         font-size: .7rem;
     }
 }
 
-#zocial-agentconnect .AgentConnectName { display: none; } 
+#zocial-agentconnect .AgentConnectName { display: none; }
 
-.zocial-item .AgentConnectLink { 
+.zocial-item .AgentConnectLink {
     display: block;
     margin-top: 10px;
 }
-.zocial-item .AgentConnectLink a { 
-	text-decoration: none; 
+.zocial-item .AgentConnectLink a {
+	text-decoration: none;
     color: #428bca;
-} 
+}
 
 .zocial-item {
     width: 80%;
@@ -369,7 +369,7 @@ a.zocial  {
 	height: 120px;
 }
 
-.zocial-item::after { 
+.zocial-item::after {
     content: " ou ";
 	position: absolute;
 	z-index: 2;
@@ -377,7 +377,7 @@ a.zocial  {
 	left: calc( 50% - 1em );
     background-color: #fff;
     padding: 0 .5em;
-} 
+}
 /* /End AgentConnect integration */
 
 @media (min-width: 768px) {

@@ -19,7 +19,7 @@
             {{ documentation_link.label }}
           </a>
       </li>
-      {% if logged_in == true %}
+      {% if user %}
         <!-- {% if account_management_url is defined and account_management_url|length %}
         <li class="fr-shortcuts__item">
           <a href="{{ account_management_url }}" class="fr-link fr-fi-lock-line fr-link--icon-left" target="_self">{{ user.fullname }}</a>

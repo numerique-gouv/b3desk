@@ -1,17 +1,14 @@
 from flask import current_app
 from flask_babel import lazy_gettext
 from flask_wtf import FlaskForm
-from wtforms import (
-    Form,
-    IntegerField,
-    SelectField,
-    StringField,
-    TextAreaField,
-    MultipleFileField,
-    BooleanField,
-    HiddenField,
-    validators,
-)
+from wtforms import BooleanField
+from wtforms import Form
+from wtforms import HiddenField
+from wtforms import IntegerField
+from wtforms import SelectField
+from wtforms import StringField
+from wtforms import TextAreaField
+from wtforms import validators
 
 
 class JoinMeetingAsRoleForm(Form):
@@ -22,7 +19,7 @@ class JoinMeetingAsRoleForm(Form):
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
     meeting_fake_id = StringField()
-    user_id = StringField()
+    user_id = IntegerField()
     h = StringField()
     fullname_suffix = StringField()
 
@@ -74,8 +71,9 @@ class MeetingForm(FlaskForm):
             "Ce texte apparait comme message de bienvenue sur le tchat public"
         ),
         default=lazy_gettext(
-            "Bienvenue dans %(this_meeting)s <u><strong> %%CONFNAME%% </strong></u>.",
+            "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
             this_meeting=current_app.config["WORDING_THIS_MEETING"],
+            meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
         validators=[

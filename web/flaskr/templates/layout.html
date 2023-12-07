@@ -32,7 +32,9 @@
 
   <body>
     <div id="js-modal-page">
-    {% block header %}{% endblock %}
+    {% block header %}
+        {% include 'header.html' %}
+    {% endblock %}
     <main role="main" id="main" >
       {% with messages = get_flashed_messages(with_categories=true, category_filter=["error","success", "message", "warning"]) %}
       {% if messages %}
@@ -53,7 +55,9 @@
       </div>
     </main>
 
-    {% block footer %}{% endblock %}
+    {% block footer %}
+        {% include 'footer.html' %}
+    {% endblock %}
 
     <!-- DSFR JavaScript -->
     <script src="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.module.min.js')}}"></script>

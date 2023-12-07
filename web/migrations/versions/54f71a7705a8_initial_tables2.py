@@ -1,16 +1,16 @@
 """Initial tables2
 
 Revision ID: 54f71a7705a8
-Revises: 
+Revises:
 Create Date: 2023-01-03 18:01:03.770238
 
 """
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-
 import os
 import sys
+
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.dialects import postgresql
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

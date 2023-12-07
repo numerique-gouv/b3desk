@@ -5,7 +5,7 @@
       <input type="hidden" id="user_id" name="user_id" value="{{ user_id }}" />
       <input type="hidden" id="expiration" name="expiration" value="{{ expiration }}" />
       <input type="hidden" id="h" name="h" value="{{ h }}" />
-      {% if fullname is defined %}
+      {% if fullname and not user %}
       <p>
         {% trans %}Votre {{ meeting_label }} n'a pas encore été activée par un modérateur{% endtrans %}
       </p>
@@ -15,7 +15,7 @@
           <div class="fr-col">
             <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
             <p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>
-            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname is defined %}value="{{ fullname }}"{% endif %} />
+            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} />
           </div>
         </div>
         <div class="fr-grid-row fr-grid-row--gutters">

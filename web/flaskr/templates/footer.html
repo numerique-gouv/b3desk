@@ -14,6 +14,7 @@
                 <p class="fr-footer__content-desc">
                     {% trans %}Le code source est ouvert et les contributions sont bienvenues.{% endtrans %}
                     <a title="{% trans %}Voir le code source - nouvelle fenêtre{% endtrans %}" href="https://github.com/numerique-gouv/b3desk" target="_blank" rel="noopener">{% trans %}Voir le code source{% endtrans %}</a>
+                    {% if version %}v{{ version }}{% endif %}
                 </p>
                 <ul class="fr-footer__content-list">
                     <li class="fr-footer__content-item">

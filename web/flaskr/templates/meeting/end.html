@@ -1,22 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block main %}
 <p>
-    {{ this_meeting.capitalize() }} est actuellement en cours avec les anciens paramètres.<br> 
+    {{ this_meeting.capitalize() }} est actuellement en cours avec les anciens paramètres.<br>
     Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.
 </p>
 
 <form action="/meeting/end" method="POST">
     {{ form.hidden_tag() }}
     <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">Mettre fin {{ to_the_meeting }} en cours</button>
-    <a href="{{ url_for('welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">Patienter jusqu'à la fin {{ of_the_meeting }}</a>
+    <a href="{{ url_for('routes.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">Patienter jusqu'à la fin {{ of_the_meeting }}</a>
 </form>
-{% endblock %}
-
-{% block footer %}
-    {% include 'footer.html' %}
 {% endblock %}

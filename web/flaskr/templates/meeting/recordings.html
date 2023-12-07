@@ -1,9 +1,5 @@
 {% extends 'layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block jumbotron %}
 {% endblock %}
 
@@ -99,7 +95,7 @@
     <!-- Renommer video -->
     <div class="modal-template" id="rename-video-{{ r.recordID }}">
         <div class="modal-body">
-            <form method="POST" action="{{ url_for('update_recording_name', meeting_id=meeting.id, recording_id=r.recordID) }}">
+            <form method="POST" action="{{ url_for('routes.update_recording_name', meeting_id=meeting.id, recording_id=r.recordID) }}">
                 {% include 'meeting/csrf.html' %}
                 <div class="fr-input-group">
                     {{ form.name.label(class_="fr-label") }}
@@ -124,11 +120,6 @@
     <div class="fr-mt-4w">
         <a href="/welcome"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
     </div>
-{% endblock %}
-
-{% block footer %}
-    {% include 'footer.html' %}
-    <!-- test show meeting recording -->
 {% endblock %}
 
 {% block js %}

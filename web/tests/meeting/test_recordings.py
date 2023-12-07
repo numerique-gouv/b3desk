@@ -1,8 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
+from datetime import timezone
 
 import pytest
-
-from flaskr.models import Meeting
 
 
 @pytest.fixture()
@@ -116,9 +115,7 @@ def bbb_getRecordings_response(mocker):
 
 
 def test_get_recordings(app, meeting, bbb_getRecordings_response):
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        recordings = meeting.bbb.get_recordings()
+    recordings = meeting.bbb.get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
@@ -158,13 +155,10 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
 
     mocked_bbb_request = mocker.patch("requests.get", return_value=Resp)
 
-    with app.app_context():
-        meeting = Meeting.query.get(1)
-        meeting_id = meeting.id
-
     response = client_app.post(
-        f"meeting/{meeting_id}/recordings/recording_id",
-        data={"name": "First recording"},
+        f"/meeting/{meeting.id}/recordings/recording_id",
+        {"name": "First recording"},
+        status=302,
     )
 
     bbb_url = mocked_bbb_request.call_args.args
@@ -173,5 +167,4 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     assert ("meta_name", "First recording") in bbb_params
     assert ("recordID", "recording_id") in bbb_params
 
-    assert response.status_code == 302
-    assert f"meeting/recordings/{meeting_id}" in response.location
+    assert f"meeting/recordings/{meeting.id}" in response.location

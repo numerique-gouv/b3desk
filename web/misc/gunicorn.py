@@ -1,5 +1,4 @@
 # Sample Gunicorn configuration file.
-
 #
 # Server socket
 #
@@ -203,7 +202,9 @@ def when_ready(server):
 def worker_int(worker):
     worker.log.info("worker received INT or QUIT signal")
     ## get traceback info
-    import threading, sys, traceback
+    import threading
+    import sys
+    import traceback
 
     id2name = {th.ident: th.name for th in threading.enumerate()}
     code = []

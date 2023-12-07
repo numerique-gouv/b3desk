@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 from flask_babel import lazy_gettext
 
@@ -32,7 +32,15 @@ OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
 OIDC_USER_INFO_ENABLED = True
 OIDC_OPENID_REALM = os.environ.get("OIDC_OPENID_REALM")
-OIDC_SCOPES = ["openid", "email", "profile"]
+OIDC_SCOPES = (
+    list(map(str.strip, os.environ["OIDC_SCOPES"].split(",")))
+    if os.environ.get("OIDC_SCOPES")
+    else [
+        "openid",
+        "email",
+        "profile",
+    ]
+)
 OIDC_INTROSPECTION_AUTH_METHOD = "client_secret_post"
 OIDC_USERINFO_HTTP_METHOD = os.environ.get("OIDC_USERINFO_HTTP_METHOD")
 OIDC_INFO_REQUESTED_FIELDS = ["email", "given_name", "family_name"]
@@ -47,6 +55,15 @@ OIDC_REDIRECT_URI = os.environ.get("OIDC_REDIRECT_URI")
 OIDC_SERVICE_NAME = os.environ.get("OIDC_SERVICE_NAME")
 
 # Attendee OIDC Configuration (back to default if empty)
+OIDC_ATTENDEE_ENABLED = os.environ.get("OIDC_ATTENDEE_ENABLED") not in [
+    0,
+    False,
+    "0",
+    "false",
+    "False",
+    "off",
+    "OFF",
+]
 OIDC_ATTENDEE_ISSUER = os.environ.get("OIDC_ATTENDEE_ISSUER") or OIDC_ISSUER
 OIDC_ATTENDEE_CLIENT_ID = os.environ.get("OIDC_ATTENDEE_CLIENT_ID") or OIDC_CLIENT_ID
 OIDC_ATTENDEE_CLIENT_SECRET = (
@@ -61,6 +78,11 @@ OIDC_ATTENDEE_USERINFO_HTTP_METHOD = (
 OIDC_ATTENDEE_SERVICE_NAME = (
     os.environ.get("OIDC_ATTENDEE_SERVICE_NAME") or OIDC_SERVICE_NAME
 )
+OIDC_ATTENDEE_SCOPES = (
+    list(map(str.strip, os.environ["OIDC_ATTENDEE_SCOPES"].split(",")))
+    if os.environ.get("OIDC_ATTENDEE_SCOPES")
+    else OIDC_SCOPES
+)
 
 # Links
 DOCUMENTATION_LINK = {
@@ -74,6 +96,7 @@ SERVICE_TITLE = os.environ.get("SERVICE_TITLE")
 SERVICE_TAGLINE = os.environ.get("SERVICE_TAGLINE")
 
 MEETING_LOGOUT_URL = os.environ.get("MEETING_LOGOUT_URL", "")
+SATISFACTION_POLL_URL = os.environ.get("SATISFACTION_POLL_URL")
 
 # Database configuration
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
@@ -150,17 +173,6 @@ AVAILABLE_WORDINGS = {
         "reunion": lazy_gettext("une réunion à laquelle"),
         "seminaire": "un séminaire auquel",
     },
-    "A_MEETING_ATTENTE": {
-        "cours": lazy_gettext(
-            "Votre cours n'a pas encore été activé par un modérateur "
-        ),
-        "reunion": lazy_gettext(
-            "Votre réunion n'a pas encore été activée par un modérateur "
-        ),
-        "seminaire": lazy_gettext(
-            "Votre séminaire n'a pas encore été activé par un modérateur "
-        ),
-    },
     "WELCOME_PAGE_SUBTITLE": {
         "cours": lazy_gettext(
             "Créez un cours immédiatement avec des réglages standards. Ce cours ne sera pas enregistré dans votre liste de salons."
@@ -209,7 +221,6 @@ WORDING_MEETING_UNDEFINED_ARTICLE = AVAILABLE_WORDINGS["MEETING_UNDEFINED_ARTICL
 WORDING_A_MEETING_TO_WHICH = AVAILABLE_WORDINGS["A_MEETING_TO_WHICH"][
     MEETING_KEY_WORDING
 ]
-WORDING_A_MEETING_ATTENTE = AVAILABLE_WORDINGS["A_MEETING_ATTENTE"][MEETING_KEY_WORDING]
 WELCOME_PAGE_SUBTITLE = AVAILABLE_WORDINGS["WELCOME_PAGE_SUBTITLE"][MEETING_KEY_WORDING]
 MEETING_MAIL_SUBJECT = AVAILABLE_WORDINGS["MEETING_MAIL_SUBJECT"][MEETING_KEY_WORDING]
 
@@ -240,7 +251,6 @@ WORDINGS = {
     "to_the_meeting": WORDING_TO_THE_MEETING,
     "meeting_undefined_article": WORDING_MEETING_UNDEFINED_ARTICLE,
     "a_meeting_to_which": WORDING_A_MEETING_TO_WHICH,
-    "meeting_attente": WORDING_A_MEETING_ATTENTE,
     "welcome_page_subtitle": WELCOME_PAGE_SUBTITLE,
     "documentation_page_subtitle": DOCUMENTATION_PAGE_SUBTITLE,
     "meeting_mail_subject": MEETING_MAIL_SUBJECT,

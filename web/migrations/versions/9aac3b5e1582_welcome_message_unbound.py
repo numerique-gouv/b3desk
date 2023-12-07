@@ -5,18 +5,15 @@ Revises: 7d80b9223a1e
 Create Date: 2021-05-06 17:44:17.835474
 
 """
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-
 import os
 import sys
+
+import sqlalchemy as sa
+from alembic import op
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-
-import alembic_helpers
 
 
 # revision identifiers, used by Alembic.

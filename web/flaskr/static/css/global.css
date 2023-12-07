@@ -100,7 +100,7 @@ form.delete {
 }
 
 .rf-highlight.info {
-  border-color: var(--bf500) ;
+  border-color: var(--border-plain-blue-france) ;
   background-color: var(--bf300-plain);
   text-align: center;
   font-size: 0.9em;
@@ -248,7 +248,7 @@ dialog.scampi-modal {
   position: relative;
   padding: 1em;
 }
-.modal-body code {  
+.modal-body code {
   padding:0.5em 1em;
   display: inline-block;
   background-color: #E7E7E7;
@@ -370,7 +370,7 @@ Secondary buttons are broken in version 0.3.1.
 This is a fix until we deal with the update.
 */
 .rf-btn--secondary {
-  border: 1px var(--bf500) solid;
+  border: 1px var(--border-plain-blue-france) solid;
 }
 
 @media (max-width: 749px) {

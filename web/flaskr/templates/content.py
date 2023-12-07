@@ -7,11 +7,11 @@ FAQ_CONTENT = [
             """Quelles sont les conditions d’accès pour accéder aux services ?"""
         ),
         "description": lazy_gettext(
-            """Cette plateforme offre une solution complète et puissante, adaptée à de nombreux types d’événements en ligne, jusqu’à 350 participants (Séminaire, formation, table ronde, ateliers collaboratifs…)   
+            """Cette plateforme offre une solution complète et puissante, adaptée à de nombreux types d’événements en ligne, jusqu’à 350 participants (Séminaire, formation, table ronde, ateliers collaboratifs…)
 
 Pour qui ?
 
-L’accès à ce service est dédié aux agents de l’État et à leurs interlocuteurs (suivant le nom de domaine autorisé, demande sur contact@webinaire.numerique.gouv.fr) depuis un poste de travail sur site ou en télétravail ou un appareil mobile personnel ou professionnel. 
+L’accès à ce service est dédié aux agents de l’État et à leurs interlocuteurs (suivant le nom de domaine autorisé, demande sur contact@webinaire.numerique.gouv.fr) depuis un poste de travail sur site ou en télétravail ou un appareil mobile personnel ou professionnel.
 L’accès au Webinaire de L’Etat n’est pas ouvert aux collectivités territoriales, ni aux Universités et établissements d'enseignements du Ministère de l’enseignement supérieur.
 
 Par quel moyen ?
@@ -23,7 +23,7 @@ Depuis votre ordinateur de travail en utilisant les navigateurs préconisés : E
 Depuis votre ordinateur de travail (VPN activé ou désactivé) les navigateurs préconisés sont : Edge, Chromium, Chrome, et aussi Firefox pour l'éducation nationale ou ordinateur personnel (Navigateurs Edge, Chrome, Chromium, Firefox)
 
 • Depuis vos appareils mobiles :
-- Téléphone portable ou tablette  (sans application, un lien participant ou modérateur suffit). 
+- Téléphone portable ou tablette  (sans application, un lien participant ou modérateur suffit).
 - Sur IOS, le navigateur Safari est recommandé pour les iphone et ipad (IOS 12.2+)
 - Sur Android, utiliser le navigateur Chrome par défaut (Android 6.0+)
 """
@@ -55,18 +55,18 @@ Depuis votre ordinateur de travail (VPN activé ou désactivé) les navigateurs 
         "title": lazy_gettext("""Comment créer un séminaire ?"""),
         "description": lazy_gettext(
             """Si vous êtes un agent de l’état, vous pouvez :
-- Créer des séminaires immédiatement en renseignant votre courriel professionnel sur .gouv.fr et suivant les noms de domaines autorisés. 
+- Créer des séminaires immédiatement en renseignant votre courriel professionnel sur .gouv.fr et suivant les noms de domaines autorisés.
 - Créer un compte pour créer et configurer des séminaires que vous pourrez retrouver facilement dans votre espace ainsi que les liens de connexions, les replays des enregistrements…
 - Pour les personnels du MENJS vous devez utiliser le bouton « HUB d'authentification Éducation, Jeunesse et Sports. »
 
-Si votre nom de domaine n’est pas reconnu, et que vous pensez être éligible au service, envoyez un mail à contact@webinaire.numerique.gouv.fr 
+Si votre nom de domaine n’est pas reconnu, et que vous pensez être éligible au service, envoyez un mail à contact@webinaire.numerique.gouv.fr
 """
         ),
     },
     {
         "title": lazy_gettext("""Comment créer un compte ?"""),
         "description": lazy_gettext(
-            """En tant qu’agent de l’État, si vous organisez régulièrement des séminaires vous pouvez créer un compte pour organiser et conserver facilement vos séminaires sur mesure. 
+            """En tant qu’agent de l’État, si vous organisez régulièrement des séminaires vous pouvez créer un compte pour organiser et conserver facilement vos séminaires sur mesure.
 
 Vous avez la possibilité créer une ou plusieurs salles de séminaire et les configurer suivant le type de dispositifs adaptés (ex : Séminaire, Formation, classe virtuelle, Conférence interactive, Plénière, Table ronde, Assemblée générale, Ateliers collaboratifs ou d’idéation, Comités en grand nombre, …etc.)."""
         ),

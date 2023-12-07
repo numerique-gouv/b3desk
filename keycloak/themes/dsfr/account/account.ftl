@@ -28,7 +28,7 @@
 
         <div class="form-group ${messagesPerField.printIfExists('email','has-error')}">
             <div class="col-sm-2 col-md-2">
-            <label for="email" class="control-label">${msg("email")}</label> 
+            <label for="email" class="control-label">${msg("email")}</label>
             </div>
 
             <div class="col-sm-10 col-md-10">
@@ -38,7 +38,7 @@
 
         <div class="form-group ${messagesPerField.printIfExists('firstName','has-error')}">
             <div class="col-sm-2 col-md-2">
-                <label for="firstName" class="control-label">${msg("firstName")}</label> 
+                <label for="firstName" class="control-label">${msg("firstName")}</label>
             </div>
 
             <div class="col-sm-10 col-md-10">
@@ -48,7 +48,7 @@
 
         <div class="form-group ${messagesPerField.printIfExists('lastName','has-error')}">
             <div class="col-sm-2 col-md-2">
-                <label for="lastName" class="control-label">${msg("lastName")}</label> 
+                <label for="lastName" class="control-label">${msg("lastName")}</label>
             </div>
 
             <div class="col-sm-10 col-md-10">
@@ -65,4 +65,3 @@
         </div>
     </form>
 </@layout.mainLayout>
-

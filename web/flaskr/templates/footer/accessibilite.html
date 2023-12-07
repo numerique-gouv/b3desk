@@ -1,9 +1,5 @@
 {% extends 'static-layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block main %}
 <div id="doc">
 <h1>{% trans %}Accessibilité{% endtrans %}</h1>
@@ -19,9 +15,4 @@
 <h2>{% trans %}Défenseur des droits{% endtrans %}</h2>
 <p>{% trans %}Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits. Plusieurs moyens sont à votre disposition :{% endtrans %}</p>
 <ul><li>{% trans %}un <a href="https://www.defenseurdesdroits.fr/nous-contacter" title="formulaire de contact - nouvelle fenêtre" target="_blank" rel="noopener noreferrer" >formulaire de contact</a></li><li>la <a href="https://www.defenseurdesdroits.fr/fr/saisir/delegues" title="liste des délégués de votre région - nouvelle fenêtre" target="_blank"  rel="noopener noreferrer">liste des délégués de votre région</a> avec leurs informations de contact directs</li><li>un numéro de téléphone : le 09 69 39 00 00 du lundi au vendredi de 8h00 à 20h00 (coût d'un appel local)</li><li>une adresse postale dans l'<a href="https://lannuaire.service-public.fr/autorites-independantes/autorite-administrative-independante_195381" title="annuaire de l'administration - nouvelle fenêtre" target="_blank" rel="noopener noreferrer" >annuaire de l'administration</a>{% endtrans %}</li></ul>
-
-{% endblock %}
-
-{% block footer %}
-    {% include 'footer.html' %}
 {% endblock %}

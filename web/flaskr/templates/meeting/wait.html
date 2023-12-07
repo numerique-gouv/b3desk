@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block jumbotron %}
+{% include 'rie.html' %}
+{% endblock %}
+
+{% block main %}
+<div class="fr-mt-4w fr-grid-row fr-grid-row--center">
+    <div class="fr-col-sm-12 fr-col-md-10 fr-col-lg-8 connected">
+        <h5 class="fr-h5">
+            {% trans %}Bonjour {{ fullname }}, vous pourrez bientôt entrer{% endtrans %}
+        </h5>
+
+        <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+
+        <p>
+        {% trans %}Votre hôte n’est pas encore arrivé. Vous entrerez automatiquement dans la salle de visio-conférence dès qu’il sera présent.{% endtrans %}
+        </p>
+
+        <form id="joinMeetingForm" action="/meeting/join" method="POST">
+            {% include 'meeting/csrf.html' %}
+            <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
+            <input type="hidden" id="user_id" name="user_id" value="{{ user_id }}" />
+            <input type="hidden" id="h" name="h" value="{{ h }}" />
+            <input type="hidden" id="fullname" name="fullname" value="{{ fullname }}" />
+            <input type="hidden" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const seconds_before_refresh = 10;
+    let joinMeeting = () => {
+        document.getElementById("joinMeetingForm").submit()
+    }
+    setTimeout(joinMeeting, seconds_before_refresh * 1000)
+</script>
+{% endblock %}

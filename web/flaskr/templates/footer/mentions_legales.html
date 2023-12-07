@@ -1,12 +1,7 @@
-
 {% extends 'static-layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block main %}
-  <div id="doc">  
+  <div id="doc">
     <h1>{% trans %}Mentions légales{% endtrans %}</h1>
     <h2>{% trans %}Éditeur{% endtrans %}</h2>
     <p>{% trans %}Ministère de l’Éducation nationale et de la jeunesse Direction du numérique pour l’éducation 110 rue Grenelle, 75007 Paris{% endtrans %}<br>{% trans %}Directeur de publication{% endtrans %}</p>
@@ -39,8 +34,4 @@
     <h2>{% trans %}Amélioration et contact{% endtrans %}</h2>
     <p>{% trans %}Vous pouvez nous aider à améliorer l’accessibilité du site en nous signalant les problèmes éventuels que vous rencontrez. Pour ce faire, envoyez-nous un courriel à <strong>apps[chez]education.gouv.fr</strong>{% endtrans %}</p>
 </div>
-{% endblock %}
-
-{% block footer %}
-    {% include 'footer.html' %}
 {% endblock %}

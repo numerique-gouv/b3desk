@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # +----------------------------------------------------------------------------+
 # | BBB-VISIO                                                                  |
 # +----------------------------------------------------------------------------+
@@ -9,83 +8,65 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-
-from werkzeug.utils import secure_filename
-
-from webdav3.client import Client as webdavClient
-from webdav3.exceptions import MethodNotSupported, WebDavException
-
+import hashlib
+import os
+import random
+import re
+import secrets
+import smtplib
+import string
+import uuid
+from datetime import date
+from datetime import datetime
+from email.message import EmailMessage
+from email.mime.text import MIMEText
 from pathlib import Path
 
 import filetype
-
-from flask import (
-    current_app,
-    send_from_directory,
-    abort,
-    Blueprint,
-    render_template,
-    send_file,
-    make_response,
-    Response,
-    request,
-    redirect,
-    flash,
-    session,
-    jsonify,
-    url_for,
-)
-from xml.etree import ElementTree
+import requests
+from flask import abort
+from flask import Blueprint
+from flask import current_app
+from flask import flash
+from flask import jsonify
+from flask import make_response
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import send_file
+from flask import send_from_directory
+from flask import session
+from flask import url_for
 from flask_babel import lazy_gettext
 from flask_pyoidc import OIDCAuthentication
-from flask_pyoidc.provider_configuration import (
-    ProviderConfiguration,
-    ClientMetadata,
-)
+from flask_pyoidc.provider_configuration import ClientMetadata
+from flask_pyoidc.provider_configuration import ProviderConfiguration
 from flask_pyoidc.user_session import UserSession
-from sqlalchemy import or_, exc
-import random
-import hashlib
-import os
-import re
-import smtplib
-import string
-import requests
-import shutil
-import secrets
-import uuid
+from flaskr.forms import EndMeetingForm
+from flaskr.forms import JoinMailMeetingForm
+from flaskr.forms import JoinMeetingAsRoleForm
+from flaskr.forms import JoinMeetingForm
+from flaskr.forms import MeetingFilesForm
+from flaskr.forms import MeetingForm
+from flaskr.forms import MeetingWithRecordForm
+from flaskr.forms import RecordingForm
+from flaskr.forms import ShowMeetingForm
+from flaskr.models import db
+from flaskr.models import get_or_create_user
+from flaskr.models import Meeting
+from flaskr.models import MeetingFiles
+from flaskr.models import MeetingFilesExternal
+from flaskr.models import User
+from sqlalchemy import exc
+from webdav3.client import Client as webdavClient
+from webdav3.exceptions import WebDavException
+from werkzeug.utils import secure_filename
 
-from datetime import datetime, date
-from email.mime.text import MIMEText
-from email.message import EmailMessage
-from urllib.parse import quote
-from netaddr import IPNetwork, IPAddress
-
-from flaskr.forms import (
-    JoinMeetingAsRoleForm,
-    JoinMeetingForm,
-    JoinMailMeetingForm,
-    ShowMeetingForm,
-    MeetingForm,
-    MeetingFilesForm,
-    MeetingWithRecordForm,
-    EndMeetingForm,
-    RecordingForm,
-)
-from flaskr.models import (
-    get_or_create_user,
-    db,
-    User,
-    Meeting,
-    MeetingFiles,
-    MeetingFilesExternal,
-)
-from flaskr.utils import retry_join_meeting
 from .common.extensions import cache
 from .templates.content import FAQ_CONTENT
 
 
-bp = Blueprint("", __name__)
+bp = Blueprint("routes", __name__)
 
 
 user_provider_configuration = ProviderConfiguration(
@@ -95,6 +76,7 @@ user_provider_configuration = ProviderConfiguration(
         client_id=current_app.config["OIDC_CLIENT_ID"],
         client_secret=current_app.config["OIDC_CLIENT_SECRET"],
         token_endpoint_auth_method=current_app.config["OIDC_CLIENT_AUTH_METHOD"],
+        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
     auth_request_params={"scope": current_app.config["OIDC_SCOPES"]},
 )
@@ -107,11 +89,9 @@ attendee_provider_configuration = ProviderConfiguration(
         token_endpoint_auth_method=current_app.config.get(
             "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
         ),
+        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
-    auth_request_params={
-        "scope": current_app.config.get("OIDC_ATTENDEE_SCOPES")
-        or current_app.config["OIDC_SCOPES"]
-    },
+    auth_request_params={"scope": current_app.config["OIDC_ATTENDEE_SCOPES"]},
 )
 
 auth = OIDCAuthentication(
@@ -140,7 +120,7 @@ def is_valid_email(email):
 
 def get_random_alphanumeric_string(length):
     letters_and_digits = string.ascii_letters + string.digits
-    result_str = "".join((random.choice(letters_and_digits) for i in range(length)))
+    result_str = "".join(random.choice(letters_and_digits) for i in range(length))
     return result_str
 
 
@@ -161,8 +141,8 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     m.user = user
     m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
     m.fake_id = random_string
-    m.moderatorPW = "%s-%s" % (user.hash, random_string)
-    m.attendeePW = "%s-%s" % (random_string, random_string)
+    m.moderatorPW = f"{user.hash}-{random_string}"
+    m.attendeePW = f"{random_string}-{random_string}"
     m.moderatorOnlyMessage = current_app.config[
         "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
     ]
@@ -207,6 +187,26 @@ def get_current_user():
     return get_or_create_user(info)
 
 
+def has_user_session():
+    user_session = UserSession(dict(session), "default")
+    return user_session.is_authenticated()
+
+
+@bp.context_processor
+def global_processor():
+    if has_user_session():
+        user = get_current_user()
+        return {
+            "user": user,
+            "fullname": user.fullname,
+        }
+    else:
+        return {
+            "user": None,
+            "fullname": "",
+        }
+
+
 def add_mailto_links(meeting_data):
     d = meeting_data
     d["moderator_mailto_href"] = render_template(
@@ -230,7 +230,7 @@ def get_meetings_stats():
         stats_array = [row.split(",") for row in stats_array]
         participantCount = int(stats_array[current_app.config["STATS_INDEX"]][1])
         runningCount = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except Exception as e:
+    except Exception:
         return None
 
     result = {"participantCount": participantCount, "runningCount": runningCount}
@@ -240,20 +240,15 @@ def get_meetings_stats():
 @bp.route("/api/meetings", methods=["GET"])
 @auth.token_auth(provider_name="default")
 def api_meetings():
-    if auth.current_token_identity:
-        current_identity = auth.current_token_identity
-    else:
-        return redirect("/")
+    if not auth.current_token_identity:
+        return redirect(url_for("routes.index"))
+
     info = {
         "given_name": auth.current_token_identity["given_name"],
         "family_name": auth.current_token_identity["family_name"],
         "email": auth.current_token_identity["email"],
     }
     user = get_or_create_user(info)
-    fullname = user.fullname
-    stats = get_meetings_stats()
-    if user is not None:
-        logged_in = True
     return {
         "meetings": [
             {
@@ -267,12 +262,12 @@ def api_meetings():
 
 
 # called by NextcloudfilePicker when documents should be added to a running room:
-@bp.route("/meeting/files/<meeting_id>/insertDocuments", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/insertDocuments", methods=["POST"])
 @auth.oidc_auth("default")
 def insertDocuments(meeting_id):
     from flask import request
 
-    user = get_current_user()
+    get_current_user()
     meeting = Meeting.query.get(meeting_id)
     files_title = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
@@ -284,7 +279,7 @@ def insertDocuments(meeting_id):
     for cur_file in files_title:
         id = add_external_meeting_file_nextcloud(cur_file, meeting_id)
         filehash = hashlib.sha1(
-            f"{secret_key}-1-{id}-{secret_key}".encode("utf-8")
+            f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
         xml_mid += f"<document url='{current_app.config['SERVER_FQDN']}/ncdownload/1/{id}/{filehash}' filename='{cur_file}' />"
 
@@ -293,20 +288,19 @@ def insertDocuments(meeting_id):
     params = {"meetingID": meeting.meetingID}
     request = requests.Request(
         "POST",
-        "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
+        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
         params=params,
     )
-    headers = {"Content-Type": "application/xml"}
     pr = request.prepare()
     bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "%s%s" % (
+    s = "{}{}".format(
         pr.url.replace("?", "").replace(
             current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
         ),
         bigbluebutton_secret,
     )
     params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-    r = requests.post(
+    requests.post(
         f"{bbb_endpoint}/insertDocument",
         headers={"Content-Type": "application/xml"},
         data=xml,
@@ -317,20 +311,8 @@ def insertDocuments(meeting_id):
 
 @bp.route("/mentions_legales")
 def mentions_legales():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/mentions_legales.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -338,20 +320,8 @@ def mentions_legales():
 
 @bp.route("/cgu")
 def cgu():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/cgu.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -359,20 +329,8 @@ def cgu():
 
 @bp.route("/donnees_personnelles")
 def donnees_personnelles():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/donnees_personnelles.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -380,20 +338,8 @@ def donnees_personnelles():
 
 @bp.route("/accessibilite")
 def accessibilite():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/accessibilite.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
         service_title=current_app.config["SERVICE_TITLE"],
         service_tagline=current_app.config["SERVICE_TAGLINE"],
     )
@@ -403,68 +349,35 @@ def accessibilite():
 def documentation():
     if current_app.config["DOCUMENTATION_LINK"]["is_external"]:
         return redirect(current_app.config["DOCUMENTATION_LINK"]["url"])
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "footer/documentation.html",
-        logged_in=logged_in,
-        user=user,
-        fullname=fullname,
     )
 
 
 @bp.route("/faq")
 def faq():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
-        user = get_current_user()
-        fullname = user.fullname
-    else:
-        user = None
-        fullname = None
-        logged_in = False
     return render_template(
         "faq.html",
-        logged_in=logged_in,
-        user=user,
         contents=FAQ_CONTENT,
-        fullname=fullname,
     )
 
 
 @bp.route("/")
 def index():
-    user_session = UserSession(session, "default")
-    if user_session.is_authenticated():
-        logged_in = True
+    if has_user_session():
+        return redirect(url_for("routes.welcome"))
     else:
-        logged_in = False
-    if logged_in:
-        return redirect("/welcome")
-    else:
-        return redirect("/home")
+        return redirect(url_for("routes.home"))
 
 
 @bp.route("/home")
 def home():
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
+    if has_user_session():
+        return redirect(url_for("routes.welcome"))
+
     stats = get_meetings_stats()
     return render_template(
         "index.html",
-        is_rie=is_rie,
         stats=stats,
         mail_meeting=current_app.config["MAIL_MEETING"],
         max_participants=current_app.config["MAX_PARTICIPANTS"],
@@ -475,22 +388,15 @@ def home():
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
-    fullname = user.fullname
     stats = get_meetings_stats()
-    if user is not None:
-        logged_in = True
-
     return render_template(
         "welcome.html",
         title=current_app.config["TITLE"],
-        user=user,
-        fullname=fullname,
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
         meetings=[
-            add_mailto_links(m.get_data_as_dict(fullname)) for m in user.meetings
+            add_mailto_links(m.get_data_as_dict(user.fullname)) for m in user.meetings
         ],
-        logged_in=logged_in,
         can_create_meetings=user.can_create_meetings,
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
         mailto=current_app.config["MAILTO_LINKS"],
@@ -509,7 +415,7 @@ def get_mail_meeting(random_string=None):
     m = Meeting()
     m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
     m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.moderatorPW = "%s-%s" % (
+    m.moderatorPW = "{}-{}".format(
         random_string,
         random_string,
     )  # it is only usefull for bbb
@@ -533,7 +439,7 @@ def quick_mail_meeting():
             ),
             "error_login",
         )
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     if not is_accepted_email(email):
         flash(
             lazy_gettext(
@@ -541,16 +447,16 @@ def quick_mail_meeting():
             ),
             "error_login",
         )
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     user = User(
         id=email
     )  # this user can probably be removed if we created adock function
     m = get_quick_meeting_from_user_and_random_string(user)
-    signinurl = _send_mail(m, email)
+    _send_mail(m, email)
     flash(
         lazy_gettext("Vous avez reçu un courriel pour vous connecter"), "success_login"
     )
-    return redirect("/")
+    return redirect(url_for("routes.index"))
 
 
 def _send_mail(meeting, to_email):
@@ -596,7 +502,7 @@ def quick_meeting():
     return redirect(m.get_join_url("moderator", fullname, create=True))
 
 
-@bp.route("/meeting/show/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/show/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def show_meeting(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -605,25 +511,19 @@ def show_meeting(meeting_id):
             lazy_gettext("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
             "warning",
         )
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
         return render_template(
             "meeting/show.html",
-            user=user,
-            fullname=fullname,
-            meeting=add_mailto_links(meeting.get_data_as_dict(fullname)),
-            logged_in=logged_in,
+            meeting=add_mailto_links(meeting.get_data_as_dict(user.fullname)),
         )
     flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/recordings/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/recordings/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def show_meeting_recording(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -632,28 +532,22 @@ def show_meeting_recording(meeting_id):
             lazy_gettext("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
             "warning",
         )
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
-        meeting_dict = meeting.get_data_as_dict(fullname, fetch_recording=True)
+        meeting_dict = meeting.get_data_as_dict(user.fullname, fetch_recording=True)
         form = RecordingForm()
         return render_template(
             "meeting/recordings.html",
-            user=user,
-            fullname=fullname,
             meeting=add_mailto_links(meeting_dict),
-            logged_in=logged_in,
             form=form,
         )
     flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/<meeting_id>/recordings/<recording_id>", methods=["POST"])
+@bp.route("/meeting/<int:meeting_id>/recordings/<recording_id>", methods=["POST"])
 @auth.oidc_auth("default")
 def update_recording_name(meeting_id, recording_id):
     user = get_current_user()
@@ -675,40 +569,30 @@ def update_recording_name(meeting_id, recording_id):
             )
     else:
         flash("Vous ne pouvez pas modifier cet enregistrement", "error")
-    return redirect(url_for("show_meeting_recording", meeting_id=meeting_id))
+    return redirect(url_for("routes.show_meeting_recording", meeting_id=meeting_id))
 
 
 @bp.route("/meeting/new", methods=["GET"])
 @auth.oidc_auth("default")
 def new_meeting():
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
-
     if not user.can_create_meetings:
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
 
     form = MeetingWithRecordForm() if current_app.config["RECORDING"] else MeetingForm()
 
     return render_template(
         "meeting/wizard.html",
-        user=user,
-        fullname=fullname,
         meeting=None,
         form=form,
         recording=current_app.config["RECORDING"],
-        logged_in=logged_in,
     )
 
 
-@bp.route("/meeting/edit/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/edit/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def edit_meeting(meeting_id):
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
 
     form = (
@@ -719,25 +603,18 @@ def edit_meeting(meeting_id):
     if meeting and meeting.user_id == user.id:
         return render_template(
             "meeting/wizard.html",
-            user=user,
-            fullname=fullname,
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
-            logged_in=logged_in,
         )
     flash("Vous ne pouvez pas modifier cet élément", "warning")
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/files/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def edit_meeting_files(meeting_id):
     user = get_current_user()
-    fullname = user.fullname
-    if user is not None:
-        logged_in = True
-
     meeting = Meeting.query.get(meeting_id)
 
     form = MeetingFilesForm()
@@ -762,19 +639,16 @@ def edit_meeting_files(meeting_id):
         if user is not None and meeting.user_id == user.id:
             return render_template(
                 "meeting/filesform.html",
-                user=user,
-                fullname=fullname,
                 meeting=meeting,
                 form=form,
                 fqdn=current_app.config["SERVER_FQDN"],
                 beta=current_app.config["BETA"],
-                logged_in=logged_in,
             )
     flash(lazy_gettext("Vous ne pouvez pas modifier cet élément"), "warning")
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<meeting_id>/<file_id>", methods=["GET"])
+@bp.route("/meeting/files/<int:meeting_id>/<int:file_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def download_meeting_files(meeting_id, file_id):
     user = get_current_user()
@@ -786,7 +660,7 @@ def download_meeting_files(meeting_id, file_id):
     fileToSend = None
     if user is not None and meeting.user_id == user.id:
         for curFile in meeting.files:
-            if curFile.id == int(file_id):
+            if curFile.id == file_id:
                 fileToSend = curFile
                 break
         if not fileToSend:
@@ -822,18 +696,18 @@ def download_meeting_files(meeting_id, file_id):
                 user.disable_nextcloud()
                 print("webdav call encountered following exception : %s" % exception)
                 flash("Le fichier ne semble pas accessible", "error")
-                return redirect("/welcome")
-    return redirect("/welcome")
+                return redirect(url_for("routes.welcome"))
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<meeting_id>/toggledownload", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/toggledownload", methods=["POST"])
 @auth.oidc_auth("default")
 def toggledownload(meeting_id):
     user = get_current_user()
     data = request.get_json()
 
     if user is None:
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
     meeting = Meeting.query.get(meeting_id)
     meeting_file = MeetingFiles.query.get(data["id"])
     if meeting_file is not None and meeting.user_id == user.id:
@@ -841,17 +715,15 @@ def toggledownload(meeting_id):
         meeting_file.save()
 
         return jsonify(status=200, id=data["id"])
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<meeting_id>/default", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/default", methods=["POST"])
 @auth.oidc_auth("default")
 def set_meeting_default_file(meeting_id):
     user = get_current_user()
     data = request.get_json()
 
-    if user is not None:
-        logged_in = True
     meeting = Meeting.query.get(meeting_id)
     if meeting.user_id == user.id:
         actual_default_file = meeting.default_file
@@ -877,12 +749,10 @@ def removeDropzoneFile(absolutePath):
 def add_meeting_file_dropzone(title, meeting_id, is_default):
     user = get_current_user()
     # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
-    DROPZONE_DIR = current_app.config["UPLOAD_DIR"] + "/dropzone/"
+    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzonePath = os.path.join(
-        DROPZONE_DIR + str(user.id) + "-" + meeting_id + "-" + title
-    )
-    metadata = os.stat(dropzonePath)
+    dropzone_path = os.path.join(DROPZONE_DIR, f"{user.id}-{meeting_id}-{title}")
+    metadata = os.stat(dropzone_path)
     if int(metadata.st_size) > int(current_app.config["MAX_SIZE_UPLOAD"]):
         return jsonify(
             status=500,
@@ -903,7 +773,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         nc_path = os.path.join("/visio-agents/" + title)
         kwargs = {
             "remote_path": nc_path,
-            "local_path": dropzonePath,
+            "local_path": dropzone_path,
         }
         client.upload_sync(**kwargs)
 
@@ -929,10 +799,10 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             meetingFile.is_default = False
 
         meetingFile.save()
-        secret_key = current_app.config["SECRET_KEY"]
+        current_app.config["SECRET_KEY"]
         meetingFile.update()
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-        removeDropzoneFile(dropzonePath)
+        removeDropzoneFile(dropzone_path)
         return jsonify(
             status=200,
             isfrom="dropzone",
@@ -949,7 +819,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
-    user = get_current_user()
+    get_current_user()
     title = url.rsplit("/", 1)[-1]
 
     # test MAX_SIZE_UPLOAD for 20Mo
@@ -978,7 +848,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     meetingFile.url = url
     meetingFile.is_default = is_default
 
-    getFile = requests.get(url)
+    requests.get(url)
 
     try:
         meetingFile.save()
@@ -1009,7 +879,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     try:
         client = webdavClient(options)
         metadata = client.info(path)
-    except WebDavException as exception:
+    except WebDavException:
         user.disable_nextcloud()
         return jsonify(
             status=500,
@@ -1020,7 +890,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         return jsonify(
             status=500,
             isfrom="nextcloud",
-            msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
+            msg=f"Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
     meetingFile = MeetingFiles()
@@ -1030,7 +900,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     meetingFile.meeting_id = meeting_id
     meetingFile.nc_path = path
     meetingFile.is_default = is_default
-    secret_key = current_app.config["SECRET_KEY"]
+    current_app.config["SECRET_KEY"]
 
     try:
         meetingFile.save()
@@ -1050,7 +920,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
-    user = get_current_user()
+    get_current_user()
 
     externalMeetingFile = MeetingFilesExternal()
 
@@ -1062,14 +932,11 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
     return externalMeetingFile.id
 
 
-@bp.route("/meeting/files/<meeting_id>", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>", methods=["POST"])
 @auth.oidc_auth("default")
 def add_meeting_files(meeting_id):
     user = get_current_user()
     meeting = Meeting.query.get(meeting_id)
-
-    if user is not None:
-        logged_in = True
 
     data = request.get_json()
     is_default = False
@@ -1095,7 +962,7 @@ def add_meeting_files(meeting_id):
 
 
 # for dropzone multiple files uploading at once
-@bp.route("/meeting/files/<meeting_id>/dropzone", methods=["POST"])
+@bp.route("/meeting/files/<int:meeting_id>/dropzone", methods=["POST"])
 @auth.oidc_auth("default")
 def add_dropzone_files(meeting_id):
     user = get_current_user()
@@ -1105,7 +972,7 @@ def add_dropzone_files(meeting_id):
         return upload(user, meeting_id, request.files["dropzoneFiles"])
     else:
         flash("Traitement de requête impossible", "error")
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
 
 
 # for dropzone chunk file by file validation
@@ -1151,9 +1018,6 @@ def upload(user, meeting_id, file):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     user = get_current_user()
-    if user is not None:
-        logged_in = True
-
     data = request.get_json()
     meeting_file_id = data["id"]
     meetingFile = MeetingFiles()
@@ -1194,18 +1058,15 @@ def save_meeting():
 
     is_new_meeting = not form.data["id"]
     if not user.can_create_meetings and is_new_meeting:
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
 
     if not form.validate():
         flash("Le formulaire contient des erreurs", "error")
         return render_template(
             "meeting/wizard.html",
-            user=user,
-            fullname=user.fullname,
             meeting=None if is_new_meeting else Meeting.query.get(form.id.data),
             form=form,
             recording=current_app.config["RECORDING"],
-            logged_in=True,
         )
 
     if is_new_meeting:
@@ -1230,16 +1091,14 @@ def save_meeting():
     )
 
     if meeting.is_meeting_running():
-        end_meeting_form = EndMeetingForm()
+        EndMeetingForm()
         EndMeetingForm.meeting_id.data = meeting.id
         return render_template(
             "meeting/end.html",
-            user=user,
-            logged_in=True,
             meeting=meeting,
             form=EndMeetingForm(data={"meeting_id": meeting_id}),
         )
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
 @bp.route("/meeting/end", methods=["POST"])
@@ -1257,10 +1116,10 @@ def end_meeting():
             f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
             "success",
         )
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/create/<meeting_id>", methods=["GET"])
+@bp.route("/meeting/create/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def create_meeting(meeting_id):
     user = get_current_user()
@@ -1268,7 +1127,7 @@ def create_meeting(meeting_id):
     if m.user_id == user.id:
         m.create_bbb()
         m.save()
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
 # draft for insertDocument calls to BBB API
@@ -1284,7 +1143,7 @@ def insertDoc(token):
     if (
         m
         or m.token
-        != hashlib.sha1(f"{secret_key}{m.id}{secret_key}".encode("utf-8")).hexdigest()
+        != hashlib.sha1(f"{secret_key}{m.id}{secret_key}".encode()).hexdigest()
     ):
         make_response("NOT OK", 500)
 
@@ -1292,13 +1151,13 @@ def insertDoc(token):
     action = "insertDocument"
     req = requests.Request(
         "POST",
-        "%s/%s" % (current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
         params=params,
     )
     headers = {"Content-Type": "application/xml"}
     pr = req.prepare()
     bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "%s%s" % (
+    s = "{}{}".format(
         pr.url.replace("?", "").replace(
             current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
         ),
@@ -1309,7 +1168,7 @@ def insertDoc(token):
     # xml now use
     xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{current_app.config['SERVER_FQDN']}/ncdownload/{m.id}/{m.download_hash}' filename='m.title' /> </module></modules>"
 
-    r = requests.post(
+    requests.post(
         f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",
         data=xml,
         headers=headers,
@@ -1319,7 +1178,7 @@ def insertDoc(token):
     return make_response("ok", 200)
 
 
-@bp.route("/meeting/<meeting_id>/externalUpload")
+@bp.route("/meeting/<int:meeting_id>/externalUpload")
 @auth.oidc_auth("default")
 def externalUpload(meeting_id):
     user = get_current_user()
@@ -1330,11 +1189,9 @@ def externalUpload(meeting_id):
         and user is not None
         and meeting.user_id == user.id
     ):
-        return render_template(
-            "meeting/externalUpload.html", user=user, meeting=meeting
-        )
+        return render_template("meeting/externalUpload.html", meeting=meeting)
     else:
-        return redirect("/welcome")
+        return redirect(url_for("routes.welcome"))
 
 
 @bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>", methods=["GET"])
@@ -1359,7 +1216,7 @@ def ncdownload(isexternal, mfid, mftoken):
     if (
         mftoken
         != hashlib.sha1(
-            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode("utf-8")
+            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
         ).hexdigest()
     ):
         return make_response("Bad token provided, no file matching", 404)
@@ -1382,7 +1239,7 @@ def ncdownload(isexternal, mfid, mftoken):
             "local_path": tmpName,
         }
         client.download_sync(**kwargs)
-    except WebDavException as exception:
+    except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
         return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
     # send the downloaded file to the BBB:
@@ -1394,12 +1251,6 @@ def ncdownload(isexternal, mfid, mftoken):
     methods=["GET"],
 )
 def signin_mail_meeting(meeting_fake_id, expiration, h):
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
     meeting = get_mail_meeting(meeting_fake_id)
     wordings = current_app.config["WORDINGS"]
 
@@ -1411,17 +1262,17 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
             ),
             "success",
         )
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
         flash(lazy_gettext("Lien invalide"), "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     is_expired = datetime.fromtimestamp(float(expiration)) < datetime.now()
     if is_expired:
         flash(lazy_gettext("Lien expiré"), "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     return render_template(
         "meeting/joinmail.html",
@@ -1430,21 +1281,14 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         expiration=expiration,
         user_id="fakeuserId",
         h=h,
-        is_rie=is_rie,
         role="moderator",
     )
 
 
 @bp.route(
-    "/meeting/signin/<meeting_fake_id>/creator/<user_id>/hash/<h>", methods=["GET"]
+    "/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
 )
 def signin_meeting(meeting_fake_id, user_id, h):
-    is_rie = any(
-        [
-            IPAddress(request.remote_addr) in IPNetwork(network_ip)
-            for network_ip in current_app.config["RIE_NETWORK_IPS"]
-        ]
-    )
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
@@ -1455,44 +1299,65 @@ def signin_meeting(meeting_fake_id, user_id, h):
             ),
             "success",
         )
-        return redirect("/")
-    role = meeting.get_role(h)
+        return redirect(url_for("routes.index"))
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
 
     if role == "authenticated":
         return redirect(
-            url_for("join_meeting_as_authenticated", meeting_id=meeting_fake_id)
+            url_for("routes.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
     elif not role:
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     return render_template(
         "meeting/join.html",
         meeting=meeting,
         meeting_fake_id=meeting_fake_id,
         user_id=user_id,
         h=h,
-        is_rie=is_rie,
         role=role,
     )
 
 
 @bp.route(
+    "/meeting/auth/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
+)
+@auth.oidc_auth("default")
+def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
+    return redirect(
+        url_for(
+            "routes.signin_meeting",
+            meeting_fake_id=meeting_fake_id,
+            user_id=user_id,
+            h=h,
+        )
+    )
+
+
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/",
+)
+@bp.route(
     "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
-    methods=["GET"],
-    defaults={"fullname_suffix": ""},
+)
+@bp.route(
+    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
     "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
-    methods=["GET"],
 )
-def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
+def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
-        return redirect("/")
-    role = meeting.get_role(h)
+        return redirect(url_for("routes.index"))
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
     if not role:
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     return render_template(
-        "meeting/join.html",
+        "meeting/wait.html",
         meeting=meeting,
         meeting_fake_id=meeting_fake_id,
         user_id=user_id,
@@ -1500,9 +1365,6 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
-        retry_join_meeting=retry_join_meeting(
-            request.referrer, role, fullname, fullname_suffix
-        ),
     )
 
 
@@ -1510,20 +1372,22 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname, fullname_suffix):
 def join_meeting():
     form = JoinMeetingForm(request.form)
     if not form.validate():
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
     user_id = form["user_id"].data
     h = form["h"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
-        return redirect("/")
-    role = meeting.get_role(h)
+        return redirect(url_for("routes.index"))
+
+    current_user_id = get_current_user().id if has_user_session() else None
+    role = meeting.get_role(h, current_user_id)
     fullname_suffix = form["fullname_suffix"].data
     if role == "authenticated":
         fullname = get_authenticated_attendee_fullname()
     elif not role:
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     return redirect(
         meeting.get_join_url(
             role, fullname, fullname_suffix=fullname_suffix, create=True
@@ -1536,10 +1400,10 @@ def join_mail_meeting():
     form = JoinMailMeetingForm(request.form)
     if not form.validate():
         flash("Lien invalide", "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
-    user_id = form["user_id"].data
+    form["user_id"].data
     expiration = form["expiration"].data
     h = form["h"].data
 
@@ -1554,17 +1418,17 @@ def join_mail_meeting():
             ),
             "error",
         )
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
         flash(lazy_gettext("Lien invalide"), "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     is_expired = datetime.fromtimestamp(expiration) < datetime.now()
     if is_expired:
         flash(lazy_gettext("Lien expiré"), "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
@@ -1572,13 +1436,13 @@ def join_mail_meeting():
 def get_authenticated_attendee_fullname():
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info["given_name"]
-    family_name = attendee_info["family_name"]
-    fullname = f"{given_name} {family_name}"
+    given_name = attendee_info.get("given_name", "")
+    family_name = attendee_info.get("family_name", "")
+    fullname = f"{given_name} {family_name}".strip()
     return fullname
 
 
-@bp.route("/meeting/join/<meeting_id>/authenticated", methods=["GET"])
+@bp.route("/meeting/join/<int:meeting_id>/authenticated", methods=["GET"])
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     meeting = Meeting.query.get(meeting_id) or abort(404)
@@ -1586,17 +1450,16 @@ def join_meeting_as_authenticated(meeting_id):
     fullname = get_authenticated_attendee_fullname()
     return redirect(
         url_for(
-            "waiting_meeting",
+            "routes.waiting_meeting",
             meeting_fake_id=meeting_id,
             user_id=meeting.user.id,
             h=meeting.get_hash(role),
             fullname=fullname,
-            fullname_suffix="",
         )
     )
 
 
-@bp.route("/meeting/join/<meeting_id>/<role>", methods=["GET"])
+@bp.route("/meeting/join/<int:meeting_id>/<role>", methods=["GET"])
 @auth.oidc_auth("default")
 def join_meeting_as_role(meeting_id, role):
     user = get_current_user()
@@ -1608,7 +1471,7 @@ def join_meeting_as_role(meeting_id, role):
         return redirect(meeting.get_join_url(role, user.fullname, create=True))
     else:
         flash(lazy_gettext("Accès non autorisé"), "error")
-        return redirect("/")
+        return redirect(url_for("routes.index"))
 
 
 @bp.route("/meeting/delete", methods=["POST", "GET"])
@@ -1632,7 +1495,7 @@ def delete_meeting():
                 flash(
                     "Nous n'avons pas pu supprimer les vidéos de cette "
                     + current_app.config["WORDINGS"]["meeting_label"]
-                    + " : {message}".format(code=return_code, message=message),
+                    + f" : {message}",
                     "error",
                 )
             else:
@@ -1641,7 +1504,7 @@ def delete_meeting():
                 flash(lazy_gettext("Élément supprimé"), "success")
         else:
             flash(lazy_gettext("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
 @bp.route("/meeting/video/delete", methods=["POST"])
@@ -1672,40 +1535,10 @@ def delete_video_meeting():
                 lazy_gettext("Vous ne pouvez pas supprimer cette enregistrement"),
                 "error",
             )
-    return redirect("/welcome")
+    return redirect(url_for("routes.welcome"))
 
 
 @bp.route("/logout")
 @auth.oidc_logout
 def logout():
-    return redirect("/")
-
-
-@current_app.errorhandler(403)
-def page_not_authorized(e):
-    return (
-        render_template(
-            "errors/403.html",
-        ),
-        403,
-    )
-
-
-@current_app.errorhandler(404)
-def page_not_found(e):
-    return (
-        render_template(
-            "errors/404.html",
-        ),
-        404,
-    )
-
-
-@current_app.errorhandler(500)
-def page_error(e):
-    return (
-        render_template(
-            "errors/500.html",
-        ),
-        500,
-    )
+    return redirect(url_for("routes.index"))

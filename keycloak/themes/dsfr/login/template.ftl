@@ -48,14 +48,14 @@
 </div>
 <div class="rf-header__navbar">
   <div class="rf-service">
-    <!-- Webinaire de l'État -->    
+    <!-- Webinaire de l'État -->
     <a class="rf-service__title" href="${properties.kcServiceTitle!}">Webinaire de l'État</a>
     <!-- Le service de réunions en ligne pour les agents de l'État -->
     <p class="rf-service__tagline">${properties.kcServiceTagline!}</p>
   </div>
 </div>
       <div class="rf-header__tools">
-  
+
 <div class="rf-shortcuts">
     <ul class="rf-shortcuts__list">
 		  <li class="rf-shortcuts__item">
@@ -198,7 +198,7 @@
                 </p>
                 <p class="rf-footer__content-desc">
                     Le code source est ouvert et les contributions sont bienvenues.
-                    <a title="Voir le code source - nouvelle fenêtre" href="https://github.com/betagouv/visio-bbb/" target="_blank" rel="noopener">Voir le code source</a>
+                    <a title="Voir le code source - nouvelle fenêtre" href="https://github.com/numerique-gouv/b3desk/" target="_blank" rel="noopener">Voir le code source</a>
                 </p>
 
                 <ul class="rf-footer__content-links">

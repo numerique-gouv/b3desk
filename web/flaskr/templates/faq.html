@@ -1,9 +1,5 @@
 {% extends 'static-layout.html' %}
 
-{% block header %}
-    {% include 'header.html' %}
-{% endblock %}
-
 {% block main %}
     <h1>{% trans %}FAQ - Modalités d'accès{% endtrans %}</h1>
     <ul class="fr-accordions-group">
@@ -22,7 +18,4 @@
         </section>
       {% endfor %}
     </ul>
-{% endblock %}
-{% block footer %}
-    {% include 'footer.html' %}
 {% endblock %}

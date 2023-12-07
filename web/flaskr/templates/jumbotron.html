@@ -1,5 +1,5 @@
 {% include 'rie.html' %}
-{% if logged_in == true %}
+{% if user %}
 <div class="grey-section fr-py-3w">
   <div class="fr-container">
     <div class="fr-mt-4w fr-grid-row fr-grid-row--center">
@@ -43,7 +43,7 @@
           <p class="fr-text">{% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}</p>
           <p><a class="fr-btn" target="_blank" rel="noopener" href="/welcome">{% trans %}Se connecter ou créer un compte{% endtrans %}</a></p>
           <p></p>
-          {% if stats %} 
+          {% if stats %}
             <p>
               <small>
                 {% trans trimmed count=stats["runningCount"]%}
