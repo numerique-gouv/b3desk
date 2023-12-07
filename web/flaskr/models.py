@@ -205,7 +205,7 @@ class BBB:
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         s = "{}{}".format(
             pr.url.replace("?", "").replace(
-                current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
+                f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
             ),
             bigbluebutton_secret,
         )
@@ -316,7 +316,7 @@ class BBB:
         if param := self.meeting.maxParticipants:
             params["maxParticipants"] = str(param)
         if param := self.meeting.logoutUrl:
-            params["logoutURL"] = param
+            params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
         bigbluebutton_analytics_callback_url = current_app.config[
@@ -327,7 +327,9 @@ class BBB:
             params.update(
                 {
                     "meetingKeepEvents": "true",
-                    "meta_analytics-callback-url": bigbluebutton_analytics_callback_url,
+                    "meta_analytics-callback-url": str(
+                        bigbluebutton_analytics_callback_url
+                    ),
                 }
             )
         if self.meeting.attendeePW is None:
@@ -413,7 +415,7 @@ class BBB:
             pr = request.prepare()
             bigbluebutton_secret = BIGBLUEBUTTON_SECRET
             s = "{}{}".format(
-                pr.url.replace("?", "").replace(BIGBLUEBUTTON_ENDPOINT + "/", ""),
+                pr.url.replace("?", "").replace(f"{BIGBLUEBUTTON_ENDPOINT}/", ""),
                 bigbluebutton_secret,
             )
             params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()

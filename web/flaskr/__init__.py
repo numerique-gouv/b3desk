@@ -29,11 +29,11 @@ cache = Cache()
 
 
 def setup_configuration(app, config=None):
-    app.config.from_pyfile("config.py")
     if config:
         app.config.from_mapping(config)
 
-    MainSettings.model_validate(config)
+    config_obj = MainSettings.model_validate(config or {})
+    app.config.from_object(config_obj)
 
 
 def setup_cache(app):
@@ -114,7 +114,7 @@ def setup_error_pages(app):
 
 
 def create_app(test_config=None, gunicorn_logging=False):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     setup_configuration(app, test_config)
     setup_cache(app)
     setup_logging(app, gunicorn_logging)

@@ -43,15 +43,23 @@ class FakeAuth:
 
 
 @pytest.fixture()
-def app(mocker):
+def app(mocker, tmp_path):
     mocker.patch("flask_pyoidc.OIDCAuthentication", return_value=FakeAuth())
     app = create_app(
         test_config={
+            "SECRET_KEY": "test-secret-key",
+            "SERVER_FQDN": "http://localhost:5000",
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
             "WTF_CSRF_ENABLED": False,
             "TESTING": True,
             "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
-            "OIDC_ATTENDEE_ISSUER": "http://oidc-server.test",
+            "OIDC_ISSUER": "http://oidc-server.test",
+            "UPLOAD_DIR": str(tmp_path),
+            "TMP_DOWNLOAD_DIR": str(tmp_path),
+            "RECORDING": True,
+            "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+            "MEETING_KEY_WORDING": "seminaire",
+            "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
         }
     )
     with app.app_context():

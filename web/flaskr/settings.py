@@ -491,12 +491,13 @@ class MainSettings(BaseSettings):
     Semble inutilisé.
     """
 
-    @computed_field()
+    @computed_field
     def DOCUMENTATION_LINK(self) -> Dict[str, Any]:
         return {
             "url": self.DOCUMENTATION_LINK_URL,
             "label": self.DOCUMENTATION_LINK_LABEL,
-            "is_external": self.DOCUMENTATION_LINK_URL.lower().startswith(
+            "is_external": self.DOCUMENTATION_LINK_URL
+            and self.DOCUMENTATION_LINK_URL.lower().startswith(
                 ("/", self.SERVER_FQDN.lower())
             ),
         }
@@ -811,7 +812,7 @@ class MainSettings(BaseSettings):
     Sous-titre de la page de documentation.
     """
 
-    @computed_field()
+    @computed_field
     def WORDINGS(self) -> Dict[str, Any]:
         return {
             "a_meeting": self.WORDING_A_MEETING,

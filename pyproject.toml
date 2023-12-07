@@ -66,7 +66,6 @@ extend-exclude = '''
 '''
 
 [tool.pytest.ini_options]
-env_files = ["web.env"]
 testpaths = "web"
 
 [tool.ruff]
