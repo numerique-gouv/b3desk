@@ -23,7 +23,7 @@ from flask import url_for
 from flask_sqlalchemy import SQLAlchemy
 from flaskr.tasks import background_upload
 from flaskr.utils import secret_key
-from sqlalchemy_utils import EncryptedType
+from sqlalchemy_utils import StringEncryptedType
 
 
 db = SQLAlchemy()
@@ -585,8 +585,8 @@ class Meeting(db.Model):
 
     # BBB params
     name = db.Column(db.Unicode(150))
-    attendeePW = db.Column(EncryptedType(db.Unicode(50), secret_key()))
-    moderatorPW = db.Column(EncryptedType(db.Unicode(50), secret_key()))
+    attendeePW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
+    moderatorPW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
     welcome = db.Column(db.UnicodeText())
     dialNumber = db.Column(db.Unicode(50))
     voiceBridge = db.Column(db.Unicode(50))
