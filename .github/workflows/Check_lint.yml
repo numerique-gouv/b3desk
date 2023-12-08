@@ -3,11 +3,11 @@ name: Check lint
 on:
   pull_request:
     branches:
-      - master
+      - production
       - main
   push:
     branches:
-      - master
+      - production
       - main
 
 jobs:
