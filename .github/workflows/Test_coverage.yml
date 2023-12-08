@@ -3,11 +3,11 @@ name: Check coverage
 on:
   pull_request:
     branches:
-      - master
+      - production
       - main
   push:
     branches:
-      - master
+      - production
       - main
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Switch to main branch
         uses: actions/checkout@v3
