@@ -978,11 +978,10 @@ def add_dropzone_files(meeting_id):
 # for dropzone chunk file by file validation
 # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
 def upload(user, meeting_id, file):
-    DROPZONE_DIR = current_app.config["UPLOAD_DIR"] + "/dropzone/"
+    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR,
-        secure_filename(str(user.id) + "-" + meeting_id + "-" + file.filename),
+        DROPZONE_DIR, secure_filename(f"{user.id}-{meeting_id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
