@@ -77,13 +77,12 @@ envlist =
     py39
     py310
     py311
-    py312
     coverage
 
 [testenv]
 allowlist_externals = poetry
 commands =
-    poetry install
+    poetry install --with dev
     poetry run pytest {posargs}
 
 [testenv:style]
@@ -93,7 +92,7 @@ commands =
 
 [testenv:coverage]
 commands =
-    poetry install
+    poetry install --with dev
     poetry run pytest --cov --cov-report term:skip-covered {posargs}
     poetry run coverage html
 """
