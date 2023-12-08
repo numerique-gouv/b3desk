@@ -65,3 +65,35 @@ ignore = [
     "E722",  # bare expect
     "E402",  # import not at the top of the file
 ]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+skipsdist = true
+envlist =
+    style
+    py38
+    py39
+    py310
+    py311
+    py312
+    coverage
+
+[testenv]
+allowlist_externals = poetry
+commands =
+    poetry install
+    poetry run pytest {posargs}
+
+[testenv:style]
+commands =
+    pip install pre-commit
+    pre-commit run --all-files
+
+[testenv:coverage]
+commands =
+    poetry install
+    poetry run pytest --cov --cov-report term:skip-covered {posargs}
+    poetry run coverage html
+"""

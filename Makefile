@@ -4,7 +4,7 @@
 
 install-dev:
 	# Install dependencies for local development usage
-	poetry env use 3.8 ; poetry install --with dev ; poetry shell
+	poetry install --with dev ; poetry shell
 	pre-commit install
 
 export-base-dependencies:
