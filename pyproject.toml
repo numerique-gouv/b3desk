@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "b3desk"
 version = "1.1.2"
@@ -44,9 +48,14 @@ pytest-dotenv = "^0.5.2"
 pytest-flask = "^1.2.0"
 coverage = "^7.2.2"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.group.doc]
+optional = true
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "^7.0.0"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-issues = "^3.0.0"
+myst-parser = "^2.0.0"
 
 [tool.black]
 extend-exclude = '''
@@ -78,6 +87,7 @@ envlist =
     py310
     py311
     coverage
+    doc
 
 [testenv]
 allowlist_externals = poetry
@@ -95,4 +105,9 @@ commands =
     poetry install --with dev
     poetry run pytest --cov --cov-report term:skip-covered {posargs}
     poetry run coverage html
+
+[testenv:doc]
+commands =
+    poetry install --with doc
+	poetry run sphinx-build documentation build/sphinx/html
 """
