@@ -33,16 +33,16 @@
 {% endmacro %}
 
     <link rel="stylesheet"
-     href="/static/js/dropzone.css"/>
+    href="{{ url_for('static', filename='js/dropzone.css') }}"/>
 
     <script type="application/javascript"
-     src="/static/js/dropzone-min.js">
+        src="{{ url_for('static', filename='js/dropzone-min.js') }}">
     </script>
 
 <h1 class="fr-h2">Gestion des {{ meeting_presentation }}s associées à <em>{{meeting.name }}</em></h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-  <a href="/welcome"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+    <a href="{{ url_for("routes.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
 </div>
 
 <div id="messageHolder">
@@ -217,7 +217,7 @@
 <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-mt-4w">
   <div class="fr-col-sm-10 fr-col-lg-9">
     <div class="fr-mt-4w">
-      <a href="/welcome"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+        <a href="{{ url_for("routes.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
     </div>
   </div>
 </div>

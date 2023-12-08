@@ -6,7 +6,7 @@
 {% block main %}
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Enregistrements de <em>{{meeting_name }}{% endtrans %}</em></h1>
 <div class="fr-mt-4w">
-    <a href="/welcome"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
+    <a href="{{ url_for("routes.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
 </div>
 <div class="recording-list">
     {% if meeting.running %}
@@ -118,7 +118,7 @@
     {% endfor %}
     </div>
     <div class="fr-mt-4w">
-        <a href="/welcome"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+        <a href="{{ url_for("routes.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
     </div>
 {% endblock %}
 

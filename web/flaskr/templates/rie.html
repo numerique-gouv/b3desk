@@ -2,6 +2,6 @@
 <div class="fr-highlight info fr-mt-2w fr-mb-2w"" role="alert">
     {% trans %}Service accessible suivant les politiques de sécurité de votre ministère.{% endtrans %}
     {% trans %}Si l'audio ou la vidéo ne fonctionne pas, vous devez utiliser un autre appareil (ordinateur, smartphone).{% endtrans %}
-<br><small><a href="/faq">{% trans %}en savoir plus{% endtrans %}</a></small>
+    <br><small><a href="{{ url_for("routes.faq") }}">{% trans %}en savoir plus{% endtrans %}</a></small>
 </div>
 {% endif %}
