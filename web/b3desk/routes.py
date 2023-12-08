@@ -321,7 +321,6 @@ def welcome():
     stats = get_meetings_stats()
     return render_template(
         "welcome.html",
-        title=current_app.config["TITLE"],
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
         meetings=[
