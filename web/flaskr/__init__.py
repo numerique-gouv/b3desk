@@ -15,14 +15,16 @@ from flask import Flask
 from flask import request
 from flask import session
 from flask_babel import Babel
+from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flaskr.utils import is_rie
 
-from .common.extensions import cache
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
+
+cache = Cache()
 
 
 def setup_cache(app):

@@ -62,7 +62,7 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
-from .common.extensions import cache
+from . import cache
 from .templates.content import FAQ_CONTENT
 
 
