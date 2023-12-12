@@ -10,11 +10,8 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 import os
-import random
-import re
 import secrets
 import smtplib
-import string
 import uuid
 from datetime import date
 from datetime import datetime
@@ -64,6 +61,9 @@ from werkzeug.utils import secure_filename
 
 from . import cache
 from .templates.content import FAQ_CONTENT
+from .utils import get_random_alphanumeric_string
+from .utils import is_accepted_email
+from .utils import is_valid_email
 
 
 bp = Blueprint("routes", __name__)
@@ -101,27 +101,6 @@ auth = OIDCAuthentication(
     },
     current_app,
 )
-
-
-def is_accepted_email(email):
-    for regex in current_app.config["EMAIL_WHITELIST"]:
-        if re.search(regex, email):
-            return True
-    return False
-
-
-def is_valid_email(email):
-    if not email or not re.search(
-        r"^([a-zA-Z0-9_\-\.']+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email
-    ):
-        return False
-    return True
-
-
-def get_random_alphanumeric_string(length):
-    letters_and_digits = string.ascii_letters + string.digits
-    result_str = "".join(random.choice(letters_and_digits) for i in range(length))
-    return result_str
 
 
 def get_quick_meeting_from_fake_id(fake_id):
