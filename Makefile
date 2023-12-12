@@ -19,7 +19,7 @@ export-dev-dependencies:
 
 export-doc-dependencies:
 	# Update requirements file for development environment used in GitHub Actions
-	poetry export --without-hashes --only doc -o web/requirements.doc.txt
+	poetry export --without-hashes --with doc -o web/requirements.doc.txt
 
 translation-extract:
 	# Extract messages to be translated with:
