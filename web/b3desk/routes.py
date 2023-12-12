@@ -11,12 +11,9 @@
 import hashlib
 import os
 import secrets
-import smtplib
 import uuid
 from datetime import date
 from datetime import datetime
-from email.message import EmailMessage
-from email.mime.text import MIMEText
 from pathlib import Path
 
 import filetype
@@ -66,6 +63,7 @@ from . import cache
 from .templates.content import FAQ_CONTENT
 from .utils import is_accepted_email
 from .utils import is_valid_email
+from .utils import send_mail
 
 bp = Blueprint("routes", __name__)
 
@@ -354,46 +352,12 @@ def quick_mail_meeting():
     user = User(
         id=email
     )  # this user can probably be removed if we created adock function
-    m = get_quick_meeting_from_user_and_random_string(user)
-    _send_mail(m, email)
+    meeting = get_quick_meeting_from_user_and_random_string(user)
+    send_mail(meeting, email)
     flash(
         lazy_gettext("Vous avez reçu un courriel pour vous connecter"), "success_login"
     )
     return redirect(url_for("routes.index"))
-
-
-def _send_mail(meeting, to_email):
-    smtp_from = current_app.config["SMTP_FROM"]
-    smtp_host = current_app.config["SMTP_HOST"]
-    smtp_port = current_app.config["SMTP_PORT"]
-    smtp_ssl = current_app.config["SMTP_SSL"]
-    smtp_username = current_app.config["SMTP_USERNAME"]
-    smtp_password = current_app.config["SMTP_PASSWORD"]
-    wordings = current_app.config["WORDINGS"]
-    msg = EmailMessage()
-    content = render_template(
-        "meeting/mailto/mail_quick_meeting_body.txt",
-        role="moderator",
-        moderator_mail_signin_url=meeting.get_mail_signin_url(),
-        welcome_url=current_app.config["SERVER_FQDN"] + "/welcome",
-        meeting=meeting,
-    )
-    msg["Subject"] = wordings["meeting_mail_subject"]
-    msg["From"] = smtp_from
-    msg["To"] = to_email
-    html = MIMEText(content, "html")
-    msg.make_mixed()  # This converts the message to multipart/mixed
-    msg.attach(html)
-
-    if smtp_ssl:
-        s = smtplib.SMTP_SSL(smtp_host, smtp_port)
-    else:
-        s = smtplib.SMTP(smtp_host, smtp_port)
-    if smtp_username:
-        # in dev, no need for username
-        s.login(smtp_username, smtp_password)
-    s.send_message(msg)
-    s.quit()
 
 
 @bp.route("/meeting/quick", methods=["GET"])

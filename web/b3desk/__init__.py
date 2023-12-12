@@ -69,14 +69,10 @@ def setup_csrf(app):
 
 
 def setup_database(app):
-    with app.app_context():
-        import b3desk.routes
+    from .models import db
 
-        app.register_blueprint(b3desk.routes.bp)
-        from .models import db
-
-        db.init_app(app)
-        Migrate(app, db, compare_type=True)
+    db.init_app(app)
+    Migrate(app, db, compare_type=True)
 
 
 def setup_jinja(app):
@@ -113,6 +109,13 @@ def setup_error_pages(app):
         return render_template("errors/500.html", error=error), 500
 
 
+def setup_endpoints(app):
+    with app.app_context():
+        import b3desk.routes
+
+        app.register_blueprint(b3desk.routes.bp)
+
+
 def create_app(test_config=None, gunicorn_logging=False):
     app = Flask(__name__)
     setup_configuration(app, test_config)
@@ -123,6 +126,7 @@ def create_app(test_config=None, gunicorn_logging=False):
     setup_database(app)
     setup_jinja(app)
     setup_error_pages(app)
+    setup_endpoints(app)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
