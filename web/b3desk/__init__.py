@@ -14,11 +14,13 @@ import os
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 from flask import Flask
+from flask import render_template
 from flask import request
 from flask import session
 from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 
 
@@ -68,6 +70,11 @@ def setup_i18n(app):
 def setup_csrf(app):
     csrf.init_app(app)
 
+    @app.errorhandler(CSRFError)
+    def bad_request(error):
+        app.logger.warning(f"CSRF Error: {error}")
+        return render_template("errors/400.html", error=error), 400
+
 
 def setup_database(app):
     from .models import db
@@ -91,8 +98,6 @@ def setup_jinja(app):
 
 
 def setup_error_pages(app):
-    from flask import render_template
-
     @app.errorhandler(400)
     def bad_request(error):
         return render_template("errors/400.html", error=error), 400
