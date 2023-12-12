@@ -318,8 +318,8 @@ class BBB:
                         int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
                     ).replace(microsecond=0)
                     result.append(d)
-            except Exception as e:
-                print(e)
+            except Exception as exception:
+                current_app.logger.error(exception)
         return result
 
     def update_recordings(self, recording_ids, metadata):

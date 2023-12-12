@@ -506,8 +506,9 @@ def edit_meeting_files(meeting_id):
                 client = webdavClient(options)
                 client.list()
             except WebDavException as exception:
-                print("webdav call failed, we disable user data", flush=True)
-                print(exception, flush=True)
+                current_app.logger.warning(
+                    "WebDAV error, user data disabled: %s", exception
+                )
                 user.disable_nextcloud()
 
         if user is not None and meeting.user_id == user.id:
@@ -568,7 +569,9 @@ def download_meeting_files(meeting_id, file_id):
                 )
             except WebDavException as exception:
                 user.disable_nextcloud()
-                print("webdav call encountered following exception : %s" % exception)
+                current_app.logger.warning(
+                    "webdav call encountered following exception : %s", exception
+                )
                 flash("Le fichier ne semble pas accessible", "error")
                 return redirect(url_for("routes.welcome"))
     return redirect(url_for("routes.welcome"))
@@ -659,7 +662,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         meetingFile.meeting_id = meeting_id
     except WebDavException as exception:
         user.disable_nextcloud()
-        print("ERROR %s" % exception)
+        current_app.logger.warning("WebDAV error: %s", exception)
         return jsonify(
             status=500, isfrom="dropzone", msg="La connexion avec Nextcloud est rompue"
         )
@@ -687,8 +690,8 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
                 current_app.config["TIME_FORMAT"]
             ),
         )
-    except exc.SQLAlchemyError as error:
-        print("ERROR %s" % error)
+    except exc.SQLAlchemyError as exception:
+        current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, isfrom="dropzone", msg="File already exists")
 
 
@@ -736,8 +739,8 @@ def add_meeting_file_URL(url, meeting_id, is_default):
                 current_app.config["TIME_FORMAT"]
             ),
         )
-    except exc.SQLAlchemyError as error:
-        print("ERROR %s" % error)
+    except exc.SQLAlchemyError as exception:
+        current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, isfrom="url", msg="File already exists")
 
 
@@ -788,8 +791,8 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
                 current_app.config["TIME_FORMAT"]
             ),
         )
-    except exc.SQLAlchemyError as error:
-        print("ERROR %s" % error)
+    except exc.SQLAlchemyError as exception:
+        current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, isfrom="nextcloud", msg="File already exists")
 
 
@@ -817,15 +820,11 @@ def add_meeting_files(meeting_id):
     if len(meeting.files) == 0:
         is_default = True
     if meeting.user_id == user.id:
-        print(data)
         if data["from"] == "nextcloud":
-            print("associating meeting with file from nextcloud")
             return add_meeting_file_nextcloud(data["value"], meeting_id, is_default)
         if data["from"] == "URL":
-            print("associating meeting with file from url")
             return add_meeting_file_URL(data["value"], meeting_id, is_default)
         if data["from"] == "dropzone":
-            print("associating meeting with file from dropzone")
             return add_meeting_file_dropzone(
                 secure_filename(data["value"]), meeting_id, is_default
             )

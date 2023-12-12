@@ -26,13 +26,13 @@ def get_user_nc_credentials(username):
         or not current_app.config["FILE_SHARING"]
         or not username
     ):
-        print(
+        current_app.logger.warning(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
     postData = {"username": username}
     postHeaders = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
-    print(
+    current_app.logger.info(
         "Retrieve NC credentials from NC_LOGIN_API_URL %s "
         % current_app.config["NC_LOGIN_API_URL"]
     )
@@ -43,7 +43,10 @@ def get_user_nc_credentials(username):
         data = response.json()
         return data
     except requests.exceptions.RequestException:
-        print("Cannot contact NC, returning None values")
+        current_app.logger.error(
+            "Cannot contact NC %s, returning None values",
+            current_app.config["NC_LOGIN_API_URL"],
+        )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
 

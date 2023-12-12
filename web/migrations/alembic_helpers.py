@@ -32,11 +32,9 @@ def table_does_not_exist(table):
 def table_has_column(table, column):
     schema = load_schema()
     has_column = False
-    print(table, flush=True)
     if table not in schema:
         return
     for s_column in schema[table]:
-        print("  %s" % s_column, flush=True)
         if column == s_column:
             has_column = True
     return has_column
