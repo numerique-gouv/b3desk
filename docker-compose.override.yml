@@ -107,5 +107,5 @@ services:
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}
     volumes:
-      - ./web/flaskr:/opt/bbb-visio/flaskr
+      - ./web/b3desk:/opt/bbb-visio/b3desk
       - ./web/tests:/opt/bbb-visio/tests

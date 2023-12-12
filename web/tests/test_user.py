@@ -1,7 +1,7 @@
 from datetime import date
 
-from flaskr.models import get_or_create_user
-from flaskr.models import User
+from b3desk.models.users import get_or_create_user
+from b3desk.models.users import User
 from freezegun import freeze_time
 
 

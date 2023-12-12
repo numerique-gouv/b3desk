@@ -1,13 +1,15 @@
 from unittest import mock
 
 import pytest
-from flaskr.models import Meeting
-from flaskr.models import MODERATOR_ONLY_MESSAGE_MAXLENGTH
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
 
 @pytest.fixture()
 def mocked_is_meeting_running(mocker):
-    mocker.patch("flaskr.models.Meeting.is_meeting_running", return_value=False)
+    mocker.patch(
+        "b3desk.models.meetings.Meeting.is_meeting_running", return_value=False
+    )
 
 
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
@@ -204,7 +206,7 @@ def test_create(app, meeting, mocker):
 
     mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocked_background_upload = mocker.patch(
-        "flaskr.tasks.background_upload.delay", return_value=True
+        "b3desk.tasks.background_upload.delay", return_value=True
     )
 
     with app.test_request_context():
@@ -297,16 +299,16 @@ def test_create_without_logout_url_gets_default(
 
 
 def test_create_quick_meeting(app, monkeypatch, user, mocker):
-    from flaskr.routes import get_quick_meeting_from_user_and_random_string
+    from b3desk.routes import get_quick_meeting_from_user_and_random_string
 
     class Resp:
         content = """<response><returncode>SUCCESS</returncode></response>"""
 
     mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
-    mocker.patch("flaskr.tasks.background_upload.delay", return_value=True)
+    mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     with app.test_request_context():
-        monkeypatch.setattr("flaskr.models.User.id", 1)
-        monkeypatch.setattr("flaskr.models.User.hash", "hash")
+        monkeypatch.setattr("b3desk.models.users.User.id", 1)
+        monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
         meeting = get_quick_meeting_from_user_and_random_string(user)
         meeting.bbb.create()
 

@@ -19,60 +19,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: web/flaskr/forms.py:56
+#: web/b3desk/forms.py:56
 #, python-format
 msgid "Titre %(of_the_meeting)s"
 msgstr "Ukrainian translation"
 
-#: web/flaskr/forms.py:60
+#: web/b3desk/forms.py:60
 #, python-format
 msgid "Créer %(a_meeting)s dont le titre est :"
 msgstr ""
 
-#: web/flaskr/forms.py:66
+#: web/b3desk/forms.py:66
 #, python-format
 msgid "%(my_meeting)s"
 msgstr ""
 
-#: web/flaskr/forms.py:71
+#: web/b3desk/forms.py:71
 msgid "Texte de bienvenue"
 msgstr ""
 
-#: web/flaskr/forms.py:72
+#: web/b3desk/forms.py:72
 msgid "Ce texte apparait comme message de bienvenue sur le tchat public"
 msgstr ""
 
-#: web/flaskr/forms.py:75
+#: web/b3desk/forms.py:75
 #, python-format
 msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
 msgstr ""
 
-#: web/flaskr/forms.py:81
+#: web/b3desk/forms.py:81
 msgid "Le texte est trop long"
 msgstr ""
 
-#: web/flaskr/forms.py:85
+#: web/b3desk/forms.py:85
 msgid "Nombre maximal de participants"
 msgstr ""
 
-#: web/flaskr/forms.py:86
+#: web/b3desk/forms.py:86
 msgid "Limitez vos salons à 250 personnes pour plus de confort"
 msgstr ""
 
-#: web/flaskr/forms.py:92
+#: web/b3desk/forms.py:92
 msgid "Durée maximale en minutes"
 msgstr ""
 
-#: web/flaskr/forms.py:93
+#: web/b3desk/forms.py:93
 #, python-format
 msgid "Après laquelle %(the_meeting)s stoppe automatiquement"
 msgstr ""
 
-#: web/flaskr/forms.py:101
+#: web/b3desk/forms.py:101
 msgid "Salle d'attente"
 msgstr ""
 
-#: web/flaskr/forms.py:102
+#: web/b3desk/forms.py:102
 #, python-format
 msgid ""
 "Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
@@ -80,203 +80,203 @@ msgid ""
 "individuellement."
 msgstr ""
 
-#: web/flaskr/forms.py:109
+#: web/b3desk/forms.py:109
 msgid "Seul les modérateurs peuvent voir les webcams des autres participants"
 msgstr ""
 
-#: web/flaskr/forms.py:112
+#: web/b3desk/forms.py:112
 msgid "Les participants ne verront pas la diffusion de la caméra des autres"
 msgstr ""
 
-#: web/flaskr/forms.py:118
+#: web/b3desk/forms.py:118
 msgid "Micros fermés au démarrage"
 msgstr ""
 
-#: web/flaskr/forms.py:119
+#: web/b3desk/forms.py:119
 msgid "Les micros sont clos à la connexion des utilisateurs"
 msgstr ""
 
-#: web/flaskr/forms.py:125
+#: web/b3desk/forms.py:125
 msgid "Verrouillage caméra"
 msgstr ""
 
-#: web/flaskr/forms.py:126
+#: web/b3desk/forms.py:126
 msgid "Les participants ne pourront pas activer leur caméra"
 msgstr ""
 
-#: web/flaskr/forms.py:132
+#: web/b3desk/forms.py:132
 msgid "Verrouillage micro"
 msgstr ""
 
-#: web/flaskr/forms.py:133
+#: web/b3desk/forms.py:133
 msgid "Les participants ne pourront pas activer leur micro"
 msgstr ""
 
-#: web/flaskr/forms.py:137
+#: web/b3desk/forms.py:137
 msgid "Désactivation de la discussion privée"
 msgstr ""
 
-#: web/flaskr/forms.py:138
+#: web/b3desk/forms.py:138
 msgid "Interdit les échanges textes directs entre participants"
 msgstr ""
 
-#: web/flaskr/forms.py:144
+#: web/b3desk/forms.py:144
 msgid "Désactivation de la discussion publique"
 msgstr ""
 
-#: web/flaskr/forms.py:145
+#: web/b3desk/forms.py:145
 msgid "Pas de tchat"
 msgstr ""
 
-#: web/flaskr/forms.py:149
+#: web/b3desk/forms.py:149
 msgid "Désactivation de la prise de notes"
 msgstr ""
 
-#: web/flaskr/forms.py:150
+#: web/b3desk/forms.py:150
 msgid "Pas de prise de notes collaborative"
 msgstr ""
 
-#: web/flaskr/forms.py:154
+#: web/b3desk/forms.py:154
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
-#: web/flaskr/forms.py:155
+#: web/b3desk/forms.py:155
 msgid "150 caractères max"
 msgstr ""
 
-#: web/flaskr/forms.py:156
+#: web/b3desk/forms.py:156
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
-#: web/flaskr/forms.py:158
+#: web/b3desk/forms.py:158
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/flaskr/forms.py:163
+#: web/b3desk/forms.py:163
 #, python-format
 msgid "Url de redirection après %(the_meeting)s"
 msgstr ""
 
-#: web/flaskr/forms.py:170
+#: web/b3desk/forms.py:170
 msgid "Renouveler le lien modérateur"
 msgstr ""
 
-#: web/flaskr/forms.py:171 web/flaskr/forms.py:180
+#: web/b3desk/forms.py:171 web/b3desk/forms.py:180
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens"
 msgstr ""
 
-#: web/flaskr/forms.py:179
+#: web/b3desk/forms.py:179
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/flaskr/forms.py:191
+#: web/b3desk/forms.py:191
 msgid "Enregistrement manuel"
 msgstr ""
 
-#: web/flaskr/forms.py:192
+#: web/b3desk/forms.py:192
 msgid "Autoriser le démarrage et l'arrêt de l'enregistrement par le modérateur"
 msgstr ""
 
-#: web/flaskr/forms.py:198
+#: web/b3desk/forms.py:198
 msgid "Enregistrement automatique"
 msgstr ""
 
-#: web/flaskr/forms.py:199
+#: web/b3desk/forms.py:199
 msgid "Démarrage automatique"
 msgstr ""
 
-#: web/flaskr/routes.py:548
+#: web/b3desk/routes.py:548
 msgid ""
 "Courriel invalide. Avez vous bien tapé votre email ? Vous pouvez "
 "réessayer."
 msgstr ""
 
-#: web/flaskr/routes.py:556
+#: web/b3desk/routes.py:556
 msgid ""
 "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez "
 "à un service de l'État mais votre courriel n'est pas reconnu par "
 "Webinaire, contactez-nous pour que nous le rajoutions!"
 msgstr ""
 
-#: web/flaskr/routes.py:568
+#: web/b3desk/routes.py:568
 msgid "Vous avez reçu un courriel pour vous connecter"
 msgstr ""
 
-#: web/flaskr/routes.py:623 web/flaskr/routes.py:653
+#: web/b3desk/routes.py:623 web/b3desk/routes.py:653
 msgid "Vous ne pouvez pas voir cet élément (identifiant incorrect)"
 msgstr ""
 
-#: web/flaskr/routes.py:643 web/flaskr/routes.py:676
+#: web/b3desk/routes.py:643 web/b3desk/routes.py:676
 msgid "Vous ne pouvez pas consulter cet élément"
 msgstr ""
 
-#: web/flaskr/routes.py:805
+#: web/b3desk/routes.py:805
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/flaskr/routes.py:1264
+#: web/b3desk/routes.py:1264
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/flaskr/routes.py:1427 web/flaskr/routes.py:1474
+#: web/b3desk/routes.py:1427 web/b3desk/routes.py:1474
 #, python-format
 msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
 msgstr ""
 
-#: web/flaskr/routes.py:1437 web/flaskr/routes.py:1589
+#: web/b3desk/routes.py:1437 web/b3desk/routes.py:1589
 msgid "Lien invalide"
 msgstr ""
 
-#: web/flaskr/routes.py:1442 web/flaskr/routes.py:1594
+#: web/b3desk/routes.py:1442 web/b3desk/routes.py:1594
 msgid "Lien expiré"
 msgstr ""
 
-#: web/flaskr/routes.py:1581
+#: web/b3desk/routes.py:1581
 #, python-format
 msgid "%(meeting_label)s inexistante"
 msgstr ""
 
-#: web/flaskr/routes.py:1638
+#: web/b3desk/routes.py:1638
 msgid "Accès non autorisé"
 msgstr ""
 
-#: web/flaskr/routes.py:1669
+#: web/b3desk/routes.py:1669
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/flaskr/routes.py:1671
+#: web/b3desk/routes.py:1671
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/flaskr/routes.py:1687
+#: web/b3desk/routes.py:1687
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/flaskr/routes.py:1691
+#: web/b3desk/routes.py:1691
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/flaskr/routes.py:1700
+#: web/b3desk/routes.py:1700
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
-#: web/flaskr/templates/brand.html:19
+#: web/b3desk/templates/brand.html:19
 #, python-format
 msgid "%(service_title)s"
 msgstr ""
 
-#: web/flaskr/templates/brand.html:26
+#: web/b3desk/templates/brand.html:26
 #, python-format
 msgid "%(service_tagline)s"
 msgstr ""
 
-#: web/flaskr/templates/content.py:6
+#: web/b3desk/templates/content.py:6
 msgid "Quelles sont les conditions d’accès pour accéder aux services ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:9
+#: web/b3desk/templates/content.py:9
 msgid ""
 "Cette plateforme offre une solution complète et puissante, adaptée à de "
 "nombreux types d’événements en ligne, jusqu’à 350 participants "
@@ -313,11 +313,11 @@ msgid ""
 "- Sur Android, utiliser le navigateur Chrome par défaut (Android 6.0+)\n"
 msgstr ""
 
-#: web/flaskr/templates/content.py:33
+#: web/b3desk/templates/content.py:33
 msgid "Quel est le matériel nécessaire ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:34
+#: web/b3desk/templates/content.py:34
 msgid ""
 "Pour utiliser l’outil Webinaire de l’État, il vous suffit de disposer du "
 "matériel suivant :\n"
@@ -339,11 +339,11 @@ msgid ""
 "contexte d’intervention."
 msgstr ""
 
-#: web/flaskr/templates/content.py:46
+#: web/b3desk/templates/content.py:46
 msgid "Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:49
+#: web/b3desk/templates/content.py:49
 msgid ""
 "Le Webinaire de l’Etat fonctionne également sur les appareils mobiles par"
 " un simple lien (sans application) sur le portail ou dans le séminaire. "
@@ -351,11 +351,11 @@ msgid ""
 "Sur Android, utiliser le navigateur chrome par défaut (Android 6.0+).\n"
 msgstr ""
 
-#: web/flaskr/templates/content.py:55
+#: web/b3desk/templates/content.py:55
 msgid "Comment créer un séminaire ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:56
+#: web/b3desk/templates/content.py:56
 msgid ""
 "Si vous êtes un agent de l’état, vous pouvez :\n"
 "- Créer des séminaires immédiatement en renseignant votre courriel "
@@ -371,11 +371,11 @@ msgid ""
 "contact@webinaire.numerique.gouv.fr \n"
 msgstr ""
 
-#: web/flaskr/templates/content.py:67
+#: web/b3desk/templates/content.py:67
 msgid "Comment créer un compte ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:68
+#: web/b3desk/templates/content.py:68
 msgid ""
 "En tant qu’agent de l’État, si vous organisez régulièrement des "
 "séminaires vous pouvez créer un compte pour organiser et conserver "
@@ -388,11 +388,11 @@ msgid ""
 "en grand nombre, …etc.)."
 msgstr ""
 
-#: web/flaskr/templates/content.py:75
+#: web/b3desk/templates/content.py:75
 msgid "Comment inviter les participants/ modérateurs"
 msgstr ""
 
-#: web/flaskr/templates/content.py:76
+#: web/b3desk/templates/content.py:76
 msgid ""
 "L’organisateur qui a créé le séminaire peut partager le lien :\n"
 "« Participants » qu’ils soient de l’administration ou de l’extérieur "
@@ -400,11 +400,11 @@ msgid ""
 "« Organisateurs/modérateurs » qui géreront avec vous le séminaire."
 msgstr ""
 
-#: web/flaskr/templates/content.py:83
+#: web/b3desk/templates/content.py:83
 msgid "Rejoindre un Webinaire en appel téléphonique ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:84
+#: web/b3desk/templates/content.py:84
 msgid ""
 "Une fois dans le séminaire, il est possible d’utiliser aussi son "
 "téléphone fixe ou mobile pour suivre le séminaire.\n"
@@ -419,11 +419,11 @@ msgid ""
 "téléphone afin d’activer ou de désactiver votre microphone."
 msgstr ""
 
-#: web/flaskr/templates/content.py:95
+#: web/b3desk/templates/content.py:95
 msgid "J'ai des perturbations audio ou vidéo ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:96
+#: web/b3desk/templates/content.py:96
 msgid ""
 "\n"
 "Pour l’audio, rapprochez-vous de votre borne wifi, ou/et coupez votre "
@@ -444,85 +444,85 @@ msgid ""
 "de vous connecter hors VPN.\n"
 msgstr ""
 
-#: web/flaskr/templates/content.py:110
+#: web/b3desk/templates/content.py:110
 msgid "Besoin de contacter l'équipe du Webinaire de l’Etat ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:113
+#: web/b3desk/templates/content.py:113
 msgid "contact@webinaire.numerique.gouv.fr"
 msgstr ""
 
-#: web/flaskr/templates/content.py:116
+#: web/b3desk/templates/content.py:116
 msgid "Besoin de contacter l'équipe du ministére de l'Éducation nationale ?"
 msgstr ""
 
-#: web/flaskr/templates/content.py:119
+#: web/b3desk/templates/content.py:119
 msgid ""
 "Rendez-vous sur votre portail d'assistance académique "
 "https://www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur "
 "Apps.education.fr"
 msgstr ""
 
-#: web/flaskr/templates/empty.html:2
+#: web/b3desk/templates/empty.html:2
 msgid "Vous devez vous identifier pour consulter la liste des visioconférences."
 msgstr ""
 
-#: web/flaskr/templates/faq.html:8
+#: web/b3desk/templates/faq.html:8
 msgid "FAQ - Modalités d'accès"
 msgstr "Ukrainian translation here"
 
-#: web/flaskr/templates/footer.html:12
+#: web/b3desk/templates/footer.html:12
 msgid ""
 "Service proposé par la Direction interministérielle du numérique et la "
 "Direction du numérique pour l'éducation"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:15
+#: web/b3desk/templates/footer.html:15
 msgid "Le code source est ouvert et les contributions sont bienvenues."
 msgstr ""
 
-#: web/flaskr/templates/footer.html:16
+#: web/b3desk/templates/footer.html:16
 msgid "Voir le code source - nouvelle fenêtre"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:16
+#: web/b3desk/templates/footer.html:16
 msgid "Voir le code source"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:37
+#: web/b3desk/templates/footer.html:37
 msgid "Accessibilité : non conforme"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:40
-#: web/flaskr/templates/footer/mentions_legales.html:10
+#: web/b3desk/templates/footer.html:40
+#: web/b3desk/templates/footer/mentions_legales.html:10
 msgid "Mentions légales"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:43
+#: web/b3desk/templates/footer.html:43
 msgid "Données personnelles et cookies"
 msgstr ""
 
-#: web/flaskr/templates/footer.html:46 web/flaskr/templates/footer/cgu.html:10
+#: web/b3desk/templates/footer.html:46 web/b3desk/templates/footer/cgu.html:10
 msgid "Conditions générales d’utilisation"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:8
+#: web/b3desk/templates/jumbotron.html:8
 #, python-format
 msgid "Lancer %(a_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:9
+#: web/b3desk/templates/jumbotron.html:9
 #, python-format
 msgid "Lancer %(the_meeting)s - nouvelle fenêtre"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:9
+#: web/b3desk/templates/jumbotron.html:9
 #, python-format
 msgid "Démarrer %(a_meeting)s immédiatement"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:19
-#: web/flaskr/templates/jumbotron.html:49
+#: web/b3desk/templates/jumbotron.html:19
+#: web/b3desk/templates/jumbotron.html:49
 #, python-format
 msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
 msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
@@ -530,8 +530,8 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: web/flaskr/templates/jumbotron.html:24
-#: web/flaskr/templates/jumbotron.html:54
+#: web/b3desk/templates/jumbotron.html:24
+#: web/b3desk/templates/jumbotron.html:54
 #, python-format
 msgid "et <b>%(count)s</b> participant"
 msgid_plural "et <b>%(count)s</b> participants"
@@ -539,133 +539,133 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: web/flaskr/templates/jumbotron.html:29
-#: web/flaskr/templates/jumbotron.html:59
+#: web/b3desk/templates/jumbotron.html:29
+#: web/b3desk/templates/jumbotron.html:59
 #, python-format
 msgid ""
 " sur une capacité moyenne pour la plateforme de %(max_participants)s "
 "participants."
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:42
+#: web/b3desk/templates/jumbotron.html:42
 #, python-format
 msgid "Vous organisez régulièrement des %(some_meetings)s"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:43
+#: web/b3desk/templates/jumbotron.html:43
 #, python-format
 msgid ""
 "Vous êtes agent de l’État, créez un compte pour organiser et conserver "
 "vos %(some_meetings)s."
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:44
+#: web/b3desk/templates/jumbotron.html:44
 msgid "Se connecter ou créer un compte"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:73
+#: web/b3desk/templates/jumbotron.html:73
 #, python-format
 msgid "Démarrer %(a_meeting)s en ligne immédiatement"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:83
+#: web/b3desk/templates/jumbotron.html:83
 #, python-format
 msgid ""
 "Recevez par courriel un lien organisateur %(of_the_meeting)s, actif une "
 "semaine, à envoyer aux participants."
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:88
+#: web/b3desk/templates/jumbotron.html:88
 msgid "Votre courriel professionnel"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:92
+#: web/b3desk/templates/jumbotron.html:92
 #, python-format
 msgid "Créer %(my_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:108
+#: web/b3desk/templates/jumbotron.html:108
 #, python-format
 msgid "Vous essayez de rejoindre %(a_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/jumbotron.html:109
+#: web/b3desk/templates/jumbotron.html:109
 #, python-format
 msgid ""
 "Pour rejoindre %(a_meeting_to_which)s vous êtes invité, cliquez sur le "
 "lien que vous a transmis l'organisateur/modérateur."
 msgstr ""
 
-#: web/flaskr/templates/redirections.html:4
+#: web/b3desk/templates/redirections.html:4
 msgid "Connectez-vous ou créez un compte"
 msgstr ""
 
-#: web/flaskr/templates/redirections.html:10
+#: web/b3desk/templates/redirections.html:10
 msgid "Autres profils"
 msgstr ""
 
-#: web/flaskr/templates/rie.html:3
+#: web/b3desk/templates/rie.html:3
 msgid "Service accessible suivant les politiques de sécurité de votre ministère."
 msgstr ""
 
-#: web/flaskr/templates/rie.html:4
+#: web/b3desk/templates/rie.html:4
 msgid ""
 "Si l'audio ou la vidéo ne fonctionne pas, vous devez utiliser un autre "
 "appareil (ordinateur, smartphone)."
 msgstr ""
 
-#: web/flaskr/templates/rie.html:5
+#: web/b3desk/templates/rie.html:5
 msgid "en savoir plus"
 msgstr ""
 
-#: web/flaskr/templates/tools.html:13
+#: web/b3desk/templates/tools.html:13
 #, fuzzy
 msgid "Modalités d'accès"
 msgstr "Ukrainian translation here"
 
-#: web/flaskr/templates/tools.html:32
+#: web/b3desk/templates/tools.html:32
 msgid "se déconnecter"
 msgstr ""
 
-#: web/flaskr/templates/tools.html:40
+#: web/b3desk/templates/tools.html:40
 msgid "S’identifier"
 msgstr ""
 
-#: web/flaskr/templates/errors/403.html:11
+#: web/b3desk/templates/errors/403.html:11
 msgid "Erreur 403"
 msgstr ""
 
-#: web/flaskr/templates/errors/403.html:12
+#: web/b3desk/templates/errors/403.html:12
 msgid ""
 "Vous n’êtes pas autorisé à accéder cette page. Vous pouvez <a "
 "href=\"/\">retourner à l’accueil</a>."
 msgstr ""
 
-#: web/flaskr/templates/errors/404.html:11
+#: web/b3desk/templates/errors/404.html:11
 msgid "Erreur 404"
 msgstr ""
 
-#: web/flaskr/templates/errors/404.html:12
+#: web/b3desk/templates/errors/404.html:12
 msgid ""
 "Cette page n'existe pas. Vous pouvez <a href=\"/\">retourner à "
 "l’accueil</a>."
 msgstr ""
 
-#: web/flaskr/templates/errors/500.html:11
+#: web/b3desk/templates/errors/500.html:11
 msgid "Erreur 500"
 msgstr ""
 
-#: web/flaskr/templates/errors/500.html:12
+#: web/b3desk/templates/errors/500.html:12
 msgid ""
 "Le serveur a rencontré une erreur interne, veuillez réessayer "
 "ultérieurement."
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:9
+#: web/b3desk/templates/footer/accessibilite.html:9
 msgid "Accessibilité"
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:10
+#: web/b3desk/templates/footer/accessibilite.html:10
 msgid ""
 "Le site webinaire.numerique.gouv.fr est développé selon les "
 "recommendations du <a href=\"https://www.numerique.gouv.fr/publications"
@@ -676,15 +676,15 @@ msgid ""
 "logiciel utilisé pour naviguer sur internet."
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:11
+#: web/b3desk/templates/footer/accessibilite.html:11
 msgid "Cependant, aucun audit formel n’a été effectué."
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:13
+#: web/b3desk/templates/footer/accessibilite.html:13
 msgid "Droit à compensation"
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:14
+#: web/b3desk/templates/footer/accessibilite.html:14
 msgid ""
 "Dans l’attente d’une mise en conformité totale, vous pouvez obtenir une "
 "version accessible des documents ou des informations qui y seraient "
@@ -694,23 +694,23 @@ msgid ""
 "dans les plus bref délais."
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:16
-#: web/flaskr/templates/footer/mentions_legales.html:39
+#: web/b3desk/templates/footer/accessibilite.html:16
+#: web/b3desk/templates/footer/mentions_legales.html:39
 msgid "Amélioration et contact"
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:17
+#: web/b3desk/templates/footer/accessibilite.html:17
 msgid ""
 "Vous pouvez nous aider à améliorer l’accessibilité du site en nous "
 "signalant les problèmes éventuels que vous rencontrez. Pour ce faire, "
 "envoyez-nous un courriel à contact@webinaire.numerique.gouv.fr ."
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:19
+#: web/b3desk/templates/footer/accessibilite.html:19
 msgid "Défenseur des droits"
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:20
+#: web/b3desk/templates/footer/accessibilite.html:20
 msgid ""
 "Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un"
 " contenu ou une fonctionnalité du site, que vous nous le signalez et que "
@@ -719,7 +719,7 @@ msgid ""
 "au Défenseur des droits. Plusieurs moyens sont à votre disposition :"
 msgstr ""
 
-#: web/flaskr/templates/footer/accessibilite.html:21
+#: web/b3desk/templates/footer/accessibilite.html:21
 msgid ""
 "un <a href=\"https://www.defenseurdesdroits.fr/nous-contacter\" "
 "title=\"formulaire de contact - nouvelle fenêtre\" target=\"_blank\" "
@@ -736,7 +736,7 @@ msgid ""
 "noreferrer\" >annuaire de l'administration</a>"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:11
+#: web/b3desk/templates/footer/cgu.html:11
 msgid ""
 "Le webinaire, Visio-ecoles/colleges/lycees/agents de l’État permet "
 "d’accéder à la page d’accueil du sous-domaine internet utilisé par l’Etat"
@@ -746,7 +746,7 @@ msgid ""
 "les partenaires du service public."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:12
+#: web/b3desk/templates/footer/cgu.html:12
 msgid ""
 "Le sous-domaine « <a class=\"rf_link\" "
 "href=\"https://webinaire.numerique.gouv.fr\" target=\"_blank\" "
@@ -754,7 +754,7 @@ msgid ""
 "par la Direction interministérielle du numérique (DINUM)"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:13
+#: web/b3desk/templates/footer/cgu.html:13
 msgid ""
 "Les sous-domaines  <a class=\"rf_link\" href=\"https://visio-"
 "agents.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
@@ -768,25 +768,25 @@ msgid ""
 "Nationale, de la Jeunesse et des Sports."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:14
+#: web/b3desk/templates/footer/cgu.html:14
 msgid ""
 "Le service est maintenu en conditions opérationnelles et ses évolutions "
 "sont assurées par le Ministère de l’Éducation Nationale, de la Jeunesse "
 "et des Sports, ci-après dénommé « l’éditeur »."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:15
+#: web/b3desk/templates/footer/cgu.html:15
 msgid ""
 "Toute utilisation des ressources de domaine de publication est "
 "subordonnée au respect des présentes conditions générales d’utilisation "
 "(CGU)."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:17
+#: web/b3desk/templates/footer/cgu.html:17
 msgid "Objet"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:18
+#: web/b3desk/templates/footer/cgu.html:18
 msgid ""
 "Le sous-domaine permet de publier sur internet l’offre de service "
 "interministérielle de webconférence.</p><a class=\"anchor hidden-xs\" "
@@ -794,11 +794,11 @@ msgid ""
 "=\"Code-de-conduite-et-responsabilités-des-Utilisateurs\">"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:19
+#: web/b3desk/templates/footer/cgu.html:19
 msgid "Code de conduite et responsabilités des Utilisateurs"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:20
+#: web/b3desk/templates/footer/cgu.html:20
 msgid ""
 "L’utilisation de ce service interministériel est libre et gratuite pour "
 "les utilisateurs des services de l’Etat, et sur invitation, pour les "
@@ -810,14 +810,14 @@ msgid ""
 "et responsabilités de l’éditeur."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:21
+#: web/b3desk/templates/footer/cgu.html:21
 msgid ""
 "Sitôt entré sur la page d’accueil, l’utilisateur peut en consulter les "
 "contenus ou accéder à un salon en saisissant le nom de ce salon ou, pour "
 "les agents de l’Etat, en créant ledit salon."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:22
+#: web/b3desk/templates/footer/cgu.html:22
 msgid ""
 "À l’instant où l’utilisateur accède à un salon de webconférence, il "
 "devient seul responsable des données et des contenus qu’il échange sur le"
@@ -825,17 +825,17 @@ msgid ""
 "netiquette."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:23
+#: web/b3desk/templates/footer/cgu.html:23
 msgid "Usage professionnel"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:24
+#: web/b3desk/templates/footer/cgu.html:24
 msgid ""
 "Le service de Webinaire, Visio-ecoles/colleges/lycees/agents mis à "
 "disposition est à usage professionnel."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:25
+#: web/b3desk/templates/footer/cgu.html:25
 msgid ""
 "Seule l’utilisation à usage professionnel de cette ressource mise à "
 "disposition est tolérée, l’utilisateur est attentif à ce que ces usages "
@@ -843,11 +843,11 @@ msgid ""
 "service auquel il accède."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:26
+#: web/b3desk/templates/footer/cgu.html:26
 msgid "Engagements et responsabilités de l’éditeur"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:27
+#: web/b3desk/templates/footer/cgu.html:27
 msgid ""
 "L’éditeur donne accès au service interministériel de webconférence aux "
 "adresses suivantes : (<a class=\"rf_link\" "
@@ -866,11 +866,11 @@ msgid ""
 "consultation de sa page d’accueil sous le pilotage de l’éditeur."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:28
+#: web/b3desk/templates/footer/cgu.html:28
 msgid "Évolution des conditions d’utilisation"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:29
+#: web/b3desk/templates/footer/cgu.html:29
 msgid ""
 "Les termes des présentes conditions d’utilisation peuvent être amendés à "
 "tout moment, sans préavis, en fonction des modifications apportées à la "
@@ -878,180 +878,180 @@ msgid ""
 " jugé nécessaire."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:30
+#: web/b3desk/templates/footer/cgu.html:30
 msgid "Textes de référence"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:31
+#: web/b3desk/templates/footer/cgu.html:31
 msgid ""
 "Loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et"
 " aux libertés"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:32
+#: web/b3desk/templates/footer/cgu.html:32
 msgid ""
 "Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie "
 "numérique"
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:33
+#: web/b3desk/templates/footer/cgu.html:33
 msgid ""
 "Ordonnance 2005-1516 du 8 décembre 2005 relative aux échanges "
 "électroniques entre les usagers et les autorités administratives et entre"
 " les autorités administratives et notamment ses articles 9 à 12."
 msgstr ""
 
-#: web/flaskr/templates/footer/cgu.html:34
+#: web/b3desk/templates/footer/cgu.html:34
 msgid "Loi n° 2016-1321 du 7 octobre 2016 pour une République numérique"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:8
+#: web/b3desk/templates/footer/documentation.html:8
 msgid "Documentation"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:9
+#: web/b3desk/templates/footer/documentation.html:9
 msgid "Guides utilisateurs"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:13
+#: web/b3desk/templates/footer/documentation.html:13
 msgid "Présentation des nouveautés de la v2.4"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:18
+#: web/b3desk/templates/footer/documentation.html:18
 #, python-format
 msgid "Créer %(an_improvised_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:19
+#: web/b3desk/templates/footer/documentation.html:19
 #, python-format
 msgid "Participer à %(a_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:20
+#: web/b3desk/templates/footer/documentation.html:20
 #, python-format
 msgid "Créer et paramétrer une salle de %(meeting_label)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:21
+#: web/b3desk/templates/footer/documentation.html:21
 msgid "Activer le matériel dans le navigateur"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:22
+#: web/b3desk/templates/footer/documentation.html:22
 msgid "Gérer les utilisateurs"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:23
+#: web/b3desk/templates/footer/documentation.html:23
 msgid "Gérer les documents"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:24
+#: web/b3desk/templates/footer/documentation.html:24
 #, python-format
 msgid "Gestion des %(private_meetings)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:25
+#: web/b3desk/templates/footer/documentation.html:25
 #, python-format
 msgid "Déléguer la création de %(meeting_label)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:26
+#: web/b3desk/templates/footer/documentation.html:26
 #, python-format
 msgid "Enregistrer %(a_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:27
+#: web/b3desk/templates/footer/documentation.html:27
 msgid "Créer un sondage"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:28
+#: web/b3desk/templates/footer/documentation.html:28
 #, python-format
 msgid "Joindre %(a_meeting)s par téléphone"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:29
+#: web/b3desk/templates/footer/documentation.html:29
 msgid "Afficher le tableau de bord"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:30
+#: web/b3desk/templates/footer/documentation.html:30
 msgid "Gérer la mise en page"
 msgstr ""
 
-#: web/flaskr/templates/footer/documentation.html:31
+#: web/b3desk/templates/footer/documentation.html:31
 msgid "Contrôle du volume"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:10
+#: web/b3desk/templates/footer/donnees_personnelles.html:10
 msgid "Données personnelles"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:12
+#: web/b3desk/templates/footer/donnees_personnelles.html:12
 msgid "Gestion des cookies"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:13
+#: web/b3desk/templates/footer/donnees_personnelles.html:13
 msgid "À propos des cookies / traceurs"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:14
+#: web/b3desk/templates/footer/donnees_personnelles.html:14
 msgid ""
 "Afin de permettre aux applications Web de fournir des services, des « "
 "cookies » (« traceurs » en français) peuvent être utilisés."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:16
+#: web/b3desk/templates/footer/donnees_personnelles.html:16
 msgid "Qu’est-ce qu’un « cookie » ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:17
+#: web/b3desk/templates/footer/donnees_personnelles.html:17
 msgid ""
 "Un « cookie » est un fichier de taille limitée, généralement constitué de"
 " lettres et de chiffres, envoyé par le serveur internet au fichier cookie"
 " du navigateur situé sur le disque dur de votre ordinateur."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:19
+#: web/b3desk/templates/footer/donnees_personnelles.html:19
 msgid ""
 "Quels types de « cookies » sont utilisés par la le Webinaire de  de "
 "l’Etat ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:20
+#: web/b3desk/templates/footer/donnees_personnelles.html:20
 msgid ""
 "Les cookies servent à l’authentification sur le site Webinaire/Visio-"
 "ecoles/colleges/lycees/agents"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:21
+#: web/b3desk/templates/footer/donnees_personnelles.html:21
 msgid "Il n’y a pas de cookie de mesure d’audience"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:22
+#: web/b3desk/templates/footer/donnees_personnelles.html:22
 msgid "Informations complémentaires sur les « cookies »"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:25
+#: web/b3desk/templates/footer/donnees_personnelles.html:25
 msgid "Quelle sécurité pour vos données personnelles ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:26
+#: web/b3desk/templates/footer/donnees_personnelles.html:26
 msgid ""
 "Nous veillons à prendre les mesures physiques, techniques et "
 "organisationnelles appropriées pour garantir la sécurité et la "
 "confidentialité de vos données personnelles."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:28
+#: web/b3desk/templates/footer/donnees_personnelles.html:28
 msgid "Politique de confidentialité"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:29
+#: web/b3desk/templates/footer/donnees_personnelles.html:29
 msgid ""
 "Dans le cadre de l’utilisation du Webinaire, des données à caractère "
 "personnel vous concernant font l’objet d’un traitement par la DINUM "
 "(Direction Interministérielle du Numérique, ci-après « Nous »)."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:30
+#: web/b3desk/templates/footer/donnees_personnelles.html:30
 msgid ""
 "La présente politique décrit nos engagements en ce qui concerne le "
 "traitement de vos données, conformément au Règlement européen sur la "
@@ -1061,18 +1061,18 @@ msgid ""
 "Informatique et Libertés »)."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:32
+#: web/b3desk/templates/footer/donnees_personnelles.html:32
 msgid "Quel est notre rôle ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:33
+#: web/b3desk/templates/footer/donnees_personnelles.html:33
 msgid ""
 "Le Webinaire est un service en ligne proposé aux agents de l’Etat destiné"
 " à faciliter le travail à distance par l’organisation et la tenue de "
 "réunions, de conférences et de formations en ligne."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:34
+#: web/b3desk/templates/footer/donnees_personnelles.html:34
 msgid ""
 "La DINUM est responsable de traitement des informations traitées dans le "
 "cadre du Service et, à ce titre, s’engage à respecter les obligations "
@@ -1080,7 +1080,7 @@ msgid ""
 "du 6 janvier 1978 relative à l’informatique aux fichiers et aux libertés."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:35
+#: web/b3desk/templates/footer/donnees_personnelles.html:35
 msgid ""
 "Les organisateurs qui procèdent aux invitations et à l’enregistrement des"
 " webinaires sont responsables des traitements ultérieurs qu’ils réalisent"
@@ -1088,91 +1088,91 @@ msgid ""
 " information sur ces traitements."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:37
+#: web/b3desk/templates/footer/donnees_personnelles.html:37
 msgid "Quels sont les traitements de données mis en œuvre ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:47
+#: web/b3desk/templates/footer/donnees_personnelles.html:47
 msgid "Finalité du traitement"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:48
+#: web/b3desk/templates/footer/donnees_personnelles.html:48
 msgid "Base légale du traitement"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:49
+#: web/b3desk/templates/footer/donnees_personnelles.html:49
 msgid "Catégorie de données personnelles traitées"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:50
+#: web/b3desk/templates/footer/donnees_personnelles.html:50
 msgid "Durée de conservation"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:53
+#: web/b3desk/templates/footer/donnees_personnelles.html:53
 msgid "Gestion des comptes des organisateurs de webinaires"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:54
-#: web/flaskr/templates/footer/donnees_personnelles.html:63
-#: web/flaskr/templates/footer/donnees_personnelles.html:69
+#: web/b3desk/templates/footer/donnees_personnelles.html:54
+#: web/b3desk/templates/footer/donnees_personnelles.html:63
+#: web/b3desk/templates/footer/donnees_personnelles.html:69
 msgid "Article 6-1(e) RGPD : exécution d’une mission de service public"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:55
+#: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Données d’identification :"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:56
+#: web/b3desk/templates/footer/donnees_personnelles.html:56
 msgid "Nom"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:57
+#: web/b3desk/templates/footer/donnees_personnelles.html:57
 msgid "Prénom"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:58
+#: web/b3desk/templates/footer/donnees_personnelles.html:58
 msgid "Adresse électronique"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:59
+#: web/b3desk/templates/footer/donnees_personnelles.html:59
 msgid ""
 "Les données sont supprimées après une période de 12 mois d’inactivité du "
 "compte ou au moment de la désactivation du compte (1ère moe planifiée au "
 "plus tard en 12/22)."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:62
+#: web/b3desk/templates/footer/donnees_personnelles.html:62
 msgid "Enregistrement des webinaires à des fins de partage et de rediffusion"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:64
+#: web/b3desk/templates/footer/donnees_personnelles.html:64
 msgid "Enregistrement vidéo des webinaires"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:65
+#: web/b3desk/templates/footer/donnees_personnelles.html:65
 msgid ""
 "Les données d’enregistrement peuvent être supprimées à tout moment par "
 "l’organisateur. Elles sont automatiquement supprimées 12 mois après la "
 "date du webinaire (1ère moe planifiée au plus tard en 12/22)."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:68
+#: web/b3desk/templates/footer/donnees_personnelles.html:68
 msgid "Outils de chat et de vote en ligne"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:70
+#: web/b3desk/templates/footer/donnees_personnelles.html:70
 msgid "Échanges écrits entre participants et résultats des votes en lignes"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:71
+#: web/b3desk/templates/footer/donnees_personnelles.html:71
 msgid "Les données sont supprimées à l’issue de la session du webinaire."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:74
+#: web/b3desk/templates/footer/donnees_personnelles.html:74
 msgid "Gestion de la sécurité du Webinaire"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:75
+#: web/b3desk/templates/footer/donnees_personnelles.html:75
 msgid ""
 "(Loi n° 2004-575 du 25 juin 2005 pour la confiance dans l’économie "
 "numérique, Décret n° 2021-1362 du 20 octobre 2021 relatif à la "
@@ -1180,180 +1180,180 @@ msgid ""
 "contribué à la création d’un contenu en ligne)"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:76
+#: web/b3desk/templates/footer/donnees_personnelles.html:76
 msgid "Données de connexion des utilisateurs du service (logs, adresse IP)"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:77
+#: web/b3desk/templates/footer/donnees_personnelles.html:77
 msgid "12 mois"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:81
+#: web/b3desk/templates/footer/donnees_personnelles.html:81
 msgid "Quels sont les destinataires de vos données ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:82
+#: web/b3desk/templates/footer/donnees_personnelles.html:82
 msgid ""
 "Les destinataires de vos données personnelles sont les agents et "
 "salariées dûment habilitées de la DINUM et de nos sous-traitants qui "
 "interviennent pour l’hébergement, et l’infogérance du service."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:83
+#: web/b3desk/templates/footer/donnees_personnelles.html:83
 msgid ""
 "Nous nous sommes assurés de la mise en œuvre par nos sous-traitants de "
 "garanties adéquates et du respect de conditions strictes de "
 "confidentialité, d’usage et de protection des données."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:84
+#: web/b3desk/templates/footer/donnees_personnelles.html:84
 msgid ""
 "Les données collectées sur le Webinaire ne sont pas transférées en dehors"
 " de l’Union européenne."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:85
+#: web/b3desk/templates/footer/donnees_personnelles.html:85
 msgid "Quels sont vos droits ?"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:86
+#: web/b3desk/templates/footer/donnees_personnelles.html:86
 msgid ""
 "Vous disposez d’un droit d’accès et de rectification des données à "
 "caractère personnel qui vous concernent. Vous disposez également d’un "
 "droit d’opposition et de limitation du traitement de vos données."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:87
+#: web/b3desk/templates/footer/donnees_personnelles.html:87
 msgid ""
 "Pour exercer vos droits ou pour toute question sur le traitement de vos "
 "données, vous pouvez nous écrire à l’adresse : "
 "contact@webinaire.numerique.gouv.fr."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:88
+#: web/b3desk/templates/footer/donnees_personnelles.html:88
 msgid ""
 "Vous pouvez également contacter le délégué à la protection des données "
 "(DPD) des services du Premier Ministre :"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:89
+#: web/b3desk/templates/footer/donnees_personnelles.html:89
 msgid "par mail à dpd@pm.gouv.fr"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:90
+#: web/b3desk/templates/footer/donnees_personnelles.html:90
 msgid "ou par courrier à l’adresse suivante :"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:91
+#: web/b3desk/templates/footer/donnees_personnelles.html:91
 msgid "Services du Premier Ministre"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:92
+#: web/b3desk/templates/footer/donnees_personnelles.html:92
 msgid ""
 "À l’attention du délégué à la protection des données (DPD)</br>\n"
 "56 rue de Varenne </br>\n"
 "75007 Paris"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:95
+#: web/b3desk/templates/footer/donnees_personnelles.html:95
 msgid ""
 "Si vous estimez, après nous avoir contactés, que vos droits Informatiques"
 " et Libertés ne sont pas respectés vous pouvez adresser une réclamation à"
 " la CNIL :"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:96
+#: web/b3desk/templates/footer/donnees_personnelles.html:96
 msgid ""
 "Commission nationale informatique et libertés </br>\n"
 "3 place de Fontenoy – TSA 80715 – </br>\n"
 "75334 PARIS CEDEX 07"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:100
+#: web/b3desk/templates/footer/donnees_personnelles.html:100
 msgid ""
 "Les modalités de réclamation sont précisées sur le site de la CNIL : "
 "www.cnil.fr."
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:102
+#: web/b3desk/templates/footer/donnees_personnelles.html:102
 msgid ""
 "Contactez le Délégué à la protection des données pour les services "
 "Écoles/Colléges/Lycées/Agents"
 msgstr ""
 
-#: web/flaskr/templates/footer/donnees_personnelles.html:103
+#: web/b3desk/templates/footer/donnees_personnelles.html:103
 msgid ""
 "Pour ce faire, envoyez un courriel à "
 "<strong>dpd[chez]education.gouv.fr</strong>"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:11
+#: web/b3desk/templates/footer/mentions_legales.html:11
 msgid "Éditeur"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:12
+#: web/b3desk/templates/footer/mentions_legales.html:12
 msgid ""
 "Ministère de l’Éducation nationale et de la jeunesse Direction du "
 "numérique pour l’éducation 110 rue Grenelle, 75007 Paris"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:12
+#: web/b3desk/templates/footer/mentions_legales.html:12
 msgid "Directeur de publication"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:13
+#: web/b3desk/templates/footer/mentions_legales.html:13
 msgid "Directeur de la publication"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:14
+#: web/b3desk/templates/footer/mentions_legales.html:14
 msgid "M. Audran Le Baron, Directeur du numérique pour l’éducation"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:15
+#: web/b3desk/templates/footer/mentions_legales.html:15
 msgid "Gestionnaire des statistiques"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:16
+#: web/b3desk/templates/footer/mentions_legales.html:16
 msgid "Il n’y a pas d’outil de mesure d’audience pour ce site."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:17
+#: web/b3desk/templates/footer/mentions_legales.html:17
 msgid "Conception et gestion du site"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:18
+#: web/b3desk/templates/footer/mentions_legales.html:18
 msgid ""
 "Le suivi éditorial, graphique et technique du site est assuré au "
 "quotidien par les équipes de la DINUM et du Pôle de compétence Identité "
 "du MENJS."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:19
+#: web/b3desk/templates/footer/mentions_legales.html:19
 msgid "Droits de reproduction"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:20
+#: web/b3desk/templates/footer/mentions_legales.html:20
 msgid ""
 "Conformément au droit public de la propriété intellectuelle et notamment "
 "selon l’article L122-5 du Code de la propriété intellectuelle, les "
 "’’documents officiels’’ sont librement réutilisables."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:21
+#: web/b3desk/templates/footer/mentions_legales.html:21
 msgid ""
 "Cependant, le bon usage veut que la reprise de ces contenus de façon "
 "partielle ou intégrale mentionne clairement la source, et le cas échéant "
 "avec un lien vers le document original en ligne sur ce site."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:22
+#: web/b3desk/templates/footer/mentions_legales.html:22
 msgid ""
 "Toutes les infographies et vidéos réalisées par le service de "
 "communication de l’éditeur se trouvent sous « Licence Ouverte V2.0 » et "
 "sont librement réutilisables sous les conditions suivantes :"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:23
+#: web/b3desk/templates/footer/mentions_legales.html:23
 msgid ""
 "Attribution : vous devez attribuer l’œuvre de la manière indiquée par "
 "l’auteur de l’œuvre ou le titulaire des droits (mais pas d’une manière "
@@ -1361,32 +1361,32 @@ msgid ""
 "l’œuvre)."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:24
+#: web/b3desk/templates/footer/mentions_legales.html:24
 msgid "Liens hypertextes pointant vers ce site :"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:25
+#: web/b3desk/templates/footer/mentions_legales.html:25
 msgid ""
 "Tout site public ou privé est autorisé à établir, sans autorisation "
 "préalable, un lien (y compris profond) vers les informations diffusées "
 "par ce site de webinaire, Visio-ecoles/colleges/lycees/agents."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:26
+#: web/b3desk/templates/footer/mentions_legales.html:26
 msgid ""
 "Pour les sites Internet, la reproduction, après autorisation, d’un "
 "contenu doit mentionner très clairement l’origine du document sous forme "
 "d’une adresse internet :"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:27
+#: web/b3desk/templates/footer/mentions_legales.html:27
 msgid ""
 "La mise en place de “liens profonds” pointant directement sur le document"
 " souhaité devra être privilégiée par rapport à la reproduction de "
 "contenus."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:28
+#: web/b3desk/templates/footer/mentions_legales.html:28
 msgid ""
 "En effet, dans ce cas, la mise en place de liens vers ce site  de "
 "Webinaire/Visio-ecoles/colleges/lycees/agents n’est conditionnée à aucun "
@@ -1394,20 +1394,20 @@ msgid ""
 "du lien est recommandée."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:29
+#: web/b3desk/templates/footer/mentions_legales.html:29
 msgid ""
 "Les sites qui font le choix de pointer vers ce site  de Webinaire, Visio-"
 "ecoles/colleges/lycees/agents engagent leur responsabilité dès lors "
 "qu’ils porteraient atteinte à l’image du site public."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:30
+#: web/b3desk/templates/footer/mentions_legales.html:30
 msgid ""
 "Liens hypertextes proposés par ce site  de Webinaire, Visio-"
 "ecoles/colleges/lycees/agents :"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:31
+#: web/b3desk/templates/footer/mentions_legales.html:31
 msgid ""
 "Les liens vers chaque service interministériel référencé dans le "
 "catalogue que proposé par de ce site. Leur présence engage l’éditeur et "
@@ -1417,43 +1417,43 @@ msgid ""
 "disposition au plan interministériel."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:32
+#: web/b3desk/templates/footer/mentions_legales.html:32
 msgid "Clause de responsabilité"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:33
+#: web/b3desk/templates/footer/mentions_legales.html:33
 msgid ""
 "Les informations proposées sur ce site le sont à titre de service rendu "
 "aux agents du service public, notamment aux agents des services de "
 "l’État."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:34
+#: web/b3desk/templates/footer/mentions_legales.html:34
 msgid ""
 "Les informations et/ou documents disponibles sur ce site sont "
 "susceptibles d’être modifiés à tout moment, et peuvent faire l’objet de "
 "mises à jour pour faciliter l’accès aux ressources numériques."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:35
+#: web/b3desk/templates/footer/mentions_legales.html:35
 msgid ""
 "Les informations et/ou documents accédés à partir de ce site relèvent de "
 "la responsabilité des porteurs de chaque service interministériel ainsi "
 "mis à disposition."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:36
+#: web/b3desk/templates/footer/mentions_legales.html:36
 msgid ""
 "L’éditeur ne pourra en aucun cas être tenue responsable de tout dommage "
 "de quelque nature qu’il soit résultant de la mauvaise utilisation des "
 "ressources accessibles à partir de ce site."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:37
+#: web/b3desk/templates/footer/mentions_legales.html:37
 msgid "Droit à la compensation"
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:38
+#: web/b3desk/templates/footer/mentions_legales.html:38
 msgid ""
 "Dans l’attente d’une mise en conformité totale d’un de ces services, vous"
 " pouvez obtenir une version accessible des documents ou des informations "
@@ -1463,69 +1463,69 @@ msgid ""
 "demandées vous seront transmises dans les plus brefs délais."
 msgstr ""
 
-#: web/flaskr/templates/footer/mentions_legales.html:40
+#: web/b3desk/templates/footer/mentions_legales.html:40
 msgid ""
 "Vous pouvez nous aider à améliorer l’accessibilité du site en nous "
 "signalant les problèmes éventuels que vous rencontrez. Pour ce faire, "
 "envoyez-nous un courriel à <strong>apps[chez]education.gouv.fr</strong>"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:36
+#: web/b3desk/templates/meeting/form.html:36
 msgid "Modifier"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:38
-#: web/flaskr/templates/meeting/submit.html:5
+#: web/b3desk/templates/meeting/form.html:38
+#: web/b3desk/templates/meeting/submit.html:5
 msgid "Créer"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:43
+#: web/b3desk/templates/meeting/form.html:43
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:51
+#: web/b3desk/templates/meeting/form.html:51
 msgid "Configuration"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:67
+#: web/b3desk/templates/meeting/form.html:67
 msgid ""
 "Gestion des permissions, elles peuvent être ajustées une fois dans le "
 "salon"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:84
+#: web/b3desk/templates/meeting/form.html:84
 msgid "Personnalisation"
 msgstr ""
 
-#: web/flaskr/templates/meeting/form.html:99
+#: web/b3desk/templates/meeting/form.html:99
 msgid "Enregistrement"
 msgstr ""
 
-#: web/flaskr/templates/meeting/jumbotron.html:3
+#: web/b3desk/templates/meeting/jumbotron.html:3
 msgid "Webinaire"
 msgstr ""
 
-#: web/flaskr/templates/meeting/jumbotron.html:5
+#: web/b3desk/templates/meeting/jumbotron.html:5
 msgid "Nouveau webinaire"
 msgstr ""
 
-#: web/flaskr/templates/meeting/jumbotron.html:8
+#: web/b3desk/templates/meeting/jumbotron.html:8
 msgid "Retour au tableau de bord"
 msgstr ""
 
-#: web/flaskr/templates/meeting/list.html:2
+#: web/b3desk/templates/meeting/list.html:2
 #, python-format
 msgid "Mes salles de %(some_meetings)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/list.html:4
+#: web/b3desk/templates/meeting/list.html:4
 #, python-format
 msgid ""
 "Créer une salle de %(meeting_label)s</a> vous permet de conserver les "
 "réglages et le lien de la salle."
 msgstr ""
 
-#: web/flaskr/templates/meeting/list.html:9
+#: web/b3desk/templates/meeting/list.html:9
 #, python-format
 msgid ""
 "Vous avez atteint la limite des %(max_meetings_per_user)s "
@@ -1533,22 +1533,22 @@ msgid ""
 "des %(meeting_label)ss inactives."
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:75
+#: web/b3desk/templates/meeting/modals.html:75
 #, python-format
 msgid ""
 "%(the_meeting)s est toujours en cours. Si un enregistrement est en cours,"
 " il ne sera encodé qu'après la fin %(of_the_meeting)s."
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:77
-#: web/flaskr/templates/meeting/recordings.html:22
+#: web/b3desk/templates/meeting/modals.html:77
+#: web/b3desk/templates/meeting/recordings.html:22
 #, python-format
 msgid ""
 "Après la fin d'%(a_meeting)s, l'encodage de l'enregistrement peut prendre"
 " autant de temps que la durée %(of_the_meeting)s."
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:78
+#: web/b3desk/templates/meeting/modals.html:78
 #, python-format
 msgid ""
 "Si aucun modérateur ne met fin %(to_the_meeting)s, un délai "
@@ -1556,54 +1556,54 @@ msgid ""
 "utilisateurs l'aient quitté."
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:84
+#: web/b3desk/templates/meeting/modals.html:84
 msgid "Images"
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:85
+#: web/b3desk/templates/meeting/modals.html:85
 msgid "Lien"
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:105
-#: web/flaskr/templates/meeting/modals.html:106
-#: web/flaskr/templates/meeting/recordings.html:71
-#: web/flaskr/templates/meeting/recordings.html:72
+#: web/b3desk/templates/meeting/modals.html:105
+#: web/b3desk/templates/meeting/modals.html:106
+#: web/b3desk/templates/meeting/recordings.html:71
+#: web/b3desk/templates/meeting/recordings.html:72
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:108
-#: web/flaskr/templates/meeting/recordings.html:74
+#: web/b3desk/templates/meeting/modals.html:108
+#: web/b3desk/templates/meeting/recordings.html:74
 msgid "Suppression d'enregistrement"
 msgstr ""
 
-#: web/flaskr/templates/meeting/modals.html:111
+#: web/b3desk/templates/meeting/modals.html:111
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:11
+#: web/b3desk/templates/meeting/recordings.html:11
 #, python-format
 msgid "Enregistrements de <em>%(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:13
+#: web/b3desk/templates/meeting/recordings.html:13
 #, python-format
 msgid "Retour à mes %(meeting_label)ss"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:18
+#: web/b3desk/templates/meeting/recordings.html:18
 #, python-format
 msgid "%(this_meeting)s est toujours en cours"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:19
+#: web/b3desk/templates/meeting/recordings.html:19
 #, python-format
 msgid ""
 "Si un enregistrement est en cours, il ne sera encodé qu'après la fin "
 "%(of_the_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:23
+#: web/b3desk/templates/meeting/recordings.html:23
 #, python-format
 msgid ""
 "Si aucun modérateur ne met fin %(of_the_meeting)s, un délai "
@@ -1611,199 +1611,199 @@ msgid ""
 "utilisateurs l'aient quitté."
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:42
+#: web/b3desk/templates/meeting/recordings.html:42
 msgid "Visuels"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:43
+#: web/b3desk/templates/meeting/recordings.html:43
 msgid "Actions"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:76
-#: web/flaskr/templates/meeting/row.html:29
-#: web/flaskr/templates/meeting/row.html:40
-#: web/flaskr/templates/meeting/row.html:59
+#: web/b3desk/templates/meeting/recordings.html:76
+#: web/b3desk/templates/meeting/row.html:29
+#: web/b3desk/templates/meeting/row.html:40
+#: web/b3desk/templates/meeting/row.html:59
 msgid "Fermer la fenêtre modale"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:91
+#: web/b3desk/templates/meeting/recordings.html:91
 msgid "Supprimer"
 msgstr ""
 
-#: web/flaskr/templates/meeting/recordings.html:92
-#: web/flaskr/templates/meeting/submit.html:7
+#: web/b3desk/templates/meeting/recordings.html:92
+#: web/b3desk/templates/meeting/submit.html:7
 msgid "Annuler"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:5
-#: web/flaskr/templates/meeting/row.html:33
+#: web/b3desk/templates/meeting/row.html:5
+#: web/b3desk/templates/meeting/row.html:33
 #, python-format
 msgid "Lancer %(meeting_name)s - nouvelle fenêtre"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:7
+#: web/b3desk/templates/meeting/row.html:7
 msgid "Envoyer un courriel aux modérateurs"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:9
+#: web/b3desk/templates/meeting/row.html:9
 msgid "Copier le lien Modérateur dans le presse-papiers"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:13
+#: web/b3desk/templates/meeting/row.html:13
 #, python-format
 msgid "Participer à %(meeting_name)s - nouvelle fenêtre"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:15
+#: web/b3desk/templates/meeting/row.html:15
 msgid "Envoyer un courriel aux participants"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:17
+#: web/b3desk/templates/meeting/row.html:17
 msgid "Copier le lien Participant dans le presse-papiers"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:20
-#: web/flaskr/templates/meeting/row.html:50
+#: web/b3desk/templates/meeting/row.html:20
+#: web/b3desk/templates/meeting/row.html:50
 #, python-format
 msgid "Modifier %(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:24
-#: web/flaskr/templates/meeting/row.html:25
-#: web/flaskr/templates/meeting/row.html:27
-#: web/flaskr/templates/meeting/row.html:54
-#: web/flaskr/templates/meeting/row.html:55
-#: web/flaskr/templates/meeting/row.html:57
+#: web/b3desk/templates/meeting/row.html:24
+#: web/b3desk/templates/meeting/row.html:25
+#: web/b3desk/templates/meeting/row.html:27
+#: web/b3desk/templates/meeting/row.html:54
+#: web/b3desk/templates/meeting/row.html:55
+#: web/b3desk/templates/meeting/row.html:57
 #, python-format
 msgid "Supprimer %(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:33
+#: web/b3desk/templates/meeting/row.html:33
 msgid "Lancer"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:36
-#: web/flaskr/templates/meeting/row.html:38
+#: web/b3desk/templates/meeting/row.html:36
+#: web/b3desk/templates/meeting/row.html:38
 #, python-format
 msgid "Inviter à %(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:41
+#: web/b3desk/templates/meeting/row.html:41
 msgid "Inviter"
 msgstr ""
 
-#: web/flaskr/templates/meeting/row.html:46
+#: web/b3desk/templates/meeting/row.html:46
 #, python-format
 msgid "Voir les enregistrements de %(meeting_name)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/signin.html:1
-#: web/flaskr/templates/meeting/signinmail.html:1
+#: web/b3desk/templates/meeting/signin.html:1
+#: web/b3desk/templates/meeting/signinmail.html:1
 #, python-format
 msgid "Rejoindre %(the_meeting)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/signin.html:16
+#: web/b3desk/templates/meeting/signin.html:16
 #, python-format
 msgid "%(meeting_attente)s"
 msgstr ""
 
-#: web/flaskr/templates/meeting/signin.html:24
-#: web/flaskr/templates/meeting/signinmail.html:16
+#: web/b3desk/templates/meeting/signin.html:24
+#: web/b3desk/templates/meeting/signinmail.html:16
 msgid "Votre nom"
 msgstr ""
 
-#: web/flaskr/templates/meeting/signin.html:25
-#: web/flaskr/templates/meeting/signinmail.html:17
+#: web/b3desk/templates/meeting/signin.html:25
+#: web/b3desk/templates/meeting/signinmail.html:17
 msgid "Vous pouvez également préciser votre service ou votre fonction."
 msgstr ""
 
-#: web/flaskr/templates/meeting/signin.html:44
-#: web/flaskr/templates/meeting/signinmail.html:23
+#: web/b3desk/templates/meeting/signin.html:44
+#: web/b3desk/templates/meeting/signinmail.html:23
 msgid "Rejoindre"
 msgstr ""
 
-#: web/flaskr/templates/meeting/signinmail.html:10
+#: web/b3desk/templates/meeting/signinmail.html:10
 #, python-format
 msgid "Votre %(meeting_label)s n'a pas encore été activée par un modérateur"
 msgstr ""
 
-#: web/flaskr/templates/meeting/submit.html:3
+#: web/b3desk/templates/meeting/submit.html:3
 msgid "Enregistrer"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:4
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:4
 msgid "Modérateur"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:6
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:6
 msgid "Participant"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:9
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:9
 #, python-format
 msgid "À %(the_meeting)s suivante :"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:13
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:13
 msgid "Le lien pour s'y inscrire est le suivant :"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:21
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:21
 #, python-format
 msgid "Le mot de passe de %(this_meeting)s est :"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_body.txt:29
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:29
 msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:2
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:2
 msgid "Bonjour,"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:5
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:5
 #, python-format
 msgid ""
 "Vous avez demandé l’organisation d’%(a_quick_meeting)s au travers du "
 "webinaire de l’Etat."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:8
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:8
 msgid ""
 "Le lien du webinaire que vous trouvez ci-dessous reste actif et "
 "accessible pendant une semaine depuis un navigateur internet sur un "
 "ordinateur ou un smartphone :"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:11
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:11
 #, python-format
 msgid ""
 "<a "
 "href=\"%(moderator_mail_signin_url)s\">%(moderator_mail_signin_url)s</a>"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:14
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:14
 msgid ""
 "Vous pouvez dès à présent transmettre ce lien de connexion aux "
 "participants que vous souhaitez inviter."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:17
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:17
 msgid ""
 "Une fois sur la page d’accueil, vous êtes invité à rentrer votre nom "
 "complet pour accéder au webinaire."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:20
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:20
 msgid "Vous y êtes !"
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:23
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:23
 msgid "L’équipe du webinaire de l’Etat vous souhaite un excellent séminaire."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_quick_meeting_body.txt:26
+#: web/b3desk/templates/meeting/mailto/mail_quick_meeting_body.txt:26
 #, python-format
 msgid ""
 "Si vous organisez régulièrement des %(meeting_label)ss, nous vous "
@@ -1812,7 +1812,7 @@ msgid ""
 "mesure."
 msgstr ""
 
-#: web/flaskr/templates/meeting/mailto/mail_subject.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
 msgid "Invitation"
 msgstr ""
 

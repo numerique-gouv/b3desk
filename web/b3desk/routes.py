@@ -24,6 +24,21 @@ from pathlib import Path
 
 import filetype
 import requests
+from b3desk.forms import EndMeetingForm
+from b3desk.forms import JoinMailMeetingForm
+from b3desk.forms import JoinMeetingAsRoleForm
+from b3desk.forms import JoinMeetingForm
+from b3desk.forms import MeetingFilesForm
+from b3desk.forms import MeetingForm
+from b3desk.forms import MeetingWithRecordForm
+from b3desk.forms import RecordingForm
+from b3desk.forms import ShowMeetingForm
+from b3desk.models import db
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import MeetingFilesExternal
+from b3desk.models.users import get_or_create_user
+from b3desk.models.users import User
 from flask import abort
 from flask import Blueprint
 from flask import current_app
@@ -42,21 +57,6 @@ from flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ClientMetadata
 from flask_pyoidc.provider_configuration import ProviderConfiguration
 from flask_pyoidc.user_session import UserSession
-from flaskr.forms import EndMeetingForm
-from flaskr.forms import JoinMailMeetingForm
-from flaskr.forms import JoinMeetingAsRoleForm
-from flaskr.forms import JoinMeetingForm
-from flaskr.forms import MeetingFilesForm
-from flaskr.forms import MeetingForm
-from flaskr.forms import MeetingWithRecordForm
-from flaskr.forms import RecordingForm
-from flaskr.forms import ShowMeetingForm
-from flaskr.models import db
-from flaskr.models import get_or_create_user
-from flaskr.models import Meeting
-from flaskr.models import MeetingFiles
-from flaskr.models import MeetingFilesExternal
-from flaskr.models import User
 from sqlalchemy import exc
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
