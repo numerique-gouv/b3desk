@@ -3,7 +3,7 @@
 Deux branches principales sont utilisées :
 
 - `main` est la branche de développement. Elle sert à recevoir les PR de fonctionnalités et les corrections de bugs importantes.
-- `production` est la branche stable. Elle sert à recevoir les bugfixes.
+- `production` est la branche stable. Elle sert à recevoir les hotfixes.
 
 Le *périmètre technique* est la responsabilité de l’équipe de développement.
 Elle est donc autonome pour valider les modifications de code touchant à la qualité, aux réusinages etc.
