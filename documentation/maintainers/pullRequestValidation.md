@@ -22,7 +22,7 @@ Plus de détails sur l’intégration continue sont disponibles dans la {ref}`se
 
 ## 2. Déployer la PR dans un environnement de test
 
-Passé ces étapes, les mainteneurs font une validation manuelle des développements réalisés.
+Passées ces étapes, les mainteneurs font une validation manuelle des développements réalisés.
 
 Sur un serveur de préprod, il faut récupérer la *pull request* en question.
 Exécuter les commandes suivantes en remplaçant `<ID>` par le numéro de la PR.
