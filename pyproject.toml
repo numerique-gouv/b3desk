@@ -31,6 +31,7 @@ flask-wtf = "^1.1.1"
 redis = "4.4.4"
 requests = "^2.27.1"
 werkzeug = "<2.3"
+pydantic-settings = "^2.1.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -55,6 +56,7 @@ optional = true
 sphinx = "^7.0.0"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-issues = "^3.0.0"
+autodoc-pydantic = "^2.0.1"
 myst-parser = "^2.0.0"
 
 [tool.black]
@@ -65,7 +67,6 @@ extend-exclude = '''
 '''
 
 [tool.pytest.ini_options]
-env_files = ["web.env"]
 testpaths = "web"
 
 [tool.ruff]

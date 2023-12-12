@@ -321,7 +321,7 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
         "uploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "attendeePW": meeting.attendeePW,
         "moderatorPW": meeting.moderatorPW,
-        "logoutURL": "http://education.gouv.fr",
+        "logoutURL": "http://education.gouv.fr/",
         "duration": "280",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",

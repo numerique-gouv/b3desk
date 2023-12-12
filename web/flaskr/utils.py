@@ -16,8 +16,8 @@ def is_rie():
     if not request.remote_addr:
         return False
 
-    return any(
-        IPAddress(request.remote_addr) in IPNetwork(network_ip)
-        for network_ip in current_app.config.get("RIE_NETWORK_IPS", [])
+    return current_app.config["RIE_NETWORK_IPS"] and any(
+        IPAddress(request.remote_addr) in IPNetwork(str(network_ip))
+        for network_ip in current_app.config["RIE_NETWORK_IPS"]
         if network_ip
     )
