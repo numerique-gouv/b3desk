@@ -177,10 +177,6 @@ def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
     return meeting
 
 
-def get_fake_user():
-    return User(email=current_app.config["SMTP_FROM"])
-
-
 def get_current_user():
     user_session = UserSession(session)
     info = user_session.userinfo
