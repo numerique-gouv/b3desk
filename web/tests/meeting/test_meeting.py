@@ -1,13 +1,15 @@
 from unittest import mock
 
 import pytest
-from b3desk.models import Meeting
-from b3desk.models import MODERATOR_ONLY_MESSAGE_MAXLENGTH
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
 
 @pytest.fixture()
 def mocked_is_meeting_running(mocker):
-    mocker.patch("b3desk.models.Meeting.is_meeting_running", return_value=False)
+    mocker.patch(
+        "b3desk.models.meetings.Meeting.is_meeting_running", return_value=False
+    )
 
 
 def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
@@ -305,8 +307,8 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
     mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     with app.test_request_context():
-        monkeypatch.setattr("b3desk.models.User.id", 1)
-        monkeypatch.setattr("b3desk.models.User.hash", "hash")
+        monkeypatch.setattr("b3desk.models.users.User.id", 1)
+        monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
         meeting = get_quick_meeting_from_user_and_random_string(user)
         meeting.bbb.create()
 

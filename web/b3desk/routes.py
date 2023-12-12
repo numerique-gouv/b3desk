@@ -34,11 +34,11 @@ from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
-from b3desk.models import get_or_create_user
-from b3desk.models import Meeting
-from b3desk.models import MeetingFiles
-from b3desk.models import MeetingFilesExternal
-from b3desk.models import User
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import MeetingFilesExternal
+from b3desk.models.users import get_or_create_user
+from b3desk.models.users import User
 from flask import abort
 from flask import Blueprint
 from flask import current_app

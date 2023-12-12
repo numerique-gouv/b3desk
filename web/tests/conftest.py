@@ -10,7 +10,9 @@ from flask_webtest import TestApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 
-from b3desk.models import Meeting, User, db
+from b3desk.models import db
+from b3desk.models.users import User
+from b3desk.models.meetings import Meeting
 
 
 class FakeAuth:
