@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath("../web/flaskr"))
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.doctest",
     "sphinx.ext.graphviz",
     "sphinx.ext.intersphinx",
@@ -85,3 +86,7 @@ texinfo_documents = [
         "Miscellaneous",
     )
 ]
+
+# -- Options for autosectionlabel -----------------------------------------
+
+autosectionlabel_prefix_document = True

@@ -1,6 +1,10 @@
-# Validation de Pull Request
+# Intégration Continue
 
-Pour qu'une pull request soit validée par les mainteneurs, elle doit passer un certain nombre d'étapes :
+Quand l’intégration continue (CI) s’est correctement déroulée, l’interface de github affiche cet encart :
+
+![ci](../_static/ci.png)
+
+Les différentes étapes de l’intégration continue
 
 ## CI : Tests dans un virtualenv
 
@@ -31,24 +35,3 @@ Pour être sûr de passer cette étape, il suffit d'ajouter des tests **au moins
 ## CI : Formattage du code
 
 GitHub Actions va vérifier que le code a bien été formatté. Pour le moment, seul `black` est exécuté, mais à l'avenir, `flake8` ou encore `mypy` pourraient être requis. Le même genre de décisions pourait être appliquée au front.
-
-## Tests en préprod
-
-Passé ces étapes, les mainteneurs font une validation manuelle des développements réalisés.
-
-Sur un serveur de préprod, il faut récupérer la *pull request* en question :
-```bash
-git fetch origin pull/ID/head:BRANCH_NAME
-```
-en remplaçant `ID` par l'**id** de la pull request et `BRANCH_NAME` par le nom de la **branche** sur laquelle ont été réalisés les modifications, celle du *fork*.
-
-Il faut ensuite passer sur cette branche puis lancer la préprod :
-```bash
-git switch BRANCH_NAME
-# Switched to a new branch 'BRANCH_NAME'
-docker compose -f docker-compose.yml -f docker-compose.preprod.yml up
-```
-
-À partir de là, l'état fonctionnel du projet peut être testé manuellement ainsi que les modifications apportées par la PR.
-
-Lorsqu'assez de modifications suffisamment cohérentes ont été ajoutées sur la branche `main`, les mainteneurs peuvent merger celle-ci dans la branche `production` qui sert de référence pour les déploiements. Un tag avec un numéro de version ainsi qu'un changelog peut également être ajouté.
