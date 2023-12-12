@@ -25,7 +25,9 @@ from flask_wtf.csrf import CSRFProtect
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
 
+babel = Babel()
 cache = Cache()
+csrf = CSRFProtect()
 
 
 def setup_configuration(app, config=None):
@@ -54,7 +56,7 @@ def setup_logging(app, gunicorn_logging=False):
 
 
 def setup_i18n(app):
-    babel = Babel(app)
+    babel.init_app(app)
 
     @babel.localeselector
     def get_locale():
@@ -64,7 +66,6 @@ def setup_i18n(app):
 
 
 def setup_csrf(app):
-    csrf = CSRFProtect()
     csrf.init_app(app)
 
 
