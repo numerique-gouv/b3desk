@@ -1,5 +1,5 @@
 def test_end_bbb_meeting(app, client_app, authenticated_user, meeting, mocker):
-    mocked_end = mocker.patch("flaskr.models.BBB.end")
+    mocked_end = mocker.patch("b3desk.models.BBB.end")
 
     response = client_app.post(
         "/meeting/end",

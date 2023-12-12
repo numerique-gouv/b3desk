@@ -11,6 +11,8 @@
 import logging
 import os
 
+from b3desk.settings import MainSettings
+from b3desk.utils import is_rie
 from flask import Flask
 from flask import request
 from flask import session
@@ -18,8 +20,6 @@ from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
-from flaskr.settings import MainSettings
-from flaskr.utils import is_rie
 
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
@@ -70,9 +70,9 @@ def setup_csrf(app):
 
 def setup_database(app):
     with app.app_context():
-        import flaskr.routes
+        import b3desk.routes
 
-        app.register_blueprint(flaskr.routes.bp)
+        app.register_blueprint(b3desk.routes.bp)
         from .models import db
 
         db.init_app(app)

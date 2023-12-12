@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../web"))
-sys.path.insert(0, os.path.abspath("../web/flaskr"))
+sys.path.insert(0, os.path.abspath("../web/b3desk"))
 
 
 # -- General configuration ------------------------------------------------
@@ -29,12 +29,12 @@ source_suffix = {
     ".md": "markdown",
 }
 master_doc = "index"
-project = "flaskr"
+project = "b3desk"
 year = datetime.datetime.now().strftime("%Y")
 copyright = f"{year}, Ministère de l'Éducation Nationale"
 author = "Ministère de l'Éducation Nationale"
 
-release = "1.1.0"  # metadata.version("flaskr")
+release = "1.1.0"  # metadata.version("b3desk")
 version = "%s.%s" % tuple(map(int, release.split(".")[:2]))
 language = "fr"
 exclude_patterns = []

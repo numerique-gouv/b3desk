@@ -1,4 +1,4 @@
 Configuration
 #############
 
-.. autopydantic_model:: flaskr.settings.MainSettings
+.. autopydantic_model:: b3desk.settings.MainSettings

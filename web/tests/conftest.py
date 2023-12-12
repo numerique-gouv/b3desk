@@ -1,16 +1,16 @@
 import functools
 import time
 
-import flaskr.utils
+import b3desk.utils
 import pytest
+from b3desk import create_app
 from flask_migrate import Migrate
 from flask_webtest import TestApp
-from flaskr import create_app
 
 
-flaskr.utils.secret_key = lambda: "AZERTY"
+b3desk.utils.secret_key = lambda: "AZERTY"
 
-from flaskr.models import Meeting, User, db
+from b3desk.models import Meeting, User, db
 
 
 class FakeAuth:

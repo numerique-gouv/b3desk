@@ -14,7 +14,7 @@ services:
     #   - web.env
     volumes:
       - ./web/logs:/var/log
-      - ./web/flaskr:/opt/bbb-visio/flaskr
+      - ./web/b3desk:/opt/bbb-visio/b3desk
       - ./web/instance:/opt/bbb-visio/instance
       - ./web/migrations:/opt/bbb-visio/migrations
       - ./web/translations:/opt/bbb-visio/translations
@@ -34,7 +34,7 @@ services:
     environment:
       - APP=tasks.celery
     volumes:
-      - ./web/flaskr:/usr/src/app
+      - ./web/b3desk:/usr/src/app
     command: celery --app tasks.celery worker --loglevel=info
 
   broker:

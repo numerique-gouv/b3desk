@@ -1,4 +1,3 @@
-
 # Traductions
 
 ## Ajouter du texte à traduire
@@ -25,7 +24,7 @@ Cette commande va mettre à jour les catalogues existants avec de nouveaux messa
 
 ## Traduire du texte
 
-Les fichiers à traduire sont `web/flaskr/translations/*/LC_MESSAGES/messages.po`.
+Les fichiers à traduire sont `web/b3desk/translations/*/LC_MESSAGES/messages.po`.
 Lors de la traduction, il ne faut pas traduire les motifs du type `%(...)s` mais simplement mettre l'équivalent traduit.
 Par exemple, pour une traduction vers l'anglais :
 

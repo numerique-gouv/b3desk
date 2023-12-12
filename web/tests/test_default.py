@@ -52,7 +52,7 @@ def test_home__anonymous_user(client_app, mocker):
         "participantCount": 123,
         "runningCount": 33,
     }
-    mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
+    mocker.patch("b3desk.routes.get_meetings_stats", return_value=STATS)
 
     response = client_app.get(
         "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
@@ -66,7 +66,7 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
         "participantCount": 123,
         "runningCount": 33,
     }
-    mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
+    mocker.patch("b3desk.routes.get_meetings_stats", return_value=STATS)
 
     response = client_app.get(
         "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
