@@ -113,6 +113,15 @@ def has_user_session():
     return user_session.is_authenticated()
 
 
+def get_authenticated_attendee_fullname():
+    attendee_session = UserSession(session)
+    attendee_info = attendee_session.userinfo
+    given_name = attendee_info.get("given_name", "")
+    family_name = attendee_info.get("family_name", "")
+    fullname = f"{given_name} {family_name}".strip()
+    return fullname
+
+
 @bp.context_processor
 def global_processor():
     if has_user_session():
@@ -1297,15 +1306,6 @@ def join_mail_meeting():
         return redirect(url_for("routes.index"))
 
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
-
-
-def get_authenticated_attendee_fullname():
-    attendee_session = UserSession(session)
-    attendee_info = attendee_session.userinfo
-    given_name = attendee_info.get("given_name", "")
-    family_name = attendee_info.get("family_name", "")
-    fullname = f"{given_name} {family_name}".strip()
-    return fullname
 
 
 @bp.route("/meeting/join/<int:meeting_id>/authenticated", methods=["GET"])
