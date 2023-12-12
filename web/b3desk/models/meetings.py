@@ -12,6 +12,7 @@ import hashlib
 from datetime import datetime
 from datetime import timedelta
 
+from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 from flask import current_app
 from flask import url_for
@@ -19,6 +20,7 @@ from sqlalchemy_utils import StringEncryptedType
 
 from . import db
 from .bbb import BBB
+from .users import User
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
@@ -272,3 +274,67 @@ class Meeting(db.Model):
 
     def end_bbb(self):
         self.bbb.end()
+
+
+def get_quick_meeting_from_user_and_random_string(user, random_string=None):
+    if random_string is None:
+        random_string = get_random_alphanumeric_string(8)
+    m = Meeting()
+    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
+    m.user = user
+    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
+    m.fake_id = random_string
+    m.moderatorPW = f"{user.hash}-{random_string}"
+    m.attendeePW = f"{random_string}-{random_string}"
+    m.moderatorOnlyMessage = current_app.config[
+        "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
+    ]
+    m.logoutUrl = (
+        current_app.config["QUICK_MEETING_LOGOUT_URL"]
+        or current_app.config["SERVER_FQDN"]
+    )
+    return m
+
+
+def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
+    if meeting_fake_id.isdigit():
+        try:
+            meeting = Meeting.query.get(meeting_fake_id)
+        except:
+            try:
+                user = User.query.get(user_id)
+                meeting = get_quick_meeting_from_user_and_random_string(
+                    user, random_string=meeting_fake_id
+                )
+            except:
+                meeting = None
+    else:
+        try:
+            user = User.query.get(user_id)
+            meeting = get_quick_meeting_from_user_and_random_string(
+                user, random_string=meeting_fake_id
+            )
+        except:
+            meeting = None
+
+    return meeting
+
+
+def get_mail_meeting(random_string=None):
+    # only used for mail meeting
+    if random_string is None:
+        random_string = get_random_alphanumeric_string(8)
+    m = Meeting()
+    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
+    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
+    m.moderatorPW = "{}-{}".format(
+        random_string,
+        random_string,
+    )  # it is only usefull for bbb
+    m.fake_id = random_string
+    m.moderatorOnlyMessage = current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"]
+    m.logoutUrl = (
+        current_app.config["QUICK_MEETING_LOGOUT_URL"]
+        or current_app.config["SERVER_FQDN"]
+    )
+    return m

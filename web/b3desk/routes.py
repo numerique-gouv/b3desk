@@ -31,6 +31,9 @@ from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
+from b3desk.models.meetings import get_mail_meeting
+from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
+from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
@@ -61,10 +64,8 @@ from werkzeug.utils import secure_filename
 
 from . import cache
 from .templates.content import FAQ_CONTENT
-from .utils import get_random_alphanumeric_string
 from .utils import is_accepted_email
 from .utils import is_valid_email
-
 
 bp = Blueprint("routes", __name__)
 
@@ -101,59 +102,6 @@ auth = OIDCAuthentication(
     },
     current_app,
 )
-
-
-def get_quick_meeting_from_fake_id(fake_id):
-    try:
-        user_id_str, random_string = fake_id.split("-")
-        user = User.query.get(int(user_id_str))
-        return get_quick_meeting_from_user_and_random_string(user, random_string)
-    except:
-        return None
-
-
-def get_quick_meeting_from_user_and_random_string(user, random_string=None):
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
-    m = Meeting()
-    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
-    m.user = user
-    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.fake_id = random_string
-    m.moderatorPW = f"{user.hash}-{random_string}"
-    m.attendeePW = f"{random_string}-{random_string}"
-    m.moderatorOnlyMessage = current_app.config[
-        "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-    ]
-    m.logoutUrl = (
-        current_app.config["QUICK_MEETING_LOGOUT_URL"]
-        or current_app.config["SERVER_FQDN"]
-    )
-    return m
-
-
-def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
-    if meeting_fake_id.isdigit():
-        try:
-            meeting = Meeting.query.get(meeting_fake_id)
-        except:
-            try:
-                user = User.query.get(user_id)
-                meeting = get_quick_meeting_from_user_and_random_string(
-                    user, random_string=meeting_fake_id
-                )
-            except:
-                meeting = None
-    else:
-        try:
-            user = User.query.get(user_id)
-            meeting = get_quick_meeting_from_user_and_random_string(
-                user, random_string=meeting_fake_id
-            )
-        except:
-            meeting = None
-
-    return meeting
 
 
 def get_current_user():
@@ -381,26 +329,6 @@ def welcome():
         clipboard=current_app.config["CLIPBOARD"],
         recording=current_app.config["RECORDING"],
     )
-
-
-def get_mail_meeting(random_string=None):
-    # only used for mail meeting
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
-    m = Meeting()
-    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
-    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.moderatorPW = "{}-{}".format(
-        random_string,
-        random_string,
-    )  # it is only usefull for bbb
-    m.fake_id = random_string
-    m.moderatorOnlyMessage = current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"]
-    m.logoutUrl = (
-        current_app.config["QUICK_MEETING_LOGOUT_URL"]
-        or current_app.config["SERVER_FQDN"]
-    )
-    return m
 
 
 @bp.route("/meeting/mail", methods=["POST"])
