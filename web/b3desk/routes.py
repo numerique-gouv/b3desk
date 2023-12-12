@@ -49,7 +49,7 @@ from flask import send_file
 from flask import send_from_directory
 from flask import session
 from flask import url_for
-from flask_babel import lazy_gettext
+from flask_babel import lazy_gettext as _
 from flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ClientMetadata
 from flask_pyoidc.provider_configuration import ProviderConfiguration
@@ -344,7 +344,7 @@ def quick_mail_meeting():
     email = request.form.get("mail")
     if not is_valid_email(email):
         flash(
-            lazy_gettext(
+            _(
                 "Courriel invalide. Avez vous bien tapé votre email ? Vous pouvez réessayer."
             ),
             "error_login",
@@ -352,7 +352,7 @@ def quick_mail_meeting():
         return redirect(url_for("routes.index"))
     if not is_accepted_email(email):
         flash(
-            lazy_gettext(
+            _(
                 "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions!"
             ),
             "error_login",
@@ -363,9 +363,7 @@ def quick_mail_meeting():
     )  # this user can probably be removed if we created adock function
     meeting = get_quick_meeting_from_user_and_random_string(user)
     send_mail(meeting, email)
-    flash(
-        lazy_gettext("Vous avez reçu un courriel pour vous connecter"), "success_login"
-    )
+    flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
     return redirect(url_for("routes.index"))
 
 
@@ -384,7 +382,7 @@ def show_meeting(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
     if not form.validate():
         flash(
-            lazy_gettext("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
+            _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
             "warning",
         )
         return redirect(url_for("routes.welcome"))
@@ -395,7 +393,7 @@ def show_meeting(meeting_id):
             "meeting/show.html",
             meeting=add_mailto_links(meeting.get_data_as_dict(user.fullname)),
         )
-    flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
+    flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
     return redirect(url_for("routes.welcome"))
 
 
@@ -405,7 +403,7 @@ def show_meeting_recording(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
     if not form.validate():
         flash(
-            lazy_gettext("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
+            _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
             "warning",
         )
         return redirect(url_for("routes.welcome"))
@@ -419,7 +417,7 @@ def show_meeting_recording(meeting_id):
             meeting=add_mailto_links(meeting_dict),
             form=form,
         )
-    flash(lazy_gettext("Vous ne pouvez pas consulter cet élément"), "warning")
+    flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
     return redirect(url_for("routes.welcome"))
 
 
@@ -520,7 +518,7 @@ def edit_meeting_files(meeting_id):
                 fqdn=current_app.config["SERVER_FQDN"],
                 beta=current_app.config["BETA"],
             )
-    flash(lazy_gettext("Vous ne pouvez pas modifier cet élément"), "warning")
+    flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
     return redirect(url_for("routes.welcome"))
 
 
@@ -959,9 +957,7 @@ def save_meeting():
     form.populate_obj(meeting)
     meeting.save()
     flash(
-        lazy_gettext(
-            "%(meeting_name)s modifications prises en compte", meeting_name=meeting.name
-        ),
+        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
         "success",
     )
 
@@ -1131,7 +1127,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
     if meeting is None:
         flash(
-            lazy_gettext(
+            _(
                 "Aucune %(meeting_label)s ne correspond à ces paramètres",
                 meeting_label=wordings["meeting_label"],
             ),
@@ -1141,12 +1137,12 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
-        flash(lazy_gettext("Lien invalide"), "error")
+        flash(_("Lien invalide"), "error")
         return redirect(url_for("routes.index"))
 
     is_expired = datetime.fromtimestamp(float(expiration)) < datetime.now()
     if is_expired:
-        flash(lazy_gettext("Lien expiré"), "error")
+        flash(_("Lien expiré"), "error")
         return redirect(url_for("routes.index"))
 
     return render_template(
@@ -1168,7 +1164,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
         flash(
-            lazy_gettext(
+            _(
                 "Aucune %(meeting_label)s ne correspond à ces paramètres",
                 meeting_label=wordings["meeting_label"],
             ),
@@ -1285,7 +1281,7 @@ def join_mail_meeting():
     meeting = get_mail_meeting(meeting_fake_id)
     if meeting is None:
         flash(
-            lazy_gettext(
+            _(
                 "%(meeting_label)s inexistante",
                 meeting_label=current_app.config["WORDINGS"][
                     "meeting_label"
@@ -1297,12 +1293,12 @@ def join_mail_meeting():
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
-        flash(lazy_gettext("Lien invalide"), "error")
+        flash(_("Lien invalide"), "error")
         return redirect(url_for("routes.index"))
 
     is_expired = datetime.fromtimestamp(expiration) < datetime.now()
     if is_expired:
-        flash(lazy_gettext("Lien expiré"), "error")
+        flash(_("Lien expiré"), "error")
         return redirect(url_for("routes.index"))
 
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
@@ -1336,7 +1332,7 @@ def join_meeting_as_role(meeting_id, role):
     if meeting.user_id == user.id:
         return redirect(meeting.get_join_url(role, user.fullname, create=True))
     else:
-        flash(lazy_gettext("Accès non autorisé"), "error")
+        flash(_("Accès non autorisé"), "error")
         return redirect(url_for("routes.index"))
 
 
@@ -1367,9 +1363,9 @@ def delete_meeting():
             else:
                 db.session.delete(meeting)
                 db.session.commit()
-                flash(lazy_gettext("Élément supprimé"), "success")
+                flash(_("Élément supprimé"), "success")
         else:
-            flash(lazy_gettext("Vous ne pouvez pas supprimer cet élément"), "error")
+            flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("routes.welcome"))
 
 
@@ -1385,11 +1381,11 @@ def delete_video_meeting():
             data = meeting.delete_recordings(recordID)
             return_code = data.get("returncode")
             if return_code == "SUCCESS":
-                flash(lazy_gettext("Vidéo supprimée"), "success")
+                flash(_("Vidéo supprimée"), "success")
             else:
                 message = data.get("message", "")
                 flash(
-                    lazy_gettext(
+                    _(
                         "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
                         code=return_code,
                         message=message,
@@ -1398,7 +1394,7 @@ def delete_video_meeting():
                 )
         else:
             flash(
-                lazy_gettext("Vous ne pouvez pas supprimer cette enregistrement"),
+                _("Vous ne pouvez pas supprimer cette enregistrement"),
                 "error",
             )
     return redirect(url_for("routes.welcome"))

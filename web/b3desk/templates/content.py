@@ -1,12 +1,11 @@
-from flask_babel import lazy_gettext
-
+from flask_babel import lazy_gettext as _
 
 FAQ_CONTENT = [
     {
-        "title": lazy_gettext(
+        "title": _(
             """Quelles sont les conditions d’accès pour accéder aux services ?"""
         ),
-        "description": lazy_gettext(
+        "description": _(
             """Cette plateforme offre une solution complète et puissante, adaptée à de nombreux types d’événements en ligne, jusqu’à 350 participants (Séminaire, formation, table ronde, ateliers collaboratifs…)
 
 Pour qui ?
@@ -30,8 +29,8 @@ Depuis votre ordinateur de travail (VPN activé ou désactivé) les navigateurs 
         ),
     },
     {
-        "title": lazy_gettext("""Quel est le matériel nécessaire ?"""),
-        "description": lazy_gettext(
+        "title": _("""Quel est le matériel nécessaire ?"""),
+        "description": _(
             """Pour utiliser l’outil Webinaire de l’État, il vous suffit de disposer du matériel suivant :
 
     • un ordinateur connecté à Internet
@@ -43,17 +42,17 @@ Depuis votre ordinateur de travail (VPN activé ou désactivé) les navigateurs 
         ),
     },
     {
-        "title": lazy_gettext(
+        "title": _(
             """Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"""
         ),
-        "description": lazy_gettext(
+        "description": _(
             """Le Webinaire de l’Etat fonctionne également sur les appareils mobiles par un simple lien (sans application) sur le portail ou dans le séminaire. Sur les iphone et ipad (IOS 12.2+) le navigateur Safari est recommandé. Sur Android, utiliser le navigateur chrome par défaut (Android 6.0+).
 """
         ),
     },
     {
-        "title": lazy_gettext("""Comment créer un séminaire ?"""),
-        "description": lazy_gettext(
+        "title": _("""Comment créer un séminaire ?"""),
+        "description": _(
             """Si vous êtes un agent de l’état, vous pouvez :
 - Créer des séminaires immédiatement en renseignant votre courriel professionnel sur .gouv.fr et suivant les noms de domaines autorisés.
 - Créer un compte pour créer et configurer des séminaires que vous pourrez retrouver facilement dans votre espace ainsi que les liens de connexions, les replays des enregistrements…
@@ -64,24 +63,24 @@ Si votre nom de domaine n’est pas reconnu, et que vous pensez être éligible 
         ),
     },
     {
-        "title": lazy_gettext("""Comment créer un compte ?"""),
-        "description": lazy_gettext(
+        "title": _("""Comment créer un compte ?"""),
+        "description": _(
             """En tant qu’agent de l’État, si vous organisez régulièrement des séminaires vous pouvez créer un compte pour organiser et conserver facilement vos séminaires sur mesure.
 
 Vous avez la possibilité créer une ou plusieurs salles de séminaire et les configurer suivant le type de dispositifs adaptés (ex : Séminaire, Formation, classe virtuelle, Conférence interactive, Plénière, Table ronde, Assemblée générale, Ateliers collaboratifs ou d’idéation, Comités en grand nombre, …etc.)."""
         ),
     },
     {
-        "title": lazy_gettext("""Comment inviter les participants/ modérateurs"""),
-        "description": lazy_gettext(
+        "title": _("""Comment inviter les participants/ modérateurs"""),
+        "description": _(
             """L’organisateur qui a créé le séminaire peut partager le lien :
 « Participants » qu’ils soient de l’administration ou de l’extérieur (partenaires, prestataires, entreprises, citoyens…)
 « Organisateurs/modérateurs » qui géreront avec vous le séminaire."""
         ),
     },
     {
-        "title": lazy_gettext("""Rejoindre un Webinaire en appel téléphonique ?"""),
-        "description": lazy_gettext(
+        "title": _("""Rejoindre un Webinaire en appel téléphonique ?"""),
+        "description": _(
             """Une fois dans le séminaire, il est possible d’utiliser aussi son téléphone fixe ou mobile pour suivre le séminaire.
 Les informations sont visibles dans le séminaire sur discussion publique. Vous pouvez transmettre ses informations composées du numéro d’appel et du code du séminaire :
 
@@ -92,8 +91,8 @@ Une fois dans la conférence, appuyez sur la touche « 0 » de votre téléphone
         ),
     },
     {
-        "title": lazy_gettext("""J'ai des perturbations audio ou vidéo ?"""),
-        "description": lazy_gettext(
+        "title": _("""J'ai des perturbations audio ou vidéo ?"""),
+        "description": _(
             """
 Pour l’audio, rapprochez-vous de votre borne wifi, ou/et coupez votre caméra
 Nous vous invitons à utiliser un casque pour une meilleure écoute et pour que les bruits de fond autour de vous ne perturbent pas les autres participants.
@@ -107,16 +106,14 @@ Pour utiliser moins de bande passante et profiter du service dans les meilleures
         ),
     },
     {
-        "title": lazy_gettext(
-            """Besoin de contacter l'équipe du Webinaire de l’Etat ?"""
-        ),
-        "description": lazy_gettext("""contact@webinaire.numerique.gouv.fr"""),
+        "title": _("""Besoin de contacter l'équipe du Webinaire de l’Etat ?"""),
+        "description": _("""contact@webinaire.numerique.gouv.fr"""),
     },
     {
-        "title": lazy_gettext(
+        "title": _(
             """Besoin de contacter l'équipe du ministére de l'Éducation nationale ?"""
         ),
-        "description": lazy_gettext(
+        "description": _(
             """Rendez-vous sur votre portail d'assistance académique https://www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur Apps.education.fr"""
         ),
     },
