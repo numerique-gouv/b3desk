@@ -342,6 +342,8 @@ def quick_meeting():
 @bp.route("/meeting/show/<int:meeting_id>", methods=["GET"])
 @auth.oidc_auth("default")
 def show_meeting(meeting_id):
+    # TODO: appears unused
+
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
     if not form.validate():
         flash(
