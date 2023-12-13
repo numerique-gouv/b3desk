@@ -21,6 +21,7 @@ from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
+from jinja2 import StrictUndefined
 
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
@@ -87,6 +88,9 @@ def setup_database(app):
 def setup_jinja(app):
     from b3desk.session import has_user_session
     from b3desk.session import get_current_user
+
+    if app.debug or app.testing:
+        app.jinja_env.undefined = StrictUndefined
 
     @app.context_processor
     def global_processor():
