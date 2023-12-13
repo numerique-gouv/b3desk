@@ -198,7 +198,7 @@
 								<button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="Supprimer"></button>
 							</td>
               <td>
-                <a href="{{ fqdn }}/meeting/files/{{ meeting.id }}/{{ file.id }}">
+                <a href="{{ config.get("SERVER_FQDN") }}/meeting/files/{{ meeting.id }}/{{ file.id }}">
 									<button class="fr-btn fr-icon-download-fill" title="Télécharger"></button>
                 </a>
               </td>

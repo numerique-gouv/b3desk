@@ -389,7 +389,7 @@ const nc_locator = "{{ user.nc_locator }}";
 const nc_login = "{{ user.nc_login }}";
 const nc_token = "{{ user.nc_token }}";
 const meeting_id = "{{ meeting.id }}";
-const fqdn = "{{ fqdn }}";
+const fqdn = "{{ config.get("SERVER_FQDN") }}";
 let ncfilepicker = null;
 
 if (!nc_locator || !nc_login || !nc_token) {

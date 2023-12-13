@@ -4,14 +4,14 @@
   <div class="fr-container">
     <div class="fr-mt-4w fr-grid-row fr-grid-row--center">
       <div class="fr-col-sm-8 fr-col-md-6 fr-col-lg-4 connected">
-        {% if quick_meeting == true %}
+        {% if quick_meeting is defined and quick_meeting %}
           <h1 class="fr-h2">{% trans %}Lancer {{ a_meeting }}{% endtrans %}</h1>
           <a class="fr-btn fr-btn--lg" href="{{ url_for("routes.quick_meeting") }}" target="_blank" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">{% trans %}Démarrer {{ a_meeting }} immédiatement{% endtrans %}</a>
           <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
         {% endif %}
       </div>
     </div>
-    {% if stats %}
+    {% if stats is defined and stats %}
     <div class="fr-mt-4w fr-grid-row fr-grid-row--center fr-grid-row--gutters stats-info-container">
       <div class="fr-col-sm-10 fr-col-md-8">
         <p class="stats-info">
@@ -43,7 +43,7 @@
           <p class="fr-text">{% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}</p>
           <p><a class="fr-btn" target="_blank" rel="noopener" href="{{ url_for("routes.welcome") }}">{% trans %}Se connecter ou créer un compte{% endtrans %}</a></p>
           <p></p>
-          {% if stats %}
+          {% if stats is defined and stats %}
             <p>
               <small>
                 {% trans trimmed count=stats["runningCount"]%}

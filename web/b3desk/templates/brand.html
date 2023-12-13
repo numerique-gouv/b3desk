@@ -17,7 +17,7 @@
         <!-- Webinaire de l'État -->
         <p class="fr-header__service-title">
             {% trans %}{{ service_title }}{% endtrans %}
-            {% if beta %}
+            {% if config.get("BETA") %}
               <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
             {% endif %}
           </p>

@@ -296,10 +296,8 @@ def welcome():
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
         mailto=current_app.config["MAILTO_LINKS"],
         quick_meeting=current_app.config["QUICK_MEETING"],
-        shorty=current_app.config["SHORTY"],
         file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
-        recording=current_app.config["RECORDING"],
     )
 
 
@@ -481,8 +479,6 @@ def edit_meeting_files(meeting_id):
                 "meeting/filesform.html",
                 meeting=meeting,
                 form=form,
-                fqdn=current_app.config["SERVER_FQDN"],
-                beta=current_app.config["BETA"],
             )
     flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
     return redirect(url_for("routes.welcome"))

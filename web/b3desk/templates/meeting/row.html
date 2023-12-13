@@ -1,5 +1,5 @@
 <div class="fr-grid-row fr-grid-row--gutters fr-pt-1-5v">
-  {% if shorty %}
+  {% if config.get("SHORTY") %}
   <div class="fr-col-4">
     <span class="fr-fi-user-line"></span>
     <a href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="moderator") }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
@@ -18,7 +18,7 @@
   </div>
   <div class="rf-col">
         <a href="{{ url_for("routes.edit_meeting", meeting_id=meeting.id) }}" class="rf-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="rf-fi-edit-line"></span></a>
-      {% if file_sharing %}
+      {% if config.get("FILE_SHARING") %}
         <a href="{{ url_for("routes.edit_meeting_files", meeting_id=meeting.id) }}" class="rf-tag" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="rf-fi-file-pdf-line"></span></a>
       {% endif %}
       <a href="#"
@@ -44,13 +44,13 @@
     </button>
   </div>
   <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
-      {% if recording %}
+      {% if config.get("RECORDING") %}
         <a href="{{ url_for("routes.show_meeting_recording", meeting_id=meeting.id) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
           <span class="fr-icon-play-line" aria-hidden="true"></span>
         </a>
       {% endif %}
       <a href="{{ url_for("routes.edit_meeting", meeting_id=meeting.id) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-icon-edit-line"></span></a>
-      {% if file_sharing %}
+      {% if config.get("FILE_SHARING") %}
         <a href="{{ url_for("routes.edit_meeting_files", meeting_id=meeting.id) }}" class="fr-btn fr-btn--secondary" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="fr-icon-file-pdf-line"></span></a>
       {% endif %}
       <a href="javascript: void()"
