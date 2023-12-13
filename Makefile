@@ -11,7 +11,7 @@ export-dependencies: export-base-dependencies export-dev-dependencies export-doc
 
 export-base-dependencies:
 	# Update requirements file for web service
-	poetry export --without-hashes --with task-management -o web/requirements.app.txt
+	poetry export --without-hashes -o web/requirements.app.txt
 
 export-dev-dependencies:
 	# Update requirements file for development environment used in GitHub Actions
