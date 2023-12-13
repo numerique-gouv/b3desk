@@ -1,4 +1,4 @@
-# Associer un fichier à un salon BBB dans B3desk
+# Associer un fichier à un salon BBB
 
 Il est possible d'associer un fichier à un salon
 ## Association des fichiers avant le lancement du salon
