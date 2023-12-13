@@ -197,7 +197,6 @@ def api_meetings():
 def insertDocuments(meeting_id):
     from flask import request
 
-    get_current_user()
     meeting = Meeting.query.get(meeting_id)
     files_title = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
@@ -696,7 +695,6 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
-    get_current_user()
     title = url.rsplit("/", 1)[-1]
 
     # test MAX_SIZE_UPLOAD for 20Mo
@@ -797,8 +795,6 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
-    get_current_user()
-
     externalMeetingFile = MeetingFilesExternal()
 
     externalMeetingFile.title = path
