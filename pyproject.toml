@@ -112,3 +112,15 @@ commands =
     poetry install --with doc
 	poetry run sphinx-build documentation build/sphinx/html
 """
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "except ImportError",
+    "if app.debug",
+    "if app.testing",
+]
