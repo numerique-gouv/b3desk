@@ -1,0 +1,18 @@
+<!-- Supprimer -->
+<div class="modal-template" id="delete-{{ meeting.id }}">
+  <div class="modal-body modal-body--center">
+    <p>Voulez-vous vraiment supprimer {{ the_meeting }} <em>{{ meeting.name }}</em> ?</p>
+    <div class="fr-highlight warning" id="meeting-delete-video-warning">
+      <p>
+        En supprimant {{ this_meeting }} vous supprimerez aussi les enregistrements qui lui sont rattachés.
+      </p>
+    </div>
+
+    <form action="{{ url_for("routes.delete_meeting") }}" method="POST" class="delete">
+      <button type="submit" class="fr-btn fr-btn--primary" >Supprimer</button>
+      <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >Annuler</button>
+      {% include 'meeting/id.html' %}
+      {% include 'meeting/csrf.html' %}
+    </form>
+  </div>
+</div>

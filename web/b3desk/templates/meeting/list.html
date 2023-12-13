@@ -18,7 +18,9 @@
       {% include 'meeting/row.html' %}
     </div>
   </div>
-  {% include 'meeting/modals.html' %}
+  {% include 'meeting/modals/delete.html' %}
+  {% include 'meeting/modals/invite.html' %}
+  {% include 'meeting/modals/recordings.html' %}
   {% endfor %}
   {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
     <iframe id="iframe-poll"

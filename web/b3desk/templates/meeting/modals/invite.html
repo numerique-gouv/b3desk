@@ -1,0 +1,52 @@
+<!-- Inviter -->
+<div class="modal-template" id="share-{{ meeting.id }}">
+    <div class="modal-body">
+        <h2 class="fr-h4">Inviter les modérateurs</h2>
+        <p>En leur envoyant l’adresse ci-dessous :</p>
+        <div class="fr-grid-row fr-text--sm">
+          <div class="fr-col-xs-9 fr-col-sm-10">
+            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.moderator_signin_url }}</code>
+          </div>
+          <div class="fr-col">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.moderator_signin_url }}');" title="Copier le lien modérateur dans le presse-papiers">
+              <span class="ri-clipboard-line"></span>
+            </button>
+          </div>
+        </div>
+        <p>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="moderator") }}">Rejoindre {{ the_meeting }} en tant que modérateur principal</a>
+        </p>
+
+        <h2 class="fr-h4">Inviter les participants</h2>
+        <p>En leur envoyant l’adresse ci-dessous :</p>
+        <div class="fr-grid-row fr-text--sm">
+          <div class="fr-col-xs-9 fr-col-sm-10">
+            <code id="meeting-{{ meeting.id }}-attendee-url">{{ meeting.attendee_signin_url }}</code>
+          </div>
+          <div class="fr-col">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.attendee_signin_url }}');" title="Copier le lien participant dans le presse-papiers">
+              <span class="ri-clipboard-line"></span>
+            </button>
+          </div>
+        </div>
+        <p>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="attendee") }}">Rejoindre {{ the_meeting }} en tant que participant</a>
+        </p>
+
+        <h2 class="fr-h4">Inviter les participants authentifiés {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</h2>
+        <p>En leur envoyant l’adresse ci-dessous :</p>
+        <div class="fr-grid-row fr-text--sm">
+          <div class="fr-col-xs-9 fr-col-sm-10">
+            <code id="meeting-{{ meeting.id }}-authenticated-attendee-url">{{ meeting.authenticated_attendee_signin_url }}</code>
+          </div>
+          <div class="fr-col">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.authenticated_attendee_signin_url }}');" title="Copier le lien participant authentifié dans le presse-papiers">
+              <span class="ri-clipboard-line"></span>
+            </button>
+          </div>
+        </div>
+        <p>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_authenticated", meeting_id=meeting.id) }}">Rejoindre {{ the_meeting }} en tant que participant authentifié</a>
+        </p>
+    </div>
+</div>
