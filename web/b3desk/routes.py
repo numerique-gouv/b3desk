@@ -1371,31 +1371,30 @@ def delete_meeting():
 @bp.route("/meeting/video/delete", methods=["POST"])
 @auth.oidc_auth("default")
 def delete_video_meeting():
-    if request.method == "POST":
-        user = get_current_user()
-        meeting_id = request.form["id"]
-        meeting = Meeting.query.get(meeting_id)
-        if meeting.user_id == user.id:
-            recordID = request.form["recordID"]
-            data = meeting.delete_recordings(recordID)
-            return_code = data.get("returncode")
-            if return_code == "SUCCESS":
-                flash(_("Vidéo supprimée"), "success")
-            else:
-                message = data.get("message", "")
-                flash(
-                    _(
-                        "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
-                        code=return_code,
-                        message=message,
-                    ),
-                    "error",
-                )
+    user = get_current_user()
+    meeting_id = request.form["id"]
+    meeting = Meeting.query.get(meeting_id)
+    if meeting.user_id == user.id:
+        recordID = request.form["recordID"]
+        data = meeting.delete_recordings(recordID)
+        return_code = data.get("returncode")
+        if return_code == "SUCCESS":
+            flash(_("Vidéo supprimée"), "success")
         else:
+            message = data.get("message", "")
             flash(
-                _("Vous ne pouvez pas supprimer cette enregistrement"),
+                _(
+                    "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
+                    code=return_code,
+                    message=message,
+                ),
                 "error",
             )
+    else:
+        flash(
+            _("Vous ne pouvez pas supprimer cette enregistrement"),
+            "error",
+        )
     return redirect(url_for("routes.welcome"))
 
 

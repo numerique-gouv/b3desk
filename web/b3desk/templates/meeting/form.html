@@ -38,7 +38,7 @@
   <h1 class="fr-h2">{% trans %}Créer{% endtrans %} {{ a_meeting }}</h1>
 {% endif %}
 
-<form id="meeting-form" action="/meeting/save" method="POST">
+<form id="meeting-form" action="{{ url_for("routes.save_meeting") }}" method="POST">
   {% if form.errors %}
   <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
   {% endif %}

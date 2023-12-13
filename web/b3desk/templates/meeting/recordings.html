@@ -82,7 +82,7 @@
     <div class="modal-template" id="delete-video-{{ r.recordID }}">
         <div class="modal-body modal-body--center">
             <p>Voulez-vous vraiment supprimer l'enregistrement <em>{{ recording_name }}</em> de <em>{{ meeting.name }}</em> ?</p>
-            <form action="/meeting/video/delete" method="POST" class="delete">
+            <form action="{{ url_for("routes.delete_video_meeting") }}" method="POST" class="delete">
             <input class="fr-input" type="hidden" name="recordID" value="{{ r.recordID }}" />
             <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
             <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >{% trans %}Annuler{% endtrans %}</button>

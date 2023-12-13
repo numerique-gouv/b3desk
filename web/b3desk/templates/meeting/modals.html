@@ -60,7 +60,7 @@
       </p>
     </div>
 
-    <form action="/meeting/delete" method="POST" class="delete">
+    <form action="{{ url_for("routes.delete_meeting") }}" method="POST" class="delete">
       <button type="submit" class="fr-btn fr-btn--primary" >Supprimer</button>
       <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >Annuler</button>
       {% include 'meeting/id.html' %}
