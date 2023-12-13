@@ -33,13 +33,12 @@
         <p>Le nom affiché sera « <tt id="namePreview"></tt> ».</p>
         {% endif %}
 
-        {% if not retry_join_meeting %}
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col">
             <button type="submit" class="fr-btn fr-btn-primary" >{% trans %}Rejoindre{% endtrans %}</button>
           </div>
         </div>
-        {% endif %}
+
         {% if role != "authenticated" and not user %}
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col">
