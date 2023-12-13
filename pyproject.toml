@@ -121,6 +121,9 @@ exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",
     "except ImportError",
+]
+partial_branches = [
+    "pragma: no branch",
     "if app.debug",
     "if app.testing",
 ]
