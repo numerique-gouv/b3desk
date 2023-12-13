@@ -47,23 +47,25 @@ from flask import render_template
 from flask import request
 from flask import send_file
 from flask import send_from_directory
-from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import ClientMetadata
 from flask_pyoidc.provider_configuration import ProviderConfiguration
-from flask_pyoidc.user_session import UserSession
 from sqlalchemy import exc
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
 from . import cache
+from .session import get_authenticated_attendee_fullname
+from .session import get_current_user
+from .session import has_user_session
 from .templates.content import FAQ_CONTENT
 from .utils import is_accepted_email
 from .utils import is_valid_email
 from .utils import send_mail
+
 
 bp = Blueprint("routes", __name__)
 
@@ -100,41 +102,6 @@ auth = OIDCAuthentication(
     },
     current_app,
 )
-
-
-def get_current_user():
-    user_session = UserSession(session)
-    info = user_session.userinfo
-    return get_or_create_user(info)
-
-
-def has_user_session():
-    user_session = UserSession(dict(session), "default")
-    return user_session.is_authenticated()
-
-
-def get_authenticated_attendee_fullname():
-    attendee_session = UserSession(session)
-    attendee_info = attendee_session.userinfo
-    given_name = attendee_info.get("given_name", "")
-    family_name = attendee_info.get("family_name", "")
-    fullname = f"{given_name} {family_name}".strip()
-    return fullname
-
-
-@bp.context_processor
-def global_processor():
-    if has_user_session():
-        user = get_current_user()
-        return {
-            "user": user,
-            "fullname": user.fullname,
-        }
-    else:
-        return {
-            "user": None,
-            "fullname": "",
-        }
 
 
 def add_mailto_links(meeting_data):

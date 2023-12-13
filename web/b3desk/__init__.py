@@ -16,7 +16,6 @@ from b3desk.utils import is_rie
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import session
 from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
@@ -58,6 +57,8 @@ def setup_logging(app, gunicorn_logging=False):
 
 
 def setup_i18n(app):
+    from flask import session
+
     babel.init_app(app)
 
     @babel.localeselector
@@ -84,8 +85,23 @@ def setup_database(app):
 
 
 def setup_jinja(app):
+    from b3desk.session import has_user_session
+    from b3desk.session import get_current_user
+
     @app.context_processor
     def global_processor():
+        if has_user_session():
+            user = get_current_user()
+            session_dict = {
+                "user": user,
+                "fullname": user.fullname,
+            }
+        else:
+            session_dict = {
+                "user": None,
+                "fullname": "",
+            }
+
         return {
             "config": app.config,
             "beta": app.config["BETA"],
@@ -94,6 +110,7 @@ def setup_jinja(app):
             "version": "1.1.2",
             "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
+            **session_dict,
         }
 
 
