@@ -1,4 +1,4 @@
-def test_end_bbb_meeting(app, client_app, authenticated_user, meeting, mocker):
+def test_end_bbb_meeting(client_app, authenticated_user, meeting, mocker):
     mocked_end = mocker.patch("b3desk.models.bbb.BBB.end")
 
     response = client_app.post(

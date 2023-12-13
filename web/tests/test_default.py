@@ -101,28 +101,30 @@ def test_faq__authenticated_user(client_app, authenticated_user):
     response.mustcontain("Alice Cooper")
 
 
-def test_documentation__anonymous_user(app, client_app, mocker):
-    app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = False
+def test_documentation__anonymous_user(client_app, mocker):
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = False
     response = client_app.get("/documentation", status=200)
 
     response.mustcontain(no="Alice Cooper")
 
 
-def test_documentation__authenticated_user(app, client_app, authenticated_user):
-    app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = False
+def test_documentation__authenticated_user(client_app, authenticated_user):
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = False
     response = client_app.get("/documentation", status=200)
 
     response.mustcontain("Alice Cooper")
 
 
-def test_documentation_with_redirection(app, client_app):
-    app.config["DOCUMENTATION_LINK"]["url"] = "https://documentation_redirect.ion"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = True
+def test_documentation_with_redirection(client_app):
+    client_app.app.config["DOCUMENTATION_LINK"][
+        "url"
+    ] = "https://documentation_redirect.ion"
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = True
     response = client_app.get("/documentation", status=302)
 
-    response.mustcontain(app.config["DOCUMENTATION_LINK"]["url"])
+    response.mustcontain(client_app.app.config["DOCUMENTATION_LINK"]["url"])
 
 
 def test_accessibilite__anonymous_user(client_app):

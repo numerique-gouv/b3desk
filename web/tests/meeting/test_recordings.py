@@ -114,7 +114,7 @@ def bbb_getRecordings_response(mocker):
     mocker.patch("requests.get", return_value=Resp)
 
 
-def test_get_recordings(app, meeting, bbb_getRecordings_response):
+def test_get_recordings(meeting, bbb_getRecordings_response):
     recordings = meeting.bbb.get_recordings()
 
     assert len(recordings) == 2
@@ -149,7 +149,7 @@ def test_get_recordings(app, meeting, bbb_getRecordings_response):
     )
 
 
-def test_update_recording_name(client_app, app, authenticated_user, meeting, mocker):
+def test_update_recording_name(client_app, authenticated_user, meeting, mocker):
     class Resp:
         content = """<response><returncode>SUCCESS</returncode><updated>true</updated></response>"""
 
@@ -162,7 +162,9 @@ def test_update_recording_name(client_app, app, authenticated_user, meeting, moc
     )
 
     bbb_url = mocked_bbb_request.call_args.args
-    assert f"{app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings" in bbb_url
+    assert (
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings" in bbb_url
+    )
     bbb_params = mocked_bbb_request.call_args.kwargs["params"].items()
     assert ("meta_name", "First recording") in bbb_params
     assert ("recordID", "recording_id") in bbb_params

@@ -12,15 +12,13 @@ def mocked_is_meeting_running(mocker):
     )
 
 
-def test_show_meeting(client_app, app, authenticated_user, meeting, bbb_response):
+def test_show_meeting(client_app, authenticated_user, meeting, bbb_response):
     response = client_app.get(f"/meeting/show/{meeting.id}", status=200)
 
     assert "meeting/show.html" in response.contexts
 
 
-def test_show_meeting_recording(
-    client_app, app, authenticated_user, meeting, bbb_response
-):
+def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
     response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
 
     assert "meeting/recordings.html" in response.contexts
@@ -32,15 +30,15 @@ def test_new_meeting(client_app, authenticated_user):
     assert response.template == "meeting/wizard.html"
 
 
-def test_new_meeting_when_recording_not_configured(client_app, app, authenticated_user):
-    app.config["RECORDING"] = False
+def test_new_meeting_when_recording_not_configured(client_app, authenticated_user):
+    client_app.app.config["RECORDING"] = False
 
     response = client_app.get("/meeting/new")
 
     response.mustcontain(no="Enregistrement")
 
 
-def test_edit_meeting(client_app, app, authenticated_user, meeting, bbb_response):
+def test_edit_meeting(client_app, authenticated_user, meeting, bbb_response):
     response = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
 
     assert response.template == "meeting/wizard.html"
@@ -68,9 +66,7 @@ MEETING_DATA = {
 }
 
 
-def test_save_new_meeting(
-    app, client_app, authenticated_user, mocked_is_meeting_running
-):
+def test_save_new_meeting(client_app, authenticated_user, mocked_is_meeting_running):
     response = client_app.post(
         "/meeting/save",
         MEETING_DATA,
@@ -104,7 +100,7 @@ def test_save_new_meeting(
 
 
 def test_save_existing_meeting(
-    app, client_app, authenticated_user, meeting, mocked_is_meeting_running
+    client_app, authenticated_user, meeting, mocked_is_meeting_running
 ):
     assert len(Meeting.query.all()) == 1
 
@@ -146,7 +142,7 @@ def test_save_existing_meeting(
 
 
 def test_save_moderatorOnlyMessage_too_long(
-    app, client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mocked_is_meeting_running
 ):
     data = MEETING_DATA.copy()
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
@@ -166,7 +162,7 @@ def test_save_moderatorOnlyMessage_too_long(
 
 
 def test_save_no_recording_by_default(
-    app, client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mocked_is_meeting_running
 ):
     data = MEETING_DATA.copy()
     del data["autoStartRecording"]
@@ -181,9 +177,9 @@ def test_save_no_recording_by_default(
 
 
 def test_save_meeting_in_no_recording_environment(
-    app, client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mocked_is_meeting_running
 ):
-    app.config["RECORDING"] = False
+    client_app.app.config["RECORDING"] = False
 
     response = client_app.post(
         "/meeting/save",
@@ -198,8 +194,8 @@ def test_save_meeting_in_no_recording_environment(
     assert meeting.record is False
 
 
-def test_create(app, meeting, mocker):
-    app.config["FILE_SHARING"] = True
+def test_create(client_app, meeting, mocker):
+    client_app.app.config["FILE_SHARING"] = True
 
     class Resp:
         content = """<response><returncode>SUCCESS</returncode></response>"""
@@ -209,33 +205,32 @@ def test_create(app, meeting, mocker):
         "b3desk.tasks.background_upload.delay", return_value=True
     )
 
-    with app.test_request_context():
-        meeting.name = "My Meeting"
-        meeting.attendeePW = "Password1"
-        meeting.moderatorPW = "Password2"
-        meeting.welcome = "Welcome!"
-        meeting.maxParticipants = 25
-        meeting.logoutUrl = "https://log.out"
-        meeting.record = True
-        meeting.duration = 60
-        meeting.moderatorOnlyMessage = "Welcome moderators!"
-        meeting.autoStartRecording = False
-        meeting.allowStartStopRecording = True
-        meeting.webcamsOnlyForModerator = False
-        meeting.muteOnStart = True
-        meeting.lockSettingsDisableCam = False
-        meeting.lockSettingsDisableMic = False
-        meeting.allowModsToUnmuteUsers = False
-        meeting.lockSettingsDisablePrivateChat = False
-        meeting.lockSettingsDisablePublicChat = False
-        meeting.lockSettingsDisableNote = False
-        meeting.guestPolicy = True
+    meeting.name = "My Meeting"
+    meeting.attendeePW = "Password1"
+    meeting.moderatorPW = "Password2"
+    meeting.welcome = "Welcome!"
+    meeting.maxParticipants = 25
+    meeting.logoutUrl = "https://log.out"
+    meeting.record = True
+    meeting.duration = 60
+    meeting.moderatorOnlyMessage = "Welcome moderators!"
+    meeting.autoStartRecording = False
+    meeting.allowStartStopRecording = True
+    meeting.webcamsOnlyForModerator = False
+    meeting.muteOnStart = True
+    meeting.lockSettingsDisableCam = False
+    meeting.lockSettingsDisableMic = False
+    meeting.allowModsToUnmuteUsers = False
+    meeting.lockSettingsDisablePrivateChat = False
+    meeting.lockSettingsDisablePublicChat = False
+    meeting.lockSettingsDisableNote = False
+    meeting.guestPolicy = True
 
-        meeting.bbb.create()
+    meeting.bbb.create()
 
     assert mocked_bbb_create_request.called
     bbb_url = mocked_bbb_create_request.call_args.args[0]
-    assert bbb_url == f'{app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    assert bbb_url == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
     bbb_params = mocked_bbb_create_request.call_args.kwargs["params"]
     assert bbb_params == {
         "meetingID": meeting.meetingID,
@@ -262,14 +257,16 @@ def test_create(app, meeting, mocker):
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": app.config["EXTERNAL_UPLOAD_DESCRIPTION"],
-        "uploadExternalUrl": f"{app.config['SERVER_FQDN']}/meeting/{str(meeting.id)}/externalUpload",
+        "uploadExternalDescription": client_app.app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
+        ],
+        "uploadExternalUrl": f"{client_app.app.config['SERVER_FQDN']}/meeting/{str(meeting.id)}/externalUpload",
     }
 
     assert mocked_background_upload.called
     assert (
         mocked_background_upload.call_args.args[0]
-        == f'{app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
+        == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
     )
     assert (
         mocked_background_upload.call_args.args[1]
@@ -298,7 +295,7 @@ def test_create_without_logout_url_gets_default(
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
 
-def test_create_quick_meeting(app, monkeypatch, user, mocker):
+def test_create_quick_meeting(client_app, monkeypatch, user, mocker):
     from b3desk.routes import get_quick_meeting_from_user_and_random_string
 
     class Resp:
@@ -306,15 +303,14 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
 
     mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
-    with app.test_request_context():
-        monkeypatch.setattr("b3desk.models.users.User.id", 1)
-        monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
-        meeting = get_quick_meeting_from_user_and_random_string(user)
-        meeting.bbb.create()
+    monkeypatch.setattr("b3desk.models.users.User.id", 1)
+    monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
+    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting.bbb.create()
 
     assert mocked_bbb_create_request.called
     bbb_url = mocked_bbb_create_request.call_args.args[0]
-    assert bbb_url == f'{app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    assert bbb_url == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
     bbb_params = mocked_bbb_create_request.call_args.kwargs["params"]
     assert bbb_params == {
         "meetingID": meeting.meetingID,
@@ -333,8 +329,8 @@ def test_create_quick_meeting(app, monkeypatch, user, mocker):
     }
 
 
-def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_response):
-    app.config["FILE_SHARING"] = True
+def test_edit_files_meeting(client_app, authenticated_user, meeting, bbb_response):
+    client_app.app.config["FILE_SHARING"] = True
 
     response = client_app.get(f"/meeting/files/{meeting.id}", status=200)
 
@@ -342,9 +338,9 @@ def test_edit_files_meeting(client_app, app, authenticated_user, meeting, bbb_re
 
 
 def test_deactivated_meeting_files_cannot_access_files(
-    client_app, app, authenticated_user, meeting, bbb_response
+    client_app, authenticated_user, meeting, bbb_response
 ):
-    app.config["FILE_SHARING"] = False
+    client_app.app.config["FILE_SHARING"] = False
 
     response = client_app.get("/welcome", status=200)
 
@@ -352,9 +348,9 @@ def test_deactivated_meeting_files_cannot_access_files(
 
 
 def test_deactivated_meeting_files_cannot_edit(
-    client_app, app, authenticated_user, meeting, bbb_response
+    client_app, authenticated_user, meeting, bbb_response
 ):
-    app.config["FILE_SHARING"] = False
+    client_app.app.config["FILE_SHARING"] = False
 
     response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
 
