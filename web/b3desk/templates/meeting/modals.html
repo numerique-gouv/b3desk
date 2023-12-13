@@ -14,7 +14,7 @@
           </div>
         </div>
         <p>
-          <a class="fr-link" target="_blank" rel="noopener" href="{{ '/meeting/join/'~ meeting.id ~ '/moderator' }}">Rejoindre {{ the_meeting }} en tant que modérateur principal</a>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="moderator") }}">Rejoindre {{ the_meeting }} en tant que modérateur principal</a>
         </p>
 
         <h2 class="fr-h4">Inviter les participants</h2>
@@ -30,7 +30,7 @@
           </div>
         </div>
         <p>
-          <a class="fr-link" target="_blank" rel="noopener" href="{{ '/meeting/join/'~ meeting.id ~ '/attendee' }}">Rejoindre {{ the_meeting }} en tant que participant</a>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="attendee") }}">Rejoindre {{ the_meeting }} en tant que participant</a>
         </p>
 
         <h2 class="fr-h4">Inviter les participants authentifiés {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</h2>
@@ -46,7 +46,7 @@
           </div>
         </div>
         <p>
-          <a class="fr-link" target="_blank" rel="noopener" href="{{ '/meeting/join/'~ meeting.id ~ '/authenticated' }}">Rejoindre {{ the_meeting }} en tant que participant authentifié</a>
+          <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("routes.join_meeting_as_authenticated", meeting_id=meeting.id) }}">Rejoindre {{ the_meeting }} en tant que participant authentifié</a>
         </p>
     </div>
 </div>

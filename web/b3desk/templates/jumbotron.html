@@ -6,7 +6,7 @@
       <div class="fr-col-sm-8 fr-col-md-6 fr-col-lg-4 connected">
         {% if quick_meeting == true %}
           <h1 class="fr-h2">{% trans %}Lancer {{ a_meeting }}{% endtrans %}</h1>
-          <a class="fr-btn fr-btn--lg" href="meeting/quick" target="_blank" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">{% trans %}Démarrer {{ a_meeting }} immédiatement{% endtrans %}</a>
+          <a class="fr-btn fr-btn--lg" href="{{ url_for("routes.quick_meeting") }}" target="_blank" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">{% trans %}Démarrer {{ a_meeting }} immédiatement{% endtrans %}</a>
           <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
         {% endif %}
       </div>
