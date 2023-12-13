@@ -4,32 +4,6 @@ Bienvenue sur B3Desk, et merci de prendre le temps de vous intéresser à la con
 
 Vous trouverez ici les quelques indications qui permettront à B3Desk de grandir et de se développer que nous avons jugées intéressantes. N'hésitez pas à faire des suggestions !
 
-**Sommaire**
-
-[Lancer B3Desk localement](#lancer-b3desk-localement)
-
-- [Docker](#Docker)
-- [Environnement de développement](#environnement-de-développement)
-    - [Installation locale](#installation-locale)
-    - [Poetry](#Poetry)
-
-[Soumettre des modifications](#soumettre-des-modifications)
-
-- [Prérequis](#Prérequis)
-    - [Validité du code](#validité-du-code)
-    - [Conventions de code](#conventions-de-code)
-    - [Intégration continue GitHub](#intégration-continue-github)
-- [Pull requests](#pull-requests)
-    - [Workflow](#Workflow)
-    - [Commits](#Commits)
-- [Cas particuliers](#cas-particuliers)
-    - [Migration des données](#migration-des-données)
-    - [Traductions](#Traductions)
-
-[Mise en forme des pages](#mise-en-forme-des-pages)
-
-[Liens utiles](#liens-utiles)
-
 ## Lancer B3Desk localement
 
 ### Docker
@@ -43,7 +17,7 @@ Pour lancer l'application et coller au plus proche des conditions de production,
 - broker : le broker redis qui maintient une liste de tâches dans laquelle vient se servir le worker
 - tokenmock : un mock qui vient reproduire les conditions de prod de distribution d'un token pour la communication entre B3Desk et l'instance Nextcloud de l'utilisateur
 
-Vous trouverez plus d'informations concernant la persistance des données pour certains de ces conteneurs dans la documentation [./documentation/dockerPersistence.md](./documentation/dockerPersistence.md).
+Vous trouverez plus d'informations concernant la persistance des données pour certains de ces conteneurs dans {doc}`la documentation <dockerPersistence>`.
 
 1. Configurer l'application web en créant le fichier `web.env` à partir du fichier `web.env.example`. Ce nouveau fichier est précisé dans `docker-compose.override.yml` qui vient surcharger le fichier `docker-compose.yml` lorsqu'aucun fichier n'est précisé dans la commande `docker compose`.
 Pour que les liens vers le service BBB fonctionne, il est nécessaire de configurer les variables d'environnement BIGBLUEBUTTON_ENDPOINT et BIGBLUEBUTTON_SECRET.
@@ -142,7 +116,7 @@ Ainsi, lorsque vous ferez un commit, black sera automatiquement lancé et format
 
 GitHub Actions est utilisé afin de s'assurer que le code reste propre et fonctionnel et que les conteneurs peuvent communiquer entre eux pour s'assurer que l'embarquement de nouveaux développeur·euses sur de nouvelles machines est possible.
 
-Cette intégration continue fait tourner des conteneurs Docker, les [fichiers de requirements](#poetry) doivent donc être maintenus à jour.
+Cette intégration continue fait tourner des conteneurs Docker, les fichiers de requirements doivent donc être maintenus à jour.
 
 La CI GitHub est utilisée pour :
 - lancer les tests dans un environnement local (sans conteneur docker) : pour permettre aux développeurs d'être indépendant de docker sur leurs machines
@@ -161,7 +135,7 @@ Le projet est organisé de la façon suivante :
 
 - Les modification sont faites sur une `branche` de votre **fork**.
 - Lorsque le développement est prêt, une *pull request* vers la branche `main` du projet d'*origine* est réalisée
-- Une fois ce [développement validé](./documentation/pullRequestValidation.md), les mainteneurs du projet vont *merger* ces modifications sur `main`
+- Une fois ce {doc}`développement validé <../maintainers/pullRequestValidation>`, les mainteneurs du projet vont *merger* ces modifications sur `main`
 - Lorsque suffisamment de modifications sont faites dans `main`, les mainteneurs peuvent décider de créer une nouvelle version du projet
 - La branche `main` est *mergée* dans la branche `production`, référente pour les déploiements du projet B3Desk
 
@@ -192,15 +166,13 @@ En production, les migrations sont réalisées automatiquement par `run_webserve
 
 #### Traductions
 
-Vous trouverez toutes les informations sur la traduction dans cette [documentation](./documentation/translation.md).
+Vous trouverez toutes les informations sur la traduction dans cette {doc}`documentation <translation>`.
 
 ## Mise en forme des pages
 
-Le service utilise le style du Système de Design de l'État (dsfr) :
-
-https://gouvfr.atlassian.net/wiki/spaces/DB/overview?homepageId=145359476
+Le service utilise le style du [Système de Design de l'État (dsfr)](https://gouvfr.atlassian.net/wiki/spaces/DB/overview?homepageId=145359476)
 
 ## Liens utiles
 
-- https://docs.bigbluebutton.org/dev/api.html
-- https://mconf.github.io/api-mate/
+- [docs.bigbluebutton.org/dev/api.html](https://docs.bigbluebutton.org/dev/api.html)
+- [mconf.github.io/api-mate](https://mconf.github.io/api-mate/)

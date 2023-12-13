@@ -20,7 +20,7 @@ La documentation pour les mainteneurs et les développeurs est déployée sur [b
 
 ## Développement et contributions
 
-Vous pouvez suivre la documentation dans [./CONTRIBUTING.md](./CONTRIBUTING.md) pour installer localement le projet et le tester.
+Vous pouvez suivre la documentation dans [CONTRIBUTING.md](./CONTRIBUTING.md) pour installer localement le projet et le tester.
 
 ## Licence
 
