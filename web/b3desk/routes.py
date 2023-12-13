@@ -134,7 +134,7 @@ def get_meetings_stats():
     return result
 
 
-@bp.route("/api/meetings", methods=["GET"])
+@bp.route("/api/meetings")
 @auth.token_auth(provider_name="default")
 def api_meetings():
     if not auth.current_token_identity:
@@ -333,7 +333,7 @@ def quick_mail_meeting():
     return redirect(url_for("routes.index"))
 
 
-@bp.route("/meeting/quick", methods=["GET"])
+@bp.route("/meeting/quick")
 @auth.oidc_auth("default")
 def quick_meeting():
     user = get_current_user()
@@ -342,7 +342,9 @@ def quick_meeting():
     return redirect(m.get_join_url("moderator", fullname, create=True))
 
 
-@bp.route("/meeting/show/<int:meeting_id>", methods=["GET"])
+@bp.route(
+    "/meeting/show/<int:meeting_id>",
+)
 @auth.oidc_auth("default")
 def show_meeting(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -363,7 +365,9 @@ def show_meeting(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/recordings/<int:meeting_id>", methods=["GET"])
+@bp.route(
+    "/meeting/recordings/<int:meeting_id>",
+)
 @auth.oidc_auth("default")
 def show_meeting_recording(meeting_id):
     form = ShowMeetingForm(data={"meeting_id": meeting_id})
@@ -412,7 +416,9 @@ def update_recording_name(meeting_id, recording_id):
     return redirect(url_for("routes.show_meeting_recording", meeting_id=meeting_id))
 
 
-@bp.route("/meeting/new", methods=["GET"])
+@bp.route(
+    "/meeting/new",
+)
 @auth.oidc_auth("default")
 def new_meeting():
     user = get_current_user()
@@ -429,7 +435,9 @@ def new_meeting():
     )
 
 
-@bp.route("/meeting/edit/<int:meeting_id>", methods=["GET"])
+@bp.route(
+    "/meeting/edit/<int:meeting_id>",
+)
 @auth.oidc_auth("default")
 def edit_meeting(meeting_id):
     user = get_current_user()
@@ -451,7 +459,9 @@ def edit_meeting(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>", methods=["GET"])
+@bp.route(
+    "/meeting/files/<int:meeting_id>",
+)
 @auth.oidc_auth("default")
 def edit_meeting_files(meeting_id):
     user = get_current_user()
@@ -489,7 +499,9 @@ def edit_meeting_files(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>/<int:file_id>", methods=["GET"])
+@bp.route(
+    "/meeting/files/<int:meeting_id>/<int:file_id>",
+)
 @auth.oidc_auth("default")
 def download_meeting_files(meeting_id, file_id):
     user = get_current_user()
@@ -952,7 +964,9 @@ def end_meeting():
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/create/<int:meeting_id>", methods=["GET"])
+@bp.route(
+    "/meeting/create/<int:meeting_id>",
+)
 @auth.oidc_auth("default")
 def create_meeting(meeting_id):
     user = get_current_user()
@@ -965,7 +979,9 @@ def create_meeting(meeting_id):
 
 # draft for insertDocument calls to BBB API
 # @TODO: can we remove this def entirely?
-@bp.route("/insertDoc/<token>", methods=["GET"])
+@bp.route(
+    "/insertDoc/<token>",
+)
 def insertDoc(token):
     # select good file from token
     # get file through NC credentials - HOW POSSIBLE ?
@@ -1027,7 +1043,9 @@ def externalUpload(meeting_id):
         return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>", methods=["GET"])
+@bp.route(
+    "/ncdownload/<isexternal>/<mfid>/<mftoken>",
+)
 # @auth.token_auth(provider_name="default") - must be accessible by BBB serveur, so no auth
 def ncdownload(isexternal, mfid, mftoken):
     secret_key = current_app.config["SECRET_KEY"]
@@ -1081,7 +1099,6 @@ def ncdownload(isexternal, mfid, mftoken):
 
 @bp.route(
     "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<h>",
-    methods=["GET"],
 )
 def signin_mail_meeting(meeting_fake_id, expiration, h):
     meeting = get_mail_meeting(meeting_fake_id)
@@ -1119,7 +1136,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
 
 @bp.route(
-    "/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
+    "/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>",
 )
 def signin_meeting(meeting_fake_id, user_id, h):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
@@ -1154,7 +1171,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
 
 
 @bp.route(
-    "/meeting/auth/<meeting_fake_id>/creator/<int:user_id>/hash/<h>", methods=["GET"]
+    "/meeting/auth/<meeting_fake_id>/creator/<int:user_id>/hash/<h>",
 )
 @auth.oidc_auth("default")
 def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
@@ -1266,7 +1283,9 @@ def join_mail_meeting():
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
 
-@bp.route("/meeting/join/<int:meeting_id>/authenticated", methods=["GET"])
+@bp.route(
+    "/meeting/join/<int:meeting_id>/authenticated",
+)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     meeting = Meeting.query.get(meeting_id) or abort(404)
@@ -1283,7 +1302,9 @@ def join_meeting_as_authenticated(meeting_id):
     )
 
 
-@bp.route("/meeting/join/<int:meeting_id>/<role>", methods=["GET"])
+@bp.route(
+    "/meeting/join/<int:meeting_id>/<role>",
+)
 @auth.oidc_auth("default")
 def join_meeting_as_role(meeting_id, role):
     user = get_current_user()
