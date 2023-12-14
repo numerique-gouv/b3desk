@@ -11,6 +11,8 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 import requests
 from b3desk.utils import secret_key
@@ -41,6 +43,19 @@ def get_user_nc_credentials(username):
             current_app.config["NC_LOGIN_API_URL"], json=postData, headers=postHeaders
         )
         data = response.json()
+        if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
+            valid_nclocator = (
+                f'//{data["nclocator"]}'
+                if not (
+                    data["nclocator"].startswith("//")
+                    or data["nclocator"].startswith("http://")
+                    or data["nclocator"].startswith("https://")
+                )
+                else data["nclocator"]
+            )
+            parsed_url = urlparse(valid_nclocator)
+            if parsed_url.scheme != "https":
+                data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
         return data
     except requests.exceptions.RequestException:
         current_app.logger.error(
@@ -77,9 +92,7 @@ def get_or_create_user(user_info):
         if nc_locator is None or nc_login is None or nc_token is None:
             nc_last_auto_enroll = None
         else:
-            nc_last_auto_enroll = datetime.now().strftime(
-                current_app.config["TIME_FORMAT"]
-            )
+            nc_last_auto_enroll = datetime.now()
         user = User(
             email=email,
             given_name=given_name,
@@ -111,9 +124,7 @@ def get_or_create_user(user_info):
             if nc_locator is None or nc_login is None or nc_token is None:
                 nc_last_auto_enroll = None
             else:
-                nc_last_auto_enroll = datetime.now().strftime(
-                    current_app.config["TIME_FORMAT"]
-                )
+                nc_last_auto_enroll = datetime.now()
             user.nc_token = nc_token
             user.nc_login = nc_login
             user.nc_locator = nc_locator

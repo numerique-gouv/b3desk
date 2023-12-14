@@ -355,3 +355,71 @@ def test_deactivated_meeting_files_cannot_edit(
     response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
 
     assert "welcome" in response.location
+
+
+def test_get_given_cloud_instance_scheme(
+    client_app,
+    app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+    cloud_token_response,
+    mocker,
+):
+    mocker.patch("requests.post", return_value=cloud_token_response)
+
+    app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
+
+    client_app.get("/welcome", status=200)
+    assert authenticated_user.nc_locator == "http://nextcloud-instance.org"
+
+
+def test_get_given_cloud_instance_scheme_untouched(
+    client_app,
+    app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+    secure_cloud_token_response,
+    mocker,
+):
+    mocker.patch("requests.post", return_value=secure_cloud_token_response)
+
+    app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
+
+    client_app.get("/welcome", status=200)
+    assert authenticated_user.nc_locator == "https://nextcloud-instance.org"
+
+
+def test_get_secure_cloud_instance_scheme(
+    client_app,
+    app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+    cloud_token_response,
+    mocker,
+):
+    mocker.patch("requests.post", return_value=cloud_token_response)
+
+    app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
+
+    client_app.get("/welcome", status=200)
+    assert authenticated_user.nc_locator == "https://nextcloud-instance.org"
+
+
+def test_get_secure_cloud_instance_on_missing_scheme(
+    client_app,
+    app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+    no_scheme_cloud_token_response,
+    mocker,
+):
+    mocker.patch("requests.post", return_value=no_scheme_cloud_token_response)
+
+    app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
+
+    client_app.get("/welcome", status=200)
+    assert authenticated_user.nc_locator == "https://nextcloud-instance.org"

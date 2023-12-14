@@ -62,6 +62,9 @@ def app(mocker, tmp_path):
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
             "MEETING_KEY_WORDING": "seminaire",
             "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+            "NC_LOGIN_API_URL": "http://tokenmock:80/index.php",
+            "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
+            "FILE_SHARING": True,
         }
     )
     with app.app_context():
@@ -140,3 +143,30 @@ def bbb_response(mocker):
         status_code = 200
 
     mocker.patch("requests.get", return_value=Resp)
+
+
+class CloudTokenResponse:
+    def __init__(self, nc_locator):
+        self.nc_locator = nc_locator
+
+    def json(self):
+        return {
+            "nctoken": "token",
+            "nclocator": self.nc_locator,
+            "nclogin": "login",
+        }
+
+
+@pytest.fixture()
+def cloud_token_response():
+    return CloudTokenResponse("http://nextcloud-instance.org")
+
+
+@pytest.fixture()
+def secure_cloud_token_response():
+    return CloudTokenResponse("https://nextcloud-instance.org")
+
+
+@pytest.fixture()
+def no_scheme_cloud_token_response():
+    return CloudTokenResponse("nextcloud-instance.org")
