@@ -64,11 +64,11 @@ def app(mocker, tmp_path):
             "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
         }
     )
-    with app.app_context():
+    with app.test_request_context():
         Migrate(app, db, compare_type=True)
         db.create_all()
 
-    return app
+        yield app
 
 
 @pytest.fixture()
