@@ -61,7 +61,6 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
-        print("locale_selector")
         if request.args.get("lang"):
             session["lang"] = request.args["lang"]
         return session.get("lang", "fr")
