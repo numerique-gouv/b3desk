@@ -1,5 +1,6 @@
 from flask import abort
 from flask import url_for
+from flask_webtest import TestApp
 
 
 def test_custom_400(client_app):
@@ -75,7 +76,8 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
     assert response.location == url_for("routes.welcome")
 
 
-def test_change_language(client_app):
+def test_change_language(app):
+    client_app = TestApp(app)
     client_app.get("/faq?lang=fr", status=200)
     with client_app.session_transaction() as session:
         assert session["lang"] == "fr"

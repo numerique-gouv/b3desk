@@ -60,13 +60,13 @@ def setup_logging(app, gunicorn_logging=False):
 def setup_i18n(app):
     from flask import session
 
-    babel.init_app(app)
-
-    @babel.localeselector
-    def get_locale():
+    def locale_selector():
+        print("locale_selector")
         if request.args.get("lang"):
             session["lang"] = request.args["lang"]
         return session.get("lang", "fr")
+
+    babel.init_app(app, locale_selector=locale_selector)
 
 
 def setup_csrf(app):

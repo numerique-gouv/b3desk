@@ -64,20 +64,21 @@ def app(mocker, tmp_path):
             "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
         }
     )
-    with app.test_request_context():
+    with app.app_context():
         Migrate(app, db, compare_type=True)
         db.create_all()
 
-        yield app
+    return app
 
 
 @pytest.fixture()
 def client_app(app):
-    return TestApp(app)
+    with app.test_request_context():
+        yield TestApp(app)
 
 
 @pytest.fixture()
-def meeting(app, user):
+def meeting(client_app, user):
     meeting = Meeting(user=user)
     meeting.save()
 
@@ -85,7 +86,7 @@ def meeting(app, user):
 
 
 @pytest.fixture()
-def user(app):
+def user(client_app):
     user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
     user.save()
 
