@@ -1,12 +1,15 @@
 from b3desk.models.users import get_or_create_user
+from flask import g
 from flask import session
 from flask_pyoidc.user_session import UserSession
 
 
 def get_current_user():
-    user_session = UserSession(session)
-    info = user_session.userinfo
-    return get_or_create_user(info)
+    if "user" not in g:
+        user_session = UserSession(session)
+        info = user_session.userinfo
+        g.user = get_or_create_user(info)
+    return g.user
 
 
 def has_user_session():
