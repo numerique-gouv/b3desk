@@ -299,10 +299,10 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
 def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
     if meeting_fake_id.isdigit():
         try:
-            meeting = Meeting.query.get(meeting_fake_id)
+            meeting = db.session.get(Meeting, meeting_fake_id)
         except:
             try:
-                user = User.query.get(user_id)
+                user = db.session.get(User, user_id)
                 meeting = get_quick_meeting_from_user_and_random_string(
                     user, random_string=meeting_fake_id
                 )
@@ -310,7 +310,7 @@ def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
                 meeting = None
     else:
         try:
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             meeting = get_quick_meeting_from_user_and_random_string(
                 user, random_string=meeting_fake_id
             )

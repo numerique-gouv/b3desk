@@ -1,6 +1,7 @@
 from unittest import mock
 
 import pytest
+from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
@@ -75,7 +76,7 @@ def test_save_new_meeting(client_app, authenticated_user, mocked_is_meeting_runn
 
     assert "welcome" in response.location
 
-    meeting = Meeting.query.get(1)
+    meeting = db.session.get(Meeting, 1)
 
     assert meeting.user_id == 1
     assert meeting.name == "Mon meeting de test"
@@ -117,7 +118,7 @@ def test_save_existing_meeting(
 
     assert len(Meeting.query.all()) == 1
 
-    meeting = Meeting.query.get(1)
+    meeting = db.session.get(Meeting, 1)
 
     assert meeting.user_id == 1
     assert not meeting.name  # Name can not be edited
@@ -170,7 +171,7 @@ def test_save_no_recording_by_default(
 
     client_app.post("/meeting/save", data, status=302)
 
-    meeting = Meeting.query.get(1)
+    meeting = db.session.get(Meeting, 1)
     assert meeting.record is False
     assert meeting.autoStartRecording is False
     assert meeting.allowStartStopRecording is False
@@ -190,7 +191,7 @@ def test_save_meeting_in_no_recording_environment(
     assert "welcome" in response.location
 
     assert len(Meeting.query.all()) == 1
-    meeting = Meeting.query.get(1)
+    meeting = db.session.get(Meeting, 1)
     assert meeting.record is False
 
 
@@ -290,7 +291,7 @@ def test_create_without_logout_url_gets_default(
         status=302,
     )
 
-    meeting = Meeting.query.get(1)
+    meeting = db.session.get(Meeting, 1)
     assert meeting
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 

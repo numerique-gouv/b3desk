@@ -168,7 +168,7 @@ def api_meetings():
 def insertDocuments(meeting_id):
     from flask import request
 
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     files_title = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
 
@@ -361,7 +361,7 @@ def show_meeting(meeting_id):
         )
         return redirect(url_for("routes.welcome"))
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         return render_template(
             "meeting/show.html",
@@ -382,7 +382,7 @@ def show_meeting_recording(meeting_id):
         )
         return redirect(url_for("routes.welcome"))
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         meeting_dict = meeting.get_data_as_dict(user.fullname, fetch_recording=True)
         form = RecordingForm()
@@ -399,7 +399,7 @@ def show_meeting_recording(meeting_id):
 @auth.oidc_auth("default")
 def update_recording_name(meeting_id, recording_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id) or abort(404)
+    meeting = db.session.get(Meeting, meeting_id) or abort(404)
     if meeting.user_id == user.id:
         form = RecordingForm(request.form)
         form.validate() or abort(403)
@@ -441,7 +441,7 @@ def new_meeting():
 @auth.oidc_auth("default")
 def edit_meeting(meeting_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
 
     form = (
         MeetingWithRecordForm(obj=meeting)
@@ -463,7 +463,7 @@ def edit_meeting(meeting_id):
 @auth.oidc_auth("default")
 def edit_meeting_files(meeting_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
 
     form = MeetingFilesForm()
 
@@ -499,7 +499,7 @@ def edit_meeting_files(meeting_id):
 @auth.oidc_auth("default")
 def download_meeting_files(meeting_id, file_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
 
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -557,8 +557,8 @@ def toggledownload(meeting_id):
 
     if user is None:
         return redirect(url_for("routes.welcome"))
-    meeting = Meeting.query.get(meeting_id)
-    meeting_file = MeetingFiles.query.get(data["id"])
+    meeting = db.session.get(Meeting, meeting_id)
+    meeting_file = db.session.get(MeetingFiles, data["id"])
     if meeting_file is not None and meeting.user_id == user.id:
         meeting_file.is_downloadable = data["value"]
         meeting_file.save()
@@ -573,7 +573,7 @@ def set_meeting_default_file(meeting_id):
     user = get_current_user()
     data = request.get_json()
 
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         actual_default_file = meeting.default_file
         if actual_default_file:
@@ -641,7 +641,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
     try:
         # test for is_default-file absence at the latest time possible
-        meeting = Meeting.query.get(meeting_id)
+        meeting = db.session.get(Meeting, meeting_id)
         if len(meeting.files) == 0 and not meeting.default_file:
             meetingFile.is_default = True
         else:
@@ -782,7 +782,7 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
 @auth.oidc_auth("default")
 def add_meeting_files(meeting_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
 
     data = request.get_json()
     is_default = False
@@ -809,7 +809,7 @@ def add_meeting_files(meeting_id):
 def add_dropzone_files(meeting_id):
     user = get_current_user()
 
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if meeting and user and meeting.user_id == user.id:
         return upload(user, meeting_id, request.files["dropzoneFiles"])
     else:
@@ -905,7 +905,7 @@ def save_meeting():
         flash("Le formulaire contient des erreurs", "error")
         return render_template(
             "meeting/wizard.html",
-            meeting=None if is_new_meeting else Meeting.query.get(form.id.data),
+            meeting=None if is_new_meeting else db.session.get(Meeting, form.id.data),
             form=form,
             recording=current_app.config["RECORDING"],
         )
@@ -915,7 +915,7 @@ def save_meeting():
         meeting.user = user
     else:
         meeting_id = form.data["id"]
-        meeting = Meeting.query.get(meeting_id)
+        meeting = db.session.get(Meeting, meeting_id)
         del form.id
         del form.name
     if form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording"):
@@ -947,7 +947,7 @@ def end_meeting():
     form = EndMeetingForm(request.form)
 
     meeting_id = form.data["meeting_id"]
-    meeting = Meeting.query.get(meeting_id) or abort(404)
+    meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
     if user == meeting.user:
         meeting.end_bbb()
@@ -962,7 +962,7 @@ def end_meeting():
 @auth.oidc_auth("default")
 def create_meeting(meeting_id):
     user = get_current_user()
-    m = Meeting.query.get(meeting_id)
+    m = db.session.get(Meeting, meeting_id)
     if m.user_id == user.id:
         m.create_bbb()
         m.save()
@@ -1021,7 +1021,7 @@ def insertDoc(token):
 @auth.oidc_auth("default")
 def externalUpload(meeting_id):
     user = get_current_user()
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if (
         meeting is not None
         and meeting.is_meeting_running() is True
@@ -1275,7 +1275,7 @@ def join_mail_meeting():
 @bp.route("/meeting/join/<int:meeting_id>/authenticated", methods=["GET"])
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
-    meeting = Meeting.query.get(meeting_id) or abort(404)
+    meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = "authenticated"
     fullname = get_authenticated_attendee_fullname()
     return redirect(
@@ -1296,7 +1296,7 @@ def join_meeting_as_role(meeting_id, role):
     form = JoinMeetingAsRoleForm(data={"meeting_id": meeting_id, "role": role})
     if not form.validate():
         abort(404)
-    meeting = Meeting.query.get(meeting_id) or abort(404)
+    meeting = db.session.get(Meeting, meeting_id) or abort(404)
     if meeting.user_id == user.id:
         return redirect(meeting.get_join_url(role, user.fullname, create=True))
     else:
@@ -1310,7 +1310,7 @@ def delete_meeting():
     if request.method == "POST":
         user = get_current_user()
         meeting_id = request.form["id"]
-        meeting = Meeting.query.get(meeting_id)
+        meeting = db.session.get(Meeting, meeting_id)
 
         if meeting.user_id == user.id:
             for meeting_file in meeting.files:
@@ -1342,7 +1342,7 @@ def delete_meeting():
 def delete_video_meeting():
     user = get_current_user()
     meeting_id = request.form["id"]
-    meeting = Meeting.query.get(meeting_id)
+    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)

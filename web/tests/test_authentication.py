@@ -1,4 +1,5 @@
 import requests
+from b3desk.models import db
 from b3desk.models.users import User
 
 
@@ -30,7 +31,7 @@ def test_user_authentication(client_app, configuration, iam_server, iam_client):
     res4.mustcontain(no="S’identifier")
     res4.mustcontain("se déconnecter")
 
-    user = User.query.get(1)
+    user = db.session.get(User, 1)
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
