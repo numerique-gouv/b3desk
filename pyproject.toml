@@ -47,6 +47,7 @@ pytest-cov = "^4.1.0"
 pytest-dotenv = "^0.5.2"
 pytest-iam = "^0.0.4"
 pytest-mock = "^3.11.1"
+wsgidav = "^4.3.0"
 
 [tool.poetry.group.doc]
 optional = true

@@ -86,9 +86,7 @@ def get_or_create_user(user_info):
         if nc_locator is None or nc_login is None or nc_token is None:
             nc_last_auto_enroll = None
         else:
-            nc_last_auto_enroll = datetime.now().strftime(
-                current_app.config["TIME_FORMAT"]
-            )
+            nc_last_auto_enroll = datetime.now()
         user = User(
             email=email,
             given_name=given_name,
@@ -120,9 +118,7 @@ def get_or_create_user(user_info):
             if nc_locator is None or nc_login is None or nc_token is None:
                 nc_last_auto_enroll = None
             else:
-                nc_last_auto_enroll = datetime.now().strftime(
-                    current_app.config["TIME_FORMAT"]
-                )
+                nc_last_auto_enroll = datetime.now()
             user.nc_token = nc_token
             user.nc_login = nc_login
             user.nc_locator = nc_locator

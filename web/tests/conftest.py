@@ -1,10 +1,17 @@
+import threading
 import time
+import uuid
+import wsgiref
+from pathlib import Path
 
 import b3desk.utils
+import portpicker
 import pytest
 from b3desk import create_app
 from flask_migrate import Migrate
 from flask_webtest import TestApp
+from wsgidav.fs_dav_provider import FilesystemProvider
+from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 from b3desk.models import db
@@ -53,8 +60,10 @@ def configuration(tmp_path, iam_server, iam_client):
         "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
         "MEETING_KEY_WORDING": "seminaire",
         "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+        "NC_LOGIN_API_URL": "http://nextcloud.test",
+        "NC_LOGIN_API_KEY": "nextcloud-api-key",
+        "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
-        "NC_LOGIN_API_URL": None,
         "STATS_URL": None,
     }
 
@@ -139,3 +148,49 @@ def bbb_response(mocker):
         status_code = 200
 
     mocker.patch("requests.get", return_value=Resp)
+
+
+@pytest.fixture(scope="session")
+def webdav_server(tmp_path_factory):
+    root_path = Path(tmp_path_factory.mktemp("webdav"))
+    (root_path / "remote.php" / "dav" / "files" / "alice").mkdir(
+        parents=True, exist_ok=True
+    )
+    provider = FilesystemProvider(root_path, readonly=False, fs_opts={})
+
+    config = {
+        "host": "localhost",
+        "port": portpicker.pick_unused_port(),
+        "provider_mapping": {"/": provider},
+        "http_authenticator": {"domain_controller": None},
+        "simple_dc": {"user_mapping": {"*": True}},
+        "verbose": 4,
+        "logging": {
+            "enable": True,
+            "enable_loggers": [],
+        },
+    }
+    app = WsgiDAVApp(config)
+
+    server = wsgiref.simple_server.make_server("localhost", config["port"], app)
+
+    server_thread = threading.Thread(target=server.serve_forever)
+    server_thread.start()
+    try:
+        yield app
+    finally:
+        server.shutdown()
+        server_thread.join()
+
+
+@pytest.fixture(autouse=True)
+def nextcloud_credentials(mocker, webdav_server):
+    response = {
+        "nctoken": str(uuid.uuid4()),
+        "nclocator": f"http://{webdav_server.config['host']}:{webdav_server.config['port']}",
+        "nclogin": "alice",
+    }
+    mocker.patch(
+        "b3desk.models.users.make_nextcloud_credentials_request", return_value=response
+    )
+    return response
