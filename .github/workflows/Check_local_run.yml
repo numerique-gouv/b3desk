@@ -47,7 +47,7 @@ jobs:
           pip install -r web/requirements.app.txt
           pip install -r web/requirements.dev.txt
       - name: Check local environment tests
-        run: pytest --envfile web.env.example
+        run: pytest
 
   healthy-containers:
     name: Check containers run
