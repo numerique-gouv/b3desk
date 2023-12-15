@@ -8,7 +8,7 @@ from b3desk.constants import DEFAULT_EMAIL_WHITELIST
 from flask_babel import lazy_gettext as _
 from pydantic import computed_field
 from pydantic import field_validator
-from pydantic import FieldValidationInfo
+from pydantic import ValidationInfo
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
@@ -250,7 +250,7 @@ class MainSettings(BaseSettings):
     def get_allowed_mime_types_server_side(
         cls,
         allowed_mime_types_server_side: Optional[List[str]],
-        info: FieldValidationInfo,
+        info: ValidationInfo,
     ) -> List[str]:
         if not allowed_mime_types_server_side:
             return []
@@ -300,7 +300,7 @@ class MainSettings(BaseSettings):
     """
 
     @field_validator("OIDC_SCOPES", mode="before")
-    def get_oidc_scopes(cls, oidc_scopes: List[str], info: FieldValidationInfo) -> str:
+    def get_oidc_scopes(cls, oidc_scopes: List[str], info: ValidationInfo) -> str:
         return oidc_scopes.split(",") if isinstance(oidc_scopes, str) else oidc_scopes
 
     OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_post"
@@ -437,32 +437,30 @@ class MainSettings(BaseSettings):
     """
 
     @field_validator("OIDC_ATTENDEE_ISSUER")
-    def get_attendee_issuer(
-        cls, attendee_issuer: str, info: FieldValidationInfo
-    ) -> str:
+    def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
         return attendee_issuer or info.data.get("OIDC_ISSUER")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_ID")
     def get_attendee_client_id(
-        cls, attendee_client_id: str, info: FieldValidationInfo
+        cls, attendee_client_id: str, info: ValidationInfo
     ) -> str:
         return attendee_client_id or info.data.get("OIDC_CLIENT_ID")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_SECRET")
     def get_attendee_client_secret(
-        cls, attendee_client_secret: str, info: FieldValidationInfo
+        cls, attendee_client_secret: str, info: ValidationInfo
     ) -> str:
         return attendee_client_secret or info.data.get("OIDC_CLIENT_SECRET")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_AUTH_METHOD")
     def get_attendee_client_auth_method(
-        cls, attendee_client_auth_method: str, info: FieldValidationInfo
+        cls, attendee_client_auth_method: str, info: ValidationInfo
     ) -> str:
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
 
     @field_validator("OIDC_ATTENDEE_USERINFO_HTTP_METHOD")
     def get_attendee_userinfo_http_method(
-        cls, attendee_userinfo_http_method: str, info: FieldValidationInfo
+        cls, attendee_userinfo_http_method: str, info: ValidationInfo
     ) -> str:
         return attendee_userinfo_http_method or info.data.get(
             "OIDC_USERINFO_HTTP_METHOD"
@@ -470,13 +468,13 @@ class MainSettings(BaseSettings):
 
     @field_validator("OIDC_ATTENDEE_SERVICE_NAME")
     def get_attendee_attendee_service_name(
-        cls, attendee_attendee_service_name: str, info: FieldValidationInfo
+        cls, attendee_attendee_service_name: str, info: ValidationInfo
     ) -> str:
         return attendee_attendee_service_name or info.data.get("OIDC_SERVICE_NAME")
 
     @field_validator("OIDC_ATTENDEE_SCOPES")
     def get_attendee_attendee_scopes(
-        cls, attendee_scopes: str, info: FieldValidationInfo
+        cls, attendee_scopes: str, info: ValidationInfo
     ) -> str:
         scopes = attendee_scopes or info.data.get("OIDC_SCOPES")
         return scopes.split(",") if isinstance(scopes, str) else scopes
@@ -548,9 +546,7 @@ class MainSettings(BaseSettings):
     """
 
     @field_validator("WORDING_A_MEETING")
-    def get_wording_a_meeting(
-        cls, wording_a_meeting: Any, info: FieldValidationInfo
-    ) -> Any:
+    def get_wording_a_meeting(cls, wording_a_meeting: Any, info: ValidationInfo) -> Any:
         return (
             wording_a_meeting
             or AVAILABLE_WORDINGS["A_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -563,7 +559,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MY_MEETING")
     def get_wording_my_meeting(
-        cls, wording_my_meeting: Any, info: FieldValidationInfo
+        cls, wording_my_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_my_meeting
@@ -577,7 +573,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_THE_MEETING")
     def get_wording_the_meeting(
-        cls, wording_the_meeting: Any, info: FieldValidationInfo
+        cls, wording_the_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_the_meeting
@@ -591,7 +587,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_OF_THE_MEETING")
     def get_wording_of_the_meeting(
-        cls, wording_of_the_meeting: Any, info: FieldValidationInfo
+        cls, wording_of_the_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_of_the_meeting
@@ -604,9 +600,7 @@ class MainSettings(BaseSettings):
     """
 
     @field_validator("WORDING_MEETING")
-    def get_wording_meeting(
-        cls, wording_meeting: Any, info: FieldValidationInfo
-    ) -> Any:
+    def get_wording_meeting(cls, wording_meeting: Any, info: ValidationInfo) -> Any:
         return (
             wording_meeting
             or AVAILABLE_WORDINGS["MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -618,9 +612,7 @@ class MainSettings(BaseSettings):
     """
 
     @field_validator("WORDING_MEETINGS")
-    def get_wording_meetings(
-        cls, wording_meetings: Any, info: FieldValidationInfo
-    ) -> Any:
+    def get_wording_meetings(cls, wording_meetings: Any, info: ValidationInfo) -> Any:
         return (
             wording_meetings
             or AVAILABLE_WORDINGS["MEETINGS"][info.data["MEETING_KEY_WORDING"]]
@@ -633,7 +625,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_THIS_MEETING")
     def get_wording_this_meeting(
-        cls, wording_this_meeting: Any, info: FieldValidationInfo
+        cls, wording_this_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_this_meeting
@@ -647,7 +639,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_TO_THE_MEETING")
     def get_wording_to_the_meeting(
-        cls, wording_to_the_meeting: Any, info: FieldValidationInfo
+        cls, wording_to_the_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_to_the_meeting
@@ -661,7 +653,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_IMPROVISED_MEETING")
     def get_wording_improvised_meeting(
-        cls, wording_improvised_meeting: Any, info: FieldValidationInfo
+        cls, wording_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_improvised_meeting
@@ -677,7 +669,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_AN_IMPROVISED_MEETING")
     def get_wording_an_improvised_meeting(
-        cls, wording_an_improvised_meeting: Any, info: FieldValidationInfo
+        cls, wording_an_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_an_improvised_meeting
@@ -693,7 +685,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_A_QUICK_MEETING")
     def get_wording_a_quick_meeting(
-        cls, wording_a_quick_meeting: Any, info: FieldValidationInfo
+        cls, wording_a_quick_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_a_quick_meeting
@@ -707,7 +699,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_PRIVATE_MEETINGS")
     def get_wording_private_meetings(
-        cls, wording_private_meetings: Any, info: FieldValidationInfo
+        cls, wording_private_meetings: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_private_meetings
@@ -721,7 +713,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_GOOD_MEETING")
     def get_wording_good_meeting(
-        cls, wording_good_meeting: Any, info: FieldValidationInfo
+        cls, wording_good_meeting: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_good_meeting
@@ -735,7 +727,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MEETING_UNDEFINED_ARTICLE")
     def get_wording_meeting_undefined_article(
-        cls, wording_meeting_undefined_article: Any, info: FieldValidationInfo
+        cls, wording_meeting_undefined_article: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_meeting_undefined_article
@@ -751,7 +743,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_A_MEETING_TO_WHICH")
     def get_wording_a_meeting_to_which(
-        cls, wording_a_meeting_to_which: Any, info: FieldValidationInfo
+        cls, wording_a_meeting_to_which: Any, info: ValidationInfo
     ) -> Any:
         return (
             wording_a_meeting_to_which
@@ -767,7 +759,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WELCOME_PAGE_SUBTITLE")
     def get_welcome_page_subtitle(
-        cls, welcome_page_subtitle: Any, info: FieldValidationInfo
+        cls, welcome_page_subtitle: Any, info: ValidationInfo
     ) -> Any:
         return (
             welcome_page_subtitle
@@ -783,7 +775,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("MEETING_MAIL_SUBJECT")
     def get_meeting_mail_subject(
-        cls, meeting_mail_subject: Any, info: FieldValidationInfo
+        cls, meeting_mail_subject: Any, info: ValidationInfo
     ) -> Any:
         return (
             meeting_mail_subject
@@ -852,7 +844,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("QUICK_MEETING_DEFAULT_NAME")
     def get_quick_meeting_default_value(
-        cls, quick_meeting_default_value: Optional[str], info: FieldValidationInfo
+        cls, quick_meeting_default_value: Optional[str], info: ValidationInfo
     ) -> Any:
         return (
             quick_meeting_default_value
@@ -879,7 +871,7 @@ class MainSettings(BaseSettings):
     def get_quick_meeting_moderator_welcome_message(
         cls,
         quick_meeting_moderator_welcome_message: Optional[str],
-        info: FieldValidationInfo,
+        info: ValidationInfo,
     ) -> Any:
         return quick_meeting_moderator_welcome_message or _(
             "Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
@@ -899,7 +891,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("MAIL_MODERATOR_WELCOME_MESSAGE")
     def get_moderator_welcome_message(
-        cls, moderator_welcome_message: Optional[str], info: FieldValidationInfo
+        cls, moderator_welcome_message: Optional[str], info: ValidationInfo
     ) -> Any:
         return moderator_welcome_message or _(
             "Bienvenue. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
@@ -970,7 +962,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("EMAIL_WHITELIST")
     def get_email_whitelist(
-        cls, email_whitelist: List[str], info: FieldValidationInfo
+        cls, email_whitelist: List[str], info: ValidationInfo
     ) -> str:
         if not email_whitelist:
             return DEFAULT_EMAIL_WHITELIST
@@ -994,7 +986,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("RIE_NETWORK_IPS", mode="before")
     def get_rie_network_ips(
-        cls, rie_network_ips: List[str], info: FieldValidationInfo
+        cls, rie_network_ips: List[str], info: ValidationInfo
     ) -> str:
         return (
             rie_network_ips.split(",")
