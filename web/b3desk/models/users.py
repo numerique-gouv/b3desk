@@ -26,7 +26,7 @@ def get_user_nc_credentials(username):
         or not current_app.config["FILE_SHARING"]
         or not username
     ):
-        current_app.logger.warning(
+        current_app.logger.debug(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
