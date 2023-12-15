@@ -44,26 +44,29 @@ class FakeAuth:
         return wrapper
 
 
-@pytest.fixture()
-def app(mocker, tmp_path):
+@pytest.fixture
+def configuration(tmp_path):
+    return {
+        "SECRET_KEY": "test-secret-key",
+        "SERVER_FQDN": "http://localhost:5000",
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "WTF_CSRF_ENABLED": False,
+        "TESTING": True,
+        "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
+        "OIDC_ISSUER": "http://oidc-server.test",
+        "UPLOAD_DIR": str(tmp_path),
+        "TMP_DOWNLOAD_DIR": str(tmp_path),
+        "RECORDING": True,
+        "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "MEETING_KEY_WORDING": "seminaire",
+        "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+    }
+
+
+@pytest.fixture
+def app(mocker, configuration):
     mocker.patch("flask_pyoidc.OIDCAuthentication", return_value=FakeAuth())
-    app = create_app(
-        test_config={
-            "SECRET_KEY": "test-secret-key",
-            "SERVER_FQDN": "http://localhost:5000",
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-            "WTF_CSRF_ENABLED": False,
-            "TESTING": True,
-            "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
-            "OIDC_ISSUER": "http://oidc-server.test",
-            "UPLOAD_DIR": str(tmp_path),
-            "TMP_DOWNLOAD_DIR": str(tmp_path),
-            "RECORDING": True,
-            "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
-            "MEETING_KEY_WORDING": "seminaire",
-            "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
-        }
-    )
+    app = create_app(configuration)
     with app.app_context():
         Migrate(app, db, compare_type=True)
         db.create_all()
@@ -71,13 +74,13 @@ def app(mocker, tmp_path):
     return app
 
 
-@pytest.fixture()
+@pytest.fixture
 def client_app(app):
     with app.test_request_context():
         yield TestApp(app)
 
 
-@pytest.fixture()
+@pytest.fixture
 def meeting(client_app, user):
     meeting = Meeting(user=user)
     meeting.save()
@@ -85,7 +88,7 @@ def meeting(client_app, user):
     yield meeting
 
 
-@pytest.fixture()
+@pytest.fixture
 def user(client_app):
     user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
     user.save()
@@ -93,7 +96,7 @@ def user(client_app):
     yield user
 
 
-@pytest.fixture()
+@pytest.fixture
 def authenticated_user(client_app, user):
     with client_app.session_transaction() as session:
         session["access_token"] = ""
@@ -114,7 +117,7 @@ def authenticated_user(client_app, user):
     yield user
 
 
-@pytest.fixture()
+@pytest.fixture
 def authenticated_attendee(client_app, user, mocker):
     with client_app.session_transaction() as session:
         session["access_token"] = ""
@@ -134,7 +137,7 @@ def authenticated_attendee(client_app, user, mocker):
     yield user
 
 
-@pytest.fixture()
+@pytest.fixture
 def bbb_response(mocker):
     class Resp:
         content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
