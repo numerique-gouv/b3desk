@@ -284,7 +284,12 @@ def home():
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
+
+    # TODO: do this asynchroneously
+    # Currently, the page needs to wait another network request in get_meetings_stats
+    # before it can be rendered
     stats = get_meetings_stats()
+
     return render_template(
         "welcome.html",
         stats=stats,
