@@ -119,9 +119,13 @@ def add_mailto_links(meeting_data):
     timeout=current_app.config["STATS_CACHE_DURATION"], key_prefix="meetings_stats"
 )
 def get_meetings_stats():
+    if not current_app.config["STATS_URL"]:
+        return None
+
     response = requests.get(current_app.config["STATS_URL"])
     if response.status_code != 200:
         return None
+
     try:
         stats_array = response.content.decode(encoding="utf-8").split("\n")
         stats_array = [row.split(",") for row in stats_array]
