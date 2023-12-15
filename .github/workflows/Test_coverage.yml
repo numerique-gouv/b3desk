@@ -36,7 +36,7 @@ jobs:
           pip install diff-cover
 
       - name: Run unit tests with coverage
-        run: pytest --envfile --cov --cov-report=xml
+        run: pytest --cov --cov-report=xml
 
       - name: Check that the edited lines are all covered
         run: diff-cover coverage.xml --fail-under=100
