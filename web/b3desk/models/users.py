@@ -19,6 +19,16 @@ from flask import current_app
 from . import db
 
 
+def make_nextcloud_credentials_request(url, payload, headers):
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        data = response.json()
+        return data
+
+    except requests.exceptions.RequestException:
+        return None
+
+
 def get_user_nc_credentials(username):
     if (
         not current_app.config["NC_LOGIN_API_KEY"]
@@ -30,24 +40,23 @@ def get_user_nc_credentials(username):
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
-    postData = {"username": username}
-    postHeaders = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
+
+    payload = {"username": username}
+    headers = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
     current_app.logger.info(
         "Retrieve NC credentials from NC_LOGIN_API_URL %s "
         % current_app.config["NC_LOGIN_API_URL"]
     )
-    try:
-        response = requests.post(
-            current_app.config["NC_LOGIN_API_URL"], json=postData, headers=postHeaders
-        )
-        data = response.json()
-        return data
-    except requests.exceptions.RequestException:
+    result = make_nextcloud_credentials_request(
+        current_app.config["NC_LOGIN_API_URL"], payload, headers
+    )
+    if not result:
         current_app.logger.error(
             "Cannot contact NC %s, returning None values",
             current_app.config["NC_LOGIN_API_URL"],
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
+    return result
 
 
 def get_or_create_user(user_info):
