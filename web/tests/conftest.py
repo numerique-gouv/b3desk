@@ -1,4 +1,3 @@
-import functools
 import time
 
 import b3desk.utils
@@ -7,45 +6,33 @@ from b3desk import create_app
 from flask_migrate import Migrate
 from flask_webtest import TestApp
 
-
 b3desk.utils.secret_key = lambda: "AZERTY"
-
 from b3desk.models import db
-from b3desk.models.users import User
 from b3desk.models.meetings import Meeting
-
-
-class FakeAuth:
-    def token_auth(self, provider_name):
-        def token_decorator(view_func):
-            @functools.wraps(view_func)
-            def wrapper(*args, **kwargs):
-                return view_func(*args, **kwargs)
-
-            return wrapper
-
-        return token_decorator
-
-    def oidc_auth(self, provider_name):
-        def token_decorator(view_func):
-            @functools.wraps(view_func)
-            def wrapper(*args, **kwargs):
-                return view_func(*args, **kwargs)
-
-            return wrapper
-
-        return token_decorator
-
-    def oidc_logout(self, view_func):
-        @functools.wraps(view_func)
-        def wrapper(*args, **kwargs):
-            return view_func(*args, **kwargs)
-
-        return wrapper
+from b3desk.models.users import User
 
 
 @pytest.fixture
-def configuration(tmp_path):
+def iam_client(iam_server):
+    iam_client = iam_server.models.Client(
+        client_id="client_id",
+        client_secret="client_secret",
+        redirect_uris=["http://localhost:5000/oidc_callback"],
+        token_endpoint_auth_method="client_secret_post",
+        post_logout_redirect_uris=["http://localhost:5000/logout"],
+        grant_types=["authorization_code"],
+        response_types=["code", "token", "id_token"],
+        scope=["openid", "profile", "email"],
+        preconsent=True,
+    )
+    iam_client.audience = [iam_client]
+    iam_client.save()
+    yield iam_client
+    iam_client.delete()
+
+
+@pytest.fixture
+def configuration(tmp_path, iam_server, iam_client):
     return {
         "SECRET_KEY": "test-secret-key",
         "SERVER_FQDN": "http://localhost:5000",
@@ -53,7 +40,13 @@ def configuration(tmp_path):
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
-        "OIDC_ISSUER": "http://oidc-server.test",
+        "OIDC_ISSUER": iam_server.url,
+        "OIDC_REDIRECT_URI": iam_client.redirect_uris[0],
+        "OIDC_CLIENT_ID": iam_client.client_id,
+        "OIDC_CLIENT_SECRET": iam_client.client_secret,
+        "OIDC_CLIENT_AUTH_METHOD": iam_client.token_endpoint_auth_method,
+        "OIDC_SCOPES": iam_client.scope,
+        "OIDC_USERINFO_HTTP_METHOD": "GET",
         "UPLOAD_DIR": str(tmp_path),
         "TMP_DOWNLOAD_DIR": str(tmp_path),
         "RECORDING": True,
@@ -64,8 +57,7 @@ def configuration(tmp_path):
 
 
 @pytest.fixture
-def app(mocker, configuration):
-    mocker.patch("flask_pyoidc.OIDCAuthentication", return_value=FakeAuth())
+def app(configuration):
     app = create_app(configuration)
     with app.app_context():
         Migrate(app, db, compare_type=True)

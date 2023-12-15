@@ -72,6 +72,20 @@ files = [
 ]
 
 [[package]]
+name = "authlib"
+version = "1.2.1"
+description = "The ultimate Python library in building OAuth and OpenID Connect servers and clients."
+optional = false
+python-versions = "*"
+files = [
+    {file = "Authlib-1.2.1-py2.py3-none-any.whl", hash = "sha256:c88984ea00149a90e3537c964327da930779afa4564e354edfd98410bea01911"},
+    {file = "Authlib-1.2.1.tar.gz", hash = "sha256:421f7c6b468d907ca2d9afede256f068f87e34d23dd221c07d13d4c234726afb"},
+]
+
+[package.dependencies]
+cryptography = ">=3.2"
+
+[[package]]
 name = "autodoc-pydantic"
 version = "2.0.1"
 description = "Seamlessly integrate pydantic models in your Sphinx documentation."
@@ -238,6 +252,31 @@ files = [
     {file = "cachelib-0.9.0-py3-none-any.whl", hash = "sha256:811ceeb1209d2fe51cd2b62810bd1eccf70feba5c52641532498be5c675493b3"},
     {file = "cachelib-0.9.0.tar.gz", hash = "sha256:38222cc7c1b79a23606de5c2607f4925779e37cdcea1c2ad21b8bae94b5425a5"},
 ]
+
+[[package]]
+name = "canaille"
+version = "0.0.38"
+description = "Minimalistic identity provider"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "canaille-0.0.38-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:b5a1cecf73ba01b71571268b5d72e6d8e51d07214fcd0d8eb3ec3a2cc896000b"},
+    {file = "canaille-0.0.38.tar.gz", hash = "sha256:e338e58f1f022e5193d4a58f7647a2c8c30b06e83ebf0b99cf22814e0e82adea"},
+]
+
+[package.dependencies]
+authlib = {version = ">=1.2.1,<2.0.0", optional = true, markers = "extra == \"oidc\" or extra == \"all\""}
+flask = ">=3.0.0,<4.0.0"
+flask-wtf = ">=1.2.1,<2.0.0"
+wtforms = ">=3.1.1,<4.0.0"
+
+[package.extras]
+all = ["authlib (>=1.2.1,<2.0.0)", "email_validator (>=2.0.0,<3.0.0)", "flask-babel (>=4.0.0,<5.0.0)", "flask-themer (>=2.0.0,<3.0.0)", "passlib (>=1.7.4,<2.0.0)", "pycountry (>=22.1.10)", "python-ldap (>=3.4.0,<4.0.0)", "pytz (>=2022.7)", "sentry-sdk[flask] (<2)", "sqlalchemy (>=2.0.23,<3.0.0)", "sqlalchemy-json (>=0.7.0,<0.8.0)", "sqlalchemy-utils (>=0.41.1,<0.42.0)", "toml (>=0.10.0,<0.11.0)"]
+front = ["email_validator (>=2.0.0,<3.0.0)", "flask-babel (>=4.0.0,<5.0.0)", "flask-themer (>=2.0.0,<3.0.0)", "pycountry (>=22.1.10)", "pytz (>=2022.7)", "toml (>=0.10.0,<0.11.0)"]
+ldap = ["python-ldap (>=3.4.0,<4.0.0)"]
+oidc = ["authlib (>=1.2.1,<2.0.0)"]
+sentry = ["sentry-sdk[flask] (<2)"]
+sql = ["passlib (>=1.7.4,<2.0.0)", "sqlalchemy (>=2.0.23,<3.0.0)", "sqlalchemy-json (>=0.7.0,<0.8.0)", "sqlalchemy-utils (>=0.41.1,<0.42.0)"]
 
 [[package]]
 name = "celery"
@@ -712,6 +751,21 @@ files = [
 
 [package.extras]
 test = ["pytest (>=6)"]
+
+[[package]]
+name = "faker"
+version = "21.0.0"
+description = "Faker is a Python package that generates fake data for you."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "Faker-21.0.0-py3-none-any.whl", hash = "sha256:ff61cca42547795bee8a11319792a8fee6d0f0cd191e831f7f3050c5851fcd8a"},
+    {file = "Faker-21.0.0.tar.gz", hash = "sha256:2d8a350e952225a145307d7461881c44a1c9320e90fbe8bd903d5947f133f3ec"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.4"
+typing-extensions = {version = ">=3.10.0.1", markers = "python_version <= \"3.8\""}
 
 [[package]]
 name = "filelock"
@@ -1575,6 +1629,20 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "portpicker"
+version = "1.6.0"
+description = "A library to choose unique available network ports."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "portpicker-1.6.0-py3-none-any.whl", hash = "sha256:b2787a41404cf7edbe29b07b9e0ed863b09f2665dcc01c1eb0c2261c1e7d0755"},
+    {file = "portpicker-1.6.0.tar.gz", hash = "sha256:bd507fd6f96f65ee02781f2e674e9dc6c99bbfa6e3c39992e3916204c9d431fa"},
+]
+
+[package.dependencies]
+psutil = "*"
+
+[[package]]
 name = "pre-commit"
 version = "3.5.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -1605,6 +1673,34 @@ files = [
 
 [package.dependencies]
 wcwidth = "*"
+
+[[package]]
+name = "psutil"
+version = "5.9.6"
+description = "Cross-platform lib for process and system monitoring in Python."
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+files = [
+    {file = "psutil-5.9.6-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:fb8a697f11b0f5994550555fcfe3e69799e5b060c8ecf9e2f75c69302cc35c0d"},
+    {file = "psutil-5.9.6-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:91ecd2d9c00db9817a4b4192107cf6954addb5d9d67a969a4f436dbc9200f88c"},
+    {file = "psutil-5.9.6-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:10e8c17b4f898d64b121149afb136c53ea8b68c7531155147867b7b1ac9e7e28"},
+    {file = "psutil-5.9.6-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:18cd22c5db486f33998f37e2bb054cc62fd06646995285e02a51b1e08da97017"},
+    {file = "psutil-5.9.6-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:ca2780f5e038379e520281e4c032dddd086906ddff9ef0d1b9dcf00710e5071c"},
+    {file = "psutil-5.9.6-cp27-none-win32.whl", hash = "sha256:70cb3beb98bc3fd5ac9ac617a327af7e7f826373ee64c80efd4eb2856e5051e9"},
+    {file = "psutil-5.9.6-cp27-none-win_amd64.whl", hash = "sha256:51dc3d54607c73148f63732c727856f5febec1c7c336f8f41fcbd6315cce76ac"},
+    {file = "psutil-5.9.6-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:c69596f9fc2f8acd574a12d5f8b7b1ba3765a641ea5d60fb4736bf3c08a8214a"},
+    {file = "psutil-5.9.6-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:92e0cc43c524834af53e9d3369245e6cc3b130e78e26100d1f63cdb0abeb3d3c"},
+    {file = "psutil-5.9.6-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:748c9dd2583ed86347ed65d0035f45fa8c851e8d90354c122ab72319b5f366f4"},
+    {file = "psutil-5.9.6-cp36-cp36m-win32.whl", hash = "sha256:3ebf2158c16cc69db777e3c7decb3c0f43a7af94a60d72e87b2823aebac3d602"},
+    {file = "psutil-5.9.6-cp36-cp36m-win_amd64.whl", hash = "sha256:ff18b8d1a784b810df0b0fff3bcb50ab941c3b8e2c8de5726f9c71c601c611aa"},
+    {file = "psutil-5.9.6-cp37-abi3-win32.whl", hash = "sha256:a6f01f03bf1843280f4ad16f4bde26b817847b4c1a0db59bf6419807bc5ce05c"},
+    {file = "psutil-5.9.6-cp37-abi3-win_amd64.whl", hash = "sha256:6e5fb8dc711a514da83098bc5234264e551ad980cec5f85dabf4d38ed6f15e9a"},
+    {file = "psutil-5.9.6-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:daecbcbd29b289aac14ece28eca6a3e60aa361754cf6da3dfb20d4d32b6c7f57"},
+    {file = "psutil-5.9.6.tar.gz", hash = "sha256:e4b92ddcd7dd4cdd3f900180ea1e104932c7bce234fb88976e2a3b296441225a"},
+]
+
+[package.extras]
+test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "psycopg2"
@@ -1938,6 +2034,23 @@ files = [
 [package.dependencies]
 pytest = ">=5.0.0"
 python-dotenv = ">=0.9.1"
+
+[[package]]
+name = "pytest-iam"
+version = "0.0.4"
+description = "A fully functional OAUTH2 / OpenID Connect (OIDC) server to be used in your testsuite"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "pytest_iam-0.0.4-py3-none-any.whl", hash = "sha256:da7efaccae67d138d7af4c5414c6a431fbddfd1f744140f61a9d2d69f30caf2e"},
+    {file = "pytest_iam-0.0.4.tar.gz", hash = "sha256:5ddd40e674eb5a8ef0de064f272aa423fd5060559c305c01886672486baa544e"},
+]
+
+[package.dependencies]
+canaille = {version = "<1", extras = ["oidc"]}
+faker = ">=21.0.0,<22.0.0"
+portpicker = ">=1.6.0,<2.0.0"
+pytest = ">=7.0.0,<8.0.0"
 
 [[package]]
 name = "pytest-mock"
@@ -2629,4 +2742,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "fc65c8f65dc26c488c632f61cb901f12e03edb203aa0cbb0521322db03dafd79"
+content-hash = "191e7e4f37c50618c2927316d1b96a8409c05312576786f81c3055e37bb813cf"

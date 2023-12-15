@@ -38,14 +38,15 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
 coverage = "^7.2.2"
-freezegun = "^1.2.2"
-pytest = "^7.4.0"
-pytest-mock = "^3.11.1"
-Flask-WebTest = "^0.1.3"
 flake8 = "^6.0.0"
+Flask-WebTest = "^0.1.3"
+freezegun = "^1.2.2"
 pre-commit = "^3.1.1"
+pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-dotenv = "^0.5.2"
+pytest-iam = "^0.0.4"
+pytest-mock = "^3.11.1"
 
 [tool.poetry.group.doc]
 optional = true
