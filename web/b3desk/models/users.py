@@ -58,7 +58,7 @@ def get_or_create_user(user_info):
     # visio-agent calls EDNAT API for NC_DATA retrieval, passing LOGIN as postData
     # visio-agent can now connect to remote NC with NC_DATA
     if current_app.config["FILE_SHARING"]:
-        preferred_username = user_info["preferred_username"]
+        preferred_username = user_info.get("preferred_username")
     else:
         preferred_username = None
     given_name = user_info["given_name"]

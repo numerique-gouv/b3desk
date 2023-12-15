@@ -53,6 +53,9 @@ def configuration(tmp_path, iam_server, iam_client):
         "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
         "MEETING_KEY_WORDING": "seminaire",
         "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+        # Overwrite the web.env values for tests running in docker
+        "NC_LOGIN_API_URL": None,
+        "STATS_URL": None,
     }
 
 
