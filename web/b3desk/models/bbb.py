@@ -288,7 +288,7 @@ class BBB:
         return_code = root.find("returncode").text
         recordings = root.find("recordings")
         result = []
-        if return_code != "FAILED":
+        if return_code != "FAILED" and recordings:
             try:
                 for recording in recordings.iter("recording"):
                     d = {}
@@ -298,6 +298,9 @@ class BBB:
                     d["participants"] = int(recording.find("participants").text)
                     d["playbacks"] = {}
                     playback = recording.find("playback")
+                    if not playback:
+                        continue
+
                     for format in playback.iter("format"):
                         images = []
                         preview = format.find("preview")
