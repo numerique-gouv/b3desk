@@ -78,15 +78,24 @@ Ces ports sont :
 <br>
 
 <h3>Serveurs TURN</h3>
-<p>Instance Éducation Depuis la version 2.6 de BigBlueButton le service TURN est embarqué directement dans chaque serveur BigBlueButton et non plus une grappe de serveurs TURN dédiés.</p>
-<p>Instance Webinaire de l'État, il y une grappe de serveurs TURN dédiés.</p>
-|IP             | FQDN |
-| :----         | :----: |
-|212.47.226.44  | bbb-dinum-turn1.visio.education.fr |
-|212.47.243.166 | bbb-dinum-turn2.visio.education.fr |
-|212.47.231.140 | bbb-dinum-turn3.visio.education.fr |
-|212.47.243.234 | bbb-dinum-turn4.visio.education.fr |
-|212.47.231.160 | bbb-dinum-turn5.visio.education.fr |
+<li>TCP/IP ports 443 service TURN (TCP/DTLS) dont il faut positionner en exclusion du proxy les FQDN/IP</li>
+<li>Instance Éducation, depuis la version 2.6 de BigBlueButton le service TURN est embarqué directement dans chaque serveur BigBlueButton et non plus une grappe de serveurs TURN dédiés.</li>
+<li>Instance Webinaire de l'État, il y une grappe de serveurs TURN dédiés.</li>
+<table class="fr-mb-4w">
+  <thead>
+    <tr><th>IP</th><th>FQDN</th><th>Domaine</th></tr>
+  </thead>
+  <tbody>
+    
+    <tr><td>212.47.226.44</td><td>bbb-dinum-turn1.visio.education.fr</td><td>Webinaire de l'état</td></tr>
+    <tr><td>212.47.243.166</td><td>bbb-dinum-turn2.visio.education.fr</td><td>Webinaire de l'état</td></tr>
+    <tr><td>212.47.231.140</td><td>bbb-dinum-turn3.visio.education.fr</td><td>Webinaire de l'état</td></tr>
+    <tr><td>212.47.243.234</td><td>bbb-dinum-turn4.visio.education.fr</td><td>Webinaire de l'état</td></tr>
+    <tr><td>212.47.231.160</td><td>bbb-dinum-turn5.visio.education.fr</td><td>Webinaire de l'état</td></tr>
+
+  </tbody>
+</table>
+
 
 <h3>Fichiers avec les IP et FQDN des serveurs BBB</h3>
 
