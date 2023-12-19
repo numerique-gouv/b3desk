@@ -78,9 +78,18 @@ Ces ports sont :
 <br>
 
 <h3>Serveurs TURN</h3>
-<p>Depuis la version 2.6 de BigBlueButton le service TURN est embarqué directement dans chaque serveur BigBlueButton et non plus une grappe de serveurs TURN dédiés.</p>
+<p>Instance Éducation Depuis la version 2.6 de BigBlueButton le service TURN est embarqué directement dans chaque serveur BigBlueButton et non plus une grappe de serveurs TURN dédiés.</p>
+<p>Instance Webinaire de l'État, il y une grappe de serveurs TURN dédiés.</p>
+|IP             | FQDN |
+| :----         | :----: |
+|212.47.226.44  | bbb-dinum-turn1.visio.education.fr |
+|212.47.243.166 | bbb-dinum-turn2.visio.education.fr |
+|212.47.231.140 | bbb-dinum-turn3.visio.education.fr |
+|212.47.243.234 | bbb-dinum-turn4.visio.education.fr |
+|212.47.231.160 | bbb-dinum-turn5.visio.education.fr |
 
 <h3>Fichiers avec les IP et FQDN des serveurs BBB</h3>
+
 <ul>
  <li><a href="{{ url_for('static', filename='misc/ip-fqdn-adm-sort.txt') }}" title="Liste des serveurs BigBlueButton pour l'Éducation" target="_blank" rel="noopener noreferrer"> Visio Éducation</a></li>
  <li><a href="{{ url_for('static', filename='misc/ip-fqdn-bbb-dinum-sort.txt') }}" title="Liste des serveurs BigBlueButton pour le Webinaire de l'État" target="_blank" rel="noopener noreferrer"> Webinaire </a></li>
