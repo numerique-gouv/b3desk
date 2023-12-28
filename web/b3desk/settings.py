@@ -104,114 +104,100 @@ AVAILABLE_WORDINGS = {
 
 
 class MainSettings(BaseSettings):
-    """
-    Paramètres de configuration du frontal B3Desk.
-    """
+    """Paramètres de configuration du frontal B3Desk."""
 
     model_config = SettingsConfigDict(extra="allow")
 
     SECRET_KEY: str
-    """
-    Clé secrète utilisée notamment pour la signature des cookies.
-    Cette clé DOIT être différente pour TOUTES les instances de B3Desk, et être tenue secrète.
-    Peut être générée avec ``python -c 'import secrets; print(secrets.token_hex())'``
+    """Clé secrète utilisée notamment pour la signature des cookies. Cette clé
+    DOIT être différente pour TOUTES les instances de B3Desk, et être tenue
+    secrète. Peut être générée avec ``python -c 'import secrets;
+    print(secrets.token_hex())'``
 
-    Plus d'infos sur https://flask.palletsprojects.com/en/3.0.x/config/#SECRET_KEY
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SECRET_KEY
     """
 
     REDIS_URL: Optional[str] = None
-    """
-    L’URL du serveur redis utilisé pour les tâches asynchrones.
+    """L’URL du serveur redis utilisé pour les tâches asynchrones.
+
     Par exemple ``localhost:6379``.
     """
 
     NC_LOGIN_TIMEDELTA_DAYS: int = 30
-    """
-    Durée en jours avant l’expiration des autorisations Nextcloud.
-    """
+    """Durée en jours avant l’expiration des autorisations Nextcloud."""
 
     NC_LOGIN_API_URL: Optional[str] = None
-    """
-    Point d’accès du fournisseur Nextcloud.
+    """Point d’accès du fournisseur Nextcloud.
+
     Par exemple ``https://cloud.example.org/index.php``.
     """
 
     NC_LOGIN_API_KEY: Optional[str] = None
-    """
-    Clé d'API Nextcloud.
-    """
+    """Clé d'API Nextcloud."""
 
     UPLOAD_DIR: str
-    """
-    Chemin vers le dossier dans lequel seront stockés les fichiers téléversés par les utilisateurs.
-    """
+    """Chemin vers le dossier dans lequel seront stockés les fichiers
+    téléversés par les utilisateurs."""
 
     TMP_DOWNLOAD_DIR: str
-    """
-    Chemin vers un dossier qui servira de stockage temporaire de fichiers entre Nextcloud et BBB.
-    """
+    """Chemin vers un dossier qui servira de stockage temporaire de fichiers
+    entre Nextcloud et BBB."""
 
     MAX_SIZE_UPLOAD: int = 20000000
-    """
-    Taille maximum des fichiers téléversés, en octets.
-    """
+    """Taille maximum des fichiers téléversés, en octets."""
 
     TIME_FORMAT: str = "%Y-%m-%d"
-    """
-    Format des dates utilisées lors des échanges avec l’API de Nextcloud.
+    """Format des dates utilisées lors des échanges avec l’API de Nextcloud.
 
-    Plus d’informations sur https://docs.python.org/fr/3/library/datetime.html#strftime-and-strptime-format-codes
+    Plus d’informations sur
+    https://docs.python.org/fr/3/library/datetime.html#strftime-and-strptime-format-codes
     """
 
     TESTING: bool = False
-    """
-    Mode tests unitaires, à ne surtout pas utiliser en production.
+    """Mode tests unitaires, à ne surtout pas utiliser en production.
 
-    Plus d’informations sur https://flask.palletsprojects.com/en/3.0.x/config/#TESTING
+    Plus d’informations sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#TESTING
     """
 
     DEBUG: bool = False
-    """
-    Mode debug, à ne surtout pas utiliser en production.
+    """Mode debug, à ne surtout pas utiliser en production.
 
-    Plus d’informations sur https://flask.palletsprojects.com/en/3.0.x/config/#DEBUG
+    Plus d’informations sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#DEBUG
     """
 
     TITLE: str = "BBB-Visio"
-    """
-    Titre HTML par défaut pour les pages HTML.
-    """
+    """Titre HTML par défaut pour les pages HTML."""
 
     # TODO: Replace this with SERVER_NAME + url_for(..., _external=True)
     SERVER_FQDN: str
-    """
-    L’adresse publique du serveur B3Desk.
+    """L’adresse publique du serveur B3Desk.
+
     Par exemple ``https://b3desk.example.org``.
     """
 
     EXTERNAL_UPLOAD_DESCRIPTION: str = "Fichiers depuis votre Nextcloud"
-    """
-    Description dans BBB des fichiers téléversés dans Nextcloud.
-    """
+    """Description dans BBB des fichiers téléversés dans Nextcloud."""
 
     WTF_CSRF_TIME_LIMIT: int = 3600 * 12
-    """
-    Indique en secondes la durée de validit des jetons CSRF.
+    """Indique en secondes la durée de validit des jetons CSRF.
 
-    Plus d'infos sur https://flask-wtf.readthedocs.io/en/1.2.x/config/
+    Plus d'infos sur
+    https://flask-wtf.readthedocs.io/en/1.2.x/config/
     """
 
     BABEL_TRANSLATION_DIRECTORIES: str = "/opt/bbb-visio/translations"
-    """
-    Un ou plusieurs chemins vers les répertoires des catalogues de traduction, séparés par des « ; ».
+    """Un ou plusieurs chemins vers les répertoires des catalogues de
+    traduction, séparés par des « ; ».
 
-    Plus d’infos sur https://python-babel.github.io/flask-babel/#configuration
+    Plus d’infos sur
+    https://python-babel.github.io/flask-babel/#configuration
     """
 
     MAX_MEETINGS_PER_USER: int = 50
-    """
-    Le nombre maximum de séminaires que peut créer un utilisateur.
-    """
+    """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
     ALLOWED_MIME_TYPES_SERVER_SIDE: Optional[List[str]] = [
         "application/pdf",
@@ -241,8 +227,9 @@ class MainSettings(BaseSettings):
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/vnd.oasis.opendocument.presentation",
     ]
-    """
-    Liste de mime-types acceptés par le serveur pour le téléversement de fichiers.
+    """Liste de mime-types acceptés par le serveur pour le téléversement de
+    fichiers.
+
     Si non renseigné, tous les fichiers sont autorisés.
     """
 
@@ -263,8 +250,8 @@ class MainSettings(BaseSettings):
     ACCEPTED_FILES_CLIENT_SIDE: Optional[
         str
     ] = "image/*,.pdf,.doc,.docx,.htm,.html,.odp,.ods,.odt,.ppt,.pptx,.xls,.xlsx"
-    """
-    Liste de mime-types autorisés par le navigateur pour le téléversement des fichiers, séparés par des virgules.
+    """Liste de mime-types autorisés par le navigateur pour le téléversement
+    des fichiers, séparés par des virgules.
 
     Passé en paramètre ``acceptedFiles`` de *Dropzone*.
 
@@ -272,28 +259,20 @@ class MainSettings(BaseSettings):
     """
 
     OIDC_ID_TOKEN_COOKIE_SECURE: bool = False
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_REQUIRE_VERIFIED_EMAIL: bool = False
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_USER_INFO_ENABLED: bool = True
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_OPENID_REALM: str = "apps"
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_SCOPES: List[str] = ["openid", "email", "profile"]
-    """
-    Liste des scopes OpenID Connect pour lesquels une autorisation sera demandée au serveur d’identité, séparés par des virgules.
+    """Liste des scopes OpenID Connect pour lesquels une autorisation sera
+    demandée au serveur d’identité, séparés par des virgules.
 
     Passé en paramètre ``auth_request_params`` de flask-pyoidc.
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
@@ -304,64 +283,52 @@ class MainSettings(BaseSettings):
         return oidc_scopes.split(",") if isinstance(oidc_scopes, str) else oidc_scopes
 
     OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_post"
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_USERINFO_HTTP_METHOD: str = "POST"
-    """
-    Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point d’entrée *UserInfo* du serveur d’identité.
+    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
+    d’entrée *UserInfo* du serveur d’identité.
 
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
+    Plus d’infos sur
+    https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
     OIDC_INFO_REQUESTED_FIELDS: List[str] = ["email", "given_name", "family_name"]
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_ISSUER: Optional[str] = None
-    """
-    URL du serveur d’identité des organisateurs de réunion.
+    """URL du serveur d’identité des organisateurs de réunion.
 
     Par exemple : https://auth.example.com
     """
 
     OIDC_AUTH_URI: Optional[str] = None
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_USERINFO_URI: Optional[str] = None
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_TOKEN_URI: Optional[str] = None
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_CLIENT_ID: Optional[str] = None
-    """
-    ID du client auprès du serveur d’identité des organisateurs.
-    """
+    """ID du client auprès du serveur d’identité des organisateurs."""
 
     OIDC_CLIENT_SECRET: Optional[str] = None
-    """
-    Secret permettant d’identifier le client auprès du serveur d’identité des organisateurs.
-    """
+    """Secret permettant d’identifier le client auprès du serveur d’identité
+    des organisateurs."""
 
     OIDC_CLIENT_AUTH_METHOD: Optional[str] = "client_secret_post"
-    """
-    Méthode de communication avec le point d’entrée ``token_introspection_uri`` du serveur d’identité des organisateurs. Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
+    """Méthode de communication avec le point d’entrée
+    ``token_introspection_uri`` du serveur d’identité des organisateurs.
+
+    Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
     """
 
     # TODO: replace by OIDCAuthentication.redirect_uri_config
     OIDC_REDIRECT_URI: Optional[str] = None
-    """
-    URL de B3Desk vers laquelle le serveur d’identité redirige
-    les utilisateurs après authentification.
+    """URL de B3Desk vers laquelle le serveur d’identité redirige les
+    utilisateurs après authentification.
 
     Par exemple ``http://localhost:5000/oidc_callback``
 
@@ -369,49 +336,48 @@ class MainSettings(BaseSettings):
     """
 
     OIDC_SERVICE_NAME: Optional[str] = None
-    """
-    Probablement un relicat de flask-oidc, semble inutilisé à part en valeur par défaut de ``OIDC_ATTENDEE_SERVICE_NAME``.
-    """
+    """Probablement un relicat de flask-oidc, semble inutilisé à part en valeur
+    par défaut de ``OIDC_ATTENDEE_SERVICE_NAME``."""
 
     # Attendee OIDC Configuration (back to default if empty)
     OIDC_ATTENDEE_ENABLED: Optional[bool] = True
-    """
-    Indique si le serveur d’authentification des participants est activé ou non.
+    """Indique si le serveur d’authentification des participants est activé ou
+    non.
+
     Si le serveur est KO, en passant cette variable à ``False``,
     l’authentification ne sera plus nécessaire pour les liens d’invitation authentifiés, ce qui permet de faire en sorte que les liens restent valides.
     """
 
     OIDC_ATTENDEE_ISSUER: Optional[str] = None
-    """
-    URL du serveur d’identité des participants authentifiés.
+    """URL du serveur d’identité des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_ISSUER``.
     """
 
     OIDC_ATTENDEE_CLIENT_ID: Optional[str] = None
-    """
-    ID du client auprès du serveur d’identité des participants authentifiés.
+    """ID du client auprès du serveur d’identité des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
     """
 
     OIDC_ATTENDEE_CLIENT_SECRET: Optional[str] = None
-    """
-    Secret permettant d’identifier le client auprès du serveur d’identité des participants authentifiés.
+    """Secret permettant d’identifier le client auprès du serveur d’identité
+    des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
     """
 
     OIDC_ATTENDEE_CLIENT_AUTH_METHOD: Optional[str] = None
-    """
-    Méthode de communication avec le point d’entrée ``token_introspection_uri`` du serveur d’identité des participants authentifiés. Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
+    """Méthode de communication avec le point d’entrée
+    ``token_introspection_uri`` du serveur d’identité des participants
+    authentifiés. Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_AUTH_METHOD``.
     """
 
     OIDC_ATTENDEE_USERINFO_HTTP_METHOD: Optional[str] = None
-    """
-    Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point d’entrée *UserInfo* du serveur d’identité.
+    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
+    d’entrée *UserInfo* du serveur d’identité.
 
     Si non renseigné, prend la valeur de ``OIDC_USERINFO_HTTP_METHOD``.
 
@@ -419,16 +385,16 @@ class MainSettings(BaseSettings):
     """
 
     OIDC_ATTENDEE_SERVICE_NAME: Optional[str] = None
-    """
-    Nom du service d’authentification des participants authentifiés.
-    Utilisé pour l’affichage dans la modale d’invitation de participants authentifés.
+    """Nom du service d’authentification des participants authentifiés. Utilisé
+    pour l’affichage dans la modale d’invitation de participants authentifés.
 
     Si non renseigné, prend la valeur de ``OIDC_SERVICE_NAME``.
     """
 
     OIDC_ATTENDEE_SCOPES: Optional[List[str]] = None
-    """
-    Liste des scopes OpenID Connect pour lesquels une autorisation sera demandée au serveur d’identité des participants authentifiés, séparés par des virgules.
+    """Liste des scopes OpenID Connect pour lesquels une autorisation sera
+    demandée au serveur d’identité des participants authentifiés, séparés par
+    des virgules.
 
     Si non renseigné, prend la valeur de ``OIDC_SCOPES``.
 
@@ -480,14 +446,10 @@ class MainSettings(BaseSettings):
         return scopes.split(",") if isinstance(scopes, str) else scopes
 
     DOCUMENTATION_LINK_URL: Optional[str] = None
-    """
-    Surcharge l’adresse de la page de documentation si renseigné.
-    """
+    """Surcharge l’adresse de la page de documentation si renseigné."""
 
     DOCUMENTATION_LINK_LABEL: Optional[str] = None
-    """
-    Semble inutilisé.
-    """
+    """Semble inutilisé."""
 
     @computed_field
     def DOCUMENTATION_LINK(self) -> Dict[str, Any]:
@@ -501,48 +463,42 @@ class MainSettings(BaseSettings):
         }
 
     SERVICE_TITLE: str = "Webinaire"
-    """
-    Nom du service B3Desk.
-    """
+    """Nom du service B3Desk."""
 
     SERVICE_TAGLINE: str = "Le service de webinaire pour les agents de l’État"
-    """
-    Slogan du service B3Desk.
-    """
+    """Slogan du service B3Desk."""
 
     MEETING_LOGOUT_URL: Optional[str] = None
-    """
-    URL vers laquelle sont redirigés les utilisateurs après un séminaire.
-    """
+    """URL vers laquelle sont redirigés les utilisateurs après un séminaire."""
 
     SATISFACTION_POLL_URL: Optional[str] = None
-    """
-    URL de l’iframe du formulaire de satisfaction.
-    """
+    """URL de l’iframe du formulaire de satisfaction."""
 
     SQLALCHEMY_DATABASE_URI: str
-    """
-    URI de configuration de la base de données.
+    """URI de configuration de la base de données.
 
     Par exemple ``postgresql://user:password@localhost:5432/bbb_visio``
     """
 
     # TODO: delete as this is the default in flask-sqlalchemy 3?
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-    """
-    Traçage des évènements de modification des modèles dans SQLAlchemy.
+    """Traçage des évènements de modification des modèles dans SQLAlchemy.
 
-    Plus d’informations sur https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/track-modifications/
+    Plus d’informations sur
+    https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/track-modifications/
     """
 
     MEETING_KEY_WORDING: str = "reunion"
-    """
-    Nommage des réunions. Peut-être *reunion*, *cours* ou *séminaire*.
+    """Nommage des réunions.
+
+    Peut-être *reunion*, *cours* ou *séminaire*.
     """
 
     WORDING_A_MEETING: Any = None
-    """
-    Formulation de « une réunion », par exemple *un cours* ou *un séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « une réunion », par exemple *un cours* ou *un
+    séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_A_MEETING")
@@ -553,8 +509,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_MY_MEETING: Any = None
-    """
-    Formulation de « ma réunion », par exemple *mon cours* ou *mon séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « ma réunion », par exemple *mon cours* ou *mon
+    séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_MY_MEETING")
@@ -567,8 +525,9 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_THE_MEETING: Any = None
-    """
-    Formulation de « la réunion », par exemple *le cours* ou *le séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « la réunion », par exemple *le cours* ou *le séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_THE_MEETING")
@@ -581,8 +540,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_OF_THE_MEETING: Any = None
-    """
-    Formulation de « de la réunion », par exemple *du cours* ou *du séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « de la réunion », par exemple *du cours* ou *du
+    séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_OF_THE_MEETING")
@@ -595,8 +556,9 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_MEETING: Any = None
-    """
-    Formulation de « réunion », par exemple *cours* ou *séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « réunion », par exemple *cours* ou *séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_MEETING")
@@ -607,8 +569,9 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_MEETINGS: Any = None
-    """
-    Formulation de « réunions », par exemple *cours* ou *séminaires*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « réunions », par exemple *cours* ou *séminaires*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_MEETINGS")
@@ -619,8 +582,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_THIS_MEETING: Any = None
-    """
-    Formulation de « cette réunion », par exemple *ce cours* ou *ce séminaires*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « cette réunion », par exemple *ce cours* ou *ce
+    séminaires*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_THIS_MEETING")
@@ -633,8 +598,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_TO_THE_MEETING: Any = None
-    """
-    Formulation de « à la réunion », par exemple *au cours* ou *au séminaires*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « à la réunion », par exemple *au cours* ou *au
+    séminaires*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_TO_THE_MEETING")
@@ -647,8 +614,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_IMPROVISED_MEETING: Any = None
-    """
-    Formulation de « réunion improvisée », par exemple *cours improvisé* ou *séminaire improvisé*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « réunion improvisée », par exemple *cours improvisé* ou
+    *séminaire improvisé*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_IMPROVISED_MEETING")
@@ -663,8 +632,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_AN_IMPROVISED_MEETING: Any = None
-    """
-    Formulation de « une réunion improvisée », par exemple *un cours improvisé* ou *un séminaire improvisé*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « une réunion improvisée », par exemple *un cours
+    improvisé* ou *un séminaire improvisé*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_AN_IMPROVISED_MEETING")
@@ -679,8 +650,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_A_QUICK_MEETING: Any = None
-    """
-    Formulation de « une réunion immédiate », par exemple *un cours immédiat* ou *un séminaire immédiat*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « une réunion immédiate », par exemple *un cours
+    immédiat* ou *un séminaire immédiat*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_A_QUICK_MEETING")
@@ -693,8 +666,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_PRIVATE_MEETINGS: Any = None
-    """
-    Formulation de « réunions privées », par exemple *cours privés* ou *séminaires privés*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « réunions privées », par exemple *cours privés* ou
+    *séminaires privés*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_PRIVATE_MEETINGS")
@@ -707,8 +682,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_GOOD_MEETING: Any = None
-    """
-    Formulation de « bonne réunion », par exemple *bon cours* ou *bon séminaire*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « bonne réunion », par exemple *bon cours* ou *bon
+    séminaire*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_GOOD_MEETING")
@@ -721,8 +698,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_MEETING_UNDEFINED_ARTICLE: Any = None
-    """
-    Formulation de l’article indéterminé de « réunion » comme « une », par exemple *un*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de l’article indéterminé de « réunion » comme « une », par
+    exemple *un*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_MEETING_UNDEFINED_ARTICLE")
@@ -737,8 +716,10 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_A_MEETING_TO_WHICH: Any = None
-    """
-    Formulation de « une réunion à laquelle », par exemple *un cours auquel* ou *un séminaire auquel*. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation de « une réunion à laquelle », par exemple *un cours auquel*
+    ou *un séminaire auquel*.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WORDING_A_MEETING_TO_WHICH")
@@ -753,8 +734,9 @@ class MainSettings(BaseSettings):
         )
 
     WELCOME_PAGE_SUBTITLE: Any = None
-    """
-    Formulation du sous-titre de la page de création de réunion. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation du sous-titre de la page de création de réunion.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("WELCOME_PAGE_SUBTITLE")
@@ -769,8 +751,9 @@ class MainSettings(BaseSettings):
         )
 
     MEETING_MAIL_SUBJECT: Any = None
-    """
-    Formulation du titre du mail d’invitation à une réunion. Par défaut s’adapte à ``MEETING_KEY_WORDING``.
+    """Formulation du titre du mail d’invitation à une réunion.
+
+    Par défaut s’adapte à ``MEETING_KEY_WORDING``.
     """
 
     @field_validator("MEETING_MAIL_SUBJECT")
@@ -785,24 +768,17 @@ class MainSettings(BaseSettings):
         )
 
     WORDING_MEETING_PRESENTATION: str = "présentation"
-    """
-    Formulation de « présentation » qui désigne les fichiers accompagnant les réunions.
-    """
+    """Formulation de « présentation » qui désigne les fichiers accompagnant
+    les réunions."""
 
     WORDING_UPLOAD_FILE: str = "envoyer"
-    """
-    Semble inutilisé.
-    """
+    """Semble inutilisé."""
 
     FILE_SHARING: bool = False
-    """
-    Active la fonctionnalité de téléversement de fichiers.
-    """
+    """Active la fonctionnalité de téléversement de fichiers."""
 
     DOCUMENTATION_PAGE_SUBTITLE: Optional[str] = None
-    """
-    Sous-titre de la page de documentation.
-    """
+    """Sous-titre de la page de documentation."""
 
     @computed_field
     def WORDINGS(self) -> Dict[str, Any]:
@@ -831,13 +807,10 @@ class MainSettings(BaseSettings):
         }
 
     QUICK_MEETING: bool = True
-    """
-    Affiche le lien de création de réunions improvisées.
-    """
+    """Affiche le lien de création de réunions improvisées."""
 
     QUICK_MEETING_DEFAULT_NAME: Optional[str] = None
-    """
-    Nom par défaut des réunions improvisées.
+    """Nom par défaut des réunions improvisées.
 
     Par défaut prend la valeur de ``WORDING_IMPROVISED_MEETING``.
     """
@@ -852,18 +825,14 @@ class MainSettings(BaseSettings):
         )
 
     QUICK_MEETING_MODERATOR_LINK_INTRODUCTION: Any = _(" Lien Modérateur  ")
-    """
-    Formulation de « Lien Modérateur » dans les liens BBB.
-    """
+    """Formulation de « Lien Modérateur » dans les liens BBB."""
 
     QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION: Any = _(" Lien Participant  ")
-    """
-    Formulation de « Lien Participant » dans les liens BBB.
-    """
+    """Formulation de « Lien Participant » dans les liens BBB."""
 
     QUICK_MEETING_MODERATOR_WELCOME_MESSAGE: Any = None
-    """
-    Formulation du message d’accueil aux modérateurs dans BBB.
+    """Formulation du message d’accueil aux modérateurs dans BBB.
+
     Par défaut s’adapte à ``WORDING_THIS_MEETING``.
     """
 
@@ -879,13 +848,16 @@ class MainSettings(BaseSettings):
         )
 
     QUICK_MEETING_LOGOUT_URL: Optional[str] = None
-    """
-    Lien vers lequel sont redirigés les participants à la fin d’une réunion improvisée. Par défaut, c’est la page d’accueil du service B3Desk.
+    """Lien vers lequel sont redirigés les participants à la fin d’une réunion
+    improvisée.
+
+    Par défaut, c’est la page d’accueil du service B3Desk.
     """
 
     MAIL_MODERATOR_WELCOME_MESSAGE: Any = None
-    """
-    Formulation du message d’accueil aux modérateurs dans BBB, dont le lien à été envoyé par mail.
+    """Formulation du message d’accueil aux modérateurs dans BBB, dont le lien
+    à été envoyé par mail.
+
     Par défaut s’adapte à ``WORDING_THIS_MEETING``.
     """
 
@@ -899,64 +871,41 @@ class MainSettings(BaseSettings):
         )
 
     MAILTO_LINKS: bool = False
-    """
-    Affiche des liens vers les adresses email des modérateurs et participants dans la liste des réunions.
-    """
+    """Affiche des liens vers les adresses email des modérateurs et
+    participants dans la liste des réunions."""
 
     SHORTY: bool = False
-    """
-    Affichage court des listes de réunions.
-    """
+    """Affichage court des listes de réunions."""
 
     CLIPBOARD: bool = False
-    """
-    Semble inutilisé.
-    """
+    """Semble inutilisé."""
 
     RECORDING: bool = False
-    """
-    Active la fonctionnalité d’enregistrement des réunions.
-    """
+    """Active la fonctionnalité d’enregistrement des réunions."""
 
     BETA: bool = False
-    """
-    Active l’encart « Bêta » dans l’entête du service B3Desk.
-    """
+    """Active l’encart « Bêta » dans l’entête du service B3Desk."""
 
     MAIL_MEETING: bool = False
-    """
-    Active l’organisation de réunion par envoi de liens par email.
-    """
+    """Active l’organisation de réunion par envoi de liens par email."""
 
     SMTP_FROM: Optional[str] = None
-    """
-    Adresse email d’expéditeur pour les mails d’invitation.
-    """
+    """Adresse email d’expéditeur pour les mails d’invitation."""
 
     SMTP_HOST: Optional[str] = None
-    """
-    Addresse du serveur SMTP.
-    """
+    """Addresse du serveur SMTP."""
 
     SMTP_PORT: Optional[int] = None
-    """
-    Port du serveur SMTP.
-    """
+    """Port du serveur SMTP."""
 
     SMTP_USERNAME: Optional[str] = None
-    """
-    Identifiant auprès du serveur SMTP.
-    """
+    """Identifiant auprès du serveur SMTP."""
 
     SMTP_PASSWORD: Optional[str] = None
-    """
-    Mot de passe du serveur SMTP.
-    """
+    """Mot de passe du serveur SMTP."""
 
     SMTP_SSL: Optional[bool] = False
-    """
-    Connexion SSL au serveur SMTP.
-    """
+    """Connexion SSL au serveur SMTP."""
 
     EMAIL_WHITELIST: Any = None
 
@@ -971,17 +920,17 @@ class MainSettings(BaseSettings):
         )
 
     DEFAULT_MEETING_DURATION: int = 280
-    """
-    Durée maximum en minutes des réunion passée à l'API BBB.
+    """Durée maximum en minutes des réunion passée à l'API BBB.
 
-    Plus d’informations sur https://docs.bigbluebutton.org/development/api/#create
+    Plus d’informations sur
+    https://docs.bigbluebutton.org/development/api/#create
     """
 
     RIE_NETWORK_IPS: Optional[List[str]] = None
-    """
-    Plages d’adresses IP du réseau interministériel de l'État.
+    """Plages d’adresses IP du réseau interministériel de l'État.
 
-    Affiche un encart particulier pour les utilisateurs se connectant depuis ce réseau.
+    Affiche un encart particulier pour les utilisateurs se connectant
+    depuis ce réseau.
     """
 
     @field_validator("RIE_NETWORK_IPS", mode="before")
@@ -995,42 +944,35 @@ class MainSettings(BaseSettings):
         )
 
     MAX_PARTICIPANTS: int = 200
-    """
-    Nombre moyen de participants indicatif sur la plateforme.
+    """Nombre moyen de participants indicatif sur la plateforme.
 
     Seulement utilisé à des fins d’affichage.
     """
 
     STATS_CACHE_DURATION: int = 1800
-    """
-    Durée de rétention du cache des statistiques des réunions.
-    """
+    """Durée de rétention du cache des statistiques des réunions."""
 
     STATS_URL: Optional[str] = None
-    """
-    URL du fichier de statistiques des réunions.
+    """URL du fichier de statistiques des réunions.
 
     Par exemple ``http://localhost:5000/static/local/stats.csv``
     """
 
     STATS_INDEX: int = 2
-    """
-    Numéro de ligne des statistiques de réunion dans le fichier CSV.
-    """
+    """Numéro de ligne des statistiques de réunion dans le fichier CSV."""
 
     BIGBLUEBUTTON_ENDPOINT: Optional[str] = None
-    """
-    URL du service BBB.
+    """URL du service BBB.
+
     Par exemple ``https://bbb26.test/bigbluebutton/api``
     """
 
     BIGBLUEBUTTON_SECRET: Optional[str] = None
-    """
-    Mot de passe du service BBB.
-    """
+    """Mot de passe du service BBB."""
 
     BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL: Optional[str] = None
-    """
-    Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
-    Plus d’informations sur https://docs.bigbluebutton.org/development/api/#create
+    """Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
+
+    Plus d’informations sur
+    https://docs.bigbluebutton.org/development/api/#create
     """

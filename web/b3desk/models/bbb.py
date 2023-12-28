@@ -20,7 +20,7 @@ from flask import render_template
 
 
 class BBB:
-    """Interface to BBB API"""
+    """Interface to BBB API."""
 
     def __init__(self, meeting):
         self.meeting = meeting

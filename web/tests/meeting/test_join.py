@@ -29,10 +29,8 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
     authenticated_user,
     bbb_response,
 ):
-    """
-    If the meeting owner are authenticated, they must be automatically
-    promoted moderator in the meeting when clicking on an attendee link.
-    """
+    """If the meeting owner are authenticated, they must be automatically
+    promoted moderator in the meeting when clicking on an attendee link."""
     meeting_hash = meeting.get_hash("attendee")
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
 
@@ -57,9 +55,9 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
 
 
 def test_auth_attendee_disabled(client_app, meeting):
-    """
-    If attendee authentication service is temporarily disabled, we should skip
-    the attendee authentication step.
+    """If attendee authentication service is temporarily disabled, we should
+    skip the attendee authentication step.
+
     https://github.com/numerique-gouv/b3desk/issues/9
     """
     client_app.app.config["OIDC_ATTENDEE_ENABLED"] = False

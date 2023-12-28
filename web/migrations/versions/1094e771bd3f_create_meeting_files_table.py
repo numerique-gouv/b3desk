@@ -1,9 +1,8 @@
-"""create_meeting_files_table
+"""create_meeting_files_table.
 
 Revision ID: 1094e771bd3f
 Revises: 8fe077ecfb10
 Create Date: 2023-02-28 14:30:43.642893
-
 """
 import os
 import sys
