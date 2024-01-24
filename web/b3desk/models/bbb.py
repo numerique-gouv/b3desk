@@ -56,6 +56,7 @@ class BBB:
         return d and d["returncode"] == "SUCCESS" and d["running"] == "true"
 
     def insertDocsNoDefault(self):
+        # TODO: appears to be unused
         # meeting has started, we can now add files by using insertDocument API
         # ADDING ALL FILES EXCEPT DEFAULT
         SERVER_FQDN = current_app.config["SERVER_FQDN"]
@@ -271,6 +272,7 @@ class BBB:
         return d
 
     def get_meeting_info(self):
+        # TODO: appears to be unused?
         action = "getMeetingInfo"
         params = self.get_params_with_checksum(
             action, {"meetingID": self.meeting.meetingID}

@@ -119,6 +119,10 @@ def add_mailto_links(meeting_data):
     timeout=current_app.config["STATS_CACHE_DURATION"], key_prefix="meetings_stats"
 )
 def get_meetings_stats():
+    # TODO: do this asynchroneously
+    # Currently, the page needs to wait another network request in get_meetings_stats
+    # before it can be rendered. This is mitigated by caching though.
+
     if not current_app.config["STATS_URL"]:
         return None
 
@@ -288,10 +292,6 @@ def home():
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
-
-    # TODO: do this asynchroneously
-    # Currently, the page needs to wait another network request in get_meetings_stats
-    # before it can be rendered
     stats = get_meetings_stats()
 
     return render_template(
@@ -1034,7 +1034,7 @@ def externalUpload(meeting_id):
 
 
 @bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>", methods=["GET"])
-# @auth.token_auth(provider_name="default") - must be accessible by BBB serveur, so no auth
+# @auth.token_auth(provider_name="default") - must be accessible by BBB server, so no auth
 def ncdownload(isexternal, mfid, mftoken):
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
