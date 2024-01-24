@@ -133,12 +133,12 @@ def get_meetings_stats():
     try:
         stats_array = response.content.decode(encoding="utf-8").split("\n")
         stats_array = [row.split(",") for row in stats_array]
-        participantCount = int(stats_array[current_app.config["STATS_INDEX"]][1])
-        runningCount = int(stats_array[current_app.config["STATS_INDEX"]][2])
+        participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
+        running_count = int(stats_array[current_app.config["STATS_INDEX"]][2])
     except Exception:
         return None
 
-    result = {"participantCount": participantCount, "runningCount": runningCount}
+    result = {"participantCount": participant_count, "runningCount": running_count}
     return result
 
 
@@ -579,8 +579,8 @@ def set_meeting_default_file(meeting_id):
         if actual_default_file:
             actual_default_file.is_default = False
 
-        meetingFile = MeetingFiles()
-        meeting_file = meetingFile.query.get(data["id"])
+        meeting_file = MeetingFiles()
+        meeting_file = meeting_file.query.get(data["id"])
         meeting_file.is_default = True
 
         if actual_default_file:
@@ -626,12 +626,12 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         }
         client.upload_sync(**kwargs)
 
-        meetingFile = MeetingFiles()
-        meetingFile.nc_path = nc_path
+        meeting_file = MeetingFiles()
+        meeting_file.nc_path = nc_path
 
-        meetingFile.title = title
-        meetingFile.created_at = date.today()
-        meetingFile.meeting_id = meeting_id
+        meeting_file.title = title
+        meeting_file.created_at = date.today()
+        meeting_file.meeting_id = meeting_id
     except WebDavException as exception:
         user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
@@ -643,22 +643,22 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         # test for is_default-file absence at the latest time possible
         meeting = db.session.get(Meeting, meeting_id)
         if len(meeting.files) == 0 and not meeting.default_file:
-            meetingFile.is_default = True
+            meeting_file.is_default = True
         else:
-            meetingFile.is_default = False
+            meeting_file.is_default = False
 
-        meetingFile.save()
+        meeting_file.save()
         current_app.config["SECRET_KEY"]
-        meetingFile.update()
+        meeting_file.update()
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
         removeDropzoneFile(dropzone_path)
         return jsonify(
             status=200,
             isfrom="dropzone",
             isDefault=is_default,
-            title=meetingFile.short_title,
-            id=meetingFile.id,
-            created_at=meetingFile.created_at.strftime(
+            title=meeting_file.short_title,
+            id=meeting_file.id,
+            created_at=meeting_file.created_at.strftime(
                 current_app.config["TIME_FORMAT"]
             ),
         )
@@ -688,25 +688,25 @@ def add_meeting_file_URL(url, meeting_id, is_default):
             msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
-    meetingFile = MeetingFiles()
+    meeting_file = MeetingFiles()
 
-    meetingFile.title = title
-    meetingFile.created_at = date.today()
-    meetingFile.meeting_id = meeting_id
-    meetingFile.url = url
-    meetingFile.is_default = is_default
+    meeting_file.title = title
+    meeting_file.created_at = date.today()
+    meeting_file.meeting_id = meeting_id
+    meeting_file.url = url
+    meeting_file.is_default = is_default
 
     requests.get(url)
 
     try:
-        meetingFile.save()
+        meeting_file.save()
         return jsonify(
             status=200,
             isfrom="url",
             isDefault=is_default,
-            title=meetingFile.short_title,
-            id=meetingFile.id,
-            created_at=meetingFile.created_at.strftime(
+            title=meeting_file.short_title,
+            id=meeting_file.id,
+            created_at=meeting_file.created_at.strftime(
                 current_app.config["TIME_FORMAT"]
             ),
         )
@@ -741,24 +741,24 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
             msg=f"Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
-    meetingFile = MeetingFiles()
+    meeting_file = MeetingFiles()
 
-    meetingFile.title = path
-    meetingFile.created_at = date.today()
-    meetingFile.meeting_id = meeting_id
-    meetingFile.nc_path = path
-    meetingFile.is_default = is_default
+    meeting_file.title = path
+    meeting_file.created_at = date.today()
+    meeting_file.meeting_id = meeting_id
+    meeting_file.nc_path = path
+    meeting_file.is_default = is_default
     current_app.config["SECRET_KEY"]
 
     try:
-        meetingFile.save()
+        meeting_file.save()
         return jsonify(
             status=200,
             isfrom="nextcloud",
             isDefault=is_default,
-            title=meetingFile.short_title,
-            id=meetingFile.id,
-            created_at=meetingFile.created_at.strftime(
+            title=meeting_file.short_title,
+            id=meeting_file.id,
+            created_at=meeting_file.created_at.strftime(
                 current_app.config["TIME_FORMAT"]
             ),
         )
@@ -861,24 +861,24 @@ def delete_meeting_file():
     user = get_current_user()
     data = request.get_json()
     meeting_file_id = data["id"]
-    meetingFile = MeetingFiles()
-    meeting_file = meetingFile.query.get(meeting_file_id)
+    meeting_file = MeetingFiles()
+    meeting_file = meeting_file.query.get(meeting_file_id)
     meeting = Meeting()
     cur_meeting = meeting.query.get(meeting_file.meeting_id)
 
     if cur_meeting.user_id == user.id:
         db.session.delete(meeting_file)
         db.session.commit()
-        newDefaultId = None
+        new_default_id = None
         if meeting_file.is_default:
             cur_meeting = meeting.query.get(meeting_file.meeting_id)
             if len(cur_meeting.files) > 0:
                 cur_meeting.files[0].is_default = True
-                newDefaultId = cur_meeting.files[0].id
+                new_default_id = cur_meeting.files[0].id
                 cur_meeting.save()
         return jsonify(
             status=200,
-            newDefaultId=newDefaultId,
+            newDefaultId=new_default_id,
             id=data["id"],
             msg="Fichier supprimé avec succès",
         )
