@@ -517,7 +517,7 @@ msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:9
 #, python-format
-msgid "Démarrer %(a_meeting)s immédiatement"
+msgid "Ouvrir %(a_meeting)s temporaire"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:19
@@ -1850,20 +1850,20 @@ msgstr ""
 
 #: web/instance/config.py:185
 msgid ""
-"Créez un cours immédiatement avec des réglages standards. Ce cours ne "
-"sera pas enregistré dans votre liste de salons."
+"Créez en un clic un cours aux réglages standards. "
+"Il ne sera pas enregistré dans votre liste de salles."
 msgstr ""
 
 #: web/instance/config.py:188
 msgid ""
-"Créez une réunion immédiatement avec des réglages standards. Cette "
-"réunion ne sera pas enregistrée dans votre liste de salons."
+"Créez en un clic une réunion aux réglages standards. "
+"Elle ne sera pas enregistrée dans votre liste de salles."
 msgstr ""
 
 #: web/instance/config.py:191
 msgid ""
-"Créez un séminaire immédiatement avec des réglages standards. Ce "
-"séminaire ne sera pas enregistré dans votre liste de salons."
+"Créez en un clic un séminaire aux réglages standards. "
+"Il ne sera pas enregistré dans votre liste de salles."
 msgstr ""
 
 #: web/instance/config.py:196
@@ -2333,4 +2333,3 @@ msgstr ""
 #~ " \n"
 #~ "« Organisateurs/modérateurs » qui géreront avec vous le séminaire."
 #~ msgstr ""
-
