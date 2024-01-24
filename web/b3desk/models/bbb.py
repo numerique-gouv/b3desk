@@ -34,7 +34,6 @@ class BBB:
         pr = request.prepare()
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         secret = "{}{}".format(
-            # TODO: isn't this just 'action' in the end?
             pr.url.replace("?", "").replace(
                 f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
             ),
