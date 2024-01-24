@@ -33,13 +33,13 @@ class BBB:
         )
         pr = request.prepare()
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-        s = "{}{}".format(
+        secret = "{}{}".format(
             pr.url.replace("?", "").replace(
                 f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
             ),
             bigbluebutton_secret,
         )
-        params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
+        params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
         return params
 
     def get_url(self, action):
@@ -51,9 +51,9 @@ class BBB:
         params = self.get_params_with_checksum(
             action, {"meetingID": self.meeting.meetingID}
         )
-        r = requests.get(self.get_url(action), params=params)
-        d = {c.tag: c.text for c in ElementTree.fromstring(r.content)}
-        return d and d["returncode"] == "SUCCESS" and d["running"] == "true"
+        response = requests.get(self.get_url(action), params=params)
+        data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def insertDocsNoDefault(self):
         # TODO: appears to be unused
@@ -88,11 +88,11 @@ class BBB:
         )
         pr = request.prepare()
         bigbluebutton_secret = BIGBLUEBUTTON_SECRET
-        s = "{}{}".format(
+        secret = "{}{}".format(
             pr.url.replace("?", "").replace(BIGBLUEBUTTON_ENDPOINT + "/", ""),
             bigbluebutton_secret,
         )
-        params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
+        params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
 
         requests.post(
             f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
@@ -207,7 +207,7 @@ class BBB:
                     ).hexdigest()
                     xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
             xml = xml_beg + xml_mid + xml_end
-            r = requests.post(
+            response = requests.post(
                 self.get_url(action),
                 params=params,
                 headers={"Content-Type": "application/xml"},
@@ -245,31 +245,31 @@ class BBB:
             )
             pr = request.prepare()
             bigbluebutton_secret = BIGBLUEBUTTON_SECRET
-            s = "{}{}".format(
+            secret = "{}{}".format(
                 pr.url.replace("?", "").replace(f"{BIGBLUEBUTTON_ENDPOINT}/", ""),
                 bigbluebutton_secret,
             )
-            params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
+            params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
             background_upload.delay(
                 f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}", xml, params
             )
 
-            d = {c.tag: c.text for c in ElementTree.fromstring(r.content)}
-            return d
+            data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+            return data
         else:
-            r = requests.post(self.get_url(action), params=params)
-            d = {c.tag: c.text for c in ElementTree.fromstring(r.content)}
-            return d
+            response = requests.post(self.get_url(action), params=params)
+            data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+            return data
 
     def delete_recordings(self, recording_ids):
         """DeleteRecordings BBB API: https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
         action = "deleteRecordings"
         params = self.get_params_with_checksum(action, {"recordID": recording_ids})
         response = requests.get(self.get_url(action), params=params)
-        d = {
+        data = {
             child.tag: child.text for child in ElementTree.fromstring(response.content)
         }
-        return d
+        return data
 
     def get_meeting_info(self):
         # TODO: appears to be unused?
@@ -293,12 +293,12 @@ class BBB:
         if return_code != "FAILED" and recordings:
             try:
                 for recording in recordings.iter("recording"):
-                    d = {}
-                    d["recordID"] = recording.find("recordID").text
+                    data = {}
+                    data["recordID"] = recording.find("recordID").text
                     name = recording.find("metadata").find("name")
-                    d["name"] = name.text if name is not None else None
-                    d["participants"] = int(recording.find("participants").text)
-                    d["playbacks"] = {}
+                    data["name"] = name.text if name is not None else None
+                    data["participants"] = int(recording.find("participants").text)
+                    data["playbacks"] = {}
                     playback = recording.find("playback")
                     if not playback:
                         continue
@@ -315,14 +315,14 @@ class BBB:
                                 images.append(image)
                         type = format.find("type").text
                         if type in ("presentation", "video"):
-                            d["playbacks"][type] = {
+                            data["playbacks"][type] = {
                                 "url": format.find("url").text,
                                 "images": images,
                             }
-                    d["start_date"] = datetime.fromtimestamp(
+                    data["start_date"] = datetime.fromtimestamp(
                         int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
                     ).replace(microsecond=0)
-                    result.append(d)
+                    result.append(data)
             except Exception as exception:
                 current_app.logger.error(exception)
         return result
@@ -335,10 +335,10 @@ class BBB:
             action, {"recordID": ",".join(recording_ids), **meta}
         )
         response = requests.get(self.get_url(action), params=params)
-        d = {
+        data = {
             child.tag: child.text for child in ElementTree.fromstring(response.content)
         }
-        return d
+        return data
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
         """Join BBB API: https://docs.bigbluebutton.org/dev/api.html#join"""
