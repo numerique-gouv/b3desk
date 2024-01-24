@@ -190,76 +190,74 @@ class BBB:
         )
 
         params = self.get_params_with_checksum(action, params)
-        if current_app.config["FILE_SHARING"]:
-            # ADDING DEFAULT FILE TO MEETING
-            SECRET_KEY = current_app.config["SECRET_KEY"]
-            xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-            xml_end = " </module></modules>"
-            xml_mid = ""
-
-            if self.meeting.default_file:
-                meeting_file = self.meeting.default_file
-                if meeting_file.url:
-                    xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
-                else:  # file is not URL nor NC hence it was uploaded
-                    filehash = hashlib.sha1(
-                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
-                    ).hexdigest()
-                    xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
-            xml = xml_beg + xml_mid + xml_end
-            response = requests.post(
-                self.get_url(action),
-                params=params,
-                headers={"Content-Type": "application/xml"},
-                data=xml,
-            )
-            ## BEGINNING OF TASK CELERY - aka background_upload for meeting_files
-            params = {}
-            xml = ""
-            # ADDING ALL FILES EXCEPT DEFAULT
-            SERVER_FQDN = current_app.config["SERVER_FQDN"]
-            BIGBLUEBUTTON_ENDPOINT = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
-            BIGBLUEBUTTON_SECRET = current_app.config["BIGBLUEBUTTON_SECRET"]
-
-            insertAction = "insertDocument"
-            xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-            xml_end = " </module></modules>"
-            xml_mid = ""
-            for meeting_file in self.meeting.files:
-                if meeting_file.is_default:
-                    continue
-                elif meeting_file.url:
-                    xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
-                else:  # file is not URL nor NC hence it was uploaded
-                    filehash = hashlib.sha1(
-                        f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
-                    ).hexdigest()
-                    xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
-
-            xml = xml_beg + xml_mid + xml_end
-            params = {"meetingID": self.meeting.meetingID}
-            request = requests.Request(
-                "POST",
-                f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
-                params=params,
-            )
-            pr = request.prepare()
-            bigbluebutton_secret = BIGBLUEBUTTON_SECRET
-            secret = "{}{}".format(
-                pr.url.replace("?", "").replace(f"{BIGBLUEBUTTON_ENDPOINT}/", ""),
-                bigbluebutton_secret,
-            )
-            params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
-            background_upload.delay(
-                f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}", xml, params
-            )
-
-            data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
-            return data
-        else:
+        if not current_app.config["FILE_SHARING"]:
             response = requests.post(self.get_url(action), params=params)
             data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
             return data
+
+        # ADDING DEFAULT FILE TO MEETING
+        SECRET_KEY = current_app.config["SECRET_KEY"]
+        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
+        xml_end = " </module></modules>"
+        xml_mid = ""
+
+        if self.meeting.default_file:
+            meeting_file = self.meeting.default_file
+            if meeting_file.url:
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
+            else:  # file is not URL nor NC hence it was uploaded
+                filehash = hashlib.sha1(
+                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
+                ).hexdigest()
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
+        xml = xml_beg + xml_mid + xml_end
+        response = requests.post(
+            self.get_url(action),
+            params=params,
+            headers={"Content-Type": "application/xml"},
+            data=xml,
+        )
+        ## BEGINNING OF TASK CELERY - aka background_upload for meeting_files
+        params = {}
+        xml = ""
+        # ADDING ALL FILES EXCEPT DEFAULT
+        SERVER_FQDN = current_app.config["SERVER_FQDN"]
+        BIGBLUEBUTTON_ENDPOINT = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
+        BIGBLUEBUTTON_SECRET = current_app.config["BIGBLUEBUTTON_SECRET"]
+
+        insertAction = "insertDocument"
+        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
+        xml_end = " </module></modules>"
+        xml_mid = ""
+        for meeting_file in self.meeting.files:
+            if meeting_file.is_default:
+                continue
+            elif meeting_file.url:
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
+            else:  # file is not URL nor NC hence it was uploaded
+                filehash = hashlib.sha1(
+                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
+                ).hexdigest()
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
+
+        xml = xml_beg + xml_mid + xml_end
+        params = {"meetingID": self.meeting.meetingID}
+        request = requests.Request(
+            "POST",
+            f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
+            params=params,
+        )
+        pr = request.prepare()
+        bigbluebutton_secret = BIGBLUEBUTTON_SECRET
+        secret = "{}{}".format(
+            pr.url.replace("?", "").replace(f"{BIGBLUEBUTTON_ENDPOINT}/", ""),
+            bigbluebutton_secret,
+        )
+        params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
+        background_upload.delay(f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}", xml, params)
+
+        data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+        return data
 
     def delete_recordings(self, recording_ids):
         """DeleteRecordings BBB API: https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
