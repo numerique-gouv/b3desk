@@ -16,7 +16,7 @@ services:
       - ./nextcloud/nextcloudcheck.sh:/var/tmp/nextcloudcheck.sh
     healthcheck:
       test: "bash /var/tmp/nextcloudcheck.sh"
-      start_period: 30s
+      start_period: 60s
       interval: 5s
 
   worker:
