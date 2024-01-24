@@ -8,3 +8,5 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 # ou
 # docker compose -f docker-compose.yml -f docker-compose.preprod.yml up
 ```
+
+Le fichier `run_webserver.sh` est lancé par le `Dockerfile` et migre la base de données. Ces docker-compose de prod et preprod peuvent donc être utilisés pour une primo-installation, ou sur une instance existante.
