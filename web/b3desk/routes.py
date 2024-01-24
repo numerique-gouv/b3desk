@@ -344,8 +344,8 @@ def quick_mail_meeting():
 def quick_meeting():
     user = get_current_user()
     fullname = user.fullname
-    m = get_quick_meeting_from_user_and_random_string(user)
-    return redirect(m.get_join_url("moderator", fullname, create=True))
+    meeting = get_quick_meeting_from_user_and_random_string(user)
+    return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
 
 @bp.route("/meeting/show/<int:meeting_id>")
@@ -962,10 +962,10 @@ def end_meeting():
 @auth.oidc_auth("default")
 def create_meeting(meeting_id):
     user = get_current_user()
-    m = db.session.get(Meeting, meeting_id)
-    if m.user_id == user.id:
-        m.create_bbb()
-        m.save()
+    meeting = db.session.get(Meeting, meeting_id)
+    if meeting.user_id == user.id:
+        meeting.create_bbb()
+        meeting.save()
     return redirect(url_for("routes.welcome"))
 
 
@@ -977,16 +977,18 @@ def insertDoc(token):
     # get file through NC credentials - HOW POSSIBLE ?
     # return file as response to BBB server
 
-    m = MeetingFiles.query.filter_by(download_hash=token).one()
+    meeting_file = MeetingFiles.query.filter_by(download_hash=token).one()
     secret_key = current_app.config["SECRET_KEY"]
     if (
-        m
-        or m.token
-        != hashlib.sha1(f"{secret_key}{m.id}{secret_key}".encode()).hexdigest()
+        meeting_file
+        or meeting_file.token
+        != hashlib.sha1(
+            f"{secret_key}{meeting_file.id}{secret_key}".encode()
+        ).hexdigest()
     ):
         make_response("NOT OK", 500)
 
-    params = {"meetingID": m.meeting.meetingID}
+    params = {"meetingID": meeting_file.meeting.meetingID}
     action = "insertDocument"
     req = requests.Request(
         "POST",
@@ -1005,7 +1007,7 @@ def insertDoc(token):
     params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     # xml now use
-    xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{current_app.config['SERVER_FQDN']}/ncdownload/{m.id}/{m.download_hash}' filename='m.title' /> </module></modules>"
+    xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{current_app.config['SERVER_FQDN']}/ncdownload/{meeting_file.id}/{meeting_file.download_hash}' filename='{meeting_file.title}' /> </module></modules>"
 
     requests.post(
         f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",
