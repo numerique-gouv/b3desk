@@ -45,7 +45,7 @@ pre-commit = "^3.1.1"
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-dotenv = "^0.5.2"
-pytest-iam = "^0.0.5"
+pytest-iam = "^0.0.6"
 pytest-mock = "^3.11.1"
 wsgidav = "^4.3.0"
 
