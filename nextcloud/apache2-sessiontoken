@@ -5,6 +5,7 @@ git clone https://gitlab.octopuce.fr/octopuce-public/nextcloud-sessiontoken.git 
 cd /var/www/html/apps/sessiontoken
 git config --global --add safe.directory '*'
 git checkout 7cf4ff5eea1f16820aa20c3995c3a663e74a9eb7
+cd /var/www/html
 chown -R www-data: /var/www/html/apps/sessiontoken
 #
 ## install the sessiontoken key in /var/www/html/config/config.php
