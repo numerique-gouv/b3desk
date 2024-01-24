@@ -1,13 +1,15 @@
 from datetime import datetime
 from datetime import timezone
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def bbb_getRecordings_response(mocker):
-    class Resp:
-        """Example response inspired from https://docs.bigbluebutton.org/dev/api.html#getrecordings"""
+    class Response:
+        """https://docs.bigbluebutton.org/dev/api.html#getrecordings"""
 
         content = """
 <response>
@@ -111,7 +113,7 @@ def bbb_getRecordings_response(mocker):
 </response>
 """
 
-    mocker.patch("requests.get", return_value=Resp)
+    yield mocker.patch("requests.Session.send", return_value=Response)
 
 
 def test_get_recordings(meeting, bbb_getRecordings_response):
@@ -149,24 +151,21 @@ def test_get_recordings(meeting, bbb_getRecordings_response):
     )
 
 
-def test_update_recording_name(client_app, authenticated_user, meeting, mocker):
-    class Resp:
-        content = """<response><returncode>SUCCESS</returncode><updated>true</updated></response>"""
-
-    mocked_bbb_request = mocker.patch("requests.get", return_value=Resp)
-
+def test_update_recording_name(client_app, authenticated_user, meeting, bbb_response):
     response = client_app.post(
         f"/meeting/{meeting.id}/recordings/recording_id",
         {"name": "First recording"},
         status=302,
     )
 
-    bbb_url = mocked_bbb_request.call_args.args
-    assert (
-        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings" in bbb_url
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
     )
-    bbb_params = mocked_bbb_request.call_args.kwargs["params"].items()
-    assert ("meta_name", "First recording") in bbb_params
-    assert ("recordID", "recording_id") in bbb_params
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params["meta_name"] == "First recording"
+    assert bbb_params["recordID"] == "recording_id"
 
     assert f"meeting/recordings/{meeting.id}" in response.location

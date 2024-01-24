@@ -143,11 +143,11 @@ def authenticated_attendee(client_app, user, mocker):
 
 @pytest.fixture
 def bbb_response(mocker):
-    class Resp:
+    class Response:
         content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
         status_code = 200
 
-    mocker.patch("requests.get", return_value=Resp)
+    yield mocker.patch("requests.Session.send", return_value=Response)
 
 
 @pytest.fixture(scope="session")

@@ -1,4 +1,6 @@
 from unittest import mock
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 import pytest
 from b3desk.models import db
@@ -195,13 +197,9 @@ def test_save_meeting_in_no_recording_environment(
     assert meeting.record is False
 
 
-def test_create(client_app, meeting, mocker):
+def test_create(client_app, meeting, mocker, bbb_response):
     client_app.app.config["FILE_SHARING"] = True
 
-    class Resp:
-        content = """<response><returncode>SUCCESS</returncode></response>"""
-
-    mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocked_background_upload = mocker.patch(
         "b3desk.tasks.background_upload.delay", return_value=True
     )
@@ -229,10 +227,14 @@ def test_create(client_app, meeting, mocker):
 
     meeting.bbb.create()
 
-    assert mocked_bbb_create_request.called
-    bbb_url = mocked_bbb_create_request.call_args.args[0]
-    assert bbb_url == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
-    bbb_params = mocked_bbb_create_request.call_args.kwargs["params"]
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
@@ -265,18 +267,13 @@ def test_create(client_app, meeting, mocker):
     }
 
     assert mocked_background_upload.called
-    assert (
-        mocked_background_upload.call_args.args[0]
-        == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
+    assert mocked_background_upload.call_args.args[0].startswith(
+        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
     )
     assert (
         mocked_background_upload.call_args.args[1]
         == "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'>  </module></modules>"
     )
-    assert mocked_background_upload.call_args.args[2] == {
-        "meetingID": meeting.meetingID,
-        "checksum": mock.ANY,
-    }
 
 
 def test_create_without_logout_url_gets_default(
@@ -296,23 +293,23 @@ def test_create_without_logout_url_gets_default(
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
 
-def test_create_quick_meeting(client_app, monkeypatch, user, mocker):
+def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     from b3desk.routes import get_quick_meeting_from_user_and_random_string
 
-    class Resp:
-        content = """<response><returncode>SUCCESS</returncode></response>"""
-
-    mocked_bbb_create_request = mocker.patch("requests.post", return_value=Resp)
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
     monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
     meeting = get_quick_meeting_from_user_and_random_string(user)
     meeting.bbb.create()
 
-    assert mocked_bbb_create_request.called
-    bbb_url = mocked_bbb_create_request.call_args.args[0]
-    assert bbb_url == f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
-    bbb_params = mocked_bbb_create_request.call_args.kwargs["params"]
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",

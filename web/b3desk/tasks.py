@@ -14,14 +14,11 @@ logger = get_task_logger(__name__)
 
 
 @celery.task(name="background_upload")
-def background_upload(endpoint, xml, params):
+def background_upload(endpoint, xml):
     requests.post(
         endpoint,
         headers={"Content-Type": "application/xml"},
         data=xml,
-        params=params,
     )
-    logger.info(
-        f"adding background files endpoint:{endpoint} xml:{xml} params:{params}"
-    )
+    logger.info(f"adding background files endpoint:{endpoint} xml:{xml}")
     return True

@@ -25,34 +25,35 @@ class BBB:
     def __init__(self, meeting):
         self.meeting = meeting
 
-    def get_params_with_checksum(self, action, params, method="GET"):
+    def bbb_request(self, action, method="GET", **kwargs):
         request = requests.Request(
-            method,
-            "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
-            params=params,
+            method=method,
+            url="{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+            **kwargs,
         )
-        pr = request.prepare()
+        prepped = request.prepare()
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         secret = "{}{}".format(
-            pr.url.replace("?", "").replace(
+            prepped.url.replace("?", "").replace(
                 f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
             ),
             bigbluebutton_secret,
         )
-        params["checksum"] = hashlib.sha1(secret.encode("utf-8")).hexdigest()
-        return params
+        checksum = hashlib.sha1(secret.encode("utf-8")).hexdigest()
+        prepped.prepare_url(prepped.url, params={"checksum": checksum})
+        return prepped
 
-    def get_url(self, action):
-        bbb_endpoint = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
-        return f"{bbb_endpoint}/{action}"
+    def bbb_response(self, request):
+        session = requests.Session()
+        current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
+        response = session.send(request)
+        return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     def is_meeting_running(self):
-        action = "isMeetingRunning"
-        params = self.get_params_with_checksum(
-            action, {"meetingID": self.meeting.meetingID}
+        request = self.bbb_request(
+            "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
-        response = requests.get(self.get_url(action), params=params)
-        data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+        data = self.bbb_response(request)
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def insertDocsNoDefault(self):
@@ -61,9 +62,7 @@ class BBB:
         # ADDING ALL FILES EXCEPT DEFAULT
         SERVER_FQDN = current_app.config["SERVER_FQDN"]
         SECRET_KEY = current_app.config["SECRET_KEY"]
-        BIGBLUEBUTTON_ENDPOINT = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
 
-        insertAction = "insertDocument"
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
         xml_mid = ""
@@ -79,27 +78,25 @@ class BBB:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
 
         xml = xml_beg + xml_mid + xml_end
-        params = self.get_params_with_checksum(
-            insertAction, {"meetingID": self.meeting.meetingID}, "POST"
-        )
-        requests.post(
-            f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}",
-            headers={"Content-Type": "application/xml"},
+        request = self.bbb_request(
+            "insertDocument",
+            "POST",
+            params={"meetingID": self.meeting.meetingID},
             data=xml,
-            params=params,
         )
-        return {}
+        return self.bbb_response(request)
 
     def create(self):
-        action = "create"
-        insertAction = "insertDocument"
+        """https://docs.bigbluebutton.org/development/api/#create"""
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
-            "uploadExternalUrl": current_app.config["SERVER_FQDN"]
-            + "/meeting/"
-            + str(self.meeting.id)
-            + "/externalUpload",
+            "uploadExternalUrl": (
+                current_app.config["SERVER_FQDN"]
+                + "/meeting/"
+                + str(self.meeting.id)
+                + "/externalUpload"
+            ),
             "uploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
             ],
@@ -177,11 +174,9 @@ class BBB:
             "ASK_MODERATOR" if self.meeting.guestPolicy else "ALWAYS_ACCEPT"
         )
 
-        params = self.get_params_with_checksum(action, params)
         if not current_app.config["FILE_SHARING"]:
-            response = requests.post(self.get_url(action), params=params)
-            data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
-            return data
+            request = self.bbb_request("create", params=params)
+            return self.bbb_response(request)
 
         # ADDING DEFAULT FILE TO MEETING
         SECRET_KEY = current_app.config["SECRET_KEY"]
@@ -199,20 +194,15 @@ class BBB:
                 ).hexdigest()
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
         xml = xml_beg + xml_mid + xml_end
-        response = requests.post(
-            self.get_url(action),
-            params=params,
-            headers={"Content-Type": "application/xml"},
-            data=xml,
-        )
+        request = self.bbb_request("create", "POST", params=params, data=xml)
+        data = self.bbb_response(request)
+
         ## BEGINNING OF TASK CELERY - aka background_upload for meeting_files
         params = {}
         xml = ""
         # ADDING ALL FILES EXCEPT DEFAULT
         SERVER_FQDN = current_app.config["SERVER_FQDN"]
-        BIGBLUEBUTTON_ENDPOINT = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
 
-        insertAction = "insertDocument"
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
         xml_mid = ""
@@ -228,39 +218,35 @@ class BBB:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
 
         xml = xml_beg + xml_mid + xml_end
-        params = self.get_params_with_checksum(
-            insertAction, {"meetingID": self.meeting.meetingID}, "POST"
+        request = self.bbb_request(
+            "insertDocument", params={"meetingID": self.meeting.meetingID}
         )
-        background_upload.delay(f"{BIGBLUEBUTTON_ENDPOINT}/{insertAction}", xml, params)
+        background_upload.delay(request.url, xml)
 
-        data = {c.tag: c.text for c in ElementTree.fromstring(response.content)}
         return data
 
     def delete_recordings(self, recording_ids):
-        """DeleteRecordings BBB API: https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
-        action = "deleteRecordings"
-        params = self.get_params_with_checksum(action, {"recordID": recording_ids})
-        response = requests.get(self.get_url(action), params=params)
-        data = {
-            child.tag: child.text for child in ElementTree.fromstring(response.content)
-        }
-        return data
+        """https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
+        request = self.bbb_request(
+            "deleteRecordings", params={"recordID": recording_ids}
+        )
+        return self.bbb_response(request)
 
     def get_meeting_info(self):
-        # TODO: appears to be unused?
-        action = "getMeetingInfo"
-        params = self.get_params_with_checksum(
-            action, {"meetingID": self.meeting.meetingID}
+        """https://docs.bigbluebutton.org/development/api/#getmeetinginfo"""
+        request = self.bbb_request(
+            "getMeetingInfo", params={"meetingID": self.meeting.meetingID}
         )
-        resp = requests.get(self.get_url(action), params=params)
-        return {c.tag: c.text for c in ElementTree.fromstring(resp.content)}
+        return self.bbb_response(request)
 
     def get_recordings(self):
-        action = "getRecordings"
-        params = self.get_params_with_checksum(
-            action, {"meetingID": self.meeting.meetingID}
+        """https://docs.bigbluebutton.org/development/api/#getrecordings"""
+        request = self.bbb_request(
+            "getRecordings", params={"meetingID": self.meeting.meetingID}
         )
-        response = requests.get(self.get_url(action), params=params)
+        current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
+        response = requests.Session().send(request)
+
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
         recordings = root.find("recordings")
@@ -303,20 +289,15 @@ class BBB:
         return result
 
     def update_recordings(self, recording_ids, metadata):
-        """updateRecordings BBB API: https://docs.bigbluebutton.org/dev/api.html#updaterecordings"""
-        action = "updateRecordings"
+        """https://docs.bigbluebutton.org/dev/api.html#updaterecordings"""
         meta = {f"meta_{key}": value for (key, value) in metadata.items()}
-        params = self.get_params_with_checksum(
-            action, {"recordID": ",".join(recording_ids), **meta}
+        request = self.bbb_request(
+            "updateRecordings", params={"recordID": ",".join(recording_ids), **meta}
         )
-        response = requests.get(self.get_url(action), params=params)
-        data = {
-            child.tag: child.text for child in ElementTree.fromstring(response.content)
-        }
-        return data
+        return self.bbb_response(request)
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
-        """Join BBB API: https://docs.bigbluebutton.org/dev/api.html#join"""
+        """https://docs.bigbluebutton.org/dev/api.html#join"""
         params = {
             "fullName": fullname,
             "meetingID": self.meeting.meetingID,
@@ -329,15 +310,10 @@ class BBB:
             params["role"] = "viewer"
         elif meeting_role == "moderator":
             params["role"] = "moderator"
-        action = "join"
-        params = self.get_params_with_checksum(action, params)
-        request = requests.Request("GET", self.get_url(action), params=params)
-        pr = request.prepare()
-        return pr
+
+        return self.bbb_request("join", params=params)
 
     def end(self):
-        action = "end"
-        params = self.get_params_with_checksum(
-            action, {"meetingID": self.meeting.meetingID}
-        )
-        requests.get(self.get_url(action), params=params)
+        """https://docs.bigbluebutton.org/development/api/#end"""
+        request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
+        return self.bbb_response(request)
