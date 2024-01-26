@@ -23,6 +23,7 @@ from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
 
+__version__ = "1.1.2"
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
@@ -127,7 +128,7 @@ def setup_jinja(app):
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
-            "version": "1.1.2",
+            "version": __version__,
             "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
             **session_dict,

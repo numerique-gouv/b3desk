@@ -3,10 +3,9 @@ import datetime
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../web"))
-sys.path.insert(0, os.path.abspath("../web/b3desk"))
 
+import b3desk
 
 # -- General configuration ------------------------------------------------
 
@@ -34,7 +33,7 @@ year = datetime.datetime.now().strftime("%Y")
 copyright = f"{year}, Ministère de l'Éducation Nationale"
 author = "Ministère de l'Éducation Nationale"
 
-release = "1.1.0"  # metadata.version("b3desk")
+release = b3desk.__version__
 version = "%s.%s" % tuple(map(int, release.split(".")[:2]))
 language = "fr"
 exclude_patterns = []
