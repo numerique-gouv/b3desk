@@ -40,6 +40,12 @@ def setup_configuration(app, config=None):
     app.config.from_object(config_obj)
 
 
+def setup_celery(app):
+    from b3desk.tasks import celery
+
+    celery.conf.task_always_eager = app.testing
+
+
 def setup_cache(app):
     if app.config.get("CACHE_TYPE"):
         config = None
@@ -156,6 +162,7 @@ def setup_endpoints(app):
 def create_app(test_config=None, gunicorn_logging=False):
     app = Flask(__name__)
     setup_configuration(app, test_config)
+    setup_celery(app)
     setup_cache(app)
     setup_logging(app, gunicorn_logging)
     setup_i18n(app)
