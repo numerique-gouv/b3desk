@@ -41,13 +41,24 @@ def setup_configuration(app, config=None):
 
 
 def setup_cache(app):
-    cache.init_app(
-        app,
-        config={
-            "CACHE_TYPE": "flask_caching.backends.filesystem",
+    if app.config.get("CACHE_TYPE"):
+        config = None
+
+    elif app.config.get("REDIS_URL"):
+        host, port = app.config.get("REDIS_URL").split(":")
+        config = {
+            "CACHE_TYPE": "RedisCache",
+            "CACHE_REDIS_HOST": host,
+            "CACHE_REDIS_PORT": port,
+        }
+
+    else:
+        config = {
+            "CACHE_TYPE": "FileSystemCache",
             "CACHE_DIR": "/tmp/flask-caching",
-        },
-    )
+        }
+
+    cache.init_app(app, config=config)
 
 
 def setup_logging(app, gunicorn_logging=False):

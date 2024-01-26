@@ -65,6 +65,7 @@ def configuration(tmp_path, iam_server, iam_client):
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
         "STATS_URL": None,
+        "CACHE_TYPE": "SimpleCache",
     }
 
 
