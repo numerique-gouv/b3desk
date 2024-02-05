@@ -68,6 +68,10 @@ extend-exclude = '''
 
 [tool.pytest.ini_options]
 testpaths = "web"
+markers = [
+    "secure: cloud auth responds with a https url",
+    "no_scheme: cloud auth responds without any scheme for url",
+]
 
 [tool.ruff]
 ignore = [

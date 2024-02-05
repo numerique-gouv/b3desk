@@ -11,6 +11,8 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 import requests
 from b3desk.utils import secret_key
@@ -23,6 +25,19 @@ def make_nextcloud_credentials_request(url, payload, headers):
     try:
         response = requests.post(url, json=payload, headers=headers)
         data = response.json()
+        if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
+            valid_nclocator = (
+                f'//{data["nclocator"]}'
+                if not (
+                    data["nclocator"].startswith("//")
+                    or data["nclocator"].startswith("http://")
+                    or data["nclocator"].startswith("https://")
+                )
+                else data["nclocator"]
+            )
+            parsed_url = urlparse(valid_nclocator)
+            if parsed_url.scheme != "https":
+                data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
         return data
 
     except requests.exceptions.RequestException:

@@ -60,8 +60,9 @@ def configuration(tmp_path, iam_server, iam_client):
         "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
         "MEETING_KEY_WORDING": "seminaire",
         "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
-        "NC_LOGIN_API_URL": "http://nextcloud.test",
-        "NC_LOGIN_API_KEY": "nextcloud-api-key",
+        "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
+        "NC_LOGIN_API_URL": "http://tokenmock:80/index.php",
+        "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
         "STATS_URL": None,
@@ -184,14 +185,34 @@ def webdav_server(tmp_path_factory):
         server_thread.join()
 
 
+class CloudTokenResponse:
+    def __init__(self, nc_locator):
+        self.data = {
+            "nctoken": str(uuid.uuid4()),
+            "nclocator": nc_locator,
+            "nclogin": "alice",
+        }
+
+    def json(self):
+        return self.data
+
+
 @pytest.fixture(autouse=True)
 def nextcloud_credentials(mocker, webdav_server):
-    response = {
-        "nctoken": str(uuid.uuid4()),
-        "nclocator": f"http://{webdav_server.config['host']}:{webdav_server.config['port']}",
-        "nclogin": "alice",
-    }
+    response = CloudTokenResponse(
+        nc_locator=f"http://{webdav_server.config['host']}:{webdav_server.config['port']}",
+    ).data
     mocker.patch(
         "b3desk.models.users.make_nextcloud_credentials_request", return_value=response
     )
     return response
+
+
+@pytest.fixture
+def cloud_service_response(mocker, webdav_server, request):
+    scheme = "http://"
+    if "secure" in request.keywords:
+        scheme = "https://"
+    elif "no_scheme" in request.keywords:
+        scheme = ""
+    return CloudTokenResponse(nc_locator=f"{scheme}cloud-auth-serv.ice")
