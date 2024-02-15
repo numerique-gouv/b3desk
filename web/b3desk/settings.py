@@ -82,13 +82,13 @@ AVAILABLE_WORDINGS = {
     },
     "WELCOME_PAGE_SUBTITLE": {
         "cours": _(
-            "Créez un cours immédiatement avec des réglages standards. Ce cours ne sera pas enregistré dans votre liste de salons."
+            "Créez en un clic un cours aux réglages standards. Il ne sera pas enregistré dans votre liste de salles."
         ),
         "reunion": _(
-            "Créez une réunion immédiatement avec des réglages standards. Cette réunion ne sera pas enregistrée dans votre liste de salons."
+            "Créez en un clic une réunion aux réglages standards. Elle ne sera pas enregistrée dans votre liste de salles."
         ),
         "seminaire": _(
-            "Créez un séminaire immédiatement avec des réglages standards. Ce séminaire ne sera pas enregistré dans votre liste de salons."
+            "Créez en un clic un séminaire aux réglages standards. Il ne sera pas enregistré dans votre liste de salles."
         ),
     },
     "MEETING_MAIL_SUBJECT": {

@@ -43,6 +43,12 @@ header.rf-header {
   background-size: auto 100%;
   background-position: center;
 }
+.image-no-meetings {
+	background: url('../images/home.svg') no-repeat;
+  background-size: auto 60%;
+  background-position: top;
+  filter: grayscale(0.8) opacity(0.5);
+}
 .alerte {
   width: 80%;
   margin: 2em auto;
@@ -377,4 +383,23 @@ This is a fix until we deal with the update.
   .recording-list .rf-btn.rf-btn--primary {
     padding: .5rem 1rem;
   }
+}
+
+.fr-btn--visio.fr-icon-live-line[target="_blank"]::after {
+  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+}
+
+.list-meeting-rooms-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-meeting-rooms-title div {
+  margin: var(--title-spacing);
+  display: flex;
+}
+
+.list-meeting-rooms-title div a {
+  align-self: flex-end;
 }
