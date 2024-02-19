@@ -67,6 +67,8 @@ def configuration(tmp_path, iam_server, iam_client):
         # Overwrite the web.env values for tests running in docker
         "STATS_URL": None,
         "CACHE_TYPE": "SimpleCache",
+        # Disable cache in unit tests
+        "CACHE_DEFAULT_TIMEOUT": 0,
     }
 
 
