@@ -6,7 +6,7 @@
     Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.
 </p>
 
-<form action="{{ url_for("end_meeting") }}" method="POST">
+<form action="{{ url_for("routes.end_meeting") }}" method="POST">
     {{ form.hidden_tag() }}
     <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">Mettre fin {{ to_the_meeting }} en cours</button>
     <a href="{{ url_for('routes.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">Patienter jusqu'à la fin {{ of_the_meeting }}</a>
