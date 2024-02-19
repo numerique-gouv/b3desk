@@ -182,6 +182,10 @@ class User(db.Model):
     def can_create_meetings(self):
         return len(self.meetings) < current_app.config["MAX_MEETINGS_PER_USER"]
 
+    @property
+    def mail_domain(self):
+        return self.email.split("@")[1] if self.email and "@" in self.email else None
+
     def save(self):
         db.session.add(self)
         db.session.commit()
