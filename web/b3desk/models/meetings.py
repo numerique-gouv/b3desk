@@ -277,7 +277,8 @@ class Meeting(db.Model):
         return role
 
     def end_bbb(self):
-        self.bbb.end()
+        data = self.bbb.end()
+        return data and data["returncode"] == "SUCCESS"
 
 
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):

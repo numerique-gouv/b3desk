@@ -9,7 +9,12 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
 
 @pytest.fixture()
-def mocked_is_meeting_running(mocker):
+def mock_meeting_is_running(mocker):
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
     mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
 
 
@@ -45,7 +50,7 @@ def test_edit_meeting(client_app, authenticated_user, meeting, bbb_response):
     assert response.template == "meeting/wizard.html"
 
 
-def test_save_new_meeting(client_app, authenticated_user, mocked_is_meeting_running):
+def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_running):
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
     res.form["welcome"] = "Bienvenue dans mon meeting de test"
@@ -96,8 +101,8 @@ def test_save_new_meeting(client_app, authenticated_user, mocked_is_meeting_runn
     assert meeting.allowStartStopRecording is True
 
 
-def test_save_existing_meeting(
-    client_app, authenticated_user, meeting, mocked_is_meeting_running
+def test_save_existing_meeting_not_running(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
 ):
     assert len(Meeting.query.all()) == 1
 
@@ -149,8 +154,29 @@ def test_save_existing_meeting(
     assert meeting.allowStartStopRecording is True
 
 
+def test_save_existing_meeting_running(
+    mocker, client_app, authenticated_user, meeting, mock_meeting_is_running
+):
+    mocker.patch("b3desk.models.meetings.Meeting.end_bbb", return_value=True)
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+
+    res = res.form.submit()
+    assert res.template == "meeting/end.html"
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+
+    res = res.form.submit()
+    assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
+
+
 def test_save_moderatorOnlyMessage_too_long(
-    client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mock_meeting_is_not_running
 ):
     res = client_app.get("/meeting/new")
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
@@ -164,7 +190,7 @@ def test_save_moderatorOnlyMessage_too_long(
 
 
 def test_save_no_recording_by_default(
-    client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mock_meeting_is_not_running
 ):
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
@@ -186,7 +212,7 @@ def test_save_no_recording_by_default(
 
 
 def test_save_meeting_in_no_recording_environment(
-    client_app, authenticated_user, mocked_is_meeting_running
+    client_app, authenticated_user, mock_meeting_is_not_running
 ):
     assert len(Meeting.query.all()) == 0
     client_app.app.config["RECORDING"] = False
@@ -292,7 +318,7 @@ def test_create(client_app, meeting, mocker, bbb_response):
 
 
 def test_create_without_logout_url_gets_default(
-    app, client_app, authenticated_user, mocked_is_meeting_running
+    app, client_app, authenticated_user, mock_meeting_is_not_running
 ):
     res = client_app.get("/meeting/new")
     res = res.form.submit()

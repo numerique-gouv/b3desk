@@ -930,8 +930,6 @@ def save_meeting():
     )
 
     if meeting.is_running():
-        EndMeetingForm()
-        EndMeetingForm.meeting_id.data = meeting.id
         return render_template(
             "meeting/end.html",
             meeting=meeting,
