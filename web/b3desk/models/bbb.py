@@ -50,6 +50,7 @@ class BBB:
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     def is_meeting_running(self):
+        """https://docs.bigbluebutton.org/development/api/#ismeetingrunning"""
         request = self.bbb_request(
             "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
