@@ -15,8 +15,6 @@ from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 from b3desk.models import db
-from b3desk.models.meetings import Meeting
-from b3desk.models.users import User
 
 
 @pytest.fixture
@@ -91,6 +89,8 @@ def client_app(app):
 
 @pytest.fixture
 def meeting(client_app, user):
+    from b3desk.models.meetings import Meeting
+
     meeting = Meeting(
         user=user,
         name="meeting",
@@ -106,6 +106,8 @@ def meeting(client_app, user):
 
 @pytest.fixture
 def user(client_app):
+    from b3desk.models.users import User
+
     user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
     user.save()
 

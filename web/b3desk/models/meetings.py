@@ -19,7 +19,6 @@ from flask import url_for
 from sqlalchemy_utils import StringEncryptedType
 
 from . import db
-from .bbb import BBB
 from .users import User
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
@@ -109,6 +108,8 @@ class Meeting(db.Model):
 
     @property
     def bbb(self):
+        from .bbb import BBB
+
         if not self._bbb:
             self._bbb = BBB(self)
         return self._bbb
