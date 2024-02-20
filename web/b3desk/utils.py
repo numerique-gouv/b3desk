@@ -58,6 +58,7 @@ def send_mail(meeting, to_email):
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]
     smtp_ssl = current_app.config["SMTP_SSL"]
+    smtp_starttls = current_app.config["SMTP_STARTTLS"]
     smtp_username = current_app.config["SMTP_USERNAME"]
     smtp_password = current_app.config["SMTP_PASSWORD"]
     wordings = current_app.config["WORDINGS"]
@@ -69,22 +70,20 @@ def send_mail(meeting, to_email):
         welcome_url=current_app.config["SERVER_FQDN"] + "/welcome",
         meeting=meeting,
     )
-    msg["Subject"] = wordings["meeting_mail_subject"]
+    msg["Subject"] = str(wordings["meeting_mail_subject"])
     msg["From"] = smtp_from
     msg["To"] = to_email
     html = MIMEText(content, "html")
     msg.make_mixed()  # This converts the message to multipart/mixed
     msg.attach(html)
 
-    if smtp_ssl:
-        s = smtplib.SMTP_SSL(smtp_host, smtp_port)
-    else:
-        s = smtplib.SMTP(smtp_host, smtp_port)
-    if smtp_username:
-        # in dev, no need for username
-        s.login(smtp_username, smtp_password)
-    s.send_message(msg)
-    s.quit()
+    connection_func = smtplib.SMTP_SSL if smtp_ssl else smtplib.SMTP
+    with connection_func(smtp_host, smtp_port) as smtp:
+        if smtp_starttls:
+            smtp.starttls()
+        if smtp_username:
+            smtp.login(smtp_username, smtp_password)
+        smtp.send_message(msg)
 
 
 def model_converter(model):

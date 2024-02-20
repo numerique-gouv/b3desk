@@ -910,6 +910,9 @@ class MainSettings(BaseSettings):
     SMTP_SSL: Optional[bool] = False
     """Connexion SSL au serveur SMTP."""
 
+    SMTP_STARTTLS: Optional[bool] = False
+    """Connexion StartTLS au serveur SMTP."""
+
     EMAIL_WHITELIST: Any = None
 
     @field_validator("EMAIL_WHITELIST")

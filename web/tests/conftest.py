@@ -37,7 +37,8 @@ def iam_client(iam_server):
 
 
 @pytest.fixture
-def configuration(tmp_path, iam_server, iam_client):
+def configuration(tmp_path, iam_server, iam_client, smtpd):
+    smtpd.config.use_starttls = True
     return {
         "SECRET_KEY": "test-secret-key",
         "SERVER_FQDN": "http://localhost:5000",
@@ -68,6 +69,14 @@ def configuration(tmp_path, iam_server, iam_client):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "MEETING_LOGOUT_URL": "https://example.org/logout",
+        "MAIL_MEETING": True,
+        "SMTP_FROM": "from@example.org",
+        "SMTP_HOST": smtpd.hostname,
+        "SMTP_PORT": smtpd.port,
+        "SMTP_SSL": smtpd.config.use_ssl,
+        "SMTP_STARTTLS": smtpd.config.use_starttls,
+        "SMTP_USERNAME": smtpd.config.login_username,
+        "SMTP_PASSWORD": smtpd.config.login_password,
     }
 
 

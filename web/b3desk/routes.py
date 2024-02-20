@@ -144,6 +144,7 @@ def get_meetings_stats():
 @bp.route("/api/meetings")
 @auth.token_auth(provider_name="default")
 def api_meetings():
+    # TODO: probably unused
     if not auth.current_token_identity:
         return redirect(url_for("routes.index"))
 
@@ -321,7 +322,7 @@ def quick_mail_meeting():
     if not is_accepted_email(email):
         flash(
             _(
-                "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions!"
+                "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions !"
             ),
             "error_login",
         )

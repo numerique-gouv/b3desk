@@ -48,6 +48,7 @@ pytest-dotenv = "^0.5.2"
 pytest-iam = "^0.0.6"
 pytest-mock = "^3.11.1"
 wsgidav = "^4.3.0"
+pytest-smtpd = "^0.1.0"
 
 [tool.poetry.group.doc]
 optional = true
