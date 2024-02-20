@@ -298,7 +298,6 @@ def welcome():
         "welcome.html",
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
-        meetings=[m.get_data_as_dict(user.fullname) for m in user.meetings],
         can_create_meetings=user.can_create_meetings,
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
         meeting_mailto_params=meeting_mailto_params,
@@ -365,7 +364,7 @@ def show_meeting(meeting_id):
         return render_template(
             "meeting/show.html",
             meeting_mailto_params=meeting_mailto_params,
-            meeting=meeting.get_data_as_dict(user.fullname),
+            meeting=meeting,
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
     return redirect(url_for("routes.welcome"))
@@ -384,12 +383,11 @@ def show_meeting_recording(meeting_id):
     user = get_current_user()
     meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
-        meeting_dict = meeting.get_data_as_dict(user.fullname, fetch_recording=True)
         form = RecordingForm()
         return render_template(
             "meeting/recordings.html",
             meeting_mailto_params=meeting_mailto_params,
-            meeting=meeting_dict,
+            meeting=meeting,
             form=form,
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")

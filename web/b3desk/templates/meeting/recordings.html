@@ -9,7 +9,7 @@
     <a href="{{ url_for("routes.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
 </div>
 <div class="recording-list">
-    {% if meeting.running %}
+    {% if meeting.is_running() %}
         <p>
             {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est toujours en cours{% endtrans %}.
             {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
@@ -17,7 +17,7 @@
     {% endif %}
     <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
     <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
-    {% for r in meeting.recordings %}
+    {% for r in meeting.get_recordings() %}
     {% set recording_name = r.name or r.start_date.strftime("%d/%m/%Y") %}
     <h3>
         {{ recording_name }}

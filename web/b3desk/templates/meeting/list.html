@@ -20,7 +20,7 @@
   </div>
   {% endif %}
 
-  {% if not meetings %}
+  {% if not user.meetings %}
   <div class="fr-grid-row">
     <div class="fr-col-md-4 image-no-meetings">
     </div>
@@ -35,7 +35,7 @@
     </div>
   </div>
   {% else %}
-    {% for meeting in meetings %}
+    {% for meeting in user.meetings %}
     <div class="fr-grid-row">
       <div class="fr-col meeting-room">
         <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
@@ -46,7 +46,7 @@
     {% include 'meeting/modals/invite.html' %}
     {% include 'meeting/modals/recordings.html' %}
     {% endfor %}
-    {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
+    {% if user.meetings|length and config.get("SATISFACTION_POLL_URL") %}
       <iframe id="iframe-poll"
         frameborder=0
         src="{{ config.get("SATISFACTION_POLL_URL") }}"

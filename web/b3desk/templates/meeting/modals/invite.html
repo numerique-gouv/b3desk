@@ -5,10 +5,10 @@
         <p>En leur envoyant l’adresse ci-dessous :</p>
         <div class="fr-grid-row fr-text--sm">
           <div class="fr-col-xs-9 fr-col-sm-10">
-            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.moderator_signin_url }}</code>
+            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url("moderator") }}</code>
           </div>
           <div class="fr-col">
-            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.moderator_signin_url }}');" title="Copier le lien modérateur dans le presse-papiers">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url("moderator") }}');" title="Copier le lien modérateur dans le presse-papiers">
               <span class="ri-clipboard-line"></span>
             </button>
           </div>
@@ -21,10 +21,10 @@
         <p>En leur envoyant l’adresse ci-dessous :</p>
         <div class="fr-grid-row fr-text--sm">
           <div class="fr-col-xs-9 fr-col-sm-10">
-            <code id="meeting-{{ meeting.id }}-attendee-url">{{ meeting.attendee_signin_url }}</code>
+            <code id="meeting-{{ meeting.id }}-attendee-url">{{ meeting.get_signin_url("attendee") }}</code>
           </div>
           <div class="fr-col">
-            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.attendee_signin_url }}');" title="Copier le lien participant dans le presse-papiers">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url("attendee") }}');" title="Copier le lien participant dans le presse-papiers">
               <span class="ri-clipboard-line"></span>
             </button>
           </div>
@@ -37,10 +37,10 @@
         <p>En leur envoyant l’adresse ci-dessous :</p>
         <div class="fr-grid-row fr-text--sm">
           <div class="fr-col-xs-9 fr-col-sm-10">
-            <code id="meeting-{{ meeting.id }}-authenticated-attendee-url">{{ meeting.authenticated_attendee_signin_url }}</code>
+            <code id="meeting-{{ meeting.id }}-authenticated-attendee-url">{{ meeting.get_signin_url("authenticated") }}</code>
           </div>
           <div class="fr-col">
-            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.authenticated_attendee_signin_url }}');" title="Copier le lien participant authentifié dans le presse-papiers">
+            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url("authenticated") }}');" title="Copier le lien participant authentifié dans le presse-papiers">
               <span class="ri-clipboard-line"></span>
             </button>
           </div>

@@ -238,28 +238,6 @@ class Meeting(db.Model):
             h=hash_param,
         )
 
-    def get_data_as_dict(self, fullname, fetch_recording=False):
-        if self.id is None:
-            d = {}
-        else:
-            d = {
-                c.name: getattr(self, c.name)
-                for c in self.__table__.columns
-                if c.name != "slideshows"
-            }
-            d["meeting"] = self
-            if fetch_recording:
-                d["recordings"] = self.get_recordings()
-            d["running"] = self.is_running()
-            d["attendee_signin_url"] = self.get_signin_url("attendee")
-            d["moderator_signin_url"] = self.get_signin_url("moderator")
-            d["authenticated_attendee_signin_url"] = self.get_signin_url(
-                "authenticated"
-            )
-        d["moderator_join_url"] = self.get_join_url("moderator", fullname)
-        d["attendee_join_url"] = self.get_join_url("attendee", fullname)
-        return d
-
     def get_role(self, hashed_role, user_id=None):
         if user_id and self.user.id == user_id:
             return "moderator"
