@@ -247,6 +247,7 @@ class Meeting(db.Model):
                 for c in self.__table__.columns
                 if c.name != "slideshows"
             }
+            d["meeting"] = self
             if fetch_recording:
                 d["recordings"] = self.get_recordings()
             d["running"] = self.is_running()

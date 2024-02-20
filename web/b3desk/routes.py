@@ -104,15 +104,15 @@ auth = OIDCAuthentication(
 )
 
 
-def add_mailto_links(meeting_data):
-    d = meeting_data
-    d["moderator_mailto_href"] = render_template(
-        "meeting/mailto/mail_href.txt", meeting=meeting_data, role="moderator"
-    ).replace("\n", "%0D%0A")
-    d["attendee_mailto_href"] = render_template(
-        "meeting/mailto/mail_href.txt", meeting=meeting_data, role="attendee"
-    ).replace("\n", "%0D%0A")
-    return d
+def meeting_mailto_params(meeting, role):
+    if role == "moderator":
+        return render_template(
+            "meeting/mailto/mail_href.txt", meeting=meeting, role="moderator"
+        ).replace("\n", "%0D%0A")
+    elif role == "attendee":
+        return render_template(
+            "meeting/mailto/mail_href.txt", meeting=meeting, role="attendee"
+        ).replace("\n", "%0D%0A")
 
 
 @cache.cached(
@@ -298,11 +298,10 @@ def welcome():
         "welcome.html",
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
-        meetings=[
-            add_mailto_links(m.get_data_as_dict(user.fullname)) for m in user.meetings
-        ],
+        meetings=[m.get_data_as_dict(user.fullname) for m in user.meetings],
         can_create_meetings=user.can_create_meetings,
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
+        meeting_mailto_params=meeting_mailto_params,
         mailto=current_app.config["MAILTO_LINKS"],
         quick_meeting=current_app.config["QUICK_MEETING"],
         file_sharing=current_app.config["FILE_SHARING"],
@@ -365,7 +364,8 @@ def show_meeting(meeting_id):
     if meeting.user_id == user.id:
         return render_template(
             "meeting/show.html",
-            meeting=add_mailto_links(meeting.get_data_as_dict(user.fullname)),
+            meeting_mailto_params=meeting_mailto_params,
+            meeting=meeting.get_data_as_dict(user.fullname),
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
     return redirect(url_for("routes.welcome"))
@@ -388,7 +388,8 @@ def show_meeting_recording(meeting_id):
         form = RecordingForm()
         return render_template(
             "meeting/recordings.html",
-            meeting=add_mailto_links(meeting_dict),
+            meeting_mailto_params=meeting_mailto_params,
+            meeting=meeting_dict,
             form=form,
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")

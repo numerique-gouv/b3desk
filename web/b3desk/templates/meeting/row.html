@@ -4,7 +4,7 @@
     <span class="fr-fi-user-line"></span>
     <a href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="moderator") }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
     {% if mailto %}
-    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting.moderator_mailto_href }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
+    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting.meeting, "moderator") }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
     {% endif %}
     <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_signin_url }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
   </div>
@@ -12,7 +12,7 @@
     <span class="ri-group-line"></span>
     <a href="{{ url_for("routes.join_meeting_as_role", meeting_id=meeting.id, role="attendee") }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Participer à {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
     {% if mailto %}
-    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting.attendee_mailto_href }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
+    <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting.meeting, "attendee") }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
     {% endif %}
     <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_signin_url }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
   </div>
