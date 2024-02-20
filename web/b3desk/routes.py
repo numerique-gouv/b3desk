@@ -918,10 +918,10 @@ def save_meeting():
         meeting = db.session.get(Meeting, meeting_id)
         del form.id
         del form.name
-    if form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording"):
-        meeting.record = True
-    else:
-        meeting.record = False
+
+    meeting.record = bool(
+        form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
+    )
     form.populate_obj(meeting)
     meeting.save()
     flash(

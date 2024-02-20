@@ -69,6 +69,7 @@ def configuration(tmp_path, iam_server, iam_client):
         "CACHE_TYPE": "SimpleCache",
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
+        "MEETING_LOGOUT_URL": "https://example.org/logout",
     }
 
 
@@ -90,7 +91,14 @@ def client_app(app):
 
 @pytest.fixture
 def meeting(client_app, user):
-    meeting = Meeting(user=user)
+    meeting = Meeting(
+        user=user,
+        name="meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+    )
     meeting.save()
 
     yield meeting

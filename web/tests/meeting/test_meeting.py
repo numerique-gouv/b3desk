@@ -47,36 +47,32 @@ def test_edit_meeting(client_app, authenticated_user, meeting, bbb_response):
     assert response.template == "meeting/wizard.html"
 
 
-MEETING_DATA = {
-    "name": "Mon meeting de test",
-    "welcome": "Bienvenue dans mon meeting de test",
-    "maxParticipants": 5,
-    "duration": 60,
-    "guestPolicy": "on",
-    "webcamsOnlyForModerator": "on",
-    "muteOnStart": "on",
-    "lockSettingsDisableCam": "on",
-    "lockSettingsDisableMic": "on",
-    "lockSettingsDisablePrivateChat": "on",
-    "lockSettingsDisablePublicChat": "on",
-    "lockSettingsDisableNote": "on",
-    "moderatorOnlyMessage": "Bienvenue aux modérateurs",
-    "logoutUrl": "https://log.out",
-    "moderatorPW": "Motdepasse1",
-    "attendeePW": "Motdepasse2",
-    "autoStartRecording": "on",
-    "allowStartStopRecording": "on",
-}
-
-
 def test_save_new_meeting(client_app, authenticated_user, mocked_is_meeting_running):
-    response = client_app.post(
-        "/meeting/save",
-        MEETING_DATA,
-        status=302,
-    )
+    res = client_app.get("/meeting/new")
+    res.form["name"] = "Mon meeting de test"
+    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["guestPolicy"] = "on"
+    res.form["webcamsOnlyForModerator"] = "on"
+    res.form["muteOnStart"] = "on"
+    res.form["lockSettingsDisableCam"] = "on"
+    res.form["lockSettingsDisableMic"] = "on"
+    res.form["lockSettingsDisablePrivateChat"] = "on"
+    res.form["lockSettingsDisablePublicChat"] = "on"
+    res.form["lockSettingsDisableNote"] = "on"
+    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.form["logoutUrl"] = "https://log.out"
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
+    res.form["autoStartRecording"] = "on"
+    res.form["allowStartStopRecording"] = "on"
 
-    assert "welcome" in response.location
+    res = res.form.submit()
+    assert (
+        "success",
+        "Mon meeting de test modifications prises en compte",
+    ) in res.flashes
 
     meeting = db.session.get(Meeting, 1)
 
@@ -107,23 +103,34 @@ def test_save_existing_meeting(
 ):
     assert len(Meeting.query.all()) == 1
 
-    data = MEETING_DATA.copy()
-    data["id"] = meeting.id
+    res = client_app.get("/meeting/edit/1")
+    res.form["name"] = "Mon meeting de test"
+    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["guestPolicy"] = "on"
+    res.form["webcamsOnlyForModerator"] = "on"
+    res.form["muteOnStart"] = "on"
+    res.form["lockSettingsDisableCam"] = "on"
+    res.form["lockSettingsDisableMic"] = "on"
+    res.form["lockSettingsDisablePrivateChat"] = "on"
+    res.form["lockSettingsDisablePublicChat"] = "on"
+    res.form["lockSettingsDisableNote"] = "on"
+    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.form["logoutUrl"] = "https://log.out"
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
+    res.form["autoStartRecording"] = "on"
+    res.form["allowStartStopRecording"] = "on"
 
-    response = client_app.post(
-        "/meeting/save",
-        data,
-        status=302,
-    )
-
-    assert "welcome" in response.location
+    res = res.form.submit()
+    assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
-
     meeting = db.session.get(Meeting, 1)
 
     assert meeting.user_id == 1
-    assert not meeting.name  # Name can not be edited
+    assert meeting.name == "meeting"  # Name can not be edited
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
     assert meeting.duration == 60
@@ -147,31 +154,32 @@ def test_save_existing_meeting(
 def test_save_moderatorOnlyMessage_too_long(
     client_app, authenticated_user, mocked_is_meeting_running
 ):
-    data = MEETING_DATA.copy()
+    res = client_app.get("/meeting/new")
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
-    data["moderatorOnlyMessage"] = moderator_only_message
+    res.form["moderatorOnlyMessage"] = moderator_only_message
+    res = res.form.submit()
 
-    response = client_app.post(
-        "/meeting/save",
-        data,
-        status=200,
-    )
-    assert response.template == "meeting/wizard.html"
-
-    response.mustcontain("Le formulaire contient des erreurs")
-    response.mustcontain(moderator_only_message)
-    response.mustcontain("Le message est trop long")
+    res.mustcontain("Le formulaire contient des erreurs")
+    res.mustcontain(moderator_only_message)
+    res.mustcontain("Le message est trop long")
     assert not Meeting.query.all()
 
 
 def test_save_no_recording_by_default(
     client_app, authenticated_user, mocked_is_meeting_running
 ):
-    data = MEETING_DATA.copy()
-    del data["autoStartRecording"]
-    del data["allowStartStopRecording"]
+    res = client_app.get("/meeting/new")
+    res.form["name"] = "Mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
 
-    client_app.post("/meeting/save", data, status=302)
+    res = res.form.submit()
+    assert (
+        "success",
+        "Mon meeting de test modifications prises en compte",
+    ) in res.flashes
 
     meeting = db.session.get(Meeting, 1)
     assert meeting.record is False
@@ -182,15 +190,24 @@ def test_save_no_recording_by_default(
 def test_save_meeting_in_no_recording_environment(
     client_app, authenticated_user, mocked_is_meeting_running
 ):
+    assert len(Meeting.query.all()) == 0
     client_app.app.config["RECORDING"] = False
 
-    response = client_app.post(
-        "/meeting/save",
-        MEETING_DATA,
-        status=302,
-    )
+    res = client_app.get("/meeting/new")
+    res.form["name"] = "Mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
 
-    assert "welcome" in response.location
+    assert "allowStartStopRecording" not in res.form.fields
+    assert "autoStartRecording" not in res.form.fields
+
+    res = res.form.submit()
+    assert (
+        "success",
+        "Mon meeting de test modifications prises en compte",
+    ) in res.flashes
 
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
@@ -279,14 +296,9 @@ def test_create(client_app, meeting, mocker, bbb_response):
 def test_create_without_logout_url_gets_default(
     app, client_app, authenticated_user, mocked_is_meeting_running
 ):
-    data = MEETING_DATA.copy()
-    del data["logoutUrl"]
-
-    client_app.post(
-        "/meeting/save",
-        data,
-        status=302,
-    )
+    res = client_app.get("/meeting/new")
+    res = res.form.submit()
+    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
 
     meeting = db.session.get(Meeting, 1)
     assert meeting
