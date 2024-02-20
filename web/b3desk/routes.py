@@ -339,9 +339,8 @@ def quick_mail_meeting():
 @auth.oidc_auth("default")
 def quick_meeting():
     user = get_current_user()
-    fullname = user.fullname
     meeting = get_quick_meeting_from_user_and_random_string(user)
-    return redirect(meeting.get_join_url("moderator", fullname, create=True))
+    return redirect(meeting.get_join_url("moderator", user.fullname, create=True))
 
 
 @bp.route("/meeting/show/<meeting:meeting>")

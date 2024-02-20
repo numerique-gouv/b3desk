@@ -263,21 +263,23 @@ class Meeting(db.Model):
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     if random_string is None:
         random_string = get_random_alphanumeric_string(8)
-    m = Meeting()
-    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
-    m.user = user
-    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.fake_id = random_string
-    m.moderatorPW = f"{user.hash}-{random_string}"
-    m.attendeePW = f"{random_string}-{random_string}"
-    m.moderatorOnlyMessage = current_app.config[
-        "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-    ]
-    m.logoutUrl = (
-        current_app.config["QUICK_MEETING_LOGOUT_URL"]
-        or current_app.config["SERVER_FQDN"]
+
+    meeting = Meeting(
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
+        user=user,
+        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
+        moderatorPW=f"{user.hash}-{random_string}",
+        attendeePW=f"{random_string}-{random_string}",
+        moderatorOnlyMessage=current_app.config[
+            "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
+        ],
+        logoutUrl=(
+            current_app.config["QUICK_MEETING_LOGOUT_URL"]
+            or current_app.config["SERVER_FQDN"]
+        ),
     )
-    return m
+    meeting.fake_id = random_string
+    return meeting
 
 
 def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
@@ -308,17 +310,19 @@ def get_mail_meeting(random_string=None):
     # only used for mail meeting
     if random_string is None:
         random_string = get_random_alphanumeric_string(8)
-    m = Meeting()
-    m.duration = current_app.config["DEFAULT_MEETING_DURATION"]
-    m.name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
-    m.moderatorPW = "{}-{}".format(
-        random_string,
-        random_string,
-    )  # it is only usefull for bbb
-    m.fake_id = random_string
-    m.moderatorOnlyMessage = current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"]
-    m.logoutUrl = (
-        current_app.config["QUICK_MEETING_LOGOUT_URL"]
-        or current_app.config["SERVER_FQDN"]
+
+    meeting = Meeting(
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
+        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
+        moderatorPW="{}-{}".format(
+            random_string,
+            random_string,
+        ),  # it is only usefull for bbb
+        moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
+        logoutUrl=(
+            current_app.config["QUICK_MEETING_LOGOUT_URL"]
+            or current_app.config["SERVER_FQDN"]
+        ),
     )
-    return m
+    meeting.fake_id = random_string
+    return meeting
