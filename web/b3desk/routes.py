@@ -370,18 +370,10 @@ def show_meeting(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/recordings/<int:meeting_id>")
+@bp.route("/meeting/recordings/<meeting:meeting>")
 @auth.oidc_auth("default")
-def show_meeting_recording(meeting_id):
-    form = ShowMeetingForm(data={"meeting_id": meeting_id})
-    if not form.validate():
-        flash(
-            _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
-            "warning",
-        )
-        return redirect(url_for("routes.welcome"))
+def show_meeting_recording(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         form = RecordingForm()
         return render_template(
@@ -416,7 +408,7 @@ def update_recording_name(meeting_id, recording_id):
             )
     else:
         flash("Vous ne pouvez pas modifier cet enregistrement", "error")
-    return redirect(url_for("routes.show_meeting_recording", meeting_id=meeting_id))
+    return redirect(url_for("routes.show_meeting_recording", meeting=meeting))
 
 
 @bp.route("/meeting/new")

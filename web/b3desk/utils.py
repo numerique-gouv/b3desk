@@ -5,11 +5,14 @@ import string
 from email.message import EmailMessage
 from email.mime.text import MIMEText
 
+from b3desk.models import db
+from flask import abort
 from flask import current_app
 from flask import render_template
 from flask import request
 from netaddr import IPAddress
 from netaddr import IPNetwork
+from werkzeug.routing import BaseConverter
 
 
 def secret_key():
@@ -82,3 +85,22 @@ def send_mail(meeting, to_email):
         s.login(smtp_username, smtp_password)
     s.send_message(msg)
     s.quit()
+
+
+def model_converter(model):
+    class ModelConverter(BaseConverter):
+        def __init__(self, *args, required=True, **kwargs):
+            self.required = required
+            super().__init__(self, *args, **kwargs)
+
+        def to_url(self, instance):
+            return str(instance.id)
+
+        def to_python(self, identifier):
+            instance = db.session.get(model, identifier)
+            if self.required and not instance:
+                abort(404)
+
+            return instance
+
+    return ModelConverter

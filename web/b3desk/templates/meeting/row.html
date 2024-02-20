@@ -45,7 +45,7 @@
   </div>
   <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
       {% if config.get("RECORDING") %}
-        <a href="{{ url_for("routes.show_meeting_recording", meeting_id=meeting.id) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
+        <a href="{{ url_for("routes.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
           <span class="fr-icon-play-line" aria-hidden="true"></span>
         </a>
       {% endif %}

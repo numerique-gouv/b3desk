@@ -23,6 +23,8 @@ from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
 
+from .utils import model_converter
+
 __version__ = "1.1.2"
 
 CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
@@ -135,6 +137,15 @@ def setup_jinja(app):
         }
 
 
+def setup_flask(app):
+    with app.app_context():
+        from b3desk.models.meetings import Meeting
+        from b3desk.models.users import User
+
+        for model in (Meeting, User):
+            app.url_map.converters[model.__name__.lower()] = model_converter(model)
+
+
 def setup_error_pages(app):
     @app.errorhandler(400)
     def bad_request(error):
@@ -170,6 +181,7 @@ def create_app(test_config=None, gunicorn_logging=False):
     setup_csrf(app)
     setup_database(app)
     setup_jinja(app)
+    setup_flask(app)
     setup_error_pages(app)
     setup_endpoints(app)
 
