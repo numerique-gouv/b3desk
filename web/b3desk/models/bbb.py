@@ -54,8 +54,7 @@ class BBB:
         request = self.bbb_request(
             "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
-        data = self.bbb_response(request)
-        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
+        return self.bbb_response(request)
 
     def insertDocsNoDefault(self):
         # TODO: appears to be unused

@@ -929,7 +929,7 @@ def save_meeting():
         "success",
     )
 
-    if meeting.is_meeting_running():
+    if meeting.is_running():
         EndMeetingForm()
         EndMeetingForm.meeting_id.data = meeting.id
         return render_template(
@@ -1026,7 +1026,7 @@ def externalUpload(meeting_id):
     meeting = db.session.get(Meeting, meeting_id)
     if (
         meeting is not None
-        and meeting.is_meeting_running() is True
+        and meeting.is_running()
         and user is not None
         and meeting.user_id == user.id
     ):
@@ -1148,6 +1148,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
         )
     elif not role:
         return redirect(url_for("routes.index"))
+
     return render_template(
         "meeting/join.html",
         meeting=meeting,
@@ -1192,6 +1193,7 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""
     role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect(url_for("routes.index"))
+
     return render_template(
         "meeting/wait.html",
         meeting=meeting,
@@ -1209,6 +1211,7 @@ def join_meeting():
     form = JoinMeetingForm(request.form)
     if not form.validate():
         return redirect(url_for("routes.index"))
+
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
     user_id = form["user_id"].data
@@ -1224,6 +1227,7 @@ def join_meeting():
         fullname = get_authenticated_attendee_fullname()
     elif not role:
         return redirect(url_for("routes.index"))
+
     return redirect(
         meeting.get_join_url(
             role, fullname, fullname_suffix=fullname_suffix, create=True
@@ -1237,6 +1241,7 @@ def join_mail_meeting():
     if not form.validate():
         flash("Lien invalide", "error")
         return redirect(url_for("routes.index"))
+
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
     form["user_id"].data
@@ -1293,6 +1298,7 @@ def join_meeting_as_role(meeting_id, role):
     form = JoinMeetingAsRoleForm(data={"meeting_id": meeting_id, "role": role})
     if not form.validate():
         abort(404)
+
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     if meeting.user_id == user.id:
         return redirect(meeting.get_join_url(role, user.fullname, create=True))

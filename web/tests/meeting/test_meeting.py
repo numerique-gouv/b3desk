@@ -10,9 +10,7 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 
 @pytest.fixture()
 def mocked_is_meeting_running(mocker):
-    mocker.patch(
-        "b3desk.models.meetings.Meeting.is_meeting_running", return_value=False
-    )
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
 
 
 def test_show_meeting(client_app, authenticated_user, meeting, bbb_response):

@@ -151,8 +151,9 @@ class Meeting(db.Model):
         s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
-    def is_meeting_running(self):
-        return self.bbb.is_meeting_running()
+    def is_running(self):
+        data = self.bbb.is_meeting_running()
+        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def create_bbb(self):
         result = self.bbb.create()
@@ -187,19 +188,21 @@ class Meeting(db.Model):
         )
 
     def get_join_url(self, meeting_role, fullname, fullname_suffix="", create=False):
-        is_meeting_available = self.is_meeting_running()
+        is_meeting_available = self.is_running()
         should_create_room = (
             not is_meeting_available and (meeting_role == "moderator") and create
         )
         if should_create_room:
-            d = self.create_bbb()
-            if "returncode" in d and d["returncode"] == "SUCCESS":
+            data = self.create_bbb()
+            if "returncode" in data and data["returncode"] == "SUCCESS":
                 is_meeting_available = True
+
         if is_meeting_available:
             nickname = (
                 f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
             )
             return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
+
         return url_for(
             "routes.waiting_meeting",
             meeting_fake_id=self.fake_id,
@@ -246,7 +249,7 @@ class Meeting(db.Model):
             }
             if fetch_recording:
                 d["recordings"] = self.get_recordings()
-            d["running"] = self.is_meeting_running()
+            d["running"] = self.is_running()
             d["attendee_signin_url"] = self.get_signin_url("attendee")
             d["moderator_signin_url"] = self.get_signin_url("moderator")
             d["authenticated_attendee_signin_url"] = self.get_signin_url(
