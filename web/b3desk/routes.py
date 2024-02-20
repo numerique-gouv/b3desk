@@ -20,7 +20,6 @@ import filetype
 import requests
 from b3desk.forms import EndMeetingForm
 from b3desk.forms import JoinMailMeetingForm
-from b3desk.forms import JoinMeetingAsRoleForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.forms import MeetingFilesForm
 from b3desk.forms import MeetingForm
@@ -167,12 +166,11 @@ def api_meetings():
 
 
 # called by NextcloudfilePicker when documents should be added to a running room:
-@bp.route("/meeting/files/<int:meeting_id>/insertDocuments", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/insertDocuments", methods=["POST"])
 @auth.oidc_auth("default")
-def insertDocuments(meeting_id):
+def insertDocuments(meeting):
     from flask import request
 
-    meeting = db.session.get(Meeting, meeting_id)
     files_title = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
 
@@ -181,7 +179,7 @@ def insertDocuments(meeting_id):
     xml_mid = ""
     # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
     for cur_file in files_title:
-        id = add_external_meeting_file_nextcloud(cur_file, meeting_id)
+        id = add_external_meeting_file_nextcloud(cur_file, meeting.id)
         filehash = hashlib.sha1(
             f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
@@ -346,12 +344,12 @@ def quick_meeting():
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
 
-@bp.route("/meeting/show/<int:meeting_id>")
+@bp.route("/meeting/show/<meeting:meeting>")
 @auth.oidc_auth("default")
-def show_meeting(meeting_id):
+def show_meeting(meeting):
     # TODO: appears unused
 
-    form = ShowMeetingForm(data={"meeting_id": meeting_id})
+    form = ShowMeetingForm(data={"meeting_id": meeting.id})
     if not form.validate():
         flash(
             _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
@@ -359,7 +357,6 @@ def show_meeting(meeting_id):
         )
         return redirect(url_for("routes.welcome"))
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         return render_template(
             "meeting/show.html",
@@ -386,11 +383,10 @@ def show_meeting_recording(meeting):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/<int:meeting_id>/recordings/<recording_id>", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @auth.oidc_auth("default")
-def update_recording_name(meeting_id, recording_id):
+def update_recording_name(meeting, recording_id):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id) or abort(404)
     if meeting.user_id == user.id:
         form = RecordingForm(request.form)
         form.validate() or abort(403)
@@ -428,11 +424,10 @@ def new_meeting():
     )
 
 
-@bp.route("/meeting/edit/<int:meeting_id>")
+@bp.route("/meeting/edit/<meeting:meeting>")
 @auth.oidc_auth("default")
-def edit_meeting(meeting_id):
+def edit_meeting(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
 
     form = (
         MeetingWithRecordForm(obj=meeting)
@@ -450,11 +445,10 @@ def edit_meeting(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>")
+@bp.route("/meeting/files/<meeting:meeting>")
 @auth.oidc_auth("default")
-def edit_meeting_files(meeting_id):
+def edit_meeting_files(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
 
     form = MeetingFilesForm()
 
@@ -486,12 +480,11 @@ def edit_meeting_files(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>/")
-@bp.route("/meeting/files/<int:meeting_id>/<int:file_id>")
+@bp.route("/meeting/files/<meeting:meeting>/")
+@bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @auth.oidc_auth("default")
-def download_meeting_files(meeting_id, file_id=None):
+def download_meeting_files(meeting, file_id=None):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
 
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -541,15 +534,14 @@ def download_meeting_files(meeting_id, file_id=None):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>/toggledownload", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @auth.oidc_auth("default")
-def toggledownload(meeting_id):
+def toggledownload(meeting):
     user = get_current_user()
     data = request.get_json()
 
     if user is None:
         return redirect(url_for("routes.welcome"))
-    meeting = db.session.get(Meeting, meeting_id)
     meeting_file = db.session.get(MeetingFiles, data["id"])
     if meeting_file is not None and meeting.user_id == user.id:
         meeting_file.is_downloadable = data["value"]
@@ -559,13 +551,12 @@ def toggledownload(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/files/<int:meeting_id>/default", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
 @auth.oidc_auth("default")
-def set_meeting_default_file(meeting_id):
+def set_meeting_default_file(meeting):
     user = get_current_user()
     data = request.get_json()
 
-    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         actual_default_file = meeting.default_file
         if actual_default_file:
@@ -770,11 +761,10 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
     return externalMeetingFile.id
 
 
-@bp.route("/meeting/files/<int:meeting_id>", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @auth.oidc_auth("default")
-def add_meeting_files(meeting_id):
+def add_meeting_files(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
 
     data = request.get_json()
     is_default = False
@@ -782,12 +772,12 @@ def add_meeting_files(meeting_id):
         is_default = True
     if meeting.user_id == user.id:
         if data["from"] == "nextcloud":
-            return add_meeting_file_nextcloud(data["value"], meeting_id, is_default)
+            return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
         if data["from"] == "URL":
-            return add_meeting_file_URL(data["value"], meeting_id, is_default)
+            return add_meeting_file_URL(data["value"], meeting.id, is_default)
         if data["from"] == "dropzone":
             return add_meeting_file_dropzone(
-                secure_filename(data["value"]), meeting_id, is_default
+                secure_filename(data["value"]), meeting.id, is_default
             )
         else:
             return make_response(jsonify("no file provided"), 200)
@@ -796,14 +786,13 @@ def add_meeting_files(meeting_id):
 
 
 # for dropzone multiple files uploading at once
-@bp.route("/meeting/files/<int:meeting_id>/dropzone", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
 @auth.oidc_auth("default")
-def add_dropzone_files(meeting_id):
+def add_dropzone_files(meeting):
     user = get_current_user()
 
-    meeting = db.session.get(Meeting, meeting_id)
-    if meeting and user and meeting.user_id == user.id:
-        return upload(user, meeting_id, request.files["dropzoneFiles"])
+    if user and meeting.user_id == user.id:
+        return upload(user, meeting, request.files["dropzoneFiles"])
     else:
         flash("Traitement de requête impossible", "error")
         return redirect(url_for("routes.welcome"))
@@ -948,11 +937,10 @@ def end_meeting():
     return redirect(url_for("routes.welcome"))
 
 
-@bp.route("/meeting/create/<int:meeting_id>")
+@bp.route("/meeting/create/<meeting:meeting>")
 @auth.oidc_auth("default")
-def create_meeting(meeting_id):
+def create_meeting(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == user.id:
         meeting.create_bbb()
         meeting.save()
@@ -1009,20 +997,13 @@ def insertDoc(token):
     return make_response("ok", 200)
 
 
-@bp.route("/meeting/<int:meeting_id>/externalUpload")
+@bp.route("/meeting/<meeting:meeting>/externalUpload")
 @auth.oidc_auth("default")
-def externalUpload(meeting_id):
+def externalUpload(meeting):
     user = get_current_user()
-    meeting = db.session.get(Meeting, meeting_id)
-    if (
-        meeting is not None
-        and meeting.is_running()
-        and user is not None
-        and meeting.user_id == user.id
-    ):
+    if meeting.is_running() and user is not None and meeting.user_id == user.id:
         return render_template("meeting/externalUpload.html", meeting=meeting)
-    else:
-        return redirect(url_for("routes.welcome"))
+    return redirect(url_for("routes.welcome"))
 
 
 @bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>")
@@ -1264,6 +1245,7 @@ def join_mail_meeting():
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
 
+# Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
 @bp.route("/meeting/join/<int:meeting_id>/authenticated")
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
@@ -1281,15 +1263,13 @@ def join_meeting_as_authenticated(meeting_id):
     )
 
 
-@bp.route("/meeting/join/<int:meeting_id>/<role>")
+@bp.route("/meeting/join/<meeting:meeting>/<role>")
 @auth.oidc_auth("default")
-def join_meeting_as_role(meeting_id, role):
+def join_meeting_as_role(meeting, role):
     user = get_current_user()
-    form = JoinMeetingAsRoleForm(data={"meeting_id": meeting_id, "role": role})
-    if not form.validate():
+    if role not in ("attendee", "moderator"):
         abort(404)
 
-    meeting = db.session.get(Meeting, meeting_id) or abort(404)
     if meeting.user_id == user.id:
         return redirect(meeting.get_join_url(role, user.fullname, create=True))
     else:

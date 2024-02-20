@@ -384,10 +384,10 @@ const nc_locator = "{{ user.nc_locator }}";
 const nc_login = "{{ user.nc_login }}";
 const nc_token = "{{ user.nc_token }}";
 const meeting_id = "{{ meeting.id }}";
-const toggle_download_url = "{{ url_for("routes.toggledownload", meeting_id=meeting.id) }}";
-const set_default_file_url = "{{ url_for("routes.set_meeting_default_file", meeting_id=meeting.id) }}";
-const download_meeting_file_url = "{{ url_for("routes.download_meeting_files", meeting_id=meeting.id, _external=True) }}";
-const edit_meeting_files_url = "{{ url_for("routes.edit_meeting_files", meeting_id=meeting.id) }}";
+const toggle_download_url = "{{ url_for("routes.toggledownload", meeting=meeting) }}";
+const set_default_file_url = "{{ url_for("routes.set_meeting_default_file", meeting=meeting) }}";
+const download_meeting_file_url = "{{ url_for("routes.download_meeting_files", meeting=meeting, _external=True) }}";
+const edit_meeting_files_url = "{{ url_for("routes.edit_meeting_files", meeting=meeting) }}";
 const delete_file_url = "{{ url_for("routes.delete_meeting_file") }}";
 let ncfilepicker = null;
 

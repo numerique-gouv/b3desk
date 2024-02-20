@@ -5,15 +5,9 @@ from wtforms import BooleanField
 from wtforms import Form
 from wtforms import HiddenField
 from wtforms import IntegerField
-from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import validators
-
-
-class JoinMeetingAsRoleForm(Form):
-    role = SelectField(choices=["attendee", "moderator"])
-    meeting_id = IntegerField()
 
 
 class JoinMeetingForm(FlaskForm):
