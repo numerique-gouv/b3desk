@@ -1144,16 +1144,16 @@ def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
