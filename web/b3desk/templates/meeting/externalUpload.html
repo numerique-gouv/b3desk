@@ -10,7 +10,7 @@
     const nc_locator = "{{ user.nc_locator }}";
     const nc_login = "{{ user.nc_login }}";
     const nc_token = "{{ user.nc_token }}";
-    const meeting_id = "{{ meeting.id }}";
+    const insert_documents_url = "{{ url_for("routes.insertDocuments", meeting_id=meeting_id) }}";
 
     function createNCFilePicker() {
       let ncPickerParams = {
@@ -32,7 +32,7 @@
       var csrf_token = document.getElementsByName("csrf_token")[0].value
       var post_data = e.detail.selection.map(name => name.slice(1))
       JSON.stringify(post_data);
-      fetch('/meeting/files/'+meeting_id+'/insertDocuments', {
+      fetch(insert_documents_url, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

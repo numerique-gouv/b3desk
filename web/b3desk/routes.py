@@ -486,9 +486,10 @@ def edit_meeting_files(meeting_id):
     return redirect(url_for("routes.welcome"))
 
 
+@bp.route("/meeting/files/<int:meeting_id>/")
 @bp.route("/meeting/files/<int:meeting_id>/<int:file_id>")
 @auth.oidc_auth("default")
-def download_meeting_files(meeting_id, file_id):
+def download_meeting_files(meeting_id, file_id=None):
     user = get_current_user()
     meeting = db.session.get(Meeting, meeting_id)
 

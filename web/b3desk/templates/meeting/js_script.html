@@ -27,7 +27,7 @@ function toggleIsDownloadable(e){
   let newValue = e.target.checked;
   let csrf_token = document.getElementsByName("csrf_token")[0].value;
 
-  fetch('/meeting/files/'+meeting_id+'/toggledownload', {
+  fetch(toggle_download_url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -43,11 +43,10 @@ function toggleIsDownloadable(e){
 }
 
 function submitDefaultFile(e){
-
   let csrf_token = document.getElementsByName("csrf_token")[0].value;
   let idFileSelected = e.target.id.split('-').slice(-1);
 
-  fetch('/meeting/files/'+meeting_id+'/default', {
+  fetch(set_default_file_url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -72,8 +71,7 @@ function deleteFile(e){
 
   let csrf_token = document.getElementsByName("csrf_token")[0].value;
   let idFileSelected = e.target[0].value;
-
-  fetch('/meeting/files/delete', {
+  fetch(delete_meeting_file, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -115,7 +113,6 @@ function add_URL_file(name, from) {
 }
 
 function append_file_to_fileslist(title, id, date, isDefault) {
-
   var nofileavailable = document.getElementById('nofileavailable');
   if (nofileavailable) {
     nofileavailable.parentNode.removeChild(nofileavailable);
@@ -149,7 +146,7 @@ function append_file_to_fileslist(title, id, date, isDefault) {
 
   buttonLink.classList.add('fr-btn','fr-icon-download-fill');
   buttonLink.setAttribute('title', 'Télécharger');
-	aLink.setAttribute('href', fqdn+'/meeting/files/'+meeting_id+'/'+id);
+	aLink.setAttribute('href', download_meeting_file_url + id);
   aLink.appendChild(buttonLink);
 	tdDownload.appendChild(aLink);
   inputIsDl.classList.add('fr-toggle__input');
@@ -235,7 +232,7 @@ function append_file_to_fileslist(title, id, date, isDefault) {
   input.setAttribute('type', 'hidden');
   input.setAttribute('name', 'id');
   input.setAttribute('value', id);
-  form.setAttribute('action', '/meeting/files/delete');
+  form.setAttribute('action', delete_meeting_file);
   form.setAttribute('method', 'POST');
   form.setAttribute('onsubmit', 'deleteFile(event)');
 
@@ -261,13 +258,11 @@ function append_file_to_fileslist(title, id, date, isDefault) {
 }
 
 function append_file_to_default_fileslist(title, id) {
-
   let selectDefault = document.getElementById('defaultFileSelector');
   let option = document.createElement('option');
   option.setAttribute('value', id);
   option.innerHTML = title;
   selectDefault.appendChild(option);
-
 }
 
 //
@@ -320,7 +315,7 @@ function link_file_to_meeting(value, from) {
           'from': from,
   };
   JSON.stringify(post_data);
-  fetch('/meeting/files/'+meeting_id, {
+  fetch(edit_meeting_files_url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -389,7 +384,11 @@ const nc_locator = "{{ user.nc_locator }}";
 const nc_login = "{{ user.nc_login }}";
 const nc_token = "{{ user.nc_token }}";
 const meeting_id = "{{ meeting.id }}";
-const fqdn = "{{ config.get("SERVER_FQDN") }}";
+const toggle_download_url = "{{ url_for("routes.toggledownload", meeting_id=meeting.id) }}";
+const set_default_file_url = "{{ url_for("routes.set_meeting_default_file", meeting_id=meeting.id) }}";
+const download_meeting_file_url = "{{ url_for("routes.download_meeting_files", meeting_id=meeting.id, _external=True) }}";
+const edit_meeting_files_url = "{{ url_for("routes.edit_meeting_files", meeting_id=meeting.id) }}";
+const delete_file_url = "{{ url_for("routes.delete_meeting_file") }}";
 let ncfilepicker = null;
 
 if (!nc_locator || !nc_login || !nc_token) {
