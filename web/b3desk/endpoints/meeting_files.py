@@ -274,12 +274,12 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         }
         client.upload_sync(**kwargs)
 
-        meeting_file = MeetingFiles()
-        meeting_file.nc_path = nc_path
-
-        meeting_file.title = title
-        meeting_file.created_at = date.today()
-        meeting_file.meeting_id = meeting_id
+        meeting_file = MeetingFiles(
+            nc_path=nc_path,
+            title=title,
+            created_at=date.today(),
+            meeting_id=meeting_id,
+        )
 
     except WebDavException as exception:
         user.disable_nextcloud()
@@ -291,14 +291,9 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
     try:
         # test for is_default-file absence at the latest time possible
         meeting = db.session.get(Meeting, meeting_id)
-        if len(meeting.files) == 0 and not meeting.default_file:
-            meeting_file.is_default = True
-        else:
-            meeting_file.is_default = False
-
+        meeting_file.is_default = len(meeting.files) == 0 and not meeting.default_file
         meeting_file.save()
-        current_app.config["SECRET_KEY"]
-        meeting_file.update()
+
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
         remove_dropzone_file(dropzone_path)
         return jsonify(
@@ -340,14 +335,13 @@ def add_meeting_file_URL(url, meeting_id, is_default):
             msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
-    meeting_file = MeetingFiles()
-
-    meeting_file.title = title
-    meeting_file.created_at = date.today()
-    meeting_file.meeting_id = meeting_id
-    meeting_file.url = url
-    meeting_file.is_default = is_default
-
+    meeting_file = MeetingFiles(
+        title=title,
+        created_at=date.today(),
+        meeting_id=meeting_id,
+        url=url,
+        is_default=is_default,
+    )
     requests.get(url)
 
     try:
@@ -398,14 +392,13 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
             msg=f"Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo",
         )
 
-    meeting_file = MeetingFiles()
-
-    meeting_file.title = path
-    meeting_file.created_at = date.today()
-    meeting_file.meeting_id = meeting_id
-    meeting_file.nc_path = path
-    meeting_file.is_default = is_default
-    current_app.config["SECRET_KEY"]
+    meeting_file = MeetingFiles(
+        title=path,
+        created_at=date.today(),
+        meeting_id=meeting_id,
+        nc_path=path,
+        is_default=is_default,
+    )
 
     try:
         meeting_file.save()
@@ -427,12 +420,9 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
-    externalMeetingFile = MeetingFilesExternal()
-
-    externalMeetingFile.title = path
-    externalMeetingFile.meeting_id = meeting_id
-    externalMeetingFile.nc_path = path
-
+    externalMeetingFile = MeetingFilesExternal(
+        title=path, meeting_id=meeting_id, nc_path=path
+    )
     externalMeetingFile.save()
     return externalMeetingFile.id
 
@@ -571,7 +561,7 @@ def insertDoc(token):
     return make_response("ok", 200)
 
 
-@bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>")
+@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>")
 # @auth.token_auth(provider_name="default") - must be accessible by BBB server, so no auth
 def ncdownload(isexternal, mfid, mftoken):
     secret_key = current_app.config["SECRET_KEY"]
@@ -579,15 +569,11 @@ def ncdownload(isexternal, mfid, mftoken):
     # get file through NC credentials - HOW POSSIBLE ?
     # return file as response to BBB server
     # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
-    if str(isexternal) == "0":
-        isexternal = "0"
-        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
-    else:
-        isexternal = "1"
-        meeting_file = MeetingFilesExternal.query.filter_by(id=mfid).one_or_none()
+    model = MeetingFiles if isexternal == 0 else MeetingFilesExternal
+    meeting_file = model.query.filter_by(id=mfid).one_or_none()
 
     if not meeting_file:
-        return make_response("Bad token provided, no file matching", 404)
+        abort(404, "Bad token provided, no file matching")
 
     # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
     if (
@@ -596,7 +582,7 @@ def ncdownload(isexternal, mfid, mftoken):
             f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
         ).hexdigest()
     ):
-        return make_response("Bad token provided, no file matching", 404)
+        abort(404, "Bad token provided, no file matching")
 
     # download the file using webdavClient from the Nextcloud to a temporary folder (that will need cleaning)
     options = {
