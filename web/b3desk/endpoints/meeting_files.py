@@ -43,30 +43,34 @@ def edit_meeting_files(meeting):
 
     form = MeetingFilesForm()
 
-    if current_app.config["FILE_SHARING"]:
-        # we test webdav connection here, with a simple 'list' command
-        if user.nc_login and user.nc_token and user.nc_locator:
-            options = {
-                "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-                "webdav_hostname": user.nc_locator,
-                "webdav_verbose": True,
-                "webdav_token": user.nc_token,
-            }
-            try:
-                client = webdavClient(options)
-                client.list()
-            except WebDavException as exception:
-                current_app.logger.warning(
-                    "WebDAV error, user data disabled: %s", exception
-                )
-                user.disable_nextcloud()
+    if not current_app.config["FILE_SHARING"]:
+        flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
+        return redirect(url_for("public.welcome"))
 
-        if user is not None and meeting.user_id == user.id:
-            return render_template(
-                "meeting/filesform.html",
-                meeting=meeting,
-                form=form,
+    # we test webdav connection here, with a simple 'list' command
+    if user.nc_login and user.nc_token and user.nc_locator:
+        options = {
+            "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
+            "webdav_hostname": user.nc_locator,
+            "webdav_verbose": True,
+            "webdav_token": user.nc_token,
+        }
+        try:
+            client = webdavClient(options)
+            client.list()
+        except WebDavException as exception:
+            current_app.logger.warning(
+                "WebDAV error, user data disabled: %s", exception
             )
+            user.disable_nextcloud()
+
+    if user is not None and meeting.user_id == user.id:
+        return render_template(
+            "meeting/filesform.html",
+            meeting=meeting,
+            form=form,
+        )
+
     flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
     return redirect(url_for("public.welcome"))
 
@@ -81,48 +85,50 @@ def download_meeting_files(meeting, file_id=None):
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
     tmpName = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
     fileToSend = None
-    if user is not None and meeting.user_id == user.id:
-        for curFile in meeting.files:
-            if curFile.id == file_id:
-                fileToSend = curFile
-                break
-        if not fileToSend:
-            return jsonify(status=404, msg="file not found")
-        if curFile.url:
-            response = requests.get(curFile.url)
-            open(tmpName, "wb").write(response.content)
-            return send_file(tmpName, as_attachment=True, download_name=curFile.title)
-        else:
-            # get file from nextcloud WEBDAV and send it
-            try:
-                davUser = {
-                    "nc_locator": user.nc_locator,
-                    "nc_login": user.nc_login,
-                    "nc_token": user.nc_token,
-                }
-                options = {
-                    "webdav_root": f"/remote.php/dav/files/{davUser['nc_login']}/",
-                    "webdav_hostname": davUser["nc_locator"],
-                    "webdav_verbose": True,
-                    "webdav_token": davUser["nc_token"],
-                }
-                client = webdavClient(options)
-                kwargs = {
-                    "remote_path": curFile.nc_path,
-                    "local_path": f"{tmpName}",
-                }
-                client.download_sync(**kwargs)
-                return send_file(
-                    tmpName, as_attachment=True, download_name=curFile.title
-                )
-            except WebDavException as exception:
-                user.disable_nextcloud()
-                current_app.logger.warning(
-                    "webdav call encountered following exception : %s", exception
-                )
-                flash("Le fichier ne semble pas accessible", "error")
-                return redirect(url_for("public.welcome"))
-    return redirect(url_for("public.welcome"))
+    if user is None or meeting.user_id != user.id:
+        return redirect(url_for("public.welcome"))
+
+    for curFile in meeting.files:
+        if curFile.id == file_id:
+            fileToSend = curFile
+            break
+
+    if not fileToSend:
+        return jsonify(status=404, msg="file not found")
+
+    if curFile.url:
+        response = requests.get(curFile.url)
+        open(tmpName, "wb").write(response.content)
+        return send_file(tmpName, as_attachment=True, download_name=curFile.title)
+
+    # get file from nextcloud WEBDAV and send it
+    try:
+        davUser = {
+            "nc_locator": user.nc_locator,
+            "nc_login": user.nc_login,
+            "nc_token": user.nc_token,
+        }
+        options = {
+            "webdav_root": f"/remote.php/dav/files/{davUser['nc_login']}/",
+            "webdav_hostname": davUser["nc_locator"],
+            "webdav_verbose": True,
+            "webdav_token": davUser["nc_token"],
+        }
+        client = webdavClient(options)
+        kwargs = {
+            "remote_path": curFile.nc_path,
+            "local_path": f"{tmpName}",
+        }
+        client.download_sync(**kwargs)
+        return send_file(tmpName, as_attachment=True, download_name=curFile.title)
+
+    except WebDavException as exception:
+        user.disable_nextcloud()
+        current_app.logger.warning(
+            "webdav call encountered following exception : %s", exception
+        )
+        flash("Le fichier ne semble pas accessible", "error")
+        return redirect(url_for("public.welcome"))
 
 
 # called by NextcloudfilePicker when documents should be added to a running room:
@@ -186,6 +192,7 @@ def toggledownload(meeting):
 
     if user is None:
         return redirect(url_for("public.welcome"))
+
     meeting_file = db.session.get(MeetingFiles, data["id"])
     if meeting_file is not None and meeting.user_id == user.id:
         meeting_file.is_downloadable = data["value"]
@@ -259,6 +266,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         meeting_file.title = title
         meeting_file.created_at = date.today()
         meeting_file.meeting_id = meeting_id
+
     except WebDavException as exception:
         user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
@@ -289,6 +297,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
                 current_app.config["TIME_FORMAT"]
             ),
         )
+
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, isfrom="dropzone", msg="File already exists")
@@ -337,6 +346,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
                 current_app.config["TIME_FORMAT"]
             ),
         )
+
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, isfrom="url", msg="File already exists")
@@ -354,6 +364,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     try:
         client = webdavClient(options)
         metadata = client.info(path)
+
     except WebDavException:
         user.disable_nextcloud()
         return jsonify(
@@ -361,6 +372,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
             isfrom="nextcloud",
             msg="La connexion avec Nextcloud semble rompue",
         )
+
     if int(metadata["size"]) > int(current_app.config["MAX_SIZE_UPLOAD"]):
         return jsonify(
             status=500,
@@ -414,19 +426,22 @@ def add_meeting_files(meeting):
     is_default = False
     if len(meeting.files) == 0:
         is_default = True
-    if meeting.user_id == user.id:
-        if data["from"] == "nextcloud":
-            return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
-        if data["from"] == "URL":
-            return add_meeting_file_URL(data["value"], meeting.id, is_default)
-        if data["from"] == "dropzone":
-            return add_meeting_file_dropzone(
-                secure_filename(data["value"]), meeting.id, is_default
-            )
-        else:
-            return make_response(jsonify("no file provided"), 200)
 
-    return jsonify(status=500, msg="Vous ne pouvez pas modifier cet élément")
+    if meeting.user_id != user.id:
+        return jsonify(status=500, msg="Vous ne pouvez pas modifier cet élément")
+
+    if data["from"] == "nextcloud":
+        return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
+
+    if data["from"] == "URL":
+        return add_meeting_file_URL(data["value"], meeting.id, is_default)
+
+    if data["from"] == "dropzone":
+        return add_meeting_file_dropzone(
+            secure_filename(data["value"]), meeting.id, is_default
+        )
+
+    return jsonify("no file provided")
 
 
 # for dropzone multiple files uploading at once
@@ -437,9 +452,9 @@ def add_dropzone_files(meeting):
 
     if user and meeting.user_id == user.id:
         return upload(user, meeting, request.files["dropzoneFiles"])
-    else:
-        flash("Traitement de requête impossible", "error")
-        return redirect(url_for("public.welcome"))
+
+    flash("Traitement de requête impossible", "error")
+    return redirect(url_for("public.welcome"))
 
 
 # for dropzone chunk file by file validation
@@ -462,6 +477,7 @@ def upload(user, meeting_id, file):
         with open(save_path, "ab") as f:
             f.seek(int(request.form["dzchunkbyteoffset"]))
             f.write(file.stream.read())
+
     except OSError:
         return make_response(
             ("Not sure why, but we couldn't write the file to disk", 500)
@@ -491,24 +507,26 @@ def delete_meeting_file():
     meeting = Meeting()
     cur_meeting = meeting.query.get(meeting_file.meeting_id)
 
-    if cur_meeting.user_id == user.id:
-        db.session.delete(meeting_file)
-        db.session.commit()
-        new_default_id = None
-        if meeting_file.is_default:
-            cur_meeting = meeting.query.get(meeting_file.meeting_id)
-            if len(cur_meeting.files) > 0:
-                cur_meeting.files[0].is_default = True
-                new_default_id = cur_meeting.files[0].id
-                cur_meeting.save()
+    if cur_meeting.user_id != user.id:
         return jsonify(
-            status=200,
-            newDefaultId=new_default_id,
-            id=data["id"],
-            msg="Fichier supprimé avec succès",
+            status=500, id=data["id"], msg="Vous ne pouvez pas supprimer cet élément"
         )
+
+    db.session.delete(meeting_file)
+    db.session.commit()
+    new_default_id = None
+    if meeting_file.is_default:
+        cur_meeting = meeting.query.get(meeting_file.meeting_id)
+        if len(cur_meeting.files) > 0:
+            cur_meeting.files[0].is_default = True
+            new_default_id = cur_meeting.files[0].id
+            cur_meeting.save()
+
     return jsonify(
-        status=500, id=data["id"], msg="Vous ne pouvez pas supprimer cet élément"
+        status=200,
+        newDefaultId=new_default_id,
+        id=data["id"],
+        msg="Fichier supprimé avec succès",
     )
 
 
@@ -614,8 +632,10 @@ def ncdownload(isexternal, mfid, mftoken):
             "local_path": tmpName,
         }
         client.download_sync(**kwargs)
+
     except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
         return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
+
     # send the downloaded file to the BBB:
     return send_from_directory(TMP_DOWNLOAD_DIR, uniqfile)
