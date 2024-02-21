@@ -16,6 +16,7 @@ from b3desk.utils import is_rie
 from flask import Flask
 from flask import render_template
 from flask import request
+from flask import url_for
 from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
@@ -43,6 +44,13 @@ def setup_configuration(app, config=None):
 
     config_obj = MainSettings.model_validate(config or {})
     app.config.from_object(config_obj)
+
+    # TODO: properly deprecate and remove "SERVER_FQDN" in favor of "SERVER_NAME"
+    # https://flask.palletsprojects.com/en/3.0.x/config/#SERVER_NAME
+    if not app.config.get("SERVER_NAME"):
+        app.config["SERVER_NAME"] = (
+            app.config["SERVER_FQDN"].replace("http://", "").replace("https://", "")
+        )
 
 
 def setup_celery(app):
@@ -177,6 +185,9 @@ def setup_oidc(app):
     from flask_pyoidc.provider_configuration import ClientMetadata
     from flask_pyoidc.provider_configuration import ProviderConfiguration
 
+    with app.app_context():
+        logout_url = url_for("routes.logout", _external=True)
+
     user_provider_configuration = ProviderConfiguration(
         issuer=app.config["OIDC_ISSUER"],
         userinfo_http_method=app.config["OIDC_USERINFO_HTTP_METHOD"],
@@ -184,7 +195,7 @@ def setup_oidc(app):
             client_id=app.config["OIDC_CLIENT_ID"],
             client_secret=app.config["OIDC_CLIENT_SECRET"],
             token_endpoint_auth_method=app.config["OIDC_CLIENT_AUTH_METHOD"],
-            post_logout_redirect_uris=[f'{app.config.get("SERVER_FQDN")}/logout'],
+            post_logout_redirect_uris=[logout_url],
         ),
         auth_request_params={"scope": app.config["OIDC_SCOPES"]},
     )
@@ -197,7 +208,7 @@ def setup_oidc(app):
             token_endpoint_auth_method=app.config.get(
                 "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
             ),
-            post_logout_redirect_uris=[f'{app.config.get("SERVER_FQDN")}/logout'],
+            post_logout_redirect_uris=[logout_url],
         ),
         auth_request_params={"scope": app.config["OIDC_ATTENDEE_SCOPES"]},
     )
