@@ -79,42 +79,42 @@ def edit_meeting_files(meeting, owner):
 def download_meeting_files(meeting, owner, file_id=None):
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-    tmpName = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
-    fileToSend = None
+    tmp_name = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
+    file_to_send = None
 
-    for curFile in meeting.files:
-        if curFile.id == file_id:
-            fileToSend = curFile
+    for current_file in meeting.files:
+        if current_file.id == file_id:
+            file_to_send = current_file
             break
 
-    if not fileToSend:
+    if not file_to_send:
         return jsonify(status=404, msg="file not found")
 
-    if curFile.url:
-        response = requests.get(curFile.url)
-        open(tmpName, "wb").write(response.content)
-        return send_file(tmpName, as_attachment=True, download_name=curFile.title)
+    if current_file.url:
+        response = requests.get(current_file.url)
+        open(tmp_name, "wb").write(response.content)
+        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     # get file from nextcloud WEBDAV and send it
     try:
-        davUser = {
+        dav_user = {
             "nc_locator": owner.nc_locator,
             "nc_login": owner.nc_login,
             "nc_token": owner.nc_token,
         }
         options = {
-            "webdav_root": f"/remote.php/dav/files/{davUser['nc_login']}/",
-            "webdav_hostname": davUser["nc_locator"],
+            "webdav_root": f"/remote.php/dav/files/{dav_user['nc_login']}/",
+            "webdav_hostname": dav_user["nc_locator"],
             "webdav_verbose": True,
-            "webdav_token": davUser["nc_token"],
+            "webdav_token": dav_user["nc_token"],
         }
         client = webdavClient(options)
         kwargs = {
-            "remote_path": curFile.nc_path,
-            "local_path": f"{tmpName}",
+            "remote_path": current_file.nc_path,
+            "local_path": f"{tmp_name}",
         }
         client.download_sync(**kwargs)
-        return send_file(tmpName, as_attachment=True, download_name=curFile.title)
+        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     except WebDavException as exception:
         owner.disable_nextcloud()
@@ -214,7 +214,7 @@ def set_meeting_default_file(meeting, owner):
     return jsonify(status=200, id=data["id"])
 
 
-def removeDropzoneFile(absolutePath):
+def remove_dropzone_file(absolutePath):
     os.remove(absolutePath)
 
 
@@ -276,7 +276,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         current_app.config["SECRET_KEY"]
         meeting_file.update()
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-        removeDropzoneFile(dropzone_path)
+        remove_dropzone_file(dropzone_path)
         return jsonify(
             status=200,
             isfrom="dropzone",
@@ -611,10 +611,10 @@ def ncdownload(isexternal, mfid, mftoken):
         TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
         Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
         uniqfile = str(uuid.uuid4())
-        tmpName = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
+        tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
         kwargs = {
             "remote_path": meeting_file.nc_path,
-            "local_path": tmpName,
+            "local_path": tmp_name,
         }
         client.download_sync(**kwargs)
 
