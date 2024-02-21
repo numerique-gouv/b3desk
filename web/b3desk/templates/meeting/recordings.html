@@ -134,6 +134,7 @@
     const add_meeting_files_url = "{{ url_for("meeting_files.add_meeting_files", meeting=meeting) }}";
     const delete_meeting_file_url = "{{ url_for("meeting_files.delete_meeting_file") }}";
     const accepted_files = "{{ config.ACCEPTED_FILES_CLIENT_SIDE }}";
-    {% include 'meeting/meeting.js' %}
 </script>
+<script src="{{ url_for("static", filename="js/filePickerWrapper.js") }}"></script>
+<script src="{{ url_for("static", filename="js/meeting.js") }}"></script>
 {% endblock %}

@@ -381,62 +381,58 @@ function createNCFilePicker() {
 
 let ncfilepicker = null;
 
-if (!nc_locator || !nc_login || !nc_token) {
-    printout_message({ type: 'error', title: 'Nextcloud connexion', data: "La connexion avec votre Nextcloud n'est pas fonctionnelle, les options associées sont désactivées"});
-}
+document.addEventListener('DOMContentLoaded', () => {
 
-
-Dropzone.autoDiscover = false;
-var dropzone_conf = {
-    paramName: 'dropzoneFiles',
-    //autoProcessQueue: false,
-    //uploadMultiple: true,
-    //chunking: false,
-    //forceChunking: false,
-    chunking: true,
-    forceChunking: true,
-    maxFilesize: 20, // megabytes
-    acceptedFiles: accepted_files,
-    dictRemoveFile: 'Supprimer',
-    dictDefaultMessage: 'Cliquer ou glisser-déposer les fichiers à ajouter',
-    addRemoveLinks: true,
-    parallelUploads: 10,
-    chunkSize: 1000000, // bytes
-    init: function() {
-        this.on("removedfile", file => {
-            console.log('removed file from dropzone');
-        });
-        this.on('success', file => {
-            setTimeout(() => {link_file_to_meeting(file.name, 'dropzone')}, this.getUploadingFiles().length * 1000);
-            setTimeout(() => {this.removeFile(file)}, 1000);
-        });
-        this.on('error', (file, message) => {
-            close_dialog('dropzone');
-            printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
-            this.removeFile(file);
-        });
+    if (!nc_locator || !nc_login || !nc_token) {
+        printout_message({ type: 'error', title: 'Nextcloud connexion', data: "La connexion avec votre Nextcloud n'est pas fonctionnelle, les options associées sont désactivées"});
     }
-}
-var dropper = new Dropzone("form#dropper", dropzone_conf);
 
+    Dropzone.autoDiscover = false;
+    var dropzone_conf = {
+        paramName: 'dropzoneFiles',
+        //autoProcessQueue: false,
+        //uploadMultiple: true,
+        //chunking: false,
+        //forceChunking: false,
+        chunking: true,
+        forceChunking: true,
+        maxFilesize: 20, // megabytes
+        acceptedFiles: accepted_files,
+        dictRemoveFile: 'Supprimer',
+        dictDefaultMessage: 'Cliquer ou glisser-déposer les fichiers à ajouter',
+        addRemoveLinks: true,
+        parallelUploads: 10,
+        chunkSize: 1000000, // bytes
+        init: function() {
+            this.on("removedfile", file => {
+                console.log('removed file from dropzone');
+            });
+            this.on('success', file => {
+                setTimeout(() => {link_file_to_meeting(file.name, 'dropzone')}, this.getUploadingFiles().length * 1000);
+                setTimeout(() => {this.removeFile(file)}, 1000);
+            });
+            this.on('error', (file, message) => {
+                close_dialog('dropzone');
+                printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
+                this.removeFile(file);
+            });
+        }
+    }
+    var dropper = new Dropzone("form#dropper", dropzone_conf);
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    import('/static/js/filePickerWrapper.js').then(() => {
-        createNCFilePicker()
+    var form_files = document.getElementById('meeting-form');
+
+    form_files.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        var formData = new FormData(form_files);
+
+        var name = `${formData.get('url')}`;
+        var from = `depuis URL`;
+
+        add_URL_file(name, from);
+
     });
+
+    createNCFilePicker()
 })
-
-var form_files = document.getElementById('meeting-form');
-
-form_files.addEventListener('submit', (e) => {
-
-    e.preventDefault();
-
-    var formData = new FormData(form_files);
-
-    var name = `${formData.get('url')}`;
-    var from = `depuis URL`;
-
-    add_URL_file(name, from);
-
-});
