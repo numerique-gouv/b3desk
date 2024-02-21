@@ -300,7 +300,9 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(status=500, isfrom="dropzone", msg="File already exists")
+        return jsonify(
+            status=500, isfrom="dropzone", msg="Le fichier a déjà été mis en ligne"
+        )
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
@@ -349,7 +351,9 @@ def add_meeting_file_URL(url, meeting_id, is_default):
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(status=500, isfrom="url", msg="File already exists")
+        return jsonify(
+            status=500, isfrom="url", msg="Le fichier a déjà été mis en ligne"
+        )
 
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
@@ -403,7 +407,9 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         )
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(status=500, isfrom="nextcloud", msg="File already exists")
+        return jsonify(
+            status=500, isfrom="nextcloud", msg="Le fichier a déjà été mis en ligne"
+        )
 
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
@@ -451,7 +457,7 @@ def add_dropzone_files(meeting):
     user = get_current_user()
 
     if user and meeting.user_id == user.id:
-        return upload(user, meeting, request.files["dropzoneFiles"])
+        return upload(user, meeting.id, request.files["dropzoneFiles"])
 
     flash("Traitement de requête impossible", "error")
     return redirect(url_for("public.welcome"))
@@ -471,7 +477,7 @@ def upload(user, meeting_id, file):
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
         # 400 and 500s will tell dropzone that an error occurred and show an error
-        return make_response(("File already exists", 500))
+        return make_response(("Le fichier a déjà été mis en ligne", 500))
 
     try:
         with open(save_path, "ab") as f:
@@ -493,6 +499,7 @@ def upload(user, meeting_id, file):
         if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
             return make_response(("Size mismatch", 500))
 
+    current_app.logger.debug(f"Wrote a chunk at {save_path}")
     return make_response(("Chunk upload successful", 200))
 
 

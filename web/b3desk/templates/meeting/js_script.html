@@ -71,7 +71,7 @@ function deleteFile(e){
 
   let csrf_token = document.getElementsByName("csrf_token")[0].value;
   let idFileSelected = e.target[0].value;
-  fetch(delete_meeting_file, {
+  fetch(delete_meeting_file_url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -232,7 +232,7 @@ function append_file_to_fileslist(title, id, date, isDefault) {
   input.setAttribute('type', 'hidden');
   input.setAttribute('name', 'id');
   input.setAttribute('value', id);
-  form.setAttribute('action', delete_meeting_file);
+  form.setAttribute('action', delete_meeting_file_url);
   form.setAttribute('method', 'POST');
   form.setAttribute('onsubmit', 'deleteFile(event)');
 
@@ -388,7 +388,7 @@ const toggle_download_url = "{{ url_for("meeting_files.toggledownload", meeting=
 const set_default_file_url = "{{ url_for("meeting_files.set_meeting_default_file", meeting=meeting) }}";
 const download_meeting_file_url = "{{ url_for("meeting_files.download_meeting_files", meeting=meeting, _external=True) }}";
 const edit_meeting_files_url = "{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}";
-const delete_file_url = "{{ url_for("meeting_files.delete_meeting_file") }}";
+const delete_meeting_file_url = "{{ url_for("meeting_files.delete_meeting_file") }}";
 let ncfilepicker = null;
 
 if (!nc_locator || !nc_login || !nc_token) {
@@ -422,7 +422,7 @@ Dropzone.autoDiscover = false;
         });
         this.on('error', (file, message) => {
           close_dialog('dropzone');
-          printout_message({ type: 'error', title: 'Upload of '+file.name+' failed', data: message});
+          printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
           this.removeFile(file);
         });
       }
