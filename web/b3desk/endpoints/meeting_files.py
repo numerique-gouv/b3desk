@@ -12,6 +12,7 @@ from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
+from flask import abort
 from flask import Blueprint
 from flask import current_app
 from flask import flash
@@ -31,6 +32,7 @@ from werkzeug.utils import secure_filename
 
 from .. import auth
 from ..session import get_current_user
+from ..session import meeting_owner_needed
 
 
 bp = Blueprint("meeting_files", __name__)
@@ -38,9 +40,8 @@ bp = Blueprint("meeting_files", __name__)
 
 @bp.route("/meeting/files/<meeting:meeting>")
 @auth.oidc_auth("default")
-def edit_meeting_files(meeting):
-    user = get_current_user()
-
+@meeting_owner_needed
+def edit_meeting_files(meeting, owner):
     form = MeetingFilesForm()
 
     if not current_app.config["FILE_SHARING"]:
@@ -48,45 +49,38 @@ def edit_meeting_files(meeting):
         return redirect(url_for("public.welcome"))
 
     # we test webdav connection here, with a simple 'list' command
-    if user.nc_login and user.nc_token and user.nc_locator:
+    if owner.nc_login and owner.nc_token and owner.nc_locator:
         options = {
-            "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-            "webdav_hostname": user.nc_locator,
+            "webdav_root": f"/remote.php/dav/files/{owner.nc_login}/",
+            "webdav_hostname": owner.nc_locator,
             "webdav_verbose": True,
-            "webdav_token": user.nc_token,
+            "webdav_token": owner.nc_token,
         }
         try:
             client = webdavClient(options)
             client.list()
         except WebDavException as exception:
             current_app.logger.warning(
-                "WebDAV error, user data disabled: %s", exception
+                "WebDAV error, owner data disabled: %s", exception
             )
-            user.disable_nextcloud()
+            owner.disable_nextcloud()
 
-    if user is not None and meeting.user_id == user.id:
-        return render_template(
-            "meeting/filesform.html",
-            meeting=meeting,
-            form=form,
-        )
-
-    flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
-    return redirect(url_for("public.welcome"))
+    return render_template(
+        "meeting/filesform.html",
+        meeting=meeting,
+        form=form,
+    )
 
 
 @bp.route("/meeting/files/<meeting:meeting>/")
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @auth.oidc_auth("default")
-def download_meeting_files(meeting, file_id=None):
-    user = get_current_user()
-
+@meeting_owner_needed
+def download_meeting_files(meeting, owner, file_id=None):
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
     tmpName = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
     fileToSend = None
-    if user is None or meeting.user_id != user.id:
-        return redirect(url_for("public.welcome"))
 
     for curFile in meeting.files:
         if curFile.id == file_id:
@@ -104,9 +98,9 @@ def download_meeting_files(meeting, file_id=None):
     # get file from nextcloud WEBDAV and send it
     try:
         davUser = {
-            "nc_locator": user.nc_locator,
-            "nc_login": user.nc_login,
-            "nc_token": user.nc_token,
+            "nc_locator": owner.nc_locator,
+            "nc_login": owner.nc_login,
+            "nc_token": owner.nc_token,
         }
         options = {
             "webdav_root": f"/remote.php/dav/files/{davUser['nc_login']}/",
@@ -123,7 +117,7 @@ def download_meeting_files(meeting, file_id=None):
         return send_file(tmpName, as_attachment=True, download_name=curFile.title)
 
     except WebDavException as exception:
-        user.disable_nextcloud()
+        owner.disable_nextcloud()
         current_app.logger.warning(
             "webdav call encountered following exception : %s", exception
         )
@@ -186,40 +180,36 @@ def insertDocuments(meeting):
 
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @auth.oidc_auth("default")
-def toggledownload(meeting):
-    user = get_current_user()
+@meeting_owner_needed
+def toggledownload(meeting, owner):
     data = request.get_json()
-
-    if user is None:
-        return redirect(url_for("public.welcome"))
-
     meeting_file = db.session.get(MeetingFiles, data["id"])
-    if meeting_file is not None and meeting.user_id == user.id:
-        meeting_file.is_downloadable = data["value"]
-        meeting_file.save()
+    if not meeting_file:
+        abort(404)
 
-        return jsonify(status=200, id=data["id"])
-    return redirect(url_for("public.welcome"))
+    meeting_file.is_downloadable = data["value"]
+    meeting_file.save()
+
+    return jsonify(status=200, id=data["id"])
 
 
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
 @auth.oidc_auth("default")
-def set_meeting_default_file(meeting):
-    user = get_current_user()
+@meeting_owner_needed
+def set_meeting_default_file(meeting, owner):
     data = request.get_json()
 
-    if meeting.user_id == user.id:
-        actual_default_file = meeting.default_file
-        if actual_default_file:
-            actual_default_file.is_default = False
+    actual_default_file = meeting.default_file
+    if actual_default_file:
+        actual_default_file.is_default = False
 
-        meeting_file = MeetingFiles()
-        meeting_file = meeting_file.query.get(data["id"])
-        meeting_file.is_default = True
+    meeting_file = MeetingFiles()
+    meeting_file = meeting_file.query.get(data["id"])
+    meeting_file.is_default = True
 
-        if actual_default_file:
-            actual_default_file.save()
-        meeting_file.save()
+    if actual_default_file:
+        actual_default_file.save()
+    meeting_file.save()
 
     return jsonify(status=200, id=data["id"])
 
@@ -425,16 +415,12 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
 
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @auth.oidc_auth("default")
-def add_meeting_files(meeting):
-    user = get_current_user()
-
+@meeting_owner_needed
+def add_meeting_files(meeting, owner):
     data = request.get_json()
     is_default = False
     if len(meeting.files) == 0:
         is_default = True
-
-    if meeting.user_id != user.id:
-        return jsonify(status=500, msg="Vous ne pouvez pas modifier cet élément")
 
     if data["from"] == "nextcloud":
         return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
@@ -453,23 +439,15 @@ def add_meeting_files(meeting):
 # for dropzone multiple files uploading at once
 @bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
 @auth.oidc_auth("default")
-def add_dropzone_files(meeting):
-    user = get_current_user()
-
-    if user and meeting.user_id == user.id:
-        return upload(user, meeting.id, request.files["dropzoneFiles"])
-
-    flash("Traitement de requête impossible", "error")
-    return redirect(url_for("public.welcome"))
-
-
-# for dropzone chunk file by file validation
-# shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
-def upload(user, meeting_id, file):
+@meeting_owner_needed
+def add_dropzone_files(meeting, owner):
+    file = request.files["dropzoneFiles"]
+    # for dropzone chunk file by file validation
+    # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR, secure_filename(f"{user.id}-{meeting_id}-{file.filename}")
+        DROPZONE_DIR, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
