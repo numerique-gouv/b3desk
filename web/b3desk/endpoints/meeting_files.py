@@ -72,6 +72,29 @@ def edit_meeting_files(meeting, owner):
     )
 
 
+@bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
+@auth.oidc_auth("default")
+@meeting_owner_needed
+def add_meeting_files(meeting, owner):
+    data = request.get_json()
+    is_default = False
+    if len(meeting.files) == 0:
+        is_default = True
+
+    if data["from"] == "nextcloud":
+        return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
+
+    if data["from"] == "URL":
+        return add_meeting_file_URL(data["value"], meeting.id, is_default)
+
+    if data["from"] == "dropzone":
+        return add_meeting_file_dropzone(
+            secure_filename(data["value"]), meeting.id, is_default
+        )
+
+    return jsonify("no file provided")
+
+
 @bp.route("/meeting/files/<meeting:meeting>/")
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @auth.oidc_auth("default")
@@ -411,29 +434,6 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
 
     externalMeetingFile.save()
     return externalMeetingFile.id
-
-
-@bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def add_meeting_files(meeting, owner):
-    data = request.get_json()
-    is_default = False
-    if len(meeting.files) == 0:
-        is_default = True
-
-    if data["from"] == "nextcloud":
-        return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
-
-    if data["from"] == "URL":
-        return add_meeting_file_URL(data["value"], meeting.id, is_default)
-
-    if data["from"] == "dropzone":
-        return add_meeting_file_dropzone(
-            secure_filename(data["value"]), meeting.id, is_default
-        )
-
-    return jsonify("no file provided")
 
 
 # for dropzone multiple files uploading at once
