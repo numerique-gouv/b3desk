@@ -307,7 +307,6 @@ function close_dialog(id){
     // ]
 
 function link_file_to_meeting(value, from) {
-
     var csrf_token = document.getElementsByName("csrf_token")[0].value
     var post_data = {
         'value': value,
@@ -323,33 +322,32 @@ function link_file_to_meeting(value, from) {
         },
         body: JSON.stringify(post_data)
     })
-        .then(res => {
-            if (res.status == 200) {
-                return (res.json())
-            } else {
-                throw res
-            }
+    .then(res => {
+        if (res.status == 200) {
+            return (res.json())
+        } else {
+            throw res
+        }
 
-        })
-        .then(data => {
-            if (data.status == 200) {
-                append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
-                printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
-                if (data.isfrom !== 'nextcloud') {
-                    close_dialog(data.isfrom);
-                }
-            } else {
-                throw data
-            }
-        })
-        .catch(data => {
-            console.log(data)
-            printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
+    })
+    .then(data => {
+        if (data.status == 200) {
+            append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
+            printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
             if (data.isfrom !== 'nextcloud') {
                 close_dialog(data.isfrom);
             }
-        })
-
+        } else {
+            throw data
+        }
+    })
+    .catch(data => {
+        console.log(data)
+        printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
+        if (data.isfrom !== 'nextcloud') {
+            close_dialog(data.isfrom);
+        }
+    })
 }
 
 function openNCFilePicker(e) {
