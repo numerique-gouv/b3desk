@@ -389,3 +389,9 @@ def test_deactivated_meeting_files_cannot_edit(
     response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
 
     assert "welcome" in response.location
+
+
+def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
+    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    assert ("success", "Élément supprimé") in res.flashes
+    assert len(Meeting.query.all()) == 0
