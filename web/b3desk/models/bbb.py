@@ -76,7 +76,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "routes.ncdownload",
+                    "meetings.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
@@ -99,7 +99,7 @@ class BBB:
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
             "uploadExternalUrl": url_for(
-                "routes.externalUpload", meeting=self.meeting, _external=True
+                "meetings.externalUpload", meeting=self.meeting, _external=True
             ),
             "uploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -197,7 +197,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "routes.ncdownload",
+                    "meetings.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
@@ -226,7 +226,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "routes.ncdownload",
+                    "meetings.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,

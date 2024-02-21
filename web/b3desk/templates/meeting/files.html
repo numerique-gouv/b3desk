@@ -61,7 +61,7 @@
                   <button class="fr-btn--close fr-btn" aria-controls="dropzone" title="Fermer"></button>
               </div>
               <div class="fr-modal__content">
-              <form method="POST" action="{{ url_for("routes.add_dropzone_files", meeting=meeting) }}" class="dropzone dz-clickable" id="dropper" enctype="multipart/form-data">
+              <form method="POST" action="{{ url_for("meeting_files.add_dropzone_files", meeting=meeting) }}" class="dropzone dz-clickable" id="dropper" enctype="multipart/form-data">
                   {% include 'meeting/csrf.html' %}
                   {% include 'meeting/id.html' %}
                   <div>
@@ -156,7 +156,7 @@
                                     Supprimer
                                 </h1>
                                 <p class="padbot">Voulez-vous vraiment supprimer le fichier <em>{{ file.short_title }}</em> ?</p>
-                                <form action="{{ url_for("routes.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
+                                <form action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
                                   <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
                                   <button type="submit" class="fr-btn fr-btn--primary" >Supprimer</button>
                                   <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="Annuler">Annuler</button>
@@ -198,7 +198,7 @@
 								<button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="Supprimer"></button>
 							</td>
               <td>
-                  <a href="{{ url_for("routes.download_meeting_files", meeting=meeting, file_id=file.id) }}">
+                  <a href="{{ url_for("meeting_files.download_meeting_files", meeting=meeting, file_id=file.id) }}">
                       <button class="fr-btn fr-icon-download-fill" title="Télécharger"></button>
                 </a>
               </td>

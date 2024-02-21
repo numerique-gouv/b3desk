@@ -204,7 +204,7 @@ class Meeting(db.Model):
             return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
 
         return url_for(
-            "routes.waiting_meeting",
+            "meetings.waiting_meeting",
             meeting_fake_id=self.fake_id,
             user_id=self.user.id,
             h=self.get_hash(meeting_role),
@@ -214,7 +214,7 @@ class Meeting(db.Model):
 
     def get_signin_url(self, meeting_role):
         return url_for(
-            "routes.signin_meeting",
+            "meetings.signin_meeting",
             meeting_fake_id=self.fake_id,
             user_id=self.user.id,
             h=self.get_hash(meeting_role),
@@ -233,7 +233,7 @@ class Meeting(db.Model):
         ]  # remove milliseconds
         hash_param = self.get_mail_signin_hash(self.fake_id, expiration)
         return url_for(
-            "routes.signin_mail_meeting",
+            "meetings.signin_mail_meeting",
             meeting_fake_id=self.fake_id,
             expiration=expiration,
             h=hash_param,

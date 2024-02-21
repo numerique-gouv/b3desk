@@ -4,7 +4,7 @@
       <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
       {% if can_create_meetings == true %}
       <div>
-        <a href="{{ url_for("routes.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
+        <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
           Créer une salle permanente
         </a>
       </div>
@@ -26,7 +26,7 @@
     </div>
     <div class="fr-col-md-8">
       <p>Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.</p>
-      <a href="{{ url_for("routes.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
+      <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
         Créer une salle permanente
       </a>
       <p class="fr-mt-2w fr-text--sm">

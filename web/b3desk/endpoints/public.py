@@ -10,7 +10,7 @@ from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
-from .routes import meeting_mailto_params
+from .meetings import meeting_mailto_params
 
 
 bp = Blueprint("public", __name__)

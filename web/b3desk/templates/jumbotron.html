@@ -72,7 +72,7 @@
             {% endif %}
           {% endwith %}
           <p class="fr-text">{% trans %}Recevez par courriel un lien organisateur {{ of_the_meeting }}, actif une semaine, à envoyer aux participants.{% endtrans %}</p>
-          <form action="{{ url_for("routes.quick_mail_meeting") }}" method="POST">
+          <form action="{{ url_for("meetings.quick_mail_meeting") }}" method="POST">
             {% include 'meeting/csrf.html' %}
             <div class="fr-input-group fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-6">

@@ -21,7 +21,7 @@
         {% trans %}Votre hôte n’est pas encore arrivé. Vous entrerez automatiquement dans la salle de visio-conférence dès qu’il sera présent.{% endtrans %}
         </p>
 
-        <form id="joinMeetingForm" action="{{ url_for("routes.join_meeting") }}" method="POST">
+        <form id="joinMeetingForm" action="{{ url_for("meetings.join_meeting") }}" method="POST">
             {% include 'meeting/csrf.html' %}
             <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
             <input type="hidden" id="user_id" name="user_id" value="{{ user_id }}" />
