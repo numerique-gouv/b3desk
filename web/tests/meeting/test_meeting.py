@@ -304,7 +304,7 @@ def test_create(client_app, meeting, mocker, bbb_response):
         "uploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"{client_app.app.config['SERVER_FQDN']}/meeting/{str(meeting.id)}/externalUpload",
+        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
     }
 
     assert mocked_background_upload.called

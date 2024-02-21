@@ -461,7 +461,7 @@ class MainSettings(BaseSettings):
             "label": self.DOCUMENTATION_LINK_LABEL,
             "is_external": self.DOCUMENTATION_LINK_URL
             and self.DOCUMENTATION_LINK_URL.lower().startswith(
-                ("/", self.SERVER_FQDN.lower())
+                ("/", "http://", "https://")
             ),
         }
 

@@ -277,7 +277,7 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
         ],
         logoutUrl=(
             current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or current_app.config["SERVER_FQDN"]
+            or url_for("routes.index", _external=True)
         ),
     )
     meeting.fake_id = random_string
@@ -323,7 +323,7 @@ def get_mail_meeting(random_string=None):
         moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
         logoutUrl=(
             current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or current_app.config["SERVER_FQDN"]
+            or url_for("routes.index", _external=True)
         ),
     )
     meeting.fake_id = random_string
