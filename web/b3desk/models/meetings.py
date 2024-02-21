@@ -206,7 +206,7 @@ class Meeting(db.Model):
         return url_for(
             "meetings.waiting_meeting",
             meeting_fake_id=self.fake_id,
-            user_id=self.user.id,
+            creator=self.user,
             h=self.get_hash(meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
@@ -216,7 +216,7 @@ class Meeting(db.Model):
         return url_for(
             "meetings.signin_meeting",
             meeting_fake_id=self.fake_id,
-            user_id=self.user.id,
+            creator=self.user,
             h=self.get_hash(meeting_role),
             _external=True,
         )

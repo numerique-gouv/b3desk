@@ -24,7 +24,7 @@
         <form id="joinMeetingForm" action="{{ url_for("meetings.join_meeting") }}" method="POST">
             {% include 'meeting/csrf.html' %}
             <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
-            <input type="hidden" id="user_id" name="user_id" value="{{ user_id }}" />
+            <input type="hidden" id="user_id" name="user_id" value="{{ creator.id }}" />
             <input type="hidden" id="h" name="h" value="{{ h }}" />
             <input type="hidden" id="fullname" name="fullname" value="{{ fullname }}" />
             <input type="hidden" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />

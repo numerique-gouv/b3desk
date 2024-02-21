@@ -346,9 +346,9 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     )
 
 
-@bp.route("/meeting/signin/<meeting_fake_id>/creator/<int:user_id>/hash/<h>")
-def signin_meeting(meeting_fake_id, user_id, h):
-    meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
+@bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
+def signin_meeting(meeting_fake_id, creator, h):
+    meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
         flash(
@@ -376,39 +376,39 @@ def signin_meeting(meeting_fake_id, user_id, h):
         "meeting/join.html",
         meeting=meeting,
         meeting_fake_id=meeting_fake_id,
-        user_id=user_id,
+        creator=creator,
         h=h,
         role=role,
     )
 
 
-@bp.route("/meeting/auth/<meeting_fake_id>/creator/<int:user_id>/hash/<h>")
+@bp.route("/meeting/auth/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
 @auth.oidc_auth("default")
-def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
+def authenticate_then_signin_meeting(meeting_fake_id, creator, h):
     return redirect(
         url_for(
             "meetings.signin_meeting",
             meeting_fake_id=meeting_fake_id,
-            user_id=user_id,
+            creator=creator,
             h=h,
         )
     )
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<int:user_id>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
-def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
-    meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
+def waiting_meeting(meeting_fake_id, creator, h, fullname="", fullname_suffix=""):
+    meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     if meeting is None:
         return redirect(url_for("public.index"))
 
@@ -421,7 +421,7 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""
         "meeting/wait.html",
         meeting=meeting,
         meeting_fake_id=meeting_fake_id,
-        user_id=user_id,
+        creator=creator,
         h=h,
         role=role,
         fullname=fullname,
@@ -508,7 +508,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "meetings.waiting_meeting",
             meeting_fake_id=meeting_id,
-            user_id=meeting.user.id,
+            creator=meeting.user,
             h=meeting.get_hash(role),
             fullname=fullname,
         )
