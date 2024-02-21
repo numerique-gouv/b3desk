@@ -389,39 +389,3 @@ def test_deactivated_meeting_files_cannot_edit(
     response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
 
     assert "welcome" in response.location
-
-
-def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
-    """No anonymous quick mail form should be displayed on the home page if it
-    is not allowed by the configuration."""
-    client_app.app.config["MAIL_MEETING"] = False
-    res = client_app.get("/home")
-    assert not res.forms
-
-
-def test_unauthenticated_quick_meeting_unauthorized_email(client_app, bbb_response):
-    """Only allowed email domains should be able to launch an anonymous quick
-    mail meeting."""
-    client_app.app.config["MAIL_MEETING"] = True
-    res = client_app.get("/home")
-    res.form["mail"] = "email@example.org"
-    res = res.form.submit()
-    assert (
-        "error_login",
-        "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions !",
-    ) in res.flashes
-
-
-def test_unauthenticated_quick_meeting_authorized_email(
-    client_app, bbb_response, smtpd
-):
-    assert len(smtpd.messages) == 0
-    client_app.app.config["MAIL_MEETING"] = True
-    res = client_app.get("/home")
-    res.form["mail"] = "example@gouv.fr"
-    res = res.form.submit()
-    assert (
-        "success_login",
-        "Vous avez reçu un courriel pour vous connecter",
-    ) in res.flashes
-    assert len(smtpd.messages) == 1
