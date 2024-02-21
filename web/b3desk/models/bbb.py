@@ -76,7 +76,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "meetings.ncdownload",
+                    "meeting_files.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
@@ -197,7 +197,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "meetings.ncdownload",
+                    "meeting_files.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
@@ -226,7 +226,7 @@ class BBB:
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
                 url = url_for(
-                    "meetings.ncdownload",
+                    "meeting_files.ncdownload",
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,

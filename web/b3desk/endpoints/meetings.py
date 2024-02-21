@@ -8,17 +8,11 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import hashlib
-import secrets
-import uuid
 from datetime import datetime
-from pathlib import Path
 
-import requests
 from b3desk.forms import EndMeetingForm
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
-from b3desk.forms import MeetingFilesForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
@@ -28,25 +22,17 @@ from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.models.users import get_or_create_user
 from b3desk.models.users import User
 from flask import abort
 from flask import Blueprint
 from flask import current_app
 from flask import flash
-from flask import jsonify
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import send_file
-from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
-from webdav3.client import Client as webdavClient
-from webdav3.exceptions import WebDavException
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
@@ -234,95 +220,6 @@ def edit_meeting(meeting):
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/files/<meeting:meeting>")
-@auth.oidc_auth("default")
-def edit_meeting_files(meeting):
-    user = get_current_user()
-
-    form = MeetingFilesForm()
-
-    if current_app.config["FILE_SHARING"]:
-        # we test webdav connection here, with a simple 'list' command
-        if user.nc_login and user.nc_token and user.nc_locator:
-            options = {
-                "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-                "webdav_hostname": user.nc_locator,
-                "webdav_verbose": True,
-                "webdav_token": user.nc_token,
-            }
-            try:
-                client = webdavClient(options)
-                client.list()
-            except WebDavException as exception:
-                current_app.logger.warning(
-                    "WebDAV error, user data disabled: %s", exception
-                )
-                user.disable_nextcloud()
-
-        if user is not None and meeting.user_id == user.id:
-            return render_template(
-                "meeting/filesform.html",
-                meeting=meeting,
-                form=form,
-            )
-    flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
-    return redirect(url_for("public.welcome"))
-
-
-@bp.route("/meeting/files/<meeting:meeting>/")
-@bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
-@auth.oidc_auth("default")
-def download_meeting_files(meeting, file_id=None):
-    user = get_current_user()
-
-    TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
-    Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-    tmpName = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
-    fileToSend = None
-    if user is not None and meeting.user_id == user.id:
-        for curFile in meeting.files:
-            if curFile.id == file_id:
-                fileToSend = curFile
-                break
-        if not fileToSend:
-            return jsonify(status=404, msg="file not found")
-        if curFile.url:
-            response = requests.get(curFile.url)
-            open(tmpName, "wb").write(response.content)
-            return send_file(tmpName, as_attachment=True, download_name=curFile.title)
-        else:
-            # get file from nextcloud WEBDAV and send it
-            try:
-                davUser = {
-                    "nc_locator": user.nc_locator,
-                    "nc_login": user.nc_login,
-                    "nc_token": user.nc_token,
-                }
-                options = {
-                    "webdav_root": f"/remote.php/dav/files/{davUser['nc_login']}/",
-                    "webdav_hostname": davUser["nc_locator"],
-                    "webdav_verbose": True,
-                    "webdav_token": davUser["nc_token"],
-                }
-                client = webdavClient(options)
-                kwargs = {
-                    "remote_path": curFile.nc_path,
-                    "local_path": f"{tmpName}",
-                }
-                client.download_sync(**kwargs)
-                return send_file(
-                    tmpName, as_attachment=True, download_name=curFile.title
-                )
-            except WebDavException as exception:
-                user.disable_nextcloud()
-                current_app.logger.warning(
-                    "webdav call encountered following exception : %s", exception
-                )
-                flash("Le fichier ne semble pas accessible", "error")
-                return redirect(url_for("public.welcome"))
-    return redirect(url_for("public.welcome"))
-
-
 @bp.route("/meeting/save", methods=["POST"])
 @auth.oidc_auth("default")
 def save_meeting():
@@ -409,58 +306,6 @@ def externalUpload(meeting):
     if meeting.is_running() and user is not None and meeting.user_id == user.id:
         return render_template("meeting/externalUpload.html", meeting=meeting)
     return redirect(url_for("public.welcome"))
-
-
-@bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>")
-# @auth.token_auth(provider_name="default") - must be accessible by BBB server, so no auth
-def ncdownload(isexternal, mfid, mftoken):
-    secret_key = current_app.config["SECRET_KEY"]
-    # select good file from token
-    # get file through NC credentials - HOW POSSIBLE ?
-    # return file as response to BBB server
-    # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
-    if str(isexternal) == "0":
-        isexternal = "0"
-        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
-    else:
-        isexternal = "1"
-        meeting_file = MeetingFilesExternal.query.filter_by(id=mfid).one_or_none()
-
-    if not meeting_file:
-        return make_response("Bad token provided, no file matching", 404)
-
-    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
-    if (
-        mftoken
-        != hashlib.sha1(
-            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
-        ).hexdigest()
-    ):
-        return make_response("Bad token provided, no file matching", 404)
-
-    # download the file using webdavClient from the Nextcloud to a temporary folder (that will need cleaning)
-    options = {
-        "webdav_root": f"/remote.php/dav/files/{meeting_file.meeting.user.nc_login}/",
-        "webdav_hostname": meeting_file.meeting.user.nc_locator,
-        "webdav_verbose": True,
-        "webdav_token": meeting_file.meeting.user.nc_token,
-    }
-    try:
-        client = webdavClient(options)
-        TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
-        Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-        uniqfile = str(uuid.uuid4())
-        tmpName = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
-        kwargs = {
-            "remote_path": meeting_file.nc_path,
-            "local_path": tmpName,
-        }
-        client.download_sync(**kwargs)
-    except WebDavException:
-        meeting_file.meeting.user.disable_nextcloud()
-        return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
-    # send the downloaded file to the BBB:
-    return send_from_directory(TMP_DOWNLOAD_DIR, uniqfile)
 
 
 @bp.route(

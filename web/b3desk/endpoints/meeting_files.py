@@ -1,6 +1,7 @@
 import hashlib
 import os
 import secrets
+import uuid
 from datetime import date
 from pathlib import Path
 
@@ -20,6 +21,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import send_file
+from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from sqlalchemy import exc
@@ -142,7 +144,7 @@ def insertDocuments(meeting):
             f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
         url = url_for(
-            "meetings.ncdownload",
+            "meeting_files.ncdownload",
             isexternal=1,
             mfid=id,
             mftoken=filehash,
@@ -549,7 +551,7 @@ def insertDoc(token):
 
     # xml now use
     url = url_for(
-        "meetings.ncdownload",
+        "meeting_files.ncdownload",
         isexternal=0,
         mfid=meeting_file.id,
         mftoken=meeting_file.download_hash,
@@ -565,3 +567,55 @@ def insertDoc(token):
     )
 
     return make_response("ok", 200)
+
+
+@bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>")
+# @auth.token_auth(provider_name="default") - must be accessible by BBB server, so no auth
+def ncdownload(isexternal, mfid, mftoken):
+    secret_key = current_app.config["SECRET_KEY"]
+    # select good file from token
+    # get file through NC credentials - HOW POSSIBLE ?
+    # return file as response to BBB server
+    # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
+    if str(isexternal) == "0":
+        isexternal = "0"
+        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
+    else:
+        isexternal = "1"
+        meeting_file = MeetingFilesExternal.query.filter_by(id=mfid).one_or_none()
+
+    if not meeting_file:
+        return make_response("Bad token provided, no file matching", 404)
+
+    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
+    if (
+        mftoken
+        != hashlib.sha1(
+            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
+        ).hexdigest()
+    ):
+        return make_response("Bad token provided, no file matching", 404)
+
+    # download the file using webdavClient from the Nextcloud to a temporary folder (that will need cleaning)
+    options = {
+        "webdav_root": f"/remote.php/dav/files/{meeting_file.meeting.user.nc_login}/",
+        "webdav_hostname": meeting_file.meeting.user.nc_locator,
+        "webdav_verbose": True,
+        "webdav_token": meeting_file.meeting.user.nc_token,
+    }
+    try:
+        client = webdavClient(options)
+        TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
+        Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
+        uniqfile = str(uuid.uuid4())
+        tmpName = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
+        kwargs = {
+            "remote_path": meeting_file.nc_path,
+            "local_path": tmpName,
+        }
+        client.download_sync(**kwargs)
+    except WebDavException:
+        meeting_file.meeting.user.disable_nextcloud()
+        return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
+    # send the downloaded file to the BBB:
+    return send_from_directory(TMP_DOWNLOAD_DIR, uniqfile)
