@@ -45,13 +45,6 @@ def setup_configuration(app, config=None):
     config_obj = MainSettings.model_validate(config or {})
     app.config.from_object(config_obj)
 
-    # TODO: properly deprecate and remove "SERVER_FQDN" in favor of "SERVER_NAME"
-    # https://flask.palletsprojects.com/en/3.0.x/config/#SERVER_NAME
-    if not app.config.get("SERVER_NAME"):
-        app.config["SERVER_NAME"] = (
-            app.config["SERVER_FQDN"].replace("http://", "").replace("https://", "")
-        )
-
 
 def setup_celery(app):
     from b3desk.tasks import celery

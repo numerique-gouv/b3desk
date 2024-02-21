@@ -41,8 +41,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
     smtpd.config.use_starttls = True
     return {
         "SECRET_KEY": "test-secret-key",
-        "SERVER_FQDN": "http://localhost:5000",
         "SERVER_NAME": "localhost:5000",
+        "PREFERRED_URL_SCHEME": "http",
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,

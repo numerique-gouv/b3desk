@@ -118,6 +118,22 @@ class MainSettings(BaseSettings):
     https://flask.palletsprojects.com/en/3.0.x/config/#SECRET_KEY
     """
 
+    SERVER_NAME: str
+    """Le nom de domaine sur lequel est déployé l'instance B3Desk.
+
+    Par exemple ``b3desk.example.org``, sans `https://`.
+
+    Plus d'infos sur https://flask.palletsprojects.com/en/3.0.x/config/#SERVER_NAME.
+    """
+
+    PREFERRED_URL_SCHEME: str = "https"
+    """La méthode préférée utilisée pour générer des URL. Peut être `http` ou
+    `https`.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#PREFERRED_URL_SCHEME.
+    """
+
     REDIS_URL: Optional[str] = None
     """L’URL du serveur redis utilisé pour les tâches asynchrones.
 
@@ -173,13 +189,6 @@ class MainSettings(BaseSettings):
 
     TITLE: str = "BBB-Visio"
     """Titre HTML par défaut pour les pages HTML."""
-
-    # TODO: Replace this with SERVER_NAME + url_for(..., _external=True)
-    SERVER_FQDN: str
-    """L’adresse publique du serveur B3Desk.
-
-    Par exemple ``https://b3desk.example.org``.
-    """
 
     EXTERNAL_UPLOAD_DESCRIPTION: str = "Fichiers depuis votre Nextcloud"
     """Description dans BBB des fichiers téléversés dans Nextcloud."""
