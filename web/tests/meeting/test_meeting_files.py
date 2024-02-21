@@ -1,3 +1,5 @@
+import os
+
 from flask import url_for
 from webdav3.exceptions import WebDavException
 
@@ -42,3 +44,23 @@ def test_file_sharing_disabled(client_app, authenticated_user, meeting):
         url_for("meeting_files.edit_meeting_files", meeting=meeting), status=302
     )
     assert ("warning", "Vous ne pouvez pas modifier cet élément") in res.flashes
+
+
+def test_add_dropzone_file(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path
+):
+    res = client_app.post(
+        "/meeting/files/1/dropzone",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    assert res.text == "Chunk upload successful"
+
+    with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
+        assert jpg_file_content == fd.read()
