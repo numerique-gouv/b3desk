@@ -38,6 +38,7 @@ from .. import auth
 from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
+from ..session import meeting_owner_needed
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
@@ -121,7 +122,8 @@ def quick_meeting():
 
 @bp.route("/meeting/show/<meeting:meeting>")
 @auth.oidc_auth("default")
-def show_meeting(meeting):
+@meeting_owner_needed
+def show_meeting(meeting, owner):
     # TODO: appears unused
 
     form = ShowMeetingForm(data={"meeting_id": meeting.id})
@@ -131,54 +133,47 @@ def show_meeting(meeting):
             "warning",
         )
         return redirect(url_for("public.welcome"))
-    user = get_current_user()
-    if meeting.user_id == user.id:
-        return render_template(
-            "meeting/show.html",
-            meeting_mailto_params=meeting_mailto_params,
-            meeting=meeting,
-        )
-    flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect(url_for("public.welcome"))
+
+    return render_template(
+        "meeting/show.html",
+        meeting_mailto_params=meeting_mailto_params,
+        meeting=meeting,
+    )
 
 
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @auth.oidc_auth("default")
-def show_meeting_recording(meeting):
-    user = get_current_user()
-    if meeting.user_id == user.id:
-        form = RecordingForm()
-        return render_template(
-            "meeting/recordings.html",
-            meeting_mailto_params=meeting_mailto_params,
-            meeting=meeting,
-            form=form,
-        )
-    flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect(url_for("public.welcome"))
+@meeting_owner_needed
+def show_meeting_recording(meeting, owner):
+    form = RecordingForm()
+    return render_template(
+        "meeting/recordings.html",
+        meeting_mailto_params=meeting_mailto_params,
+        meeting=meeting,
+        form=form,
+    )
 
 
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @auth.oidc_auth("default")
-def update_recording_name(meeting, recording_id):
-    user = get_current_user()
-    if meeting.user_id == user.id:
-        form = RecordingForm(request.form)
-        form.validate() or abort(403)
-        result = meeting.update_recording_name(recording_id, form.data["name"])
-        return_code = result.get("returncode")
-        if return_code == "SUCCESS":
-            flash("Enregistrement renommé", "success")
-        else:
-            message = result.get("message", "")
-            flash(
-                "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}".format(
-                    code=return_code, message=message
-                ),
-                "error",
-            )
+@meeting_owner_needed
+def update_recording_name(meeting, recording_id, owner):
+    form = RecordingForm(request.form)
+    if not form.validate():
+        abort(403)
+
+    result = meeting.update_recording_name(recording_id, form.data["name"])
+    return_code = result.get("returncode")
+    if return_code == "SUCCESS":
+        flash("Enregistrement renommé", "success")
     else:
-        flash("Vous ne pouvez pas modifier cet enregistrement", "error")
+        message = result.get("message", "")
+        flash(
+            "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}".format(
+                code=return_code, message=message
+            ),
+            "error",
+        )
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
@@ -201,23 +196,19 @@ def new_meeting():
 
 @bp.route("/meeting/edit/<meeting:meeting>")
 @auth.oidc_auth("default")
-def edit_meeting(meeting):
-    user = get_current_user()
-
+@meeting_owner_needed
+def edit_meeting(meeting, owner):
     form = (
         MeetingWithRecordForm(obj=meeting)
         if current_app.config["RECORDING"]
         else MeetingForm(obj=meeting)
     )
-    if meeting and meeting.user_id == user.id:
-        return render_template(
-            "meeting/wizard.html",
-            meeting=meeting,
-            form=form,
-            recording=current_app.config["RECORDING"],
-        )
-    flash("Vous ne pouvez pas modifier cet élément", "warning")
-    return redirect(url_for("public.welcome"))
+    return render_template(
+        "meeting/wizard.html",
+        meeting=meeting,
+        form=form,
+        recording=current_app.config["RECORDING"],
+    )
 
 
 @bp.route("/meeting/save", methods=["POST"])
@@ -291,19 +282,18 @@ def end_meeting():
 
 @bp.route("/meeting/create/<meeting:meeting>")
 @auth.oidc_auth("default")
-def create_meeting(meeting):
-    user = get_current_user()
-    if meeting.user_id == user.id:
-        meeting.create_bbb()
-        meeting.save()
+@meeting_owner_needed
+def create_meeting(meeting, owner):
+    meeting.create_bbb()
+    meeting.save()
     return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
 @auth.oidc_auth("default")
-def externalUpload(meeting):
-    user = get_current_user()
-    if meeting.is_running() and user is not None and meeting.user_id == user.id:
+@meeting_owner_needed
+def externalUpload(meeting, owner):
+    if meeting.is_running():
         return render_template("meeting/externalUpload.html", meeting=meeting)
     return redirect(url_for("public.welcome"))
 
@@ -517,16 +507,12 @@ def join_meeting_as_authenticated(meeting_id):
 
 @bp.route("/meeting/join/<meeting:meeting>/<role>")
 @auth.oidc_auth("default")
-def join_meeting_as_role(meeting, role):
-    user = get_current_user()
+@meeting_owner_needed
+def join_meeting_as_role(meeting, role, owner):
     if role not in ("attendee", "moderator"):
         abort(404)
 
-    if meeting.user_id == user.id:
-        return redirect(meeting.get_join_url(role, user.fullname, create=True))
-    else:
-        flash(_("Accès non autorisé"), "error")
-        return redirect(url_for("public.index"))
+    return redirect(meeting.get_join_url(role, owner.fullname, create=True))
 
 
 @bp.route("/meeting/delete", methods=["POST", "GET"])

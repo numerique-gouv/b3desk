@@ -1,4 +1,7 @@
+from functools import wraps
+
 from b3desk.models.users import get_or_create_user
+from flask import abort
 from flask import g
 from flask import session
 from flask_pyoidc.user_session import UserSession
@@ -24,3 +27,18 @@ def get_authenticated_attendee_fullname():
     family_name = attendee_info.get("family_name", "")
     fullname = f"{given_name} {family_name}".strip()
     return fullname
+
+
+def meeting_owner_needed(view_function):
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not has_user_session():
+            abort(403)
+
+        user = get_current_user()
+        if not user or kwargs["meeting"].user != user:
+            abort(403)
+
+        return view_function(*args, owner=user, **kwargs)
+
+    return decorator
