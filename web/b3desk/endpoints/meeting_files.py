@@ -87,6 +87,8 @@ def add_meeting_files(meeting, owner):
     if data["from"] == "URL":
         return add_meeting_file_URL(data["value"], meeting.id, is_default)
 
+    # This is called by the JS after uploading a file on the 'add_dropzone_files'
+    # TODO: do everything in one single request?
     if data["from"] == "dropzone":
         return add_meeting_file_dropzone(
             secure_filename(data["value"]), meeting.id, is_default
@@ -226,8 +228,7 @@ def set_meeting_default_file(meeting, owner):
     if actual_default_file:
         actual_default_file.is_default = False
 
-    meeting_file = MeetingFiles()
-    meeting_file = meeting_file.query.get(data["id"])
+    meeting_file = MeetingFiles.query.get(data["id"])
     meeting_file.is_default = True
 
     if actual_default_file:
@@ -487,10 +488,8 @@ def delete_meeting_file():
     user = get_current_user()
     data = request.get_json()
     meeting_file_id = data["id"]
-    meeting_file = MeetingFiles()
-    meeting_file = meeting_file.query.get(meeting_file_id)
-    meeting = Meeting()
-    cur_meeting = meeting.query.get(meeting_file.meeting_id)
+    meeting_file = MeetingFiles.query.get(meeting_file_id)
+    cur_meeting = Meeting.query.get(meeting_file.meeting_id)
 
     if cur_meeting.user_id != user.id:
         return jsonify(
@@ -501,7 +500,7 @@ def delete_meeting_file():
     db.session.commit()
     new_default_id = None
     if meeting_file.is_default:
-        cur_meeting = meeting.query.get(meeting_file.meeting_id)
+        cur_meeting = Meeting.query.get(meeting_file.meeting_id)
         if len(cur_meeting.files) > 0:
             cur_meeting.files[0].is_default = True
             new_default_id = cur_meeting.files[0].id
