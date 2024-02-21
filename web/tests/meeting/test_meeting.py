@@ -418,7 +418,7 @@ def test_unauthenticated_quick_meeting_authorized_email(
     assert len(smtpd.messages) == 0
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
-    res.form["mail"] = "example@ird.fr"
+    res.form["mail"] = "example@gouv.fr"
     res = res.form.submit()
     assert (
         "success_login",
