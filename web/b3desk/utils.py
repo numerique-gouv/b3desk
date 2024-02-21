@@ -10,6 +10,7 @@ from flask import abort
 from flask import current_app
 from flask import render_template
 from flask import request
+from flask import url_for
 from netaddr import IPAddress
 from netaddr import IPNetwork
 from werkzeug.routing import BaseConverter
@@ -53,7 +54,7 @@ def get_random_alphanumeric_string(length):
     return result_str
 
 
-def send_mail(meeting, to_email):
+def send_quick_meeting_mail(meeting, to_email):
     smtp_from = current_app.config["SMTP_FROM"]
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]
@@ -67,7 +68,7 @@ def send_mail(meeting, to_email):
         "meeting/mailto/mail_quick_meeting_body.txt",
         role="moderator",
         moderator_mail_signin_url=meeting.get_mail_signin_url(),
-        welcome_url=current_app.config["SERVER_FQDN"] + "/welcome",
+        welcome_url=url_for("routes.welcome", _external=True),
         meeting=meeting,
     )
     msg["Subject"] = str(wordings["meeting_mail_subject"])

@@ -63,7 +63,7 @@ from .session import has_user_session
 from .templates.content import FAQ_CONTENT
 from .utils import is_accepted_email
 from .utils import is_valid_email
-from .utils import send_mail
+from .utils import send_quick_meeting_mail
 
 
 bp = Blueprint("routes", __name__)
@@ -184,7 +184,10 @@ def insertDocuments(meeting):
         filehash = hashlib.sha1(
             f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
-        xml_mid += f"<document url='{current_app.config['SERVER_FQDN']}/ncdownload/1/{id}/{filehash}' filename='{cur_file}' />"
+        url = url_for(
+            "routes.ncdownload", isexternal=1, mfid=id, mftoken=filehash, _external=True
+        )
+        xml_mid += f"<document url='{url}' filename='{cur_file}' />"
 
     bbb_endpoint = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
     xml = xml_beg + xml_mid + xml_end
@@ -331,7 +334,7 @@ def quick_mail_meeting():
         id=email
     )  # this user can probably be removed if we created adock function
     meeting = get_quick_meeting_from_user_and_random_string(user)
-    send_mail(meeting, email)
+    send_quick_meeting_mail(meeting, email)
     flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
     return redirect(url_for("routes.index"))
 
@@ -985,7 +988,14 @@ def insertDoc(token):
     params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     # xml now use
-    xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{current_app.config['SERVER_FQDN']}/ncdownload/{meeting_file.id}/{meeting_file.download_hash}' filename='{meeting_file.title}' /> </module></modules>"
+    url = url_for(
+        "routes.ncdownload",
+        isexternal=0,
+        mfid=meeting_file.id,
+        mftoken=meeting_file.download_hash,
+        _external=True,
+    )
+    xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{url}' filename='{meeting_file.title}' /> </module></modules>"
 
     requests.post(
         f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",

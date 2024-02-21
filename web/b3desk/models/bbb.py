@@ -17,6 +17,7 @@ import requests
 from b3desk.tasks import background_upload
 from flask import current_app
 from flask import render_template
+from flask import url_for
 
 
 class BBB:
@@ -60,7 +61,6 @@ class BBB:
         # TODO: appears to be unused
         # meeting has started, we can now add files by using insertDocument API
         # ADDING ALL FILES EXCEPT DEFAULT
-        SERVER_FQDN = current_app.config["SERVER_FQDN"]
         SECRET_KEY = current_app.config["SECRET_KEY"]
 
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
@@ -75,7 +75,14 @@ class BBB:
                 filehash = hashlib.sha1(
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
+                url = url_for(
+                    "routes.ncdownload",
+                    isexternal=0,
+                    mfid=meeting_file.id,
+                    mftoken=filehash,
+                    _external=True,
+                )
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
 
         xml = xml_beg + xml_mid + xml_end
         request = self.bbb_request(
@@ -91,11 +98,8 @@ class BBB:
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
-            "uploadExternalUrl": (
-                current_app.config["SERVER_FQDN"]
-                + "/meeting/"
-                + str(self.meeting.id)
-                + "/externalUpload"
+            "uploadExternalUrl": url_for(
+                "routes.externalUpload", meeting=self.meeting, _external=True
             ),
             "uploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -192,7 +196,14 @@ class BBB:
                 filehash = hashlib.sha1(
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{current_app.config['SERVER_FQDN']}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
+                url = url_for(
+                    "routes.ncdownload",
+                    isexternal=0,
+                    mfid=meeting_file.id,
+                    mftoken=filehash,
+                    _external=True,
+                )
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
         xml = xml_beg + xml_mid + xml_end
         request = self.bbb_request("create", "POST", params=params, data=xml)
         data = self.bbb_response(request)
@@ -201,7 +212,6 @@ class BBB:
         params = {}
         xml = ""
         # ADDING ALL FILES EXCEPT DEFAULT
-        SERVER_FQDN = current_app.config["SERVER_FQDN"]
 
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
@@ -215,7 +225,14 @@ class BBB:
                 filehash = hashlib.sha1(
                     f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
                 ).hexdigest()
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{SERVER_FQDN}/ncdownload/0/{meeting_file.id}/{filehash}' filename='{meeting_file.title}' />"
+                url = url_for(
+                    "routes.ncdownload",
+                    isexternal=0,
+                    mfid=meeting_file.id,
+                    mftoken=filehash,
+                    _external=True,
+                )
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
 
         xml = xml_beg + xml_mid + xml_end
         request = self.bbb_request(

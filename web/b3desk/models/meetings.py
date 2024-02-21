@@ -213,11 +213,12 @@ class Meeting(db.Model):
         )
 
     def get_signin_url(self, meeting_role):
-        return current_app.config["SERVER_FQDN"] + url_for(
+        return url_for(
             "routes.signin_meeting",
             meeting_fake_id=self.fake_id,
             user_id=self.user.id,
             h=self.get_hash(meeting_role),
+            _external=True,
         )
 
     def get_mail_signin_hash(self, meeting_id, expiration_epoch):
@@ -231,11 +232,12 @@ class Meeting(db.Model):
             0
         ]  # remove milliseconds
         hash_param = self.get_mail_signin_hash(self.fake_id, expiration)
-        return current_app.config["SERVER_FQDN"] + url_for(
+        return url_for(
             "routes.signin_mail_meeting",
             meeting_fake_id=self.fake_id,
             expiration=expiration,
             h=hash_param,
+            _external=True,
         )
 
     def get_role(self, hashed_role, user_id=None):
