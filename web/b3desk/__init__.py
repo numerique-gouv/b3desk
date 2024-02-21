@@ -169,9 +169,11 @@ def setup_error_pages(app):
 
 def setup_endpoints(app):
     with app.app_context():
-        import b3desk.routes
+        import b3desk.endpoints.public
+        import b3desk.endpoints.routes
 
-        app.register_blueprint(b3desk.routes.bp)
+        app.register_blueprint(b3desk.endpoints.public.bp)
+        app.register_blueprint(b3desk.endpoints.routes.bp)
 
 
 def setup_oidc(app):
@@ -179,7 +181,7 @@ def setup_oidc(app):
     from flask_pyoidc.provider_configuration import ProviderConfiguration
 
     with app.app_context():
-        logout_url = url_for("routes.logout", _external=True)
+        logout_url = url_for("public.logout", _external=True)
 
     user_provider_configuration = ProviderConfiguration(
         issuer=app.config["OIDC_ISSUER"],

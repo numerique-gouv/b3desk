@@ -53,15 +53,13 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
-from . import auth
-from . import cache
-from .session import get_authenticated_attendee_fullname
-from .session import get_current_user
-from .session import has_user_session
-from .templates.content import FAQ_CONTENT
-from .utils import is_accepted_email
-from .utils import is_valid_email
-from .utils import send_quick_meeting_mail
+from .. import auth
+from ..session import get_authenticated_attendee_fullname
+from ..session import get_current_user
+from ..session import has_user_session
+from ..utils import is_accepted_email
+from ..utils import is_valid_email
+from ..utils import send_quick_meeting_mail
 
 
 bp = Blueprint("routes", __name__)
@@ -78,39 +76,12 @@ def meeting_mailto_params(meeting, role):
         ).replace("\n", "%0D%0A")
 
 
-@cache.cached(
-    timeout=current_app.config["STATS_CACHE_DURATION"], key_prefix="meetings_stats"
-)
-def get_meetings_stats():
-    # TODO: do this asynchroneously
-    # Currently, the page needs to wait another network request in get_meetings_stats
-    # before it can be rendered. This is mitigated by caching though.
-
-    if not current_app.config["STATS_URL"]:
-        return None
-
-    response = requests.get(current_app.config["STATS_URL"])
-    if response.status_code != 200:
-        return None
-
-    try:
-        stats_array = response.content.decode(encoding="utf-8").split("\n")
-        stats_array = [row.split(",") for row in stats_array]
-        participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
-        running_count = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except Exception:
-        return None
-
-    result = {"participantCount": participant_count, "runningCount": running_count}
-    return result
-
-
 @bp.route("/api/meetings")
 @auth.token_auth(provider_name="default")
 def api_meetings():
     # TODO: probably unused
     if not auth.current_token_identity:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     info = {
         "given_name": auth.current_token_identity["given_name"],
@@ -179,101 +150,6 @@ def insertDocuments(meeting):
     return jsonify(status=200, msg="SUCCESS")
 
 
-@bp.route("/mentions_legales")
-def mentions_legales():
-    return render_template(
-        "footer/mentions_legales.html",
-        service_title=current_app.config["SERVICE_TITLE"],
-        service_tagline=current_app.config["SERVICE_TAGLINE"],
-    )
-
-
-@bp.route("/cgu")
-def cgu():
-    return render_template(
-        "footer/cgu.html",
-        service_title=current_app.config["SERVICE_TITLE"],
-        service_tagline=current_app.config["SERVICE_TAGLINE"],
-    )
-
-
-@bp.route("/donnees_personnelles")
-def donnees_personnelles():
-    return render_template(
-        "footer/donnees_personnelles.html",
-        service_title=current_app.config["SERVICE_TITLE"],
-        service_tagline=current_app.config["SERVICE_TAGLINE"],
-    )
-
-
-@bp.route("/accessibilite")
-def accessibilite():
-    return render_template(
-        "footer/accessibilite.html",
-        service_title=current_app.config["SERVICE_TITLE"],
-        service_tagline=current_app.config["SERVICE_TAGLINE"],
-    )
-
-
-@bp.route("/documentation")
-def documentation():
-    if current_app.config["DOCUMENTATION_LINK"]["is_external"]:
-        return redirect(current_app.config["DOCUMENTATION_LINK"]["url"])
-    return render_template(
-        "footer/documentation.html",
-    )
-
-
-@bp.route("/faq")
-def faq():
-    return render_template(
-        "faq.html",
-        contents=FAQ_CONTENT,
-    )
-
-
-@bp.route("/")
-def index():
-    if has_user_session():
-        return redirect(url_for("routes.welcome"))
-    else:
-        return redirect(url_for("routes.home"))
-
-
-@bp.route("/home")
-def home():
-    if has_user_session():
-        return redirect(url_for("routes.welcome"))
-
-    stats = get_meetings_stats()
-    return render_template(
-        "index.html",
-        stats=stats,
-        mail_meeting=current_app.config["MAIL_MEETING"],
-        max_participants=current_app.config["MAX_PARTICIPANTS"],
-    )
-
-
-@bp.route("/welcome")
-@auth.oidc_auth("default")
-def welcome():
-    user = get_current_user()
-    stats = get_meetings_stats()
-
-    return render_template(
-        "welcome.html",
-        stats=stats,
-        max_participants=current_app.config["MAX_PARTICIPANTS"],
-        can_create_meetings=user.can_create_meetings,
-        max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
-        meeting_mailto_params=meeting_mailto_params,
-        mailto=current_app.config["MAILTO_LINKS"],
-        quick_meeting=current_app.config["QUICK_MEETING"],
-        file_sharing=current_app.config["FILE_SHARING"],
-        clipboard=current_app.config["CLIPBOARD"],
-    )
-
-
 @bp.route("/meeting/mail", methods=["POST"])
 def quick_mail_meeting():
     #### Almost the same as quick meeting but we do not redirect to join
@@ -285,7 +161,7 @@ def quick_mail_meeting():
             ),
             "error_login",
         )
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
     if not is_accepted_email(email):
         flash(
             _(
@@ -293,14 +169,14 @@ def quick_mail_meeting():
             ),
             "error_login",
         )
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
     user = User(
         id=email
     )  # this user can probably be removed if we created adock function
     meeting = get_quick_meeting_from_user_and_random_string(user)
     send_quick_meeting_mail(meeting, email)
     flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
-    return redirect(url_for("routes.index"))
+    return redirect(url_for("public.index"))
 
 
 @bp.route("/meeting/quick")
@@ -322,7 +198,7 @@ def show_meeting(meeting):
             _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
             "warning",
         )
-        return redirect(url_for("routes.welcome"))
+        return redirect(url_for("public.welcome"))
     user = get_current_user()
     if meeting.user_id == user.id:
         return render_template(
@@ -331,7 +207,7 @@ def show_meeting(meeting):
             meeting=meeting,
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/recordings/<meeting:meeting>")
@@ -347,7 +223,7 @@ def show_meeting_recording(meeting):
             form=form,
         )
     flash(_("Vous ne pouvez pas consulter cet élément"), "warning")
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
@@ -379,7 +255,7 @@ def update_recording_name(meeting, recording_id):
 def new_meeting():
     user = get_current_user()
     if not user.can_create_meetings:
-        return redirect(url_for("routes.welcome"))
+        return redirect(url_for("public.welcome"))
 
     form = MeetingWithRecordForm() if current_app.config["RECORDING"] else MeetingForm()
 
@@ -409,7 +285,7 @@ def edit_meeting(meeting):
             recording=current_app.config["RECORDING"],
         )
     flash("Vous ne pouvez pas modifier cet élément", "warning")
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/files/<meeting:meeting>")
@@ -444,7 +320,7 @@ def edit_meeting_files(meeting):
                 form=form,
             )
     flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/files/<meeting:meeting>/")
@@ -497,8 +373,8 @@ def download_meeting_files(meeting, file_id=None):
                     "webdav call encountered following exception : %s", exception
                 )
                 flash("Le fichier ne semble pas accessible", "error")
-                return redirect(url_for("routes.welcome"))
-    return redirect(url_for("routes.welcome"))
+                return redirect(url_for("public.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
@@ -508,14 +384,14 @@ def toggledownload(meeting):
     data = request.get_json()
 
     if user is None:
-        return redirect(url_for("routes.welcome"))
+        return redirect(url_for("public.welcome"))
     meeting_file = db.session.get(MeetingFiles, data["id"])
     if meeting_file is not None and meeting.user_id == user.id:
         meeting_file.is_downloadable = data["value"]
         meeting_file.save()
 
         return jsonify(status=200, id=data["id"])
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
@@ -762,7 +638,7 @@ def add_dropzone_files(meeting):
         return upload(user, meeting, request.files["dropzoneFiles"])
     else:
         flash("Traitement de requête impossible", "error")
-        return redirect(url_for("routes.welcome"))
+        return redirect(url_for("public.welcome"))
 
 
 # for dropzone chunk file by file validation
@@ -847,7 +723,7 @@ def save_meeting():
 
     is_new_meeting = not form.data["id"]
     if not user.can_create_meetings and is_new_meeting:
-        return redirect(url_for("routes.welcome"))
+        return redirect(url_for("public.welcome"))
 
     if not form.validate():
         flash("Le formulaire contient des erreurs", "error")
@@ -883,7 +759,7 @@ def save_meeting():
             meeting=meeting,
             form=EndMeetingForm(data={"meeting_id": meeting_id}),
         )
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/end", methods=["POST"])
@@ -901,7 +777,7 @@ def end_meeting():
             f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
             "success",
         )
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/create/<meeting:meeting>")
@@ -911,7 +787,7 @@ def create_meeting(meeting):
     if meeting.user_id == user.id:
         meeting.create_bbb()
         meeting.save()
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 # draft for insertDocument calls to BBB API
@@ -977,7 +853,7 @@ def externalUpload(meeting):
     user = get_current_user()
     if meeting.is_running() and user is not None and meeting.user_id == user.id:
         return render_template("meeting/externalUpload.html", meeting=meeting)
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/ncdownload/<isexternal>/<mfid>/<mftoken>")
@@ -1047,17 +923,17 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
             ),
             "success",
         )
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
         flash(_("Lien invalide"), "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     is_expired = datetime.fromtimestamp(float(expiration)) < datetime.now()
     if is_expired:
         flash(_("Lien expiré"), "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     return render_template(
         "meeting/joinmail.html",
@@ -1082,7 +958,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
             ),
             "success",
         )
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
@@ -1092,7 +968,7 @@ def signin_meeting(meeting_fake_id, user_id, h):
             url_for("routes.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
     elif not role:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     return render_template(
         "meeting/join.html",
@@ -1132,12 +1008,12 @@ def authenticate_then_signin_meeting(meeting_fake_id, user_id, h):
 def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
     if not role:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     return render_template(
         "meeting/wait.html",
@@ -1155,7 +1031,7 @@ def waiting_meeting(meeting_fake_id, user_id, h, fullname="", fullname_suffix=""
 def join_meeting():
     form = JoinMeetingForm(request.form)
     if not form.validate():
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
@@ -1163,7 +1039,7 @@ def join_meeting():
     h = form["h"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
@@ -1171,7 +1047,7 @@ def join_meeting():
     if role == "authenticated":
         fullname = get_authenticated_attendee_fullname()
     elif not role:
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     return redirect(
         meeting.get_join_url(
@@ -1185,7 +1061,7 @@ def join_mail_meeting():
     form = JoinMailMeetingForm(request.form)
     if not form.validate():
         flash("Lien invalide", "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
@@ -1204,17 +1080,17 @@ def join_mail_meeting():
             ),
             "error",
         )
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
     if not hash_matches:
         flash(_("Lien invalide"), "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     is_expired = datetime.fromtimestamp(expiration) < datetime.now()
     if is_expired:
         flash(_("Lien expiré"), "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
     return redirect(meeting.get_join_url("moderator", fullname, create=True))
 
@@ -1248,7 +1124,7 @@ def join_meeting_as_role(meeting, role):
         return redirect(meeting.get_join_url(role, user.fullname, create=True))
     else:
         flash(_("Accès non autorisé"), "error")
-        return redirect(url_for("routes.index"))
+        return redirect(url_for("public.index"))
 
 
 @bp.route("/meeting/delete", methods=["POST", "GET"])
@@ -1281,7 +1157,7 @@ def delete_meeting():
                 flash(_("Élément supprimé"), "success")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect(url_for("routes.welcome"))
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/video/delete", methods=["POST"])
@@ -1311,10 +1187,4 @@ def delete_video_meeting():
             _("Vous ne pouvez pas supprimer cette enregistrement"),
             "error",
         )
-    return redirect(url_for("routes.welcome"))
-
-
-@bp.route("/logout")
-@auth.oidc_logout
-def logout():
-    return redirect(url_for("routes.index"))
+    return redirect(url_for("public.welcome"))

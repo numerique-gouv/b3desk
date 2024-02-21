@@ -330,7 +330,7 @@ def test_create_without_logout_url_gets_default(
 
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
-    from b3desk.routes import get_quick_meeting_from_user_and_random_string
+    from b3desk.endpoints.routes import get_quick_meeting_from_user_and_random_string
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)

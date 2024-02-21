@@ -68,7 +68,7 @@ def send_quick_meeting_mail(meeting, to_email):
         "meeting/mailto/mail_quick_meeting_body.txt",
         role="moderator",
         moderator_mail_signin_url=meeting.get_mail_signin_url(),
-        welcome_url=url_for("routes.welcome", _external=True),
+        welcome_url=url_for("public.welcome", _external=True),
         meeting=meeting,
     )
     msg["Subject"] = str(wordings["meeting_mail_subject"])
