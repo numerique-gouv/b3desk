@@ -250,7 +250,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
     dropzone_path = os.path.join(DROPZONE_DIR, f"{user.id}-{meeting_id}-{title}")
     metadata = os.stat(dropzone_path)
-    if int(metadata.st_size) > int(current_app.config["MAX_SIZE_UPLOAD"]):
+    if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
             isfrom="dropzone",
@@ -326,9 +326,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
             msg=f"Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée",
         )
 
-    if int(metadata.headers["content-length"]) > int(
-        current_app.config["MAX_SIZE_UPLOAD"]
-    ):
+    if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
             isfrom="url",
@@ -385,7 +383,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
             msg="La connexion avec Nextcloud semble rompue",
         )
 
-    if int(metadata["size"]) > int(current_app.config["MAX_SIZE_UPLOAD"]):
+    if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
             isfrom="nextcloud",
