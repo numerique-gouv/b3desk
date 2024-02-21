@@ -48,14 +48,12 @@ from flask import send_file
 from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
-from flask_pyoidc import OIDCAuthentication
-from flask_pyoidc.provider_configuration import ClientMetadata
-from flask_pyoidc.provider_configuration import ProviderConfiguration
 from sqlalchemy import exc
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
+from . import auth
 from . import cache
 from .session import get_authenticated_attendee_fullname
 from .session import get_current_user
@@ -67,40 +65,6 @@ from .utils import send_quick_meeting_mail
 
 
 bp = Blueprint("routes", __name__)
-
-
-user_provider_configuration = ProviderConfiguration(
-    issuer=current_app.config["OIDC_ISSUER"],
-    userinfo_http_method=current_app.config["OIDC_USERINFO_HTTP_METHOD"],
-    client_metadata=ClientMetadata(
-        client_id=current_app.config["OIDC_CLIENT_ID"],
-        client_secret=current_app.config["OIDC_CLIENT_SECRET"],
-        token_endpoint_auth_method=current_app.config["OIDC_CLIENT_AUTH_METHOD"],
-        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
-    ),
-    auth_request_params={"scope": current_app.config["OIDC_SCOPES"]},
-)
-attendee_provider_configuration = ProviderConfiguration(
-    issuer=current_app.config.get("OIDC_ATTENDEE_ISSUER"),
-    userinfo_http_method=current_app.config.get("OIDC_ATTENDEE_USERINFO_HTTP_METHOD"),
-    client_metadata=ClientMetadata(
-        client_id=current_app.config.get("OIDC_ATTENDEE_CLIENT_ID"),
-        client_secret=current_app.config.get("OIDC_ATTENDEE_CLIENT_SECRET"),
-        token_endpoint_auth_method=current_app.config.get(
-            "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
-        ),
-        post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
-    ),
-    auth_request_params={"scope": current_app.config["OIDC_ATTENDEE_SCOPES"]},
-)
-
-auth = OIDCAuthentication(
-    {
-        "default": user_provider_configuration,
-        "attendee": attendee_provider_configuration,
-    },
-    current_app,
-)
 
 
 def meeting_mailto_params(meeting, role):

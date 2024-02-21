@@ -19,6 +19,7 @@ from flask import request
 from flask_babel import Babel
 from flask_caching import Cache
 from flask_migrate import Migrate
+from flask_pyoidc import OIDCAuthentication
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
@@ -33,6 +34,7 @@ LANGUAGES = ["en", "fr"]
 babel = Babel()
 cache = Cache()
 csrf = CSRFProtect()
+auth = OIDCAuthentication({"default": None, "attendee": None})
 
 
 def setup_configuration(app, config=None):
@@ -171,6 +173,44 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.routes.bp)
 
 
+def setup_oidc(app):
+    from flask_pyoidc.provider_configuration import ClientMetadata
+    from flask_pyoidc.provider_configuration import ProviderConfiguration
+
+    user_provider_configuration = ProviderConfiguration(
+        issuer=app.config["OIDC_ISSUER"],
+        userinfo_http_method=app.config["OIDC_USERINFO_HTTP_METHOD"],
+        client_metadata=ClientMetadata(
+            client_id=app.config["OIDC_CLIENT_ID"],
+            client_secret=app.config["OIDC_CLIENT_SECRET"],
+            token_endpoint_auth_method=app.config["OIDC_CLIENT_AUTH_METHOD"],
+            post_logout_redirect_uris=[f'{app.config.get("SERVER_FQDN")}/logout'],
+        ),
+        auth_request_params={"scope": app.config["OIDC_SCOPES"]},
+    )
+    attendee_provider_configuration = ProviderConfiguration(
+        issuer=app.config.get("OIDC_ATTENDEE_ISSUER"),
+        userinfo_http_method=app.config.get("OIDC_ATTENDEE_USERINFO_HTTP_METHOD"),
+        client_metadata=ClientMetadata(
+            client_id=app.config.get("OIDC_ATTENDEE_CLIENT_ID"),
+            client_secret=app.config.get("OIDC_ATTENDEE_CLIENT_SECRET"),
+            token_endpoint_auth_method=app.config.get(
+                "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
+            ),
+            post_logout_redirect_uris=[f'{app.config.get("SERVER_FQDN")}/logout'],
+        ),
+        auth_request_params={"scope": app.config["OIDC_ATTENDEE_SCOPES"]},
+    )
+
+    # This is a hack to be able to initialize flask-oidc in two steps
+    # https://github.com/zamzterz/Flask-pyoidc/issues/171
+    auth._provider_configurations = {
+        "default": user_provider_configuration,
+        "attendee": attendee_provider_configuration,
+    }
+    auth.init_app(app)
+
+
 def create_app(test_config=None, gunicorn_logging=False):
     app = Flask(__name__)
     setup_configuration(app, test_config)
@@ -184,6 +224,7 @@ def create_app(test_config=None, gunicorn_logging=False):
     setup_flask(app)
     setup_error_pages(app)
     setup_endpoints(app)
+    setup_oidc(app)
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
