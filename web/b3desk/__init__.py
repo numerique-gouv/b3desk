@@ -170,10 +170,12 @@ def setup_error_pages(app):
 def setup_endpoints(app):
     with app.app_context():
         import b3desk.endpoints.public
+        import b3desk.endpoints.join
         import b3desk.endpoints.meetings
         import b3desk.endpoints.meeting_files
 
         app.register_blueprint(b3desk.endpoints.public.bp)
+        app.register_blueprint(b3desk.endpoints.join.bp)
         app.register_blueprint(b3desk.endpoints.meetings.bp)
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
 

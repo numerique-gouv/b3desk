@@ -173,7 +173,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
-        "meetings.waiting_meeting",
+        "join.waiting_meeting",
         meeting_fake_id=meeting_fake_id,
         creator=meeting.user,
         h=h,
@@ -191,7 +191,7 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
-        "meetings.waiting_meeting",
+        "join.waiting_meeting",
         meeting_fake_id=meeting_fake_id,
         creator=meeting.user,
         h=h,
