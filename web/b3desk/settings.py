@@ -144,9 +144,9 @@ class MainSettings(BaseSettings):
     """Durée en jours avant l’expiration des autorisations Nextcloud."""
 
     NC_LOGIN_API_URL: Optional[str] = None
-    """Point d’accès du fournisseur Nextcloud.
+    """URL du fournisseur d'accès utilisé par Nextcloud.
 
-    Par exemple ``https://cloud.example.org/index.php``.
+    Par exemple ``https://auth.example.org``.
     """
 
     NC_LOGIN_API_KEY: Optional[str] = None
