@@ -29,7 +29,6 @@ from .utils import model_converter
 
 __version__ = "1.1.2"
 
-CRITICAL_VARS = ["OIDC_ISSUER", "OIDC_CLIENT_SECRET", "BIGBLUEBUTTON_SECRET"]
 LANGUAGES = ["en", "fr"]
 
 babel = Babel()
