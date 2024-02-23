@@ -410,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
         var from = `depuis URL`;
 
         add_URL_file(name, from);
-
     });
 
     createNCFilePicker()
