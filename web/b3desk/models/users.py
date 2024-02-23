@@ -74,17 +74,47 @@ def get_user_nc_credentials(username):
     return result
 
 
-def get_or_create_user(user_info):
+def update_user_nc_credentials(user, user_info):
     # preferred_username is login from keycloak, REQUIRED for nc_login connexion
     # data is conveyed like following :
     # user logs in to keycloak
     # visio-agent retrives preferred_username from keycloack ( aka keycloak LOGIN, which is immutable )
     # visio-agent calls EDNAT API for NC_DATA retrieval, passing LOGIN as postData
     # visio-agent can now connect to remote NC with NC_DATA
-    if current_app.config["FILE_SHARING"]:
-        preferred_username = user_info.get("preferred_username")
+    if (
+        user.nc_last_auto_enroll
+        and user.nc_locator
+        and user.nc_token
+        and (
+            (datetime.now() - user.nc_last_auto_enroll).days
+            <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
+        )
+    ):
+        return False
+
+    preferred_username = (
+        user_info.get("preferred_username")
+        if current_app.config["FILE_SHARING"]
+        else None
+    )
+    data = get_user_nc_credentials(preferred_username)
+    if (
+        preferred_username is None
+        or data["nclocator"] is None
+        or data["nctoken"] is None
+    ):
+        nc_last_auto_enroll = None
     else:
-        preferred_username = None
+        nc_last_auto_enroll = datetime.now()
+
+    user.nc_locator = data["nclocator"]
+    user.nc_token = data["nctoken"]
+    user.nc_login = preferred_username
+    user.nc_last_auto_enroll = nc_last_auto_enroll
+    return True
+
+
+def get_or_create_user(user_info):
     given_name = user_info["given_name"]
     family_name = user_info["family_name"]
     email = user_info["email"].lower()
@@ -92,68 +122,36 @@ def get_or_create_user(user_info):
     user = User.query.filter_by(email=email).first()
 
     if user is None:
-        data = get_user_nc_credentials(preferred_username)
-        nc_locator, nc_token, nc_login = (
-            data["nclocator"],
-            data["nctoken"],
-            preferred_username,
-        )
-        if nc_locator is None or nc_login is None or nc_token is None:
-            nc_last_auto_enroll = None
-        else:
-            nc_last_auto_enroll = datetime.now()
         user = User(
             email=email,
             given_name=given_name,
             family_name=family_name,
-            nc_locator=nc_locator,
-            nc_login=nc_login,
-            nc_token=nc_token,
-            nc_last_auto_enroll=nc_last_auto_enroll,
             last_connection_utc_datetime=datetime.utcnow(),
         )
+        update_user_nc_credentials(user, user_info)
         user.save()
+
     else:
-        user_has_changed = False
-        if (
-            not user.nc_last_auto_enroll
-            or not user.nc_locator
-            or not user.nc_token
-            or (
-                (datetime.now() - user.nc_last_auto_enroll).days
-                > current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
-            )
-        ):
-            data = get_user_nc_credentials(preferred_username)
-            nc_locator, nc_token, nc_login = (
-                data["nclocator"],
-                data["nctoken"],
-                preferred_username,
-            )
-            if nc_locator is None or nc_login is None or nc_token is None:
-                nc_last_auto_enroll = None
-            else:
-                nc_last_auto_enroll = datetime.now()
-            user.nc_token = nc_token
-            user.nc_login = nc_login
-            user.nc_locator = nc_locator
-            user.nc_last_auto_enroll = nc_last_auto_enroll
-            user_has_changed = True
+        user_has_changed = update_user_nc_credentials(user, user_info)
 
         if user.given_name != given_name:
             user.given_name = given_name
             user_has_changed = True
+
         if user.family_name != family_name:
             user.family_name = family_name
             user_has_changed = True
+
         if (
             not user.last_connection_utc_datetime
             or user.last_connection_utc_datetime.date() < date.today()
         ):
             user.last_connection_utc_datetime = datetime.utcnow()
             user_has_changed = True
+
         if user_has_changed:
             user.save()
+
     return user
 
 
