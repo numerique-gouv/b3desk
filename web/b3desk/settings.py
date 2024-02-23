@@ -193,8 +193,13 @@ class MainSettings(BaseSettings):
     EXTERNAL_UPLOAD_DESCRIPTION: str = "Fichiers depuis votre Nextcloud"
     """Description dans BBB des fichiers téléversés dans Nextcloud."""
 
-    WTF_CSRF_TIME_LIMIT: int = 3600 * 12
+    WTF_CSRF_TIME_LIMIT: int = 3600 * 24
     """Indique en secondes la durée de validit des jetons CSRF.
+
+    Il est nécessaire de mettre une valeur plus élevée que le délai de
+    mise en cache des pages par le serveur web. Sans quoi les
+    navigateurs des utilisateurs serviront des pages en caches contenant
+    des jetons CSRF expirés.
 
     Plus d'infos sur
     https://flask-wtf.readthedocs.io/en/1.2.x/config/
