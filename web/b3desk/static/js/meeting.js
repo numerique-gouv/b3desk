@@ -1,12 +1,5 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
-function toggleDisplayById(id, mode) {
-    var x = document.getElementById(id);
-    if (mode === 'hidden')
-        x.style.display = "none";
-    else
-        x.style.display = mode;
-}
 
 function changeDefaultFile(newId){
     let tbody=document.getElementById('fileslist');
@@ -256,14 +249,6 @@ function append_file_to_fileslist(title, id, date, isDefault) {
     tbody.appendChild(tr);
 }
 
-function append_file_to_default_fileslist(title, id) {
-    let selectDefault = document.getElementById('defaultFileSelector');
-    let option = document.createElement('option');
-    option.setAttribute('value', id);
-    option.innerHTML = title;
-    selectDefault.appendChild(option);
-}
-
 //
     // msg should be formatted :
 // {
@@ -272,28 +257,26 @@ function append_file_to_default_fileslist(title, id) {
     //    data :
     // }
 //
-    function printout_message(msg){
+function printout_message(msg){
+    let div=document.createElement('div');
+    let h3=document.createElement('h3');
+    let p=document.createElement('p');
+    div.classList.add('fr-alert','fr-alert--'+msg.type);
+    h3.classList.add('fr-alert__title');
+    h3.innerHTML=msg.title;
+    p.innerHTML=msg.data;
 
-        let div=document.createElement('div');
-        let h3=document.createElement('h3');
-        let p=document.createElement('p');
-        div.classList.add('fr-alert','fr-alert--'+msg.type);
-        h3.classList.add('fr-alert__title');
-        h3.innerHTML=msg.title;
-        p.innerHTML=msg.data;
+    div.appendChild(h3);
+    div.appendChild(p);
 
-        div.appendChild(h3);
-        div.appendChild(p);
-
-        nodeToPrepend = document.getElementById('layoutContainer');
-        parentNodeToPrepend = nodeToPrepend.parentNode;
-        parentNodeToPrepend.insertBefore(div, nodeToPrepend);
-        window.scrollTo(0, 0);
-        setTimeout(() => {
-            parentNodeToPrepend.removeChild(div);
-        }, 3000)
-
-    }
+    nodeToPrepend = document.getElementById('layoutContainer');
+    parentNodeToPrepend = nodeToPrepend.parentNode;
+    parentNodeToPrepend.insertBefore(div, nodeToPrepend);
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+        parentNodeToPrepend.removeChild(div);
+    }, 3000)
+}
 
 function close_dialog(id){
     let dialogToClose = document.getElementById(id);
