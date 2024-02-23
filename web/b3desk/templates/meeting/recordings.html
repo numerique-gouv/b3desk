@@ -10,10 +10,10 @@
 </div>
 <div class="recording-list">
     {% if meeting.is_running() %}
-        <p>
-            {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est toujours en cours{% endtrans %}.
-            {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
-        </p>
+    <p>
+    {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est toujours en cours{% endtrans %}.
+    {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
+    </p>
     {% endif %}
     <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
     <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
@@ -22,59 +22,59 @@
     <h3>
         {{ recording_name }}
         <button
-        class="fr-btn fr-btn--secondary js-modal fr-mr-2w fr-mt-1w"
-        title="Renommer l'enregistrement"
-        aria-label="Renommer l'enregistrement"
-        data-modal-content-id="rename-video-{{ r.recordID }}"
-        data-modal-title="Renommer l'enregistrement"
-        data-modal-close-text="x"
-        data-modal-close-title="Fermer la fenêtre modale">
+            class="fr-btn fr-btn--secondary js-modal fr-mr-2w fr-mt-1w"
+            title="Renommer l'enregistrement"
+            aria-label="Renommer l'enregistrement"
+            data-modal-content-id="rename-video-{{ r.recordID }}"
+            data-modal-title="Renommer l'enregistrement"
+            data-modal-close-text="x"
+            data-modal-close-title="Fermer la fenêtre modale">
             <span class="fr-icon-edit-line"></span>
         </button>
     </h3>
     <div class="fr-table fr-table--bordered fr-table--layout-fixed">
         <table>
-        <thead>
-            <th>{% trans %}Visuels{% endtrans %}</th>
-            <th>{% trans %}Actions{% endtrans %}</th>
-        </thead>
-        <tbody>
-        {% set p = r.playbacks.get("presentation") %}
-        {% if p %}
-            <tr style="background-color: white;">
-            <td>
-                <div class="fr-grid-row fr-grid-row--gutters">
-                {% for i in p.images %}
-                {% if loop.index is le(2) %}
-                <div class="fr-col">
-                <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
-                </div>
+            <thead>
+                <th>{% trans %}Visuels{% endtrans %}</th>
+                <th>{% trans %}Actions{% endtrans %}</th>
+            </thead>
+            <tbody>
+                {% set p = r.playbacks.get("presentation") %}
+                {% if p %}
+                <tr style="background-color: white;">
+                    <td>
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for i in p.images %}
+                            {% if loop.index is le(2) %}
+                            <div class="fr-col">
+                                <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td style="vertical-align: middle">
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            <a class="fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" target="_blank" rel="noopener" href="{{ p.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
+                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ p.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
+                                <span class="fr-icon-clipboard-line"></span>
+                            </button>
+                            {% if r.playbacks.get("video") %}
+                            <a class="fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" download target="_blank" rel="noopener" href="{{ r.playbacks['video'].url }}" title="Voir l'enregistrement mp4 (fichier téléchargeable) et le chat">mp4</a>
+                            {% endif %}
+                            <button
+                                class="fr-btn fr-btn--secondary js-modal fr-mr-2w fr-mt-1w"
+                                title="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %} "
+                                aria-label="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
+                                data-modal-content-id="delete-video-{{ r.recordID }}"
+                                data-modal-title="{% trans %}Suppression d'enregistrement{% endtrans %}"
+                                data-modal-close-text="x"
+                                data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></button>
+                        </div>
+                    </td>
+                </tr>
                 {% endif %}
-                {% endfor %}
-                </div>
-            </td>
-            <td style="vertical-align: middle">
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    <a class="fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" target="_blank" rel="noopener" href="{{ p.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
-                    <button type="button" class="btn-copy fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ p.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
-                        <span class="fr-icon-clipboard-line"></span>
-                    </button>
-                    {% if r.playbacks.get("video") %}
-                    <a class="fr-btn fr-btn--primary fr-mr-2w fr-mt-1w" download target="_blank" rel="noopener" href="{{ r.playbacks['video'].url }}" title="Voir l'enregistrement mp4 (fichier téléchargeable) et le chat">mp4</a>
-                    {% endif %}
-                    <button
-                    class="fr-btn fr-btn--secondary js-modal fr-mr-2w fr-mt-1w"
-                    title="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %} "
-                    aria-label="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
-                    data-modal-content-id="delete-video-{{ r.recordID }}"
-                    data-modal-title="{% trans %}Suppression d'enregistrement{% endtrans %}"
-                    data-modal-close-text="x"
-                    data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></button>
-                </div>
-            </td>
-            </tr>
-        {% endif %}
-        </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -83,11 +83,11 @@
         <div class="modal-body modal-body--center">
             <p>Voulez-vous vraiment supprimer l'enregistrement <em>{{ recording_name }}</em> de <em>{{ meeting.name }}</em> ?</p>
             <form action="{{ url_for("meetings.delete_video_meeting") }}" method="POST" class="delete">
-            <input class="fr-input" type="hidden" name="recordID" value="{{ r.recordID }}" />
-            <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
-            <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >{% trans %}Annuler{% endtrans %}</button>
-            {% include 'meeting/id.html' %}
-            {% include 'meeting/csrf.html' %}
+                <input class="fr-input" type="hidden" name="recordID" value="{{ r.recordID }}" />
+                <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
+                <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >{% trans %}Annuler{% endtrans %}</button>
+                {% include 'meeting/id.html' %}
+                {% include 'meeting/csrf.html' %}
             </form>
         </div>
     </div>
@@ -101,9 +101,9 @@
                     {{ form.name.label(class_="fr-label") }}
                     <p class="fr-hint-text">{{ form.name.description }}</p>
                     {% if form.name.errors %}
-                      {% for error in form.name.errors %}
-                      <p class="fr-error-text">{{ error }}</p>
-                      {% endfor %}
+                    {% for error in form.name.errors %}
+                    <p class="fr-error-text">{{ error }}</p>
+                    {% endfor %}
                     {% endif %}
                     {{ form.name(value=recording_name, class_="fr-input") }}
                 </div>
@@ -116,8 +116,8 @@
     </div>
 
     {% endfor %}
-    </div>
-    <div class="fr-mt-4w">
-        <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
-    </div>
+</div>
+<div class="fr-mt-4w">
+    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+</div>
 {% endblock %}

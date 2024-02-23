@@ -1,42 +1,42 @@
 {% extends 'layout.html' %}
 
 {% block jumbotron %}
-    {% include 'rie.html' %}
+{% include 'rie.html' %}
 {% endblock %}
 
 {% block main %}
-    <h1 class="fr-h2">{% trans %}Rejoindre {{ the_meeting }}{% endtrans %}</h1>
+<h1 class="fr-h2">{% trans %}Rejoindre {{ the_meeting }}{% endtrans %}</h1>
 
-    <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
-      {% include 'meeting/csrf.html' %}
-      <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
-      <input type="hidden" id="user_id" name="user_id" value="{{ creator.id }}" />
-      <input type="hidden" id="h" name="h" value="{{ h }}" />
+<form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
+    {% include 'meeting/csrf.html' %}
+    <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
+    <input type="hidden" id="user_id" name="user_id" value="{{ creator.id }}" />
+    <input type="hidden" id="h" name="h" value="{{ h }}" />
 
-      <div class="fr-input-group">
+    <div class="fr-input-group">
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col">
-            <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
-            {% if role != "authenticated" %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
-            <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
-          </div>
+            <div class="fr-col">
+                <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
+                {% if role != "authenticated" %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
+                <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
+            </div>
         </div>
 
         {% if role == "authenticated" %}
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col">
-            <label for="fullname_suffix" class="fr-label" aria-describedby="text-input-desc">Informations facultatives</label>
-            <p class="fr-hint-text" id="text-input-desc">Si ce champ est rempli, il sera affiché dans BBB.</p>
-            <input type="text" class="fr-input" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />
-          </div>
+            <div class="fr-col">
+                <label for="fullname_suffix" class="fr-label" aria-describedby="text-input-desc">Informations facultatives</label>
+                <p class="fr-hint-text" id="text-input-desc">Si ce champ est rempli, il sera affiché dans BBB.</p>
+                <input type="text" class="fr-input" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />
+            </div>
         </div>
         <p>Le nom affiché sera « <tt id="namePreview"></tt> ».</p>
         {% endif %}
 
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col">
-            <button type="submit" class="fr-btn fr-btn-primary" >{% trans %}Rejoindre{% endtrans %}</button>
-          </div>
+            <div class="fr-col">
+                <button type="submit" class="fr-btn fr-btn-primary" >{% trans %}Rejoindre{% endtrans %}</button>
+            </div>
         </div>
 
         {% if role != "authenticated" and not user %}
@@ -49,24 +49,24 @@
             </div>
         </div>
         {% endif %}
-      </div>
-    </form>
+    </div>
+</form>
 
-    {% if role == "authenticated" %}
-    <script>
-      document.addEventListener('keyup', updatePreview);
+{% if role == "authenticated" %}
+<script>
+    document.addEventListener('keyup', updatePreview);
 
-      function updatePreview(e) {
+    function updatePreview(e) {
         const fullnameField = document.getElementById('fullname')
         const suffixField = document.getElementById('fullname_suffix')
         const previewArea = document.getElementById('namePreview')
         var namePreview = fullnameField.value
         if (suffixField.value.length) {
-          namePreview += " - " + suffixField.value
+            namePreview += " - " + suffixField.value
         }
         previewArea.innerHTML = namePreview
-      }
-      updatePreview()
-    </script>
-    {% endif %}
+    }
+    updatePreview()
+</script>
+{% endif %}
 {% endblock %}

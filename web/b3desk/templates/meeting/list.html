@@ -1,57 +1,57 @@
 <div class="list-meeting-rooms">
-  <div class="fr-container">
-    <div class="list-meeting-rooms-title">
-      <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
-      {% if can_create_meetings == true %}
-      <div>
-        <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
-          Créer une salle permanente
-        </a>
-      </div>
-      {% endif %}
+    <div class="fr-container">
+        <div class="list-meeting-rooms-title">
+            <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
+            {% if can_create_meetings == true %}
+            <div>
+                <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
+                    Créer une salle permanente
+                </a>
+            </div>
+            {% endif %}
+        </div>
     </div>
-  </div>
-  {% if not can_create_meetings %}
-  <div class="fr-highlight error">
-    <p class="">
-      <i class="ri-error-warning-line"></i>
-      {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} {{ meeting_label }}s. Pour pouvoir en créer davantage, veuillez supprimer des {{ meeting_label }}s inactives.{% endtrans %}
-    </p>
-  </div>
-  {% endif %}
+    {% if not can_create_meetings %}
+    <div class="fr-highlight error">
+        <p class="">
+        <i class="ri-error-warning-line"></i>
+        {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} {{ meeting_label }}s. Pour pouvoir en créer davantage, veuillez supprimer des {{ meeting_label }}s inactives.{% endtrans %}
+        </p>
+    </div>
+    {% endif %}
 
-  {% if not user.meetings %}
-  <div class="fr-grid-row">
-    <div class="fr-col-md-4 image-no-meetings">
+    {% if not user.meetings %}
+    <div class="fr-grid-row">
+        <div class="fr-col-md-4 image-no-meetings">
+        </div>
+        <div class="fr-col-md-8">
+            <p>Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.</p>
+            <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
+                Créer une salle permanente
+            </a>
+            <p class="fr-mt-2w fr-text--sm">
+            En créant une salle de réunion permanente, vous pouvez créer une base de documents permanente, choisir d'ajouter une salle d'attente, de bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de discussions privés et publiques, ou encore accéder aux enregistrements à la fin de votre réunion.
+            </p>
+        </div>
     </div>
-    <div class="fr-col-md-8">
-      <p>Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.</p>
-      <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
-        Créer une salle permanente
-      </a>
-      <p class="fr-mt-2w fr-text--sm">
-        En créant une salle de réunion permanente, vous pouvez créer une base de documents permanente, choisir d'ajouter une salle d'attente, de bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de discussions privés et publiques, ou encore accéder aux enregistrements à la fin de votre réunion.
-      </p>
-    </div>
-  </div>
-  {% else %}
+    {% else %}
     {% for meeting in user.meetings %}
     <div class="fr-grid-row">
-      <div class="fr-col meeting-room">
-        <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
-        {% include 'meeting/row.html' %}
-      </div>
+        <div class="fr-col meeting-room">
+            <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
+            {% include 'meeting/row.html' %}
+        </div>
     </div>
     {% include 'meeting/modals/delete.html' %}
     {% include 'meeting/modals/invite.html' %}
     {% include 'meeting/modals/recordings.html' %}
     {% endfor %}
     {% if user.meetings|length and config.get("SATISFACTION_POLL_URL") %}
-      <iframe id="iframe-poll"
+    <iframe id="iframe-poll"
         frameborder=0
         src="{{ config.get("SATISFACTION_POLL_URL") }}"
         height="500" scrolling="no"
         sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
     {% endif %}
-  </div>
+</div>
 {% endif %}

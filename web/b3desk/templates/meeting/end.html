@@ -2,8 +2,8 @@
 
 {% block main %}
 <p>
-    {{ this_meeting.capitalize() }} est actuellement en cours avec les anciens paramètres.<br>
-    Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.
+{{ this_meeting.capitalize() }} est actuellement en cours avec les anciens paramètres.<br>
+Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.
 </p>
 
 <form action="{{ url_for("meetings.end_meeting") }}" method="POST">
