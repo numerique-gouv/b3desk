@@ -1,6 +1,5 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
-
 function changeDefaultFile(newId){
     let tbody=document.getElementById('fileslist');
     let actualDefaultFile = tbody.querySelector('[disabled]');
@@ -28,10 +27,10 @@ function toggleIsDownloadable(e){
         },
         body: JSON.stringify({'id': idFileSelected, 'value': newValue})
     })
-        .then(res => res.json())
-        .then(res => {
-            //printout_message({ type: 'success', title: 'Modification prise en compte' });
-        })
+    .then(res => res.json())
+    .then(res => {
+        //printout_message({ type: 'success', title: 'Modification prise en compte' });
+    })
 }
 
 function submitDefaultFile(e){
@@ -47,10 +46,10 @@ function submitDefaultFile(e){
         },
         body: JSON.stringify({'id': idFileSelected})
     })
-        .then(res => res.json())
-        .then(res => {
-            changeDefaultFile(res.id);
-        })
+    .then(res => res.json())
+    .then(res => {
+        changeDefaultFile(res.id);
+    })
 }
 
 function remove_file_from_fileslist(id){
@@ -72,15 +71,15 @@ function deleteFile(e){
         },
         body: JSON.stringify({'id': idFileSelected})
     })
-        .then(res => res.json())
-        .then(res => {
-            close_dialog('delete-file-'+res.id);
-            remove_file_from_fileslist(res.id);
-            printout_message({ type: 'success', title: 'Document supprimé', data: res.msg});
-            if (res.newDefaultId) {
-                changeDefaultFile(res.newDefaultId);
-            }
-        })
+    .then(res => res.json())
+    .then(res => {
+        close_dialog('delete-file-'+res.id);
+        remove_file_from_fileslist(res.id);
+        printout_message({ type: 'success', title: 'Document supprimé', data: res.msg});
+        if (res.newDefaultId) {
+            changeDefaultFile(res.newDefaultId);
+        }
+    })
 }
 
 function add_URL_file(name, from) {
@@ -348,7 +347,6 @@ function createNCFilePicker() {
 
     ncfilepicker = window.createFilePicker('ncfilepicker', ncPickerParams);
     document.addEventListener('get-files-path', (e) => {
-
         //    { selection: [ 'lol.jpg', 'megalol.jpg' ] }
         e.detail.selection.map( (name, index) => {
             setTimeout(() => {link_file_to_meeting(name.slice(1), 'nextcloud')}, index * 500);
