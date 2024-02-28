@@ -178,7 +178,7 @@ def test_join_mail_meeting(client_app, meeting, bbb_response):
 def test_join_meeting_as_role(client_app, authenticated_user, meeting, bbb_response):
     fullname = "Alice+Cooper"
 
-    response = client_app.get(f"/meeting/join/{meeting.id}/attendee", status=302)
+    response = client_app.get(f"/meeting/join/{meeting.id}/invite", status=302)
 
     assert (
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"

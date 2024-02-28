@@ -66,8 +66,14 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     )
 
 
+# The role needs to appear in the URL, even if it is unused, so user won't
+# mix up invitation links.
+# https://github.com/numerique-gouv/b3desk/issues/93
+@bp.route(
+    "/meeting/signin/<role:role>/<meeting_fake_id>/creator/<user:creator>/hash/<h>"
+)
 @bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
-def signin_meeting(meeting_fake_id, creator: User, h):
+def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
