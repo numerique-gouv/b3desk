@@ -171,11 +171,13 @@ def setup_endpoints(app):
         import b3desk.endpoints.public
         import b3desk.endpoints.join
         import b3desk.endpoints.meetings
+        import b3desk.endpoints.api
         import b3desk.endpoints.meeting_files
 
         app.register_blueprint(b3desk.endpoints.public.bp)
         app.register_blueprint(b3desk.endpoints.join.bp)
         app.register_blueprint(b3desk.endpoints.meetings.bp)
+        app.register_blueprint(b3desk.endpoints.api.bp)
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
 
 

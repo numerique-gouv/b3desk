@@ -16,7 +16,6 @@ from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import Meeting
-from b3desk.models.users import get_or_create_user
 from b3desk.models.users import User
 from flask import abort
 from flask import Blueprint
@@ -48,31 +47,6 @@ def meeting_mailto_params(meeting, role):
         return render_template(
             "meeting/mailto/mail_href.txt", meeting=meeting, role="attendee"
         ).replace("\n", "%0D%0A")
-
-
-@bp.route("/api/meetings")
-@auth.token_auth(provider_name="default")
-def api_meetings():
-    # TODO: probably unused
-    if not auth.current_token_identity:
-        return redirect(url_for("public.index"))
-
-    info = {
-        "given_name": auth.current_token_identity["given_name"],
-        "family_name": auth.current_token_identity["family_name"],
-        "email": auth.current_token_identity["email"],
-    }
-    user = get_or_create_user(info)
-    return {
-        "meetings": [
-            {
-                "name": m.name,
-                "moderator_url": m.get_signin_url("moderator"),
-                "attendee_url": m.get_signin_url("attendee"),
-            }
-            for m in user.meetings
-        ]
-    }
 
 
 @bp.route("/meeting/mail", methods=["POST"])
