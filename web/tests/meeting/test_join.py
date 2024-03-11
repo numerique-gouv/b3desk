@@ -84,6 +84,36 @@ def test_join_meeting_as_authenticated_attendee(
     assert response.form["fullname"].value == "Bob Dylan"
 
 
+def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
+    """The user names coming from the identity provider might be uppercase. In
+    such cases b3desk should correct the display.
+
+    https://github.com/numerique-gouv/b3desk/issues/47
+    """
+
+    user.given_name = "JOHN"
+    user.family_name = "LENNON"
+    user.email = "john@lennon.com"
+    with client_app.session_transaction() as session:
+        session["current_provider"] = "attendee"
+        session["last_authenticated"] = "true"
+        session["userinfo"] = {
+            "given_name": user.given_name,
+            "family_name": user.family_name,
+            "email": user.email,
+        }
+
+    url = f"/meeting/join/{meeting.id}/authenticated"
+    response = client_app.get(url, status=302)
+
+    assert "/meeting/wait/1/creator/1/hash/" in response.location
+    assert "John%20Lennon" in response.location
+
+    response = response.follow()
+
+    assert response.form["fullname"].value == "John Lennon"
+
+
 def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
     client_app, meeting, authenticated_attendee, bbb_response
 ):
