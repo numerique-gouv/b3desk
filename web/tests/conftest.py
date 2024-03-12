@@ -59,7 +59,7 @@ def iam_token(iam_server, iam_client, iam_user):
         audience=iam_client,
         client=iam_client,
         id="token_id",
-        issue_date=datetime.datetime.now(tz=datetime.UTC),
+        issue_date=datetime.datetime.now(tz=datetime.timezone.utc),
         lifetime=36000,
         refresh_token="refresh_token_example",
         revokation_date=None,
