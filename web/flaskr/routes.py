@@ -189,6 +189,9 @@ def get_fake_user():
 
 def get_current_user():
     user_session = UserSession(session)
+    current_app.logger.debug(
+        f"User authenticated with token: {user_session.access_token}"
+    )
     info = user_session.userinfo
     return get_or_create_user(info)
 
@@ -244,17 +247,12 @@ def get_meetings_stats():
 
 
 @bp.route("/api/meetings", methods=["GET"])
-@auth.token_auth(provider_name="default")
+@auth.token_auth("default")
 def api_meetings():
-    if not auth.current_token_identity:
-        return redirect(url_for("routes.index"))
-
-    info = {
-        "given_name": auth.current_token_identity["given_name"],
-        "family_name": auth.current_token_identity["family_name"],
-        "email": auth.current_token_identity["email"],
-    }
-    user = get_or_create_user(info)
+    client = auth.clients["default"]
+    access_token = auth._parse_access_token(request)
+    userinfo = client.userinfo_request(access_token).to_dict()
+    user = get_or_create_user(userinfo)
     return {
         "meetings": [
             {
