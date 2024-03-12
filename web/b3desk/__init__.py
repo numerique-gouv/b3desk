@@ -27,7 +27,7 @@ from jinja2 import StrictUndefined
 
 from .utils import model_converter
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 LANGUAGES = ["en", "fr"]
 
