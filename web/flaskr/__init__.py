@@ -79,7 +79,7 @@ def setup_jinja(app):
             "beta": app.config["BETA"],
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
-            "version": "1.1.3",
+            "version": "1.1.4",
             "LANGUAGES": LANGUAGES,
             **app.config["WORDINGS"],
         }
