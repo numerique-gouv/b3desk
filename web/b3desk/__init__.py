@@ -195,6 +195,9 @@ def setup_oidc(app):
             client_id=app.config["OIDC_CLIENT_ID"],
             client_secret=app.config["OIDC_CLIENT_SECRET"],
             token_endpoint_auth_method=app.config["OIDC_CLIENT_AUTH_METHOD"],
+            introspection_endpoint_auth_method=app.config[
+                "OIDC_INTROSPECTION_AUTH_METHOD"
+            ],
             post_logout_redirect_uris=[logout_url],
         ),
         auth_request_params={"scope": app.config["OIDC_SCOPES"]},
@@ -207,6 +210,9 @@ def setup_oidc(app):
             client_secret=app.config.get("OIDC_ATTENDEE_CLIENT_SECRET"),
             token_endpoint_auth_method=app.config.get(
                 "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
+            ),
+            introspection_endpoint_auth_method=app.config.get(
+                "OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD"
             ),
             post_logout_redirect_uris=[logout_url],
         ),

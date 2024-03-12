@@ -299,9 +299,6 @@ class MainSettings(BaseSettings):
     def get_oidc_scopes(cls, oidc_scopes: List[str], info: ValidationInfo) -> str:
         return oidc_scopes.split(",") if isinstance(oidc_scopes, str) else oidc_scopes
 
-    OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_post"
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
     OIDC_USERINFO_HTTP_METHOD: str = "POST"
     """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
     d’entrée *UserInfo* du serveur d’identité.
@@ -336,11 +333,12 @@ class MainSettings(BaseSettings):
     des organisateurs."""
 
     OIDC_CLIENT_AUTH_METHOD: Optional[str] = "client_secret_post"
-    """Méthode de communication avec le point d’entrée
-    ``token_introspection_uri`` du serveur d’identité des organisateurs.
+    """Méthode de communication avec le point d’entrée ``token_endpoint`` du
+    serveur d’identité des organisateurs."""
 
-    Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
-    """
+    OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
+    """Méthode de communication avec le point d’entrée d’introspection
+    ``token_introspection`` du serveur d’identité des organisateurs."""
 
     # TODO: replace by OIDCAuthentication.redirect_uri_config
     OIDC_REDIRECT_URI: Optional[str] = None
@@ -385,11 +383,18 @@ class MainSettings(BaseSettings):
     """
 
     OIDC_ATTENDEE_CLIENT_AUTH_METHOD: Optional[str] = None
-    """Méthode de communication avec le point d’entrée
-    ``token_introspection_uri`` du serveur d’identité des participants
-    authentifiés. Surcharge probablement ``OIDC_INTROSPECTION_AUTH_METHOD``.
+    """Méthode de communication avec le point d’entrée ``token_endpoint`` du
+    serveur d’identité des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_AUTH_METHOD``.
+    """
+
+    OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
+    """Méthode de communication avec le point d’entrée d’introspection
+    ``token_introspection`` du serveur d’identité  des participants
+    authentifiés.
+
+    Si non renseigné, prend la valeur de ``OIDC_INTROSPECTION_AUTH_METHOD``.
     """
 
     OIDC_ATTENDEE_USERINFO_HTTP_METHOD: Optional[str] = None
@@ -440,6 +445,14 @@ class MainSettings(BaseSettings):
         cls, attendee_client_auth_method: str, info: ValidationInfo
     ) -> str:
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
+
+    @field_validator("OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD")
+    def get_attendee_introspection_endpoint_auth_method(
+        cls, attendee_introspection_endpoint_auth_method: str, info: ValidationInfo
+    ) -> str:
+        return attendee_introspection_endpoint_auth_method or info.data.get(
+            "OIDC_INTROSPECTION_AUTH_METHOD"
+        )
 
     @field_validator("OIDC_ATTENDEE_USERINFO_HTTP_METHOD")
     def get_attendee_userinfo_http_method(
