@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 import uuid
@@ -18,6 +19,21 @@ from b3desk.models import db
 
 
 @pytest.fixture
+def iam_user(iam_server):
+    iam_user = iam_server.models.User(
+        id="user_id",
+        emails=["alice@domain.tld"],
+        given_name="Alice",
+        user_name="Alice_user_name",
+        family_name="Cooper",
+    )
+    iam_user.save()
+
+    yield iam_user
+    iam_user.delete()
+
+
+@pytest.fixture
 def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
@@ -34,6 +50,28 @@ def iam_client(iam_server):
     iam_client.save()
     yield iam_client
     iam_client.delete()
+
+
+@pytest.fixture
+def iam_token(iam_server, iam_client, iam_user):
+    iam_token = iam_server.models.Token(
+        access_token="access_token_example",
+        audience=iam_client,
+        client=iam_client,
+        id="token_id",
+        issue_date=datetime.datetime.now(tz=datetime.timezone.utc),
+        lifetime=36000,
+        refresh_token="refresh_token_example",
+        revokation_date=None,
+        scope=["openid", "profile", "email"],
+        subject=iam_user,
+        token_id="token_id",
+        type="access_token",
+    )
+    iam_token.save()
+
+    yield iam_token
+    iam_token.delete()
 
 
 @pytest.fixture
@@ -115,19 +153,23 @@ def meeting(client_app, user):
 
 
 @pytest.fixture
-def user(client_app):
+def user(client_app, iam_user):
     from b3desk.models.users import User
 
-    user = User(email="alice@domain.tld", given_name="Alice", family_name="Cooper")
+    user = User(
+        email=iam_user.emails[0],
+        given_name=iam_user.given_name,
+        family_name=iam_user.family_name,
+    )
     user.save()
 
     yield user
 
 
 @pytest.fixture
-def authenticated_user(client_app, user):
+def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
     with client_app.session_transaction() as session:
-        session["access_token"] = ""
+        session["access_token"] = iam_token.access_token
         session["access_token_expires_at"] = ""
         session["current_provider"] = "default"
         session["id_token"] = ""
@@ -141,6 +183,9 @@ def authenticated_user(client_app, user):
             "preferred_username": "alice",
         }
         session["refresh_token"] = ""
+
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
 
     yield user
 
