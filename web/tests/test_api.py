@@ -28,21 +28,11 @@ def test_api_meetings_invalid_token(client_app):
 
 
 def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user, user):
-    iam_token = iam_server.models.Token(
-        access_token="access_token_example",
-        audience=iam_client,
+    iam_token = iam_server.random_token(
         client=iam_client,
-        id="token_id",
-        issue_date=datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc),
-        lifetime=36000,
-        refresh_token="refresh_token_example",
-        revokation_date=None,
-        scope=["openid", "profile", "email"],
         subject=iam_user,
-        token_id="token_id",
-        type="access_token",
+        issue_date=datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc),
     )
-    iam_token.save()
 
     client_app.get(
         "/api/meetings",
@@ -57,20 +47,10 @@ def test_api_meetings_client_id_missing_in_token_audience(
     client_app, iam_server, iam_client, iam_user, user
 ):
     iam_token = iam_server.models.Token(
-        access_token="access_token_example",
-        audience="some-other-audience",
         client=iam_client,
-        id="token_id",
-        issue_date=datetime.datetime.now(tz=datetime.timezone.utc),
-        lifetime=36000,
-        refresh_token="refresh_token_example",
-        revokation_date=None,
-        scope=["openid", "profile", "email"],
         subject=iam_user,
-        token_id="token_id",
-        type="access_token",
+        audience="some-other-audience",
     )
-    iam_token.save()
 
     client_app.get(
         "/api/meetings",
@@ -85,20 +65,10 @@ def test_api_meetings_missing_scope_in_token(
     client_app, iam_server, iam_client, iam_user, user
 ):
     iam_token = iam_server.models.Token(
-        access_token="access_token_example",
-        audience=iam_client,
         client=iam_client,
-        id="token_id",
-        issue_date=datetime.datetime.now(tz=datetime.timezone.utc),
-        lifetime=36000,
-        refresh_token="refresh_token_example",
-        revokation_date=None,
-        scope=["openid"],
         subject=iam_user,
-        token_id="token_id",
-        type="access_token",
+        scope=["openid"],
     )
-    iam_token.save()
 
     client_app.get(
         "/api/meetings",

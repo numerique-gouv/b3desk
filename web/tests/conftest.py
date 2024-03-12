@@ -1,4 +1,3 @@
-import datetime
 import threading
 import time
 import uuid
@@ -54,22 +53,10 @@ def iam_client(iam_server):
 
 @pytest.fixture
 def iam_token(iam_server, iam_client, iam_user):
-    iam_token = iam_server.models.Token(
-        access_token="access_token_example",
-        audience=iam_client,
+    iam_token = iam_server.random_token(
         client=iam_client,
-        id="token_id",
-        issue_date=datetime.datetime.now(tz=datetime.timezone.utc),
-        lifetime=36000,
-        refresh_token="refresh_token_example",
-        revokation_date=None,
-        scope=["openid", "profile", "email"],
         subject=iam_user,
-        token_id="token_id",
-        type="access_token",
     )
-    iam_token.save()
-
     yield iam_token
     iam_token.delete()
 
