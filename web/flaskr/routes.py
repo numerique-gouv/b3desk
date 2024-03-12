@@ -76,6 +76,9 @@ user_provider_configuration = ProviderConfiguration(
         client_id=current_app.config["OIDC_CLIENT_ID"],
         client_secret=current_app.config["OIDC_CLIENT_SECRET"],
         token_endpoint_auth_method=current_app.config["OIDC_CLIENT_AUTH_METHOD"],
+        introspection_endpoint_auth_method=current_app.config.get(
+            "OIDC_INTROSPECTION_AUTH_METHOD"
+        ),
         post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
     auth_request_params={"scope": current_app.config["OIDC_SCOPES"]},
@@ -88,6 +91,9 @@ attendee_provider_configuration = ProviderConfiguration(
         client_secret=current_app.config.get("OIDC_ATTENDEE_CLIENT_SECRET"),
         token_endpoint_auth_method=current_app.config.get(
             "OIDC_ATTENDEE_CLIENT_AUTH_METHOD"
+        ),
+        introspection_endpoint_auth_method=current_app.config.get(
+            "OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD",
         ),
         post_logout_redirect_uris=[f'{current_app.config.get("SERVER_FQDN")}/logout'],
     ),
