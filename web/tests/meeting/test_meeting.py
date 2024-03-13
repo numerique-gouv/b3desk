@@ -3,9 +3,10 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+
 from b3desk.models import db
-from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
+from b3desk.models.meetings import Meeting
 
 
 @pytest.fixture()

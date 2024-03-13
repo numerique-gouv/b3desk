@@ -7,13 +7,8 @@ from pathlib import Path
 
 import filetype
 import requests
-from b3desk.forms import MeetingFilesForm
-from b3desk.models import db
-from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import MeetingFilesExternal
-from flask import abort
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import flash
 from flask import jsonify
@@ -30,10 +25,15 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
+from b3desk.forms import MeetingFilesForm
+from b3desk.models import db
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import MeetingFilesExternal
+
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
-
 
 bp = Blueprint("meeting_files", __name__)
 

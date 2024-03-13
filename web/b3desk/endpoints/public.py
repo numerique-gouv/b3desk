@@ -12,7 +12,6 @@ from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
 from .meetings import meeting_mailto_params
 
-
 bp = Blueprint("public", __name__)
 
 

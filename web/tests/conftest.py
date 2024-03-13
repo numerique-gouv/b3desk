@@ -4,14 +4,15 @@ import uuid
 import wsgiref
 from pathlib import Path
 
-import b3desk.utils
 import portpicker
 import pytest
-from b3desk import create_app
 from flask_migrate import Migrate
 from flask_webtest import TestApp
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
+
+import b3desk.utils
+from b3desk import create_app
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 from b3desk.models import db

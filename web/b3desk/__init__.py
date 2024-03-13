@@ -11,8 +11,6 @@
 import logging
 import os
 
-from b3desk.settings import MainSettings
-from b3desk.utils import is_rie
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -24,6 +22,9 @@ from flask_pyoidc import OIDCAuthentication
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
+
+from b3desk.settings import MainSettings
+from b3desk.utils import is_rie
 
 from .utils import model_converter
 
@@ -107,8 +108,8 @@ def setup_database(app):
 
 
 def setup_jinja(app):
-    from b3desk.session import has_user_session
     from b3desk.session import get_current_user
+    from b3desk.session import has_user_session
 
     if app.debug or app.testing:
         app.jinja_env.undefined = StrictUndefined
@@ -168,11 +169,11 @@ def setup_error_pages(app):
 
 def setup_endpoints(app):
     with app.app_context():
-        import b3desk.endpoints.public
-        import b3desk.endpoints.join
-        import b3desk.endpoints.meetings
         import b3desk.endpoints.api
+        import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
+        import b3desk.endpoints.meetings
+        import b3desk.endpoints.public
 
         app.register_blueprint(b3desk.endpoints.public.bp)
         app.register_blueprint(b3desk.endpoints.join.bp)

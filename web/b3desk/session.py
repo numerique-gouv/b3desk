@@ -1,11 +1,12 @@
 from functools import wraps
 
-from b3desk.models.users import get_or_create_user
 from flask import abort
 from flask import current_app
 from flask import g
 from flask import session
 from flask_pyoidc.user_session import UserSession
+
+from b3desk.models.users import get_or_create_user
 
 
 def get_current_user():

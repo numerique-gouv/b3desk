@@ -4,6 +4,7 @@ Revision ID: 65acbe9b0646
 Revises: 1094e771bd3f
 Create Date: 2023-02-28 14:35:21.691915
 """
+
 import os
 import sys
 
@@ -15,7 +16,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import alembic_helpers
-
 
 # revision identifiers, used by Alembic.
 revision = "65acbe9b0646"

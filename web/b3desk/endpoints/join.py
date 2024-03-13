@@ -1,13 +1,7 @@
 from datetime import datetime
 
-from b3desk.forms import JoinMailMeetingForm
-from b3desk.forms import JoinMeetingForm
-from b3desk.models import db
-from b3desk.models.meetings import get_mail_meeting
-from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
-from b3desk.models.meetings import Meeting
-from flask import abort
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import flash
 from flask import redirect
@@ -16,12 +10,18 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.forms import JoinMailMeetingForm
+from b3desk.forms import JoinMeetingForm
+from b3desk.models import db
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import get_mail_meeting
+from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
+
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
 from ..session import meeting_owner_needed
-
 
 bp = Blueprint("join", __name__)
 

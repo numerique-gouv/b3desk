@@ -14,10 +14,11 @@ from datetime import timezone
 from xml.etree import ElementTree
 
 import requests
-from b3desk.tasks import background_upload
 from flask import current_app
 from flask import render_template
 from flask import url_for
+
+from b3desk.tasks import background_upload
 
 
 class BBB:

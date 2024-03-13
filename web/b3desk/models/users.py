@@ -15,8 +15,9 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 import requests
-from b3desk.utils import secret_key
 from flask import current_app
+
+from b3desk.utils import secret_key
 
 from . import db
 

@@ -1,11 +1,12 @@
 from datetime import date
 
 import pytest
+from freezegun import freeze_time
+
 from b3desk.models import db
+from b3desk.models.users import User
 from b3desk.models.users import get_or_create_user
 from b3desk.models.users import make_nextcloud_credentials_request
-from b3desk.models.users import User
-from freezegun import freeze_time
 
 
 def test_get_or_create_user(client_app):

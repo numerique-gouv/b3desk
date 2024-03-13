@@ -1,9 +1,9 @@
-from b3desk.models.users import get_or_create_user
 from flask import Blueprint
 from flask import request
 
-from .. import auth
+from b3desk.models.users import get_or_create_user
 
+from .. import auth
 
 bp = Blueprint("api", __name__)
 

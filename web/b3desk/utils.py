@@ -5,7 +5,6 @@ import string
 from email.message import EmailMessage
 from email.mime.text import MIMEText
 
-from b3desk.models import db
 from flask import abort
 from flask import current_app
 from flask import render_template
@@ -14,6 +13,8 @@ from flask import url_for
 from netaddr import IPAddress
 from netaddr import IPNetwork
 from werkzeug.routing import BaseConverter
+
+from b3desk.models import db
 
 
 def secret_key():

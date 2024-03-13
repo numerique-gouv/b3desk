@@ -1,7 +1,7 @@
 # Code based on https://github.com/talkpython/data-driven-web-apps-with-flask
 from alembic import op
-from sqlalchemy import engine_from_config
 from sqlalchemy import MetaData
+from sqlalchemy import engine_from_config
 
 
 def load_schema():

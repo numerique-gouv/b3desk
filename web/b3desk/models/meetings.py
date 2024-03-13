@@ -12,11 +12,12 @@ import hashlib
 from datetime import datetime
 from datetime import timedelta
 
-from b3desk.utils import get_random_alphanumeric_string
-from b3desk.utils import secret_key
 from flask import current_app
 from flask import url_for
 from sqlalchemy_utils import StringEncryptedType
+
+from b3desk.utils import get_random_alphanumeric_string
+from b3desk.utils import secret_key
 
 from . import db
 from .users import User

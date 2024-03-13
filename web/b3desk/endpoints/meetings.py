@@ -8,17 +8,8 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-from b3desk.forms import EndMeetingForm
-from b3desk.forms import MeetingForm
-from b3desk.forms import MeetingWithRecordForm
-from b3desk.forms import RecordingForm
-from b3desk.forms import ShowMeetingForm
-from b3desk.models import db
-from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
-from b3desk.models.meetings import Meeting
-from b3desk.models.users import User
-from flask import abort
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import flash
 from flask import redirect
@@ -27,13 +18,22 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.forms import EndMeetingForm
+from b3desk.forms import MeetingForm
+from b3desk.forms import MeetingWithRecordForm
+from b3desk.forms import RecordingForm
+from b3desk.forms import ShowMeetingForm
+from b3desk.models import db
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.users import User
+
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
-
 
 bp = Blueprint("meetings", __name__)
 

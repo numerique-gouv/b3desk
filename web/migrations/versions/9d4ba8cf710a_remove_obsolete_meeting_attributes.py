@@ -4,9 +4,9 @@ Revision ID: 9d4ba8cf710a
 Revises: 65acbe9b0646
 Create Date: 2022-08-12 15:43:01.721995
 """
+
 import sqlalchemy as sa
 from alembic import op
-
 
 # revision identifiers, used by Alembic.
 revision = "9d4ba8cf710a"

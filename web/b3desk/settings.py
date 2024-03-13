@@ -4,13 +4,14 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from b3desk.constants import DEFAULT_EMAIL_WHITELIST
 from flask_babel import lazy_gettext as _
+from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
-from pydantic import ValidationInfo
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
+
+from b3desk.constants import DEFAULT_EMAIL_WHITELIST
 
 AVAILABLE_WORDINGS = {
     "MEETING": {"cours": "cours", "reunion": "réunion", "seminaire": "séminaire"},
