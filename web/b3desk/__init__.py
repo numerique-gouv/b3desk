@@ -36,6 +36,7 @@ babel = Babel()
 cache = Cache()
 csrf = CSRFProtect()
 auth = OIDCAuthentication({"default": None, "attendee": None})
+migrate = Migrate()
 
 
 def setup_configuration(app, config=None):
@@ -104,7 +105,7 @@ def setup_database(app):
     from .models import db
 
     db.init_app(app)
-    Migrate(app, db, compare_type=True)
+    migrate.init_app(app, db, compare_type=True)
 
 
 def setup_jinja(app):
