@@ -264,9 +264,9 @@ class MainSettings(BaseSettings):
 
         return allowed_mime_types_server_side
 
-    ACCEPTED_FILES_CLIENT_SIDE: Optional[
-        str
-    ] = "image/*,.pdf,.doc,.docx,.htm,.html,.odp,.ods,.odt,.ppt,.pptx,.xls,.xlsx"
+    ACCEPTED_FILES_CLIENT_SIDE: Optional[str] = (
+        "image/*,.pdf,.doc,.docx,.htm,.html,.odp,.ods,.odt,.ppt,.pptx,.xls,.xlsx"
+    )
     """Liste de mime-types autorisés par le navigateur pour le téléversement
     des fichiers, séparés par des virgules.
 

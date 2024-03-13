@@ -117,9 +117,9 @@ def test_documentation__authenticated_user(client_app, authenticated_user):
 
 
 def test_documentation_with_redirection(client_app):
-    client_app.app.config["DOCUMENTATION_LINK"][
-        "url"
-    ] = "https://documentation_redirect.ion"
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = (
+        "https://documentation_redirect.ion"
+    )
     client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = True
     response = client_app.get("/documentation", status=302)
 
