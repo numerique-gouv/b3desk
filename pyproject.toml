@@ -75,7 +75,7 @@ markers = [
     "no_scheme: cloud auth responds without any scheme for url",
 ]
 
-[tool.ruff]
+[tool.ruff.lint]
 ignore = [
     "E501",  # line too long
     "E722",  # bare expect
