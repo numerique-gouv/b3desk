@@ -45,22 +45,18 @@
     </div>
     <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
         {% if config.get("RECORDING") %}
-        <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
-            <span class="fr-icon-play-line" aria-hidden="true"></span>
+        <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
+            Voir les enregistrements de {{ meeting_name }}
         </a>
         {% endif %}
-        <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-icon-edit-line"></span></a>
+        <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">Modifier {{ meeting_name }}</a>
         {% if config.get("FILE_SHARING") %}
-        <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="fr-icon-file-pdf-line"></span></a>
+        <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}">Fichiers associés à {{ meeting.name }}</a>
         {% endif %}
-        <a href="javascript: void()"
-            class="js-modal fr-btn fr-btn--secondary"
-            title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
-            aria-label="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}"
-            data-modal-content-id="delete-{{ meeting.id }}"
-            data-modal-title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
-            data-modal-close-text="x"
-            data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-icon-delete-line" aria-hidden="true"></span></a>
+        <button class="fr-btn fr-btn--secondary fr-fi-delete-line"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
+            Supprimer {{ meeting_name }}
+        </button>
+
     </div>
     {% endif %}
 </div>
