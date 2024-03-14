@@ -11,7 +11,7 @@ def load_schema():
         config.get_section(config.config_ini_section), prefix="sqlalchemy."
     )
     m = MetaData()
-    m.reflect(engine)
+    m.reflect(engine, schema=engine.url.database)
     db_schema = {}
     for m_table in m.tables.values():
         db_schema[m_table.name] = []
