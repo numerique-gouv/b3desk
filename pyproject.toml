@@ -22,7 +22,7 @@ flask-pyoidc = "^3.14.2"
 flask-sqlalchemy = "^3.0.3"
 flask-wtf = "^1.2.1"
 gunicorn = "21.2.0"
-netaddr = "^0.10.0"
+netaddr = "^1.2.1"
 psycopg2 = "^2.9.3"
 pydantic-settings = "^2.1.0"
 redis = "^5.0.1"
@@ -36,16 +36,15 @@ webdavclient3 = "3.14.6"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.1.0"
 coverage = "^7.2.2"
 flake8 = "^7.0.0"
 Flask-WebTest = "^0.1.3"
 freezegun = "^1.2.2"
 pre-commit = "^3.1.1"
-pytest = "^7.4.0"
+pytest = "^8.0.0"
 pytest-cov = "^4.1.0"
 pytest-dotenv = "^0.5.2"
-pytest-iam = "^0.0.7"
+pytest-iam = "^0.0.8"
 pytest-mock = "^3.11.1"
 wsgidav = "^4.3.0"
 pytest-smtpd = "^0.1.0"
@@ -60,13 +59,6 @@ myst-parser = "^2.0.0"
 sphinx = "^7.0.0"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-issues = "^3.0.0"
-
-[tool.black]
-extend-exclude = '''
-(
-  postgres/data
-)
-'''
 
 [tool.pytest.ini_options]
 testpaths = "web"
