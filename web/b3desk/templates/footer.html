@@ -27,7 +27,7 @@
                     <a title="{% trans %}Voir le code source - nouvelle fenêtre{% endtrans %}" href="https://github.com/numerique-gouv/b3desk" target="_blank" rel="noopener">{% trans %}Voir le code source{% endtrans %}</a>
                     {% if version %}
                         {% if version == "dev" %}
-                            <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
+                        <span class="fr-badge fr-badge--sm fr-badge--warning" title="{% trans %}Ceci est une version de développement et ne doit en aucun cas être déployée dans des environnements de production.{% endtrans %}">DEV</span>
                         {% else %}
                             v{{ version }}
                         {% endif %}
