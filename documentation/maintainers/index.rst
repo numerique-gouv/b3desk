@@ -10,4 +10,3 @@ Cette partie de la documentation est à destination des personnes qui déploient
    versioning
    deployment
    settings
-   meetingFiles

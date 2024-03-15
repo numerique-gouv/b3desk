@@ -11,3 +11,4 @@ Cette documentation est à destination des développeurs.
    ci
    dockerPersistence
    translation
+   meetingFiles
