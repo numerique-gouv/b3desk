@@ -7,7 +7,7 @@ Cette partie de la documentation est à destination des personnes qui déploient
    :maxdepth: 2
 
    codeReview
-   settings
    versioning
    deployment
+   settings
    meetingFiles

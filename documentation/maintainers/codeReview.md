@@ -1,9 +1,6 @@
 # Revue de code
 
-Deux branches principales sont utilisées :
-
-- `main` est la branche de développement. Elle sert à recevoir les PR de fonctionnalités et les corrections de bugs importantes.
-- `production` est la branche stable. Elle sert à recevoir les hotfixes.
+Les correctifs et évolutions nécessitant une validation de l’équipe produit font l’objet de *pull request (PR)* sur le dépôt GitHub.
 
 Le *périmètre technique* est la responsabilité de l’équipe de développement.
 Elle est donc autonome pour valider les modifications de code touchant à la qualité, aux réusinages etc.
@@ -24,18 +21,7 @@ Plus de détails sur l’intégration continue sont disponibles dans la {ref}`se
 
 Passées ces étapes, les mainteneurs font une validation manuelle des développements réalisés.
 
-Sur un serveur de préprod, il faut récupérer la *pull request* en question.
-Exécuter les commandes suivantes en remplaçant `<ID>` par le numéro de la PR.
-```bash
-# Récupération de la PR
-git fetch origin pull/<ID>/head:pr<ID>
-
-# Changement vers la branche de la PR
-git switch pr<ID>
-
-# Démarrage des services
-docker compose -f docker-compose.yml -f docker-compose.preprod.yml up
-```
+Sur un serveur de préprod, il faut récupérer la PR en suivant les instructions de la {ref}`section déploiement <maintainers/deployment:Téléchargement du code source>`
 
 ## 3. Tests fonctionnels
 
