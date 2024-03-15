@@ -1,4 +1,4 @@
-# Publication de nouvelles versions
+# Publication
 
 La branche de référence pour les releases est `production`. C'est ici qu'on retrouve les différentes versions installées sur les instances. À ces releases correspondent des tags git.
 
