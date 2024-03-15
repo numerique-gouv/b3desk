@@ -28,7 +28,7 @@ from b3desk.utils import is_rie
 
 from .utils import model_converter
 
-__version__ = "1.1.3"
+__version__ = "dev"
 
 LANGUAGES = ["en", "fr"]
 
