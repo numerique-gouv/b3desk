@@ -1,5 +1,5 @@
-Documentation développeurs
-==========================
+Développement
+=============
 
 Cette documentation est à destination des développeurs.
 
