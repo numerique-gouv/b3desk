@@ -123,6 +123,12 @@ class Meeting(db.Model):
         return None
 
     @property
+    def non_default_files(self):
+        return [
+            meeting_file for meeting_file in self.files if not meeting_file.is_default
+        ]
+
+    @property
     def meetingID(self):
         if self.id is not None:
             fid = "meeting-persistent-%i" % (self.id)

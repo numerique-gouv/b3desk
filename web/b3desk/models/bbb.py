@@ -58,42 +58,6 @@ class BBB:
         )
         return self.bbb_response(request)
 
-    def insertDocsNoDefault(self):
-        # TODO: appears to be unused
-        # meeting has started, we can now add files by using insertDocument API
-        # ADDING ALL FILES EXCEPT DEFAULT
-        SECRET_KEY = current_app.config["SECRET_KEY"]
-
-        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-        xml_end = " </module></modules>"
-        xml_mid = ""
-        for meeting_file in self.meeting.files:
-            if meeting_file.is_default:
-                continue
-            elif meeting_file.url:
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
-            else:  # file is not URL hence it was uploaded to nextcloud:
-                filehash = hashlib.sha1(
-                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
-                ).hexdigest()
-                url = url_for(
-                    "meeting_files.ncdownload",
-                    isexternal=0,
-                    mfid=meeting_file.id,
-                    mftoken=filehash,
-                    _external=True,
-                )
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
-
-        xml = xml_beg + xml_mid + xml_end
-        request = self.bbb_request(
-            "insertDocument",
-            "POST",
-            params={"meetingID": self.meeting.meetingID},
-            data=xml,
-        )
-        return self.bbb_response(request)
-
     def create(self):
         """https://docs.bigbluebutton.org/development/api/#create"""
         params = {
@@ -183,63 +147,23 @@ class BBB:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)
 
-        # ADDING DEFAULT FILE TO MEETING
-        SECRET_KEY = current_app.config["SECRET_KEY"]
-        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-        xml_end = " </module></modules>"
-        xml_mid = ""
-
-        if self.meeting.default_file:
-            meeting_file = self.meeting.default_file
-            if meeting_file.url:
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
-            else:  # file is not URL nor NC hence it was uploaded
-                filehash = hashlib.sha1(
-                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
-                ).hexdigest()
-                url = url_for(
-                    "meeting_files.ncdownload",
-                    isexternal=0,
-                    mfid=meeting_file.id,
-                    mftoken=filehash,
-                    _external=True,
-                )
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
-        xml = xml_beg + xml_mid + xml_end
+        # default file is sent right away since it is need as the background
+        # image for the meeting
+        xml = (
+            self.meeting_file_addition_xml([self.meeting.default_file])
+            if self.meeting.default_file
+            else None
+        )
         request = self.bbb_request("create", "POST", params=params, data=xml)
         data = self.bbb_response(request)
 
-        ## BEGINNING OF TASK CELERY - aka background_upload for meeting_files
-        params = {}
-        xml = ""
-        # ADDING ALL FILES EXCEPT DEFAULT
-
-        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-        xml_end = " </module></modules>"
-        xml_mid = ""
-        for meeting_file in self.meeting.files:
-            if meeting_file.is_default:
-                continue
-            elif meeting_file.url:
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
-            else:  # file is not URL nor NC hence it was uploaded
-                filehash = hashlib.sha1(
-                    f"{SECRET_KEY}-0-{meeting_file.id}-{SECRET_KEY}".encode()
-                ).hexdigest()
-                url = url_for(
-                    "meeting_files.ncdownload",
-                    isexternal=0,
-                    mfid=meeting_file.id,
-                    mftoken=filehash,
-                    _external=True,
-                )
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
-
-        xml = xml_beg + xml_mid + xml_end
-        request = self.bbb_request(
-            "insertDocument", params={"meetingID": self.meeting.meetingID}
-        )
-        background_upload.delay(request.url, xml)
+        # non default files are sent later
+        if self.meeting.non_default_files:
+            xml = self.meeting_file_addition_xml(self.meeting.non_default_files)
+            request = self.bbb_request(
+                "insertDocument", params={"meetingID": self.meeting.meetingID}
+            )
+            background_upload.delay(request.url, xml)
 
         return data
 
@@ -335,3 +259,25 @@ class BBB:
         """https://docs.bigbluebutton.org/development/api/#end"""
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
+
+    def meeting_file_addition_xml(self, meeting_files):
+        xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
+        xml_end = " </module></modules>"
+        xml_mid = ""
+        for meeting_file in meeting_files:
+            if meeting_file.url:
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
+            else:  # file is not URL nor NC hence it was uploaded
+                filehash = hashlib.sha1(
+                    f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
+                ).hexdigest()
+                url = url_for(
+                    "meeting_files.ncdownload",
+                    isexternal=0,
+                    mfid=meeting_file.id,
+                    mftoken=filehash,
+                    _external=True,
+                )
+                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
+
+        return xml_beg + xml_mid + xml_end
