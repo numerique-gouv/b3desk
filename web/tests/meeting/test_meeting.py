@@ -264,19 +264,7 @@ def test_create(app, meeting, mocker):
         "uploadExternalUrl": f"{app.config['SERVER_FQDN']}/meeting/{str(meeting.id)}/externalUpload",
     }
 
-    assert mocked_background_upload.called
-    assert (
-        mocked_background_upload.call_args.args[0]
-        == f'{app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
-    )
-    assert (
-        mocked_background_upload.call_args.args[1]
-        == "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'>  </module></modules>"
-    )
-    assert mocked_background_upload.call_args.args[2] == {
-        "meetingID": meeting.meetingID,
-        "checksum": mock.ANY,
-    }
+    assert not mocked_background_upload.called
 
 
 def test_create_without_logout_url_gets_default(
