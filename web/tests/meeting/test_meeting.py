@@ -1,3 +1,6 @@
+import datetime
+import hashlib
+import os
 from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -7,6 +10,7 @@ import pytest
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingFiles
 
 
 @pytest.fixture()
@@ -239,7 +243,12 @@ def test_save_meeting_in_no_recording_environment(
     assert meeting.record is False
 
 
-def test_create(client_app, meeting, mocker, bbb_response):
+def test_create_no_file(client_app, meeting, mocker, bbb_response):
+    """Tests the BBB meeting creation request.
+
+    As there is no file attached to the meeting, no background upload
+    task should be called.
+    """
     client_app.app.config["FILE_SHARING"] = True
 
     mocked_background_upload = mocker.patch(
@@ -266,6 +275,189 @@ def test_create(client_app, meeting, mocker, bbb_response):
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.bbb.create()
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params == {
+        "meetingID": meeting.meetingID,
+        "name": "My Meeting",
+        "meetingKeepEvents": "true",
+        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "attendeePW": "Password1",
+        "moderatorPW": "Password2",
+        "welcome": "Welcome!",
+        "maxParticipants": "25",
+        "logoutURL": "https://log.out",
+        "record": "true",
+        "duration": "60",
+        "moderatorOnlyMessage": "Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/74416cd20fdc0ce5f59ff198915c82515e1e375f\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/b3f8a558fb7cfc889405fd1b8c1c8d933db00334",
+        "autoStartRecording": "false",
+        "allowStartStopRecording": "true",
+        "webcamsOnlyForModerator": "false",
+        "muteOnStart": "true",
+        "lockSettingsDisableCam": "false",
+        "lockSettingsDisableMic": "false",
+        "allowModsToUnmuteUsers": "false",
+        "lockSettingsDisablePrivateChat": "false",
+        "lockSettingsDisablePublicChat": "false",
+        "lockSettingsDisableNote": "false",
+        "guestPolicy": "ASK_MODERATOR",
+        "checksum": mock.ANY,
+        "uploadExternalDescription": client_app.app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
+        ],
+        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+    }
+
+    assert not mocked_background_upload.called
+
+
+def test_create_with_only_a_default_file(
+    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+):
+    """Tests the BBB meeting creation request.
+
+    As there is a default file attached to the meeting, it should be
+    sent right away, and no background upload task should be called.
+    """
+    client_app.app.config["FILE_SHARING"] = True
+
+    file_path = os.path.join(tmp_path, "foobar.jpg")
+    with open(file_path, "wb") as fd:
+        fd.write(jpg_file_content)
+
+    mocked_background_upload = mocker.patch(
+        "b3desk.tasks.background_upload.delay", return_value=True
+    )
+
+    meeting.name = "My Meeting"
+    meeting.attendeePW = "Password1"
+    meeting.moderatorPW = "Password2"
+    meeting.welcome = "Welcome!"
+    meeting.maxParticipants = 25
+    meeting.logoutUrl = "https://log.out"
+    meeting.record = True
+    meeting.duration = 60
+    meeting.moderatorOnlyMessage = "Welcome moderators!"
+    meeting.autoStartRecording = False
+    meeting.allowStartStopRecording = True
+    meeting.webcamsOnlyForModerator = False
+    meeting.muteOnStart = True
+    meeting.lockSettingsDisableCam = False
+    meeting.lockSettingsDisableMic = False
+    meeting.allowModsToUnmuteUsers = False
+    meeting.lockSettingsDisablePrivateChat = False
+    meeting.lockSettingsDisablePublicChat = False
+    meeting.lockSettingsDisableNote = False
+    meeting.guestPolicy = True
+
+    meeting_file = MeetingFiles(
+        nc_path=file_path,
+        title="file_title",
+        created_at=datetime.date(2024, 3, 19),
+        meeting_id=meeting.id,
+        is_default=True,
+    )
+    meeting.files = [meeting_file]
+
+    meeting.bbb.create()
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params == {
+        "meetingID": meeting.meetingID,
+        "name": "My Meeting",
+        "meetingKeepEvents": "true",
+        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "attendeePW": "Password1",
+        "moderatorPW": "Password2",
+        "welcome": "Welcome!",
+        "maxParticipants": "25",
+        "logoutURL": "https://log.out",
+        "record": "true",
+        "duration": "60",
+        "moderatorOnlyMessage": "Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/74416cd20fdc0ce5f59ff198915c82515e1e375f\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/b3f8a558fb7cfc889405fd1b8c1c8d933db00334",
+        "autoStartRecording": "false",
+        "allowStartStopRecording": "true",
+        "webcamsOnlyForModerator": "false",
+        "muteOnStart": "true",
+        "lockSettingsDisableCam": "false",
+        "lockSettingsDisableMic": "false",
+        "allowModsToUnmuteUsers": "false",
+        "lockSettingsDisablePrivateChat": "false",
+        "lockSettingsDisablePublicChat": "false",
+        "lockSettingsDisableNote": "false",
+        "guestPolicy": "ASK_MODERATOR",
+        "checksum": mock.ANY,
+        "uploadExternalDescription": client_app.app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
+        ],
+        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+    }
+
+    assert not mocked_background_upload.called
+
+
+def test_create_with_files(
+    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+):
+    """Tests the BBB meeting creation request.
+
+    As there is a non default file attached to the meeting, the
+    background upload task should be called.
+    """
+    client_app.app.config["FILE_SHARING"] = True
+
+    file_path = os.path.join(tmp_path, "foobar.jpg")
+    with open(file_path, "wb") as fd:
+        fd.write(jpg_file_content)
+
+    mocked_background_upload = mocker.patch(
+        "b3desk.tasks.background_upload.delay", return_value=True
+    )
+
+    meeting.name = "My Meeting"
+    meeting.attendeePW = "Password1"
+    meeting.moderatorPW = "Password2"
+    meeting.welcome = "Welcome!"
+    meeting.maxParticipants = 25
+    meeting.logoutUrl = "https://log.out"
+    meeting.record = True
+    meeting.duration = 60
+    meeting.moderatorOnlyMessage = "Welcome moderators!"
+    meeting.autoStartRecording = False
+    meeting.allowStartStopRecording = True
+    meeting.webcamsOnlyForModerator = False
+    meeting.muteOnStart = True
+    meeting.lockSettingsDisableCam = False
+    meeting.lockSettingsDisableMic = False
+    meeting.allowModsToUnmuteUsers = False
+    meeting.lockSettingsDisablePrivateChat = False
+    meeting.lockSettingsDisablePublicChat = False
+    meeting.lockSettingsDisableNote = False
+    meeting.guestPolicy = True
+
+    meeting_file = MeetingFiles(
+        nc_path=file_path,
+        title="file_title",
+        created_at=datetime.date(2024, 3, 19),
+        meeting_id=meeting.id,
+        is_default=False,
+    )
+    meeting.files = [meeting_file]
 
     meeting.bbb.create()
 
@@ -312,9 +504,20 @@ def test_create(client_app, meeting, mocker, bbb_response):
     assert mocked_background_upload.call_args.args[0].startswith(
         f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
     )
+
+    secret_key = client_app.app.config["SECRET_KEY"]
+    filehash = hashlib.sha1(
+        f"{secret_key}-0-{meeting_file.id}-{secret_key}".encode()
+    ).hexdigest()
+
     assert (
         mocked_background_upload.call_args.args[1]
-        == "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'>  </module></modules>"
+        == "<?xml version='1.0' encoding='UTF-8'?> "
+        + "<modules>  "
+        + "<module name='presentation'> "
+        + f"<document downloadable='false' url='http://localhost:5000/ncdownload/0/1/{filehash}' filename='file_title' /> "
+        + "</module>"
+        + "</modules>"
     )
 
 
