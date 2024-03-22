@@ -1,9 +1,9 @@
 {% macro render_field(field, generate_button=False) %}
-<div class="fr-col-sm-10 fr-col-lg-6">
+<div class="fr-col-12">
   {% if field.type == "BooleanField" %}
-    <div class="fr-checkbox-group">
-      {{ field(value="on")}}
-      {{ field.label(class_="fr-label") }}
+    <div class="fr-toggle">
+      {{ field(value="on", class_="fr-toggle__input")}}
+      {{ field.label(class_="fr-toggle__label") }}
       <p class="fr-hint-text">{{ field.description }}</p>
     </div>
   {% else %}
