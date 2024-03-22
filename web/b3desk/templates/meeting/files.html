@@ -147,7 +147,7 @@
                                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                                     <div class="fr-modal__body">
                                         <div class="fr-modal__header">
-                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="Fermer"></button>
+                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="Fermer">Fermer</button>
                                         </div>
                                         <div class="fr-modal__content">
                                             <h1 id="delete-file-{{ file.id }}-title" class="fr-modal__title">
@@ -156,7 +156,7 @@
                                             <p class="padbot">Voulez-vous vraiment supprimer le fichier <em>{{ file.short_title }}</em> ?</p>
                                         </div>
                                         <div class="fr-modal__footer">
-                                            <form action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
+                                            <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
                                                 <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
                                                 <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                                     <li>
