@@ -11,6 +11,7 @@
 import hashlib
 from datetime import datetime
 from datetime import timezone
+from urllib.parse import urlparse
 from xml.etree import ElementTree
 
 import requests
@@ -19,6 +20,25 @@ from flask import render_template
 from flask import url_for
 
 from b3desk.tasks import background_upload
+
+from .. import cache
+
+
+def cache_key(func, caller, prepped, *args, **kwargs):
+    return prepped.url
+
+
+def caching_exclusion(func, caller, prepped, *args, **kwargs):
+    """Only read-only methods should be cached."""
+    url = urlparse(prepped.url)
+    endpoint_name = url.path.split("/")[-1]
+    return prepped.method != "GET" or endpoint_name not in (
+        "isMeetingRunning",
+        "getMeetingInfo",
+        "getMeetings",
+        "getRecordings",
+        "getRecordingTextTracks",
+    )
 
 
 class BBB:
@@ -45,11 +65,17 @@ class BBB:
         prepped.prepare_url(prepped.url, params={"checksum": checksum})
         return prepped
 
+    @cache.memoize(
+        unless=caching_exclusion,
+        timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"],
+    )
     def bbb_response(self, request):
         session = requests.Session()
         current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
         response = session.send(request)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+
+    bbb_response.make_cache_key = cache_key
 
     def is_meeting_running(self):
         """https://docs.bigbluebutton.org/development/api/#ismeetingrunning"""
@@ -181,6 +207,7 @@ class BBB:
         )
         return self.bbb_response(request)
 
+    @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
     def get_recordings(self):
         """https://docs.bigbluebutton.org/development/api/#getrecordings"""
         request = self.bbb_request(

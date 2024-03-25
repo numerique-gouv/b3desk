@@ -1016,3 +1016,7 @@ class MainSettings(BaseSettings):
 
     MATOMO_SITE_ID: Optional[str] = None
     """ID de l’instance B3Desk dans Matomo."""
+
+    BIGBLUEBUTTON_API_CACHE_DURATION: int = 5
+    """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
+    l'API BBB."""

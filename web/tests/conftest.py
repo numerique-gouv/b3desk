@@ -95,6 +95,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "CACHE_TYPE": "SimpleCache",
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
+        "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
         "MEETING_LOGOUT_URL": "https://example.org/logout",
         "MAIL_MEETING": True,
         "SMTP_FROM": "from@example.org",
