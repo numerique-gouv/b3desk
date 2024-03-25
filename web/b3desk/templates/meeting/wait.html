@@ -18,7 +18,15 @@
         </div>
 
         <p>
-        {% trans %}Votre hôte n’est pas encore arrivé. Vous entrerez automatiquement dans la salle de visio-conférence dès qu’il sera présent.{% endtrans %}
+        {% if role == "moderator" %}
+            {% trans %}
+                La salle de visio-conférence est en cours de création. Vous entrerez automatiquement dans la salle dès qu'elle sera opérationnelle.
+            {% endtrans %}
+        {% else %}
+            {% trans %}
+                Votre hôte n’est pas encore arrivé. Vous entrerez automatiquement dans la salle de visio-conférence dès qu’il sera présent.
+            {% endtrans %}
+        {% endif %}
         </p>
 
         <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
