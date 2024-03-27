@@ -26,6 +26,7 @@ from jinja2 import StrictUndefined
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 
+from .utils import enum_converter
 from .utils import model_converter
 
 __version__ = "0.0.0"
@@ -109,6 +110,7 @@ def setup_database(app):
 
 
 def setup_jinja(app):
+    from b3desk.models.meetings import Role
     from b3desk.session import get_current_user
     from b3desk.session import has_user_session
 
@@ -136,6 +138,7 @@ def setup_jinja(app):
             "is_rie": is_rie(),
             "version": __version__,
             "LANGUAGES": LANGUAGES,
+            "Role": Role,
             **app.config["WORDINGS"],
             **session_dict,
         }
@@ -144,10 +147,14 @@ def setup_jinja(app):
 def setup_flask(app):
     with app.app_context():
         from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import Role
         from b3desk.models.users import User
 
         for model in (Meeting, User):
             app.url_map.converters[model.__name__.lower()] = model_converter(model)
+
+        for enum in (Role,):
+            app.url_map.converters[enum.__name__.lower()] = enum_converter(enum)
 
 
 def setup_error_pages(app):

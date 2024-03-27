@@ -4,9 +4,11 @@ from urllib.parse import urlparse
 
 from flask import url_for
 
+from b3desk.models.meetings import Role
+
 
 def test_signin_meeting(client_app, meeting, user, bbb_response):
-    meeting_hash = meeting.get_hash("attendee")
+    meeting_hash = meeting.get_hash(Role.attendee)
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -31,7 +33,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
 ):
     """If the meeting owner are authenticated, they must be automatically
     promoted moderator in the meeting when clicking on an attendee link."""
-    meeting_hash = meeting.get_hash("attendee")
+    meeting_hash = meeting.get_hash(Role.attendee)
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
 
     response = client_app.get(
@@ -44,7 +46,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
 
 
 def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
-    meeting_hash = meeting.get_hash("authenticated")
+    meeting_hash = meeting.get_hash(Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -61,7 +63,7 @@ def test_auth_attendee_disabled(client_app, meeting):
     https://github.com/numerique-gouv/b3desk/issues/9
     """
     client_app.app.config["OIDC_ATTENDEE_ENABLED"] = False
-    meeting_hash = meeting.get_hash("authenticated")
+    meeting_hash = meeting.get_hash(Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -143,7 +145,7 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 
 def test_join_meeting(client_app, meeting, bbb_response):
-    meeting_hash = meeting.get_hash("attendee")
+    meeting_hash = meeting.get_hash(Role.attendee)
     response = client_app.get(
         f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
     )
@@ -199,7 +201,7 @@ def test_join_meeting_as_role__not_attendee_or_moderator(
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting):
     fullname_suffix = "Service EN"
     meeting_fake_id = meeting.fake_id
-    h = meeting.get_hash("attendee")
+    h = meeting.get_hash(Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
@@ -217,7 +219,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     meeting_fake_id = meeting.fake_id
-    h = meeting.get_hash("attendee")
+    h = meeting.get_hash(Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(

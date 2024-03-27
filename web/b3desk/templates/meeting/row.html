@@ -2,19 +2,19 @@
     {% if config.get("SHORTY") %}
     <div class="fr-col-4">
         <span class="fr-fi-user-line"></span>
-        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role="moderator") }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
+        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
         {% if mailto %}
-        <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, "moderator") }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
+        <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.moderator) }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
         {% endif %}
-        <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url("moderator") }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+        <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
     </div>
     <div class="fr-col-4">
         <span class="ri-group-line"></span>
-        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role="attendee") }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Participer à {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
+        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.attendee) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Participer à {{ meeting_name }} - nouvelle fenêtre{% endtrans %}"><span class="fr-fi-play-line"></span></a>
         {% if mailto %}
-        <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, "attendee") }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
+        <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.attendee) }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
         {% endif %}
-        <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url("moderator") }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+        <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
     </div>
     <div class="rf-col">
         <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="rf-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="rf-fi-edit-line"></span></a>
@@ -32,7 +32,7 @@
     </div>
     {% else %}
     <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6">
-        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role="moderator") }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
+        <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
         <button
             class="js-modal fr-btn fr-btn--secondary btn-invite"
             title="{% trans meeting_name=meeting.name %}Inviter à {{ meeting_name }}{% endtrans %} "

@@ -14,6 +14,7 @@ from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import Role
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 
@@ -60,7 +61,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         expiration=expiration,
         user_id="fakeuserId",
         h=h,
-        role="moderator",
+        role=Role.moderator,
     )
 
 
@@ -81,7 +82,7 @@ def signin_meeting(meeting_fake_id, creator, h):
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
 
-    if role == "authenticated":
+    if role == Role.authenticated:
         return redirect(
             url_for("join.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
@@ -162,7 +163,7 @@ def join_meeting():
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
     fullname_suffix = form["fullname_suffix"].data
-    if role == "authenticated":
+    if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()
     elif not role:
         return redirect(url_for("public.index"))
@@ -210,7 +211,7 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
-    return redirect(meeting.get_join_url("moderator", fullname, create=True))
+    return redirect(meeting.get_join_url(Role.moderator, fullname, create=True))
 
 
 # Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
@@ -218,7 +219,7 @@ def join_mail_meeting():
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
-    role = "authenticated"
+    role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
     return redirect(
         url_for(
@@ -231,11 +232,8 @@ def join_meeting_as_authenticated(meeting_id):
     )
 
 
-@bp.route("/meeting/join/<meeting:meeting>/<role>")
+@bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def join_meeting_as_role(meeting, role, owner):
-    if role not in ("attendee", "moderator"):
-        abort(404)
-
+def join_meeting_as_role(meeting, role: Role, owner):
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))

@@ -86,6 +86,8 @@ class BBB:
 
     def create(self):
         """https://docs.bigbluebutton.org/development/api/#create"""
+        from .meetings import Role
+
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
@@ -161,9 +163,9 @@ class BBB:
                 "meeting/signin_links.html",
                 moderator_message=self.meeting.moderatorOnlyMessage,
                 moderator_link_introduction=quick_meeting_moderator_link_introduction,
-                moderator_signin_url=self.meeting.get_signin_url("moderator"),
+                moderator_signin_url=self.meeting.get_signin_url(Role.moderator),
                 attendee_link_introduction=quick_meeting_attendee_link_introduction,
-                attendee_signin_url=self.meeting.get_signin_url("attendee"),
+                attendee_signin_url=self.meeting.get_signin_url(Role.attendee),
             )
         params["guestPolicy"] = (
             "ASK_MODERATOR" if self.meeting.guestPolicy else "ALWAYS_ACCEPT"
@@ -267,17 +269,20 @@ class BBB:
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
         """https://docs.bigbluebutton.org/dev/api.html#join"""
+
+        from .meetings import Role
+
         params = {
             "fullName": fullname,
             "meetingID": self.meeting.meetingID,
             "redirect": "true",
         }
-        if meeting_role == "attendee":
+        if meeting_role == Role.attendee:
             params["role"] = "viewer"
             params["guest"] = "true"
-        elif meeting_role == "authenticated":
+        elif meeting_role == Role.authenticated:
             params["role"] = "viewer"
-        elif meeting_role == "moderator":
+        elif meeting_role == Role.moderator:
             params["role"] = "moderator"
 
         return self.bbb_request("join", params=params)

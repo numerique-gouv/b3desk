@@ -12,6 +12,7 @@ from flask import request
 from flask import url_for
 from netaddr import IPAddress
 from netaddr import IPNetwork
+from slugify import slugify
 from werkzeug.routing import BaseConverter
 
 from b3desk.models import db
@@ -56,6 +57,8 @@ def get_random_alphanumeric_string(length):
 
 
 def send_quick_meeting_mail(meeting, to_email):
+    from b3desk.models.meetings import Role
+
     smtp_from = current_app.config["SMTP_FROM"]
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]
@@ -67,7 +70,7 @@ def send_quick_meeting_mail(meeting, to_email):
     msg = EmailMessage()
     content = render_template(
         "meeting/mailto/mail_quick_meeting_body.txt",
-        role="moderator",
+        role=Role.moderator,
         moderator_mail_signin_url=meeting.get_mail_signin_url(),
         welcome_url=url_for("public.welcome", _external=True),
         meeting=meeting,
@@ -105,3 +108,21 @@ def model_converter(model):
             return instance
 
     return ModelConverter
+
+
+def enum_converter(enum):
+    class EnumConverter(BaseConverter):
+        def __init__(self, *args, required=True, **kwargs):
+            self.required = required
+            super().__init__(self, *args, **kwargs)
+
+        def to_url(self, instance):
+            return slugify(instance)
+
+        def to_python(self, identifier):
+            for value in enum:
+                if identifier == slugify(value):
+                    return value
+            abort(404)
+
+    return EnumConverter

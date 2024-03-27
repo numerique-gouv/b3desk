@@ -11,6 +11,7 @@ from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import Role
 
 
 @pytest.fixture()
@@ -297,7 +298,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": "Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/74416cd20fdc0ce5f59ff198915c82515e1e375f\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/b3f8a558fb7cfc889405fd1b8c1c8d933db00334",
+        "moderatorOnlyMessage": f"Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.moderator)}\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.attendee)}",
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -389,7 +390,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": "Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/74416cd20fdc0ce5f59ff198915c82515e1e375f\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/b3f8a558fb7cfc889405fd1b8c1c8d933db00334",
+        "moderatorOnlyMessage": f"Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.moderator)}\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.attendee)}",
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -481,7 +482,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": "Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/74416cd20fdc0ce5f59ff198915c82515e1e375f\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/b3f8a558fb7cfc889405fd1b8c1c8d933db00334",
+        "moderatorOnlyMessage": f"Welcome moderators!\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.moderator)}\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/1/creator/1/hash/{meeting.get_hash(Role.attendee)}",
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -535,6 +536,7 @@ def test_create_without_logout_url_gets_default(
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
+    from b3desk.models.meetings import Role
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
@@ -561,7 +563,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
         "duration": "280",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
-        "moderatorOnlyMessage": f"Bienvenue aux modérateurs. Pour inviter quelqu'un à ce séminaire, envoyez-lui l'un de ces liens :\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/{meeting.fake_id}/creator/1/hash/{meeting.get_hash('moderator')}\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/{meeting.fake_id}/creator/1/hash/{meeting.get_hash('attendee')}",
+        "moderatorOnlyMessage": f"Bienvenue aux modérateurs. Pour inviter quelqu'un à ce séminaire, envoyez-lui l'un de ces liens :\n\n Lien Modérateur   :\n\nhttp://localhost:5000/meeting/signin/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}\n\n Lien Participant   :\n\nhttp://localhost:5000/meeting/signin/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}",
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
     }

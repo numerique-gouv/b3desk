@@ -17,12 +17,12 @@
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col">
                 <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
-                {% if role != "authenticated" %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
+                {% if role != Role.authenticated %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
                 <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
             </div>
         </div>
 
-        {% if role == "authenticated" %}
+        {% if role == Role.authenticated %}
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col">
                 <label for="fullname_suffix" class="fr-label" aria-describedby="text-input-desc">Informations facultatives</label>
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        {% if role != "authenticated" and not user %}
+        {% if role != Role.authenticated and not user %}
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col">
                 {% trans %}Vous êtes propriétaire de cette salle ?{% endtrans %}
@@ -52,7 +52,7 @@
     </div>
 </form>
 
-{% if role == "authenticated" %}
+{% if role == Role.authenticated %}
 <script>
     document.addEventListener('keyup', updatePreview);
 

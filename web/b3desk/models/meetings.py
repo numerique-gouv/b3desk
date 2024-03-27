@@ -11,6 +11,7 @@
 import hashlib
 from datetime import datetime
 from datetime import timedelta
+from enum import StrEnum
 
 from flask import current_app
 from flask import url_for
@@ -23,6 +24,12 @@ from . import db
 from .users import User
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
+
+
+class Role(StrEnum):
+    attendee = "attendee"
+    moderator = "moderator"
+    authenticated = "authenticated"
 
 
 class MeetingFiles(db.Model):
@@ -154,7 +161,7 @@ class Meeting(db.Model):
     def fake_id(self):
         del self._fake_id
 
-    def get_hash(self, role):
+    def get_hash(self, role: Role):
         s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
@@ -194,10 +201,12 @@ class Meeting(db.Model):
             recording_ids=[recording_id], metadata={"name": name}
         )
 
-    def get_join_url(self, meeting_role, fullname, fullname_suffix="", create=False):
+    def get_join_url(
+        self, meeting_role: Role, fullname, fullname_suffix="", create=False
+    ):
         is_meeting_available = self.is_running()
         should_create_room = (
-            not is_meeting_available and (meeting_role == "moderator") and create
+            not is_meeting_available and (meeting_role == Role.moderator) and create
         )
         if should_create_room:
             data = self.create_bbb()
@@ -219,7 +228,7 @@ class Meeting(db.Model):
             fullname_suffix=fullname_suffix,
         )
 
-    def get_signin_url(self, meeting_role):
+    def get_signin_url(self, meeting_role: Role):
         return url_for(
             "join.signin_meeting",
             meeting_fake_id=self.fake_id,
@@ -247,18 +256,18 @@ class Meeting(db.Model):
             _external=True,
         )
 
-    def get_role(self, hashed_role, user_id=None):
+    def get_role(self, hashed_role, user_id=None) -> Role | None:
         if user_id and self.user.id == user_id:
-            return "moderator"
-        elif self.get_hash("attendee") == hashed_role:
-            role = "attendee"
-        elif self.get_hash("moderator") == hashed_role:
-            role = "moderator"
-        elif self.get_hash("authenticated") == hashed_role:
+            return Role.moderator
+        elif self.get_hash(Role.attendee) == hashed_role:
+            role = Role.attendee
+        elif self.get_hash(Role.moderator) == hashed_role:
+            role = Role.moderator
+        elif self.get_hash(Role.authenticated) == hashed_role:
             role = (
-                "authenticated"
+                Role.authenticated
                 if current_app.config["OIDC_ATTENDEE_ENABLED"]
-                else "attendee"
+                else Role.attendee
             )
         else:
             role = None

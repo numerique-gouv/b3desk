@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import request
 
+from b3desk.models.meetings import Role
 from b3desk.models.users import get_or_create_user
 
 from .. import auth
@@ -20,8 +21,8 @@ def api_meetings():
         "meetings": [
             {
                 "name": meeting.name,
-                "moderator_url": meeting.get_signin_url("moderator"),
-                "attendee_url": meeting.get_signin_url("attendee"),
+                "moderator_url": meeting.get_signin_url(Role.moderator),
+                "attendee_url": meeting.get_signin_url(Role.attendee),
             }
             for meeting in user.meetings
         ]

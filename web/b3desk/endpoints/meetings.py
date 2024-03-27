@@ -25,6 +25,7 @@ from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import Role
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.users import User
 
@@ -38,14 +39,14 @@ from ..utils import send_quick_meeting_mail
 bp = Blueprint("meetings", __name__)
 
 
-def meeting_mailto_params(meeting, role):
-    if role == "moderator":
+def meeting_mailto_params(meeting, role: Role):
+    if role == Role.moderator:
         return render_template(
-            "meeting/mailto/mail_href.txt", meeting=meeting, role="moderator"
+            "meeting/mailto/mail_href.txt", meeting=meeting, role=role
         ).replace("\n", "%0D%0A")
-    elif role == "attendee":
+    elif role == Role.attendee:
         return render_template(
-            "meeting/mailto/mail_href.txt", meeting=meeting, role="attendee"
+            "meeting/mailto/mail_href.txt", meeting=meeting, role=role
         ).replace("\n", "%0D%0A")
 
 
@@ -83,7 +84,7 @@ def quick_mail_meeting():
 def quick_meeting():
     user = get_current_user()
     meeting = get_quick_meeting_from_user_and_random_string(user)
-    return redirect(meeting.get_join_url("moderator", user.fullname, create=True))
+    return redirect(meeting.get_join_url(Role.moderator, user.fullname, create=True))
 
 
 @bp.route("/meeting/show/<meeting:meeting>")
