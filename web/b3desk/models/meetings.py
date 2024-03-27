@@ -11,6 +11,7 @@
 import hashlib
 from datetime import datetime
 from datetime import timedelta
+from typing import Optional
 
 from flask import current_app
 from flask import url_for
@@ -250,7 +251,7 @@ class Meeting(db.Model):
             _external=True,
         )
 
-    def get_role(self, hashed_role, user_id=None) -> Role | None:
+    def get_role(self, hashed_role, user_id=None) -> Optional[Role]:
         if user_id and self.user.id == user_id:
             return Role.moderator
         elif self.get_hash(Role.attendee) == hashed_role:

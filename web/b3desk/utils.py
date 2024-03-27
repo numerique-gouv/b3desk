@@ -116,12 +116,12 @@ def enum_converter(enum):
             super().__init__(self, *args, **kwargs)
 
         def to_url(self, instance):
-            return slugify(instance)
+            return slugify(instance.value)
 
         def to_python(self, identifier):
-            for value in enum:
-                if identifier == slugify(value):
-                    return value
+            for item in enum:
+                if identifier == slugify(item.value):
+                    return item
             abort(404)
 
     return EnumConverter

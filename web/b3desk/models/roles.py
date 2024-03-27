@@ -1,7 +1,7 @@
-from enum import StrEnum
+from enum import Enum
 
 
-class Role(StrEnum):
+class Role(Enum):
     attendee = "attendee"
     moderator = "moderator"
     authenticated = "authenticated"
