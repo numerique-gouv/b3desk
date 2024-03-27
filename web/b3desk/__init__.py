@@ -110,7 +110,7 @@ def setup_database(app):
 
 
 def setup_jinja(app):
-    from b3desk.models.meetings import Role
+    from b3desk.models.roles import Role
     from b3desk.session import get_current_user
     from b3desk.session import has_user_session
 
@@ -147,7 +147,7 @@ def setup_jinja(app):
 def setup_flask(app):
     with app.app_context():
         from b3desk.models.meetings import Meeting
-        from b3desk.models.meetings import Role
+        from b3desk.models.roles import Role
         from b3desk.models.users import User
 
         for model in (Meeting, User):

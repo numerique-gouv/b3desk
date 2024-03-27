@@ -22,6 +22,7 @@ from flask import url_for
 from b3desk.tasks import background_upload
 
 from .. import cache
+from .roles import Role
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
@@ -86,7 +87,6 @@ class BBB:
 
     def create(self):
         """https://docs.bigbluebutton.org/development/api/#create"""
-        from .meetings import Role
 
         params = {
             "meetingID": self.meeting.meetingID,
@@ -269,8 +269,6 @@ class BBB:
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
         """https://docs.bigbluebutton.org/dev/api.html#join"""
-
-        from .meetings import Role
 
         params = {
             "fullName": fullname,

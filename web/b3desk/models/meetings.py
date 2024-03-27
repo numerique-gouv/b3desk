@@ -11,7 +11,6 @@
 import hashlib
 from datetime import datetime
 from datetime import timedelta
-from enum import StrEnum
 
 from flask import current_app
 from flask import url_for
@@ -21,15 +20,10 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
+from .roles import Role
 from .users import User
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
-
-
-class Role(StrEnum):
-    attendee = "attendee"
-    moderator = "moderator"
-    authenticated = "authenticated"
 
 
 class MeetingFiles(db.Model):

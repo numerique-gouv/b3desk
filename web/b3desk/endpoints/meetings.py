@@ -25,8 +25,8 @@ from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import Role
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.roles import Role
 from b3desk.models.users import User
 
 from .. import auth

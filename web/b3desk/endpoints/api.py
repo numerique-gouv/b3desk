@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request
 
-from b3desk.models.meetings import Role
+from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
 
 from .. import auth

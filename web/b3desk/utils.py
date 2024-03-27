@@ -16,6 +16,7 @@ from slugify import slugify
 from werkzeug.routing import BaseConverter
 
 from b3desk.models import db
+from b3desk.models.roles import Role
 
 
 def secret_key():
@@ -57,8 +58,6 @@ def get_random_alphanumeric_string(length):
 
 
 def send_quick_meeting_mail(meeting, to_email):
-    from b3desk.models.meetings import Role
-
     smtp_from = current_app.config["SMTP_FROM"]
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]

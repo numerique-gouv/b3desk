@@ -14,9 +14,9 @@ from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import Role
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
+from b3desk.models.roles import Role
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname

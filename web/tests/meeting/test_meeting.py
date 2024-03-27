@@ -11,7 +11,7 @@ from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import Role
+from b3desk.models.roles import Role
 
 
 @pytest.fixture()
@@ -536,7 +536,6 @@ def test_create_without_logout_url_gets_default(
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
-    from b3desk.models.meetings import Role
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)

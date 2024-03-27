@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 from flask import url_for
 
-from b3desk.models.meetings import Role
+from b3desk.models.roles import Role
 
 
 def test_signin_meeting(client_app, meeting, user, bbb_response):
