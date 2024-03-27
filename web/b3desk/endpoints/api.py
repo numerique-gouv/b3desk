@@ -19,10 +19,10 @@ def api_meetings():
     return {
         "meetings": [
             {
-                "name": m.name,
-                "moderator_url": m.get_signin_url("moderator"),
-                "attendee_url": m.get_signin_url("attendee"),
+                "name": meeting.name,
+                "moderator_url": meeting.get_signin_url("moderator"),
+                "attendee_url": meeting.get_signin_url("attendee"),
             }
-            for m in user.meetings
+            for meeting in user.meetings
         ]
     }
