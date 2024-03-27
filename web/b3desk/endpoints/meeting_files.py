@@ -30,6 +30,7 @@ from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
+from b3desk.models.users import User
 
 from .. import auth
 from ..session import get_current_user
@@ -41,7 +42,7 @@ bp = Blueprint("meeting_files", __name__)
 @bp.route("/meeting/files/<meeting:meeting>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def edit_meeting_files(meeting, owner):
+def edit_meeting_files(meeting: Meeting, owner: User):
     form = MeetingFilesForm()
 
     if not current_app.config["FILE_SHARING"]:
@@ -75,7 +76,7 @@ def edit_meeting_files(meeting, owner):
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def add_meeting_files(meeting, owner):
+def add_meeting_files(meeting: Meeting, owner: User):
     data = request.get_json()
     is_default = False
     if len(meeting.files) == 0:
@@ -101,7 +102,7 @@ def add_meeting_files(meeting, owner):
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def download_meeting_files(meeting, owner, file_id=None):
+def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
     tmp_name = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
@@ -153,7 +154,7 @@ def download_meeting_files(meeting, owner, file_id=None):
 # called by NextcloudfilePicker when documents should be added to a running room:
 @bp.route("/meeting/files/<meeting:meeting>/insertDocuments", methods=["POST"])
 @auth.oidc_auth("default")
-def insertDocuments(meeting):
+def insertDocuments(meeting: Meeting):
     from flask import request
 
     files_title = request.get_json()
@@ -206,7 +207,7 @@ def insertDocuments(meeting):
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def toggledownload(meeting, owner):
+def toggledownload(meeting: Meeting, owner: User):
     data = request.get_json()
     meeting_file = db.session.get(MeetingFiles, data["id"])
     if not meeting_file:
@@ -221,7 +222,7 @@ def toggledownload(meeting, owner):
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def set_meeting_default_file(meeting, owner):
+def set_meeting_default_file(meeting: Meeting, owner: User):
     data = request.get_json()
 
     actual_default_file = meeting.default_file
@@ -429,7 +430,7 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
 @bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def add_dropzone_files(meeting, owner):
+def add_dropzone_files(meeting: Meeting, owner: User):
     file = request.files["dropzoneFiles"]
     # for dropzone chunk file by file validation
     # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask

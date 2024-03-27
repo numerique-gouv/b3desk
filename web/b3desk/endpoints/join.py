@@ -17,6 +17,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
+from b3desk.models.users import User
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
@@ -66,7 +67,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
 
 @bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
-def signin_meeting(meeting_fake_id, creator, h):
+def signin_meeting(meeting_fake_id, creator: User, h):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
@@ -101,7 +102,7 @@ def signin_meeting(meeting_fake_id, creator, h):
 
 @bp.route("/meeting/auth/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
 @auth.oidc_auth("default")
-def authenticate_then_signin_meeting(meeting_fake_id, creator, h):
+def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
     return redirect(
         url_for(
             "join.signin_meeting",
@@ -124,7 +125,7 @@ def authenticate_then_signin_meeting(meeting_fake_id, creator, h):
 @bp.route(
     "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
-def waiting_meeting(meeting_fake_id, creator, h, fullname="", fullname_suffix=""):
+def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suffix=""):
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -235,5 +236,5 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def join_meeting_as_role(meeting, role: Role, owner):
+def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))

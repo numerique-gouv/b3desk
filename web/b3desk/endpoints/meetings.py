@@ -39,7 +39,7 @@ from ..utils import send_quick_meeting_mail
 bp = Blueprint("meetings", __name__)
 
 
-def meeting_mailto_params(meeting, role: Role):
+def meeting_mailto_params(meeting: Meeting, role: Role):
     if role == Role.moderator:
         return render_template(
             "meeting/mailto/mail_href.txt", meeting=meeting, role=role
@@ -90,7 +90,7 @@ def quick_meeting():
 @bp.route("/meeting/show/<meeting:meeting>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def show_meeting(meeting, owner):
+def show_meeting(meeting: Meeting, owner: User):
     # TODO: appears unused
 
     form = ShowMeetingForm(data={"meeting_id": meeting.id})
@@ -111,7 +111,7 @@ def show_meeting(meeting, owner):
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def show_meeting_recording(meeting, owner):
+def show_meeting_recording(meeting: Meeting, owner: User):
     form = RecordingForm()
     return render_template(
         "meeting/recordings.html",
@@ -124,7 +124,7 @@ def show_meeting_recording(meeting, owner):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def update_recording_name(meeting, recording_id, owner):
+def update_recording_name(meeting: Meeting, recording_id, owner: User):
     form = RecordingForm(request.form)
     if not form.validate():
         abort(403)
@@ -164,7 +164,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def edit_meeting(meeting, owner):
+def edit_meeting(meeting: Meeting, owner: User):
     form = (
         MeetingWithRecordForm(obj=meeting)
         if current_app.config["RECORDING"]
@@ -250,7 +250,7 @@ def end_meeting():
 @bp.route("/meeting/create/<meeting:meeting>")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def create_meeting(meeting, owner):
+def create_meeting(meeting: Meeting, owner: User):
     meeting.create_bbb()
     meeting.save()
     return redirect(url_for("public.welcome"))
@@ -259,7 +259,7 @@ def create_meeting(meeting, owner):
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def externalUpload(meeting, owner):
+def externalUpload(meeting: Meeting, owner: User):
     if meeting.is_running():
         return render_template("meeting/externalUpload.html", meeting=meeting)
     return redirect(url_for("public.welcome"))
