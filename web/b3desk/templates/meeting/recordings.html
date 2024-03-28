@@ -45,7 +45,7 @@
                     <td>
                         <div class="fr-grid-row fr-grid-row--gutters">
                             {% for i in playback.images %}
-                            {% if looplayback.index is le(2) %}
+                            {% if loop.index is le(2) %}
                             <div class="fr-col">
                                 <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
                             </div>
