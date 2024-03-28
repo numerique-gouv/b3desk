@@ -17,21 +17,26 @@
     {% endif %}
     <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
     <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
+    <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
     {% for recording in meeting.get_recordings() %}
     {% set recording_name = recording.name or recording.start_date.strftime("%d/%m/%Y") %}
-    <h3>
+    <h3 class="fr-h3">
         {{ recording_name }}
         <button
             class="fr-btn fr-btn--secondary js-modal fr-mr-2w fr-mt-1w"
-            title="Renommer l'enregistrement"
+            title="{% trans %}Renommer l’enregistrement{% endtrans %}"
             aria-label="Renommer l'enregistrement"
             data-modal-content-id="rename-video-{{ recording.recordID }}"
-            data-modal-title="Renommer l'enregistrement"
+            data-modal-title="{% trans %}Renommer l’enregistrement{% endtrans %}"
             data-modal-close-text="x"
             data-modal-close-title="Fermer la fenêtre modale">
             <span class="fr-icon-edit-line"></span>
         </button>
     </h3>
+        {% trans start_date=recording.start_date|dateformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
+        Enregistré le {{ start_date }} -
+        Expire le {{ expiration_date }}
+        {% endtrans %}
     <div class="fr-table fr-table--bordered fr-table--layout-fixed">
         <table>
             <thead>
