@@ -229,6 +229,7 @@ class Meeting(db.Model):
             meeting_fake_id=self.fake_id,
             creator=self.user,
             h=self.get_hash(meeting_role),
+            role=meeting_role,
             _external=True,
         )
 

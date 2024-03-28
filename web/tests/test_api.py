@@ -8,11 +8,11 @@ def test_api_meetings_nominal(client_app, user, meeting, iam_token):
     assert res.json["meetings"]
     assert res.json["meetings"][0]["name"] == "meeting"
     assert (
-        f"/meeting/signin/{meeting.id}/creator/{user.id}/hash/"
+        f"/meeting/signin/moderateur/{meeting.id}/creator/{user.id}/hash/"
         in res.json["meetings"][0]["moderator_url"]
     )
     assert (
-        f"/meeting/signin/{meeting.id}/creator/{user.id}/hash/"
+        f"/meeting/signin/invite/{meeting.id}/creator/{user.id}/hash/"
         in res.json["meetings"][0]["attendee_url"]
     )
 
