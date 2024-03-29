@@ -1,3 +1,4 @@
+import datetime
 import json
 from typing import Any
 from typing import Dict
@@ -913,6 +914,12 @@ class MainSettings(BaseSettings):
 
     RECORDING: bool = False
     """Active la fonctionnalité d’enregistrement des réunions."""
+
+    RECORDING_DURATION: Optional[datetime.timedelta] = datetime.timedelta(days=365)
+    """Durée par défaut de conservation des enregistrements.
+
+    Utilisé à des fins d’affichage seulement.
+    """
 
     BETA: bool = False
     """Active l’encart « Bêta » dans l’entête du service B3Desk."""

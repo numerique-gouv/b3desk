@@ -230,6 +230,13 @@ class BBB:
                     name = recording.find("metadata").find("name")
                     data["name"] = name.text if name is not None else None
                     data["participants"] = int(recording.find("participants").text)
+                    data["start_date"] = datetime.fromtimestamp(
+                        int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
+                    ).replace(microsecond=0)
+                    data["end_date"] = datetime.fromtimestamp(
+                        int(recording.find("endTime").text) / 1000.0, tz=timezone.utc
+                    ).replace(microsecond=0)
+
                     data["playbacks"] = {}
                     playback = recording.find("playback")
                     if not playback:
@@ -251,9 +258,6 @@ class BBB:
                                 "url": format.find("url").text,
                                 "images": images,
                             }
-                    data["start_date"] = datetime.fromtimestamp(
-                        int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
-                    ).replace(microsecond=0)
                     result.append(data)
             except Exception as exception:
                 current_app.logger.error(exception)
