@@ -884,7 +884,7 @@ msgid ""
 " conditions opérationnelles et les évolutions."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:18
+#: web/b3desk/templates/footer/cgu.html:13
 msgid ""
 "Toute utilisation des ressources de domaine de publication est "
 "subordonnée au respect des présentes conditions générales d’utilisation "
@@ -901,19 +901,19 @@ msgid ""
 "l’équipe qui pilote le produit."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:20
+#: web/b3desk/templates/footer/cgu.html:15
 msgid ""
 "Le Service VISIO-AGENTS est un logiciel libre basé sur un logiciel "
 "développé par la société Blindside Networks."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:21
+#: web/b3desk/templates/footer/cgu.html:16
 msgid ""
 "L’hébergement du Service et des données est réalisé chez l’entreprise "
 "Scaleway, validée offre Cloud Cercle 3."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:22
+#: web/b3desk/templates/footer/cgu.html:17
 msgid ""
 "La société française Arawa assure l’infogérance et la surveillance des "
 "infrastructures de la solution de visioconférence en heures ouvrées."
@@ -933,7 +933,7 @@ msgstr ""
 msgid "Accès au Service"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:27
+#: web/b3desk/templates/footer/cgu.html:22
 msgid ""
 "Le Service est accessible depuis un navigateur récent connecté à "
 "Internet, quel que soit le terminal utilisé."
@@ -1809,18 +1809,12 @@ msgstr ""
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:51
-msgid "Configuration"
+#: web/b3desk/templates/meeting/form.html:54
+msgid "Accueil des participants"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:67
-msgid ""
-"Gestion des permissions, elles peuvent être ajustées une fois dans le "
-"salon"
-msgstr ""
-
-#: web/b3desk/templates/meeting/form.html:84
-msgid "Personnalisation"
+#: web/b3desk/templates/meeting/form.html:81
+msgid "Interactions"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:99
@@ -1866,7 +1860,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/list.html:4
 #, python-format
-msgid "Mes salles de %(some_meetings)s"
+msgid "Rejoindre %(the_meeting)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/list.html:18
@@ -2966,4 +2960,3 @@ msgstr ""
 #~ "consultation de sa page d’accueil sous"
 #~ " le pilotage de l’éditeur."
 #~ msgstr ""
-

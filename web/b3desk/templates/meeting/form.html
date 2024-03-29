@@ -51,7 +51,7 @@
   <div class="fr-accordions-group" id="meeting-form-accordion">
       <div class="fr-accordion">
         <h2 class="fr-accordion__title fr-h3">
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="false" aria-controls="meeting-form-accordion-body-1">{% trans %}Configuration{% endtrans %} {{ meeting_label.capitalize() }}</button>
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="false" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
             <div class="fr-grid-row fr-grid-row--gutters">
@@ -78,7 +78,7 @@
 
       <div class="fr-accordion">
         <h2 class="fr-accordion__title fr-h3">
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Gestion des permissions, elles peuvent être ajustées une fois dans le salon{% endtrans %}</button>
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
             <div class="fr-grid-row fr-grid-row--gutters">
@@ -110,7 +110,7 @@
     {% endif %}
     <div class="fr-accordion">
       <h2 class="fr-accordion__title fr-h3">
-        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Personnalisation{% endtrans %}</button>
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Paramètres avancés{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
           <div class="fr-grid-row fr-grid-row--gutters">
