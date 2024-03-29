@@ -33,34 +33,23 @@
     {% else %}
     <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6">
         <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
-        <button
-            class="js-modal fr-btn fr-btn--secondary btn-invite"
-            title="{% trans meeting_name=meeting.name %}Inviter à {{ meeting_name }}{% endtrans %} "
-            data-modal-content-id="share-{{ meeting.id }}"
-            data-modal-title="{% trans meeting_name=meeting.name %}Inviter à {{ meeting_name }}{% endtrans %} "
-            data-modal-close-text="x"
-            data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}">
+        <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
             {% trans %}Inviter{% endtrans %}
         </button>
     </div>
     <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
         {% if config.get("RECORDING") %}
-        <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
-            <span class="fr-icon-play-line" aria-hidden="true"></span>
+        <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
+            {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
         </a>
         {% endif %}
-        <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-icon-edit-line"></span></a>
+        <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}</a>
         {% if config.get("FILE_SHARING") %}
-        <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="fr-icon-file-pdf-line"></span></a>
+        <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}">Fichiers associés à {{ meeting.name }}</a>
         {% endif %}
-        <a href="javascript: void()"
-            class="js-modal fr-btn fr-btn--secondary"
-            title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
-            aria-label="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}"
-            data-modal-content-id="delete-{{ meeting.id }}"
-            data-modal-title="{% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %} "
-            data-modal-close-text="x"
-            data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-icon-delete-line" aria-hidden="true"></span></a>
+        <button class="fr-btn fr-btn--secondary fr-fi-delete-line"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
+            Supprimer {{ meeting.name }}
+        </button>
     </div>
     {% endif %}
 </div>

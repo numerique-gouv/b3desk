@@ -147,17 +147,25 @@
                                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                                     <div class="fr-modal__body">
                                         <div class="fr-modal__header">
-                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="Fermer"></button>
+                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="Fermer">Fermer</button>
                                         </div>
                                         <div class="fr-modal__content">
                                             <h1 id="delete-file-{{ file.id }}-title" class="fr-modal__title">
                                                 Supprimer
                                             </h1>
                                             <p class="padbot">Voulez-vous vraiment supprimer le fichier <em>{{ file.short_title }}</em> ?</p>
-                                            <form action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
+                                        </div>
+                                        <div class="fr-modal__footer">
+                                            <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
                                                 <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
-                                                <button type="submit" class="fr-btn fr-btn--primary" >Supprimer</button>
-                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="Annuler">Annuler</button>
+                                                <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                                    <li>
+                                                        <button type="submit" class="fr-btn fr-btn--primary fr-btn--delete" >Supprimer</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="Annuler">Annuler</button>
+                                                    </li>
+                                                </ul>
                                                 {% include 'meeting/csrf.html' %}
                                             </form>
                                         </div>
