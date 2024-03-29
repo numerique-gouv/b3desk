@@ -62,7 +62,7 @@ class MeetingForm(FlaskForm):
     welcome = TextAreaField(
         label=_("Texte de bienvenue"),
         description=_(
-            "Ce texte apparait comme message de bienvenue sur le tchat public"
+            "Ce texte apparait comme message de bienvenue sur le tchat public."
         ),
         default=_(
             "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
@@ -74,13 +74,13 @@ class MeetingForm(FlaskForm):
     )
     maxParticipants = IntegerField(
         label=_("Nombre maximal de participants"),
-        description=_("Limitez vos salons à 350 personnes pour plus de confort"),
+        description=_("Limitez vos salons à 350 personnes pour plus de confort."),
         default=350,
     )
     duration = IntegerField(
-        label=_("Durée maximale en minutes"),
+        label=_("Durée maximale (minutes)"),
         description=_(
-            "Après laquelle %(the_meeting)s stoppe automatiquement",
+            "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
         default=280,
@@ -95,42 +95,43 @@ class MeetingForm(FlaskForm):
         default=False,
     )
     webcamsOnlyForModerator = BooleanField(
-        label=_(
-            "Seul les modérateurs peuvent voir les webcams des autres participants"
-        ),
+        label=_("Caméras visibles par les modérateurs uniquement"),
         description=_(
-            "Les participants ne verront pas la diffusion de la caméra des autres"
+            "Seuls vous et les modérateurs pouvez voir les caméras des autres participants quand cette option est activée."
         ),
         default=False,
     )
     muteOnStart = BooleanField(
-        label=_("Micros fermés au démarrage"),
-        description=_("Les micros sont clos à la connexion des utilisateurs"),
+        label=_("Participants muets à leur arrivée"),
+        description=_(
+            "Vous pouvez choisir de faire arriver les participants dans la salle avec leur micro fermé, pour un démarrage de réunion plus calme."
+        ),
         default=True,
     )
     lockSettingsDisableCam = BooleanField(
-        label=_("Verrouillage caméra"),
-        description=_("Les participants ne pourront pas activer leur caméra"),
+        label=_("Caméras des participants"),
+        description=_(
+            "Vous pouvez autoriser ou interdire l'ouverture de la caméra des participants."
+        ),
         default=False,
     )
     lockSettingsDisableMic = BooleanField(
-        label=_("Verrouillage micro"),
-        description=_("Les participants ne pourront pas activer leur micro"),
+        label=_("Micros des participants"),
+        description=_(
+            "Vous pouvez autoriser ou interdire l'ouverture du microphone des participants."
+        ),
         default=False,
     )
     lockSettingsDisablePrivateChat = BooleanField(
-        label=_("Désactivation de la discussion privée"),
-        description=_("Interdit les échanges textes directs entre participants"),
+        label=_("Discussions privées"),
         default=False,
     )
     lockSettingsDisablePublicChat = BooleanField(
-        label=_("Désactivation de la discussion publique"),
-        description=_("Pas de tchat"),
+        label=_("Discussion publique"),
         default=False,
     )
     lockSettingsDisableNote = BooleanField(
-        label=_("Désactivation de la prise de notes"),
-        description=_("Pas de prise de notes collaborative"),
+        label=_("Prise de note collaborative"),
         default=False,
     )
     moderatorOnlyMessage = TextAreaField(
@@ -150,7 +151,7 @@ class MeetingForm(FlaskForm):
     moderatorPW = StringField(
         label=_("Renouveler le lien modérateur"),
         description=_(
-            "Ce code vous permet si vous le changez de bloquer les anciens liens"
+            "Ce code vous permet si vous le changez de bloquer les anciens liens."
         ),
         default="Pa55W0rd1",
         render_kw={"readonly": True},
@@ -159,7 +160,7 @@ class MeetingForm(FlaskForm):
     attendeePW = StringField(
         label=_("Renouveler le lien participants"),
         description=_(
-            "Ce code vous permet si vous le changez de bloquer les anciens liens"
+            "Ce code vous permet si vous le changez de bloquer les anciens liens."
         ),
         default="Pa55W0rd2",
         render_kw={"readonly": True},
@@ -175,13 +176,15 @@ class MeetingWithRecordForm(MeetingForm):
     allowStartStopRecording = BooleanField(
         label=_("Enregistrement manuel"),
         description=_(
-            "Autoriser le démarrage et l'arrêt de l'enregistrement par le modérateur"
+            "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
         ),
         default=False,
     )
     autoStartRecording = BooleanField(
         label=_("Enregistrement automatique"),
-        description=_("Démarrage automatique"),
+        description=_(
+            "L'enregistrement démarre automatiquement à l'ouverture de la salle et s'arrête à sa fermeture."
+        ),
         default=False,
     )
 

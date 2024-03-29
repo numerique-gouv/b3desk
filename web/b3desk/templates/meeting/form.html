@@ -1,13 +1,13 @@
 {% macro render_field(field, generate_button=False) %}
-<div class="fr-col-12">
+<div class="fr-col-12 fr-py-0">
   {% if field.type == "BooleanField" %}
-    <div class="fr-toggle">
+    <div class="fr-toggle" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
       {{ field(value="on", class_="fr-toggle__input")}}
-      {{ field.label(class_="fr-toggle__label") }}
+      {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
       <p class="fr-hint-text">{{ field.description }}</p>
     </div>
   {% else %}
-    <div class="fr-input-group">
+    <div class="fr-input-group fr-py-2w">
       {{ field.label(class_="fr-label") }}
       <p class="fr-hint-text">{{ field.description }}</p>
       {% if field.errors %}
@@ -117,8 +117,14 @@
             <!-- Paramètres avancés -->
             {{ render_field(form.moderatorPW, generate_button=True) }}
             {{ render_field(form.attendeePW, generate_button=True) }}
-            {{ render_field(form.maxParticipants) }}
-            {{ render_field(form.duration) }}
+            <div class="fr-grid-row fr-px-1w fr-grid-row--gutters">
+              <div class="fr-col-lg-6 fr-col-12">
+                {{ render_field(form.maxParticipants) }}
+              </div>
+              <div class="fr-col-lg-6 fr-col-12">
+                {{ render_field(form.duration) }}
+              </div>
+            </div>
             {{ render_field(form.logoutUrl, pattern="[^\\x22]+") }}
           </div>
       </div>
