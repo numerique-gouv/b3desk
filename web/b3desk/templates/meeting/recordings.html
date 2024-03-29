@@ -98,7 +98,7 @@
                                         <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
                                     </li>
                                     <li>
-                                        <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >{% trans %}Annuler{% endtrans %}</button>
+                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
                                     </li>
                                 </ul>
                                 {% include 'meeting/id.html' %}
@@ -112,27 +112,6 @@
     </dialog>
 
     <!-- Renommer video -->
-    <div class="modal-template" id="rename-video-{{ recording.recordID }}">
-        <div class="modal-body">
-            <form method="POST" action="{{ url_for('meetings.update_recording_name', meeting=meeting, recording_id=recording.recordID) }}">
-                {% include 'meeting/csrf.html' %}
-                <div class="fr-input-group">
-                    {{ form.name.label(class_="fr-label") }}
-                    <p class="fr-hint-text">{{ form.name.description }}</p>
-                    {% if form.name.errors %}
-                    {% for error in form.name.errors %}
-                    <p class="fr-error-text">{{ error }}</p>
-                    {% endfor %}
-                    {% endif %}
-                    {{ form.name(value=recording_name, class_="fr-input") }}
-                </div>
-                <div class="modal-body--center">
-                    <input type="submit" class="fr-btn fr-btn--primary fr-mt-1w" id="update-recording-{{ recording.recordID }}" title="Modifier le nom de l'enregistrement" value="Renommer"></input>
-                    <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >Annuler</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <dialog id="rename-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="rename-video-{{ recording.recordID }}-title">
         <div class="fr-container fr-container--fluid fr-container-md">
             <div class="fr-grid-row fr-grid-row--center">
@@ -161,7 +140,7 @@
                                         <input type="submit" class="fr-btn fr-btn--primary fr-mt-1w" id="update-recording-{{ recording.recordID }}" title="Modifier le nom de l'enregistrement" value="Renommer"></input>
                                     </li>
                                     <li>
-                                        <button type="reset" class="fr-btn fr-btn--secondary js-modal-close" >Annuler</button>
+                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="rename-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
                                     </li>
                                 </ul>
                             </form>

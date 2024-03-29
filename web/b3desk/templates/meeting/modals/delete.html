@@ -33,9 +33,7 @@
                                 </button>
                             </li>
                             <li>
-                                <button type="reset" class="fr-btn fr-btn--secondary">
-                                    Annuler
-                                </button>
+                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-{{ meeting.id }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
                             </li>
                         </ul>
                         {% include 'meeting/id.html' %}
