@@ -46,11 +46,11 @@ class MeetingForm(FlaskForm):
     id = IntegerField()
     name = StringField(
         label=_(
-            "Titre %(of_the_meeting)s",
+            "Nom %(of_the_meeting)s",
             of_the_meeting=current_app.config["WORDING_OF_THE_MEETING"],
         ),
         description=_(
-            "Créer %(a_meeting)s dont le titre est :",
+            "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est visible des participents",
             a_meeting=current_app.config["WORDING_A_MEETING"],
         ),
         default=_(
@@ -62,7 +62,7 @@ class MeetingForm(FlaskForm):
     welcome = TextAreaField(
         label=_("Texte de bienvenue"),
         description=_(
-            "Ce texte apparait comme message de bienvenue sur le tchat public."
+            "Ce texte apparait comme message de bienvenue sur le tchat public. 150 caractères max."
         ),
         default=_(
             "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
@@ -127,7 +127,7 @@ class MeetingForm(FlaskForm):
         default=False,
     )
     lockSettingsDisablePublicChat = BooleanField(
-        label=_("Discussion publique"),
+        label=_("Discussion publique (tchat)"),
         default=False,
     )
     lockSettingsDisableNote = BooleanField(

@@ -21,12 +21,13 @@ msgstr ""
 
 #: web/b3desk/forms.py:48
 #, python-format
-msgid "Titre %(of_the_meeting)s"
-msgstr "Ukrainian translation"
+msgid "Nom %(of_the_meeting)s"
+msgstr ""
 
 #: web/b3desk/forms.py:52
-#, python-format
-msgid "Créer %(a_meeting)s dont le titre est :"
+msgid ""
+"Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est"
+" visible des participents"
 msgstr ""
 
 #: web/b3desk/forms.py:58
@@ -39,7 +40,9 @@ msgid "Texte de bienvenue"
 msgstr ""
 
 #: web/b3desk/forms.py:64
-msgid "Ce texte apparait comme message de bienvenue sur le tchat public"
+msgid ""
+"Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
+"caractères max."
 msgstr ""
 
 #: web/b3desk/forms.py:67
@@ -56,16 +59,18 @@ msgid "Nombre maximal de participants"
 msgstr ""
 
 #: web/b3desk/forms.py:77
-msgid "Limitez vos salons à 250 personnes pour plus de confort"
+msgid "Limitez vos salons à 250 personnes pour plus de confort."
 msgstr ""
 
 #: web/b3desk/forms.py:81
-msgid "Durée maximale en minutes"
+msgid "Durée maximale (minutes)"
 msgstr ""
 
 #: web/b3desk/forms.py:82
 #, python-format
-msgid "Après laquelle %(the_meeting)s stoppe automatiquement"
+msgid ""
+"A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60,"
+" 2h = 120, 3h = 180, 4h = 240."
 msgstr ""
 
 #: web/b3desk/forms.py:90
@@ -81,108 +86,106 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/forms.py:98
-msgid "Seul les modérateurs peuvent voir les webcams des autres participants"
+msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
-#: web/b3desk/forms.py:101
-msgid "Les participants ne verront pas la diffusion de la caméra des autres"
+#: web/b3desk/forms.py:99
+msgid ""
+"Seuls vous et les modérateurs pouvez voir les caméras des autres "
+"participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:107
-msgid "Micros fermés au démarrage"
+#: web/b3desk/forms.py:105
+msgid "Participants muets à leur arrivée"
 msgstr ""
 
-#: web/b3desk/forms.py:108
-msgid "Les micros sont clos à la connexion des utilisateurs"
+#: web/b3desk/forms.py:106
+msgid ""
+"Vous pouvez choisir de faire arriver les participants dans la salle avec "
+"leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
 #: web/b3desk/forms.py:112
-msgid "Verrouillage caméra"
+msgid "Caméras des participants"
 msgstr ""
 
 #: web/b3desk/forms.py:113
-msgid "Les participants ne pourront pas activer leur caméra"
+msgid ""
+"Vous pouvez autoriser ou interdire l'ouverture de la caméra des "
+"participants."
 msgstr ""
 
-#: web/b3desk/forms.py:117
-msgid "Verrouillage micro"
+#: web/b3desk/forms.py:119
+msgid "Micros des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:118
-msgid "Les participants ne pourront pas activer leur micro"
+#: web/b3desk/forms.py:120
+msgid ""
+"Vous pouvez autoriser ou interdire l'ouverture du microphone des "
+"participants."
 msgstr ""
 
-#: web/b3desk/forms.py:122
-msgid "Désactivation de la discussion privée"
+#: web/b3desk/forms.py:126
+msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:123
-msgid "Interdit les échanges textes directs entre participants"
+#: web/b3desk/forms.py:130
+msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:127
-msgid "Désactivation de la discussion publique"
-msgstr ""
-
-#: web/b3desk/forms.py:128
-msgid "Pas de tchat"
-msgstr ""
-
-#: web/b3desk/forms.py:132
-msgid "Désactivation de la prise de notes"
-msgstr ""
-
-#: web/b3desk/forms.py:133
-msgid "Pas de prise de notes collaborative"
-msgstr ""
-
-#: web/b3desk/forms.py:137
-msgid "Message à l'attention des modérateurs"
+#: web/b3desk/forms.py:134
+msgid "Prise de note collaborative"
 msgstr ""
 
 #: web/b3desk/forms.py:138
-msgid "150 caractères max"
+msgid "Message à l'attention des modérateurs"
 msgstr ""
 
 #: web/b3desk/forms.py:139
-msgid "Bienvenue aux modérateurs"
+msgid "150 caractères max"
 msgstr ""
 
 #: web/b3desk/forms.py:140
+msgid "Bienvenue aux modérateurs"
+msgstr ""
+
+#: web/b3desk/forms.py:141
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:144
+#: web/b3desk/forms.py:145
 #, python-format
 msgid "Url de redirection après %(the_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:151
+#: web/b3desk/forms.py:152
 msgid "Renouveler le lien modérateur"
 msgstr ""
 
-#: web/b3desk/forms.py:152 web/b3desk/forms.py:161
-msgid "Ce code vous permet si vous le changez de bloquer les anciens liens"
+#: web/b3desk/forms.py:153 web/b3desk/forms.py:162
+msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
 msgstr ""
 
-#: web/b3desk/forms.py:160
+#: web/b3desk/forms.py:161
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:176
+#: web/b3desk/forms.py:177
 msgid "Enregistrement manuel"
 msgstr ""
 
-#: web/b3desk/forms.py:177
-msgid "Autoriser le démarrage et l'arrêt de l'enregistrement par le modérateur"
-msgstr ""
-
-#: web/b3desk/forms.py:183
-msgid "Enregistrement automatique"
+#: web/b3desk/forms.py:178
+msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
 #: web/b3desk/forms.py:184
-msgid "Démarrage automatique"
+msgid "Enregistrement automatique"
+msgstr ""
+
+#: web/b3desk/forms.py:185
+msgid ""
+"L'enregistrement démarre automatiquement à l'ouverture de la salle et "
+"s'arrête à sa fermeture."
 msgstr ""
 
 #: web/b3desk/settings.py:68
@@ -1801,7 +1804,6 @@ msgid "Modifier"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:38
-#: web/b3desk/templates/meeting/submit.html:5
 msgid "Créer"
 msgstr ""
 
@@ -1817,8 +1819,24 @@ msgstr ""
 msgid "Interactions"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:99
+#: web/b3desk/templates/meeting/form.html:86
+msgid ""
+"Tous ces paramètres sont modifiables directement depuis la salle de "
+"réunion à tout moment."
+msgstr ""
+
+#: web/b3desk/templates/meeting/form.html:102
 msgid "Enregistrement"
+msgstr ""
+
+#: web/b3desk/templates/meeting/form.html:107
+msgid ""
+"L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc"
+" et le tchat public."
+msgstr ""
+
+#: web/b3desk/templates/meeting/form.html:119
+msgid "Paramètres avancés"
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:8
@@ -2018,6 +2036,10 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/submit.html:3
 msgid "Enregistrer"
+msgstr ""
+
+#: web/b3desk/templates/meeting/submit.html:5
+msgid "Créer la salle"
 msgstr ""
 
 #: web/b3desk/templates/meeting/wait.html:11
@@ -2817,6 +2839,81 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Votre séminaire n'a pas encore été activé par un modérateur "
+#~ msgstr ""
+
+#~ msgid "Ce texte apparait comme message de bienvenue sur le tchat public"
+#~ msgstr ""
+
+#~ msgid "Limitez vos salons à 250 personnes pour plus de confort"
+#~ msgstr ""
+
+#~ msgid "Durée maximale en minutes"
+#~ msgstr ""
+
+#~ msgid "Après laquelle %(the_meeting)s stoppe automatiquement"
+#~ msgstr ""
+
+#~ msgid "Seul les modérateurs peuvent voir les webcams des autres participants"
+#~ msgstr ""
+
+#~ msgid "Les participants ne verront pas la diffusion de la caméra des autres"
+#~ msgstr ""
+
+#~ msgid "Micros fermés au démarrage"
+#~ msgstr ""
+
+#~ msgid "Les micros sont clos à la connexion des utilisateurs"
+#~ msgstr ""
+
+#~ msgid "Verrouillage caméra"
+#~ msgstr ""
+
+#~ msgid "Les participants ne pourront pas activer leur caméra"
+#~ msgstr ""
+
+#~ msgid "Verrouillage micro"
+#~ msgstr ""
+
+#~ msgid "Les participants ne pourront pas activer leur micro"
+#~ msgstr ""
+
+#~ msgid "Désactivation de la discussion privée"
+#~ msgstr ""
+
+#~ msgid "Interdit les échanges textes directs entre participants"
+#~ msgstr ""
+
+#~ msgid "Désactivation de la discussion publique"
+#~ msgstr ""
+
+#~ msgid "Pas de tchat"
+#~ msgstr ""
+
+#~ msgid "Désactivation de la prise de notes"
+#~ msgstr ""
+
+#~ msgid "Pas de prise de notes collaborative"
+#~ msgstr ""
+
+#~ msgid "Ce code vous permet si vous le changez de bloquer les anciens liens"
+#~ msgstr ""
+
+#~ msgid "Autoriser le démarrage et l'arrêt de l'enregistrement par le modérateur"
+#~ msgstr ""
+
+#~ msgid "Démarrage automatique"
+#~ msgstr ""
+
+#~ msgid "Titre %(of_the_meeting)s"
+#~ msgstr "Ukrainian translation"
+
+#~ msgid "Créer %(a_meeting)s dont le titre est :"
+#~ msgstr ""
+
+#~ msgid "Ce texte apparait comme message de bienvenue sur le tchat public."
+#~ msgstr ""
+
+#~ msgid "Discussion publique"
 #~ msgstr ""
 
 #~ msgid ""

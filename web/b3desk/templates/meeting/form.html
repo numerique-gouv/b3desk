@@ -1,7 +1,7 @@
 {% macro render_field(field, generate_button=False) %}
 <div class="fr-col-12 fr-py-0">
   {% if field.type == "BooleanField" %}
-    <div class="fr-toggle" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
+    <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
       {{ field(value="on", class_="fr-toggle__input")}}
       {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
       <p class="fr-hint-text">{{ field.description }}</p>
@@ -82,6 +82,9 @@
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
             <div class="fr-grid-row fr-grid-row--gutters">
+              <p class="fr-px-2w">
+                {% trans %}Tous ces paramètres sont modifiables directement depuis la salle de réunion à tout moment.{% endtrans %}
+              </p>
               <!-- Interactions -->
               {{ render_field(form.lockSettingsDisablePublicChat) }}
               {{ render_field(form.lockSettingsDisablePrivateChat) }}
@@ -100,6 +103,9 @@
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
             <div class="fr-grid-row fr-grid-row--gutters">
+              <p class="fr-px-2w">
+                {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
+              </p>
               <!-- Enregistrement -->
               {{ render_field(form.allowStartStopRecording) }}
               {{ render_field(form.autoStartRecording) }}
