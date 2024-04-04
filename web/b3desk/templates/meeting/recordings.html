@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block jumbotron %}
+{% endblock %}
+
+{% block main %}
+<h1 class="fr-h2">{% trans meeting_name=meeting.name %}Enregistrements de <em>{{meeting_name }}{% endtrans %}</em></h1>
+<div class="fr-mt-4w">
+    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
+</div>
+<div class="recording-list">
+    {% if meeting.is_running() %}
+    <p>
+    {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est toujours en cours{% endtrans %}.
+    {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
+    </p>
+    {% endif %}
+    <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
+    <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
+    <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
+    {% for recording in meeting.get_recordings() %}
+    {% set recording_name = recording.name or recording.start_date.strftime("%d/%m/%Y") %}
+    <h3 class="fr-h3">
+        {{ recording_name }}
+        <button class="fr-btn fr-btn--secondary fr-icon-edit-line"  data-fr-opened="false" aria-controls="rename-video-{{ recording.recordID }}">
+            {% trans %}Renommer l’enregistrement{% endtrans %}
+        </button>
+    </h3>
+        {% trans start_date=recording.start_date|dateformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
+        Enregistré le {{ start_date }} -
+        Expire le {{ expiration_date }}
+        {% endtrans %}
+    <div class="fr-table fr-table--bordered fr-table--layout-fixed">
+        <table>
+            <thead>
+                <th>{% trans %}Visuels{% endtrans %}</th>
+                <th>{% trans %}Actions{% endtrans %}</th>
+            </thead>
+            <tbody>
+                {% set playback = recording.playbacks.get("presentation") %}
+                {% if playback %}
+                <tr style="background-color: white;">
+                    <td>
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for i in playback.images %}
+                            {% if loop.index is le(2) %}
+                            <div class="fr-col">
+                                <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td style="vertical-align: middle">
+                        <div class="fr-grid-row fr-grid-row--gutters btn-actions">
+                            <a class="fr-btn fr-btn--primary fr-mx-1w" target="_blank" rel="noopener" href="{{ playback.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
+                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-mx-1w"" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ playback.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
+                                <span class="fr-icon-clipboard-line"></span>
+                            </button>
+                            {% if recording.playbacks.get("video") %}
+                            <a class="fr-btn fr-btn--primary fr-mx-1w"" download target="_blank" rel="noopener" href="{{ recording.playbacks['video'].url }}" title="Voir l'enregistrement mp4 (fichier téléchargeable) et le chat">mp4</a>
+                            {% endif %}
+                            <button class="fr-btn fr-btn--secondary fr-fi-delete-line fr-mx-1w""  data-fr-opened="false" aria-controls="delete-video-{{ recording.recordID }}">
+                                {% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Supprimer video -->
+
+    <dialog id="delete-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="delete-video-{{ recording.recordID }}-title">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" aria-controls="delete-video-{{ recording.recordID }}" title="Fermer">
+                                Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="delete-video-{{ recording.recordID }}-title" class="fr-modal__title">
+                                <span class="" aria-hidden="true"></span>
+                                Supprimer "<em>{{ recording_name }}</em>" ?
+                            </h1>
+                            <p>Voulez-vous vraiment supprimer l'enregistrement <em>{{ recording_name }}</em> de <em>{{ meeting.name }}</em> ?</p>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <form action="{{ url_for("meetings.delete_video_meeting") }}" method="POST" class="delete">
+                                <input class="fr-input" type="hidden" name="recordID" value="{{ recording.recordID }}" />
+                                <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                    <li>
+                                        <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
+                                    </li>
+                                    <li>
+                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
+                                    </li>
+                                </ul>
+                                {% include 'meeting/id.html' %}
+                                {% include 'meeting/csrf.html' %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Renommer video -->
+    <dialog id="rename-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="rename-video-{{ recording.recordID }}-title">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" aria-controls="rename-video-{{ recording.recordID }}" title="Fermer">
+                                Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <form method="POST" action="{{ url_for('meetings.update_recording_name', meeting=meeting, recording_id=recording.recordID) }}">
+                                {% include 'meeting/csrf.html' %}
+                                <div class="fr-input-group">
+                                    {{ form.name.label(class_="fr-label") }}
+                                    <p class="fr-hint-text">{{ form.name.description }}</p>
+                                    {% if form.name.errors %}
+                                    {% for error in form.name.errors %}
+                                    <p class="fr-error-text">{{ error }}</p>
+                                    {% endfor %}
+                                    {% endif %}
+                                    {{ form.name(value=recording_name, class_="fr-input") }}
+                                </div>
+                                <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                    <li>
+                                        <input type="submit" class="fr-btn fr-btn--primary fr-mt-1w" id="update-recording-{{ recording.recordID }}" title="Modifier le nom de l'enregistrement" value="Renommer"></input>
+                                    </li>
+                                    <li>
+                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="rename-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    {% endfor %}
+</div>
+<div class="fr-mt-4w">
+    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+<footer id="footer" role="contentinfo">
+    {% if quick_meeting is defined and quick_meeting %}
+    <div class="fr-follow">
+        <div class="fr-container">
+            <a class="fr-btn fr-btn--visio fr-btn--icon-right fr-icon-live-line" target="_blank" href="{{ url_for("meetings.quick_meeting") }}" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">
+                {% trans %}Ouvrir {{ a_meeting }} temporaire{% endtrans %}
+            </a>
+            <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="fr-footer">
+        <div class="fr-container">
+            <div class="fr-footer__body">
+                <div class="fr-footer__brand fr-enlarge-link">
+                    <p class="fr-logo">
+                    République
+                    <br>Française
+                    </p>
+                </div>
+                <div class="fr-footer__content">
+                    <p class="fr-footer__content-desc">
+                    {% trans %}Service proposé par la Direction interministérielle du numérique et la Direction du numérique pour l'éducation{% endtrans %}
+                    </p>
+                    <p class="fr-footer__content-desc">
+                    {% trans %}Le code source est ouvert et les contributions sont bienvenues.{% endtrans %}
+                    <a title="{% trans %}Voir le code source - nouvelle fenêtre{% endtrans %}" href="https://github.com/numerique-gouv/b3desk" target="_blank" rel="noopener">{% trans %}Voir le code source{% endtrans %}</a>
+                    {% if version %}
+                        {% if version == "0.0.0" %}
+                        <span class="fr-badge fr-badge--sm fr-badge--warning" title="{% trans %}Ceci est une version de développement et ne doit en aucun cas être déployée dans des environnements de production.{% endtrans %}">DEV</span>
+                        {% else %}
+                            v{{ version }}
+                        {% endif %}
+                    {% endif %}
+                    </p>
+                    <ul class="fr-footer__content-list">
+                        <li class="fr-footer__content-item">
+                            <a class="fr-footer__content-link" target="_blank" href="https://legifrance.gouv.fr">legifrance.gouv.fr</a>
+                        </li>
+                        <li class="fr-footer__content-item">
+                            <a class="fr-footer__content-link" target="_blank" href="https://gouvernement.fr">gouvernement.fr</a>
+                        </li>
+                        <li class="fr-footer__content-item">
+                            <a class="fr-footer__content-link" target="_blank" href="https://service-public.fr">service-public.fr</a>
+                        </li>
+                        <li class="fr-footer__content-item">
+                            <a class="fr-footer__content-link" target="_blank" href="https://data.gouv.fr">data.gouv.fr</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fr-footer__bottom">
+                <ul class="fr-footer__bottom-list">
+                    <li class="fr-footer__bottom-item">
+                        <a class="fr-footer__bottom-link" href="{{ url_for("public.accessibilite") }}">{% trans %}Accessibilité : non conforme{% endtrans %}</a>
+                    </li>
+                    <li class="fr-footer__bottom-item">
+                        <a class="fr-footer__bottom-link" href="{{ url_for("public.mentions_legales") }}">{% trans %}Mentions légales{% endtrans %}</a>
+                    </li>
+                    <li class="fr-footer__bottom-item">
+                        <a class="fr-footer__bottom-link" href="{{ url_for("public.donnees_personnelles") }}">{% trans %}Données personnelles et cookies{% endtrans %}</a>
+                    </li>
+                    <li class="fr-footer__bottom-item">
+                        <a class="fr-footer__bottom-link" href="{{ url_for("public.cgu") }}">{% trans %}Conditions générales d’utilisation{% endtrans %}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

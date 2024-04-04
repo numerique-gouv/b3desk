@@ -1,0 +1,31 @@
+Vous êtes invité en tant que :
+
+{% if role == Role.moderator %}
+{% trans %}Modérateur{% endtrans %}
+{% else %}
+{% trans %}Participant{% endtrans %}
+{% endif %}
+---
+{% trans %}À {{ the_meeting }} suivante :{% endtrans %}
+
+{{ meeting.name }}
+---
+{% trans %}Le lien pour s'y inscrire est le suivant :{% endtrans %}
+
+{% if role == Role.moderator %}
+{{ meeting.get_signin_url(Role.moderator) }}
+{% else %}
+{{ meeting.get_signin_url(Role.attendee) }}
+{% endif %}
+---
+{% trans %}Le mot de passe de {{ this_meeting }} est :{% endtrans %}
+
+{% if role == Role.moderator %}
+{{ meeting.moderatorPW }}
+{% else %}
+{{ meeting.attendeePW }}
+{% endif %}
+---
+{% trans %}Vous devez rentrer votre nom complet et le mot de passe pour y accéder.{% endtrans %}
+
+{{ good_meeting | capitalize }}.

@@ -1,10 +1,10 @@
-"""GuestPolicy migration
+"""GuestPolicy migration.
 
 Revision ID: 7d80b9223a1e
 Revises: 54f71a7705a8
 Create Date: 2023-02-28 14:29:28.456201
-
 """
+
 import os
 import sys
 
@@ -16,7 +16,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import alembic_helpers
-
 
 # revision identifiers, used by Alembic.
 revision = "7d80b9223a1e"

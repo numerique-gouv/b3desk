@@ -1,0 +1,111 @@
+{% macro render_field(field, generate_button=False) %}
+<div class="fr-col-sm-10 fr-col-lg-6">
+  {% if field.type == "BooleanField" %}
+    <div class="fr-checkbox-group">
+      {{ field(value="on")}}
+      {{ field.label(class_="fr-label") }}
+      <p class="fr-hint-text">{{ field.description }}</p>
+    </div>
+  {% else %}
+    <div class="fr-input-group">
+      {{ field.label(class_="fr-label") }}
+      <p class="fr-hint-text">{{ field.description }}</p>
+      {% if field.errors %}
+        {% for error in field.errors %}
+        <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+      {% if generate_button %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            {{ field(class_="fr-input") }}
+          </div>
+          <div class="fr-col-2">
+            <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+          </div>
+        </div>
+      {% else %}
+        {{ field(class_="fr-input", **kwargs) }}
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% if meeting is not none %}
+  <h1 class="fr-h2">{% trans %}Modifier{% endtrans %} <em>{{meeting.name }}</em></h1>
+{% else %}
+  <h1 class="fr-h2">{% trans %}Créer{% endtrans %} {{ a_meeting }}</h1>
+{% endif %}
+
+<form id="meeting-form" action="{{ url_for("meetings.save_meeting") }}" method="POST">
+  {% if form.errors %}
+  <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
+  {% endif %}
+
+  {% include 'meeting/csrf.html' %}
+  {% include 'meeting/id.html' %}
+  <div class="fr-accordions-group" id="meeting-form-accordion">
+      <div class="fr-accordion">
+        <h2 class="fr-accordion__title fr-h3">
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="true" aria-controls="meeting-form-accordion-body-1">{% trans %}Configuration{% endtrans %} {{ meeting_label.capitalize() }}</button>
+        </h2>
+        <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              {% set name_disabled = meeting is not none %}
+              {{ render_field(form.name, pattern="[^\\x22]+", disabled=name_disabled) }}
+              {{ render_field(form.welcome) }}
+              {{ render_field(form.maxParticipants) }}
+              {{ render_field(form.duration) }}
+              {{ render_field(form.guestPolicy) }}
+            </div>
+        </div>
+      </div>
+
+      <div class="fr-accordion">
+        <h2 class="fr-accordion__title fr-h3">
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Gestion des permissions, elles peuvent être ajustées une fois dans le salon{% endtrans %}</button>
+        </h2>
+        <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              {{ render_field(form.webcamsOnlyForModerator) }}
+              {{ render_field(form.muteOnStart) }}
+              {{ render_field(form.lockSettingsDisableCam) }}
+              {{ render_field(form.lockSettingsDisableMic) }}
+              {{ render_field(form.lockSettingsDisablePrivateChat) }}
+              {{ render_field(form.lockSettingsDisablePublicChat) }}
+              {{ render_field(form.lockSettingsDisableNote) }}
+            </div>
+        </div>
+      </div>
+
+      <div class="fr-accordion">
+        <h2 class="fr-accordion__title fr-h3">
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Personnalisation{% endtrans %}</button>
+        </h2>
+        <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              {{ render_field(form.moderatorOnlyMessage) }}
+              {{ render_field(form.logoutUrl, pattern="[^\\x22]+") }}
+              {{ render_field(form.moderatorPW, generate_button=True) }}
+              {{ render_field(form.attendeePW, generate_button=True) }}
+            </div>
+        </div>
+      </div>
+
+    {% if recording %}
+      <div class="fr-accordion">
+        <h2 class="fr-accordion__title fr-h3">
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
+        </h2>
+        <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              {{ render_field(form.allowStartStopRecording) }}
+              {{ render_field(form.autoStartRecording) }}
+            </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  {% include 'meeting/submit.html' %}
+</form>

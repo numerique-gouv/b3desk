@@ -1,4 +1,4 @@
-FROM python:3.8-bullseye
+FROM python:3.11-bullseye
 
 # Install.
 RUN \
@@ -10,8 +10,6 @@ COPY requirements.app.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 COPY requirements.dev.txt /tmp/requirements.dev.txt
 RUN pip install -r /tmp/requirements.dev.txt
-
-COPY instance/config.py /opt/bbb-visio/instance/config.py
 
 WORKDIR /opt/bbb-visio
 ENTRYPOINT ["pytest"]

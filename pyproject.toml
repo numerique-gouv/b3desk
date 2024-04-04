@@ -1,67 +1,127 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
-name = "b3desk"
-version = "1.1.6"
+version = "1.2.0"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
+celery = "^5.2.7"
+filetype = "^1.2.0"
+flask = "^3.0.0"
+flask-babel = "^4.0.0"
+flask-caching = "^2.0.2"
+flask-uploads = "0.2.1"
+flask-migrate = "^4.0.5"
 flask-pyoidc = "^3.14.2"
 flask-sqlalchemy = "^3.0.3"
-flask-uploads = "0.2.1"
-flask-migrate = "3.1.0"
-gunicorn = "20.1.0"
-netaddr = "0.8.0"
-sqlalchemy = "1.4.31"
-sqlalchemy-json = "0.4.0"
-sqlalchemy-utils = "0.38.1"
-psycopg2 = "2.9.3"
-webdavclient3 = "3.14.6"
-filetype = "^1.2.0"
-flask-babel = "2.0.0"
-celery = "5.2.7"
-flask = "<2.3"
-flask-caching = "^2.0.2"
-flask-wtf = "^1.1.1"
-redis = "4.4.4"
+flask-wtf = "^1.2.1"
+gunicorn = "21.2.0"
+netaddr = "^1.2.1"
+psycopg2 = "^2.9.3"
+pydantic-settings = "^2.1.0"
+python-slugify = "^8.0.4"
+redis = "^5.0.1"
 requests = "^2.27.1"
-werkzeug = "<2.3"
+sqlalchemy = "^1.4.31"
+sqlalchemy-json = "^0.7.0"
+sqlalchemy-utils = "^0.41.1"
+webdavclient3 = "3.14.6"
 
 [tool.poetry.group.dev]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-pytest-mock = "^3.11.1"
+coverage = "^7.2.2"
+flake8 = "^7.0.0"
 Flask-WebTest = "^0.1.3"
 freezegun = "^1.2.2"
-black = "^23.1.0"
-flake8 = "^6.0.0"
 pre-commit = "^3.1.1"
-pytest-cov = "^4.1.0"
+pytest = "^8.0.0"
+pytest-cov = "^5.0.0"
 pytest-dotenv = "^0.5.2"
-pytest-flask = "^1.2.0"
-coverage = "^7.2.2"
+pytest-iam = "^0.0.9"
+pytest-mock = "^3.11.1"
+wsgidav = "^4.3.1"
+pytest-smtpd = "^0.1.0"
+pyquery = "^2.0.0"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.group.doc]
+optional = true
 
-[tool.black]
-extend-exclude = '''
-(
-  postgres/data
-)
-'''
+[tool.poetry.group.doc.dependencies]
+autodoc-pydantic = "^2.0.1"
+myst-parser = "^2.0.0"
+sphinx = "^7.0.0"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-issues = "^4.0.0"
 
 [tool.pytest.ini_options]
-env_files = ["web.env"]
 testpaths = "web"
+markers = [
+    "secure: cloud auth responds with a https url",
+    "no_scheme: cloud auth responds without any scheme for url",
+]
 
-[tool.ruff]
+[tool.ruff.lint]
 ignore = [
     "E501",  # line too long
     "E722",  # bare expect
     "E402",  # import not at the top of the file
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+skipsdist = true
+envlist =
+    style
+    py38
+    py39
+    py310
+    py311
+    coverage
+    doc
+
+[testenv]
+allowlist_externals = poetry
+commands =
+    poetry install --with dev
+    poetry run pytest {posargs}
+
+[testenv:style]
+commands =
+    pip install pre-commit
+    pre-commit run --all-files
+
+[testenv:coverage]
+commands =
+    poetry install --with dev
+    poetry run pytest --cov --cov-report term:skip-covered {posargs}
+    poetry run coverage html
+
+[testenv:doc]
+commands =
+    poetry install --with doc
+	poetry run sphinx-build documentation build/sphinx/html
+"""
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "except ImportError",
+]
+partial_branches = [
+    "pragma: no branch",
+    "if app.debug",
+    "if app.testing",
 ]

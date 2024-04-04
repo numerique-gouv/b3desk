@@ -1,4 +1,4 @@
-FROM python:3.8-bullseye
+FROM python:3.11-bullseye
 
 # Install.
 RUN \
@@ -13,8 +13,7 @@ COPY misc/wsgi.py misc/gunicorn.py misc/run_webserver.sh /opt/bbb-visio/
 COPY misc/delete_uploaded_files.cron /etc/cron.d/delete_uploaded_files
 RUN chmod u+x /opt/bbb-visio/run_webserver.sh
 COPY migrations /opt/bbb-visio/migrations
-COPY instance/config.py /opt/bbb-visio/instance/config.py
-COPY flaskr /opt/bbb-visio/flaskr
+COPY b3desk /opt/bbb-visio/b3desk
 
 WORKDIR /opt/bbb-visio/
 ENTRYPOINT ["/opt/bbb-visio/run_webserver.sh"]

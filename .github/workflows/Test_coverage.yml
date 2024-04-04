@@ -3,11 +3,11 @@ name: Check coverage
 on:
   pull_request:
     branches:
-      - master
+      - production
       - main
   push:
     branches:
-      - master
+      - production
       - main
 
 jobs:
@@ -18,41 +18,25 @@ jobs:
       - name: Setup git
         uses: actions/checkout@v3
 
+      - name: Get the git branch
+        uses: actions/checkout@v3
+        with:
+          ref: main # TODO: dynamically get the branch against which the PR will be merged?
+
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
-      - name: Switch to main branch
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-
-      - name: Install previous python dependencies
+      - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r web/requirements.app.txt
           pip install -r web/requirements.dev.txt
+          pip install diff-cover
 
-      - name: Get previous coverage
-        id: get_coverage
-        run: |
-          coverage run -m pytest --envfile web.env.example
-          coverage json
-          export PERCENT_COVERED=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered'])")
-          echo "percent_covered=$PERCENT_COVERED" >> $GITHUB_OUTPUT
+      - name: Run unit tests with coverage
+        run: pytest --cov --cov-report=xml
 
-      - name: Switch to branch to merge
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Install new python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r web/requirements.app.txt
-          pip install -r web/requirements.dev.txt
-
-      - name: Check that coverage at least equals to main coverage
-        run: pytest --envfile web.env.example --cov --cov-fail-under=${{ steps.get_coverage.outputs.percent_covered }}
+      - name: Check that the edited lines are all covered
+        run: diff-cover coverage.xml --fail-under=100

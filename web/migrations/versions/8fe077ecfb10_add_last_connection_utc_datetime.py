@@ -1,10 +1,10 @@
-"""add last_connection_utc_datetime
+"""Add last_connection_utc_datetime.
 
 Revision ID: 8fe077ecfb10
 Revises: 9aac3b5e1582
 Create Date: 2022-08-12 09:09:47.674373
-
 """
+
 import os
 import sys
 
@@ -16,7 +16,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import alembic_helpers
-
 
 # revision identifiers, used by Alembic.
 revision = "8fe077ecfb10"

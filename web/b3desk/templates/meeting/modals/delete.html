@@ -1,0 +1,47 @@
+<!-- Supprimer -->
+<dialog id="delete-{{ meeting.id }}" class="fr-modal" role="dialog" aria-labelledby="delete-{{ meeting.id }}-title">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" aria-controls="delete-{{ meeting.id }}" title="Fermer">
+                            Fermer
+                        </button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="delete-{{ meeting.id }}-title" class="fr-modal__title">
+                            <span class="" aria-hidden="true"></span>
+                            Supprimer "<em>{{ meeting.name }}</em>" ?
+                        </h1>
+                        <p>Voulez-vous vraiment supprimer {{ the_meeting }} "<em>{{ meeting.name }}</em>" ?</p>
+                        <div class="fr-notice fr-notice--info">
+                            <div class="fr-container">
+                                <div class="fr-notice__body">
+                                    <p class="fr-notice__title">La suppression est définitive</p>
+                                </div>
+                                <p>Si vous supprimez cette salle, tous les médias (documents importés et enregistrements) qui lui sont rattachés seront supprimés.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-modal__footer">
+                        <form action="{{ url_for("meetings.delete_meeting") }}" method="POST" class="delete">
+                        <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                            <li>
+                                <button type="submit" class="fr-btn fr-btn--delete">
+                                    Supprimer {{ the_meeting }}
+                                </button>
+                            </li>
+                            <li>
+                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-{{ meeting.id }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
+                            </li>
+                        </ul>
+                        {% include 'meeting/id.html' %}
+                        {% include 'meeting/csrf.html' %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>

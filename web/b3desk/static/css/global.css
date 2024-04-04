@@ -1,0 +1,414 @@
+
+h1 {
+	font-weight: 300;
+}
+header.rf-header {
+  position: relative;
+  z-index: 1;
+}
+.connected { text-align: center;}
+.rf-btn { z-index: 0; }
+.meeting-room {
+  padding: 1rem;
+  border-bottom: 1px solid #000091;}
+.meeting-room .btn-actions {
+  text-align: right;
+}
+.meeting-room .btn-actions .rf-btn {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+  padding-left:0.5rem;
+  padding-right:0.5rem;
+}
+.meeting-room h3 {
+  margin-bottom: 0;
+}
+.stats-info-container [class|="rf-col"], .stats-info-container .stats-info {
+  margin-top: 0;
+  padding-top: 0;
+}
+.stats-info {
+  text-align: center;
+}
+.delete .rf-btn--secondary { box-shadow: none;}
+.inline-label {
+	padding-top: 0.5em;
+}
+.image-home {
+	background: url('../images/home.svg') no-repeat;
+	min-height:250px;
+  background-size: auto 100%;
+  background-position: center;
+}
+.image-no-meetings {
+	background: url('../images/home.svg') no-repeat;
+  background-size: auto 60%;
+  background-position: top;
+  filter: grayscale(0.8) opacity(0.5);
+}
+.alerte {
+  width: 80%;
+  margin: 2em auto;
+  background-color: #ffe283;
+  color: #503d00;
+}
+.alerte .message {
+  padding: 1em 5em;
+}
+
+#jumbotron {
+  background-color: #f9f8f6;
+  text-align: center;
+  padding-bottom: 2em;
+}
+.start-meeting  {
+  text-align: center;
+  margin: 2em 0 4em 0;
+}
+footer{
+	margin-top:3em
+}
+form.delete {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+
+.beta {
+    position: fixed;
+    top: 0px;
+    right: -43px;
+    z-index: 2;
+    width: 8em;
+    height: 1.5em;
+    transform: rotate(45deg);
+    background: #E1000F;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+.rf-highlight {
+  border: none;
+  border-bottom: 0.25rem solid;
+  margin:0;
+}
+.rf-highlight.error {
+  border-color: #FF3333 ;
+  background-color: #FEE3E0;
+  text-align: center;
+  padding: 1em 2em;
+  color: #000;
+}
+
+.rf-highlight.info {
+  border-color: var(--border-plain-blue-france) ;
+  background-color: var(--bf300-plain);
+  text-align: center;
+  font-size: 0.9em;
+  padding: 1em 2em;
+  color: #000;
+}
+
+.rf-highlight.warning {
+  border-color: #FFA633;
+  background-color: #FEF8E0;
+  text-align: center;
+  padding: 1em 2em;
+  color: #000;
+}
+#meeting-delete-video-warning {
+  margin: 20px 0;
+}
+
+.rf-highlight.success {
+  border-color: #0d6635 ;
+  background-color: #E7F5EF;
+  text-align: center;
+  padding: 1em 2em;
+  color: #000;
+}
+
+.rf-header__brand a {
+  box-shadow: none;
+}
+
+.highlight-background {
+  position: relative;
+}
+.primary-section {
+  padding: 64px 0px;
+  background-color: #fdcf41;
+}
+.secondary-section {
+  padding: 64px 0px;
+  background-color: #F2F2F9;
+}
+.grey-section {
+  background-color: #F2F2F9;
+}
+.mail-create-button-container {
+  position: relative;
+}
+.mail-create-button-container > button {
+  position: absolute;
+  bottom: calc(2rem/2);
+}
+
+@keyframes modal-overlay{
+	0% {
+	  opacity: 0
+	}
+	100% {
+	  opacity: 1
+	}
+  }
+
+  /* needed for old browsers */
+  dialog {
+	display: block;
+	border: 0;
+	padding: 0;
+  }
+  /* removes scroll when modal is opened */
+  .no-scroll {
+	overflow: hidden;
+  }
+
+  /* overlay covers everything */
+  #js-modal-overlay {
+	animation: modal-overlay ease .5s 1 normal;
+	background-color: rgba(0,0,0, 0.5);
+	bottom: 0;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 666;
+
+  }
+  #js-modal-overlay .invisible{
+	opacity: 0;
+  }
+
+/* modal */
+.scampi-modal {
+  left: 0;
+  margin: 10px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 667;
+}
+.scampi-modal textarea:disabled {
+  cursor: text;
+  color: black;
+}
+dialog.scampi-modal {
+  background-clip: padding-box;
+  background-color: white;
+  outline: 0;
+  max-width: 40em;
+  margin: 4em auto 0;
+  overflow: auto;
+}
+
+.modal-template{
+  display: none;
+}
+
+.modal__wrapper{
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2em 0.5em;
+  max-height: 80vh; /* this can be either set on modal__wrapper or modal-body */
+}
+
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-close {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  border: none;
+  background-color: inherit;
+  font-size: 1.4em;
+}
+
+.modal-title {
+  margin: 0;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: 400;
+  padding:0 2em;
+}
+.modal-body {
+  position: relative;
+  padding: 1em;
+}
+.modal-body code {
+  padding:0.5em 1em;
+  display: inline-block;
+  background-color: #E7E7E7;
+  border-bottom: 2px solid #9C9C9C;
+  word-break: break-word;
+}
+button.btn-copy {
+  height: 100%;
+}
+.modal-body--center {
+  text-align: center;
+}
+.modal-body h2 {
+margin-bottom: 0;
+color: #000091;  }
+
+.modal-footer {
+  padding: 1em;
+  text-align: right;
+  border-top: 1px solid #e5e5e5;
+
+}
+.modal-footer   .btn-group .btn + .btn {
+    margin-left: -1px;
+  }
+  .modal-footer   .btn-block + .btn-block {
+    margin-left: 0;
+  }
+
+.modal-scrollbar-measure {
+  position: absolute;
+  top: -9999px;
+  width: 50px;
+  height: 50px;
+  overflow: scroll;
+}
+
+.fr-btn--delete {
+  background-color: var(--background-action-high-red-marianne) !important;
+}
+.fr-btn--delete:hover {
+  background-color: var(--background-action-high-red-marianne-hover) !important;
+}
+
+#doc > a.anchor {
+  display: inline;
+  float: left;
+  margin: 15px 5px;
+}
+
+#iframe-poll {
+  width: 100%;
+  min-height: 400px;
+}
+
+@media only screen and (max-width : 992px) {
+  .rf-col.bottom-align-container > button {
+    bottom: calc(1.5rem/2);
+  }
+}
+
+@media only screen and (max-width : 768px) {
+  .primary-section {
+    padding: 30px 0px;
+  }
+  .secondary-section {
+    padding: 30px 0px;
+  }
+  .mail-create-button-container > button {
+    position: relative;
+    bottom: auto;
+  }
+
+  .rf-col-md-6.image-home {
+    display: none;
+  }
+}
+
+@media only screen and (max-width : 768px) {
+  .primary-section {
+    padding: 30px 0px;
+  }
+  .secondary-section {
+    padding: 30px 0px;
+  }
+  .mail-create-button-container > button {
+    position: relative;
+    bottom: auto;
+  }
+
+  .rf-container .image-home {
+    background-image: none;
+  }
+}
+
+@media only screen and (max-device-width : 480px) {
+
+  dialog.scampi-modal {
+    margin: 0.5em;
+  }
+  h1.modal-title {
+    font-size: 1.2em;
+    padding: 0 1.7em;
+  }
+  .modal-body{
+    padding:0;
+  }
+  .modal-body h2  {
+    font-size:1em;
+  }
+  .modal-body p, .modal-body label{
+    font-size:0.8em;
+  }
+}
+
+.rf-fi-refresh-fill::before {
+    content: "\f102";
+}
+
+.faq-accordion-content {
+  white-space: pre-line;
+}
+
+/*
+Secondary buttons are broken in version 0.3.1.
+This is a fix until we deal with the update.
+*/
+.rf-btn--secondary {
+  border: 1px var(--border-plain-blue-france) solid;
+}
+
+@media (max-width: 749px) {
+  .recording-list .rf-btn.rf-btn--primary {
+    padding: .5rem 1rem;
+  }
+}
+
+.fr-btn--visio.fr-icon-live-line[target="_blank"]::after {
+  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+}
+
+.list-meeting-rooms-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-meeting-rooms-title div {
+  margin: var(--title-spacing);
+  display: flex;
+}
+
+.list-meeting-rooms-title div a {
+  align-self: flex-end;
+}

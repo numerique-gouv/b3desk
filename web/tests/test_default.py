@@ -1,5 +1,6 @@
 from flask import abort
 from flask import url_for
+from flask_webtest import TestApp
 
 
 def test_custom_400(client_app):
@@ -52,7 +53,7 @@ def test_home__anonymous_user(client_app, mocker):
         "participantCount": 123,
         "runningCount": 33,
     }
-    mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
+    mocker.patch("b3desk.endpoints.public.get_meetings_stats", return_value=STATS)
 
     response = client_app.get(
         "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
@@ -66,27 +67,25 @@ def test_home__authenticated_user(client_app, mocker, authenticated_user):
         "participantCount": 123,
         "runningCount": 33,
     }
-    mocker.patch("flaskr.routes.get_meetings_stats", return_value=STATS)
+    mocker.patch("b3desk.endpoints.public.get_meetings_stats", return_value=STATS)
 
     response = client_app.get(
         "/home", extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
     )
 
-    assert response.location == url_for("routes.welcome")
+    assert response.location == url_for("public.welcome")
 
 
-def test_change_language(client_app):
-    client_app.get("/faq?lang=fr", status=200)
-    with client_app.session_transaction() as session:
-        assert session["lang"] == "fr"
+def test_change_language(app):
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert res.session["lang"] == "fr"
 
-    client_app.get("/faq?lang=uk", status=200)
-    with client_app.session_transaction() as session:
-        assert session["lang"] == "uk"
+    res = client_app.get("/faq?lang=uk", status=200)
+    assert res.session["lang"] == "uk"
 
-    client_app.get("/faq", status=200)
-    with client_app.session_transaction() as session:
-        assert session["lang"] == "uk"
+    res = client_app.get("/faq", status=200)
+    assert res.session["lang"] == "uk"
 
 
 def test_faq__anonymous_user(client_app):
@@ -101,28 +100,30 @@ def test_faq__authenticated_user(client_app, authenticated_user):
     response.mustcontain("Alice Cooper")
 
 
-def test_documentation__anonymous_user(app, client_app, mocker):
-    app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = False
+def test_documentation__anonymous_user(client_app, mocker):
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = False
     response = client_app.get("/documentation", status=200)
 
     response.mustcontain(no="Alice Cooper")
 
 
-def test_documentation__authenticated_user(app, client_app, authenticated_user):
-    app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = False
+def test_documentation__authenticated_user(client_app, authenticated_user):
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = "/documentation"
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = False
     response = client_app.get("/documentation", status=200)
 
     response.mustcontain("Alice Cooper")
 
 
-def test_documentation_with_redirection(app, client_app):
-    app.config["DOCUMENTATION_LINK"]["url"] = "https://documentation_redirect.ion"
-    app.config["DOCUMENTATION_LINK"]["is_external"] = True
+def test_documentation_with_redirection(client_app):
+    client_app.app.config["DOCUMENTATION_LINK"]["url"] = (
+        "https://documentation_redirect.ion"
+    )
+    client_app.app.config["DOCUMENTATION_LINK"]["is_external"] = True
     response = client_app.get("/documentation", status=302)
 
-    response.mustcontain(app.config["DOCUMENTATION_LINK"]["url"])
+    response.mustcontain(client_app.app.config["DOCUMENTATION_LINK"]["url"])
 
 
 def test_accessibilite__anonymous_user(client_app):

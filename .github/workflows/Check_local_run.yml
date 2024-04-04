@@ -3,11 +3,11 @@ name: Check local run
 on:
   pull_request:
     branches:
-      - master
+      - production
       - main
   push:
     branches:
-      - master
+      - production
       - main
 
 jobs:
@@ -24,6 +24,14 @@ jobs:
   test-local:
     name: Run test locally
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+          - '3.11'
+          - '3.10'
+          - '3.9'
+          - '3.8'
+
     steps:
       - name: Setup git
         uses: actions/checkout@v3
@@ -31,7 +39,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python }}
 
       - name: Install python dependencies
         run: |
@@ -39,7 +47,7 @@ jobs:
           pip install -r web/requirements.app.txt
           pip install -r web/requirements.dev.txt
       - name: Check local environment tests
-        run: pytest --envfile web.env.example
+        run: pytest
 
   healthy-containers:
     name: Check containers run
