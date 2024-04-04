@@ -20,7 +20,7 @@ from b3desk.models import db
 
 @pytest.fixture
 def iam_user(iam_server):
-    iam_user = iam_server.models.User(
+    iam_user = iam_server.random_user(
         id="user_id",
         emails=["alice@domain.tld"],
         given_name="Alice",
