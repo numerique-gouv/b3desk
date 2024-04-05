@@ -109,7 +109,7 @@ commands =
 [testenv:doc]
 commands =
     poetry install --with doc
-	poetry run sphinx-build documentation build/sphinx/html
+	poetry run sphinx-build -W --keep-going documentation build/sphinx/html
 """
 
 [tool.coverage.run]
