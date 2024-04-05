@@ -1,11 +1,13 @@
 import datetime
 import json
+from typing import Annotated
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 
 from flask_babel import lazy_gettext as _
+from pydantic import BeforeValidator
 from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
@@ -13,6 +15,17 @@ from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
 from b3desk.constants import DEFAULT_EMAIL_WHITELIST
+
+
+def split_comma_separated_strings(value):
+    if not isinstance(value, str):
+        return value
+
+    return map(str.strip, value.split(","))
+
+
+ListOfStrings = Annotated[List[str], BeforeValidator(split_comma_separated_strings)]
+
 
 AVAILABLE_WORDINGS = {
     "MEETING": {"cours": "cours", "reunion": "réunion", "seminaire": "séminaire"},
@@ -289,17 +302,13 @@ class MainSettings(BaseSettings):
     OIDC_OPENID_REALM: str = "apps"
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
-    OIDC_SCOPES: List[str] = ["openid", "email", "profile"]
+    OIDC_SCOPES: ListOfStrings = ["openid", "email", "profile"]
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
     demandée au serveur d’identité, séparés par des virgules.
 
     Passé en paramètre ``auth_request_params`` de flask-pyoidc.
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
-
-    @field_validator("OIDC_SCOPES", mode="before")
-    def get_oidc_scopes(cls, oidc_scopes: List[str], info: ValidationInfo) -> str:
-        return oidc_scopes.split(",") if isinstance(oidc_scopes, str) else oidc_scopes
 
     OIDC_USERINFO_HTTP_METHOD: str = "POST"
     """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
@@ -415,7 +424,7 @@ class MainSettings(BaseSettings):
     Si non renseigné, prend la valeur de ``OIDC_SERVICE_NAME``.
     """
 
-    OIDC_ATTENDEE_SCOPES: Optional[List[str]] = None
+    OIDC_ATTENDEE_SCOPES: Optional[ListOfStrings] = None
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
     demandée au serveur d’identité des participants authentifiés, séparés par
     des virgules.
@@ -474,8 +483,7 @@ class MainSettings(BaseSettings):
     def get_attendee_attendee_scopes(
         cls, attendee_scopes: str, info: ValidationInfo
     ) -> str:
-        scopes = attendee_scopes or info.data.get("OIDC_SCOPES")
-        return scopes.split(",") if isinstance(scopes, str) else scopes
+        return attendee_scopes or info.data.get("OIDC_SCOPES")
 
     DOCUMENTATION_LINK_URL: Optional[str] = None
     """Surcharge l’adresse de la page de documentation si renseigné."""
@@ -967,22 +975,12 @@ class MainSettings(BaseSettings):
     https://docs.bigbluebutton.org/development/api/#create
     """
 
-    RIE_NETWORK_IPS: Optional[List[str]] = None
+    RIE_NETWORK_IPS: Optional[ListOfStrings] = None
     """Plages d’adresses IP du réseau interministériel de l'État.
 
     Affiche un encart particulier pour les utilisateurs se connectant
     depuis ce réseau.
     """
-
-    @field_validator("RIE_NETWORK_IPS", mode="before")
-    def get_rie_network_ips(
-        cls, rie_network_ips: List[str], info: ValidationInfo
-    ) -> str:
-        return (
-            rie_network_ips.split(",")
-            if isinstance(rie_network_ips, str)
-            else rie_network_ips
-        )
 
     MAX_PARTICIPANTS: int = 200
     """Nombre moyen de participants indicatif sur la plateforme.
