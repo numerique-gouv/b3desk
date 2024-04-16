@@ -8,14 +8,15 @@ import portpicker
 import pytest
 from flask_migrate import Migrate
 from flask_webtest import TestApp
+from jinja2 import FileSystemBytecodeCache
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
 
 import b3desk.utils
 from b3desk import create_app
+from b3desk.models import db
 
 b3desk.utils.secret_key = lambda: "AZERTY"
-from b3desk.models import db
 
 
 @pytest.fixture
@@ -108,9 +109,16 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
     }
 
 
+@pytest.fixture(scope="session")
+def jinja_cache_directory(tmp_path_factory):
+    return tmp_path_factory.mktemp("cache")
+
+
 @pytest.fixture
-def app(configuration):
+def app(configuration, jinja_cache_directory):
     app = create_app(configuration)
+    app.jinja_env.bytecode_cache = FileSystemBytecodeCache(jinja_cache_directory)
+
     with app.app_context():
         Migrate(app, db, compare_type=True)
         db.create_all()
