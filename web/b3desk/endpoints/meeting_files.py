@@ -393,7 +393,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         )
 
     meeting_file = MeetingFiles(
-        title=path,
+        title=path.split("/")[-1],
         created_at=date.today(),
         meeting_id=meeting_id,
         nc_path=path,
