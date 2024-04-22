@@ -21,6 +21,7 @@ def test_is_meeting_running(meeting, mocker):
 
     class Response:
         content = IS_MEETING_RUNNING_SUCCESS_RESPONSE
+        text = ""
 
     send = mocker.patch("requests.Session.send", return_value=Response)
 
@@ -142,6 +143,7 @@ def test_get_recordings(meeting, mocker):
 
     class Response:
         content = GET_RECORDINGS_RESPONSE
+        text = ""
 
     send = mocker.patch("requests.Session.send", return_value=Response)
 
@@ -183,6 +185,7 @@ def test_create(meeting, mocker):
 
     class Response:
         content = CREATE_RESPONSE
+        text = ""
 
     send = mocker.patch("requests.Session.send", return_value=Response)
     mocker.patch("requests.post")

@@ -74,6 +74,7 @@ class BBB:
         session = requests.Session()
         current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
         response = session.send(request)
+        current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     bbb_response.make_cache_key = cache_key

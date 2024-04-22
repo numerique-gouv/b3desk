@@ -212,6 +212,7 @@ def bbb_response(mocker):
     class Response:
         content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
         status_code = 200
+        text = ""
 
     yield mocker.patch("requests.Session.send", return_value=Response)
 

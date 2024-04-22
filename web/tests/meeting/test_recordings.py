@@ -112,6 +112,7 @@ def bbb_getRecordings_response(mocker):
    </recordings>
 </response>
 """
+        text = ""
 
     yield mocker.patch("requests.Session.send", return_value=Response)
 
