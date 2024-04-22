@@ -217,13 +217,13 @@ files = [
 
 [[package]]
 name = "canaille"
-version = "0.0.51"
-description = "Lightweight identity and autorization management software"
+version = "0.0.52"
+description = "Lightweight identity and authorization management software"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "canaille-0.0.51-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:abe9d39e55442e341322fd82bf9d94183530e40563afe2f33d3ac9c0f23e7bc2"},
-    {file = "canaille-0.0.51.tar.gz", hash = "sha256:b5598c7ef9325940ebc3b6fbde55d0978d900ea296a34a98d9ce8ff46e08d3c6"},
+    {file = "canaille-0.0.52-cp311-cp311-manylinux_2_39_x86_64.whl", hash = "sha256:dc57a70f98d9241d6e976a4a9d0485f1f1c710ffbfa83e5adcb140cc70c3851c"},
+    {file = "canaille-0.0.52.tar.gz", hash = "sha256:d03fdc23c49819a2097549052f9ef45694de60f6384593893fc77ae56c3e4f42"},
 ]
 
 [package.dependencies]
@@ -2071,13 +2071,13 @@ python-dotenv = ">=0.9.1"
 
 [[package]]
 name = "pytest-iam"
-version = "0.0.9"
+version = "0.0.11"
 description = "A fully functional OAUTH2 / OpenID Connect (OIDC) server to be used in your testsuite"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "pytest_iam-0.0.9-py3-none-any.whl", hash = "sha256:ea20832cb51c3be8a8509ad1bf2524db11444186db0ecee94b8418e838fd28c3"},
-    {file = "pytest_iam-0.0.9.tar.gz", hash = "sha256:d043f83ebe7aa0ce10ffabf3849e2f42d76fd47ad47ead9c0b4c91ccc108dd8a"},
+    {file = "pytest_iam-0.0.11-py3-none-any.whl", hash = "sha256:9af55b04f8857aef8cc52ab89cf37898dbd91086c962ef26f2e104da23d40473"},
+    {file = "pytest_iam-0.0.11.tar.gz", hash = "sha256:af3234e5bedd0c3d8ca0e196a35ec20ae1f8bd5af03550045591a33dbc104f02"},
 ]
 
 [package.dependencies]
@@ -2891,4 +2891,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "8b4de0bd382a742b2334b748475c9d07d4bd8f22c568c0a1bee1f8eccd0b080b"
+content-hash = "57b510e49597171bf8828a7637c46164b3c0af2d3bde05897e0f032f64bb8f9e"
