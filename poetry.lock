@@ -2071,17 +2071,17 @@ python-dotenv = ">=0.9.1"
 
 [[package]]
 name = "pytest-iam"
-version = "0.0.11"
+version = "0.0.12"
 description = "A fully functional OAUTH2 / OpenID Connect (OIDC) server to be used in your testsuite"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "pytest_iam-0.0.11-py3-none-any.whl", hash = "sha256:9af55b04f8857aef8cc52ab89cf37898dbd91086c962ef26f2e104da23d40473"},
-    {file = "pytest_iam-0.0.11.tar.gz", hash = "sha256:af3234e5bedd0c3d8ca0e196a35ec20ae1f8bd5af03550045591a33dbc104f02"},
+    {file = "pytest_iam-0.0.12-py3-none-any.whl", hash = "sha256:480a7ff195dae5f3b56cb81a7ca80d0dd8ea0274e79f684390d42fe9c4cc101e"},
+    {file = "pytest_iam-0.0.12.tar.gz", hash = "sha256:15b6f343ff3c3649d9355fd8d0fd631553282176104939d4b595048703061b70"},
 ]
 
 [package.dependencies]
-canaille = {version = "<1", extras = ["oidc"]}
+canaille = {version = ">=0.0.53,<1", extras = ["oidc"]}
 faker = ">=21.0.0"
 portpicker = ">=1.6.0"
 pytest = ">=7.0.0"
@@ -2891,4 +2891,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "57b510e49597171bf8828a7637c46164b3c0af2d3bde05897e0f032f64bb8f9e"
+content-hash = "40acc55fd255873d306e230e86272caad86500f522e41003352d597dbc52054a"
