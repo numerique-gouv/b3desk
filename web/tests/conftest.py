@@ -47,6 +47,7 @@ def iam_client(iam_server):
         scope=["openid", "profile", "email"],
         preconsent=True,
     )
+    iam_client.save()
     iam_client.audience = [iam_client]
     iam_client.save()
     yield iam_client
