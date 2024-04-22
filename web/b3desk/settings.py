@@ -2,8 +2,6 @@ import datetime
 import json
 from typing import Annotated
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from flask_babel import lazy_gettext as _
@@ -24,7 +22,7 @@ def split_comma_separated_strings(value):
     return map(str.strip, value.split(","))
 
 
-ListOfStrings = Annotated[List[str], BeforeValidator(split_comma_separated_strings)]
+ListOfStrings = Annotated[list[str], BeforeValidator(split_comma_separated_strings)]
 
 
 AVAILABLE_WORDINGS = {
@@ -231,7 +229,7 @@ class MainSettings(BaseSettings):
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
-    ALLOWED_MIME_TYPES_SERVER_SIDE: Optional[List[str]] = [
+    ALLOWED_MIME_TYPES_SERVER_SIDE: Optional[list[str]] = [
         "application/pdf",
         "image/vnd.dwg",
         "image/x-xcf",
@@ -268,9 +266,9 @@ class MainSettings(BaseSettings):
     @field_validator("ALLOWED_MIME_TYPES_SERVER_SIDE", mode="before")
     def get_allowed_mime_types_server_side(
         cls,
-        allowed_mime_types_server_side: Optional[List[str]],
+        allowed_mime_types_server_side: Optional[list[str]],
         info: ValidationInfo,
-    ) -> List[str]:
+    ) -> list[str]:
         if not allowed_mime_types_server_side:
             return []
 
@@ -318,7 +316,7 @@ class MainSettings(BaseSettings):
     https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
-    OIDC_INFO_REQUESTED_FIELDS: List[str] = ["email", "given_name", "family_name"]
+    OIDC_INFO_REQUESTED_FIELDS: list[str] = ["email", "given_name", "family_name"]
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
     OIDC_ISSUER: Optional[str] = None
@@ -492,7 +490,7 @@ class MainSettings(BaseSettings):
     """Semble inutilisé."""
 
     @computed_field
-    def DOCUMENTATION_LINK(self) -> Dict[str, Any]:
+    def DOCUMENTATION_LINK(self) -> dict[str, Any]:
         return {
             "url": self.DOCUMENTATION_LINK_URL,
             "label": self.DOCUMENTATION_LINK_LABEL,
@@ -821,7 +819,7 @@ class MainSettings(BaseSettings):
     """Sous-titre de la page de documentation."""
 
     @computed_field
-    def WORDINGS(self) -> Dict[str, Any]:
+    def WORDINGS(self) -> dict[str, Any]:
         return {
             "a_meeting": self.WORDING_A_MEETING,
             "the_meeting": self.WORDING_THE_MEETING,
@@ -960,7 +958,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("EMAIL_WHITELIST")
     def get_email_whitelist(
-        cls, email_whitelist: List[str], info: ValidationInfo
+        cls, email_whitelist: list[str], info: ValidationInfo
     ) -> str:
         if not email_whitelist:
             return DEFAULT_EMAIL_WHITELIST

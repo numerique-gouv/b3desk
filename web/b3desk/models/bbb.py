@@ -72,8 +72,14 @@ class BBB:
     )
     def bbb_response(self, request):
         session = requests.Session()
-        current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
+        current_app.logger.debug(
+            "BBB API request method:%s url:%s data:%s",
+            request.method,
+            request.url,
+            request.body,
+        )
         response = session.send(request)
+        current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     bbb_response.make_cache_key = cache_key
@@ -221,7 +227,9 @@ class BBB:
         request = self.bbb_request(
             "getRecordings", params={"meetingID": self.meeting.meetingID}
         )
-        current_app.logger.debug("BBB API request %s: %s", request.method, request.url)
+        current_app.logger.debug(
+            "BBB API request method:%s url:%s", request.method, request.url
+        )
         response = requests.Session().send(request)
 
         root = ElementTree.fromstring(response.content)
@@ -316,7 +324,9 @@ class BBB:
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
+                    filename=meeting_file.title,
                     _external=True,
+                    _scheme=current_app.config["PREFERRED_URL_SCHEME"],
                 )
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
 

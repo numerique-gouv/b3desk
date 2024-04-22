@@ -135,7 +135,7 @@ Le projet est organisé de la façon suivante :
 
 - Les modification sont faites sur une `branche` de votre **fork**.
 - Lorsque le développement est prêt, une *pull request* vers la branche `main` du projet d'*origine* est réalisée
-- Une fois ce {doc}`développement validé <../maintainers/pullRequestValidation>`, les mainteneurs du projet vont *merger* ces modifications sur `main`
+- Une fois ce {doc}`développement validé <../maintainers/codeReview>`, les mainteneurs du projet vont *merger* ces modifications sur `main`
 - Lorsque suffisamment de modifications sont faites dans `main`, les mainteneurs peuvent décider de créer une nouvelle version du projet
 - La branche `main` est *mergée* dans la branche `production`, référente pour les déploiements du projet B3Desk
 

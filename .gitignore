@@ -35,3 +35,4 @@ web-local.env
 *.swp
 
 messages.mo
+.tox

@@ -18,7 +18,11 @@
             <p class="fr-header__service-title">
             {% trans %}{{ service_title }}{% endtrans %}
             {% if config.get("BETA") %}
-            <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+                {% if development_version %}
+                    <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
+                {% else %}
+                    <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+                {% endif %}
             {% endif %}
             </p>
         </a>

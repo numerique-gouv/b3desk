@@ -4,13 +4,13 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "b3desk"
-version = "1.2.1"
+version = "1.2.2dev"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = ">=3.9,<4.0"
 celery = "^5.2.7"
 filetype = "^1.2.0"
 flask = "^3.0.0"
@@ -82,10 +82,10 @@ isolated_build = true
 skipsdist = true
 envlist =
     style
-    py38
     py39
     py310
     py311
+    py312
     coverage
     doc
 
@@ -109,7 +109,7 @@ commands =
 [testenv:doc]
 commands =
     poetry install --with doc
-	poetry run sphinx-build documentation build/sphinx/html
+	poetry run sphinx-build -W --keep-going documentation build/sphinx/html
 """
 
 [tool.coverage.run]

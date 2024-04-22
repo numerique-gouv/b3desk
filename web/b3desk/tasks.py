@@ -15,10 +15,11 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="background_upload")
 def background_upload(endpoint, xml):
-    requests.post(
+    response = requests.post(
         endpoint,
         headers={"Content-Type": "application/xml"},
         data=xml,
     )
-    logger.info(f"adding background files endpoint:{endpoint} xml:{xml}")
+    logger.info("BBB API request %s: xml:%s", endpoint, xml)
+    logger.info("BBB API response %s", response.text)
     return True
