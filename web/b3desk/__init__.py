@@ -134,6 +134,7 @@ def setup_jinja(app):
         return {
             "config": app.config,
             "beta": app.config["BETA"],
+            "development_version": __version__ == "0.0.0" or "dev" in __version__,
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
             "version": __version__,
