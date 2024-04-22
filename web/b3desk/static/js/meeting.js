@@ -90,15 +90,9 @@ function add_URL_file(name, from) {
         return ;
     }
     // si pas de https:// renseigné, on le force en préfixe, si c'est du http, la personne    devra corriger d'elle-même
-    if (!name.match(/^http/)) name = `https://${name}`;
-    //simple copy as we are fetch in asynchronous mode
-    var URL_to_fetch = name;
-    // gestion if name > 50 char, reduce its printing
-    if (name.length > 80 ) {
-        var splitted = name.split(['/']);
-        name = splitted[2] + '/' + splitted[3] + '.../' + splitted.slice(-1).slice(-20);
+    if (!name.match(/^http/)) {
+        name = `https://${name}`;
     }
-
     link_file_to_meeting(name, 'URL');
 
 }
