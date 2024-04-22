@@ -157,15 +157,15 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 def insertDocuments(meeting: Meeting):
     from flask import request
 
-    files_title = request.get_json()
+    filenames = request.get_json()
     secret_key = current_app.config["SECRET_KEY"]
 
     xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
     xml_end = " </module></modules>"
     xml_mid = ""
     # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
-    for cur_file in files_title:
-        id = add_external_meeting_file_nextcloud(cur_file, meeting.id)
+    for filename in filenames:
+        id = add_external_meeting_file_nextcloud(filename, meeting.id)
         filehash = hashlib.sha1(
             f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
@@ -174,9 +174,10 @@ def insertDocuments(meeting: Meeting):
             isexternal=1,
             mfid=id,
             mftoken=filehash,
+            filename=filename,
             _external=True,
         )
-        xml_mid += f"<document url='{url}' filename='{cur_file}' />"
+        xml_mid += f"<document url='{url}' filename='{filename}' />"
 
     bbb_endpoint = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
     xml = xml_beg + xml_mid + xml_end
@@ -546,6 +547,7 @@ def insertDoc(token):
         isexternal=0,
         mfid=meeting_file.id,
         mftoken=meeting_file.download_hash,
+        filename=meeting_file.title,
         _external=True,
     )
     xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{url}' filename='{meeting_file.title}' /> </module></modules>"
@@ -561,8 +563,8 @@ def insertDoc(token):
 
 
 @bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>")
-# @auth.token_auth(provider_name="default") - must be accessible by BBB server, so no auth
-def ncdownload(isexternal, mfid, mftoken):
+@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<filename>")
+def ncdownload(isexternal, mfid, mftoken, filename=None):
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
     # get file through NC credentials - HOW POSSIBLE ?
@@ -607,4 +609,6 @@ def ncdownload(isexternal, mfid, mftoken):
         return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
 
     # send the downloaded file to the BBB:
-    return send_from_directory(TMP_DOWNLOAD_DIR, uniqfile)
+    return send_from_directory(
+        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title
+    )

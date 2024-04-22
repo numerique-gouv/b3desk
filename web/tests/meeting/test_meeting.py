@@ -519,7 +519,7 @@ def test_create_with_files(
         == "<?xml version='1.0' encoding='UTF-8'?> "
         + "<modules>  "
         + "<module name='presentation'> "
-        + f"<document downloadable='false' url='http://localhost:5000/ncdownload/0/1/{filehash}' filename='file_title' /> "
+        + f"<document downloadable='false' url='http://localhost:5000/ncdownload/0/1/{filehash}/file_title' filename='file_title' /> "
         + "</module>"
         + "</modules>"
     )

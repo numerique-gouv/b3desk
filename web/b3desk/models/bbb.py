@@ -324,7 +324,9 @@ class BBB:
                     isexternal=0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
+                    filename=meeting_file.title,
                     _external=True,
+                    _scheme=current_app.config["PREFERRED_URL_SCHEME"],
                 )
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
 
