@@ -433,6 +433,28 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
+    SECONDARY_IDENTITY_PROVIDER_ENABLED: Optional[bool] = False
+    """Indique si un second serveur d'identité pour la connection a un
+    Nextcloud est activée.
+
+    S'il y a bien besoin de ce second serveur d'identité pour connecter
+    un utilisateur sur un Nextcloud, l'identifiant Nextcloud de
+    l'utilisateur sera recherché à partir de son mail.
+    """
+
+    SECONDARY_IDENTITY_PROVIDER_URI: Optional[str] = None
+    """Url du serveur d'identité permettant de retrouver un id utilisateur à
+    partir de son email."""
+
+    SECONDARY_IDENTITY_PROVIDER_REALM: Optional[str] = None
+    """Groupe sous lequel est enregistré l'utilisateur."""
+
+    SECONDARY_IDENTITY_PROVIDER_CLIENT_ID: Optional[str] = None
+    """ID du client B3desk dans ce serveur d'identité."""
+
+    SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: Optional[str] = None
+    """Secret du client B3desk dans ce serveur d'identité."""
+
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
         return attendee_issuer or info.data.get("OIDC_ISSUER")

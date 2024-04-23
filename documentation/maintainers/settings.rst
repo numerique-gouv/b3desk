@@ -31,9 +31,11 @@ Afin que les utilisateurs de b3desk puissent accéder à leurs fichiers Nextclou
 
 Il est donc nécessaire de configurer les paramètres de configuration suivants :
 
-- :attr:`~b3desk.settings.MainSettings.SECRET_KEY` (TODO)
-- :attr:`~b3desk.settings.MainSettings.SECRET_KEY` (TODO)
-- :attr:`~b3desk.settings.MainSettings.SECRET_KEY` (TODO)
+- :attr:`~b3desk.settings.MainSettings.SECONDARY_IDENTITY_PROVIDER_ENABLED`
+- :attr:`~b3desk.settings.MainSettings.SECONDARY_IDENTITY_PROVIDER_URI`
+- :attr:`~b3desk.settings.MainSettings.SECONDARY_IDENTITY_PROVIDER_REALM`
+- :attr:`~b3desk.settings.MainSettings.SECONDARY_IDENTITY_PROVIDER_CLIENT_ID`
+- :attr:`~b3desk.settings.MainSettings.SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET`
 
 On peut ensuite tester que la configuration est correcte grâce à la commande suivante:
 
