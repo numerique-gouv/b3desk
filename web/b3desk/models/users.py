@@ -45,19 +45,107 @@ def make_nextcloud_credentials_request(url, payload, headers):
         return None
 
 
-def get_user_nc_credentials(username):
+class TooManyUsers(Exception):
+    """Exception raised if email returns more than one user.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message="More than one user is using this email"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class NoUserFound(Exception):
+    """Exception raised if email returns no user.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message="No user with this email was found"):
+        self.message = message
+        super().__init__(self.message)
+
+
+def get_secondary_identity_provider_token():
+    return requests.post(
+        f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/protocol/openid-connect/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "grant_type": "client_credentials",
+            "client_id": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_ID']}",
+            "client_secret": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET']}",
+        },
+    )
+
+
+def get_secondary_identity_provider_users_from_email(email, access_token):
+    return requests.get(
+        f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/admin/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/users",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "cache-control": "no-cache",
+        },
+        params={"email": email},
+    )
+
+
+def get_secondary_identity_provider_id_from_email(email):
+    try:
+        token_response = get_secondary_identity_provider_token()
+        token_response.raise_for_status()
+    except requests.exceptions.HTTPError as exception:
+        current_app.logger.warning(
+            "Get token request error: %s, %s", exception, token_response.text
+        )
+        raise exception
+    access_token = token_response.json()["access_token"]
+
+    try:
+        users_response = get_secondary_identity_provider_users_from_email(
+            email=email, access_token=access_token
+        )
+        users_response.raise_for_status()
+    except requests.exceptions.HTTPError as exception:
+        current_app.logger.warning(
+            "Get user from email request error: %s, %s", exception, users_response.text
+        )
+        raise exception
+    found_users = users_response.json()
+    if (user_count := len(found_users)) > 1:
+        raise TooManyUsers(f"There are {user_count} users with the email {email}")
+    elif user_count < 1:
+        raise NoUserFound(f"There are no users with the email {email}")
+
+    [user] = found_users
+    return user["username"]
+
+
+def get_user_nc_credentials(preferred_username="", email=""):
     if (
         not current_app.config["NC_LOGIN_API_KEY"]
         or not current_app.config["NC_LOGIN_API_URL"]
         or not current_app.config["FILE_SHARING"]
-        or not username
+        or not (preferred_username or email)
     ):
         current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
-    payload = {"username": username}
+    nc_username = preferred_username
+    if current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] and email:
+        try:
+            nc_username = get_secondary_identity_provider_id_from_email(email=email)
+        except requests.exceptions.HTTPError:
+            pass
+        except TooManyUsers as e:
+            current_app.logger.warning(e.message)
+        except NoUserFound as e:
+            current_app.logger.warning(e.message)
+    payload = {"username": nc_username}
     headers = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
     current_app.logger.info(
         "Retrieve NC credentials from NC_LOGIN_API_URL %s "
@@ -103,12 +191,17 @@ def update_user_nc_credentials(user, user_info):
         if current_app.config["FILE_SHARING"]
         else None
     )
-    data = get_user_nc_credentials(preferred_username)
-    if (
-        preferred_username is None
-        or data["nclocator"] is None
-        or data["nctoken"] is None
-    ):
+
+    if current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"]:
+        data = get_user_nc_credentials(
+            email=(
+                user_info.get("email") if current_app.config["FILE_SHARING"] else None
+            )
+        )
+    else:
+        data = get_user_nc_credentials(preferred_username=preferred_username)
+
+    if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
         current_app.logger.info(
             "No new Nextcloud enroll needed for user %s with those data %s", user, data
         )
@@ -119,7 +212,7 @@ def update_user_nc_credentials(user, user_info):
 
     user.nc_locator = data["nclocator"]
     user.nc_token = data["nctoken"]
-    user.nc_login = preferred_username
+    user.nc_login = data["nclogin"]
     user.nc_last_auto_enroll = nc_last_auto_enroll
     return True
 
