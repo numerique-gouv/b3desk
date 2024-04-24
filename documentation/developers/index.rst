@@ -12,3 +12,4 @@ Cette documentation est à destination des développeurs.
    dockerPersistence
    translation
    meetingFiles
+   imitateProduction
