@@ -169,6 +169,9 @@ def insertDocuments(meeting: Meeting):
         filehash = hashlib.sha1(
             f"{secret_key}-1-{id}-{secret_key}".encode()
         ).hexdigest()
+        current_app.logger.info(
+            "Call insert document BigBlueButton API in running room for %s", filename
+        )
         url = url_for(
             "meeting_files.ncdownload",
             isexternal=1,
@@ -552,6 +555,9 @@ def insertDoc(token):
     )
     xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{url}' filename='{meeting_file.title}' /> </module></modules>"
 
+    current_app.logger.info(
+        "Call insert document BigBlueButton API for %s", meeting_file.title
+    )
     requests.post(
         f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",
         data=xml,
@@ -565,6 +571,7 @@ def insertDoc(token):
 @bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>")
 @bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<filename>")
 def ncdownload(isexternal, mfid, mftoken, filename=None):
+    current_app.logger.info("Service requesting file url %s", filename)
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
     # get file through NC credentials - HOW POSSIBLE ?

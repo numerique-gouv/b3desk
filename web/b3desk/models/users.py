@@ -52,7 +52,7 @@ def get_user_nc_credentials(username):
         or not current_app.config["FILE_SHARING"]
         or not username
     ):
-        current_app.logger.debug(
+        current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
@@ -87,10 +87,15 @@ def update_user_nc_credentials(user, user_info):
         and user.nc_locator
         and user.nc_token
         and (
-            (datetime.now() - user.nc_last_auto_enroll).days
+            (remaining_time := (datetime.now() - user.nc_last_auto_enroll)).days
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
+        current_app.logger.info(
+            "Nextcloud login for user %s not to be refreshed for %s",
+            user,
+            remaining_time,
+        )
         return False
 
     preferred_username = (
@@ -104,8 +109,12 @@ def update_user_nc_credentials(user, user_info):
         or data["nclocator"] is None
         or data["nctoken"] is None
     ):
+        current_app.logger.info(
+            "No new Nextcloud enroll needed for user %s with those data %s", user, data
+        )
         nc_last_auto_enroll = None
     else:
+        current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
         nc_last_auto_enroll = datetime.now()
 
     user.nc_locator = data["nclocator"]

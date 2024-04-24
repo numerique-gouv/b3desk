@@ -319,6 +319,10 @@ class BBB:
                 filehash = hashlib.sha1(
                     f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
                 ).hexdigest()
+                current_app.logger.info(
+                    "Add document on BigBLueButton room creation for file",
+                    meeting_file.title,
+                )
                 url = url_for(
                     "meeting_files.ncdownload",
                     isexternal=0,
