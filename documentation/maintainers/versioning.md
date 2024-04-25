@@ -5,7 +5,7 @@ La branche de référence pour les releases est `production`. C'est ici qu'on re
 Pour publier une nouvelle version :
 - S'assurer d'être sur la branche `production`
 - Mettre à jour le numéro de version dans `pyproject.toml` et dans `web/b3desk/__init__.py`
-- Mettre un tag sur le commit, portant le numéro de la version, avec `git tag vX.Y.Z`
+- Mettre un tag sur le commit, portant le numéro de la version, avec `git tag -a vX.Y.Z -m "Bump to X.Y.Z version`
 - Pousser le commit ET le tag `git push origin production --follow-tags`
 - Se rendre sur [la page github de publication de version](https://github.com/numerique-gouv/b3desk/releases/new)
 - Choisir le tag récemment ajouté, remplir les informations, publier la version.
