@@ -217,13 +217,13 @@ files = [
 
 [[package]]
 name = "canaille"
-version = "0.0.51"
-description = "Lightweight identity and autorization management software"
+version = "0.0.53"
+description = "Lightweight identity and authorization management software"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "canaille-0.0.51-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:abe9d39e55442e341322fd82bf9d94183530e40563afe2f33d3ac9c0f23e7bc2"},
-    {file = "canaille-0.0.51.tar.gz", hash = "sha256:b5598c7ef9325940ebc3b6fbde55d0978d900ea296a34a98d9ce8ff46e08d3c6"},
+    {file = "canaille-0.0.53-cp311-cp311-manylinux_2_39_x86_64.whl", hash = "sha256:e3fa454827174fb347bc1aedf1286bbe9b6beedabf3cf82d8fdba7fb7420a8be"},
+    {file = "canaille-0.0.53.tar.gz", hash = "sha256:c9b1579d63e9777528dff0f9071c8fe755a5da171f1018b4c41742781a7d73cd"},
 ]
 
 [package.dependencies]
@@ -2071,17 +2071,17 @@ python-dotenv = ">=0.9.1"
 
 [[package]]
 name = "pytest-iam"
-version = "0.0.9"
+version = "0.0.12"
 description = "A fully functional OAUTH2 / OpenID Connect (OIDC) server to be used in your testsuite"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "pytest_iam-0.0.9-py3-none-any.whl", hash = "sha256:ea20832cb51c3be8a8509ad1bf2524db11444186db0ecee94b8418e838fd28c3"},
-    {file = "pytest_iam-0.0.9.tar.gz", hash = "sha256:d043f83ebe7aa0ce10ffabf3849e2f42d76fd47ad47ead9c0b4c91ccc108dd8a"},
+    {file = "pytest_iam-0.0.12-py3-none-any.whl", hash = "sha256:480a7ff195dae5f3b56cb81a7ca80d0dd8ea0274e79f684390d42fe9c4cc101e"},
+    {file = "pytest_iam-0.0.12.tar.gz", hash = "sha256:15b6f343ff3c3649d9355fd8d0fd631553282176104939d4b595048703061b70"},
 ]
 
 [package.dependencies]
-canaille = {version = "<1", extras = ["oidc"]}
+canaille = {version = ">=0.0.53,<1", extras = ["oidc"]}
 faker = ">=21.0.0"
 portpicker = ">=1.6.0"
 pytest = ">=7.0.0"
@@ -2891,4 +2891,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "8b4de0bd382a742b2334b748475c9d07d4bd8f22c568c0a1bee1f8eccd0b080b"
+content-hash = "40acc55fd255873d306e230e86272caad86500f522e41003352d597dbc52054a"
