@@ -141,10 +141,8 @@ def get_user_nc_credentials(preferred_username="", email=""):
             nc_username = get_secondary_identity_provider_id_from_email(email=email)
         except requests.exceptions.HTTPError:
             pass
-        except TooManyUsers as e:
-            current_app.logger.warning(e.message)
-        except NoUserFound as e:
-            current_app.logger.warning(e.message)
+        except (TooManyUsers, NoUserFound) as e:
+            current_app.logger.warning(e)
     payload = {"username": nc_username}
     headers = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
     current_app.logger.info(
