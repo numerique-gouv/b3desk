@@ -45,6 +45,18 @@ def make_nextcloud_credentials_request(url, payload, headers):
         return None
 
 
+class MissingToken(Exception):
+    """Exception raised if unable to get token.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message="No token given for the B3Desk instance"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class TooManyUsers(Exception):
     """Exception raised if email returns more than one user.
 
@@ -101,7 +113,15 @@ def get_secondary_identity_provider_id_from_email(email):
             "Get token request error: %s, %s", exception, token_response.text
         )
         raise exception
-    access_token = token_response.json()["access_token"]
+
+    try:
+        access_token = token_response.json()["access_token"]
+        if not access_token:
+            raise MissingToken(
+                f"No token given for the B3Desk instance, {token_response}"
+            )
+    except (AttributeError, KeyError):
+        raise MissingToken(f"No token given for the B3Desk instance, {token_response}")
 
     try:
         users_response = get_secondary_identity_provider_users_from_email(
