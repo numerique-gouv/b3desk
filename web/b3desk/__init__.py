@@ -8,8 +8,8 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import logging
 import os
+from logging.config import dictConfig
 
 from flask import Flask
 from flask import render_template
@@ -29,7 +29,7 @@ from b3desk.utils import is_rie
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 LANGUAGES = ["en", "fr"]
 
@@ -75,11 +75,26 @@ def setup_cache(app):
     cache.init_app(app, config=config)
 
 
-def setup_logging(app, gunicorn_logging=False):
-    if gunicorn_logging:
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        app.logger.handlers = gunicorn_logger.handlers
-        app.logger.setLevel(gunicorn_logger.level)
+def setup_logging(app):
+    if not app.debug and not app.testing:
+        dictConfig(
+            {
+                "version": 1,
+                "formatters": {
+                    "default": {
+                        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                    }
+                },
+                "handlers": {
+                    "wsgi": {
+                        "class": "logging.handlers.WatchedFileHandler",
+                        "filename": "/var/log/b3desk.log",
+                        "formatter": "default",
+                    }
+                },
+                "root": {"level": "INFO", "handlers": ["wsgi"]},
+            }
+        )
 
 
 def setup_i18n(app):
@@ -238,12 +253,12 @@ def setup_oidc(app):
     auth.init_app(app)
 
 
-def create_app(test_config=None, gunicorn_logging=False):
+def create_app(test_config=None):
     app = Flask(__name__)
     setup_configuration(app, test_config)
     setup_celery(app)
     setup_cache(app)
-    setup_logging(app, gunicorn_logging)
+    setup_logging(app)
     setup_i18n(app)
     setup_csrf(app)
     setup_database(app)
