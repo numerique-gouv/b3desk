@@ -82,6 +82,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "OIDC_CLIENT_AUTH_METHOD": iam_client.token_endpoint_auth_method,
         "OIDC_SCOPES": iam_client.scope,
         "OIDC_USERINFO_HTTP_METHOD": "GET",
+        "SECONDARY_IDENTITY_PROVIDER_ENABLED": False,
         "UPLOAD_DIR": str(tmp_path),
         "TMP_DOWNLOAD_DIR": str(tmp_path),
         "RECORDING": True,
@@ -287,3 +288,19 @@ def cloud_service_response(mocker, webdav_server, request):
 @pytest.fixture
 def jpg_file_content():
     return b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xc2\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x08\x01\x01\x00\x01?\x10"
+
+
+class ValidToken:
+    def raise_for_status():
+        pass
+
+    def json():
+        return {"access_token": "valid_token"}
+
+
+@pytest.fixture
+def valid_secondary_identity_token(mocker):
+    mocker.patch(
+        "b3desk.models.users.get_secondary_identity_provider_token",
+        return_value=ValidToken,
+    )

@@ -29,7 +29,7 @@ from b3desk.utils import is_rie
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 LANGUAGES = ["en", "fr"]
 
@@ -193,6 +193,7 @@ def setup_error_pages(app):
 
 def setup_endpoints(app):
     with app.app_context():
+        import b3desk.commands
         import b3desk.endpoints.api
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
@@ -204,6 +205,7 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meetings.bp)
         app.register_blueprint(b3desk.endpoints.api.bp)
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
+        app.register_blueprint(b3desk.commands.bp)
 
 
 def setup_oidc(app):
