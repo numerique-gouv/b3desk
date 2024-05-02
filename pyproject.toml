@@ -8,6 +8,7 @@ version = "1.2.6dev"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
