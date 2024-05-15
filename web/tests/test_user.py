@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 import requests
-from freezegun import freeze_time
+from time_machine import travel
 
 from b3desk.models import db
 from b3desk.models.users import NoUserFound
@@ -36,10 +36,10 @@ def test_update_last_connection_if_more_than_24h(client_app):
         "preferred_username": "alice",
         "email": "alice@mydomain.test",
     }
-    with freeze_time("2021-08-10"):
+    with travel("2021-08-10 12:00:00"):
         get_or_create_user(user_info)
 
-    with freeze_time("2021-08-11"):
+    with travel("2021-08-11 12:00:00"):
         user = db.session.get(User, 1)
         assert user.last_connection_utc_datetime.date() == date(2021, 8, 10)
 
