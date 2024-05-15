@@ -178,6 +178,8 @@ def get_user_nc_credentials(preferred_username="", email=""):
             current_app.config["NC_LOGIN_API_URL"],
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
+    if "nclogin" not in result:
+        result["nclogin"] = nc_username
     return result
 
 
