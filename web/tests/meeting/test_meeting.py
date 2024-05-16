@@ -604,3 +604,25 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
+
+
+def test_meeting_link_retrocompatibility(meeting):
+    """Old meeting links must still be usable for long lasting users.
+
+    https://github.com/numerique-gouv/b3desk/issues/128
+    """
+
+    hashed_moderator_meeting = hashlib.sha1(
+        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|moderator".encode()
+    ).hexdigest()
+    assert meeting.get_role(hashed_moderator_meeting) == Role.moderator
+
+    hashed_attendee_meeting = hashlib.sha1(
+        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|attendee".encode()
+    ).hexdigest()
+    assert meeting.get_role(hashed_attendee_meeting) == Role.attendee
+
+    hashed_authenticated_meeting = hashlib.sha1(
+        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|authenticated".encode()
+    ).hexdigest()
+    assert meeting.get_role(hashed_authenticated_meeting) == Role.authenticated
