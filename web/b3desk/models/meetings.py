@@ -157,7 +157,7 @@ class Meeting(db.Model):
         del self._fake_id
 
     def get_hash(self, role: Role):
-        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role}"
+        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role.value}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     def is_running(self):
