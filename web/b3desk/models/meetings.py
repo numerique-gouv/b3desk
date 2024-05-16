@@ -156,8 +156,8 @@ class Meeting(db.Model):
     def fake_id(self):
         del self._fake_id
 
-    def get_hash(self, role: Role):
-        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role.value}"
+    def get_hash(self, role: Role, hash_from_string=False):
+        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role.value if hash_from_string else role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     def is_running(self):
@@ -255,11 +255,20 @@ class Meeting(db.Model):
     def get_role(self, hashed_role, user_id=None) -> Optional[Role]:
         if user_id and self.user.id == user_id:
             return Role.moderator
-        elif self.get_hash(Role.attendee) == hashed_role:
+        elif hashed_role in [
+            self.get_hash(Role.attendee),
+            self.get_hash(Role.attendee, hash_from_string=True),
+        ]:
             role = Role.attendee
-        elif self.get_hash(Role.moderator) == hashed_role:
+        elif hashed_role in [
+            self.get_hash(Role.moderator),
+            self.get_hash(Role.moderator, hash_from_string=True),
+        ]:
             role = Role.moderator
-        elif self.get_hash(Role.authenticated) == hashed_role:
+        elif hashed_role in [
+            self.get_hash(Role.authenticated),
+            self.get_hash(Role.authenticated, hash_from_string=True),
+        ]:
             role = (
                 Role.authenticated
                 if current_app.config["OIDC_ATTENDEE_ENABLED"]
