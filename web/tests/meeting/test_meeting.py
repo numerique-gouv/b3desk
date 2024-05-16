@@ -607,22 +607,35 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
 
 
 def test_meeting_link_retrocompatibility(meeting):
-    """Old meeting links must still be usable for long lasting users.
+    """Old meeting links must still be usable for long lasting users, and for
+    links since 1.2.0.
 
     https://github.com/numerique-gouv/b3desk/issues/128
     """
 
-    hashed_moderator_meeting = hashlib.sha1(
-        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|moderator".encode()
+    old_hashed_moderator_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
-    assert meeting.get_role(hashed_moderator_meeting) == Role.moderator
+    assert meeting.get_role(old_hashed_moderator_meeting) == Role.moderator
+    new_hashed_moderator_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
+    ).hexdigest()
+    assert meeting.get_role(new_hashed_moderator_meeting) == Role.moderator
 
-    hashed_attendee_meeting = hashlib.sha1(
-        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|attendee".encode()
+    old_hashed_attendee_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
-    assert meeting.get_role(hashed_attendee_meeting) == Role.attendee
+    assert meeting.get_role(old_hashed_attendee_meeting) == Role.attendee
+    new_hashed_attendee_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
+    ).hexdigest()
+    assert meeting.get_role(new_hashed_attendee_meeting) == Role.attendee
 
-    hashed_authenticated_meeting = hashlib.sha1(
-        f"{meeting.meetingID}|{meeting.attendeePW}|{meeting.name}|authenticated".encode()
+    old_hashed_authenticated_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
-    assert meeting.get_role(hashed_authenticated_meeting) == Role.authenticated
+    assert meeting.get_role(old_hashed_authenticated_meeting) == Role.authenticated
+    new_hashed_authenticated_meeting = hashlib.sha1(
+        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
+    ).hexdigest()
+    assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
