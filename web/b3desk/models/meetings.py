@@ -231,6 +231,7 @@ class Meeting(db.Model):
             h=self.get_hash(meeting_role),
             role=meeting_role,
             _external=True,
+            _scheme=current_app.config["PREFERRED_URL_SCHEME"],
         )
 
     def get_mail_signin_hash(self, meeting_id, expiration_epoch):
