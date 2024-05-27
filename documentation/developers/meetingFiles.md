@@ -41,10 +41,11 @@ Pour vérifier que la communication entre chacun des conteneurs fonctionne corre
 
 #### Vérifier que Nextcloud renvoie des autorisations
 
+- Le plugin [Nextcloud Sessiontoken](https://gitlab.octopuce.fr/octopuce-public/nextcloud-sessiontoken) génère une clé au lancement du service Nextcloud trouvable dans `/nextcloud/conf/key.txt`
 - se connecter sur le service `tokenmock` avec `docker exec -it id /bin/bash`
-- faire un appel vers le service Nextcloud en passant par le session token et en indiquant l'utilisateur concerné (comme le `bbb-visio-user` par exemple) :
+- faire un appel vers le service Nextcloud en passant par le session token et en indiquant la clé générée et l'utilisateur concerné (comme le `bbb-visio-user` par exemple) :
 ```
-curl -X POST $NC_HOST/apps/sessiontoken/token -d "apikey=$NEXTCLOUD_SESSIONTOKEN_KEY&user=relevant-b3desk-username&name=device_name"
+curl -X POST $NC_HOST/apps/sessiontoken/token -d "apikey=[nextcloud-sessiontoken-generated-key]&user=relevant-b3desk-username&name=device_name"
 ```
 - le conteneur Nextcloud devrait répondre :
 ```
