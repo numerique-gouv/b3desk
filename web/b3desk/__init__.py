@@ -75,6 +75,21 @@ def setup_cache(app):
     cache.init_app(app, config=config)
 
 
+def setup_sentry(app):  # pragma: no cover
+    if not app.config.get("SENTRY_DSN"):
+        return None
+
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.flask import FlaskIntegration
+
+    except Exception:
+        return None
+
+    sentry_sdk.init(dsn=app.config["SENTRY_DSN"], integrations=[FlaskIntegration()])
+    return sentry_sdk
+
+
 def setup_logging(app):
     if not app.debug and not app.testing:
         dictConfig(
@@ -257,18 +272,24 @@ def setup_oidc(app):
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    setup_configuration(app, test_config)
-    setup_celery(app)
-    setup_cache(app)
-    setup_logging(app)
-    setup_i18n(app)
-    setup_csrf(app)
-    setup_database(app)
-    setup_jinja(app)
-    setup_flask(app)
-    setup_error_pages(app)
-    setup_endpoints(app)
-    setup_oidc(app)
+    sentry_sdk = setup_sentry(app)
+    try:
+        setup_configuration(app, test_config)
+        setup_celery(app)
+        setup_cache(app)
+        setup_logging(app)
+        setup_i18n(app)
+        setup_csrf(app)
+        setup_database(app)
+        setup_jinja(app)
+        setup_flask(app)
+        setup_error_pages(app)
+        setup_endpoints(app)
+        setup_oidc(app)
+    except Exception as exc:  # pragma: no cover
+        if sentry_sdk:
+            sentry_sdk.capture_exception(exc)
+        raise
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)

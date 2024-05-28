@@ -33,6 +33,7 @@ sqlalchemy = "^1.4.31"
 sqlalchemy-json = "^0.7.0"
 sqlalchemy-utils = "^0.41.1"
 webdavclient3 = "3.14.6"
+sentry-sdk = "^2.3.1"
 
 [tool.poetry.group.dev]
 optional = true
