@@ -41,7 +41,14 @@ def make_nextcloud_credentials_request(url, payload, headers):
                 data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
         return data
 
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(
+            "Unable to contact %s with payload %s and header %s, %s",
+            url,
+            payload,
+            headers,
+            e,
+        )
         return None
 
 
