@@ -272,9 +272,9 @@ def setup_oidc(app):
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    setup_configuration(app, test_config)
     sentry_sdk = setup_sentry(app)
     try:
-        setup_configuration(app, test_config)
         setup_celery(app)
         setup_cache(app)
         setup_logging(app)
