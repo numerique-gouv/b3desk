@@ -1046,5 +1046,5 @@ class MainSettings(BaseSettings):
     """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
     l'API BBB."""
 
-    SENTRY_DSN: [str] = None
+    SENTRY_DSN: Optional[str] = None
     """Sentry DSN to catch exceptions."""
