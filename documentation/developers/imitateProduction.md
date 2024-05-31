@@ -100,7 +100,13 @@ Vous devez modifier la variable d'environnement :
 NEXTCLOUD_TRUSTED_DOMAINS=nextcloudextdomain.ngrok-free.app
 ```
 
-dans le fichier `docker-compose.override.yml` et réinstaller Nextcloud en supprimant la base de données avec `sudo rm -rf nextcloud/html postgres/data` et en relançant les services :
+Et afin de pouvoir requêter Nextcloud depuis l'url de B3Desk, avec Filepicker, autorisé grâce au plugin WebAppPassword, il faut modifier `NEXTCLOUD_ALLOW_ORIGIN` qui se retrouvera dans le fichier de `config.php` de Nextcloud :
+
+```
+NEXTCLOUD_ALLOW_ORIGIN=https://b3deskextdomain.ngrok-free.app
+```
+
+Ces deux vaiables d'environnement sont dans le fichier `docker-compose.override.yml`. Il faut réinstaller Nextcloud en supprimant la base de données avec `sudo rm -rf nextcloud/html postgres/data` et en relançant les services :
 ```
 docker compose up --build nextcloud -d
 ```
