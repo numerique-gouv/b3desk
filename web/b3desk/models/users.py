@@ -11,6 +11,7 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -222,7 +223,8 @@ def update_user_nc_credentials(user, user_info):
         current_app.logger.info(
             "Nextcloud login for user %s not to be refreshed for %s",
             user,
-            elapsed_time - current_app.config["NC_LOGIN_TIMEDELTA_DAYS"],
+            timedelta(days=current_app.config["NC_LOGIN_TIMEDELTA_DAYS"])
+            - elapsed_time,
         )
         return False
 
