@@ -54,21 +54,22 @@ Il va donc requêter l'url de l'instance Nextcloud, et plus précisément, une u
     "user": "identifiant_nextcloud_de_lutilisateur"
 }
 ```
+🧪
+Pour tester que Nextcloud peut répondre au serveur d'identité, on peut tester simplement la communication avec la commande suivante en ssh depuis ce serveur d'identité :
 
-> Pour tester que Nextcloud peut répondre au serveur d'identité, on peut tester simplement la communication avec la commande suivante en ssh depuis ce serveur d'identité :
->
-> `curl --location --request POST 'https://<url_nextcloud>/apps/sessiontoken/token' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'apikey=<clé_générée_par_sessiontoken>' --data-urlencode 'user=<identifiant_nextcloud_de_lutilisateur>'`
->
-> la réponse devrait-être la suivante :
-> ```
-> {
->     "token": "token-de-lutilisateur",
->     "loginName": "identifiant_nextcloud_de_lutilisateur",
->     "deviceToken": {
->         ...
->     }
-> }
-> ```
+`curl --location --request POST 'https://<url_nextcloud>/apps/sessiontoken/token' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'apikey=<clé_générée_par_sessiontoken>' --data-urlencode 'user=<identifiant_nextcloud_de_lutilisateur>'`
+
+la réponse devrait-être la suivante :
+```
+{
+    "token": "token-de-lutilisateur",
+    "loginName": "identifiant_nextcloud_de_lutilisateur",
+    "deviceToken": {
+        ...
+    }
+}
+```
+🧪
 
 Le serveur d'identité va alors renvoyer cette information à B3Desk.
 
@@ -76,12 +77,7 @@ Le serveur d'identité va alors renvoyer cette information à B3Desk.
 
 Pour récupérer le token d'identification de l'utilisateur auprès de Nextcloud, B3Desk va donc requêter ce serveur d'identité.
 
-Afin de construire la requête, B3Desk a besoin des variables d'environnement suivantes :
-
-- :attr:`~b3desk.settings.MainSettings.NC_LOGIN_API_URL`
-- :attr:`~b3desk.settings.MainSettings.NC_LOGIN_API_KEY`
-
-Il va donc requêter :attr:`~b3desk.settings.MainSettings.NC_LOGIN_API_URL` en POST avec un header "x-api-key" renseignant la variable :attr:`~b3desk.settings.MainSettings.NC_LOGIN_API_KEY` et un body contenant le username de l'utilisateur B3Desk :
+B3Desk a besoin de variables d'environnement pour requêter `NC_LOGIN_API_URL` en POST avec un header "x-api-key" renseignant la variable `NC_LOGIN_API_KEY` et un body contenant le username de l'utilisateur B3Desk :
 
 ```
 {
@@ -89,17 +85,19 @@ Il va donc requêter :attr:`~b3desk.settings.MainSettings.NC_LOGIN_API_URL` en P
 }
 ```
 
-> Pour tester que le serveur d'identité est capable d'interroger l'instance Nextcloud et de répondre avec le token utilisateur, on peut tester la communication entre B3Desk et ce serveur (et par la même occasion le Nextcloud) en ssh depuis le serveur B3Desk :
->
-> `curl --location --request POST '<url_de_la_variable_NC_LOGIN_API_URL>' --header 'x-api-key: <NC_LOGIN_API_KEY>' --header 'Content-Type: application/json' --data-raw '{"username":"<identifiant_de_lutilisateur>"}'`
->
-> la réponse devrait être au moins la suivante (si le `nc_login` est maquant dans la réponse, il sera ajouté par B3Desk) :
-> ```
-> {
->     "nctoken": "token-de-lutilisateur",
->     "nclocator": "url_nextcloud",
-> }
-> ```
+🧪
+Pour tester que le serveur d'identité est capable d'interroger l'instance Nextcloud et de répondre avec le token utilisateur, on peut tester la communication entre B3Desk et ce serveur (et par la même occasion le Nextcloud) en ssh depuis le serveur B3Desk :
+
+`curl --location --request POST '<url_de_la_variable_NC_LOGIN_API_URL>' --header 'x-api-key: <NC_LOGIN_API_KEY>' --header 'Content-Type: application/json' --data-raw '{"username":"<identifiant_de_lutilisateur>"}'`
+
+la réponse devrait être au moins la suivante (si le `nc_login` est maquant dans la réponse, il sera ajouté par B3Desk) :
+```
+{
+    "nctoken": "token-de-lutilisateur",
+    "nclocator": "url_nextcloud",
+}
+```
+🧪
 
 ##### Cas particulier : L'identifiant de l'utilisateur B3Desk n'est pas le même que l'identifiant Nextcloud
 
@@ -107,13 +105,15 @@ Dans le cas où l'identifiant d'un utilisateur donné sur B3Desk n'est pas le m�
 
 B3Desk va donc requêter un autre serveur d'identité pour, à partir de l'email, retrouver l'identifiant Nextcloud de l'utilisateur. Il faut suivre la documentation {ref}`Jumelage avec Apps<maintainers/settings:Jumelage avec Apps>` pour bien configurer B3Desk et le serveur d'identité secondaire.
 
-> Pour tester que B3Desk est bien capable de retrouver l'identifiant Nextcloud d'un utilisateur à partir de son mail, on peut exécuter la commande de cette documentation :
->
-> ```
-> docker exec -it <id_du_conteneur_B3Desk> flask get-apps-id <email_de_lutilisateur@mail.fr>
-> ```
->
-> Cette commande devrait répondre `ID from secondary identity provider for email <email_de_lutilisateur@mail.fr>: <identifiant_nextcloud_de_lutilisateur>`
+🧪
+Pour tester que B3Desk est bien capable de retrouver l'identifiant Nextcloud d'un utilisateur à partir de son mail, on peut exécuter la commande de cette documentation :
+
+```
+docker exec -it <id_du_conteneur_B3Desk> flask get-apps-id <email_de_lutilisateur@mail.fr>
+```
+
+Cette commande devrait répondre `ID from secondary identity provider for email <email_de_lutilisateur@mail.fr>: <identifiant_nextcloud_de_lutilisateur>`
+🧪
 
 ### Utilisation du Filepicker
 
