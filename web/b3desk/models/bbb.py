@@ -198,7 +198,11 @@ class BBB:
         data = self.bbb_response(request)
 
         # non default files are sent later
-        if self.meeting.non_default_files:
+        if (
+            self.meeting.non_default_files
+            and "returncode" in data
+            and data["returncode"] == "SUCCESS"
+        ):
             xml = self.meeting_file_addition_xml(self.meeting.non_default_files)
             request = self.bbb_request(
                 "insertDocument", params={"meetingID": self.meeting.meetingID}
@@ -320,7 +324,9 @@ class BBB:
                     f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
                 ).hexdigest()
                 current_app.logger.info(
-                    "Add document on BigBLueButton room creation for file %s",
+                    "Add document on BigBLueButton room %s %s creation for file %s",
+                    self.meeting.name,
+                    self.meeting.id,
                     meeting_file.title,
                 )
                 url = url_for(
