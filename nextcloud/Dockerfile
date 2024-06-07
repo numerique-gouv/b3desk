@@ -1,4 +1,4 @@
-FROM nextcloud:25
+FROM nextcloud:28.0.6
 
 # cf https://github.com/nextcloud/docker/blob/master/24/apache/Dockerfile
 

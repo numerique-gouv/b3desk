@@ -47,8 +47,6 @@ services:
         condition: service_healthy
     build:
       context: ./nextcloud
-    env_file:
-      - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NEXTCLOUD_SESSIONTOKEN_KEY
     environment:
       - POSTGRES_DB=nextcloud
       - POSTGRES_USER=postgres
@@ -62,6 +60,7 @@ services:
       - NEXTCLOUD_ALLOW_ORIGIN=http://localhost:5000  # allow local browser to pick nextcloud files
     volumes:
       - ./nextcloud/html:/var/www/html
+      - ./nextcloud/conf:/var/www/conf  # to share Nextcloud Sessiontoken generated key file
     ports:
       - 80:80
     healthcheck:
@@ -75,11 +74,12 @@ services:
       nextcloud:
         condition: service_healthy
     env_file:
-      - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NC_LOGIN_API_KEY and NEXTCLOUD_SESSIONTOKEN_KEY
+      - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NC_LOGIN_API_KEY
     environment:
       - NC_HOST=http://nextcloud  # nextcloud service in docker network
     volumes:
       - ./tokenmock:/var/www/html
+      - ./nextcloud/conf:/var/www/conf  # to get shared Nextcloud Sessiontoken generated key
     ports:
       - 9000:80
 

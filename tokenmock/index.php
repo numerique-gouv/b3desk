@@ -11,7 +11,7 @@
 
 $config=include('./config.php');
 
-$API_KEY=$config['API_KEY'];
+$NC_LOGIN_API_KEY=$config['NC_LOGIN_API_KEY'];
 $NEXTCLOUD_SESSIONTOKEN_ENDPOINT=$config['NC_HOST'].'/apps/sessiontoken/token';
 $NEXTCLOUD_SESSIONTOKEN_KEY=$config['NEXTCLOUD_SESSIONTOKEN_KEY'];
 
@@ -19,7 +19,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 $LOGIN=$data['username'];
 
-if (isset($_SERVER["HTTP_X_API_KEY"]) && $_SERVER["HTTP_X_API_KEY"]==$API_KEY) {
+if (isset($_SERVER["HTTP_X_API_KEY"]) && $_SERVER["HTTP_X_API_KEY"]==$NC_LOGIN_API_KEY) {
     header("Content-Type: application/json");
 
 

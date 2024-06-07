@@ -11,6 +11,7 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -41,7 +42,14 @@ def make_nextcloud_credentials_request(url, payload, headers):
                 data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
         return data
 
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(
+            "Unable to contact %s with payload %s and header %s, %s",
+            url,
+            payload,
+            headers,
+            e,
+        )
         return None
 
 
@@ -143,20 +151,32 @@ def get_secondary_identity_provider_id_from_email(email):
     return user["username"]
 
 
+def has_secondary_identity_with_email(email):
+    return current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] and email
+
+
+def can_get_file_sharing_credentials(preferred_username, email):
+    is_cloud_configured = (
+        current_app.config["NC_LOGIN_API_KEY"]
+        and current_app.config["NC_LOGIN_API_URL"]
+        and current_app.config["FILE_SHARING"]
+    )
+    return (
+        is_cloud_configured
+        and has_secondary_identity_with_email(email)
+        or preferred_username
+    )
+
+
 def get_user_nc_credentials(preferred_username="", email=""):
-    if (
-        not current_app.config["NC_LOGIN_API_KEY"]
-        or not current_app.config["NC_LOGIN_API_URL"]
-        or not current_app.config["FILE_SHARING"]
-        or not (preferred_username or email)
-    ):
+    if not can_get_file_sharing_credentials(preferred_username, email):
         current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
     nc_username = preferred_username
-    if current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] and email:
+    if has_secondary_identity_with_email(email):
         try:
             nc_username = get_secondary_identity_provider_id_from_email(email=email)
         except requests.exceptions.HTTPError:
@@ -166,8 +186,9 @@ def get_user_nc_credentials(preferred_username="", email=""):
     payload = {"username": nc_username}
     headers = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
     current_app.logger.info(
-        "Retrieve NC credentials from NC_LOGIN_API_URL %s "
-        % current_app.config["NC_LOGIN_API_URL"]
+        "Retrieve NC credentials from NC_LOGIN_API_URL %s for user %s",
+        current_app.config["NC_LOGIN_API_URL"],
+        nc_username,
     )
     result = make_nextcloud_credentials_request(
         current_app.config["NC_LOGIN_API_URL"], payload, headers
@@ -195,31 +216,26 @@ def update_user_nc_credentials(user, user_info):
         and user.nc_locator
         and user.nc_token
         and (
-            (remaining_time := (datetime.now() - user.nc_last_auto_enroll)).days
+            (elapsed_time := (datetime.now() - user.nc_last_auto_enroll)).days
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
         current_app.logger.info(
             "Nextcloud login for user %s not to be refreshed for %s",
             user,
-            remaining_time,
+            timedelta(days=current_app.config["NC_LOGIN_TIMEDELTA_DAYS"])
+            - elapsed_time,
         )
         return False
 
-    preferred_username = (
-        user_info.get("preferred_username")
-        if current_app.config["FILE_SHARING"]
-        else None
+    data = get_user_nc_credentials(
+        preferred_username=(
+            user_info.get("preferred_username")
+            if current_app.config["FILE_SHARING"]
+            else None
+        ),
+        email=(user_info.get("email") if current_app.config["FILE_SHARING"] else None),
     )
-
-    if current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"]:
-        data = get_user_nc_credentials(
-            email=(
-                user_info.get("email") if current_app.config["FILE_SHARING"] else None
-            )
-        )
-    else:
-        data = get_user_nc_credentials(preferred_username=preferred_username)
 
     if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
         current_app.logger.info(
