@@ -15,7 +15,7 @@ sed -i -e '5!d' -e 's/[\t ]//g' /var/www/conf/key.txt
 su -p "www-data" -s /bin/sh -c "php occ app:enable sessiontoken"
 
 ## install and configure webapppassword
-wget -qO- https://github.com/digital-blueprint/webapppassword/releases/download/v23.1.0/webapppassword.tar.gz | tar xvz -C /var/www/html/apps/
+wget -qO- https://github.com/digital-blueprint/webapppassword/releases/download/v24.4.0/webapppassword.tar.gz | tar xvz -C /var/www/html/apps/
 chown -R www-data: /var/www/html/apps/webapppassword
 sed -i "/'datadirectory'/a 'webapppassword.origins' => ['$NEXTCLOUD_ALLOW_ORIGIN']," /var/www/html/config/config.php
 su -p "www-data" -s /bin/sh -c "php occ app:enable webapppassword"
