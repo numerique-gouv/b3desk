@@ -204,6 +204,9 @@ class Meeting(db.Model):
             not is_meeting_available and (meeting_role == Role.moderator) and create
         )
         if should_create_room:
+            current_app.logger.info(
+                "Request BBB room creation %s %s", self.name, self.id
+            )
             data = self.create_bbb()
             if "returncode" in data and data["returncode"] == "SUCCESS":
                 is_meeting_available = True
