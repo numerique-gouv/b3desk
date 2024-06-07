@@ -2874,12 +2874,12 @@ files = [
 
 [[package]]
 name = "webdavclient3"
-version = "3.14.6"
+version = "3.14.5"
 description = "WebDAV client, based on original package https://github.com/designerror/webdav-client-python but uses requests instead of PyCURL"
 optional = false
 python-versions = "*"
 files = [
-    {file = "webdavclient3-3.14.6.tar.gz", hash = "sha256:bcd22586bb0d58abc26ca56054fd04228e704bd36073c3080f4597c1556c880d"},
+    {file = "webdavclient3-3.14.5.tar.gz", hash = "sha256:6072f9a583059f8ff313f8544d415b4191fc89bdf6230259b0527b706ab1837b"},
 ]
 
 [package.dependencies]
@@ -2994,4 +2994,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "a09c3ed719cf14bc6f49546fdb07e26b4ebe58dfe889d8f2d9c542654f4c5d0c"
+content-hash = "55413366dd708036d457274f3330f6900229fdf172893036fdf682347ae94e13"
