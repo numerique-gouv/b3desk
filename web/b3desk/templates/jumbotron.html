@@ -26,6 +26,57 @@
     </div>
 </div>
 {% else %}
+<!-- Contenu de la homepage non connecté avec la suite -->
+<div class="lasuite-homepage__wrapper">
+    <div class="fr-container fr-p-0 lasuite-container">
+        <div class="lasuite-homepage__content">
+            <div class="fr-container--fluid">
+                <div class="fr-grid-row">
+                    <div class="lasuite-homepage__main-col">
+                        <div class="lasuite-homepage__tagline-container">
+                            <h1 class="lasuite-homepage__tagline">
+                                <strong class="lasuite-homepage__tagline-strong">
+                                    {{ service_title }}
+                                </strong>
+                                <br>
+                                {% trans %}{{ service_tagline }}{% endtrans %}
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="lasuite-homepage__secondary-col">
+                        <div class="lasuite-homepage__form-container">
+                            <div class="lasuite-homepage__form">
+                                <div>
+                                    <h2>{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h2>
+                                    <p>
+                                        {% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}<br><br>
+                                        <a class="fr-btn" target="_blank" rel="noopener" href="{{ url_for("public.welcome") }}">{% trans %}Se connecter ou créer un compte{% endtrans %}</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <picture class="lasuite-homepage__bg">
+        <source
+            srcset="
+                https://integration.lasuite.numerique.gouv.fr/api/backgrounds/v1/default.avif
+            "
+            type="image/avif"
+        />
+        <img
+            src="https://integration.lasuite.numerique.gouv.fr/api/backgrounds/v1/default.jpg"
+            alt=""
+            width="1920"
+            height="1200"
+        />
+    </picture>
+</div>
+<!-- Contenu de la homepage non connecté sans la suite -->
+{#
 <div class="highlight-background {% if mail_meeting %}primary-section{% endif %}{% if not mail_meeting %}secondary-section{% endif %}">
     <div class="fr-container">
         <div class="fr-grid-row">
@@ -57,6 +108,7 @@
         </div>
     </div>
 </div>
+
 {% if mail_meeting %}
 <div class="fr-container fr-my-4w">
     <div class="fr-grid-row">
@@ -104,4 +156,5 @@
         {% endif %}
     </div>
 </div>
+#}
 {% endif %}
