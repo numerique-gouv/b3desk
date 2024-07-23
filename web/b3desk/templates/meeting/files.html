@@ -129,7 +129,7 @@
                 <caption>Vos fichiers associés sont :</caption>
                 <thead>
                     <tr>
-                        <th scope="col">Défaut</th>
+                        <!-- <th scope="col">Défaut</th> -->
                         <th scope="col">Téléchargeable</th>
                         <th id="titleFileColumn" scope="col">Titre</th>
                         <th scope="col">Ajouté le</th>
@@ -176,7 +176,7 @@
                     </dialog>
 
                     <tr id="{{ file.id }}" >
-                        <td>
+                        <!-- <td>
                             <div class="fr-toggle">
                                 {% if file.is_default %}
                                 <input disabled onclick=submitDefaultFile(event) checked type="checkbox" class="fr-toggle__input" id="isDefault-{{ file.id }}">
@@ -186,7 +186,7 @@
                                 <label class="fr-toggle__label" for="isDefault-{{ file.id }}" data-fr-checked-label="Oui" data-fr-unchecked-label="Non"></label>
                                 {% endif %}
                             </div>
-                        </td>
+                        </td> -->
                         <td>
                             <div class="fr-toggle">
                                 {% if file.is_downloadable %}

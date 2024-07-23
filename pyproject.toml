@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "b3desk"
-version = "1.2.15"
+version = "1.2.16"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
