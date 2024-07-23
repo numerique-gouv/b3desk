@@ -326,8 +326,9 @@ def test_create_with_only_a_default_file(
 ):
     """Tests the BBB meeting creation request.
 
-    As there is a default file attached to the meeting, it should be
-    sent right away, and no background upload task should be called.
+    A default file, which is no longer a real functionnality, attached
+    to the meeting, should always be sent asynchronously, background
+    upload task should be called.
     """
     client_app.app.config["FILE_SHARING"] = True
 
@@ -411,7 +412,7 @@ def test_create_with_only_a_default_file(
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
     }
 
-    assert not mocked_background_upload.called
+    assert mocked_background_upload.called
 
 
 def test_create_with_files(
