@@ -25,7 +25,7 @@
         {% endif %}
     </div>
 </div>
-{% else %}
+{% elif config.get("ENABLE_LASUITENUMERIQUE") %}
 <!-- Contenu de la homepage non connecté avec la suite -->
 <div class="lasuite-homepage__wrapper">
     <div class="fr-container fr-p-0 lasuite-container">
@@ -75,8 +75,8 @@
         />
     </picture>
 </div>
+{% else %}
 <!-- Contenu de la homepage non connecté sans la suite -->
-{#
 <div class="highlight-background {% if mail_meeting %}primary-section{% endif %}{% if not mail_meeting %}secondary-section{% endif %}">
     <div class="fr-container">
         <div class="fr-grid-row">
@@ -156,5 +156,4 @@
         {% endif %}
     </div>
 </div>
-#}
 {% endif %}
