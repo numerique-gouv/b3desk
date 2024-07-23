@@ -17,6 +17,9 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/remixicon/remixicon.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spinner.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='presentation/css/all.css') }}">
+        {% if config.get("ENABLE_LASUITENUMERIQUE") %}
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lasuite/homepage-gaufre.css') }}">
+        {% endif %}
         <script>
             function generatePassWord(n){
                 var result = '';
@@ -33,7 +36,11 @@
     <body>
         <div id="js-modal-page">
             {% block header %}
-            {% include 'header.html' %}
+            {% if config.get("ENABLE_LASUITENUMERIQUE") and not user %}
+                {% include 'header-lasuite.html' %}
+            {% else %}
+                {% include 'header.html' %}
+            {% endif %}
             {% endblock %}
             <main role="main" id="main" >
                 {% with messages = get_flashed_messages(with_categories=true, category_filter=["error","success", "message", "warning"]) %}
@@ -78,6 +85,9 @@
                     g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
                 })();
             </script>
+            {% endif %}
+            {% if config.get("ENABLE_LASUITENUMERIQUE") %}
+                <script id="lasuite-gaufre-script" async defer src="https://integration.lasuite.numerique.gouv.fr/api/v1/gaufre.js"></script>
             {% endif %}
             {% block js %}{% endblock %}
         </div>

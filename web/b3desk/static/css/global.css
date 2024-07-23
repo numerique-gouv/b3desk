@@ -196,6 +196,12 @@ form.delete {
 	opacity: 0;
   }
 
+/* homepage lasuite */
+
+.lasuite-homepage__content {
+  margin-bottom: calc(-7rem + 2px);
+}
+
 /* modal */
 .scampi-modal {
   left: 0;

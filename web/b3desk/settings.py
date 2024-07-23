@@ -1048,3 +1048,6 @@ class MainSettings(BaseSettings):
 
     SENTRY_DSN: Optional[str] = None
     """Sentry DSN to catch exceptions."""
+
+    ENABLE_LASUITENUMERIQUE: Optional[bool] = False
+    """Enable LaSuite numerique homepage style."""
