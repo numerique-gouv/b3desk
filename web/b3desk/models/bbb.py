@@ -189,21 +189,23 @@ class BBB:
 
         # default file is sent right away since it is need as the background
         # image for the meeting
-        xml = (
-            self.meeting_file_addition_xml([self.meeting.default_file])
-            if self.meeting.default_file
-            else None
-        )
-        request = self.bbb_request("create", "POST", params=params, data=xml)
+        # xml = (
+        #     self.meeting_file_addition_xml([self.meeting.default_file])
+        #     if self.meeting.default_file
+        #     else None
+        # )
+        # TODO: xml as data is not sent anymore at BBB meeting creation to avoid delay
+        request = self.bbb_request("create", "POST", params=params)
         data = self.bbb_response(request)
 
         # non default files are sent later
         if (
-            self.meeting.non_default_files
+            self.meeting.files
             and "returncode" in data
             and data["returncode"] == "SUCCESS"
         ):
-            xml = self.meeting_file_addition_xml(self.meeting.non_default_files)
+            xml = self.meeting_file_addition_xml(self.meeting.files)
+            # TODO: send all files and not only the non default ones
             request = self.bbb_request(
                 "insertDocument", params={"meetingID": self.meeting.meetingID}
             )
