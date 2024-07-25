@@ -58,9 +58,13 @@
                                 <span class="fr-icon-clipboard-line"></span>
                             </button>
                             {% if recording.playbacks.get("video") %}
-                            <a class="fr-btn fr-btn--primary fr-mx-1w"" download target="_blank" rel="noopener" href="{{ recording.playbacks['video'].url }}" title="Voir l'enregistrement mp4 (fichier téléchargeable) et le chat">mp4</a>
+                            {% if recording.playbacks.video.get("direct_link") %}
+                            <button class="fr-btn fr-btn--primary fr-mx-1w" data-fr-opened="false" aria-controls="share-video-{{ recording.recordID }}" title="Partager l'enregistrement">
+                                <span class="fr-icon-git-branch-line" aria-hidden="true"></span>
+                            </button>
                             {% endif %}
-                            <button class="fr-btn fr-btn--secondary fr-fi-delete-line fr-mx-1w""  data-fr-opened="false" aria-controls="delete-video-{{ recording.recordID }}">
+                            {% endif %}
+                            <button class="fr-btn fr-btn--secondary fr-fi-delete-line fr-mx-1w"  data-fr-opened="false" aria-controls="delete-video-{{ recording.recordID }}">
                                 {% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}
                             </button>
                         </div>
@@ -144,6 +148,40 @@
                                     </li>
                                 </ul>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Partager la video -->
+    <dialog id="share-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="share-video-{{ recording.recordID }}-title">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" aria-controls="share-video-{{ recording.recordID }}" title="Fermer">
+                                Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="share-video-{{ recording.recordID }}-title" class="fr-modal__title">
+                                <span class="" aria-hidden="true"></span>
+                                Partager l'enregistrement de "<em>{{ recording_name }}</em>"
+                            </h1>
+                            {% if recording.playbacks.get("video") %}
+                            {% if recording.playbacks.video.get("direct_link") %}
+                            <div class="fr-grid-row fr-grid-row--center">
+                                <input class="fr-input fr-col-9" type="text" readonly value="{{ recording.playbacks.video.direct_link }}">
+                                <button type="button" class="fr-btn fr-btn--sm fr-btn--primary fr-col-3" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ recording.playbacks.video.direct_link }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
+                                    <span class="fr-icon-clipboard-line"></span> 
+                                    Copier
+                                </button>
+                            </div>
+                            {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
