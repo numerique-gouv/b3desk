@@ -26,10 +26,12 @@
             {% trans %}Renommer l’enregistrement{% endtrans %}
         </button>
     </h3>
+    <span>
         {% trans start_date=recording.start_date|dateformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
         Enregistré le {{ start_date }} -
         Expire le {{ expiration_date }}
         {% endtrans %}
+    </span>
     <div class="fr-table fr-table--bordered fr-table--layout-fixed">
         <table>
             <thead>
@@ -53,18 +55,19 @@
                     </td>
                     <td style="vertical-align: middle">
                         <div class="fr-grid-row fr-grid-row--gutters btn-actions">
-                            <a class="fr-btn fr-btn--primary fr-mx-1w" target="_blank" rel="noopener" href="{{ playback.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
-                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-mx-1w"" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ playback.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
+                            <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ playback.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
+                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ playback.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
                                 <span class="fr-icon-clipboard-line"></span>
                             </button>
                             {% if recording.playbacks.get("video") %}
+                            <a class="fr-btn fr-btn--primary fr-ml-2w" target="_blank" rel="noopener" href="{{ recording.playbacks['video'].url }}" title="Voir l'enregistrement mp4"><span class="fr-icon-film-line"></span></a>
                             {% if recording.playbacks.video.get("direct_link") %}
-                            <button class="fr-btn fr-btn--primary fr-mx-1w" data-fr-opened="false" aria-controls="share-video-{{ recording.recordID }}" title="Partager l'enregistrement">
-                                <span class="fr-icon-git-branch-line" aria-hidden="true"></span>
+                            <button class="fr-btn fr-btn--primary fr-ml-1v" data-fr-opened="false" aria-controls="share-video-{{ recording.recordID }}" title="Partager l'enregistrement mp4">
+                                <span class="fr-icon-links-line" aria-hidden="true"></span>
                             </button>
                             {% endif %}
                             {% endif %}
-                            <button class="fr-btn fr-btn--secondary fr-fi-delete-line fr-mx-1w"  data-fr-opened="false" aria-controls="delete-video-{{ recording.recordID }}">
+                            <button class="fr-btn fr-btn--secondary fr-fi-delete-line fr-ml-2w"  data-fr-opened="false" aria-controls="delete-video-{{ recording.recordID }}">
                                 {% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}
                             </button>
                         </div>
@@ -171,6 +174,16 @@
                                 <span class="" aria-hidden="true"></span>
                                 Partager l'enregistrement de "<em>{{ recording_name }}</em>"
                             </h1>
+                            <p>
+                                Cet enregistrement est conservé temporairement sur ce service. Pour le mettre à disposition de manière pérenne, fournissez ce lien à des services dédiés à la diffusion
+                                {%- if config["VIDEO_STREAMING_LINKS"] -%}
+                                    {%- for service, link in config["VIDEO_STREAMING_LINKS"].items() -%}
+                                        {{ " tels que " if loop.first else ", " if not loop.last else " ou " }}<a href="{{link}}">{{service}}</a>
+                                    {%- endfor -%}
+                                {%- endif -%}
+                                .
+                                En cas de diffusion publique, veillez préalablement à obtenir l'autorisation des participants.
+                            </p>
                             {% if recording.playbacks.get("video") %}
                             {% if recording.playbacks.video.get("direct_link") %}
                             <div class="fr-grid-row fr-grid-row--center">
