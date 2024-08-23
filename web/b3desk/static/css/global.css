@@ -269,6 +269,11 @@ dialog.scampi-modal {
   border-bottom: 2px solid #9C9C9C;
   word-break: break-word;
 }
+
+.fr-modal__body code {
+  word-break: break-word;
+}
+
 button.btn-copy {
   height: 100%;
 }
@@ -321,6 +326,16 @@ color: #000091;  }
 @media only screen and (max-width : 992px) {
   .rf-col.bottom-align-container > button {
     bottom: calc(1.5rem/2);
+  }
+  .lasuite-homepage__content .fr-grid-row {
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
+  .lasuite-homepage__content .lasuite-homepage__secondary-col {
+    margin: 0rem auto 2rem;
+  }
+  .fr-header__menu-links .lasuite-gaufre-btn {
+    display: none !important;
   }
 }
 
@@ -375,6 +390,13 @@ color: #000091;  }
   }
   .modal-body p, .modal-body label{
     font-size:0.8em;
+  }
+  .lasuite-homepage__content .fr-grid-row {
+    flex-wrap: wrap;
+    gap: 0rem;
+  }
+  .lasuite-homepage__content .lasuite-homepage__secondary-col {
+    margin: 2rem auto 2rem;
   }
 }
 
