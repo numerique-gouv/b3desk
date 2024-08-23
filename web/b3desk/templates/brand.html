@@ -10,6 +10,15 @@
             <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-616" aria-haspopup="menu" id="button-617" title="Menu">
                 Menu
             </button>
+            {% if config.get("ENABLE_LASUITENUMERIQUE") %}
+                <button
+                    type="button"
+                    class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
+                    title="Les services de La Suite numérique"
+                    >
+                    Les services de La Suite numérique
+                </button>
+            {% endif %}
         </div>
     </div>
     <div class="fr-header__service">
