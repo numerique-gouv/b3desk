@@ -269,6 +269,11 @@ dialog.scampi-modal {
   border-bottom: 2px solid #9C9C9C;
   word-break: break-word;
 }
+
+.fr-modal__body code {
+  word-break: break-word;
+}
+
 button.btn-copy {
   height: 100%;
 }
