@@ -1051,3 +1051,20 @@ class MainSettings(BaseSettings):
 
     ENABLE_LASUITENUMERIQUE: Optional[bool] = False
     """Enable LaSuite numerique homepage style."""
+
+    VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}
+    """List of streaming service for video sharing."""
+
+    @field_validator("VIDEO_STREAMING_LINKS", mode="before")
+    def get_video_streaming_links(
+        cls,
+        video_streaming_links: Optional[dict[str, str]],
+        info: ValidationInfo,
+    ) -> dict[str, str]:
+        if not video_streaming_links:
+            return {}
+
+        if isinstance(video_streaming_links, str):
+            return json.loads(video_streaming_links)
+
+        return video_streaming_links
