@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-09-11 16:51+0200\n"
+"POT-Creation-Date: 2024-09-11 18:44+0200\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -821,141 +821,355 @@ msgid ""
 "noreferrer\" >annuaire de l'administration</a>"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:6
-msgid ""
-"Le webinaire, Visio-ecoles/colleges/lycees/agents de l’État permet "
-"d’accéder à la page d’accueil du sous-domaine internet utilisé par l’Etat"
-" pour publier sur internet sa solution de webconférence "
-"interministérielle. Cette mesure facilite l’accès à cette solution pour "
-"tous les agents de l’Etat tout en permettant également de coopérer avec "
-"les partenaires du service public."
-msgstr ""
-
 #: web/b3desk/templates/footer/cgu.html:7
-msgid ""
-"Le sous-domaine « <a class=\"rf_link\" "
-"href=\"https://webinaire.numerique.gouv.fr\" target=\"_blank\" "
-"rel=\"noopener\">https://webinaire.numerique.gouv.fr</a> »  est piloté "
-"par la Direction interministérielle du numérique (DINUM)"
+msgid "Objet"
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:8
 msgid ""
-"Les sous-domaines  <a class=\"rf_link\" href=\"https://visio-"
-"agents.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
-"agents.education.fr</a> / <a class=\"rf_link\" href=\"https://visio-"
-"ecoles.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
-"ecoles.education.fr</a> / <a class=\"rf_link\" href=\"https://visio-"
-"colleges.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
-"colleges.education.fr</a> / <a class=\"rf_link\" href=\"https://visio-"
-"lycees.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
-"lycees.education.fr</a> sont pilotés par le Ministère de l’Éducation "
-"Nationale, de la Jeunesse et des Sports."
+"Les présentes conditions générales d’utilisation (CGU) ont pour objet de "
+"déterminer les conditions d’accès et les règles d’utilisation de VISIO-"
+"AGENTS (le Service) par ses Utilisateurs et Utilisatrices."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:9
 msgid ""
-"Le service est maintenu en conditions opérationnelles et ses évolutions "
-"sont assurées par le Ministère de l’Éducation Nationale, de la Jeunesse "
-"et des Sports, ci-après dénommé « l’éditeur »."
+"L’accès au Service est subordonné au respect des CGU. La Direction du "
+"numérique pour l’éducation (DNE) se réserve le droit de modifier ou de "
+"mettre à jour unilatéralement ces CGU afin de se conformer aux évolutions"
+" légales et techniques."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:10
+msgid ""
+"Les utilisateurs doivent consulter régulièrement la dernière version des "
+"CGU disponible en permanence sur le site."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:12
+msgid "Code de conduite et responsabilités des Utilisateurs"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:13
+msgid ""
+"L’utilisation du Service ministériel VISIO-AGENTS est libre et gratuite "
+"pour les agents du ministère de l’Education Nationale et de la Jeunesse "
+"(MENJ). Les partenaires du service public voire le grand public (citoyen,"
+" entreprise, association) peuvent être invités à participer sous la "
+"responsabilité des agents du ministère."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:14
+msgid ""
+"L’Utilisateur ou l’Utilisatrice peut, s’il ou elle le souhaite, utiliser "
+"quelque pseudonyme qu’il lui plaira de choisir dans le respect des règles"
+" suivantes : sont interdits les pseudonymes relevant de l’insulte, de "
+"l’injure, évoquant des propos, situations ou pratiques obscènes, "
+"grossières, à caractère sexuel ou attentatoire à la dignité humaine ou "
+"aux bonnes mœurs. Sont également prohibés les pseudonymes pouvant "
+"entraîner un risque de confusion dans l’esprit du public quant à l’auteur"
+" du message ou à sa qualité ou qualification, ainsi que ceux faisant "
+"référence directement ou indirectement à un signe commercial protégé, que"
+" l’utilisation du pseudonyme soit ou non dénigrante."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:16
+msgid "Description du Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:17
+msgid ""
+"Le Service regroupant VISIO-AGENTS et CLASSE VIRTUELLE est un outil de "
+"visioconférence en ligne proposé par la DNE, qui en assure le maintien en"
+" conditions opérationnelles et les évolutions."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:18
 msgid ""
 "Toute utilisation des ressources de domaine de publication est "
 "subordonnée au respect des présentes conditions générales d’utilisation "
 "(CGU)."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:12
-msgid "Objet"
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:13
-msgid ""
-"Le sous-domaine permet de publier sur internet l’offre de service "
-"interministérielle de webconférence.</p><a class=\"anchor hidden-xs\" "
-"href=\"#Code-de-conduite-et-responsabilités-des-Utilisateurs\" title"
-"=\"Code-de-conduite-et-responsabilités-des-Utilisateurs\">"
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:14
-msgid "Code de conduite et responsabilités des Utilisateurs"
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:15
-msgid ""
-"L’utilisation de ce service interministériel est libre et gratuite pour "
-"les utilisateurs des services de l’Etat, et sur invitation, pour les "
-"partenaires du service public voire le grand public (citoyen, entreprise,"
-" association).</p><a class=\"anchor hidden-xs\" href=\"#Accès-au-site\" "
-"title=\"Accès-au-site\"><i class=\"ri-links-line\"></i></a><h2 id"
-"=\"Accès-au-site\">Accès au site</h2><p>L’utilisateur accède à la page "
-"d’accueil du site en utilisant le lien indiqué au paragraphe engagements "
-"et responsabilités de l’éditeur."
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:16
-msgid ""
-"Sitôt entré sur la page d’accueil, l’utilisateur peut en consulter les "
-"contenus ou accéder à un salon en saisissant le nom de ce salon ou, pour "
-"les agents de l’Etat, en créant ledit salon."
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:17
-msgid ""
-"À l’instant où l’utilisateur accède à un salon de webconférence, il "
-"devient seul responsable des données et des contenus qu’il échange sur le"
-" service interministériel. Il se doit de respecter les principes de la "
-"netiquette."
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:18
-msgid "Usage professionnel"
-msgstr ""
-
 #: web/b3desk/templates/footer/cgu.html:19
 msgid ""
-"Le service de Webinaire, Visio-ecoles/colleges/lycees/agents mis à "
-"disposition est à usage professionnel."
+"Le Service permet notamment la création d’espaces de discussion en ligne "
+"et a été conçu pour répondre aux besoins de communication virtuelle des "
+"agents du ministère de l’Éducation Nationale et de la Jeunesse et évolue "
+"au fil de l’eau, selon un cycle d’amélioration continue dans lequel les "
+"utilisateurs sont placés au centre de la démarche et de l’attention de "
+"l’équipe qui pilote le produit."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:20
 msgid ""
-"Seule l’utilisation à usage professionnel de cette ressource mise à "
-"disposition est tolérée, l’utilisateur est attentif à ce que ces usages "
-"demeurent raisonnables et ne mettent pas en péril le fonctionnement du "
-"service auquel il accède."
+"Le Service VISIO-AGENTS est un logiciel libre basé sur un logiciel "
+"développé par la société Blindside Networks."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:21
-msgid "Engagements et responsabilités de l’éditeur"
+msgid ""
+"L’hébergement du Service et des données est réalisé chez l’entreprise "
+"Scaleway, validée offre Cloud Cercle 3."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:22
 msgid ""
-"L’éditeur donne accès au service interministériel de webconférence aux "
-"adresses suivantes : (<a class=\"rf_link\" "
-"href=\"https://webinaire.numerique.gouv.fr\" target=\"_blank\" "
-"rel=\"noopener\">https://webinaire.numerique.gouv.fr</a> / <a "
-"class=\"rf_link\" href=\"https://visio-agents.education.fr\" "
-"target=\"_blank\" rel=\"noopener\">https://visio-agents.education.fr</a> "
-"/ <a class=\"rf_link\" href=\"https://visio-ecoles.education.fr\" "
-"target=\"_blank\" rel=\"noopener\">https://visio-ecoles.education.fr</a> "
-"/ <a class=\"rf_link\" href=\"https://visio-colleges.education.fr\" "
-"target=\"_blank\" rel=\"noopener\">https://visio-"
-"colleges.education.fr</a> / <a class=\"rf_link\" href=\"https://visio-"
-"lycees.education.fr\" target=\"_blank\" rel=\"noopener\">https://visio-"
-"lycees.education.fr</a> ).</p><p>L’éditeur assure la mise à jour du "
-"service et le maintien en condition opérationnel du service de "
-"consultation de sa page d’accueil sous le pilotage de l’éditeur."
+"La société française Arawa assure l’infogérance et la surveillance des "
+"infrastructures de la solution de visioconférence en heures ouvrées."
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:23
+msgid ""
+"L’équipe nationale du pôle FOAD assure l’exploitation de la solution de "
+"frontal de gestion des salons en heures ouvrées."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:25
+msgid "Accès et utilisation du Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:26
+msgid "Accès au Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:27
+msgid ""
+"Le Service est accessible depuis un navigateur récent connecté à "
+"Internet, quel que soit le terminal utilisé."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:28
+msgid ""
+"Vous pouvez accéder à la page d’accueil du site en utilisant l’adresse : "
+"<a class=\"rf_link\" href=\"https://visio-agents.education.fr\" "
+"target=\"_blank\" rel=\"noopener\">https://visio-agents.education.fr</a> "
+"ou à votre service académique de Classe Virtuelle depuis votre portail <a"
+" class=\"rf_link\" href=\"https://apps.education.fr\" target=\"_blank\" "
+"rel=\"noopener\">https://apps.education.fr</a>."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:29
+msgid ""
+"Le service est accessible 365 jours par an et 24 heures sur 24, sauf cas "
+"de force majeure, évènements hors de contrôle de la DNE et/ou de "
+"l’hébergeur et à l’exception d’opérations de maintenances ou d’incidents "
+"ne pouvant être traités par le support que lors des jours ouvrés, en "
+"heures ouvrées."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:30
+msgid ""
+"Les incidents ne seront traités par le support que lors de ses horaires "
+"d’ouvertures les jours ouvrés, en heures ouvrées."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:31
+msgid "Utilisation du Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:32
+msgid ""
+"Le Service est mis à disposition des agents publics du ministère de "
+"l’Éducation nationale et de la Jeunesse et de leurs collaborateurs pour "
+"un usage strictement professionnel."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:33
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est responsable des données, contenus ou "
+"propos qu'il ou elle échange grâce au Service."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:34
+msgid ""
+"L'Utilisateur ou l’Utilisatrice ne partage pas en ligne et ni ne "
+"communique de contenus ou informations contraires aux dispositions "
+"légales et réglementaires en vigueur. Il ou elle veille notamment à ne "
+"jamais tenir de propos ou échanger de contenus insultants, diffamatoires "
+"ou indécents, ou qui porteraient atteinte aux droits des tiers, y compris"
+" leurs droits de propriété intellectuelle."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:35
+msgid ""
+"L’Utilisateur ou l’Utilisatrice doit être attentif à ce que ces usages "
+"demeurent raisonnables et ne mettent pas en péril la sécurité "
+"informatique du Service."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:36
+msgid ""
+"L’Utilisateur ou l’Utilisatrice utilise le Service dans le respect du "
+"secret professionnel et fait preuve de discrétion professionnelle pour "
+"tous les faits, informations ou documents dont il ou elle a connaissance "
+"dans le cadre de l’utilisation du Service."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:37
+msgid ""
+"Sauf preuve contraire, toute connexion au Service ou transmission de "
+"données effectuées à partir du compte d’un Utilisateur ou d’une "
+"Utilisatrice, sera réputée avoir été effectuée par ce dernier ou cette "
+"dernière."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:38
+msgid ""
+"Si l’Utilisateur ou l’Utilisatrice estime que son identité académique est"
+" compromise, il ou elle doit modifier son mot de passe sans délai."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:39
+msgid ""
+"En cas de compromission de son compte, l’Utilisateur ou l’Utilisatrice "
+"doit contacter l’équipe support :"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:41
+msgid "Limitations d’utilisation du Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:42
+msgid ""
+"Le Service est prévu pour le traitement et le partage de données sans "
+"sensibilité particulière."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:43
+msgid ""
+"Tout utilisateur ou utilisatrice qui constate la présence de contenus "
+"illicites, inappropriés ou contraires aux présentes conditions "
+"d’utilisation peut le signaler en s’adressant au support :"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:45
+msgid "Disponibilité et sécurité du Service"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:46
+msgid ""
+"La DNE s’engage à mettre en œuvre tous les moyens dont elle dispose pour "
+"assurer la bonne qualité et la fiabilité du Service."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:47
+msgid ""
+"Le système bénéficie d’une supervision opérationnelle en heures ouvrées. "
+"Il peut malgré tout être sujet à des anomalies ou des erreurs pouvant "
+"avoir des impacts sur les performances ou la disponibilité du service. A "
+"ce titre, la DNE ne peut être tenue responsable des pertes et/ou "
+"préjudices, de quelque nature qu’ils soient, qui pourraient être causés à"
+" la suite d’un dysfonctionnement ou une indisponibilité du Service. De "
+"telles situations n'ouvriront droit à aucune compensation financière."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:49
+#: web/b3desk/templates/footer/donnees_personnelles.html:5
+msgid "Données personnelles"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:50
+msgid ""
+"L’utilisation du Service donne lieu à des traitements de données à "
+"caractère personnel et au dépôt de cookies conformément à la politique de"
+" protection des données personnelles et de gestion des cookies, "
+"accessible ici : <a class=\"rf_link\" "
+"href=\"https://projet.apps.education.fr/donnees-personnelles/#cloud\" "
+"target=\"_blank\" rel=\"noopener\">https://projet.apps.education.fr"
+"/donnees-personnelles/#cloud</a>"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:51
+msgid ""
+"Les données personnelles transmises ne seront utilisées que pour assurer "
+"le fonctionnement du Service. Elles ne seront en aucun cas transmises à "
+"des tiers sans votre autorisation préalable, sauf exigences légales."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:52
+msgid ""
+"Conformément à la législation les prestataires techniques sont tenus de "
+"conserver et de déférer à l’autorité judiciaire les informations de "
+"connections (log, IP, date/heure) permettant la poursuite de l’auteur "
+"d’une infraction. Toutes les informations nécessaires seront donc "
+"conservées pour la durée légale prévue. Elles seront détruites au terme "
+"du délai légal de conservation."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:53
+msgid ""
+"Les données personnelles qui auraient été transmises par le biais d’un "
+"salon de visio-conférence (oralement, par le chat ou un document partagé)"
+" ne sont pas conservées au-delà de la fin du salon, sauf si un "
+"enregistrement a été réalisé (pour VISIO-AGENTS uniquement). Dans ce "
+"dernier cas, cet enregistrement est sous la responsabilité du "
+"propriétaire du salon, et le stockage de cette vidéo n’est assuré par le "
+"Service que pour une durée de 12 mois."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:54
+msgid ""
+"Concernant le frontal proposé par le service, vous disposez d'un droit "
+"d'accès, de modification, de rectification et de suppression des données "
+"qui vous concernent (art. 34 de la loi « Informatique et Libertés » du 6 "
+"janvier 1978). Vous pouvez, à tout moment, demander que vos contributions"
+" à cet espace soient supprimées. Les demandes concernant le droit "
+"d’accès, de modification et de rectification doivent être adressées par "
+"mail à l’adresse :"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:56
+msgid "Responsabilités"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:57
+msgid ""
+"L’Utilisateur ou l’Utilisatrice s’engage, lors de l’utilisation qu’il "
+"fait du Service, à ne pas contrevenir aux dispositions législatives et "
+"réglementaires en vigueur, aux bons usages d’Internet et aux CGU."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:58
+msgid ""
+"De manière générale, la DNE se dégage de toute responsabilité en cas "
+"d’utilisation non-conforme aux CGU du Service."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:59
+msgid ""
+"La DNE se réserve le droit de suspendre ou de résilier l’accès au Service"
+" d’un Utilisateur ou d’une Utilisatrice en cas de violation des CGU."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:60
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est responsable de tout préjudice "
+"matériel ou immatériel, direct et/ou indirect de quelque nature que ce "
+"soit causé en cas d’utilisation non-conforme aux CGU."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:61
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est informé que toute violation des "
+"stipulations des CGU est susceptible d’être signalée à son administration"
+" et d'entraîner des poursuites judiciaires et des sanctions à son "
+"encontre."
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:63
+msgid "Contact"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:64
+msgid "Pour toute question sur le Service, vous pouvez écrire à l’adresse mail :"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:66
 msgid "Évolution des conditions d’utilisation"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:24
+#: web/b3desk/templates/footer/cgu.html:67
 msgid ""
 "Les termes des présentes conditions d’utilisation peuvent être amendés à "
 "tout moment, sans préavis, en fonction des modifications apportées à la "
@@ -963,30 +1177,30 @@ msgid ""
 " jugé nécessaire."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:25
+#: web/b3desk/templates/footer/cgu.html:68
 msgid "Textes de référence"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:26
+#: web/b3desk/templates/footer/cgu.html:69
 msgid ""
 "Loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et"
 " aux libertés"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:27
+#: web/b3desk/templates/footer/cgu.html:70
 msgid ""
 "Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie "
 "numérique"
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:28
+#: web/b3desk/templates/footer/cgu.html:71
 msgid ""
 "Ordonnance 2005-1516 du 8 décembre 2005 relative aux échanges "
 "électroniques entre les usagers et les autorités administratives et entre"
 " les autorités administratives et notamment ses articles 9 à 12."
 msgstr ""
 
-#: web/b3desk/templates/footer/cgu.html:29
+#: web/b3desk/templates/footer/cgu.html:72
 msgid "Loi n° 2016-1321 du 7 octobre 2016 pour une République numérique"
 msgstr ""
 
@@ -1063,10 +1277,6 @@ msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:27
 msgid "Contrôle du volume"
-msgstr ""
-
-#: web/b3desk/templates/footer/donnees_personnelles.html:5
-msgid "Données personnelles"
 msgstr ""
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:7
@@ -2613,5 +2823,147 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Votre séminaire n'a pas encore été activé par un modérateur "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le webinaire, Visio-ecoles/colleges/lycees/agents"
+#~ " de l’État permet d’accéder à la "
+#~ "page d’accueil du sous-domaine internet"
+#~ " utilisé par l’Etat pour publier sur"
+#~ " internet sa solution de webconférence "
+#~ "interministérielle. Cette mesure facilite "
+#~ "l’accès à cette solution pour tous "
+#~ "les agents de l’Etat tout en "
+#~ "permettant également de coopérer avec "
+#~ "les partenaires du service public."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le sous-domaine « <a class=\"rf_link\""
+#~ " href=\"https://webinaire.numerique.gouv.fr\" "
+#~ "target=\"_blank\" "
+#~ "rel=\"noopener\">https://webinaire.numerique.gouv.fr</a> »  "
+#~ "est piloté par la Direction "
+#~ "interministérielle du numérique (DINUM)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les sous-domaines  <a class=\"rf_link\" "
+#~ "href=\"https://visio-agents.education.fr\" "
+#~ "target=\"_blank\" rel=\"noopener\">https://visio-"
+#~ "agents.education.fr</a> / <a class=\"rf_link\" "
+#~ "href=\"https://visio-ecoles.education.fr\" "
+#~ "target=\"_blank\" rel=\"noopener\">https://visio-"
+#~ "ecoles.education.fr</a> / <a class=\"rf_link\" "
+#~ "href=\"https://visio-colleges.education.fr\" "
+#~ "target=\"_blank\" rel=\"noopener\">https://visio-"
+#~ "colleges.education.fr</a> / <a class=\"rf_link\" "
+#~ "href=\"https://visio-lycees.education.fr\" "
+#~ "target=\"_blank\" rel=\"noopener\">https://visio-"
+#~ "lycees.education.fr</a> sont pilotés par le"
+#~ " Ministère de l’Éducation Nationale, de "
+#~ "la Jeunesse et des Sports."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le service est maintenu en conditions"
+#~ " opérationnelles et ses évolutions sont "
+#~ "assurées par le Ministère de l’Éducation"
+#~ " Nationale, de la Jeunesse et des "
+#~ "Sports, ci-après dénommé « l’éditeur "
+#~ "»."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le sous-domaine permet de publier "
+#~ "sur internet l’offre de service "
+#~ "interministérielle de webconférence.</p><a "
+#~ "class=\"anchor hidden-xs\" href=\"#Code-de-"
+#~ "conduite-et-responsabilités-des-Utilisateurs\""
+#~ " title=\"Code-de-conduite-et-"
+#~ "responsabilités-des-Utilisateurs\">"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’utilisation de ce service interministériel"
+#~ " est libre et gratuite pour les "
+#~ "utilisateurs des services de l’Etat, et"
+#~ " sur invitation, pour les partenaires "
+#~ "du service public voire le grand "
+#~ "public (citoyen, entreprise, association).</p><a "
+#~ "class=\"anchor hidden-xs\" href=\"#Accès-"
+#~ "au-site\" title=\"Accès-au-site\"><i class"
+#~ "=\"ri-links-line\"></i></a><h2 id=\"Accès-au-"
+#~ "site\">Accès au site</h2><p>L’utilisateur accède "
+#~ "à la page d’accueil du site en "
+#~ "utilisant le lien indiqué au paragraphe"
+#~ " engagements et responsabilités de "
+#~ "l’éditeur."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Sitôt entré sur la page d’accueil, "
+#~ "l’utilisateur peut en consulter les "
+#~ "contenus ou accéder à un salon en"
+#~ " saisissant le nom de ce salon "
+#~ "ou, pour les agents de l’Etat, en"
+#~ " créant ledit salon."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "À l’instant où l’utilisateur accède à"
+#~ " un salon de webconférence, il "
+#~ "devient seul responsable des données et"
+#~ " des contenus qu’il échange sur le"
+#~ " service interministériel. Il se doit "
+#~ "de respecter les principes de la "
+#~ "netiquette."
+#~ msgstr ""
+
+#~ msgid "Usage professionnel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le service de Webinaire, Visio-"
+#~ "ecoles/colleges/lycees/agents mis à disposition "
+#~ "est à usage professionnel."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Seule l’utilisation à usage professionnel "
+#~ "de cette ressource mise à disposition"
+#~ " est tolérée, l’utilisateur est attentif"
+#~ " à ce que ces usages demeurent "
+#~ "raisonnables et ne mettent pas en "
+#~ "péril le fonctionnement du service "
+#~ "auquel il accède."
+#~ msgstr ""
+
+#~ msgid "Engagements et responsabilités de l’éditeur"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’éditeur donne accès au service "
+#~ "interministériel de webconférence aux adresses"
+#~ " suivantes : (<a class=\"rf_link\" "
+#~ "href=\"https://webinaire.numerique.gouv.fr\" target=\"_blank\""
+#~ " rel=\"noopener\">https://webinaire.numerique.gouv.fr</a> /"
+#~ " <a class=\"rf_link\" href=\"https://visio-"
+#~ "agents.education.fr\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://visio-agents.education.fr</a> /"
+#~ " <a class=\"rf_link\" href=\"https://visio-"
+#~ "ecoles.education.fr\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://visio-ecoles.education.fr</a> /"
+#~ " <a class=\"rf_link\" href=\"https://visio-"
+#~ "colleges.education.fr\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://visio-colleges.education.fr</a> /"
+#~ " <a class=\"rf_link\" href=\"https://visio-"
+#~ "lycees.education.fr\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://visio-lycees.education.fr</a> "
+#~ ").</p><p>L’éditeur assure la mise à jour"
+#~ " du service et le maintien en "
+#~ "condition opérationnel du service de "
+#~ "consultation de sa page d’accueil sous"
+#~ " le pilotage de l’éditeur."
 #~ msgstr ""
 
