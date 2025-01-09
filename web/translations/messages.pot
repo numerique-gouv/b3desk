@@ -519,7 +519,7 @@ msgid "contact@webinaire.numerique.gouv.fr"
 msgstr ""
 
 #: web/b3desk/templates/content.py:113
-msgid "Besoin de contacter l'équipe du ministére de l'Éducation nationale ?"
+msgid "Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"
 msgstr ""
 
 #: web/b3desk/templates/content.py:116
