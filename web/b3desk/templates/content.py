@@ -111,7 +111,7 @@ Pour utiliser moins de bande passante et profiter du service dans les meilleures
     },
     {
         "title": _(
-            """Besoin de contacter l'équipe du ministére de l'Éducation nationale ?"""
+            """Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"""
         ),
         "description": _(
             """Rendez-vous sur votre portail d'assistance académique https://www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur Apps.education.fr"""
