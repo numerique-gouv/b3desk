@@ -329,7 +329,7 @@ msgstr ""
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/brand.html:28é
+#: web/b3desk/templates/brand.html:28
 #, python-format
 msgid "%(service_title)s"
 msgstr ""
@@ -2962,4 +2962,3 @@ msgstr ""
 #~ "consultation de sa page d’accueil sous"
 #~ " le pilotage de l’éditeur."
 #~ msgstr ""
-
