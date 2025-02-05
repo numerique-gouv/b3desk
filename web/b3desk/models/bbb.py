@@ -58,7 +58,7 @@ class BBB:
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         secret = "{}{}".format(
             prepped.url.replace("?", "").replace(
-                f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
+                f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/", ""
             ),
             bigbluebutton_secret,
         )

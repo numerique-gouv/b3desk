@@ -29,7 +29,7 @@ def make_nextcloud_credentials_request(url, payload, headers):
         data = response.json()
         if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
             valid_nclocator = (
-                f'//{data["nclocator"]}'
+                f"//{data['nclocator']}"
                 if not (
                     data["nclocator"].startswith("//")
                     or data["nclocator"].startswith("http://")

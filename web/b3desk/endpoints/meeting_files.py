@@ -105,7 +105,7 @@ def add_meeting_files(meeting: Meeting, owner: User):
 def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-    tmp_name = f'{current_app.config["TMP_DOWNLOAD_DIR"]}{secrets.token_urlsafe(32)}'
+    tmp_name = f"{current_app.config['TMP_DOWNLOAD_DIR']}{secrets.token_urlsafe(32)}"
     file_to_send = None
 
     for current_file in meeting.files:
