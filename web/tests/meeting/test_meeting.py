@@ -281,7 +281,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -375,7 +375,7 @@ def test_create_with_only_a_default_file(
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -468,7 +468,7 @@ def test_create_with_files(
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -507,7 +507,7 @@ def test_create_with_files(
 
     assert mocked_background_upload.called
     assert mocked_background_upload.call_args.args[0].startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
     )
 
     secret_key = client_app.app.config["SECRET_KEY"]
@@ -550,7 +550,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
