@@ -25,6 +25,8 @@ repos:
     rev: v1.7.5
     hooks:
       - id: docformatter
+        additional_dependencies: [tomli]
+        args: [./pyproject.toml]
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:
