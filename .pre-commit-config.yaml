@@ -22,11 +22,11 @@ repos:
         name: isort (python)
         args: ["--force-single-line-imports", "--line-length", "120"]
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
+    rev: eb1df34
     hooks:
       - id: docformatter
         additional_dependencies: [tomli]
-        args: [./pyproject.toml]
+        args: [--in-place, --config, ./pyproject.toml]
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:
