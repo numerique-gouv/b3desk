@@ -74,8 +74,8 @@ class MeetingForm(FlaskForm):
     )
     maxParticipants = IntegerField(
         label=_("Nombre maximal de participants"),
-        description=_("Limitez vos salons à 250 personnes pour plus de confort"),
-        default=100,
+        description=_("Limitez vos salons à 350 personnes pour plus de confort"),
+        default=350,
     )
     duration = IntegerField(
         label=_("Durée maximale en minutes"),
