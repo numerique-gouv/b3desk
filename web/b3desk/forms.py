@@ -113,6 +113,7 @@ class MeetingForm(FlaskForm):
         description=_(
             "Vous pouvez autoriser ou interdire l'ouverture de la caméra des participants."
         ),
+        filters=[lambda x: not x],
         default=False,
     )
     lockSettingsDisableMic = BooleanField(
@@ -120,18 +121,22 @@ class MeetingForm(FlaskForm):
         description=_(
             "Vous pouvez autoriser ou interdire l'ouverture du microphone des participants."
         ),
+        filters=[lambda x: not x],
         default=False,
     )
     lockSettingsDisablePrivateChat = BooleanField(
         label=_("Discussions privées"),
+        filters=[lambda x: not x],
         default=False,
     )
     lockSettingsDisablePublicChat = BooleanField(
         label=_("Discussion publique (tchat)"),
+        filters=[lambda x: not x],
         default=False,
     )
     lockSettingsDisableNote = BooleanField(
         label=_("Prise de note collaborative"),
+        filters=[lambda x: not x],
         default=False,
     )
     moderatorOnlyMessage = TextAreaField(
