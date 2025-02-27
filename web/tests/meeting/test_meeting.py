@@ -640,3 +640,17 @@ def test_meeting_link_retrocompatibility(meeting):
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
+
+
+def test_meeting_order_default(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome", status=200)
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+
+
+def test_meeting_order_alpha_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-by=alpha-asc", status=200)
+    assert response.context["meetings"] == [meeting_2, meeting, meeting_3]

@@ -152,6 +152,40 @@ def meeting(client_app, user):
 
 
 @pytest.fixture
+def meeting_2(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="a meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def meeting_3(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
 def user(client_app, iam_user):
     from b3desk.models.users import User
 

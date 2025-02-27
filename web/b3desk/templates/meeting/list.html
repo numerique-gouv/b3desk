@@ -20,7 +20,7 @@
     </div>
     {% endif %}
 
-    {% if not user.meetings %}
+    {% if not meetings %}
     <div class="fr-grid-row">
         <div class="fr-col-md-4 image-no-meetings">
         </div>
@@ -35,7 +35,19 @@
         </div>
     </div>
     {% else %}
-    {% for meeting in user.meetings %}
+    <p>Trier par :</p>
+    <ul class="fr-tags-group">
+        <li>
+            <a href="{{ url_for("public.welcome") }}?order-key={{order_key}}&reverse={{reverse_order}}" class="fr-tag" target="_self">Alphabétique</a>
+        </li>
+        <li>
+            <a href="#" class="fr-tag" target="_self">Label tag</a>
+        </li>
+        <li>
+            <a href="#" class="fr-tag" target="_self">Label tag</a>
+        </li>
+    </ul>
+    {% for meeting in meetings %}
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
             <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
@@ -46,7 +58,7 @@
     {% include 'meeting/modals/invite.html' %}
     {% include 'meeting/modals/recordings.html' %}
     {% endfor %}
-    {% if user.meetings|length and config.get("SATISFACTION_POLL_URL") %}
+    {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
     <iframe id="iframe-poll"
         frameborder=0
         src="{{ config.get("SATISFACTION_POLL_URL") }}"
