@@ -23,6 +23,8 @@ def upgrade():
         batch_op.add_column(sa.Column('updated_at', sa.DateTime(), nullable=True))
     op.execute("UPDATE meeting SET created_at = NOW()")
     op.execute("UPDATE meeting SET updated_at = NOW()")
+    op.execute("ALTER TABLE meeting ALTER COLUMN updated_at SET NOT NULL")
+    op.execute("ALTER TABLE meeting ALTER COLUMN updated_at SET NOT NULL")
     # ### end Alembic commands ###
 
 
