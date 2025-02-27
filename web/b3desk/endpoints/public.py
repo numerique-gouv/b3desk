@@ -3,6 +3,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 
 from .. import auth
@@ -70,6 +71,16 @@ def welcome():
     user = get_current_user()
     stats = get_meetings_stats()
 
+    order_key = request.args.get("order-key", "created_at")
+    reverse_order = request.args.get("reverse-order", True)
+
+    if order_key not in ["created_at", "name"]:
+        order_key = "created_at"
+    if reverse_order not in [True, False]:
+        reverse_order = True
+
+    meetings = sorted(user.meetings, key=lambda m: (getattr(m, order_key), m.id), reverse=reverse_order)
+
     return render_template(
         "welcome.html",
         stats=stats,
@@ -81,6 +92,9 @@ def welcome():
         quick_meeting=current_app.config["QUICK_MEETING"],
         file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
+        meetings=user.meetings,
+        reverse_order=reverse_order,
+        order_key=order_key,
     )
 
 
