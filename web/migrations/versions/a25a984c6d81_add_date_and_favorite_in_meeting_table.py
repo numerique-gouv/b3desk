@@ -1,4 +1,4 @@
-"""add date in meeting
+"""add date and favorite in meeting
 
 Revision ID: 44cab47dbc9b
 Revises: 9d4ba8cf710a
@@ -21,9 +21,11 @@ def upgrade():
     with op.batch_alter_table('meeting', schema=None) as batch_op:
         batch_op.add_column(sa.Column('created_at', sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column('updated_at', sa.DateTime(), nullable=True))
+        batch_op.add_column(sa.Column('favorite', sa.Boolean, nullable=True))
     op.execute("UPDATE meeting SET created_at = NOW()")
     op.execute("UPDATE meeting SET updated_at = NOW()")
-    op.execute("ALTER TABLE meeting ALTER COLUMN updated_at SET NOT NULL")
+    op.execute("UPDATE meeting SET favorite = 'FALSE'")
+    op.execute("ALTER TABLE meeting ALTER COLUMN created_at SET NOT NULL")
     op.execute("ALTER TABLE meeting ALTER COLUMN updated_at SET NOT NULL")
     # ### end Alembic commands ###
 
@@ -33,4 +35,5 @@ def downgrade():
     with op.batch_alter_table('meeting', schema=None) as batch_op:
         batch_op.drop_column('updated_at')
         batch_op.drop_column('created_at')
+        batch_op.drop_column('favorite')
     # ### end Alembic commands ###
