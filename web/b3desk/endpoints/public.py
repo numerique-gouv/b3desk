@@ -76,11 +76,13 @@ def welcome():
 
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
-    if reverse_order not in [True, False]:
+    if reverse_order == "false":
+        reverse_order = False
+    else:
         reverse_order = True
 
-    meetings = sorted(user.meetings, key=lambda m: (getattr(m, order_key), m.id), reverse=reverse_order)
-
+    meetings = sorted(user.meetings, key=lambda m: (getattr(m, order_key).lower() if isinstance(getattr(m, order_key), str) else getattr(m, order_key), m.id), reverse=reverse_order)
+    
     return render_template(
         "welcome.html",
         stats=stats,
@@ -92,7 +94,7 @@ def welcome():
         quick_meeting=current_app.config["QUICK_MEETING"],
         file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
-        meetings=user.meetings,
+        meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
     )
