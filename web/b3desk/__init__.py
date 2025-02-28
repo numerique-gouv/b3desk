@@ -40,6 +40,10 @@ auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
 
 
+class BigBLueButtonUnavailable(Exception):
+    pass
+
+
 def setup_configuration(app, config=None):
     if config:
         app.config.from_mapping(config)
@@ -204,6 +208,10 @@ def setup_error_pages(app):
     @app.errorhandler(500)
     def internal_error(error):
         return render_template("errors/500.html", error=error), 500
+
+    @app.errorhandler(BigBLueButtonUnavailable)
+    def bigbluebutton_unavailable_error(error):
+        return render_template("errors/big-blue-button-error.html", error=error)
 
 
 def setup_endpoints(app):
