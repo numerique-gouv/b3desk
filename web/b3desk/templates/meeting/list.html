@@ -41,6 +41,7 @@
             {% if order_key == "created_at" %}
             <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order={{ 'false' if reverse_order == True else 'true'}}" 
             class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
+            aria-pressed="true"
             target="_self">Date</a>
             {% else %}
             <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order=true" 
@@ -52,6 +53,7 @@
             {% if order_key == "name" %}
             <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order={{ 'true' if reverse_order == False else 'false'}}" 
             class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
+            aria-pressed="true"
             target="_self">Alphabétique</a>
             {% else %}
             <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order=false" 
@@ -60,7 +62,7 @@
             {% endif %}
         </li>
         <li>
-            <a href="#" class="fr-tag" target="_self">Label tag</a>
+            <a href="#" class="fr-tag" target="_self">Favorite</a>
         </li>
     </ul>
     {% for meeting in meetings %}
