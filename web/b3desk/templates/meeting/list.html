@@ -39,36 +39,43 @@
     <ul class="fr-tags-group">
         <li>
             {% if order_key == "created_at" %}
-            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order={{ 'false' if reverse_order == True else 'true'}}" 
+            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order={{ 'false' if reverse_order == True else 'true'}}&favorite={{'true' if favorite == True else 'false'}}" 
             class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
             aria-pressed="true"
             target="_self">Date</a>
             {% else %}
-            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order=true" 
+            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order=true&favorite={{'true' if favorite == True else 'false'}}" 
             class="fr-tag"
             target="_self">Date</a>
             {% endif %}
         </li>
         <li>
             {% if order_key == "name" %}
-            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order={{ 'true' if reverse_order == False else 'false'}}" 
+            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order={{ 'true' if reverse_order == False else 'false'}}&favorite={{'true' if favorite == True else 'false'}}" 
             class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
             aria-pressed="true"
             target="_self">Alphabétique</a>
             {% else %}
-            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order=false" 
+            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order=false&favorite={{'true' if favorite == True else 'false'}}" 
             class="fr-tag"
             target="_self">Alphabétique</a>
             {% endif %}
         </li>
         <li>
-            <a href="#" class="fr-tag" target="_self">Favorite</a>
+            <a href="{{ url_for("public.welcome") }}?order-key={{order_key}}&reverse-order={{'true' if reverse_order == True else 'false'}}&favorite={{'false' if favorite == True else 'true'}}" 
+            class="fr-tag"
+            aria-pressed="{{'true' if favorite == True else 'false'}}"
+            target="_self">Favoris</a>
         </li>
     </ul>
     {% for meeting in meetings %}
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
-            <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
+            <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}
+                <a href="{{ url_for("meetings.meeting_favorite") }}?id={{meeting.id}}&favorite={{'true' if meeting.favorite == False else 'false'}}">
+                    <span class="{{'fr-icon-star-line' if meeting.favorite == False else 'fr-icon-star-fill'}}"" aria-hidden="true"></span>
+                </a>
+            </h3>
             {% include 'meeting/row.html' %}
         </div>
     </div>

@@ -73,6 +73,7 @@ def welcome():
 
     order_key = request.args.get("order-key", "created_at")
     reverse_order = request.args.get("reverse-order", True)
+    favorite = request.args.get("favorite", False)
 
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
@@ -80,8 +81,14 @@ def welcome():
         reverse_order = False
     else:
         reverse_order = True
-
-    meetings = sorted(user.meetings, key=lambda m: (getattr(m, order_key).lower() if isinstance(getattr(m, order_key), str) else getattr(m, order_key), m.id), reverse=reverse_order)
+    if favorite == "true":
+        favorite = True
+    else:
+        favorite = False
+        
+    favorite_meetings = [meeting for meeting in user.meetings if meeting.favorite]
+    
+    meetings = sorted(favorite_meetings if favorite else user.meetings, key=lambda m: (getattr(m, order_key).lower() if isinstance(getattr(m, order_key), str) else getattr(m, order_key), m.id), reverse=reverse_order)
     
     return render_template(
         "welcome.html",
@@ -97,6 +104,7 @@ def welcome():
         meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
+        favorite=favorite,
     )
 
 
