@@ -20,7 +20,7 @@
     </div>
     {% endif %}
 
-    {% if not meetings %}
+    {% if not user.meetings %}
     <div class="fr-grid-row">
         <div class="fr-col-md-4 image-no-meetings">
         </div>
@@ -71,11 +71,16 @@
     {% for meeting in meetings %}
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
-            <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}
-                <a href="{{ url_for("meetings.meeting_favorite") }}?id={{meeting.id}}&favorite={{'true' if meeting.favorite == False else 'false'}}">
-                    <span class="{{'fr-icon-star-line' if meeting.favorite == False else 'fr-icon-star-fill'}}"" aria-hidden="true"></span>
-                </a>
-            </h3>
+            <div class="fr-grid-row">
+                <div class="fr-col-11">
+                    <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>   
+                </div>
+                <div class="fr-col-1">
+                <button onclick="location.href='{{ url_for("meetings.meeting_favorite") }}?order-key={{order_key}}&reverse-order={{reverse_order}}&favorite={{favorite}}&id={{meeting.id}}&meeting-favorite={{'true' if meeting.favorite == False else 'false'}}'" class="fr-btn fr-btn--tertiary-no-outline {{'fr-icon-star-line' if meeting.favorite == False else 'fr-icon-star-fill'}}" title="{{'Ajouter aux favoris' if meeting.favorite == False else 'Retirer des favoris'}}">
+                    Label bouton
+                </button>
+            </div>
+            </div>
             {% include 'meeting/row.html' %}
         </div>
     </div>
