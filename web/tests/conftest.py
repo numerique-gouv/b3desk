@@ -145,7 +145,7 @@ def meeting(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        favorite=True,
+        is_favorite=True,
     )
     meeting.save()
 
@@ -163,7 +163,7 @@ def meeting_2(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        favorite=True,
+        is_favorite=True,
     )
     meeting.save()
 
