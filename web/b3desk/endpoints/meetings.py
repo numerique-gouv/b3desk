@@ -335,7 +335,7 @@ def meeting_favorite():
     meeting = db.session.get(Meeting, meeting_id)
     
     if meeting.user_id == user.id:
-        meeting.favorite = not meeting.favorite
+        meeting.is_favorite = not meeting.is_favorite
         db.session.commit()
         meeting.save()
     

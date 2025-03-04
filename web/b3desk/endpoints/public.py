@@ -73,15 +73,15 @@ def welcome():
 
     order_key = request.args.get("order-key", "created_at")
     reverse_order = request.args.get("reverse-order", True, type=lambda x: x.lower() == "true")
-    favorite = request.args.get("favorite", False, type=lambda x: x.lower() == "true")
+    favorite_filter = request.args.get("favorite-filter", False, type=lambda x: x.lower() == "true")
     
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
 
     meetings = user.meetings
     favorite_meetings = []
-    if favorite:
-        favorite_meetings = [meeting for meeting in user.meetings if meeting.favorite]
+    if favorite_filter:
+        favorite_meetings = [meeting for meeting in user.meetings if meeting.is_favorite]
         if favorite_meetings:
             meetings = favorite_meetings
 
@@ -101,7 +101,7 @@ def welcome():
         meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
-        favorite=favorite and bool(favorite_meetings),
+        favorite_filter=favorite_filter and bool(favorite_meetings),
     )
 
 
