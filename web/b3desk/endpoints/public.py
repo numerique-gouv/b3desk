@@ -72,25 +72,20 @@ def welcome():
     stats = get_meetings_stats()
 
     order_key = request.args.get("order-key", "created_at")
-    reverse_order = request.args.get("reverse-order", "true")
-    favorite = request.args.get("favorite", "false")
+    reverse_order = request.args.get("reverse-order", True, type=lambda x: x.lower() == "true")
+    favorite = request.args.get("favorite", False, type=lambda x: x.lower() == "true")
     
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
-    if reverse_order == "false":
-        reverse_order = False
-    else:
-        reverse_order = True
-    
-    favorite_meetings = [meeting for meeting in user.meetings if meeting.favorite]
-        
-    if favorite == "true" and favorite_meetings:
-        favorite = True
-    else:
-        favorite = False
-    
-    
-    meetings = sorted(favorite_meetings if favorite else user.meetings, key=lambda m: (getattr(m, order_key).lower() if isinstance(getattr(m, order_key), str) else getattr(m, order_key), m.id), reverse=reverse_order)
+
+    meetings = user.meetings
+    favorite_meetings = []
+    if favorite:
+        favorite_meetings = [meeting for meeting in user.meetings if meeting.favorite]
+        if favorite_meetings:
+            meetings = favorite_meetings
+
+    meetings = sorted(meetings, key=lambda m: (getattr(m, order_key).lower() if isinstance(getattr(m, order_key), str) else getattr(m, order_key), m.id), reverse=reverse_order)
     
     return render_template(
         "welcome.html",
@@ -106,7 +101,7 @@ def welcome():
         meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
-        favorite=favorite,
+        favorite=favorite and bool(favorite_meetings),
     )
 
 

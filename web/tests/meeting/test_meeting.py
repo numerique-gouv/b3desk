@@ -701,3 +701,16 @@ def test_favorite_meeting_order_date_asc(
 ):
     response = client_app.get("/welcome?order-key=created_at&reverse-order=false&favorite=true", status=200)
     assert response.context["meetings"] == [meeting, meeting_2]
+    
+
+def test_add_and_remove_favorite(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    assert not meeting_3.favorite
+    response = client_app.get("/meeting/favorite?order-key=created_at&reverse-order=true&favorite=true&id=3").follow()
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+    assert meeting_3.favorite
+    
+    response = client_app.get("/meeting/favorite?order-key=created_at&reverse-order=true&favorite=true&id=3").follow()
+    assert response.context["meetings"] == [meeting_2, meeting]
+    assert not meeting_3.favorite
