@@ -652,5 +652,52 @@ def test_meeting_order_default(
 def test_meeting_order_alpha_asc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-by=alpha-asc", status=200)
+    response = client_app.get("/welcome?order-key=name&reverse-order=false&favorite=false", status=200)
     assert response.context["meetings"] == [meeting_2, meeting, meeting_3]
+    
+    
+def test_meeting_order_alpha_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=name&reverse-order=true&favorite=false", status=200)
+    assert response.context["meetings"] == [meeting_3, meeting, meeting_2]
+    
+    
+def test_meeting_order_date_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=created_at&reverse-order=true&favorite=false", status=200)
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+
+
+def test_meeting_order_date_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=created_at&reverse-order=false&favorite=false", status=200)
+    assert response.context["meetings"] == [meeting, meeting_2, meeting_3]
+    
+def test_favorite_meeting_order_alpha_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=name&reverse-order=false&favorite=true", status=200)
+    assert response.context["meetings"] == [meeting_2, meeting]
+    
+    
+def test_favorite_meeting_order_alpha_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=name&reverse-order=true&favorite=true", status=200)
+    assert response.context["meetings"] == [meeting, meeting_2]
+    
+    
+def test_favorite_meeting_order_date_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=created_at&reverse-order=true&favorite=true", status=200)
+    assert response.context["meetings"] == [meeting_2, meeting]
+
+def test_favorite_meeting_order_date_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome?order-key=created_at&reverse-order=false&favorite=true", status=200)
+    assert response.context["meetings"] == [meeting, meeting_2]
