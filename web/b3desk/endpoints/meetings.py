@@ -333,13 +333,21 @@ def meeting_favorite():
     user = get_current_user()
     meeting_id = request.args.get("id")
     meeting = db.session.get(Meeting, meeting_id)
-    meeting_favorite = request.args.get("favorite")
-    if meeting_favorite == "true":
-        meeting_favorite = True
+    is_favorite = request.args.get("meeting-favorite", "false")
+    order_key = request.args.get("order-key", "created_at")
+    reverse_order = request.args.get("reverse-order", "true")
+    favorite = request.args.get("favorite", "false")
+    
+    if is_favorite == "true":
+        is_favorite = True
     else:
-        meeting_favorite = False
+        is_favorite = False
+    
+    reverse_order = "true" if reverse_order else "false"
+    favorite = "true" if favorite else "false"
+    
     if meeting.user_id == user.id:
-        meeting.favorite = meeting_favorite
+        meeting.favorite = is_favorite
         db.session.commit()
         meeting.save()
-    return redirect(url_for("public.welcome"))
+    return redirect(url_for("public.welcome", order_key=order_key, reverse_order=reverse_order, favorite=favorite))
