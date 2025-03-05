@@ -35,6 +35,21 @@ def iam_user(iam_server):
 
 
 @pytest.fixture
+def iam_user_2(iam_server):
+    iam_user_2 = iam_server.random_user(
+        id="user_id2",
+        emails=["berenice@domain.tld"],
+        given_name="Berenice",
+        user_name="Berenice_user_name",
+        family_name="Cooler",
+    )
+    iam_user_2.save()
+
+    yield iam_user_2
+    iam_user_2.delete()
+
+
+@pytest.fixture
 def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
@@ -202,6 +217,20 @@ def user(client_app, iam_user):
 
 
 @pytest.fixture
+def user_2(client_app, iam_user_2):
+    from b3desk.models.users import User
+
+    user_2 = User(
+        email=iam_user_2.emails[0],
+        given_name=iam_user_2.given_name,
+        family_name=iam_user_2.family_name,
+    )
+    user_2.save()
+
+    yield user_2
+
+
+@pytest.fixture
 def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
     with client_app.session_transaction() as session:
         session["access_token"] = iam_token.access_token
@@ -223,6 +252,30 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
     iam_server.consent(iam_user)
 
     yield user
+
+
+@pytest.fixture
+def authenticated_user_2(client_app, user_2, iam_token, iam_server, iam_user_2):
+    with client_app.session_transaction() as session:
+        session["access_token"] = iam_token.access_token
+        session["access_token_expires_at"] = ""
+        session["current_provider"] = "default"
+        session["id_token"] = ""
+        session["id_token_jwt"] = ""
+        session["last_authenticated"] = "true"
+        session["last_session_refresh"] = time.time()
+        session["userinfo"] = {
+            "email": "berenice@domain.tld",
+            "family_name": "Cooler",
+            "given_name": "Berenice",
+            "preferred_username": "berenice",
+        }
+        session["refresh_token"] = ""
+
+    iam_server.login(iam_user_2)
+    iam_server.consent(iam_user_2)
+
+    yield user_2
 
 
 @pytest.fixture
