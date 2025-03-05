@@ -332,7 +332,7 @@ def delete_video_meeting():
 @auth.oidc_auth("default")
 def meeting_favorite():
     user = get_current_user()
-    meeting_id = request.args.get("id")
+    meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
 
     if meeting.user_id == user.id:

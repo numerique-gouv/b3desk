@@ -730,13 +730,15 @@ def test_add_and_remove_favorite(
 ):
     assert not meeting_3.is_favorite
     response = client_app.post(
-        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3"
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
     assert meeting_3.is_favorite
 
     response = client_app.post(
-        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3"
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
     assert not meeting_3.is_favorite
@@ -747,7 +749,4 @@ def test_add_favorite_by_wrong_user_failed(
 ):
     response = client_app.get("/welcome", status=200)
     response.mustcontain("Berenice Cooler")
-    response = client_app.post(
-        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3",
-        status=403,
-    )
+    response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
