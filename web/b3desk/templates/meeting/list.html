@@ -75,11 +75,14 @@
                 <div class="fr-col-11">
                     <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
                 </div>
-                <div class="fr-col-1">
-                <button onclick="location.href='{{ url_for("meetings.meeting_favorite") }}?order-key={{ order_key }}&reverse-order={{ reverse_order }}&favorite-filter={{ favorite_filter }}&id={{ meeting.id }}'" class="fr-btn fr-btn--tertiary-no-outline {{ 'fr-icon-star-line' if meeting.is_favorite == False else 'fr-icon-star-fill' }}" title="{{ 'Ajouter aux favoris' if meeting.is_favorite == False else 'Retirer des favoris' }}">
-                    Label bouton
-                </button>
-            </div>
+                <form action="{{ url_for("meetings.meeting_favorite") }}?order-key={{ order_key }}&reverse-order={{ reverse_order }}&favorite-filter={{ favorite_filter }}&id={{ meeting.id }}" method="POST">
+                    {% include 'meeting/csrf.html' %}
+                    <div class="fr-col-1">
+                        <button class="fr-btn fr-btn--tertiary-no-outline {{ 'fr-icon-star-line' if meeting.is_favorite == False else 'fr-icon-star-fill' }}" title="{{ 'Ajouter aux favoris' if meeting.is_favorite == False else 'Retirer des favoris' }}">
+                            Label bouton
+                        </button>
+                    </div>
+                </form>
             </div>
             {% include 'meeting/row.html' %}
         </div>

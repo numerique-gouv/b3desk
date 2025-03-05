@@ -328,7 +328,7 @@ def delete_video_meeting():
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/favorite")
+@bp.route("/meeting/favorite", methods=["POST"])
 @auth.oidc_auth("default")
 def meeting_favorite():
     user = get_current_user()
@@ -339,5 +339,7 @@ def meeting_favorite():
         meeting.is_favorite = not meeting.is_favorite
         db.session.commit()
         meeting.save()
+    else:
+        abort(403)
 
     return redirect(url_for("public.welcome", **request.args))
