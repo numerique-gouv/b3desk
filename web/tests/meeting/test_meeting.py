@@ -652,65 +652,91 @@ def test_meeting_order_default(
 def test_meeting_order_alpha_asc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=name&reverse-order=false&favorite-filter=false", status=200)
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=false&favorite-filter=false", status=200
+    )
     assert response.context["meetings"] == [meeting_2, meeting, meeting_3]
-    
-    
+
+
 def test_meeting_order_alpha_desc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=name&reverse-order=true&favorite-filter=false", status=200)
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=true&favorite-filter=false", status=200
+    )
     assert response.context["meetings"] == [meeting_3, meeting, meeting_2]
-    
-    
+
+
 def test_meeting_order_date_desc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=created_at&reverse-order=true&favorite-filter=false", status=200)
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=true&favorite-filter=false",
+        status=200,
+    )
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
 
 
 def test_meeting_order_date_asc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=created_at&reverse-order=false&favorite-filter=false", status=200)
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=false&favorite-filter=false",
+        status=200,
+    )
     assert response.context["meetings"] == [meeting, meeting_2, meeting_3]
-    
+
+
 def test_favorite_meeting_order_alpha_asc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=name&reverse-order=false&favorite-filter=true", status=200)
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=false&favorite-filter=true", status=200
+    )
     assert response.context["meetings"] == [meeting_2, meeting]
-    
-    
+
+
 def test_favorite_meeting_order_alpha_desc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=name&reverse-order=true&favorite-filter=true", status=200)
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=true&favorite-filter=true", status=200
+    )
     assert response.context["meetings"] == [meeting, meeting_2]
-    
-    
+
+
 def test_favorite_meeting_order_date_desc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=created_at&reverse-order=true&favorite-filter=true", status=200)
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=true&favorite-filter=true",
+        status=200,
+    )
     assert response.context["meetings"] == [meeting_2, meeting]
+
 
 def test_favorite_meeting_order_date_asc(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
-    response = client_app.get("/welcome?order-key=created_at&reverse-order=false&favorite-filter=true", status=200)
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=false&favorite-filter=true",
+        status=200,
+    )
     assert response.context["meetings"] == [meeting, meeting_2]
-    
+
 
 def test_add_and_remove_favorite(
     client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
 ):
     assert not meeting_3.is_favorite
-    response = client_app.get("/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3").follow()
+    response = client_app.get(
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3"
+    ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
     assert meeting_3.is_favorite
-    
-    response = client_app.get("/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3").follow()
+
+    response = client_app.get(
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true&id=3"
+    ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
     assert not meeting_3.is_favorite
