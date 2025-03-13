@@ -146,6 +146,7 @@ class MeetingForm(FlaskForm):
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
+        render_kw={"placeholder": current_app.config["MEETING_LOGOUT_URL"]},
     )
     moderatorPW = StringField(
         label=_("Renouveler le lien modérateur"),

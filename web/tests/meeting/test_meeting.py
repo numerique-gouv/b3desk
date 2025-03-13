@@ -538,6 +538,34 @@ def test_create_without_logout_url_gets_default(
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
 
+def test_save_existing_meeting_gets_default_logoutUrl(
+    client_app, authenticated_user, meeting, mocker, bbb_response
+):
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.form["logoutUrl"] = ""
+    res = res.form.submit()
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+
+    meeting.bbb.create()
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params.get("logoutURL", "") == client_app.app.config.get(
+        "MEETING_LOGOUT_URL"
+    )
+
+
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
 

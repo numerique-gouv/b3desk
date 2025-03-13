@@ -90,7 +90,6 @@ class BBB:
 
     def is_meeting_running(self):
         """https://docs.bigbluebutton.org/development/api/#ismeetingrunning"""
-        current_app.logger.error("BBB API available?????????????????????????")
         request = self.bbb_request(
             "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
@@ -139,7 +138,9 @@ class BBB:
             params["welcome"] = param
         if param := self.meeting.maxParticipants:
             params["maxParticipants"] = str(param)
-        if param := self.meeting.logoutUrl:
+        if param := self.meeting.logoutUrl or current_app.config.get(
+            "MEETING_LOGOUT_URL", ""
+        ):
             params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
