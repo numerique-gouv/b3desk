@@ -275,7 +275,10 @@ def setup_oidc(app):
         "default": user_provider_configuration,
         "attendee": attendee_provider_configuration,
     }
-    auth.init_app(app)
+    try:
+        auth.init_app(app)
+    except Exception as exc:
+        app.logger.error("OIDC service is not ready: %s", exc)
 
 
 def create_app(test_config=None):

@@ -28,6 +28,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_current_user
@@ -80,6 +81,7 @@ def quick_mail_meeting():
 
 
 @bp.route("/meeting/quick")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def quick_meeting():
     user = get_current_user()
@@ -88,6 +90,7 @@ def quick_meeting():
 
 
 @bp.route("/meeting/show/<meeting:meeting>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def show_meeting(meeting: Meeting, owner: User):
@@ -109,6 +112,7 @@ def show_meeting(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/recordings/<meeting:meeting>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def show_meeting_recording(meeting: Meeting, owner: User):
@@ -122,6 +126,7 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def update_recording_name(meeting: Meeting, recording_id, owner: User):
@@ -145,6 +150,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
 
 
 @bp.route("/meeting/new")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def new_meeting():
     user = get_current_user()
@@ -162,6 +168,7 @@ def new_meeting():
 
 
 @bp.route("/meeting/edit/<meeting:meeting>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def edit_meeting(meeting: Meeting, owner: User):
@@ -179,6 +186,7 @@ def edit_meeting(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/save", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def save_meeting():
     user = get_current_user()
@@ -230,6 +238,7 @@ def save_meeting():
 
 
 @bp.route("/meeting/end", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def end_meeting():
     user = get_current_user()
@@ -248,6 +257,7 @@ def end_meeting():
 
 
 @bp.route("/meeting/create/<meeting:meeting>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def create_meeting(meeting: Meeting, owner: User):
@@ -257,6 +267,7 @@ def create_meeting(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def externalUpload(meeting: Meeting, owner: User):
@@ -266,6 +277,7 @@ def externalUpload(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/delete", methods=["POST", "GET"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting():
     if request.method == "POST":
@@ -299,6 +311,7 @@ def delete_meeting():
 
 
 @bp.route("/meeting/video/delete", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_video_meeting():
     user = get_current_user()

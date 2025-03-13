@@ -18,6 +18,7 @@ from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
@@ -107,6 +108,7 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
 
 
 @bp.route("/meeting/auth/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
     return redirect(
@@ -223,6 +225,7 @@ def join_mail_meeting():
 
 # Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
 @bp.route("/meeting/join/<int:meeting_id>/authenticated")
+@check_oidc_connection(auth)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
@@ -240,6 +243,7 @@ def join_meeting_as_authenticated(meeting_id):
 
 
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):

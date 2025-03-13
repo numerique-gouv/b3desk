@@ -10,6 +10,7 @@ from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
+from ..utils import check_oidc_connection
 from .meetings import meeting_mailto_params
 
 bp = Blueprint("public", __name__)
@@ -65,6 +66,7 @@ def home():
 
 
 @bp.route("/welcome")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
@@ -130,6 +132,7 @@ def documentation():
 
 
 @bp.route("/logout")
+@check_oidc_connection(auth)
 @auth.oidc_logout
 def logout():
     return redirect(url_for("public.index"))
