@@ -6,12 +6,12 @@ Pour publier une nouvelle version :
 - S'assurer d'être sur la branche `production`
 ```
 git branch
+# La liste des branches sera affichée avec une * avant la branche actuelle.
 ```
-La liste des branches sera affichée avec une * avant la branche actuelle.  
 Si la branche actuelle n'est pas `production` :
 ```
 git switch production
-``` 
+```
 - Faire un merge de `main` dans `production` pour récupérer les dernières modifications.
 ```
 git merge main
@@ -33,7 +33,7 @@ git tag -a vW.X.Y -m "Bump to W.X.Y version"
 - Pousser le commit ET le tag
 ```
 git push upstream production --follow-tags
-``` 
+```
 - Se rendre sur [la page github de publication de version](https://github.com/numerique-gouv/b3desk/releases/new)
 - Choisir le tag récemment ajouté, remplir les informations, publier la version.
 - Repasser sur `main`
