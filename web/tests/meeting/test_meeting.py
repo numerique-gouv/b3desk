@@ -76,6 +76,7 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert (
@@ -105,6 +106,7 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
+    assert meeting.voiceBridge == "123456789"
 
 
 def test_save_existing_meeting_not_running(
@@ -131,6 +133,7 @@ def test_save_existing_meeting_not_running(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -158,6 +161,7 @@ def test_save_existing_meeting_not_running(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
+    assert meeting.voiceBridge == "123456789"
 
 
 def test_save_existing_meeting_running(
@@ -316,6 +320,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "voiceBridge": "111222333",
     }
 
     assert not mocked_background_upload.called
@@ -410,6 +415,7 @@ def test_create_with_only_a_default_file(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "voiceBridge": "111222333",
     }
 
     assert mocked_background_upload.called
@@ -503,6 +509,7 @@ def test_create_with_files(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "voiceBridge": "111222333",
     }
 
     assert mocked_background_upload.called
@@ -778,3 +785,34 @@ def test_add_favorite_by_wrong_user_failed(
     response = client_app.get("/welcome", status=200)
     response.mustcontain("Berenice Cooler")
     response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
+
+
+def test_create_meeting_with_wrong_PIN(
+    client_app, meeting, authenticated_user, mock_meeting_is_not_running
+):
+    res = client_app.get("/meeting/new")
+    res.form["name"] = "Mon meeting de test"
+    res.form["voiceBridge"] = "1234567890"
+    res = res.form.submit()
+    res.mustcontain("Entez un PIN de 9 chiffres")
+    res.form["voiceBridge"] = "12345678"
+    res = res.form.submit()
+    res.mustcontain("Entez un PIN de 9 chiffres")
+    res.form["voiceBridge"] = "a12345678"
+    res = res.form.submit()
+    res.mustcontain("Le code PIN est composé de chiffres uniquement")
+    res.form["voiceBridge"] = "012345678"
+    res = res.form.submit()
+    res.mustcontain("Le premier chiffre doit être différent de 0")
+    res.form["voiceBridge"] = "111222333"
+    res = res.form.submit()
+    res.mustcontain("Ce code PIN est déjà utilisé")
+
+
+def test_generate_existing_pin(
+    client_app, meeting, authenticated_user, mock_meeting_is_not_running, mocker
+):
+    mocker.patch("b3desk.models.meetings.random.randint", return_value=111222333)
+    res = client_app.get("/meeting/new")
+    res.form["name"] = "Mon meeting de test"
+    res.mustcontain("111222334")
