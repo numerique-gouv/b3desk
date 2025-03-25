@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
+import random
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
@@ -16,6 +17,7 @@ from typing import Optional
 from flask import current_app
 from flask import url_for
 from sqlalchemy_utils import StringEncryptedType
+from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
@@ -89,7 +91,7 @@ class Meeting(db.Model):
     moderatorPW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
     welcome = db.Column(db.UnicodeText())
     dialNumber = db.Column(db.Unicode(50))
-    voiceBridge = db.Column(db.Unicode(50))
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     maxParticipants = db.Column(db.Integer)
     logoutUrl = db.Column(db.Unicode(250))
     record = db.Column(db.Boolean, unique=False, default=True)
@@ -358,3 +360,35 @@ def get_mail_meeting(random_string=None):
     )
     meeting.fake_id = random_string
     return meeting
+
+
+def pin_generation():
+    generate_random_pin = random.randint(100000000, 999999999)
+    return create_unique_pin(generate_random_pin)
+
+
+def create_unique_pin(pin):
+    pin_string = str(pin)
+    if pin_is_unique(None, pin_string):
+        return pin_string
+    else:
+        pin += 1
+        return create_unique_pin(pin)
+
+
+def pin_is_unique_validator(form, field):
+    if not pin_is_unique(form.id.data, field.data):
+        raise ValidationError("Ce code PIN est déjà utilisé")
+
+
+def pin_is_unique(id, pin):
+    if id is None:
+        pins = [voiceBridge[0] for voiceBridge in db.session.query(Meeting.voiceBridge)]
+        return pin not in pins
+    else:
+        pins = [
+            voiceBridge[1]
+            for voiceBridge in db.session.query(Meeting.id, Meeting.voiceBridge)
+            if voiceBridge[0] != id
+        ]
+        return pin not in pins

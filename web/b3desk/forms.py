@@ -9,6 +9,9 @@ from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import validators
 
+from b3desk.models.meetings import pin_generation
+from b3desk.models.meetings import pin_is_unique_validator
+
 
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
@@ -171,6 +174,25 @@ class MeetingForm(FlaskForm):
         default="Pa55W0rd2",
         render_kw={"readonly": True},
         validators=[validators.DataRequired()],
+    )
+    voiceBridge = StringField(
+        label=_("PIN"),
+        description=_(
+            "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)",
+            the_meeting=current_app.config["WORDING_THE_MEETING"],
+        ),
+        default=lambda: pin_generation(),
+        validators=[
+            validators.DataRequired(),
+            validators.length(min=9, max=9, message="Entez un PIN de 9 chiffres"),
+            validators.Regexp(
+                regex="[0-9]", message="Le code PIN est composé de chiffres uniquement"
+            ),
+            validators.Regexp(
+                regex="^[1-9]", message="Le premier chiffre doit être différent de 0"
+            ),
+            pin_is_unique_validator,
+        ],
     )
 
     def __init__(self, *args, **kwargs):
