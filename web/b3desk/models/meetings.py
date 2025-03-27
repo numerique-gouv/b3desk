@@ -294,6 +294,32 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS"
 
 
+class PreviousVoiceBridge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
+    archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+def get_all_voiceBridges():
+    return [
+        voiceBridge[0]
+        for voiceBridge in db.session.query(PreviousVoiceBridge.voiceBridge)
+    ]
+
+
+def delete_old_voiceBridges():
+    one_year_ago = datetime.now() - timedelta(seconds=30)
+    voiceBridge_to_delete = PreviousVoiceBridge.delete().where(
+        PreviousVoiceBridge.archived_at > one_year_ago
+    )
+    voiceBridge_to_delete.execute()
+    # db.session.query(PreviousVoiceBridge.id).filter(PreviousVoiceBridge.archived_at > one_year_ago).delete()
+
+
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     if random_string is None:
         random_string = get_random_alphanumeric_string(8)
@@ -382,13 +408,17 @@ def pin_is_unique_validator(form, field):
 
 
 def pin_is_unique(id, pin):
+    # delete_old_voiceBridges()
+    previous_pins = get_all_voiceBridges()
     if id is None:
-        pins = [voiceBridge[0] for voiceBridge in db.session.query(Meeting.voiceBridge)]
+        pins = [
+            voiceBridge[0] for voiceBridge in db.session.query(Meeting.voiceBridge)
+        ] + previous_pins
         return pin not in pins
     else:
         pins = [
             voiceBridge[1]
             for voiceBridge in db.session.query(Meeting.id, Meeting.voiceBridge)
             if voiceBridge[0] != id
-        ]
+        ] + previous_pins
         return pin not in pins
