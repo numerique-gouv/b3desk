@@ -5,34 +5,19 @@ Revises: 44cab47dbc9b
 Create Date: 2025-03-25 08:23:29.169319
 """
 
-import random
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
 
+from b3desk.models.meetings import pin_generation
+
 # revision identifiers, used by Alembic.
 revision = "c25342fd2428"
 down_revision = "44cab47dbc9b"
 branch_labels = None
 depends_on = None
-
-
-def pin_generation(pins):
-    generate_random_pin = random.randint(100000000, 999999999)
-    return create_unique_pin(generate_random_pin, pins)
-
-
-def create_unique_pin(pin, pins):
-    pin_string = str(pin)
-    if pin_string not in pins:
-        pins.append(pin_string)
-        return pin_string
-    else:
-        pin += 1
-        return create_unique_pin(pin, pins)
 
 
 def upgrade():
@@ -45,6 +30,7 @@ def upgrade():
     pins = []
     for (meeting_id,) in session.execute(select(meeting.c.id)):
         pin = pin_generation(pins)
+        pins.append(pin)
         session.execute(
             update(meeting).where(meeting.c.id == meeting_id).values(voiceBridge=pin)
         )

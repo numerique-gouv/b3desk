@@ -161,7 +161,7 @@ def meeting(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
-        voiceBridge="111222333",
+        voiceBridge="111111111",
     )
     meeting.save()
 
@@ -180,7 +180,7 @@ def meeting_2(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
-        voiceBridge="222333444",
+        voiceBridge="111111112",
     )
     meeting.save()
 
@@ -198,7 +198,7 @@ def meeting_3(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        voiceBridge="333444555",
+        voiceBridge="111111113",
     )
     meeting.save()
 
