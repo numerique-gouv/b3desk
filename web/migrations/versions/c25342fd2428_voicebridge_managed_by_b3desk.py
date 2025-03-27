@@ -52,6 +52,14 @@ def upgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.alter_column("voiceBridge", nullable=False)
         batch_op.create_unique_constraint("uq_meeting_voicebridge", ["voiceBridge"])
+    op.create_table(
+        "previous_voice_bridge",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("voiceBridge", sa.Unicode(length=50), nullable=False),
+        sa.Column("archived_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("voiceBridge"),
+    )
     # ### end Alembic commands ###
 
 
@@ -65,4 +73,5 @@ def downgrade():
     meeting = sa.table("meeting", sa.column("voiceBridge", sa.String))
     session.execute(update(meeting).values(voiceBridge=None))
     session.commit()
+    op.drop_table("previous_voice_bridge")
     # ### end Alembic commands ###
