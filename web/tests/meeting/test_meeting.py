@@ -11,7 +11,7 @@ from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import get_all_voiceBridges
+from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.roles import Role
 
 
@@ -321,7 +321,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111222333",
+        "voiceBridge": "111111111",
     }
 
     assert not mocked_background_upload.called
@@ -416,7 +416,7 @@ def test_create_with_only_a_default_file(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111222333",
+        "voiceBridge": "111111111",
     }
 
     assert mocked_background_upload.called
@@ -510,7 +510,7 @@ def test_create_with_files(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111222333",
+        "voiceBridge": "111111111",
     }
 
     assert mocked_background_upload.called
@@ -641,9 +641,9 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
-    previous_voiceBridges = get_all_voiceBridges()
+    previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
-    assert previous_voiceBridges[0] == "111222333"
+    assert previous_voiceBridges[0] == "111111111"
 
 
 def test_meeting_link_retrocompatibility(meeting):
@@ -808,26 +808,40 @@ def test_create_meeting_with_wrong_PIN(
     res.form["voiceBridge"] = "012345678"
     res = res.form.submit()
     res.mustcontain("Le premier chiffre doit être différent de 0")
-    res.form["voiceBridge"] = "111222333"
+    res.form["voiceBridge"] = "111111111"
     res = res.form.submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
-    previous_voiceBridges = get_all_voiceBridges()
+    previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
-    assert previous_voiceBridges[0] == "111222333"
+    assert previous_voiceBridges[0] == "111111111"
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "111222333"
+    res.form["voiceBridge"] = "111111111"
     res = res.form.submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
 
 def test_generate_existing_pin(
-    client_app, meeting, authenticated_user, mock_meeting_is_not_running, mocker
+    client_app,
+    meeting,
+    meeting_2,
+    meeting_3,
+    authenticated_user,
+    mock_meeting_is_not_running,
+    mocker,
 ):
-    mocker.patch("b3desk.models.meetings.random.randint", return_value=111222333)
+    mocker.patch("b3desk.models.meetings.random.randint", return_value=111111111)
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
-    res.mustcontain("111222334")
+    res.mustcontain("111111114")
+
+    res = client_app.get("/meeting/new")
+    res.form["voiceBridge"] = "999999999"
+    res = res.form.submit()
+
+    mocker.patch("b3desk.models.meetings.random.randint", return_value=999999999)
+    res = client_app.get("/meeting/new")
+    res.mustcontain("100000000")

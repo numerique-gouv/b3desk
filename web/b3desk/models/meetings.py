@@ -304,7 +304,7 @@ class PreviousVoiceBridge(db.Model):
         db.session.commit()
 
 
-def get_all_voiceBridges():
+def get_all_previous_voiceBridges():
     return [
         voiceBridge[0]
         for voiceBridge in db.session.query(PreviousVoiceBridge.voiceBridge)
@@ -312,7 +312,7 @@ def get_all_voiceBridges():
 
 
 def delete_old_voiceBridges():
-    one_year_ago = datetime.now() - timedelta(seconds=30)
+    one_year_ago = datetime.now() - timedelta(days=365)
     voiceBridge_to_delete = PreviousVoiceBridge.delete().where(
         PreviousVoiceBridge.archived_at > one_year_ago
     )
@@ -388,18 +388,29 @@ def get_mail_meeting(random_string=None):
     return meeting
 
 
-def pin_generation():
-    generate_random_pin = random.randint(100000000, 999999999)
-    return create_unique_pin(generate_random_pin)
+def pin_generation(forbidden_pins=None):
+    forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
+    return create_unique_pin(forbidden_pins=forbidden_pins)
 
 
-def create_unique_pin(pin):
-    pin_string = str(pin)
-    if pin_is_unique(None, pin_string):
-        return pin_string
-    else:
+def get_forbidden_pins(edited_meeting_id=""):
+    previous_pins = get_all_previous_voiceBridges()
+    return [
+        voiceBridge[0]
+        for voiceBridge in db.session.query(Meeting.voiceBridge).filter(
+            Meeting.id != edited_meeting_id
+        )
+    ] + previous_pins
+
+
+def create_unique_pin(forbidden_pins, pin=None):
+    pin = random.randint(100000000, 999999999) if not pin else pin
+    if str(pin) in forbidden_pins:
         pin += 1
-        return create_unique_pin(pin)
+        pin = 100000000 if pin > 999999999 else pin
+        return create_unique_pin(forbidden_pins, pin)
+    else:
+        return str(pin)
 
 
 def pin_is_unique_validator(form, field):
@@ -407,18 +418,5 @@ def pin_is_unique_validator(form, field):
         raise ValidationError("Ce code PIN est déjà utilisé")
 
 
-def pin_is_unique(id, pin):
-    # delete_old_voiceBridges()
-    previous_pins = get_all_voiceBridges()
-    if id is None:
-        pins = [
-            voiceBridge[0] for voiceBridge in db.session.query(Meeting.voiceBridge)
-        ] + previous_pins
-        return pin not in pins
-    else:
-        pins = [
-            voiceBridge[1]
-            for voiceBridge in db.session.query(Meeting.id, Meeting.voiceBridge)
-            if voiceBridge[0] != id
-        ] + previous_pins
-        return pin not in pins
+def pin_is_unique(edited_meeting_id, pin):
+    return pin not in get_forbidden_pins(edited_meeting_id)
