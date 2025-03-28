@@ -394,8 +394,9 @@ def get_mail_meeting(random_string=None):
     return meeting
 
 
-def pin_generation(forbidden_pins=None):
-    delete_old_voiceBridges()
+def pin_generation(forbidden_pins=None, clean_db=True):
+    if clean_db:
+        delete_old_voiceBridges()
     forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
     return create_unique_pin(forbidden_pins=forbidden_pins)
 
