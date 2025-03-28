@@ -827,6 +827,9 @@ def test_create_meeting_with_wrong_PIN(
     res.form["voiceBridge"] = "a12345678"
     res = res.form.submit()
     res.mustcontain("Le code PIN est composé de chiffres uniquement")
+    res.form["voiceBridge"] = "12azer;:!"
+    res = res.form.submit()
+    res.mustcontain("Le code PIN est composé de chiffres uniquement")
     res.form["voiceBridge"] = "012345678"
     res = res.form.submit()
     res.mustcontain("Le premier chiffre doit être différent de 0")
@@ -965,7 +968,6 @@ def test_get_forbidden_pins(previous_voiceBridge, meeting, meeting_2, meeting_3)
 
 
 def test_create_unique_pin():
-    # doit créer un pin unique qui n'est pas dans une liste
     assert create_unique_pin([]).isdigit()
     assert len(create_unique_pin([])) == 9
     assert 100000000 <= int(create_unique_pin([])) <= 999999999
