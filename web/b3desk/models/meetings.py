@@ -176,6 +176,17 @@ class Meeting(db.Model):
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]
+            if (
+                self.dialNumber != result["dialNumber"]
+                or self.voiceBridge != result["voiceBridge"]
+            ):
+                current_app.logger.error(
+                    "Dial number or voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: dial number sent '%s' received '%s', voice bridge sent '%s' received '%s'",
+                    self.dialNumber,
+                    result["dialNumber"],
+                    self.voiceBridge,
+                    result["voiceBridge"],
+                )
         current_app.logger.warning("BBB room has not been properly created: %s", result)
         return result if result else {}
 
