@@ -177,13 +177,11 @@ class Meeting(db.Model):
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]
             if (
-                self.dialNumber != result["dialNumber"]
-                or self.voiceBridge != result["voiceBridge"]
+                current_app.config["ENABLE_PIN_MANAGEMENT"]
+                and self.voiceBridge != result["voiceBridge"]
             ):
                 current_app.logger.error(
-                    "Dial number or voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: dial number sent '%s' received '%s', voice bridge sent '%s' received '%s'",
-                    self.dialNumber,
-                    result["dialNumber"],
+                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
                     self.voiceBridge,
                     result["voiceBridge"],
                 )

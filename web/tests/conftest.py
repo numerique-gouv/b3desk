@@ -123,6 +123,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "SMTP_STARTTLS": smtpd.config.use_starttls,
         "SMTP_USERNAME": smtpd.config.login_username,
         "SMTP_PASSWORD": smtpd.config.login_password,
+        "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
+        "ENABLE_PIN_MANAGEMENT": True,
     }
 
 

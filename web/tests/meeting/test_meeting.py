@@ -81,7 +81,8 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert (
@@ -111,7 +112,8 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    assert meeting.voiceBridge == "123456789"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        assert meeting.voiceBridge == "123456789"
 
 
 def test_save_existing_meeting_not_running(
@@ -138,7 +140,8 @@ def test_save_existing_meeting_not_running(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -166,7 +169,8 @@ def test_save_existing_meeting_not_running(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    assert meeting.voiceBridge == "123456789"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        assert meeting.voiceBridge == "123456789"
 
 
 def test_save_existing_meeting_running(
@@ -295,7 +299,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
-    assert bbb_params == {
+    body = {
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
@@ -325,8 +329,12 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111111111",
     }
+
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        body["voiceBridge"] = "111111111"
+
+    assert bbb_params == body
 
     assert not mocked_background_upload.called
 
@@ -390,7 +398,7 @@ def test_create_with_only_a_default_file(
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
-    assert bbb_params == {
+    body = {
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
@@ -420,8 +428,12 @@ def test_create_with_only_a_default_file(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111111111",
     }
+
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        body["voiceBridge"] = "111111111"
+
+    assert bbb_params == body
 
     assert mocked_background_upload.called
 
@@ -484,7 +496,8 @@ def test_create_with_files(
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
-    assert bbb_params == {
+
+    body = {
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
@@ -514,9 +527,12 @@ def test_create_with_files(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
-        "voiceBridge": "111111111",
     }
 
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        body["voiceBridge"] = "111111111"
+
+    assert bbb_params == body
     assert mocked_background_upload.called
     assert mocked_background_upload.call_args.args[0].startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
@@ -798,6 +814,8 @@ def test_add_favorite_by_wrong_user_failed(
 def test_create_meeting_with_wrong_PIN(
     client_app, meeting, authenticated_user, mock_meeting_is_not_running, bbb_response
 ):
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
+
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
     res.form["voiceBridge"] = "1234567890"
@@ -837,6 +855,8 @@ def test_generate_existing_pin(
     mock_meeting_is_not_running,
     mocker,
 ):
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
+
     mocker.patch("b3desk.models.meetings.random.randint", return_value=111111111)
     res = client_app.get("/meeting/new")
     res.mustcontain("111111114")
@@ -868,6 +888,7 @@ def test_delete_old_voiceBridges_with_form(
     iam_server,
     iam_user,
 ):
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
     today = datetime.datetime.now()
     one_year_after = today + datetime.timedelta(days=366)
 

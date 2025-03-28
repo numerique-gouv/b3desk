@@ -144,7 +144,9 @@ class BBB:
             params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
-        if param := self.meeting.voiceBridge:
+        if current_app.config["ENABLE_PIN_MANAGEMENT"] and (
+            param := self.meeting.voiceBridge
+        ):
             params["voiceBridge"] = str(param)
 
         # Pass the academy for statisticts purpose
