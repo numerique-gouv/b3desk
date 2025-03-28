@@ -234,6 +234,16 @@ def user_2(client_app, iam_user_2):
 
 
 @pytest.fixture
+def previous_voiceBridge(client_app):
+    from b3desk.models.meetings import PreviousVoiceBridge
+
+    previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
+    previous_voiceBridge.save()
+
+    yield previous_voiceBridge
+
+
+@pytest.fixture
 def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
     with client_app.session_transaction() as session:
         session["access_token"] = iam_token.access_token

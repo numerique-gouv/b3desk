@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import os
+import time
 from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -11,7 +12,10 @@ from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import create_unique_pin
+from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
+from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.roles import Role
 
 
@@ -835,7 +839,6 @@ def test_generate_existing_pin(
 ):
     mocker.patch("b3desk.models.meetings.random.randint", return_value=111111111)
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
     res.mustcontain("111111114")
 
     res = client_app.get("/meeting/new")
@@ -845,3 +848,105 @@ def test_generate_existing_pin(
     mocker.patch("b3desk.models.meetings.random.randint", return_value=999999999)
     res = client_app.get("/meeting/new")
     res.mustcontain("100000000")
+
+
+def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
+    res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
+    res = res.form.submit()
+    print(res.flashes)
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+
+def test_delete_old_voiceBridges_with_form(
+    time_machine,
+    client_app,
+    authenticated_user,
+    mock_meeting_is_not_running,
+    bbb_response,
+    user,
+    iam_token,
+    iam_server,
+    iam_user,
+):
+    today = datetime.datetime.now()
+    one_year_after = today + datetime.timedelta(days=366)
+
+    res = client_app.get("/meeting/new")
+    res.form["voiceBridge"] = "999999999"
+    res = res.form.submit()
+    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+
+    res = client_app.get("/").follow()
+    res = client_app.post("/meeting/delete", {"id": "1"})
+    assert ("success", "Élément supprimé") in res.flashes
+    previous_voiceBridges = get_all_previous_voiceBridges()
+    assert len(previous_voiceBridges) == 1
+    assert previous_voiceBridges[0] == "999999999"
+
+    time_machine.move_to(one_year_after)
+
+    with client_app.session_transaction() as session:
+        session["access_token"] = iam_token.access_token
+        session["access_token_expires_at"] = ""
+        session["current_provider"] = "default"
+        session["id_token"] = ""
+        session["id_token_jwt"] = ""
+        session["last_authenticated"] = "true"
+        session["last_session_refresh"] = time.time()
+        session["userinfo"] = {
+            "email": "alice@domain.tld",
+            "family_name": "Cooper",
+            "given_name": "Alice",
+            "preferred_username": "alice",
+        }
+        session["refresh_token"] = ""
+
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    res = client_app.get("/meeting/new")
+    res.form["voiceBridge"] = "999999999"
+    res = res.form.submit()
+    res.mustcontain(no="Ce code PIN est déjà utilisé")
+    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    previous_voiceBridges = get_all_previous_voiceBridges()
+    assert len(previous_voiceBridges) == 0
+    assert previous_voiceBridges == []
+
+
+def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
+    assert get_all_previous_voiceBridges()
+    assert previous_voiceBridge.voiceBridge == "487604786"
+    assert previous_voiceBridge.archived_at.date() == datetime.date.today()
+
+    today = datetime.datetime.now()
+    one_year_after = today + datetime.timedelta(days=366)
+
+    time_machine.move_to(one_year_after)
+    delete_old_voiceBridges()
+    assert not get_all_previous_voiceBridges()
+
+
+def test_get_forbidden_pins(previous_voiceBridge, meeting, meeting_2, meeting_3):
+    assert (
+        get_forbidden_pins().sort()
+        == [
+            meeting_2.voiceBridge,
+            meeting.voiceBridge,
+            meeting_3.voiceBridge,
+            previous_voiceBridge.voiceBridge,
+        ].sort()
+    )
+
+    assert sorted(get_forbidden_pins(1)) == sorted(
+        [meeting_2.voiceBridge, meeting_3.voiceBridge, previous_voiceBridge.voiceBridge]
+    )
+
+
+def test_create_unique_pin():
+    # doit créer un pin unique qui n'est pas dans une liste
+    assert create_unique_pin([]).isdigit()
+    assert len(create_unique_pin([])) == 9
+    assert 100000000 <= int(create_unique_pin([])) <= 999999999
+    assert create_unique_pin(["499999999"], pin=499999999) == "500000000"
+    assert create_unique_pin(["999999998", "999999999"], pin=999999998) == "100000000"

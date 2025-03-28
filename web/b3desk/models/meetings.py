@@ -312,12 +312,9 @@ def get_all_previous_voiceBridges():
 
 
 def delete_old_voiceBridges():
-    one_year_ago = datetime.now() - timedelta(days=365)
-    voiceBridge_to_delete = PreviousVoiceBridge.delete().where(
-        PreviousVoiceBridge.archived_at > one_year_ago
-    )
-    voiceBridge_to_delete.execute()
-    # db.session.query(PreviousVoiceBridge.id).filter(PreviousVoiceBridge.archived_at > one_year_ago).delete()
+    db.session.query(PreviousVoiceBridge).filter(
+        PreviousVoiceBridge.archived_at < datetime.now() - timedelta(days=365)
+    ).delete()
 
 
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):
@@ -389,17 +386,23 @@ def get_mail_meeting(random_string=None):
 
 
 def pin_generation(forbidden_pins=None):
+    delete_old_voiceBridges()
     forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
     return create_unique_pin(forbidden_pins=forbidden_pins)
 
 
-def get_forbidden_pins(edited_meeting_id=""):
+def get_forbidden_pins(edited_meeting_id=None):
     previous_pins = get_all_previous_voiceBridges()
-    return [
-        voiceBridge[0]
-        for voiceBridge in db.session.query(Meeting.voiceBridge).filter(
+
+    existing_meeting_voiceBridges = db.session.query(Meeting.voiceBridge)
+
+    if edited_meeting_id:
+        existing_meeting_voiceBridges = existing_meeting_voiceBridges.filter(
             Meeting.id != edited_meeting_id
         )
+
+    return [
+        voiceBridge[0] for voiceBridge in existing_meeting_voiceBridges
     ] + previous_pins
 
 
@@ -414,9 +417,5 @@ def create_unique_pin(forbidden_pins, pin=None):
 
 
 def pin_is_unique_validator(form, field):
-    if not pin_is_unique(form.id.data, field.data):
+    if field.data in get_forbidden_pins(form.id.data):
         raise ValidationError("Ce code PIN est déjà utilisé")
-
-
-def pin_is_unique(edited_meeting_id, pin):
-    return pin not in get_forbidden_pins(edited_meeting_id)
