@@ -193,7 +193,8 @@ class BBB:
 
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
-            return self.bbb_response(request)
+            data = self.bbb_response(request)
+            return data
 
         # default file is sent right away since it is need as the background
         # image for the meeting
