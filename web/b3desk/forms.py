@@ -186,7 +186,8 @@ class MeetingForm(FlaskForm):
             validators.DataRequired(),
             validators.length(min=9, max=9, message="Entez un PIN de 9 chiffres"),
             validators.Regexp(
-                regex="[0-9]", message="Le code PIN est composé de chiffres uniquement"
+                regex="[0-9]{9}",
+                message="Le code PIN est composé de chiffres uniquement",
             ),
             validators.Regexp(
                 regex="^[1-9]", message="Le premier chiffre doit être différent de 0"
