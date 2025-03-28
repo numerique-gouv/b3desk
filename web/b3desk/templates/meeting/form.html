@@ -58,6 +58,10 @@
               {{ render_field(form.maxParticipants) }}
               {{ render_field(form.duration) }}
               {{ render_field(form.guestPolicy) }}
+
+              {% if config.get("ENABLE_PIN_MANAGEMENT") %}
+                {{ render_field(form.voiceBridge) }}
+              {% endif %}
             </div>
         </div>
       </div>

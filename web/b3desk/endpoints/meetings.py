@@ -25,6 +25,7 @@ from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import PreviousVoiceBridge
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.roles import Role
 from b3desk.models.users import User
@@ -302,6 +303,9 @@ def delete_meeting():
                     "error",
                 )
             else:
+                previous_voiceBridge = PreviousVoiceBridge()
+                previous_voiceBridge.voiceBridge = meeting.voiceBridge
+                previous_voiceBridge.save()
                 db.session.delete(meeting)
                 db.session.commit()
                 flash(_("Élément supprimé"), "success")
@@ -339,3 +343,20 @@ def delete_video_meeting():
             "error",
         )
     return redirect(url_for("public.welcome"))
+
+
+@bp.route("/meeting/favorite", methods=["POST"])
+@auth.oidc_auth("default")
+def meeting_favorite():
+    user = get_current_user()
+    meeting_id = request.form["id"]
+    meeting = db.session.get(Meeting, meeting_id)
+
+    if meeting.user_id == user.id:
+        meeting.is_favorite = not meeting.is_favorite
+        db.session.commit()
+        meeting.save()
+    else:
+        abort(403)
+
+    return redirect(url_for("public.welcome", **request.args))
