@@ -31,6 +31,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.models.users import User
+from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_current_user
@@ -40,6 +41,7 @@ bp = Blueprint("meeting_files", __name__)
 
 
 @bp.route("/meeting/files/<meeting:meeting>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def edit_meeting_files(meeting: Meeting, owner: User):
@@ -74,6 +76,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_meeting_files(meeting: Meeting, owner: User):
@@ -100,6 +103,7 @@ def add_meeting_files(meeting: Meeting, owner: User):
 
 @bp.route("/meeting/files/<meeting:meeting>/")
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
@@ -153,6 +157,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 
 # called by NextcloudfilePicker when documents should be added to a running room:
 @bp.route("/meeting/files/<meeting:meeting>/insertDocuments", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def insertDocuments(meeting: Meeting):
     from flask import request
@@ -209,6 +214,7 @@ def insertDocuments(meeting: Meeting):
 
 
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def toggledownload(meeting: Meeting, owner: User):
@@ -224,6 +230,7 @@ def toggledownload(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def set_meeting_default_file(meeting: Meeting, owner: User):
@@ -432,6 +439,7 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
 
 # for dropzone multiple files uploading at once
 @bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_dropzone_files(meeting: Meeting, owner: User):
@@ -476,6 +484,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 
 
 @bp.route("/meeting/files/delete", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting_file():
     user = get_current_user()

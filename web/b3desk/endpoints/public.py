@@ -3,6 +3,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 
 from .. import auth
@@ -10,6 +11,7 @@ from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
+from ..utils import check_oidc_connection
 from .meetings import meeting_mailto_params
 
 bp = Blueprint("public", __name__)
@@ -65,10 +67,42 @@ def home():
 
 
 @bp.route("/welcome")
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def welcome():
     user = get_current_user()
     stats = get_meetings_stats()
+
+    order_key = request.args.get("order-key", "created_at")
+    reverse_order = request.args.get(
+        "reverse-order", True, type=lambda x: x.lower() == "true"
+    )
+    favorite_filter = request.args.get(
+        "favorite-filter", False, type=lambda x: x.lower() == "true"
+    )
+
+    if order_key not in ["created_at", "name"]:
+        order_key = "created_at"
+
+    meetings = user.meetings
+    favorite_meetings = []
+    if favorite_filter:
+        favorite_meetings = [
+            meeting for meeting in user.meetings if meeting.is_favorite
+        ]
+        if favorite_meetings:
+            meetings = favorite_meetings
+
+    meetings = sorted(
+        meetings,
+        key=lambda m: (
+            getattr(m, order_key).lower()
+            if isinstance(getattr(m, order_key), str)
+            else getattr(m, order_key),
+            m.id,
+        ),
+        reverse=reverse_order,
+    )
 
     return render_template(
         "welcome.html",
@@ -81,6 +115,10 @@ def welcome():
         quick_meeting=current_app.config["QUICK_MEETING"],
         file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
+        meetings=meetings,
+        reverse_order=reverse_order,
+        order_key=order_key,
+        favorite_filter=favorite_filter and bool(favorite_meetings),
     )
 
 
@@ -130,6 +168,7 @@ def documentation():
 
 
 @bp.route("/logout")
+@check_oidc_connection(auth)
 @auth.oidc_logout
 def logout():
     return redirect(url_for("public.index"))

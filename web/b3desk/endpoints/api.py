@@ -3,6 +3,7 @@ from flask import request
 
 from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
+from b3desk.utils import check_oidc_connection
 
 from .. import auth
 
@@ -10,6 +11,7 @@ bp = Blueprint("api", __name__)
 
 
 @bp.route("/api/meetings")
+@check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["profile", "email"])
 def api_meetings():
     client = auth.clients["default"]

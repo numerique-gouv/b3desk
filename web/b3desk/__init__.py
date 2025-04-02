@@ -29,7 +29,7 @@ from b3desk.utils import is_rie
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.2.20"
+__version__ = "1.3.0"
 
 LANGUAGES = ["en", "fr"]
 
@@ -38,6 +38,10 @@ cache = Cache()
 csrf = CSRFProtect()
 auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
+
+
+class BigBLueButtonUnavailable(Exception):
+    pass
 
 
 def setup_configuration(app, config=None):
@@ -205,6 +209,10 @@ def setup_error_pages(app):
     def internal_error(error):
         return render_template("errors/500.html", error=error), 500
 
+    @app.errorhandler(BigBLueButtonUnavailable)
+    def bigbluebutton_unavailable_error(error):
+        return render_template("errors/big-blue-button-error.html", error=error)
+
 
 def setup_endpoints(app):
     with app.app_context():
@@ -267,7 +275,10 @@ def setup_oidc(app):
         "default": user_provider_configuration,
         "attendee": attendee_provider_configuration,
     }
-    auth.init_app(app)
+    try:
+        auth.init_app(app)
+    except Exception as exc:
+        app.logger.error("OIDC service is not ready: %s", exc)
 
 
 def create_app(test_config=None):

@@ -21,6 +21,7 @@ from flask import url_for
 
 from b3desk.tasks import background_upload
 
+from .. import BigBLueButtonUnavailable
 from .. import cache
 from .roles import Role
 
@@ -78,7 +79,10 @@ class BBB:
             request.url,
             request.body,
         )
-        response = session.send(request)
+        try:
+            response = session.send(request)
+        except requests.exceptions.ConnectionError:
+            raise BigBLueButtonUnavailable
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
@@ -134,7 +138,9 @@ class BBB:
             params["welcome"] = param
         if param := self.meeting.maxParticipants:
             params["maxParticipants"] = str(param)
-        if param := self.meeting.logoutUrl:
+        if param := self.meeting.logoutUrl or current_app.config.get(
+            "MEETING_LOGOUT_URL", ""
+        ):
             params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
@@ -236,7 +242,10 @@ class BBB:
         current_app.logger.debug(
             "BBB API request method:%s url:%s", request.method, request.url
         )
-        response = requests.Session().send(request)
+        try:
+            response = requests.Session().send(request)
+        except requests.exceptions.ConnectionError:
+            raise BigBLueButtonUnavailable
 
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
