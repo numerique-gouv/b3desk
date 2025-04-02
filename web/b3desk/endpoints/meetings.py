@@ -339,3 +339,20 @@ def delete_video_meeting():
             "error",
         )
     return redirect(url_for("public.welcome"))
+
+
+@bp.route("/meeting/favorite", methods=["POST"])
+@auth.oidc_auth("default")
+def meeting_favorite():
+    user = get_current_user()
+    meeting_id = request.form["id"]
+    meeting = db.session.get(Meeting, meeting_id)
+
+    if meeting.user_id == user.id:
+        meeting.is_favorite = not meeting.is_favorite
+        db.session.commit()
+        meeting.save()
+    else:
+        abort(403)
+
+    return redirect(url_for("public.welcome", **request.args))
