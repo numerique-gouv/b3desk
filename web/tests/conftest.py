@@ -208,6 +208,37 @@ def meeting_3(client_app, user):
 
 
 @pytest.fixture
+def shadow_meeting(client_app, user):
+    # peut-être que tout n'est pas utile...
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="999999999",
+        is_shadow_meeting=True,
+        welcome="Bienvenue dans le Salon",
+        guestPolicy=False,
+        webcamsOnlyForModerator=False,
+        muteOnStart=True,
+        lockSettingsDisableCam=False,
+        lockSettingsDisableMic=False,
+        lockSettingsDisablePrivateChat=False,
+        lockSettingsDisablePublicChat=False,
+        lockSettingsDisableNote=False,
+        moderatorOnlyMessage="Bienvenue",
+        logoutUrl="http://education.gouv.fr/",
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
 def user(client_app, iam_user):
     from b3desk.models.users import User
 
