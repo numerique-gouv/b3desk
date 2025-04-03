@@ -39,6 +39,9 @@ def test_api_meetings_nominal(
 
     assert len(res.json["meetings"]) == 3
 
+    assert res.json["meetings"][1]["name"] == "a meeting"
+    assert res.json["meetings"][2]["name"] == "meeting"
+    assert len(res.json["meetings"]) == 3
 
 def test_api_meetings_no_token(client_app):
     client_app.get("/api/meetings", status=401)
