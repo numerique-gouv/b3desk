@@ -702,14 +702,26 @@ def test_meeting_link_retrocompatibility(meeting):
 
 
 def test_meeting_order_default(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get("/welcome", status=200)
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
 
 
 def test_meeting_order_alpha_asc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=false&favorite-filter=false", status=200
@@ -718,7 +730,13 @@ def test_meeting_order_alpha_asc(
 
 
 def test_meeting_order_alpha_desc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=true&favorite-filter=false", status=200
@@ -727,7 +745,13 @@ def test_meeting_order_alpha_desc(
 
 
 def test_meeting_order_date_desc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=true&favorite-filter=false",
@@ -737,7 +761,13 @@ def test_meeting_order_date_desc(
 
 
 def test_meeting_order_date_asc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=false&favorite-filter=false",
@@ -747,7 +777,13 @@ def test_meeting_order_date_asc(
 
 
 def test_favorite_meeting_order_alpha_asc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=false&favorite-filter=true", status=200
@@ -756,7 +792,13 @@ def test_favorite_meeting_order_alpha_asc(
 
 
 def test_favorite_meeting_order_alpha_desc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=true&favorite-filter=true", status=200
@@ -765,7 +807,13 @@ def test_favorite_meeting_order_alpha_desc(
 
 
 def test_favorite_meeting_order_date_desc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=true&favorite-filter=true",
@@ -775,7 +823,13 @@ def test_favorite_meeting_order_date_desc(
 
 
 def test_favorite_meeting_order_date_asc(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=false&favorite-filter=true",
@@ -785,7 +839,13 @@ def test_favorite_meeting_order_date_asc(
 
 
 def test_add_and_remove_favorite(
-    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    bbb_response,
 ):
     assert not meeting_3.is_favorite
     response = client_app.post(
@@ -804,7 +864,13 @@ def test_add_and_remove_favorite(
 
 
 def test_add_favorite_by_wrong_user_failed(
-    client_app, bbb_response, authenticated_user_2, meeting, meeting_2, meeting_3
+    client_app,
+    bbb_response,
+    authenticated_user_2,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
 ):
     response = client_app.get("/welcome", status=200)
     response.mustcontain("Berenice Cooler")
@@ -854,6 +920,7 @@ def test_generate_existing_pin(
     meeting,
     meeting_2,
     meeting_3,
+    shadow_meeting,
     authenticated_user,
     mock_meeting_is_not_running,
     mocker,
@@ -951,7 +1018,9 @@ def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
     assert not get_all_previous_voiceBridges()
 
 
-def test_get_forbidden_pins(previous_voiceBridge, meeting, meeting_2, meeting_3):
+def test_get_forbidden_pins(
+    previous_voiceBridge, meeting, meeting_2, meeting_3, shadow_meeting
+):
     assert (
         get_forbidden_pins().sort()
         == [
@@ -963,7 +1032,12 @@ def test_get_forbidden_pins(previous_voiceBridge, meeting, meeting_2, meeting_3)
     )
 
     assert sorted(get_forbidden_pins(1)) == sorted(
-        [meeting_2.voiceBridge, meeting_3.voiceBridge, previous_voiceBridge.voiceBridge]
+        [
+            meeting_2.voiceBridge,
+            meeting_3.voiceBridge,
+            previous_voiceBridge.voiceBridge,
+            shadow_meeting.voiceBridge,
+        ]
     )
 
 

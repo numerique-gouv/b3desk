@@ -84,6 +84,8 @@ class Meeting(db.Model):
     user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
+    last_connection_utc_datetime = db.Column(db.DateTime)
+    is_shadow_meeting = db.Column(db.Boolean, unique=False, default=False)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -432,3 +434,30 @@ def create_unique_pin(forbidden_pins, pin=None):
 def pin_is_unique_validator(form, field):
     if field.data in get_forbidden_pins(form.id.data):
         raise ValidationError("Ce code PIN est déjà utilisé")
+
+
+def create_and_save_shadow_meeting(user):
+    # peut-être que tout n'est pas utile...
+    meeting = Meeting(
+        user=user,
+        name="Salon",
+        is_shadow_meeting=True,
+        welcome="Bienvenue dans le Salon",
+        maxParticipants=350,
+        duration=280,
+        guestPolicy=False,
+        webcamsOnlyForModerator=False,
+        muteOnStart=True,
+        lockSettingsDisableCam=False,
+        lockSettingsDisableMic=False,
+        lockSettingsDisablePrivateChat=False,
+        lockSettingsDisablePublicChat=False,
+        lockSettingsDisableNote=False,
+        moderatorOnlyMessage="Bienvenue",
+        logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
+        moderatorPW="Pa55W0rd1",
+        attendeePW="Pa55W0rd2",
+        voiceBridge=pin_generation(),
+    )
+    meeting.save()
+    return meeting
