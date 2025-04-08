@@ -453,10 +453,10 @@ def create_and_save_shadow_meeting(user):
         lockSettingsDisablePrivateChat=False,
         lockSettingsDisablePublicChat=False,
         lockSettingsDisableNote=False,
-        moderatorOnlyMessage="Bienvenue",
+        moderatorOnlyMessage=f"Bienvenue {user.fullname}",
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
-        moderatorPW="Pa55W0rd1",
-        attendeePW="Pa55W0rd2",
+        moderatorPW=get_random_alphanumeric_string(9),
+        attendeePW=get_random_alphanumeric_string(9),
         voiceBridge=pin_generation(),
     )
     meeting.save()

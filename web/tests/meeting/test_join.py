@@ -237,7 +237,7 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
 
 
 def test_join_meeting_as_moderator_correctly_save_last_connection_date(
-    client_app, authenticated_user, shadow_meeting, time_machine
+    client_app, authenticated_user, shadow_meeting
 ):
     client_app.get(f"/meeting/join/{shadow_meeting.id}/moderateur", status=200)
     meeting = db.session.get(Meeting, 1)
@@ -246,7 +246,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
 
 def test_join_meeting_as_attendee_not_save_last_connection_date(
-    client_app, authenticated_attendee, shadow_meeting, time_machine
+    client_app, authenticated_attendee, shadow_meeting
 ):
     client_app.get(f"/meeting/join/{shadow_meeting.id}/authenticated", status=302)
     meeting = db.session.get(Meeting, 1)
