@@ -440,9 +440,9 @@ def create_and_save_shadow_meeting(user):
     # peut-être que tout n'est pas utile...
     meeting = Meeting(
         user=user,
-        name="Salon",
+        name=f"Salon de {user.fullname}",
         is_shadow_meeting=True,
-        welcome="Bienvenue dans le Salon",
+        welcome=f"Bienvenue dans le Salon de {user.fullname}",
         maxParticipants=350,
         duration=280,
         guestPolicy=False,

@@ -1,9 +1,12 @@
+import datetime
 import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from flask import url_for
 
+from b3desk.models import db
+from b3desk.models.meetings import Meeting
 from b3desk.models.roles import Role
 
 
@@ -231,3 +234,20 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
         fullname_suffix="",
     )
     client_app.get(waiting_meeting_url, status=200)
+
+
+def test_join_meeting_as_moderator_correctly_save_last_connection_date(
+    client_app, authenticated_user, shadow_meeting, time_machine
+):
+    client_app.get(f"/meeting/join/{shadow_meeting.id}/moderateur", status=200)
+    meeting = db.session.get(Meeting, 1)
+    today = datetime.datetime.now()
+    assert meeting.last_connection_utc_datetime >= today - datetime.timedelta(seconds=1)
+
+
+def test_join_meeting_as_attendee_not_save_last_connection_date(
+    client_app, authenticated_attendee, shadow_meeting, time_machine
+):
+    client_app.get(f"/meeting/join/{shadow_meeting.id}/authenticated", status=302)
+    meeting = db.session.get(Meeting, 1)
+    assert meeting.last_connection_utc_datetime == datetime.datetime(2025, 1, 1)
