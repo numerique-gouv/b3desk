@@ -143,7 +143,7 @@ def test_api_new_shadow_meeting(
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
     assert res.json["shadow-meeting"]
-    assert res.json["shadow-meeting"][0]["name"] == "Salon"
+    assert res.json["shadow-meeting"][0]["name"] == "Salon de Alice Cooper"
     assert (
         f"/meeting/signin/moderateur/2/creator/{user.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]

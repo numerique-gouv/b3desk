@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 import uuid
@@ -232,6 +233,7 @@ def shadow_meeting(client_app, user):
         lockSettingsDisableNote=False,
         moderatorOnlyMessage="Bienvenue",
         logoutUrl="http://education.gouv.fr/",
+        last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
     )
     meeting.save()
 
