@@ -48,7 +48,7 @@
                 (function() {
                     var u="{{ config.get("MATOMO_URL") }}";
                     _paq.push(['setTrackerUrl', u+'piwik.php']);
-                    _paq.push(['setSiteId', 'config.get("MATOMO_SITE_ID")']);
+                    _paq.push(['setSiteId', '{{ config.get("MATOMO_SITE_ID") }}']);
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
                     g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
                 })();
