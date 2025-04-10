@@ -123,6 +123,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "SMTP_STARTTLS": smtpd.config.use_starttls,
         "SMTP_USERNAME": smtpd.config.login_username,
         "SMTP_PASSWORD": smtpd.config.login_password,
+        "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
+        "ENABLE_PIN_MANAGEMENT": True,
     }
 
 
@@ -161,6 +163,7 @@ def meeting(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
+        voiceBridge="111111111",
     )
     meeting.save()
 
@@ -179,6 +182,7 @@ def meeting_2(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
+        voiceBridge="111111112",
     )
     meeting.save()
 
@@ -196,6 +200,7 @@ def meeting_3(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
+        voiceBridge="111111113",
     )
     meeting.save()
 
@@ -228,6 +233,16 @@ def user_2(client_app, iam_user_2):
     user_2.save()
 
     yield user_2
+
+
+@pytest.fixture
+def previous_voiceBridge(client_app):
+    from b3desk.models.meetings import PreviousVoiceBridge
+
+    previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
+    previous_voiceBridge.save()
+
+    yield previous_voiceBridge
 
 
 @pytest.fixture
