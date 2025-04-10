@@ -25,8 +25,8 @@ from b3desk.forms import RecordingForm
 from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import PreviousVoiceBridge
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
@@ -303,11 +303,7 @@ def delete_meeting():
                     "error",
                 )
             else:
-                previous_voiceBridge = PreviousVoiceBridge()
-                previous_voiceBridge.voiceBridge = meeting.voiceBridge
-                previous_voiceBridge.save()
-                db.session.delete(meeting)
-                db.session.commit()
+                save_voiceBridge_and_delete_meeting(meeting)
                 flash(_("Élément supprimé"), "success")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
