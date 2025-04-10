@@ -458,10 +458,24 @@ def get_or_create_shadow_meeting(user):
     if len(meetings) > 0:
         for meeting in meetings:
             if meeting is not meetings[0]:
-                previous_voiceBridge = PreviousVoiceBridge()
-                previous_voiceBridge.voiceBridge = meeting.voiceBridge
-                previous_voiceBridge.save()
-                db.session.delete(meeting)
-                db.session.commit()
+                save_voiceBridge_and_delete_meeting(meeting)
     meeting = create_and_save_shadow_meeting(user) if not meetings else meetings[0]
     return meeting
+
+
+def save_voiceBridge_and_delete_meeting(meeting):
+    previous_voiceBridge = PreviousVoiceBridge()
+    previous_voiceBridge.voiceBridge = meeting.voiceBridge
+    previous_voiceBridge.save()
+    db.session.delete(meeting)
+    db.session.commit()
+
+
+def get_all_old_shadow_meetings():
+    return [
+        shadow_meeting[0]
+        for shadow_meeting in db.session.query(Meeting).filter(
+            Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
+            Meeting.is_shadow_meeting,
+        )
+    ]
