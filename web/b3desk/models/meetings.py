@@ -171,6 +171,9 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def create_bbb(self):
+        self.voiceBridge = (
+            pin_generation() if not self.voiceBridge else self.voiceBridge
+        )
         result = self.bbb.create()
         if result and result.get("returncode", "") == "SUCCESS":
             if self.id is None:
