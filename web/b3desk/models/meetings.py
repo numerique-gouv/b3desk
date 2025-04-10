@@ -437,26 +437,16 @@ def pin_is_unique_validator(form, field):
 
 
 def create_and_save_shadow_meeting(user):
-    # peut-être que tout n'est pas utile...
+    random_string = get_random_alphanumeric_string(8)
     meeting = Meeting(
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
         user=user,
-        name=f"Salon de {user.fullname}",
+        name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         is_shadow_meeting=True,
-        welcome=f"Bienvenue dans le Salon de {user.fullname}",
-        maxParticipants=350,
-        duration=280,
-        guestPolicy=False,
-        webcamsOnlyForModerator=False,
-        muteOnStart=True,
-        lockSettingsDisableCam=False,
-        lockSettingsDisableMic=False,
-        lockSettingsDisablePrivateChat=False,
-        lockSettingsDisablePublicChat=False,
-        lockSettingsDisableNote=False,
-        moderatorOnlyMessage=f"Bienvenue {user.fullname}",
+        welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
-        moderatorPW=get_random_alphanumeric_string(9),
-        attendeePW=get_random_alphanumeric_string(9),
+        moderatorPW=f"{user.hash}-{random_string}",
+        attendeePW=f"{random_string}-{random_string}",
         voiceBridge=pin_generation(),
     )
     meeting.save()
