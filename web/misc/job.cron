@@ -1,1 +1,2 @@
 1 * * * * root find $UPLOAD_DIR -type f -mmin +60 -delete
+0 5 * * * python ./web/misc/delete_old_shadow_meetings.py
