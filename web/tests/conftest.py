@@ -210,7 +210,6 @@ def meeting_3(client_app, user):
 
 @pytest.fixture
 def shadow_meeting(client_app, user):
-    # peut-être que tout n'est pas utile...
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(

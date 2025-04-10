@@ -48,8 +48,6 @@ def api_meetings():
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["profile", "email"])
 def shadow_meeting():
-    # avec cette route on récupère les liens vers le meeting
-    # penser à changer le nom de cette route
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
