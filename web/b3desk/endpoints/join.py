@@ -97,6 +97,10 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
     elif not role:
         return redirect(url_for("public.index"))
 
+    if role == Role.moderator:
+        meeting.last_connection_utc_datetime = datetime.now()
+        meeting.save()
+
     return render_template(
         "meeting/join.html",
         meeting=meeting,
@@ -247,8 +251,4 @@ def join_meeting_as_authenticated(meeting_id):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
-    # peut-être faut-il limiter l'enregistrement de la date de dernière connexion du modérateur aux shadow_meetings...
-    if role == Role.moderator:
-        meeting.last_connection_utc_datetime = datetime.now()
-        meeting.save()
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
