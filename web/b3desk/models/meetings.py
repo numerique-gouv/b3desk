@@ -451,3 +451,17 @@ def create_and_save_shadow_meeting(user):
     )
     meeting.save()
     return meeting
+
+
+def get_or_create_shadow_meeting(user):
+    meetings = [meeting for meeting in user.meetings if meeting.is_shadow_meeting]
+    if len(meetings) > 0:
+        for meeting in meetings:
+            if meeting is not meetings[0]:
+                previous_voiceBridge = PreviousVoiceBridge()
+                previous_voiceBridge.voiceBridge = meeting.voiceBridge
+                previous_voiceBridge.save()
+                db.session.delete(meeting)
+                db.session.commit()
+    meeting = create_and_save_shadow_meeting(user) if not meetings else meetings[0]
+    return meeting

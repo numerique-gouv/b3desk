@@ -112,6 +112,8 @@ def test_api_existing_shadow_meeting(
     client_app,
     user,
     shadow_meeting,
+    shadow_meeting_2,
+    shadow_meeting_3,
     meeting,
     iam_token,
 ):

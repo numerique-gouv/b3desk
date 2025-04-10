@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import request
 
-from b3desk.models.meetings import create_and_save_shadow_meeting
+from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
 from b3desk.utils import check_oidc_connection
@@ -52,9 +52,8 @@ def shadow_meeting():
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
     user = get_or_create_user(userinfo)
-    meetings = [meeting for meeting in user.meetings if meeting.is_shadow_meeting]
 
-    meeting = create_and_save_shadow_meeting(user) if not meetings else meetings[0]
+    meeting = get_or_create_shadow_meeting(user)
 
     return {
         "shadow-meeting": [

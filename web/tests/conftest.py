@@ -215,24 +215,45 @@ def shadow_meeting(client_app, user):
     meeting = Meeting(
         user=user,
         name="shadow meeting",
-        maxParticipants=99,
-        duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        voiceBridge="999999999",
+        voiceBridge="555555551",
         is_shadow_meeting=True,
-        welcome="Bienvenue dans le Salon",
-        guestPolicy=False,
-        webcamsOnlyForModerator=False,
-        muteOnStart=True,
-        lockSettingsDisableCam=False,
-        lockSettingsDisableMic=False,
-        lockSettingsDisablePrivateChat=False,
-        lockSettingsDisablePublicChat=False,
-        lockSettingsDisableNote=False,
-        moderatorOnlyMessage="Bienvenue",
-        logoutUrl="http://education.gouv.fr/",
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_2(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555552",
+        is_shadow_meeting=True,
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_3(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear too",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555553",
+        is_shadow_meeting=True,
     )
     meeting.save()
 
