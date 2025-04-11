@@ -31,7 +31,7 @@ def api_meetings():
                 "PIN": meeting.voiceBridge,
             }
             for meeting in user.meetings
-            if not meeting.is_shadow_meeting
+            if not meeting.is_shadow
         ]
     }
 
