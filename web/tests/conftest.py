@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 import uuid
@@ -123,6 +124,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "SMTP_STARTTLS": smtpd.config.use_starttls,
         "SMTP_USERNAME": smtpd.config.login_username,
         "SMTP_PASSWORD": smtpd.config.login_password,
+        "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
+        "ENABLE_PIN_MANAGEMENT": True,
     }
 
 
@@ -161,6 +164,8 @@ def meeting(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
+        voiceBridge="111111111",
+        last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
     )
     meeting.save()
 
@@ -179,6 +184,8 @@ def meeting_2(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         is_favorite=True,
+        voiceBridge="111111112",
+        last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
     )
     meeting.save()
 
@@ -196,6 +203,61 @@ def meeting_3(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
+        voiceBridge="111111113",
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555551",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_2(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555552",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_3(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear too",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555553",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
     )
     meeting.save()
 
@@ -228,6 +290,16 @@ def user_2(client_app, iam_user_2):
     user_2.save()
 
     yield user_2
+
+
+@pytest.fixture
+def previous_voiceBridge(client_app):
+    from b3desk.models.meetings import PreviousVoiceBridge
+
+    previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
+    previous_voiceBridge.save()
+
+    yield previous_voiceBridge
 
 
 @pytest.fixture
