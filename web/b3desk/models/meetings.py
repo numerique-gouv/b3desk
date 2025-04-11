@@ -471,11 +471,14 @@ def save_voiceBridge_and_delete_meeting(meeting):
     db.session.commit()
 
 
-def get_all_old_shadow_meetings():
-    return [
-        shadow_meeting[0]
+def delete_all_shadow_meetings():
+    meetings = [
+        shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
             Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
             Meeting.is_shadow_meeting,
         )
     ]
+
+    for meeting in meetings:
+        save_voiceBridge_and_delete_meeting(meeting)

@@ -13,9 +13,11 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import create_unique_pin
+from b3desk.models.meetings import delete_all_shadow_meetings
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.roles import Role
 
 
@@ -1047,3 +1049,19 @@ def test_create_unique_pin():
     assert 100000000 <= int(create_unique_pin([])) <= 999999999
     assert create_unique_pin(["499999999"], pin=499999999) == "500000000"
     assert create_unique_pin(["999999998", "999999999"], pin=999999998) == "100000000"
+
+
+def test_delete_all_shadow_meetings(
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    shadow_meeting_2,
+    shadow_meeting_3,
+    user,
+):
+    delete_all_shadow_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+    assert voiceBridges == ["555555552", "555555553"]
+    assert get_or_create_shadow_meeting(user) == shadow_meeting
+    assert user.meetings == [meeting, meeting_2, meeting_3, shadow_meeting]
