@@ -83,7 +83,7 @@ def welcome():
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
 
-    meetings = [meeting for meeting in user.meetings if not meeting.is_shadow_meeting]
+    meetings = [meeting for meeting in user.meetings if not meeting.is_shadow]
     favorite_meetings = []
     if favorite_filter:
         favorite_meetings = [

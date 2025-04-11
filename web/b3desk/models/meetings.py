@@ -85,7 +85,7 @@ class Meeting(db.Model):
     files = db.relationship("MeetingFiles", back_populates="meeting")
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
-    is_shadow_meeting = db.Column(db.Boolean, unique=False, default=False)
+    is_shadow = db.Column(db.Boolean, unique=False, default=False)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -444,7 +444,7 @@ def create_and_save_shadow_meeting(user):
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         user=user,
         name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
-        is_shadow_meeting=True,
+        is_shadow=True,
         welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
         moderatorPW=f"{user.hash}-{random_string}",
@@ -459,7 +459,7 @@ def get_or_create_shadow_meeting(user):
     shadow_meetings = [
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.is_shadow_meeting,
+            Meeting.is_shadow,
             Meeting.user_id == user.id,
         )
     ]
@@ -488,7 +488,7 @@ def delete_all_old_shadow_meetings():
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
             Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
-            Meeting.is_shadow_meeting,
+            Meeting.is_shadow,
         )
     ]
 

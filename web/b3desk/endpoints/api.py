@@ -39,7 +39,7 @@ def api_meetings():
                 ),
             }
             for meeting in user.meetings
-            if not meeting.is_shadow_meeting
+            if not meeting.is_shadow
         ]
     }
 

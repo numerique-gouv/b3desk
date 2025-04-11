@@ -20,10 +20,10 @@ def upgrade():
         batch_op.add_column(
             sa.Column("last_connection_utc_datetime", sa.DateTime(), nullable=True)
         )
-        batch_op.add_column(sa.Column("is_shadow_meeting", sa.Boolean(), nullable=True))
+        batch_op.add_column(sa.Column("is_shadow", sa.Boolean(), nullable=True))
 
 
 def downgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.drop_column("is_shadow_meeting")
+        batch_op.drop_column("is_shadow")
         batch_op.drop_column("last_connection_utc_datetime")
