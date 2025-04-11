@@ -34,9 +34,23 @@ def test_get_or_create_shadow_meeting_with_existing_shadow_meeting(
     assert get_or_create_shadow_meeting(user) == shadow_meeting
 
 
+CREATE_RESPONSE = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <meetingID>Test</meetingID>
+  <voiceBridge>70757</voiceBridge>
+  <running>false</running>
+</response>
+"""
+
+
 def test_join_meeting_as_moderator_correctly_save_last_connection_date(
-    client_app, shadow_meeting, user, bbb_response
+    client_app, shadow_meeting, user, mocker
 ):
+    class ResponseBBBcreate:
+        content = CREATE_RESPONSE
+        text = ""
+
     meeting_hash = shadow_meeting.get_hash(Role.moderator)
     previous_connection = shadow_meeting.last_connection_utc_datetime
 
@@ -47,8 +61,9 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
     join_url = "/meeting/join"
     assert join_url == response.form.action
+    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
 
-    response = response.form.submit()
+    response.form.submit()
 
     meeting = db.session.get(Meeting, 1)
     assert previous_connection != meeting.last_connection_utc_datetime
@@ -58,8 +73,12 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
 
 def test_join_meeting_as_attendee_not_save_last_connection_date(
-    client_app, shadow_meeting, authenticated_attendee, bbb_response
+    client_app, shadow_meeting, authenticated_attendee, mocker
 ):
+    class ResponseBBBcreate:
+        content = CREATE_RESPONSE
+        text = ""
+
     meeting_hash = shadow_meeting.get_hash(Role.attendee)
 
     url = f"/meeting/signin/{shadow_meeting.id}/creator/{shadow_meeting.user.id}/hash/{meeting_hash}"
@@ -69,6 +88,8 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
 
     join_url = "/meeting/join"
     assert join_url == response.form.action
+
+    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
 
     response = response.form.submit()
 

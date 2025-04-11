@@ -231,6 +231,8 @@ class Meeting(db.Model):
             data = self.create_bbb()
             if data.get("returncode", "") == "SUCCESS":
                 is_meeting_available = True
+                self.last_connection_utc_datetime = datetime.now()
+                self.save()
 
         if is_meeting_available:
             nickname = (

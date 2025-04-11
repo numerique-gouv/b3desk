@@ -97,10 +97,6 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
     elif not role:
         return redirect(url_for("public.index"))
 
-    if role == Role.moderator:
-        meeting.last_connection_utc_datetime = datetime.now()
-        meeting.save()
-
     return render_template(
         "meeting/join.html",
         meeting=meeting,
