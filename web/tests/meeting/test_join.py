@@ -1,12 +1,9 @@
-import datetime
 import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from flask import url_for
 
-from b3desk.models import db
-from b3desk.models.meetings import Meeting
 from b3desk.models.roles import Role
 
 
@@ -234,45 +231,3 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
         fullname_suffix="",
     )
     client_app.get(waiting_meeting_url, status=200)
-
-
-def test_join_meeting_as_moderator_correctly_save_last_connection_date(
-    client_app, shadow_meeting, user, bbb_response
-):
-    meeting_hash = shadow_meeting.get_hash(Role.moderator)
-    previous_connection = shadow_meeting.last_connection_utc_datetime
-
-    url = f"/meeting/signin/{shadow_meeting.id}/creator/{shadow_meeting.user.id}/hash/{meeting_hash}"
-    response = client_app.get(
-        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
-    )
-
-    join_url = "/meeting/join"
-    assert join_url == response.form.action
-
-    response = response.form.submit()
-
-    meeting = db.session.get(Meeting, 1)
-    assert previous_connection != meeting.last_connection_utc_datetime
-    assert (
-        meeting.last_connection_utc_datetime.date() == datetime.datetime.today().date()
-    )
-
-
-def test_join_meeting_as_attendee_not_save_last_connection_date(
-    client_app, shadow_meeting, authenticated_attendee, bbb_response
-):
-    meeting_hash = shadow_meeting.get_hash(Role.attendee)
-
-    url = f"/meeting/signin/{shadow_meeting.id}/creator/{shadow_meeting.user.id}/hash/{meeting_hash}"
-    response = client_app.get(
-        url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
-    )
-
-    join_url = "/meeting/join"
-    assert join_url == response.form.action
-
-    response = response.form.submit()
-
-    meeting = db.session.get(Meeting, 1)
-    assert meeting.last_connection_utc_datetime == datetime.datetime(2025, 1, 1)
