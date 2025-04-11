@@ -1,6 +1,3 @@
-from b3desk.models.meetings import get_all_old_shadow_meetings
-from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
+from b3desk.models.meetings import delete_all_shadow_meetings
 
-meetings = get_all_old_shadow_meetings()
-for meeting in meetings:
-    save_voiceBridge_and_delete_meeting(meeting)
+delete_all_shadow_meetings()

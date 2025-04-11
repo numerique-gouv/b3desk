@@ -165,6 +165,7 @@ def meeting(client_app, user):
         attendeePW="attendee",
         is_favorite=True,
         voiceBridge="111111111",
+        last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
     )
     meeting.save()
 
@@ -184,6 +185,7 @@ def meeting_2(client_app, user):
         attendeePW="attendee",
         is_favorite=True,
         voiceBridge="111111112",
+        last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
     )
     meeting.save()
 
