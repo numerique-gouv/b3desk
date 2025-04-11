@@ -28,7 +28,7 @@ def api_meetings():
                 "attendee_url": meeting.get_signin_url(Role.attendee),
             }
             for meeting in user.meetings
-            if not meeting.is_shadow_meeting
+            if not meeting.is_shadow
         ]
     }
 
