@@ -28,11 +28,10 @@ def get_meetings_stats():
     if not current_app.config["STATS_URL"]:
         return None
 
-    response = requests.get(current_app.config["STATS_URL"])
-    if response.status_code != 200:
-        return None
-
     try:
+        response = requests.get(current_app.config["STATS_URL"])
+        if response.status_code != 200:
+            return None
         stats_array = response.content.decode(encoding="utf-8").split("\n")
         stats_array = [row.split(",") for row in stats_array]
         participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
