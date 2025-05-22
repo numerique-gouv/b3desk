@@ -4,12 +4,14 @@ import smtplib
 import string
 from email.message import EmailMessage
 from email.mime.text import MIMEText
+from functools import wraps
 
 from flask import abort
 from flask import current_app
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from netaddr import IPAddress
 from netaddr import IPNetwork
 from slugify import slugify
@@ -125,3 +127,21 @@ def enum_converter(enum):
             abort(404)
 
     return EnumConverter
+
+
+def check_oidc_connection(auth):
+    def decorator_func(initial_func):
+        @wraps(initial_func)
+        def wrapper_func(*args, **kwargs):
+            if not auth.clients:
+                auth.clients = {
+                    name: PyoidcFacade(
+                        configuration, auth._redirect_uri_config.full_uri
+                    )
+                    for (name, configuration) in auth._provider_configurations.items()
+                }
+            return initial_func(*args, **kwargs)
+
+        return wrapper_func
+
+    return decorator_func

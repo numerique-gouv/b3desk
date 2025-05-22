@@ -21,6 +21,7 @@ from flask import url_for
 
 from b3desk.tasks import background_upload
 
+from .. import BigBLueButtonUnavailable
 from .. import cache
 from .roles import Role
 
@@ -58,7 +59,7 @@ class BBB:
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         secret = "{}{}".format(
             prepped.url.replace("?", "").replace(
-                f'{current_app.config["BIGBLUEBUTTON_ENDPOINT"]}/', ""
+                f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/", ""
             ),
             bigbluebutton_secret,
         )
@@ -78,7 +79,10 @@ class BBB:
             request.url,
             request.body,
         )
-        response = session.send(request)
+        try:
+            response = session.send(request)
+        except requests.exceptions.ConnectionError:
+            raise BigBLueButtonUnavailable
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
@@ -134,7 +138,9 @@ class BBB:
             params["welcome"] = param
         if param := self.meeting.maxParticipants:
             params["maxParticipants"] = str(param)
-        if param := self.meeting.logoutUrl:
+        if param := self.meeting.logoutUrl or current_app.config.get(
+            "MEETING_LOGOUT_URL", ""
+        ):
             params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
@@ -236,7 +242,10 @@ class BBB:
         current_app.logger.debug(
             "BBB API request method:%s url:%s", request.method, request.url
         )
-        response = requests.Session().send(request)
+        try:
+            response = requests.Session().send(request)
+        except requests.exceptions.ConnectionError:
+            raise BigBLueButtonUnavailable
 
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
@@ -279,22 +288,9 @@ class BBB:
                                 "images": images,
                             }
                             if type == "video":
-                                try:
-                                    resp = requests.get(
-                                        direct_link := media_url + "video-0.m4v"
-                                    )
-                                    if resp.status_code == 200:
-                                        data["playbacks"][type]["direct_link"] = (
-                                            direct_link
-                                        )
-                                except (
-                                    requests.exceptions.HTTPError,
-                                    requests.exceptions.ConnectionError,
-                                ):
-                                    current_app.logger.warning(
-                                        "No direct recording link for meeting %s",
-                                        self.meeting.meetingID,
-                                    )
+                                data["playbacks"][type]["direct_link"] = (
+                                    media_url + "video-0.m4v"
+                                )
                     result.append(data)
             except Exception as exception:
                 current_app.logger.error(exception)

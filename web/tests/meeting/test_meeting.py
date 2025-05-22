@@ -65,11 +65,11 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     res.form["guestPolicy"] = "on"
     res.form["webcamsOnlyForModerator"] = "on"
     res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = "on"
-    res.form["lockSettingsDisableMic"] = "on"
-    res.form["lockSettingsDisablePrivateChat"] = "on"
-    res.form["lockSettingsDisablePublicChat"] = "on"
-    res.form["lockSettingsDisableNote"] = "on"
+    res.form["lockSettingsDisableCam"] = False
+    res.form["lockSettingsDisableMic"] = False
+    res.form["lockSettingsDisablePrivateChat"] = False
+    res.form["lockSettingsDisablePublicChat"] = False
+    res.form["lockSettingsDisableNote"] = False
     res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
     res.form["logoutUrl"] = "https://log.out"
     res.form["moderatorPW"] = "Motdepasse1"
@@ -120,11 +120,11 @@ def test_save_existing_meeting_not_running(
     res.form["guestPolicy"] = "on"
     res.form["webcamsOnlyForModerator"] = "on"
     res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = "on"
-    res.form["lockSettingsDisableMic"] = "on"
-    res.form["lockSettingsDisablePrivateChat"] = "on"
-    res.form["lockSettingsDisablePublicChat"] = "on"
-    res.form["lockSettingsDisableNote"] = "on"
+    res.form["lockSettingsDisableCam"] = False
+    res.form["lockSettingsDisableMic"] = False
+    res.form["lockSettingsDisablePrivateChat"] = False
+    res.form["lockSettingsDisablePublicChat"] = False
+    res.form["lockSettingsDisableNote"] = False
     res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
     res.form["logoutUrl"] = "https://log.out"
     res.form["moderatorPW"] = "Motdepasse1"
@@ -281,7 +281,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -375,7 +375,7 @@ def test_create_with_only_a_default_file(
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -468,7 +468,7 @@ def test_create_with_files(
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -507,7 +507,7 @@ def test_create_with_files(
 
     assert mocked_background_upload.called
     assert mocked_background_upload.call_args.args[0].startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/insertDocument'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
     )
 
     secret_key = client_app.app.config["SECRET_KEY"]
@@ -538,6 +538,34 @@ def test_create_without_logout_url_gets_default(
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
 
+def test_save_existing_meeting_gets_default_logoutUrl(
+    client_app, authenticated_user, meeting, mocker, bbb_response
+):
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.form["logoutUrl"] = ""
+    res = res.form.submit()
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+
+    meeting.bbb.create()
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params.get("logoutURL", "") == client_app.app.config.get(
+        "MEETING_LOGOUT_URL"
+    )
+
+
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
 
@@ -550,7 +578,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
     assert bbb_url.startswith(
-        f'{client_app.app.config["BIGBLUEBUTTON_ENDPOINT"]}/create'
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
@@ -640,3 +668,113 @@ def test_meeting_link_retrocompatibility(meeting):
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
+
+
+def test_meeting_order_default(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get("/welcome", status=200)
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+
+
+def test_meeting_order_alpha_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=false&favorite-filter=false", status=200
+    )
+    assert response.context["meetings"] == [meeting_2, meeting, meeting_3]
+
+
+def test_meeting_order_alpha_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=true&favorite-filter=false", status=200
+    )
+    assert response.context["meetings"] == [meeting_3, meeting, meeting_2]
+
+
+def test_meeting_order_date_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=true&favorite-filter=false",
+        status=200,
+    )
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+
+
+def test_meeting_order_date_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=false&favorite-filter=false",
+        status=200,
+    )
+    assert response.context["meetings"] == [meeting, meeting_2, meeting_3]
+
+
+def test_favorite_meeting_order_alpha_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=false&favorite-filter=true", status=200
+    )
+    assert response.context["meetings"] == [meeting_2, meeting]
+
+
+def test_favorite_meeting_order_alpha_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=name&reverse-order=true&favorite-filter=true", status=200
+    )
+    assert response.context["meetings"] == [meeting, meeting_2]
+
+
+def test_favorite_meeting_order_date_desc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=true&favorite-filter=true",
+        status=200,
+    )
+    assert response.context["meetings"] == [meeting_2, meeting]
+
+
+def test_favorite_meeting_order_date_asc(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    response = client_app.get(
+        "/welcome?order-key=created_at&reverse-order=false&favorite-filter=true",
+        status=200,
+    )
+    assert response.context["meetings"] == [meeting, meeting_2]
+
+
+def test_add_and_remove_favorite(
+    client_app, authenticated_user, meeting, meeting_2, meeting_3, bbb_response
+):
+    assert not meeting_3.is_favorite
+    response = client_app.post(
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        {"id": meeting_3.id},
+    ).follow()
+    assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
+    assert meeting_3.is_favorite
+
+    response = client_app.post(
+        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        {"id": meeting_3.id},
+    ).follow()
+    assert response.context["meetings"] == [meeting_2, meeting]
+    assert not meeting_3.is_favorite
+
+
+def test_add_favorite_by_wrong_user_failed(
+    client_app, bbb_response, authenticated_user_2, meeting, meeting_2, meeting_3
+):
+    response = client_app.get("/welcome", status=200)
+    response.mustcontain("Berenice Cooler")
+    response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)

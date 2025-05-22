@@ -10,8 +10,8 @@ Les réponses sont au format json sous la forme suivante :
 {
   "meetings": [
     {
-      "attendee_url": "https://example.tld/meeting/signin/1234/creator/5678/hash/27955e8c3a16ecadbb3cf61df7806a04ce6fd18c",
-      "moderator_url": "https://example.tld/meeting/signin/1234/creator/5678/hash/3e73643801d5013d389f8fc610e258aba38e597d",
+      "attendee_url": "https://example.tld/meeting/signin/invite/1234/creator/5678/hash/27955e8c3a16ecadbb3cf61df7806a04ce6fd18c",
+      "moderator_url": "https://example.tld/meeting/signin/moderateur/1234/creator/5678/hash/3e73643801d5013d389f8fc610e258aba38e597d",
       "name": "Mon Séminaire"
     }
   ]

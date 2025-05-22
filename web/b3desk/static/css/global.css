@@ -59,6 +59,13 @@ header.rf-header {
   padding: 1em 5em;
 }
 
+/* Création de salle */
+
+.fr-accordion .fr-col-12:last-child .fr-toggle.fr-toggle--border-bottom {
+  box-shadow: none;
+}
+
+/* */
 #jumbotron {
   background-color: #f9f8f6;
   text-align: center;
@@ -199,7 +206,7 @@ form.delete {
 /* homepage lasuite */
 
 .lasuite-homepage__content {
-  margin-bottom: calc(-7rem + 2px);
+  margin-bottom: -6rem;
 }
 
 /* modal */

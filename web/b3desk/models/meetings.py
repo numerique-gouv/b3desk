@@ -74,7 +74,11 @@ class MeetingFilesExternal(db.Model):
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
+    is_favorite = db.Column(db.Boolean, unique=False, default=False)
     user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
@@ -166,10 +170,11 @@ class Meeting(db.Model):
 
     def create_bbb(self):
         result = self.bbb.create()
-        if result and result["returncode"] == "SUCCESS":
+        if result and result.get("returncode", "") == "SUCCESS":
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]
+        current_app.logger.warning("BBB room has not been properly created: %s", result)
         return result if result else {}
 
     def save(self):
@@ -208,7 +213,7 @@ class Meeting(db.Model):
                 "Request BBB room creation %s %s", self.name, self.id
             )
             data = self.create_bbb()
-            if "returncode" in data and data["returncode"] == "SUCCESS":
+            if data.get("returncode", "") == "SUCCESS":
                 is_meeting_available = True
 
         if is_meeting_available:
