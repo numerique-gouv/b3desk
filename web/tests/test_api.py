@@ -5,16 +5,18 @@ def test_api_meetings_nominal(client_app, user, meeting, iam_token):
     res = client_app.get(
         "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
     )
-    assert res.json["meetings"]
-    assert res.json["meetings"][0]["name"] == "meeting"
-    assert (
-        f"/meeting/signin/moderateur/{meeting.id}/creator/{user.id}/hash/"
-        in res.json["meetings"][0]["moderator_url"]
-    )
-    assert (
-        f"/meeting/signin/invite/{meeting.id}/creator/{user.id}/hash/"
-        in res.json["meetings"][0]["attendee_url"]
-    )
+
+    assert res.json == {
+        "meetings": [
+            {
+                "PIN": "111111111",
+                "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+                "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+                "name": "meeting",
+                "phone_number": "+33bbbphonenumber",
+            }
+        ]
+    }
 
 
 def test_api_meetings_no_token(client_app):
