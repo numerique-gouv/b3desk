@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import current_app
 from flask import request
 
 from b3desk.models.roles import Role
@@ -25,6 +26,8 @@ def api_meetings():
                 "name": meeting.name,
                 "moderator_url": meeting.get_signin_url(Role.moderator),
                 "attendee_url": meeting.get_signin_url(Role.attendee),
+                "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
+                "PIN": meeting.voiceBridge,
             }
             for meeting in user.meetings
         ]
