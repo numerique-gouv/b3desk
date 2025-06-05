@@ -1029,6 +1029,13 @@ class MainSettings(BaseSettings):
     BIGBLUEBUTTON_SECRET: Optional[str] = None
     """Mot de passe du service BBB."""
 
+    BIGBLUEBUTTON_DIALNUMBER: Optional[str] = None
+    """The dial access number that participants can call in using regular
+    phone.
+
+    Required if pin management is enabled.
+    """
+
     BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL: Optional[str] = None
     """Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
 
@@ -1051,6 +1058,25 @@ class MainSettings(BaseSettings):
 
     ENABLE_LASUITENUMERIQUE: Optional[bool] = False
     """Enable LaSuite numerique homepage style."""
+
+    ENABLE_PIN_MANAGEMENT: Optional[bool] = False
+    """Enable mangement of PIN by B3Desk.
+
+    PIN allows users joining meeting by phone. ENABLE_PIN_MANAGEMENT
+    required if enabled.
+    """
+
+    @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
+    def dial_number_required(
+        cls,
+        enable_pin_management: Optional[bool],
+        info: ValidationInfo,
+    ) -> bool:
+        if enable_pin_management:
+            assert info.data["BIGBLUEBUTTON_DIALNUMBER"], (
+                "BIGBLUEBUTTON_DIALNUMBER configuration required when enabling pin management"
+            )
+        return enable_pin_management
 
     VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}
     """List of streaming service for video sharing."""

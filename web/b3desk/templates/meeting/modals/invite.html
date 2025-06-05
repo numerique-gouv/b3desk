@@ -29,7 +29,7 @@
                             <br>
                             <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}">Rejoindre {{ the_meeting }} en tant que modérateur principal</a>
                         </p>
-                        <h2 id="share-{{ meeting.id }}-title" class="fr-modal__title">
+                        <h2 class="fr-modal__title">
                             <span class="" aria-hidden="true"></span>Inviter les participants</h2>
                         <p>En leur envoyant l’adresse ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
@@ -47,7 +47,7 @@
                             <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.attendee) }}">Rejoindre {{ the_meeting }} en tant que participant</a>
                         </p>
 
-                        <h2 id="share-{{ meeting.id }}-title" class="fr-modal__title">
+                        <h2 class="fr-modal__title">
                             <span class="" aria-hidden="true"></span>Inviter les participants authentifiés {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</h2>
                         <p>En leur envoyant l’adresse ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
@@ -64,6 +64,25 @@
                             <br>
                             <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("join.join_meeting_as_authenticated", meeting_id=meeting.id) }}">Rejoindre {{ the_meeting }} en tant que participant authentifié</a>
                         </p>
+
+                        {% if config.get("ENABLE_PIN_MANAGEMENT") %}
+                            <h2 class="fr-modal__title">
+                                <span class="" aria-hidden="true"></span>Inviter les participants par téléphone</h2>
+                            <p>En leur envoyant les informations ci-dessous :</p>
+                            <div class="fr-grid-row fr-text--sm">
+                                <div class="fr-col-xs-9 fr-col-sm-10">
+                                    <code id="meeting-{{ meeting.id }}-phone-info">
+                                        n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}<br>
+                                        code PIN : {{ meeting.voiceBridge }}
+                                    </code>
+                                </div>
+                                <div class="fr-col">
+                                    <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="navigator.clipboard.writeText('n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="Copier les informations dans le presse-papiers">
+                                        <span class="ri-clipboard-line"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
