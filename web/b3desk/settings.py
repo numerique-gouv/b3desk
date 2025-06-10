@@ -1066,6 +1066,13 @@ class MainSettings(BaseSettings):
     required if enabled.
     """
 
+    ENABLE_SIP_CODE: Optional[bool] = False
+    """Enable SIP MediaGW code.
+
+    Sip code allows users connecting MediaGW. ENABLE_SIP_CODE required
+    if enabled.
+    """
+
     @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
     def dial_number_required(
         cls,
