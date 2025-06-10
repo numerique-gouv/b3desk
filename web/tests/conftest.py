@@ -126,6 +126,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "SMTP_PASSWORD": smtpd.config.login_password,
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,
+        "ENABLE_SIP_CODE": True,
     }
 
 
