@@ -1066,13 +1066,6 @@ class MainSettings(BaseSettings):
     required if enabled.
     """
 
-    ENABLE_SIP_CODE: Optional[bool] = False
-    """Enable SIP MediaGW code.
-
-    Sip code allows users connecting MediaGW. ENABLE_SIP_CODE required
-    if enabled.
-    """
-
     @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
     def dial_number_required(
         cls,
@@ -1084,6 +1077,31 @@ class MainSettings(BaseSettings):
                 "BIGBLUEBUTTON_DIALNUMBER configuration required when enabling pin management"
             )
         return enable_pin_management
+
+    FQDN_SIP_SERVER: Optional[str] = None
+    """FQDN SIP server.
+
+    Required if sip_code is enabled.
+    """
+
+    ENABLE_SIP_CODE: Optional[bool] = False
+    """Enable SIP MediaGW code.
+
+    Sip code allows users connecting MediaGW. ENABLE_SIP_CODE required
+    if enabled.
+    """
+
+    @field_validator("ENABLE_SIP_CODE", mode="before")
+    def fqdn_sip_server_required(
+        cls,
+        enable_sip_code: Optional[bool],
+        info: ValidationInfo,
+    ) -> bool:
+        if enable_sip_code:
+            assert info.data["FQDN_SIP_SERVER"], (
+                "FQDN_SIP_SERVER configuration required when enabling sip_code"
+            )
+        return enable_sip_code
 
     VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}
     """List of streaming service for video sharing."""
