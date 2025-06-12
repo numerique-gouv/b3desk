@@ -25,6 +25,32 @@
                                 </button>
                             </div>
                         </div>
+                        {% if config.get("ENABLE_SIP_CODE") %}
+                        <br>
+                        <p>En leur envoyant le code ci-dessous :</p>
+                        <div class="fr-grid-row fr-text--sm">
+                            <div class="fr-col-xs-9 fr-col-sm-10">
+                                <code id="meeting-{{ meeting.id }}-moderator-sip-code">{{ meeting.sip_code }}</code>
+                            </div>
+                            <div class="fr-col">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.sip_code }}');" title="Copier le code SIP dans le presse-papiers">
+                                    <span class="ri-clipboard-line"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        <p>En leur envoyant lien SIP ci-dessous :</p>
+                        <div class="fr-grid-row fr-text--sm">
+                            <div class="fr-col-xs-9 fr-col-sm-10">
+                                <code id="meeting-{{ meeting.id }}-moderator-sip-link">{{ meeting.sip_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
+                            </div>
+                            <div class="fr-col">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.sip_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le code SIP dans le presse-papiers">
+                                    <span class="ri-clipboard-line"></span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
                         <p>
                             <br>
                             <a class="fr-link" target="_blank" rel="noopener" href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}">Rejoindre {{ the_meeting }} en tant que modérateur principal</a>
