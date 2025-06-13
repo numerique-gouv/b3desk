@@ -16,16 +16,12 @@ def test_api_meetings_nominal(
     assert res.json["meetings"][0]["name"] == "meeting"
     assert res.json["meetings"][1]["name"] == "a meeting"
     assert res.json["meetings"][2]["name"] == "meeting"
-    assert res.json == {
-        "meetings": [
-            {
-                "PIN": "111111111",
-                "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-                "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
-                "name": "meeting",
-                "phone_number": "+33bbbphonenumber",
-            }
-        ]
+    assert res.json["meetings"][0] == {
+        "PIN": "111111111",
+        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "name": "meeting",
+        "phone_number": "+33bbbphonenumber",
     }
 
     assert len(res.json["meetings"]) == 3
@@ -35,15 +31,13 @@ def test_api_meetings_nominal(
         "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
     )
 
-    assert res.json == {
-        "meetings": [
-            {
-                "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-                "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
-                "name": "meeting",
-            }
-        ]
+    assert res.json["meetings"][0] == {
+        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "name": "meeting",
     }
+
+    assert len(res.json["meetings"]) == 3
 
 
 def test_api_meetings_no_token(client_app):
