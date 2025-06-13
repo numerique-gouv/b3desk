@@ -25,15 +25,15 @@
                                 </button>
                             </div>
                         </div>
-                        {% if config.get("ENABLE_SIP_CODE") %}
+                        {% if config.get("ENABLE_VISIO_CODE") %}
                         <br>
                         <p>En leur envoyant le code ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
                             <div class="fr-col-xs-9 fr-col-sm-10">
-                                <code id="meeting-{{ meeting.id }}-moderator-sip-code">{{ meeting.sip_code }}</code>
+                                <code id="meeting-{{ meeting.id }}-moderator-visio-code">{{ meeting.visio_code }}</code>
                             </div>
                             <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.sip_code }}');" title="Copier le code SIP dans le presse-papiers">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}');" title="Copier le code d'invitation dans le presse-papiers">
                                     <span class="ri-clipboard-line"></span>
                                 </button>
                             </div>
@@ -42,10 +42,10 @@
                         <p>En leur envoyant lien SIP ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
                             <div class="fr-col-xs-9 fr-col-sm-10">
-                                <code id="meeting-{{ meeting.id }}-moderator-sip-link">{{ meeting.sip_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
+                                <code id="meeting-{{ meeting.id }}-moderator-sip-link">{{ meeting.visio_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
                             </div>
                             <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.sip_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le code SIP dans le presse-papiers">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le lien SIP dans le presse-papiers">
                                     <span class="ri-clipboard-line"></span>
                                 </button>
                             </div>

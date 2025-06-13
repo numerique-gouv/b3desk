@@ -126,7 +126,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "SMTP_PASSWORD": smtpd.config.login_password,
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,
-        "ENABLE_SIP_CODE": True,
+        "ENABLE_VISIO_CODE": True,
         "FQDN_SIP_SERVER": "example.serveur.com",
     }
 
@@ -168,7 +168,7 @@ def meeting(client_app, user):
         is_favorite=True,
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
-        sip_code="AAA111",
+        visio_code="AAA111",
     )
     meeting.save()
 
@@ -225,7 +225,6 @@ def shadow_meeting(client_app, user):
         voiceBridge="555555551",
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
-        sip_code="SHADOW",
     )
     meeting.save()
 

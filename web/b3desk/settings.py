@@ -1081,27 +1081,28 @@ class MainSettings(BaseSettings):
     FQDN_SIP_SERVER: Optional[str] = None
     """FQDN SIP server.
 
-    Required if sip_code is enabled.
+    Required if visio_code is enabled.
     """
 
-    ENABLE_SIP_CODE: Optional[bool] = False
-    """Enable SIP MediaGW code.
+    ENABLE_VISIO_CODE: Optional[bool] = False
+    """Enable visio code.
 
-    Sip code allows users connecting MediaGW. ENABLE_SIP_CODE required
-    if enabled.
+    Visio code is a unique alphanumeric code for each meeting. It allows
+    users connecting on SIP MediaGW. ENABLE_VISIO_CODE required if
+    enabled.
     """
 
-    @field_validator("ENABLE_SIP_CODE", mode="before")
+    @field_validator("ENABLE_VISIO_CODE", mode="before")
     def fqdn_sip_server_required(
         cls,
-        enable_sip_code: Optional[bool],
+        enable_visio_code: Optional[bool],
         info: ValidationInfo,
     ) -> bool:
-        if enable_sip_code:
+        if enable_visio_code:
             assert info.data["FQDN_SIP_SERVER"], (
-                "FQDN_SIP_SERVER configuration required when enabling sip_code"
+                "FQDN_SIP_SERVER configuration required when enabling visio_code"
             )
-        return enable_sip_code
+        return enable_visio_code
 
     VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}
     """List of streaming service for video sharing."""
