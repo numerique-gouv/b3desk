@@ -86,7 +86,7 @@ class Meeting(db.Model):
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
-    sip_code = db.Column(db.String)
+    visio_code = db.Column(db.String)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -497,16 +497,18 @@ def delete_all_old_shadow_meetings():
         save_voiceBridge_and_delete_meeting(shadow_meeting)
 
 
-def unique_sip_code_generation(forbidden_sip_code=None):
-    forbidden_sip_code = (
-        get_forbidden_sip_code() if forbidden_sip_code is None else forbidden_sip_code
+def unique_visio_code_generation(forbidden_visio_code=None):
+    forbidden_visio_code = (
+        get_forbidden_visio_code()
+        if forbidden_visio_code is None
+        else forbidden_visio_code
     )
-    new_sip_code = get_random_alphanumeric_string(6)
-    if new_sip_code not in forbidden_sip_code:
-        return new_sip_code.upper()
-    return unique_sip_code_generation(forbidden_sip_code).upper()
+    new_visio_code = get_random_alphanumeric_string(6)
+    if new_visio_code not in forbidden_visio_code:
+        return new_visio_code.upper()
+    return unique_visio_code_generation(forbidden_visio_code).upper()
 
 
-def get_forbidden_sip_code():
-    existing_sip_code = db.session.query(Meeting.sip_code)
-    return [sip_code[0] for sip_code in existing_sip_code]
+def get_forbidden_visio_code():
+    existing_visio_code = db.session.query(Meeting.visio_code)
+    return [visio_code[0] for visio_code in existing_visio_code]

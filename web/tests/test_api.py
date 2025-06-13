@@ -22,8 +22,8 @@ def test_api_meetings_nominal(
         "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "phone_number": "+33bbbphonenumber",
+        "visio_code": "AAA111",
     }
-
     assert len(res.json["meetings"]) == 3
 
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
@@ -35,12 +35,20 @@ def test_api_meetings_nominal(
         "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
         "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
+        "visio_code": "AAA111",
     }
-
     assert len(res.json["meetings"]) == 3
 
-    assert res.json["meetings"][1]["name"] == "a meeting"
-    assert res.json["meetings"][2]["name"] == "meeting"
+    client_app.app.config["ENABLE_VISIO_CODE"] = False
+    res = client_app.get(
+        "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
+    )
+
+    assert res.json["meetings"][0] == {
+        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "name": "meeting",
+    }
     assert len(res.json["meetings"]) == 3
 
 

@@ -1,4 +1,4 @@
-"""Adds sip-code in meeting.
+"""Adds visio-code in meeting.
 
 Revision ID: 0052f608f4b3
 Revises: 2e95af7b75cf
@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
 
-from b3desk.models.meetings import unique_sip_code_generation
+from b3desk.models.meetings import unique_visio_code_generation
 
 # revision identifiers, used by Alembic.
 revision = "0052f608f4b3"
@@ -22,25 +22,29 @@ depends_on = None
 
 def upgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("sip_code", sa.String(), nullable=True))
+        batch_op.add_column(sa.Column("visio_code", sa.String(), nullable=True))
     bind = op.get_bind()
     session = Session(bind)
     meeting = sa.table(
-        "meeting", sa.column("id", sa.Integer), sa.column("sip_code", sa.String)
+        "meeting", sa.column("id", sa.Integer), sa.column("visio_code", sa.String)
     )
-    generated_sip_code = []
+    generated_visio_code = []
     for (meeting_id,) in session.execute(select(meeting.c.id)):
-        sip_code = unique_sip_code_generation(forbidden_sip_code=generated_sip_code)
-        generated_sip_code.append(sip_code)
+        visio_code = unique_visio_code_generation(
+            forbidden_visio_code=generated_visio_code
+        )
+        generated_visio_code.append(visio_code)
         session.execute(
-            update(meeting).where(meeting.c.id == meeting_id).values(sip_code=sip_code)
+            update(meeting)
+            .where(meeting.c.id == meeting_id)
+            .values(visio_code=visio_code)
         )
     session.commit()
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.alter_column("sip_code", nullable=False)
-        batch_op.create_unique_constraint("uq_meeting_sip_code", ["sip_code"])
+        batch_op.alter_column("visio_code", nullable=False)
+        batch_op.create_unique_constraint("uq_meeting_visio_code", ["visio_code"])
 
 
 def downgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.drop_column("sip_code")
+        batch_op.drop_column("visio_code")

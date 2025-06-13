@@ -37,6 +37,13 @@ def api_meetings():
                     if current_app.config["ENABLE_PIN_MANAGEMENT"]
                     else {}
                 ),
+                **(
+                    {
+                        "visio_code": meeting.visio_code,
+                    }
+                    if current_app.config["ENABLE_VISIO_CODE"]
+                    else {}
+                ),
             }
             for meeting in user.meetings
             if not meeting.is_shadow
