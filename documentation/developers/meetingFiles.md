@@ -23,7 +23,7 @@ Une fois le fichier entièrement reçu, le client WEBDAV (connecté à Nextcloud
 Lorsque le téléversement se déroule sans accroc, le fichier stocké sur le serveur B3desk est ensuite supprimé.
 
 **En revanche, pour les cas où l'upload pose un problème quelconque, on se retrouve avec un dossier qui ne fait 'que' grossir, il faut donc le purger régulièrement.**
-Actuellement, un cron d'exemple est proposé : `web/misc/delete_uploaded_files.cron`.
+Actuellement, un cron d'exemple est proposé : `web/misc/job.cron`.
 
 ### Gestion de l'identité
 
