@@ -17,6 +17,20 @@ def test_api_meetings_nominal(client_app, user, meeting, iam_token):
             }
         ]
     }
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
+    res = client_app.get(
+        "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
+    )
+
+    assert res.json == {
+        "meetings": [
+            {
+                "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+                "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+                "name": "meeting",
+            }
+        ]
+    }
 
 
 def test_api_meetings_no_token(client_app):

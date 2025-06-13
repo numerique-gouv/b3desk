@@ -23,11 +23,19 @@ def api_meetings():
     return {
         "meetings": [
             {
-                "name": meeting.name,
-                "moderator_url": meeting.get_signin_url(Role.moderator),
-                "attendee_url": meeting.get_signin_url(Role.attendee),
-                "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
-                "PIN": meeting.voiceBridge,
+                **{
+                    "name": meeting.name,
+                    "moderator_url": meeting.get_signin_url(Role.moderator),
+                    "attendee_url": meeting.get_signin_url(Role.attendee),
+                },
+                **(
+                    {
+                        "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
+                        "PIN": meeting.voiceBridge,
+                    }
+                    if current_app.config["ENABLE_PIN_MANAGEMENT"]
+                    else {}
+                ),
             }
             for meeting in user.meetings
         ]
