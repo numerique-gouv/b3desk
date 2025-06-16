@@ -116,12 +116,11 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
-    if client_app.app.config["ENABLE_VISIO_CODE"]:
-        assert meeting.visio_code.isalnum()
-        assert meeting.visio_code.isupper()
-        assert len(meeting.visio_code) == 6
-        assert any(i.isdigit() for i in meeting.visio_code)
-        assert any(i.isalpha() for i in meeting.visio_code)
+    assert meeting.visio_code.isalnum()
+    assert meeting.visio_code.isupper()
+    assert len(meeting.visio_code) == 6
+    assert any(i.isdigit() for i in meeting.visio_code)
+    assert any(i.isalpha() for i in meeting.visio_code)
 
 
 def test_save_existing_meeting_not_running(
@@ -1078,7 +1077,7 @@ def test_get_forbidden_visio_code(
         "AAA111",
         "BBB222",
         "CCC333",
-        "SHADOW",
+        "SHADO1",
         "SHADO2",
         "SHADO3",
     ]

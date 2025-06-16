@@ -227,7 +227,7 @@ def shadow_meeting(client_app, user):
         voiceBridge="555555551",
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
-        visio_code="SHADOW",
+        visio_code="SHADO1",
     )
     meeting.save()
 
