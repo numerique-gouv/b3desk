@@ -16,6 +16,8 @@ from b3desk.models.meetings import create_unique_pin
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import get_forbidden_visio_code
+from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 
 
@@ -114,6 +116,12 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
+    if client_app.app.config["ENABLE_VISIO_CODE"]:
+        assert meeting.visio_code.isalnum()
+        assert meeting.visio_code.isupper()
+        assert len(meeting.visio_code) == 6
+        assert any(i.isdigit() for i in meeting.visio_code)
+        assert any(i.isalpha() for i in meeting.visio_code)
 
 
 def test_save_existing_meeting_not_running(
@@ -1047,3 +1055,30 @@ def test_create_unique_pin():
     assert 100000000 <= int(create_unique_pin([])) <= 999999999
     assert create_unique_pin(["499999999"], pin=499999999) == "500000000"
     assert create_unique_pin(["999999998", "999999999"], pin=999999998) == "100000000"
+
+
+def test_unique_visio_code_generation(
+    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+):
+    random_visio_codes = []
+    for visio_code in range(100):
+        random_visio_codes.append(unique_visio_code_generation())
+    for visio_code in random_visio_codes:
+        assert visio_code.isalnum()
+        assert visio_code.isupper()
+        assert len(visio_code) == 6
+        assert any(i.isdigit() for i in visio_code)
+        assert any(i.isalpha() for i in visio_code)
+
+
+def test_get_forbidden_visio_code(
+    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+):
+    assert get_forbidden_visio_code() == [
+        "AAA111",
+        "BBB222",
+        "CCC333",
+        "SHADOW",
+        "SHADO2",
+        "SHADO3",
+    ]
