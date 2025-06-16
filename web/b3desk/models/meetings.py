@@ -451,6 +451,7 @@ def create_and_save_shadow_meeting(user):
         moderatorPW=f"{user.hash}-{random_string}",
         attendeePW=f"{random_string}-{random_string}",
         voiceBridge=pin_generation(),
+        visio_code=unique_visio_code_generation(),
     )
     meeting.save()
     return meeting
@@ -504,7 +505,11 @@ def unique_visio_code_generation(forbidden_visio_code=None):
         else forbidden_visio_code
     )
     new_visio_code = get_random_alphanumeric_string(6)
-    if new_visio_code not in forbidden_visio_code:
+    if (
+        new_visio_code not in forbidden_visio_code
+        and any(i.isdigit() for i in new_visio_code)
+        and any(i.isalpha() for i in new_visio_code)
+    ):
         return new_visio_code.upper()
     return unique_visio_code_generation(forbidden_visio_code).upper()
 
