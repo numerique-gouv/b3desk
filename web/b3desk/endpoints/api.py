@@ -65,9 +65,18 @@ def shadow_meeting():
     return {
         "shadow-meeting": [
             {
-                "name": meeting.name,
-                "moderator_url": meeting.get_signin_url(Role.moderator),
-                "attendee_url": meeting.get_signin_url(Role.attendee),
+                **{
+                    "name": meeting.name,
+                    "moderator_url": meeting.get_signin_url(Role.moderator),
+                    "attendee_url": meeting.get_signin_url(Role.attendee),
+                },
+                **(
+                    {
+                        "visio_code": meeting.visio_code,
+                    }
+                    if current_app.config["ENABLE_VISIO_CODE"]
+                    else {}
+                ),
             }
         ]
     }

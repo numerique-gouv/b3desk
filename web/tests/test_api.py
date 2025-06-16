@@ -137,6 +137,15 @@ def test_api_existing_shadow_meeting(
         f"/meeting/signin/invite/{shadow_meeting.id}/creator/{user.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
+    assert res.json["shadow-meeting"][0]["visio_code"] == "SHADOW"
+    assert len(res.json["shadow-meeting"]) == 1
+
+    client_app.app.config["ENABLE_VISIO_CODE"] = False
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert "visio_code" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
 
 
@@ -160,4 +169,13 @@ def test_api_new_shadow_meeting(
         f"/meeting/signin/invite/2/creator/{user.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
+    assert res.json["shadow-meeting"][0]["visio_code"]
+    assert len(res.json["shadow-meeting"]) == 1
+
+    client_app.app.config["ENABLE_VISIO_CODE"] = False
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert "visio_code" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
