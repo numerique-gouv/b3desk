@@ -23,6 +23,7 @@ def test_api_meetings_nominal(
         "name": "meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "AAA111",
+        "SIPMediaGW_link": "AAA111@example.serveur.com",
     }
     assert len(res.json["meetings"]) == 3
 
@@ -36,6 +37,7 @@ def test_api_meetings_nominal(
         "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "visio_code": "AAA111",
+        "SIPMediaGW_link": "AAA111@example.serveur.com",
     }
     assert len(res.json["meetings"]) == 3
 
@@ -137,7 +139,10 @@ def test_api_existing_shadow_meeting(
         f"/meeting/signin/invite/{shadow_meeting.id}/creator/{user.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
-    assert res.json["shadow-meeting"][0]["visio_code"] == "SHADOW"
+    assert res.json["shadow-meeting"][0]["visio_code"] == "SHADO1"
+    assert (
+        res.json["shadow-meeting"][0]["SIPMediaGW_link"] == "SHADO1@example.serveur.com"
+    )
     assert len(res.json["shadow-meeting"]) == 1
 
     client_app.app.config["ENABLE_VISIO_CODE"] = False
@@ -146,6 +151,7 @@ def test_api_existing_shadow_meeting(
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
     assert "visio_code" not in res.json["shadow-meeting"][0]
+    assert "SIPMediaGW_link" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
 
 
@@ -170,6 +176,7 @@ def test_api_new_shadow_meeting(
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
+    assert "@example.serveur.com" in res.json["shadow-meeting"][0]["SIPMediaGW_link"]
     assert len(res.json["shadow-meeting"]) == 1
 
     client_app.app.config["ENABLE_VISIO_CODE"] = False
@@ -178,4 +185,5 @@ def test_api_new_shadow_meeting(
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
     assert "visio_code" not in res.json["shadow-meeting"][0]
+    assert "SIPMediaGW_link" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1

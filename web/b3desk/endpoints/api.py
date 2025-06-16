@@ -40,6 +40,9 @@ def api_meetings():
                 **(
                     {
                         "visio_code": meeting.visio_code,
+                        "SIPMediaGW_link": meeting.visio_code
+                        + "@"
+                        + current_app.config["FQDN_SIP_SERVER"],
                     }
                     if current_app.config["ENABLE_VISIO_CODE"]
                     else {}
@@ -73,6 +76,9 @@ def shadow_meeting():
                 **(
                     {
                         "visio_code": meeting.visio_code,
+                        "SIPMediaGW_link": meeting.visio_code
+                        + "@"
+                        + current_app.config["FQDN_SIP_SERVER"],
                     }
                     if current_app.config["ENABLE_VISIO_CODE"]
                     else {}
