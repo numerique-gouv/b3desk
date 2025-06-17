@@ -248,3 +248,14 @@ def join_meeting_as_authenticated(meeting_id):
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
+
+
+@bp.route("/visio-code/<visio_code>")
+@check_oidc_connection(auth)
+def join_waiting_meeting_with_visio_code(visio_code):
+    meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
+    creator = User.query.filter_by(id=meeting.user_id).one()
+    h = meeting.get_hash(role=Role.moderator)
+    return signin_meeting(
+        meeting_fake_id=str(meeting.id), creator=creator, h=h, role=Role.moderator
+    )
