@@ -28,6 +28,7 @@ def api_meetings():
                     "name": meeting.name,
                     "moderator_url": meeting.get_signin_url(Role.moderator),
                     "attendee_url": meeting.get_signin_url(Role.attendee),
+                    "visio_code": meeting.visio_code,
                 },
                 **(
                     {
@@ -39,12 +40,11 @@ def api_meetings():
                 ),
                 **(
                     {
-                        "visio_code": meeting.visio_code,
                         "SIPMediaGW_url": meeting.visio_code
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if current_app.config["ENABLE_VISIO_CODE"]
+                    if current_app.config["ENABLE_SIP"]
                     else {}
                 ),
             }
@@ -72,15 +72,15 @@ def shadow_meeting():
                     "name": meeting.name,
                     "moderator_url": meeting.get_signin_url(Role.moderator),
                     "attendee_url": meeting.get_signin_url(Role.attendee),
+                    "visio_code": meeting.visio_code,
                 },
                 **(
                     {
-                        "visio_code": meeting.visio_code,
                         "SIPMediaGW_url": meeting.visio_code
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if current_app.config["ENABLE_VISIO_CODE"]
+                    if current_app.config["ENABLE_SIP"]
                     else {}
                 ),
             }

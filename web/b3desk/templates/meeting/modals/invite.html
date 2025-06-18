@@ -25,7 +25,6 @@
                                 </button>
                             </div>
                         </div>
-                        {% if config.get("ENABLE_VISIO_CODE") %}
                         <br>
                         <p>En leur envoyant le code ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
@@ -38,6 +37,7 @@
                                 </button>
                             </div>
                         </div>
+                        {% if config.get("ENABLE_SIP") %}
                         <br>
                         <p>En leur envoyant lien SIP ci-dessous :</p>
                         <div class="fr-grid-row fr-text--sm">
