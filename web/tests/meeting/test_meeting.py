@@ -950,7 +950,6 @@ def test_generate_existing_pin(
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
     res = res.form.submit()
-    print(res.flashes)
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
