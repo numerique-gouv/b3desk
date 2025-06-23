@@ -26,6 +26,8 @@ from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
+from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
@@ -222,6 +224,9 @@ def save_meeting():
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
     form.populate_obj(meeting)
+    meeting.visio_code = (
+        meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
+    )
     meeting.save()
     flash(
         _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
@@ -262,6 +267,9 @@ def end_meeting():
 @meeting_owner_needed
 def create_meeting(meeting: Meeting, owner: User):
     meeting.create_bbb()
+    meeting.visio_code = (
+        meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
+    )
     meeting.save()
     return redirect(url_for("public.welcome"))
 
@@ -302,8 +310,7 @@ def delete_meeting():
                     "error",
                 )
             else:
-                db.session.delete(meeting)
-                db.session.commit()
+                save_voiceBridge_and_delete_meeting(meeting)
                 flash(_("Élément supprimé"), "success")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
