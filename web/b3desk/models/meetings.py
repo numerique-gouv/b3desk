@@ -500,9 +500,7 @@ def delete_all_old_shadow_meetings():
 
 def unique_visio_code_generation(forbidden_visio_code=None):
     forbidden_visio_code = (
-        get_forbidden_visio_code()
-        if forbidden_visio_code is None
-        else forbidden_visio_code
+        get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
     )
     new_visio_code = get_random_alphanumeric_string(6)
     if (
@@ -514,6 +512,6 @@ def unique_visio_code_generation(forbidden_visio_code=None):
     return unique_visio_code_generation(forbidden_visio_code).upper()
 
 
-def get_forbidden_visio_code():
+def get_all_visio_codes():
     existing_visio_code = db.session.query(Meeting.visio_code)
     return [visio_code[0] for visio_code in existing_visio_code]
