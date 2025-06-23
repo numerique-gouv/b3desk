@@ -14,6 +14,7 @@ from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
@@ -253,11 +254,15 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
 @bp.route("/visio-code/<visio_code>")
 @check_oidc_connection(auth)
 def join_waiting_meeting_with_visio_code(visio_code):
-    meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
-    meeting_fake_id = str(meeting.id)
-    creator = User.query.filter_by(id=meeting.user_id).one()
-    role = Role.moderator
-    h = meeting.get_hash(role=role)
-    return signin_meeting(
-        meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
-    )
+    if visio_code in get_all_visio_codes():
+        meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
+        meeting_fake_id = str(meeting.id)
+        creator = User.query.filter_by(id=meeting.user_id).one()
+        role = Role.moderator
+        h = meeting.get_hash(role=role)
+        return signin_meeting(
+            meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
+        )
+    else:
+        flash("Le visio-code saisi est erroné", "error")
+        return redirect(url_for("public.home"))
