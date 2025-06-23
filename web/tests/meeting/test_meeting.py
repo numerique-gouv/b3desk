@@ -15,8 +15,8 @@ from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import create_unique_pin
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
+from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_forbidden_pins
-from b3desk.models.meetings import get_forbidden_visio_code
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 
@@ -1069,10 +1069,10 @@ def test_unique_visio_code_generation(
         assert any(i.isalpha() for i in visio_code)
 
 
-def test_get_forbidden_visio_code(
+def test_get_all_visio_codes(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
-    assert get_forbidden_visio_code() == [
+    assert get_all_visio_codes() == [
         "AAA111",
         "BBB222",
         "CCC333",
