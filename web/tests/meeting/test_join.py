@@ -233,6 +233,11 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     client_app.get(waiting_meeting_url, status=200)
 
 
-def test_join_meeting_with_vios_code(client_app, meeting):
-    response = client_app.get("/visio-code/AAA111", status=200)
+def test_join_meeting_with_visios_code(client_app, meeting):
+    response = client_app.get("/visio-code/911111111", status=200)
     response.mustcontain("Rejoindre le séminaire")
+
+
+def test_join_meeting_with_wrong_visios_code(client_app):
+    response = client_app.get("/visio-code/1", status=302).follow()
+    response.mustcontain("Le visio-code saisi est erroné")

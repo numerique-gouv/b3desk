@@ -502,14 +502,10 @@ def unique_visio_code_generation(forbidden_visio_code=None):
     forbidden_visio_code = (
         get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
     )
-    new_visio_code = get_random_alphanumeric_string(6)
-    if (
-        new_visio_code not in forbidden_visio_code
-        and any(i.isdigit() for i in new_visio_code)
-        and any(i.isalpha() for i in new_visio_code)
-    ):
+    new_visio_code = create_unique_pin(forbidden_visio_code)
+    if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
         return new_visio_code.upper()
-    return unique_visio_code_generation(forbidden_visio_code).upper()
+    return unique_visio_code_generation(forbidden_pins=forbidden_visio_code)
 
 
 def get_all_visio_codes():

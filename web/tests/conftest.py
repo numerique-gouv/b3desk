@@ -168,7 +168,7 @@ def meeting(client_app, user):
         is_favorite=True,
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
-        visio_code="AAA111",
+        visio_code="911111111",
     )
     meeting.save()
 
@@ -189,7 +189,7 @@ def meeting_2(client_app, user):
         is_favorite=True,
         voiceBridge="111111112",
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
-        visio_code="BBB222",
+        visio_code="911111112",
     )
     meeting.save()
 
@@ -208,7 +208,7 @@ def meeting_3(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         voiceBridge="111111113",
-        visio_code="CCC333",
+        visio_code="911111113",
     )
     meeting.save()
 
@@ -227,7 +227,7 @@ def shadow_meeting(client_app, user):
         voiceBridge="555555551",
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
-        visio_code="SHADO1",
+        visio_code="511111111",
     )
     meeting.save()
 
@@ -246,7 +246,7 @@ def shadow_meeting_2(client_app, user):
         voiceBridge="555555552",
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
-        visio_code="SHADO2",
+        visio_code="511111112",
     )
     meeting.save()
 
@@ -265,7 +265,7 @@ def shadow_meeting_3(client_app, user):
         voiceBridge="555555553",
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
-        visio_code="SHADO3",
+        visio_code="511111113",
     )
     meeting.save()
 
