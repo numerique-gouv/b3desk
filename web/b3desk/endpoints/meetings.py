@@ -363,3 +363,12 @@ def meeting_favorite():
         abort(403)
 
     return redirect(url_for("public.welcome", **request.args))
+
+
+@bp.route("/meeting/visio_code", methods=["POST"])
+def visio_code():
+    # csrf
+    # captcha?
+    # visio_code = request.form.get("visio_code")
+    flash(_("super"), "success")
+    return redirect(url_for("public.index"))

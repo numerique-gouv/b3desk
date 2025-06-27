@@ -447,3 +447,15 @@ This is a fix until we deal with the update.
 .list-meeting-rooms-title div a {
   align-self: flex-end;
 }
+
+.visio-code-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.visio-code-container input {
+  width: 45px;
+  text-align: center;
+}

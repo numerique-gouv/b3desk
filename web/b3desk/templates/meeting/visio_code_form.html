@@ -1,0 +1,102 @@
+<h4>{% trans %}Saisir le code de connexion {{ of_the_meeting }}{% endtrans %}</h4>
+<p>
+    {% trans %}Remplissez le code de connexion reçu dans l’invitation {{ of_the_meeting }}.{% endtrans %}<br><br>
+</p>
+<form id="visio-code-form" action="{{ url_for("meetings.visio_code") }}" method="POST">
+    {% include 'meeting/csrf.html' %}
+    <input type="hidden" id="visio_code" name="visio_code" value="" />
+</form>
+<div class="fr-container--fluid fr-mb-3w">
+    <div class="visio-code-container">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+    </div>
+</div>
+<div class="fr-container--fluid">
+    <div class="fr-grid-row">
+        <button id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}">
+            {% trans %}Connexion{% endtrans %}
+        </button>
+    </div>
+</div>
+
+{% block js %}
+<script>
+    const inputValidation = (target) => {
+        const hasValue = target.value !== "";
+        const nextSibling = target.nextElementSibling;
+        const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
+        if (hasValue && nextSiblingInput){
+            nextSibling.focus();
+        }
+        if (!target.value.match(/\d{1}$/) && !target.classList.contains("fr-input--error")) {
+            target.classList.remove("fr-input--valid")
+            target.classList.add("fr-input--error")
+        } else if (target.value.match(/\d{1}$/) && !target.classList.contains("fr-input--valid")) {
+            target.classList.remove("fr-input--error")
+            target.classList.add("fr-input--valid")
+        }
+    }
+
+    const userInput = (event) => inputValidation(event.target);
+
+    const inputs = document.querySelectorAll(".visio-code-container input");
+
+    document.querySelector(".visio-code-container").addEventListener("input", userInput)
+
+    inputs.forEach((input) => {
+        input.addEventListener("keyup", function(event) {
+            const nextSibling = input.nextElementSibling;
+            const previousSibling = input.previousElementSibling;
+            if (input.value.length >= 1 && event.key.length == 1) {
+                input.value = event.key
+                inputValidation(input)
+            }
+            if (event.key == "Backspace") {
+                input.classList.remove("fr-input--valid")
+                input.classList.remove("fr-input--error")
+                if (previousSibling) {
+                    previousSibling.focus();
+                    const val = previousSibling.value;
+                    previousSibling.value = '';
+                    previousSibling.value = val;
+                }
+            }
+            if (event.keyCode == 37 && previousSibling) {
+                previousSibling.focus();
+            } else if (event.keyCode == 39 && nextSibling) {
+                nextSibling.focus();
+            }
+
+            const visioCode = Array.from(inputs).map(i => i.value).join("");
+
+            if (visioCode.match(/\d{9}$/)) {
+                document.getElementById("submit-visio-code").disabled = false;
+                if (event.key == "Enter") {
+                    document.getElementById("visio_code").value = visioCode;
+                    document.getElementById("visio-code-form").submit();
+                }
+            } else {
+                document.getElementById("submit-visio-code").disabled = true;
+
+            }
+        })
+        input.addEventListener("paste", (event) => {
+            const pastedValue = event.clipboardData.getData('text');
+            const pastedValues = [...pastedValue];
+            inputs.forEach((el, i) => {
+                el.value = pastedValues[i]??""
+                inputValidation(el)
+            });
+            inputs[Math.min(inputs.length, pastedValue.length) - 1]?.focus();
+        })
+    })
+</script>
+{% endblock %}
