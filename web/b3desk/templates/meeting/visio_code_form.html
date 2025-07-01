@@ -4,19 +4,13 @@
 </p>
 <form id="visio-code-form" action="{{ url_for("meetings.visio_code") }}" method="POST">
     {% include 'meeting/csrf.html' %}
-    <input type="hidden" id="visio_code" name="visio_code" value="" />
+    <input type="hidden" id="visio-code" name="visio_code" value="" />
 </form>
 <div class="fr-container--fluid fr-mb-3w">
     <div class="visio-code-container">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
-        <input type="text" minlength="1" maxlength="1" id="" class="fr-input">
+        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
+        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
+        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
     </div>
 </div>
 <div class="fr-container--fluid">
@@ -30,16 +24,37 @@
 {% block js %}
 <script>
     const inputValidation = (target) => {
-        const hasValue = target.value !== "";
+        moveToNextInputIfNeeded(target);
+        visualValidation(target);
+    }
+
+    const moveToNextInputIfNeeded = (target) => {
+        const isFilled = target.value.length >= 3;
         const nextSibling = target.nextElementSibling;
         const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
-        if (hasValue && nextSiblingInput){
+        if (isFilled && nextSiblingInput) {
             nextSibling.focus();
         }
-        if (!target.value.match(/\d{1}$/) && !target.classList.contains("fr-input--error")) {
+    }
+
+    const moveToPreviouInputIfNeeded = (target) => {
+        const isAtBeginning = target.selectionStart == 0;
+        const previousSibling = target.previousElementSibling;
+        const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
+        if (isAtBeginning && previousSiblingInput) {
+            previousSibling.focus();
+            previousSibling.selectionEnd = 2;
+        }
+    }
+
+    const visualValidation = (target) => {
+        if (target.value == "") {
+            target.classList.remove("fr-input--valid")
+            target.classList.remove("fr-input--error")
+        } else if (!target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--error")) {
             target.classList.remove("fr-input--valid")
             target.classList.add("fr-input--error")
-        } else if (target.value.match(/\d{1}$/) && !target.classList.contains("fr-input--valid")) {
+        } else if (target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--valid")) {
             target.classList.remove("fr-input--error")
             target.classList.add("fr-input--valid")
         }
@@ -51,36 +66,27 @@
 
     document.querySelector(".visio-code-container").addEventListener("input", userInput)
 
+
     inputs.forEach((input) => {
-        input.addEventListener("keyup", function(event) {
+        input.addEventListener("keydown", function(event) {
             const nextSibling = input.nextElementSibling;
             const previousSibling = input.previousElementSibling;
-            if (input.value.length >= 1 && event.key.length == 1) {
-                input.value = event.key
-                inputValidation(input)
+            if (input.value.length >= 3 && event.key.length == 1) {
+                moveToNextInputIfNeeded(input)
             }
-            if (event.key == "Backspace") {
-                input.classList.remove("fr-input--valid")
-                input.classList.remove("fr-input--error")
-                if (previousSibling) {
-                    previousSibling.focus();
-                    const val = previousSibling.value;
-                    previousSibling.value = '';
-                    previousSibling.value = val;
-                }
-            }
-            if (event.keyCode == 37 && previousSibling) {
-                previousSibling.focus();
-            } else if (event.keyCode == 39 && nextSibling) {
+            if (event.key == "Backspace" || event.key == "ArrowLeft") {
+                moveToPreviouInputIfNeeded(input);
+            } else if (event.key == "ArrowRight" && nextSibling) {
                 nextSibling.focus();
             }
+            visualValidation(input);
 
             const visioCode = Array.from(inputs).map(i => i.value).join("");
 
             if (visioCode.match(/\d{9}$/)) {
                 document.getElementById("submit-visio-code").disabled = false;
                 if (event.key == "Enter") {
-                    document.getElementById("visio_code").value = visioCode;
+                    document.getElementById("visio-code").value = visioCode;
                     document.getElementById("visio-code-form").submit();
                 }
             } else {
@@ -88,15 +94,20 @@
 
             }
         })
-        input.addEventListener("paste", (event) => {
-            const pastedValue = event.clipboardData.getData('text');
-            const pastedValues = [...pastedValue];
-            inputs.forEach((el, i) => {
-                el.value = pastedValues[i]??""
-                inputValidation(el)
-            });
-            inputs[Math.min(inputs.length, pastedValue.length) - 1]?.focus();
-        })
+        input.addEventListener('paste', (e) => {
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const chars = pasteData.split('');
+            for (let i = 9; i <= chars.length && i/4>>0 < inputs.length; i++) {
+                inputs[i/4>>0].value += chars[i];
+            }
+            const nextIndex = index + chars.length;
+            if (nextIndex < inputs.length) {
+                inputs[nextIndex].focus();
+            }
+            if (nextIndex >= inputs.length) {
+                inputs[inputs.length-1].focus();
+            }
+        });
     })
 </script>
 {% endblock %}
