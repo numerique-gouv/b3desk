@@ -301,3 +301,23 @@ def join_waiting_meeting_from_sip(visio_code):
         return signin_meeting(
             meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
         )
+        
+
+@bp.route("/meeting/visio_code", methods=["POST"])
+@check_oidc_connection(auth)
+def visio_code_connexion():
+    # csrf
+    # captcha?
+    visio_code = request.form.get("visio_code")
+    if visio_code in get_all_visio_codes():
+        meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
+        meeting_fake_id = str(meeting.id)
+        creator = User.query.filter_by(id=meeting.user_id).one()
+        role = Role.moderator
+        h = meeting.get_hash(role=role)
+        return signin_meeting(
+            meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
+        )
+    else:
+        flash("Le visio-code saisi est erroné", "error")
+        return redirect(url_for("public.home"))
