@@ -8,9 +8,9 @@
 </form>
 <div class="fr-container--fluid fr-mb-3w">
     <div class="visio-code-container">
-        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
-        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
-        <input type="text" minlength="3" maxlength="3" id="" class="fr-input" placeholder="- - -">
+        <input type="text" minlength="3" maxlength="3" id="visio-code1" class="fr-input" placeholder="- - -">
+        <input type="text" minlength="3" maxlength="3" id="visio-code2" class="fr-input" placeholder="- - -">
+        <input type="text" minlength="3" maxlength="3" id="visio-code3" class="fr-input" placeholder="- - -">
     </div>
 </div>
 <div class="fr-container--fluid">
@@ -30,20 +30,24 @@
 
     const moveToNextInputIfNeeded = (target) => {
         const isFilled = target.value.length >= 3;
+        const isAtEnd = target.selectionStart == 3 && target.selectionEnd == 3;
         const nextSibling = target.nextElementSibling;
         const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
-        if (isFilled && nextSiblingInput) {
+        if (isFilled && nextSiblingInput && isAtEnd) {
             nextSibling.focus();
+            nextSibling.selectionStart = 0;
+            nextSibling.selectionEnd = 0;
         }
     }
 
-    const moveToPreviouInputIfNeeded = (target) => {
-        const isAtBeginning = target.selectionStart == 0;
+    const moveToPreviousInputIfNeeded = (target) => {
+        const isAtBeginning = target.selectionStart == 0 && target.selectionEnd == 0;
         const previousSibling = target.previousElementSibling;
         const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
         if (isAtBeginning && previousSiblingInput) {
             previousSibling.focus();
-            previousSibling.selectionEnd = 2;
+            previousSibling.selectionStart = 3;
+            previousSibling.selectionEnd = 3;
         }
     }
 
@@ -67,22 +71,19 @@
     document.querySelector(".visio-code-container").addEventListener("input", userInput)
 
 
-    inputs.forEach((input) => {
-        input.addEventListener("keydown", function(event) {
-            const nextSibling = input.nextElementSibling;
-            const previousSibling = input.previousElementSibling;
+    inputs.forEach((input, index) => {
+        input.addEventListener("keyup", function(event) {
             if (input.value.length >= 3 && event.key.length == 1) {
-                moveToNextInputIfNeeded(input)
+                moveToNextInputIfNeeded(input);
             }
             if (event.key == "Backspace" || event.key == "ArrowLeft") {
-                moveToPreviouInputIfNeeded(input);
-            } else if (event.key == "ArrowRight" && nextSibling) {
-                nextSibling.focus();
+                moveToPreviousInputIfNeeded(input);
+            } else if (event.key == "ArrowRight") {
+                moveToNextInputIfNeeded(input);
             }
             visualValidation(input);
 
             const visioCode = Array.from(inputs).map(i => i.value).join("");
-
             if (visioCode.match(/\d{9}$/)) {
                 document.getElementById("submit-visio-code").disabled = false;
                 if (event.key == "Enter") {
@@ -91,22 +92,19 @@
                 }
             } else {
                 document.getElementById("submit-visio-code").disabled = true;
-
             }
         })
         input.addEventListener('paste', (e) => {
             const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-            const chars = pasteData.split('');
-            for (let i = 9; i <= chars.length && i/4>>0 < inputs.length; i++) {
-                inputs[i/4>>0].value += chars[i];
-            }
-            const nextIndex = index + chars.length;
-            if (nextIndex < inputs.length) {
-                inputs[nextIndex].focus();
-            }
-            if (nextIndex >= inputs.length) {
-                inputs[inputs.length-1].focus();
-            }
+            const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
+            inputs.forEach((input, index) => {
+                input.value = chars[index];
+                if (index == 2) {
+                    input.focus();
+                    input.selectionStart = 3;
+                    input.selectionEnd = 3;
+                }
+            })
         });
     })
 </script>
