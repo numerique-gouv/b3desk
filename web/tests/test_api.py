@@ -140,7 +140,7 @@ def test_api_existing_shadow_meeting(
         f"/meeting/signin/invite/{shadow_meeting.id}/creator/{user.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
-    # assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
+    assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
     assert (
         res.json["shadow-meeting"][0]["SIPMediaGW_url"]
         == "511111111@example.serveur.com"
@@ -152,7 +152,7 @@ def test_api_existing_shadow_meeting(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
-    # assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
+    assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
     assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
 
@@ -178,7 +178,7 @@ def test_api_new_shadow_meeting(
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
-    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 6
+    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
     assert "@example.serveur.com" in res.json["shadow-meeting"][0]["SIPMediaGW_url"]
     assert len(res.json["shadow-meeting"]) == 1
 
@@ -188,6 +188,6 @@ def test_api_new_shadow_meeting(
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
-    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 6
+    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
     assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
