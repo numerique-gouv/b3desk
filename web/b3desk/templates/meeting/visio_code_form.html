@@ -15,7 +15,7 @@
 </div>
 <div class="fr-container--fluid">
     <div class="fr-grid-row">
-        <button id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}" onclick="formValidateAndSubmit">
+        <button id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}" onclick="formValidateAndSubmit()">
             {% trans %}Connexion{% endtrans %}
         </button>
     </div>
@@ -29,11 +29,10 @@
     }
 
     const moveToNextInputIfNeeded = (target) => {
-        const isFilled = target.value.length >= 3;
-        const isAtEnd = target.selectionStart == 3 && target.selectionEnd == 3;
+        const isAtEnd = target.selectionStart == target.value.length && target.value.length == target.selectionEnd;
         const nextSibling = target.nextElementSibling;
         const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
-        if (isFilled && nextSiblingInput && isAtEnd) {
+        if (nextSiblingInput && isAtEnd) {
             nextSibling.focus();
             nextSibling.selectionStart = 0;
             nextSibling.selectionEnd = 0;
@@ -105,7 +104,6 @@
     })
 
     const formValidateAndSubmit = () => {
-        console.log("COUCOU")
         const visioCode = Array.from(inputs).map(i => i.value).join("");
         if (visioCode.match(/\d{9}$/)) {
                 formValidation(visioCode);
