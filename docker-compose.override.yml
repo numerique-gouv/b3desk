@@ -7,7 +7,7 @@ services:
         condition: service_started
       keycloak:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "-c" , "flask db upgrade && flask run --host=0.0.0.0"]
+    entrypoint: ["flask", "run", "--host=0.0.0.0"]
     volumes:
       - /tmp/download/:/tmp/download/  # same target as TMP_DOWNLOAD_DIR
       - /tmp/b3desk/:/tmp/b3desk/  # same target as UPLOAD_DIR
