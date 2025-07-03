@@ -1,14 +1,4 @@
 <footer id="footer" role="contentinfo">
-    {% if quick_meeting is defined and quick_meeting %}
-    <div class="fr-follow">
-        <div class="fr-container">
-            <a class="fr-btn fr-btn--visio fr-btn--icon-right fr-icon-live-line" target="_blank" href="{{ url_for("meetings.quick_meeting") }}" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">
-                {% trans %}Ouvrir {{ a_meeting }} temporaire{% endtrans %}
-            </a>
-            <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
-        </div>
-    </div>
-    {% endif %}
     {% include 'rie.html' %}
     <div class="fr-footer">
         <div class="fr-container">

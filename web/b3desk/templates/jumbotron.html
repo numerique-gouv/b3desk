@@ -1,5 +1,5 @@
 {% if user %}
-<div class="fr-py-1w">
+<div class="fr-py-1w fr-follow">
     <div class="fr-container">
         {% if stats is defined and stats %}
         <div class="fr-mt-4w fr-grid-row fr-grid-row--center fr-grid-row--gutters stats-info-container">
@@ -23,10 +23,17 @@
         </div>
         {% endif %}
         <div class="fr-grid-row">
-            <div class="fr-col">
-                {% include 'meeting/visio_code_form.html' %}
+            <div class="fr-col-md-6">
+                    {% include 'meeting/visio_code_form.html' %}
             </div>
-            <div class="fr-col">
+            <div class="fr-col-md-6">
+                {% if quick_meeting is defined and quick_meeting %}
+                    <h4>{% trans %}Ouvrir {{ a_new_meeting }} temporaire{% endtrans %}</h4>
+                    <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
+                    <a class="fr-btn fr-btn--visio fr-btn--icon-right fr-icon-live-line" target="_blank" href="{{ url_for("meetings.quick_meeting") }}" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">
+                        {% trans %}Ouvrir {{ a_meeting }} temporaire{% endtrans %}
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -53,6 +60,8 @@
                         <div class="lasuite-homepage__form-container">
                             <div class="lasuite-homepage__form">
                                 <div>
+                                    {% include 'meeting/visio_code_form.html' %}
+                                    <br>
                                     <h2>{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h2>
                                     <p>
                                         {% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}<br><br>
@@ -87,30 +96,32 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-md-6">
+                {% include 'meeting/visio_code_form.html' %}
+                <br>
+            </div>
+            <div class="fr-col-md-6">
                 <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h1>
                 <p class="fr-text">{% trans %}Vous êtes agent de l’État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}</p>
                 <p><a class="fr-btn" target="_blank" rel="noopener" href="{{ url_for("public.welcome") }}">{% trans %}Se connecter ou créer un compte{% endtrans %}</a></p>
-                <p></p>
-                {% if stats is defined and stats %}
-                <p>
-                <small>
-                    {% trans trimmed count=stats["runningCount"]%}
-                    Actuellement, il y a <b>{{ count }}</b> webinaire
-                    {% pluralize %}
-                    Actuellement, il y a <b>{{ count }}</b> webinaires
-                    {% endtrans %}
-                    {% trans trimmed count=stats["participantCount"]%}
-                    et <b>{{ count }}</b> participant
-                    {% pluralize %}
-                    et <b>{{ count }}</b> participants
-                    {% endtrans %}
-                    {% trans %} sur une capacité moyenne pour la plateforme de {{ max_participants }} participants.{% endtrans %}
-                </small>
-                </p>
-                {% endif %}
             </div>
-            <div class="fr-col-md-6 image-home">
-            </div>
+            <p></p>
+            {% if stats is defined and stats %}
+            <p>
+            <small>
+                {% trans trimmed count=stats["runningCount"]%}
+                Actuellement, il y a <b>{{ count }}</b> webinaire
+                {% pluralize %}
+                Actuellement, il y a <b>{{ count }}</b> webinaires
+                {% endtrans %}
+                {% trans trimmed count=stats["participantCount"]%}
+                et <b>{{ count }}</b> participant
+                {% pluralize %}
+                et <b>{{ count }}</b> participants
+                {% endtrans %}
+                {% trans %} sur une capacité moyenne pour la plateforme de {{ max_participants }} participants.{% endtrans %}
+            </small>
+            </p>
+            {% endif %}
         </div>
     </div>
 </div>

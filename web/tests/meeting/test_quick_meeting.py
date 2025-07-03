@@ -6,7 +6,7 @@ def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
     is not allowed by the configuration."""
     client_app.app.config["MAIL_MEETING"] = False
     res = client_app.get("/home")
-    assert not res.forms
+    assert 1 not in res.forms.keys()
 
 
 def test_unauthenticated_quick_meeting_unauthorized_email(client_app, bbb_response):
@@ -15,8 +15,8 @@ def test_unauthenticated_quick_meeting_unauthorized_email(client_app, bbb_respon
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
-    res.form["mail"] = "email@example.org"
-    res = res.form.submit()
+    res.forms[1]["mail"] = "email@example.org"
+    res = res.forms[1].submit()
     assert (
         "error_login",
         "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions !",
@@ -30,8 +30,8 @@ def test_unauthenticated_quick_meeting_authorized_email(
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
-    res.form["mail"] = "example@gouv.fr"
-    res = res.form.submit()
+    res.forms[1]["mail"] = "example@gouv.fr"
+    res = res.forms[1].submit()
     assert (
         "success_login",
         "Vous avez reçu un courriel pour vous connecter",
