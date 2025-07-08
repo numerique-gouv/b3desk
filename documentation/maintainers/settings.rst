@@ -72,3 +72,50 @@ Si les droits ``real-management view-users`` et ``realm-management query-users``
 - Cliquer sur le menu déroulant des filtres en haut à gauche, et sélectionner « Filter by clients » plutôt que « Filter by realm roles »
 - Dans le champ de recherche, entrer « users » et valider
 - Cocher « view-users » et « query-users » puis sur le bouton « Assign »
+
+
+Utilisation d'un méteriel visio SIPMediaGW
+==========================================
+
+Configuration de B3Desk
+-----------------------
+
+Afin de permettre au matériel visio SIPMediaGW de rejoindre une visio via B3Desk, il faut lui communiquer un token qui sécurisera la connexion à B3Desk.
+
+#. Dans un premier temps, il faut générer une clé privée :
+.. code-block:: bash
+
+   docker exec -it <CONTAINER_ID> flask generate-private-key
+
+En remplaçant <CONTAINER_ID> par l’identifiant du conteneur b3desk_web, cette commande va générer une clé privée qui sera affectée à l'instance B3Desk.
+
+#. On peut ensuite configurer les paramètres suivants :
+
+- :attr:`~b3desk.settings.MainSettings.ENABLE_SIP`
+- :attr:`~b3desk.settings.MainSettings.FQDN_SIP_SERVER`
+- :attr:`~b3desk.settings.MainSettings.PRIVATE_KEY`
+
+#. Il est maintenant nécessaire de redémarrer le conteneur :
+
+.. code-block:: bash
+
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml web -d
+
+#. Il est possible de vérfier que le paramétrage a été correctement effectué :
+
+.. code-block:: bash
+
+   docker exec -it <CONTAINER_ID> flask check-sip-setttings
+
+Générer un sip-token
+--------------------
+
+Une fois que B3Desk est correctement paramétré, la généreration de sip-token est active :
+
+.. code-block:: bash
+
+   docker exec -it <CONTAINER_ID> flask generate-sip-token
+
+Il est possible de générer plusieurs sip-tokens. Tous seront valides sans limite de temps, tant que la clé privée reste la même.
+Il suffira de transmettre un sip-token au matériel SIP qui devra le joindre dans le header {"Authorization": token} lors de ses requêtes sur la route suivante :
+`https://<instance_b3desk.fr>/sip-connect/<visio_code>`

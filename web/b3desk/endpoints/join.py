@@ -9,12 +9,16 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from joserfc.errors import BadSignatureError
+from joserfc.errors import InvalidClaimError
+from joserfc.jwk import RSAKey
+from joserfc.jwt import JWTClaimsRegistry
+from joserfc.jwt import decode
 
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
@@ -251,11 +255,29 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
 
 
-@bp.route("/visio-code/<visio_code>")
+@bp.route("/sip-connect/<visio_code>", methods=["GET"])
 @check_oidc_connection(auth)
-def join_waiting_meeting_with_visio_code(visio_code):
-    if visio_code in get_all_visio_codes():
-        meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
+def join_waiting_meeting_from_sip(visio_code):
+    token = request.headers.get("Authorization")
+    if token is None:
+        abort(401)
+    else:
+        private_key_from_settings = RSAKey.import_key(current_app.config["PRIVATE_KEY"])
+        public_key = private_key_from_settings.as_dict(private=False)
+        public_key_obj = RSAKey.import_key(public_key)
+        try:
+            decoded_token = decode(token, public_key_obj)
+            claims_requests = JWTClaimsRegistry(
+                iss={
+                    "value": f"{current_app.config['PREFERRED_URL_SCHEME']}://{current_app.config['SERVER_NAME']}"
+                }
+            )
+            claims_requests.validate(decoded_token.claims)
+        except (BadSignatureError, InvalidClaimError):
+            abort(401)
+        meeting = Meeting.query.filter_by(visio_code=visio_code).one_or_none()
+        if not meeting:
+            abort(404)
         meeting_fake_id = str(meeting.id)
         creator = User.query.filter_by(id=meeting.user_id).one()
         role = Role.moderator
@@ -263,6 +285,3 @@ def join_waiting_meeting_with_visio_code(visio_code):
         return signin_meeting(
             meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
         )
-    else:
-        flash("Le visio-code saisi est erroné", "error")
-        return redirect(url_for("public.home"))
