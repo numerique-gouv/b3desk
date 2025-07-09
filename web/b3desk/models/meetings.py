@@ -505,7 +505,7 @@ def unique_visio_code_generation(forbidden_visio_code=None):
     new_visio_code = create_unique_pin(forbidden_visio_code)
     if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
         return new_visio_code.upper()
-    return unique_visio_code_generation(forbidden_pins=forbidden_visio_code)
+    return unique_visio_code_generation(forbidden_visio_code=forbidden_visio_code)
 
 
 def get_all_visio_codes():
