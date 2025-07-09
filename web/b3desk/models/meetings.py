@@ -522,4 +522,6 @@ def get_all_visio_codes():
 
 
 def get_meeting_by_visio_code(visio_code):
-    return Meeting.query.filter_by(visio_code=visio_code).one_or_none()
+    return (
+        db.session.query(Meeting).filter(Meeting.visio_code == visio_code).one_or_none()
+    )

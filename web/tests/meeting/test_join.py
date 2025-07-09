@@ -283,33 +283,41 @@ def test_join_meeting_with_sip_connect_token_with_wrong_iss_value(client_app):
     )
 
 
-def test_join_meeting_with_visio_code(client_app, meeting):
-    response = client_app.get("/home", status=200)
-    response.forms[0]["visio_code"] = "911111111"
+def test_join_meeting_with_visio_code(client_app, meeting, visio_code_session):
+    response = client_app.get("/home")
+    response.forms[0]["visio_code1"] = "911"
+    response.forms[0]["visio_code2"] = "111"
+    response.forms[0]["visio_code3"] = "111"
     response = response.forms[0].submit()
     response.mustcontain("Rejoindre le séminaire")
 
 
-def test_join_meeting_with_wrong_visio_code(client_app, meeting):
+def test_join_meeting_with_wrong_visio_code(client_app, meeting, visio_code_session):
     response = client_app.get("/home", status=200)
-    response.forms[0]["visio_code"] = "123456789"
+    response.forms[0]["visio_code1"] = "123"
+    response.forms[0]["visio_code2"] = "456"
+    response.forms[0]["visio_code3"] = "789"
     response = response.forms[0].submit()
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
 
 
 def test_join_meeting_with_visio_code_with_authenticated_user(
-    client_app, meeting, authenticated_user, user, bbb_response
+    client_app, meeting, authenticated_user, user, bbb_response, visio_code_session
 ):
     response = client_app.get("/welcome", status=200)
-    response.forms[0]["visio_code"] = "911111111"
+    response.forms[0]["visio_code1"] = "911"
+    response.forms[0]["visio_code2"] = "111"
+    response.forms[0]["visio_code3"] = "111"
     response = response.forms[0].submit()
     response.mustcontain("Rejoindre le séminaire")
 
 
 def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
-    client_app, meeting, authenticated_user, user, bbb_response
+    client_app, meeting, authenticated_user, user, bbb_response, visio_code_session
 ):
     response = client_app.get("/welcome", status=200)
-    response.forms[0]["visio_code"] = "123456789"
+    response.forms[0]["visio_code1"] = "123"
+    response.forms[0]["visio_code2"] = "456"
+    response.forms[0]["visio_code3"] = "789"
     response = response.forms[0].submit()
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes

@@ -10,6 +10,7 @@ from .. import auth
 from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
+from ..session import should_display_captcha
 from ..templates.content import FAQ_CONTENT
 from ..utils import check_oidc_connection
 from ..utils import check_private_key
@@ -64,6 +65,7 @@ def home():
         stats=stats,
         mail_meeting=current_app.config["MAIL_MEETING"],
         max_participants=current_app.config["MAX_PARTICIPANTS"],
+        should_display_captcha=should_display_captcha(),
     )
 
 
@@ -121,6 +123,7 @@ def welcome():
         reverse_order=reverse_order,
         order_key=order_key,
         favorite_filter=favorite_filter and bool(favorite_meetings),
+        should_display_captcha=should_display_captcha(),
     )
 
 

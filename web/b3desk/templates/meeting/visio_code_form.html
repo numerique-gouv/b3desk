@@ -11,119 +11,47 @@
     </p>
     <form id="visio-code-form" action="{{ url_for("join.visio_code_connexion") }}" method="POST">
         {% include 'meeting/csrf.html' %}
-        <input type="hidden" id="visio-code" name="visio_code" value="" />
+        <div class="fr-container--fluid fr-mb-3w">
+            <div class="visio-code-container">
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code1" name="visio_code1" class="fr-input" inputmode="numeric" pattern="^\d{3,3}$" placeholder="- - -" data-visio-code-id="1">
+                </div>
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code2" name="visio_code2" class="fr-input" inputmode="numeric" pattern="^\d{3,3}$" placeholder="- - -" data-visio-code-id="2">
+                </div>
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code3" name="visio_code3" class="fr-input" inputmode="numeric" pattern="^\d{3,3}$" placeholder="- - -" data-visio-code-id="3">
+                </div>
+            </div>
+        </div>
+
+        {% if should_display_captcha %}
+            <div class="captcha-container">
+                <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
+                                                                            image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
+                <label class="fr-label" for="text-input" id="captcha-description"></label>
+                <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
+            </div>
+        {% endif %}
+
+        <br>
+
+        <div class="fr-container--fluid">
+            <div class="fr-grid-row">
+                <button type="submit" id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}">
+                    {% trans %}Connexion{% endtrans %}
+                </button>
+            </div>
+        </div>
     </form>
-    <div class="fr-container--fluid fr-mb-3w">
-        <div class="visio-code-container">
-            <input type="text" minlength="3" maxlength="3" id="visio-code1" class="fr-input" placeholder="- - -">
-            <input type="text" minlength="3" maxlength="3" id="visio-code2" class="fr-input" placeholder="- - -">
-            <input type="text" minlength="3" maxlength="3" id="visio-code3" class="fr-input" placeholder="- - -">
-        </div>
-    </div>
-    <div class="fr-container--fluid">
-        <div class="fr-grid-row">
-            <button id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}" onclick="formValidateAndSubmit()">
-                {% trans %}Connexion{% endtrans %}
-            </button>
-        </div>
-    </div>
+
+    <br>
 </div>
 
 {% block js %}
     <script>
-        const focusAtEnd = (input) => {
-            input.focus();
-            input.selectionStart = 3;
-            input.selectionEnd = 3;
-        }
-        const formValidation = (visioCode) => {
-            document.getElementById("visio-code").value = visioCode;
-            document.getElementById("visio-code-form").submit();
-        }
-
-        const moveToNextInputIfNeeded = (target) => {
-            const isAtEnd = target.selectionStart == target.value.length && target.value.length == target.selectionEnd;
-            const nextSibling = target.nextElementSibling;
-            const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
-            if (nextSiblingInput && isAtEnd) {
-                nextSibling.focus();
-                nextSibling.selectionStart = 0;
-                nextSibling.selectionEnd = 0;
-            }
-        }
-
-        const moveToPreviousInputIfNeeded = (target) => {
-            const isAtBeginning = target.selectionStart == 0 && target.selectionEnd == 0;
-            const previousSibling = target.previousElementSibling;
-            const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
-            if (isAtBeginning && previousSiblingInput) {
-                focusAtEnd(previousSibling);
-            }
-        }
-
-        const visualValidation = (target) => {
-            if (target.value == "") {
-                target.classList.remove("fr-input--valid")
-                target.classList.remove("fr-input--error")
-            } else if (!target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--error")) {
-                target.classList.remove("fr-input--valid")
-                target.classList.add("fr-input--error")
-            } else if (target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--valid")) {
-                target.classList.remove("fr-input--error")
-                target.classList.add("fr-input--valid")
-            }
-        }
-
-        const inputs = document.querySelectorAll(".visio-code-container input");
-
-        inputs.forEach((input) => {
-            visualValidation(input);
-            input.addEventListener("keyup", (event) => {
-                if (input.value.length >= 3 && event.key.length == 1) {
-                    moveToNextInputIfNeeded(input);
-                }
-                if (event.key == "Backspace" || event.key == "ArrowLeft") {
-                    moveToPreviousInputIfNeeded(input);
-                } else if (event.key == "ArrowRight") {
-                    moveToNextInputIfNeeded(input);
-                }
-                visualValidation(input);
-
-                const visioCode = Array.from(inputs).map(i => i.value).join("");
-                if (visioCode.match(/\d{9}$/)) {
-                    document.getElementById("submit-visio-code").disabled = false;
-                    if (event.key == "Enter") {
-                        formValidation(visioCode);
-                    }
-                } else {
-                    document.getElementById("submit-visio-code").disabled = true;
-                }
-            })
-            input.addEventListener('paste', (event) => {
-                event.preventDefault()
-                const pasteData = (event.clipboardData || window.clipboardData).getData('text');
-                const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
-                inputs.forEach((pastedInput, index) => {
-                    pastedInput.value = chars[index];
-                    visualValidation(pastedInput);
-                    if (pasteData.length <= 3 && index == 0) {
-                        focusAtEnd(pastedInput);
-                    } else if (pasteData.length > 3 && pasteData.length <= 6 && index == 1) {
-                        focusAtEnd(pastedInput);
-                    } else if (pasteData.length > 6 && index == 2) {
-                        focusAtEnd(pastedInput);
-                    }
-                })
-            });
-        })
-
-        const formValidateAndSubmit = () => {
-            const visioCode = Array.from(inputs).map(i => i.value).join("");
-            if (visioCode.match(/\d{9}$/)) {
-                formValidation(visioCode);
-            } else {
-                visualValidation(input);
-            }
-        }
+        window.shouldDisplayCaptcha = {{ should_display_captcha|tojson }};
     </script>
+    <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/visio_code_form.js')}}"></script>
 {% endblock %}
