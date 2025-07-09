@@ -12,6 +12,7 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
@@ -21,6 +22,8 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.session import visio_code_attempt_counter_increment
+from b3desk.session import visio_code_attempt_counter_reset
 from b3desk.utils import check_oidc_connection
 from b3desk.utils import check_token_errors
 
@@ -29,6 +32,7 @@ from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
 from ..session import meeting_owner_needed
+from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
 
@@ -288,13 +292,26 @@ def join_waiting_meeting_from_sip(visio_code):
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_connexion():
-    # csrf
-    # captcha?
-    visio_code = request.form.get("visio_code")
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+
+    if should_display_captcha(check_service_status=False):
+        captcha_uuid = request.form.get("captchetat-uuid")
+        captcha_code = request.form.get("captchaCode")
+        if not captcha_validation(captcha_uuid, captcha_code):
+            flash("Le captcha saisi est erroné", "error")
+            return redirect(url_for("public.home"))
+
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
         flash("Le code de connexion saisi est erroné", "error")
+        visio_code_attempt_counter_increment()
         return redirect(url_for("public.home"))
+
+    visio_code_attempt_counter_reset()
     return join_waiting_meeting_with_visio_code(meeting)
 
 

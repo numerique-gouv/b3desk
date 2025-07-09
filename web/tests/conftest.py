@@ -132,6 +132,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "ENABLE_SIP": True,
         "FQDN_SIP_SERVER": "example.serveur.com",
         "PRIVATE_KEY": private_pem_str,
+        "PISTE_OAUTH_CLIENT_ID": "client-id",
+        "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
 
 
@@ -330,7 +332,8 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
             "given_name": "Alice",
             "preferred_username": "alice",
         }
-        session["refresh_token"] = ""
+        session["refresh_token"] = ("",)
+        session["visio_code_attempt_counter"] = 0
 
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
@@ -477,3 +480,9 @@ def valid_secondary_identity_token(mocker):
         "b3desk.models.users.get_secondary_identity_provider_token",
         return_value=ValidToken,
     )
+
+
+@pytest.fixture
+def visio_code_session(client_app):
+    with client_app.session_transaction() as session:
+        session["visio_code_attempt_counter"] = 0

@@ -873,6 +873,7 @@ def test_add_favorite_by_wrong_user_failed(
     meeting_2,
     meeting_3,
     shadow_meeting,
+    visio_code_session,
 ):
     response = client_app.get("/welcome", status=200)
     response.mustcontain("Berenice Cooler")

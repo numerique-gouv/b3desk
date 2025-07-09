@@ -3,7 +3,9 @@ from b3desk.models import db
 from b3desk.models.users import User
 
 
-def test_user_authentication(client_app, configuration, iam_server, iam_client):
+def test_user_authentication(
+    client_app, configuration, iam_server, iam_client, visio_code_session
+):
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
@@ -38,7 +40,9 @@ def test_user_authentication(client_app, configuration, iam_server, iam_client):
     assert user.family_name == iam_user.family_name
 
 
-def test_lasuite_user_authentication(client_app, configuration, iam_server, iam_client):
+def test_lasuite_user_authentication(
+    client_app, configuration, iam_server, iam_client, visio_code_session
+):
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = True
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
