@@ -88,14 +88,15 @@ Afin de permettre au matériel visio SIPMediaGW de rejoindre une visio via B3Des
    docker exec -it <CONTAINER_ID> flask generate-private-key
 
 En remplaçant <CONTAINER_ID> par l’identifiant du conteneur b3desk_web, cette commande va générer une clé privée qui sera affectée à l'instance B3Desk.
+Afin de permettre que les token générés avec cette clé privée soient reconnus par tous les serveurs, il convient d'utiliser la même clé privée sur tous les serveurs d'une même instance B3Desk.
 
-#. On peut ensuite configurer les paramètres suivants :
+#. On peut ensuite configurer les paramètres suivants de manière identique pour tous les serveurs d'une même instance B3Desk :
 
 - :attr:`~b3desk.settings.MainSettings.ENABLE_SIP`
 - :attr:`~b3desk.settings.MainSettings.FQDN_SIP_SERVER`
 - :attr:`~b3desk.settings.MainSettings.PRIVATE_KEY`
 
-#. Il est maintenant nécessaire de redémarrer le conteneur :
+#. Il est maintenant nécessaire de redémarrer le conteneur de chaque serveur :
 
 .. code-block:: bash
 
@@ -116,6 +117,6 @@ Une fois que B3Desk est correctement paramétré, la généreration de sip-token
 
    docker exec -it <CONTAINER_ID> flask generate-sip-token
 
-Il est possible de générer plusieurs sip-tokens. Tous seront valides sans limite de temps, tant que la clé privée reste la même.
+Il est possible de générer plusieurs sip-tokens. Tous seront valides sans limite de temps, tant que la clé privée reste la même. De plus, un même token pourra servir poutr plusieurs services différents de visio SIPMediaGW.
 Il suffira de transmettre un sip-token au matériel SIP qui devra le joindre dans le header {"Authorization": token} lors de ses requêtes sur la route suivante :
 `https://<instance_b3desk.fr>/sip-connect/<visio_code>`
