@@ -20,6 +20,7 @@ from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
+from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
@@ -287,21 +288,14 @@ def join_waiting_meeting_from_sip(visio_code):
                 err,
             )
             abort(401)
-
-        meeting = Meeting.query.filter_by(visio_code=visio_code).one_or_none()
+        meeting = get_meeting_by_visio_code(visio_code)
         if not meeting:
             current_app.logger.error(
                 "SQLAlchemy cannot find a meeting with this visio-code"
             )
             abort(404)
-        meeting_fake_id = str(meeting.id)
-        creator = User.query.filter_by(id=meeting.user_id).one()
-        role = Role.moderator
-        h = meeting.get_hash(role=role)
-        return signin_meeting(
-            meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
-        )
-        
+        return join_waiting_meeting_with_visio_code(meeting)
+
 
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
@@ -309,15 +303,18 @@ def visio_code_connexion():
     # csrf
     # captcha?
     visio_code = request.form.get("visio_code")
-    if visio_code in get_all_visio_codes():
-        meeting = Meeting.query.filter_by(visio_code=visio_code).one() or abort(404)
-        meeting_fake_id = str(meeting.id)
-        creator = User.query.filter_by(id=meeting.user_id).one()
-        role = Role.moderator
-        h = meeting.get_hash(role=role)
-        return signin_meeting(
-            meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
-        )
-    else:
+    meeting = get_meeting_by_visio_code(visio_code)
+    if not meeting:
         flash("Le visio-code saisi est erroné", "error")
         return redirect(url_for("public.home"))
+    return join_waiting_meeting_with_visio_code(meeting)
+
+
+def join_waiting_meeting_with_visio_code(meeting):
+    meeting_fake_id = str(meeting.id)
+    creator = User.query.filter_by(id=meeting.user_id).one()
+    role = Role.moderator
+    h = meeting.get_hash(role=role)
+    return signin_meeting(
+        meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
+    )
