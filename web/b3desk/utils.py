@@ -8,9 +8,11 @@ from functools import wraps
 
 from flask import abort
 from flask import current_app
+from flask import flash
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from netaddr import IPAddress
 from netaddr import IPNetwork
@@ -140,6 +142,27 @@ def check_oidc_connection(auth):
                     )
                     for (name, configuration) in auth._provider_configurations.items()
                 }
+            return initial_func(*args, **kwargs)
+
+        return wrapper_func
+
+    return decorator_func
+
+
+def check_private_key():
+    def decorator_func(initial_func):
+        @wraps(initial_func)
+        def wrapper_func(*args, **kwargs):
+            if (
+                current_app.config["ENABLE_SIP"]
+                and not current_app.config["PRIVATE_KEY"]
+            ):
+                flash(
+                    _(
+                        "La clé privée n'a pas été configurée dans les paramètres B3Desk pour sécuriser la connexion SIPMediaGW"
+                    ),
+                    "error",
+                )
             return initial_func(*args, **kwargs)
 
         return wrapper_func
