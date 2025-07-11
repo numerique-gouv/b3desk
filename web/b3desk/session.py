@@ -52,11 +52,11 @@ def meeting_owner_needed(view_function):
 def visio_code_attempt_counter_update(success: bool):
     visio_code_attempt_counter = (
         session.get("visio_code_attempt_counter")
-        if session["visio_code_attempt_counter"]
+        if "visio_code_attempt_counter" in session
         else 0
     )
     visio_code_captcha = (
-        session.get("visio_code_captcha") if session["visio_code_captcha"] else False
+        session.get("visio_code_captcha") if "visio_code_captcha" in session else False
     )
 
     visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
