@@ -22,9 +22,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-113">Le visio-code</button>
+                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-visio-code">Le visio-code</button>
                                         </h3>
-                                        <div class="fr-collapse" id="accordion-113">
+                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-visio-code">
                                             <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}</code>
                                         </div>
                                     </section>
@@ -42,9 +42,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-114">Le lien modérateur</button>
+                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-moderator">Le lien modérateur</button>
                                     </h3>
-                                    <div class="fr-collapse" id="accordion-114">
+                                    <div class="fr-collapse" id="accordion-{{meeting.id}}-moderator">
                                         <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.moderator) }}</code>
                                     </div>
                                     </section>
@@ -63,9 +63,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Le lien SIP</button>
+                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-sip">Le lien SIP</button>
                                     </h3>
-                                    <div class="fr-collapse" id="accordion-115">
+                                    <div class="fr-collapse" id="accordion-{{meeting.id}}-sip">
                                         <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
                                     </div>
                                     </section>
@@ -86,9 +86,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">Le lien participant</button>
+                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-attendee">Le lien participant</button>
                                         </h3>
-                                        <div class="fr-collapse" id="accordion-116">
+                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-attendee">
                                             <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.attendee) }}</code>
                                         </div>
                                     </section>
@@ -106,9 +106,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-117">Le lien authentifié {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</button>
+                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-authenticated">Le lien authentifié {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</button>
                                         </h3>
-                                        <div class="fr-collapse" id="accordion-117">
+                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-authenticated">
                                             <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.authenticated) }}</code>
                                         </div>
                                     </section>
@@ -127,9 +127,9 @@
                                 <div class="fr-accordions-group">
                                     <section class="fr-accordion">
                                         <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-118">Connexion par téléphone</button>
+                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-voiceBridge">Connexion par téléphone</button>
                                         </h3>
-                                        <div class="fr-collapse" id="accordion-118">
+                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-voiceBridge">
                                             <code id="meeting-{{ meeting.id }}-moderator-url">n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}<br>
                                             code PIN : {{ meeting.voiceBridge }}</code>
                                         </div>
