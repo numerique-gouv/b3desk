@@ -30,6 +30,19 @@
                 }
                 return result;
             }
+
+            async function getAvailableVisioCode(visioCodeInput){
+                let method = "GET";
+                const url = "{{ url_for('meetings.get_available_visio_code') }}";
+                const response = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+                })
+                const json = await response.json();
+                visioCodeInput.value = json.available_visio_code;
+            }
         </script>
     </head>
 

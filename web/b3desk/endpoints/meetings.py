@@ -12,6 +12,7 @@ from flask import Blueprint
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import jsonify
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -363,3 +364,9 @@ def meeting_favorite():
         abort(403)
 
     return redirect(url_for("public.welcome", **request.args))
+
+
+@bp.route("/meeting/available-visio-code", methods=["GET"])
+@auth.oidc_auth("default")
+def get_available_visio_code():
+    return jsonify(available_visio_code=unique_visio_code_generation())

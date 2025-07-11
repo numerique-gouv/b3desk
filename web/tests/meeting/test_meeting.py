@@ -1080,3 +1080,14 @@ def test_get_all_visio_codes(
 def test_get_meeting_by_visio_code(meeting):
     meeting = get_meeting_by_visio_code("911111111")
     assert meeting.name == "meeting"
+
+
+def test_get_available_visio_code(client_app, authenticated_user):
+    response = client_app.get("/meeting/available-visio-code")
+    assert response.json.get("available_visio_code")
+    assert response.json.get("available_visio_code") not in get_all_visio_codes()
+
+
+def test_get_available_visio_code_no_user(client_app):
+    response = client_app.get("/meeting/available-visio-code", status=302)
+    response.location == "/home"

@@ -30,7 +30,7 @@
             {{ field(class_="fr-input") }}
           </div>
           <div class="fr-col-2">
-            <button type="button" class="fr-btn fr-btn--secondary" onclick=""><i class="ri-refresh-fill"></i></button>
+            <button type="button" class="fr-btn fr-btn--secondary" onclick="getAvailableVisioCode(visioCodeInput=document.getElementById('{{ field.name }}'))"><i class="ri-refresh-fill"></i></button>
           </div>
         </div>
       {% else %}
