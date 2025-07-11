@@ -1,4 +1,4 @@
-{% macro render_field(field, generate_button=False) %}
+{% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
 <div class="fr-col-12 fr-py-0">
   {% if field.type == "BooleanField" %}
     <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
@@ -22,6 +22,15 @@
           </div>
           <div class="fr-col-2">
             <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+          </div>
+        </div>
+      {% elif reset_visio_code_button %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            {{ field(class_="fr-input") }}
+          </div>
+          <div class="fr-col-2">
+            <button type="button" class="fr-btn fr-btn--secondary" onclick=""><i class="ri-refresh-fill"></i></button>
           </div>
         </div>
       {% else %}
@@ -125,6 +134,9 @@
       <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
           <div class="fr-grid-row fr-grid-row--gutters">
             <!-- Paramètres avancés -->
+            {% if meeting is not none %}
+              {{ render_field(form.visio_code, reset_visio_code_button=True) }}
+            {% endif %}
             {{ render_field(form.moderatorPW, generate_button=True) }}
             {{ render_field(form.attendeePW, generate_button=True) }}
             <div class="fr-grid-row fr-px-1w fr-grid-row--gutters">
