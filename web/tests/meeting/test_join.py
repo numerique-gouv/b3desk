@@ -312,4 +312,28 @@ def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
     response = client_app.get("/welcome", status=200)
     response.forms[0]["visio_code"] = "123456789"
     response = response.forms[0].submit()
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+    assert ("error", "Le visio-code saisi est erroné") in response.flashes
+
+
+def test_join_meeting_with_wrong_visio_code_until_captcha(
+    client_app, meeting, bbb_response
+):
+    def fill_and_submit_visio_code():
+        response = client_app.get("/home", status=200)
+        response.forms[0]["visio_code"] = "123456789"
+        response = response.forms[0].submit()
+        assert ("error", "Le visio-code saisi est erroné") in response.flashes
+        return response
+
+    for i in range(5):
+        response = fill_and_submit_visio_code()
+        assert ("error", "CAPTCHA") not in response.flashes
+    response = fill_and_submit_visio_code()
+    assert ("error", "CAPTCHA") in response.flashes
+
+    response = client_app.get("/home", status=200)
+    response.forms[0]["visio_code"] = "911111111"
+    response = response.forms[0].submit()
+    response.mustcontain("Rejoindre le séminaire")
+    response = fill_and_submit_visio_code()
+    assert ("error", "CAPTCHA") not in response.flashes
