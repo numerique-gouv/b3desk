@@ -50,7 +50,7 @@ class MeetingForm(FlaskForm):
             of_the_meeting=current_app.config["WORDING_OF_THE_MEETING"],
         ),
         description=_(
-            "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est visible des participents",
+            "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est visible des participants",
             a_meeting=current_app.config["WORDING_A_MEETING"],
         ),
         default=_(
