@@ -459,3 +459,32 @@ This is a fix until we deal with the update.
   width: 65px;
   text-align: center;
 }
+
+.invite-accordion {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.invite-accordion section {
+  width: 100%;
+}
+
+.invite-accordion section p:first-child {
+  font-weight: 500;
+  color: var(--background-action-high-blue-france)
+}
+
+.invite-accordion section.visio-code-invite p.visio-code {
+  background-color: var(--background-alt-green-tilleul-verveine);
+}
+
+.visio-code-invite {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ .main-connected-actions {
+  background-color: var(--background-alt-blue-france);
+ }

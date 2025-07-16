@@ -11,69 +11,55 @@
                     </div>
                     <div class="fr-modal__content">
                         <!-- modal -->
-                        <h3 id="share-{{ meeting.id }}-title"                   class="fr-modal__title">
-                            <span class="" aria-hidden="true"></span>
-                        Invitez des participants
+                        <h3 id="share-{{ meeting.id }}-title" class="fr-modal__title fr-mb-12v">
+                            Invitez des participants à votre {{ meeting_label }} en leur envoyant, au choix :
                         </h3>
                         <h6>Avec droits modérateurs : </h6>
                         <!-- visio-code -->
-                        <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-visio-code">Le visio-code</button>
-                                        </h3>
-                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-visio-code">
-                                            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}</code>
-                                        </div>
-                                    </section>
-                                </div>
-                            </div>
-                            <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}');" title="Copier le visio-code dans le presse-papiers">
-                                <span class="ri-clipboard-line"></span>
-                            </button>
+                        <div class="fr-text--sm invite-accordion">
+                            <section class="visio-code-invite">
+                                <p class="fr-pl-4v fr-my-3v">
+                                    Le code de connexion
+                                </p>
+                                <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">NOUVEAU</p>
+                                <p class="visio-code fr-px-4v fr-py-3v fr-mb-0" id="meeting-{{ meeting.id }}-moderator-url"><b>{{ meeting.visio_code }}</b></p>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}');" title="Copier le code de connexion dans le presse-papiers">
+                                    Copier
+                                </button>
                             </div>
                         </div>
                         <!-- lien modérateur -->
-                        <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-moderator">Le lien modérateur</button>
-                                    </h3>
-                                    <div class="fr-collapse" id="accordion-{{meeting.id}}-moderator">
-                                        <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.moderator) }}</code>
-                                    </div>
-                                    </section>
+                        <div class="fr-text--sm invite-accordion">
+                            <section class="fr-accordion">
+                                <h3 class="fr-accordion__title">
+                                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-moderator">Le lien modérateur</button>
+                                </h3>
+                                <div class="fr-collapse" id="accordion-{{meeting.id}}-moderator">
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.moderator) }}</code>
                                 </div>
-                            </div>
-                            <div class="fr-col">
-                               <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.moderator) }}');" title="Copier le lien modérateur dans le presse-papiers">
-                                    <span class="ri-clipboard-line"></span>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.moderator) }}');" title="Copier le lien modérateur dans le presse-papiers">
+                                    Copier
                                 </button>
                             </div>
                         </div>
                         <!-- lien SIP -->
                         {% if config.get("ENABLE_SIP") %}
-                         <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-sip">Le lien SIP</button>
-                                    </h3>
-                                    <div class="fr-collapse" id="accordion-{{meeting.id}}-sip">
-                                        <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
-                                    </div>
-                                    </section>
+                         <div class="fr-text--sm invite-accordion">
+                            <section class="fr-accordion">
+                                <h3 class="fr-accordion__title">
+                                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-sip">Le lien SIP</button>
+                                </h3>
+                                <div class="fr-collapse" id="accordion-{{meeting.id}}-sip">
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
                                 </div>
-                            </div>
-                            <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le lien SIP dans le presse-papiers">
-                                    <span class="ri-clipboard-line"></span>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le lien SIP dans le presse-papiers">
+                                    Copier
                                 </button>
                             </div>
                         </div>
@@ -81,66 +67,54 @@
                         <br>
                         <h6>Avec droits restreints : </h6>
                         <!-- lien participant -->
-                        <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-attendee">Le lien participant</button>
-                                        </h3>
-                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-attendee">
-                                            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.attendee) }}</code>
-                                        </div>
-                                    </section>
+                        <div class="fr-text--sm invite-accordion">
+                            <section class="fr-accordion">
+                                <h3 class="fr-accordion__title">
+                                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-attendee">Le lien participant</button>
+                                </h3>
+                                <div class="fr-collapse" id="accordion-{{meeting.id}}-attendee">
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.attendee) }}</code>
                                 </div>
-                            </div>
-                            <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.attendee) }}');" title="Copier le lien participant dans le presse-papiers">
-                                    <span class="ri-clipboard-line"></span>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.attendee) }}');" title="Copier le lien participant dans le presse-papiers">
+                                    Copier
                                 </button>
                             </div>
                         </div>
                         <!-- lien authentifié -->
-                        <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-authenticated">Le lien authentifié {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</button>
-                                        </h3>
-                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-authenticated">
-                                            <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.authenticated) }}</code>
-                                        </div>
-                                    </section>
+                        <div class="fr-text--sm invite-accordion">
+                            <section class="fr-accordion">
+                                <h3 class="fr-accordion__title">
+                                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-authenticated">Le lien authentifié {% if config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ config.OIDC_ATTENDEE_SERVICE_NAME }} {% endif %}</button>
+                                </h3>
+                                <div class="fr-collapse" id="accordion-{{meeting.id}}-authenticated">
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.authenticated) }}</code>
                                 </div>
-                            </div>
-                            <div class="fr-col">
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.authenticated) }}');" title="Copier le lien participant authentifié dans le presse-papiers">
-                                    <span class="ri-clipboard-line"></span>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.authenticated) }}');" title="Copier le lien participant authentifié dans le presse-papiers">
+                                    Copier
                                 </button>
                             </div>
                         </div>
                         <!-- connexion par téléphone -->
                         {% if config.get("ENABLE_PIN_MANAGEMENT") %}
-                        <div class="fr-grid-row fr-text--sm">
-                            <div class="fr-col-4 fr-col-xs-9 fr-col-sm-10">
-                                <div class="fr-accordions-group">
-                                    <section class="fr-accordion">
-                                        <h3 class="fr-accordion__title">
-                                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-voiceBridge">Connexion par téléphone</button>
-                                        </h3>
-                                        <div class="fr-collapse" id="accordion-{{meeting.id}}-voiceBridge">
-                                            <code id="meeting-{{ meeting.id }}-moderator-url">n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}<br>
-                                            code PIN : {{ meeting.voiceBridge }}</code>
-                                        </div>
-                                    </section>
+                        <div class="fr-text--sm invite-accordion">
+                            <section class="fr-accordion">
+                                <h3 class="fr-accordion__title">
+                                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-voiceBridge">Connexion par téléphone</button>
+                                </h3>
+                                <div class="fr-collapse" id="accordion-{{meeting.id}}-voiceBridge">
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}<br>
+                                    code PIN : {{ meeting.voiceBridge }}</code>
                                 </div>
+                            </section>
+                            <div>
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="navigator.clipboard.writeText('n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="Copier les informations dans le presse-papiers">
+                                    Copier
+                                </button>
                             </div>
-                            <div class="fr-col">
-                                    <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="navigator.clipboard.writeText('n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="Copier les informations dans le presse-papiers">
-                                        <span class="ri-clipboard-line"></span>
-                                    </button>
-                                </div>
                         </div>
                         {% endif %}
                         <!-- modal -->

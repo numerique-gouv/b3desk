@@ -1,10 +1,10 @@
 <div>
     {% if user %}
-    <h4>{% trans %}Saisir le code de connexion {{ of_the_meeting }}{% endtrans %}</h4>
+    <h4>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h4>
     {% elif config.get("ENABLE_LASUITENUMERIQUE") and not user %}
-    <h2>{% trans %}Saisir le code de connexion {{ of_the_meeting }}{% endtrans %}</h2>
+    <h2>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h2>
     {% else %}
-    <h6>{% trans %}Saisir le code de connexion {{ of_the_meeting }}{% endtrans %}</h6>
+    <h6>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h6>
     {% endif %}
     <p>
         {% trans %}Remplissez le code de connexion reçu dans l’invitation {{ of_the_meeting }}.{% endtrans %}<br><br>
