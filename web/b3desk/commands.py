@@ -108,3 +108,14 @@ def check_sip_settings():
         error = True
     if not error:
         print("SIPMediaGW settings are OK.")
+
+
+@bp.cli.command("check-sip-token")
+@click.argument("token")
+def check_sip_token(token):
+    from b3desk.utils import check_token_is_valid
+
+    if check_token_is_valid(token):
+        current_app.logger.info("Token provided is validated by current private key.")
+    else:
+        current_app.logger.error("Token provided is not valid.")
