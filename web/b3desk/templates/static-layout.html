@@ -10,7 +10,7 @@
         <title>{{ config["TITLE"] }}</title>
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toc.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/remixicon/remixicon.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spinner.css') }}">
@@ -33,8 +33,8 @@
             {% include 'footer.html' %}
             {% endblock %}
 
-            <script src="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.module.min.js')}}"></script>
-            <script type="text/javascript" nomodule href="dsfr-1.7/dsfr/dsfr.nomodule.min.js" ></script>
+            <script src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.module.min.js')}}"></script>
+            <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
             <!-- Scampi Modal en attendant la modale GouvFr-->
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             <!-- minified nc filepicker : from https://github.com/julien-nc/nextcloud-webdav-filepicker -->
