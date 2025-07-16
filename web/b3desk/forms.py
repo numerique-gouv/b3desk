@@ -196,9 +196,9 @@ class MeetingForm(FlaskForm):
         ],
     )
     visio_code = StringField(
-        label=_("Visio-code"),
+        label=_("Code de connexion"),
         description=_(
-            "Visio-code pour rejoindre %(the_meeting)s %(sip)s",
+            "Code de connexion pour rejoindre %(the_meeting)s %(sip)s",
             the_meeting=current_app.config["WORDING_THE_MEETING"],
             sip=_("(utilisé dans le lien SIP)")
             if current_app.config["ENABLE_SIP"]

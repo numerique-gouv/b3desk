@@ -299,7 +299,7 @@ def test_join_meeting_with_wrong_visio_code(client_app, meeting):
     response = client_app.get("/home", status=200)
     response.forms[0]["visio_code"] = "123456789"
     response = response.forms[0].submit()
-    assert ("error", "Le visio-code saisi est erroné") in response.flashes
+    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
 
 
 def test_join_meeting_with_visio_code_with_authenticated_user(
@@ -317,4 +317,4 @@ def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
     response = client_app.get("/welcome", status=200)
     response.forms[0]["visio_code"] = "123456789"
     response = response.forms[0].submit()
-    assert ("error", "Le visio-code saisi est erroné") in response.flashes
+    assert ("error", "Le code de connexion saisi est erroné") in response.flashes

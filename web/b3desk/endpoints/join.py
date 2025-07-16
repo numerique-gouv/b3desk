@@ -305,7 +305,7 @@ def visio_code_connexion():
     visio_code = request.form.get("visio_code")
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
-        flash("Le visio-code saisi est erroné", "error")
+        flash("Le code de connexion saisi est erroné", "error")
         return redirect(url_for("public.home"))
     return join_waiting_meeting_with_visio_code(meeting)
 
