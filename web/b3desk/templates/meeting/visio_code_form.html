@@ -27,9 +27,51 @@
             </button>
         </div>
     </div>
+    <br>
+    {% if session["visio_code_captcha"] %}
+    <div id="captchetat" captchaStyleName="captchaFR" altImage="alternativeImage" urlBackend="urlBackend"></div>
+    <input type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode"/>
+    {% endif %}
 </div>
 
 {% block js %}
+<script src="../../static/captchetat/captchetat-js.js">
+    document.getElementById('myFormWithCaptchetat').addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêche l'envoi classique du formulaire
+
+    // Le code entré par l’utilisateur récupéré en backend
+    var captchaCode = document.getElementById('captchaCode').value;
+    // id du captcha que l’utilisateur a tenté de résoudre
+    var captchaUuid = document.getElementById('captchetat-uuid').value;
+
+    var postData = {
+        uuid: captchaUuid,
+        code: captchaCode
+    };
+
+    // Envoi des données du captcha côté backend
+    fetch('urlBackend/validationFormulaire', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => response.json())
+    .then(response => {
+        if (response.success === false) {
+            // La validation a échoué. Le captcha est rechargé
+            window.captchetatComponentModule.refreshCaptcha(); // afficher message d’erreur
+        } else {
+           // le captcha a été correctement rempli. Validation côté front.
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la requête CAPTCHA :', error);
+    });
+});
+</script>
+
 <script>
     const focusAtEnd = (input) => {
         input.focus();
