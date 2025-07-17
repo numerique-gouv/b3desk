@@ -1156,3 +1156,6 @@ class MainSettings(BaseSettings):
             return json.loads(video_streaming_links)
 
         return video_streaming_links
+
+    CLIENT_ID: str
+    CLIENT_SECRET: str
