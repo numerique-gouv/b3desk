@@ -20,7 +20,7 @@ from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
-from b3desk.utils import check_token_is_valid
+from b3desk.utils import check_token_errors
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
@@ -256,7 +256,7 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
 @check_oidc_connection(auth)
 def join_waiting_meeting_from_sip(visio_code):
     token = request.headers.get("Authorization")
-    if check_token_is_valid(token):
+    if not check_token_errors(token):
         meeting = get_meeting_by_visio_code(visio_code)
         if not meeting:
             current_app.logger.error(
