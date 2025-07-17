@@ -297,8 +297,10 @@ def visio_code_connexion():
     if not meeting:
         flash("Le visio-code saisi est erroné", "error")
         visio_code_attempt_counter_update(False)
-        if session.get("visio_code_captcha"):
+        if session["visio_code"]["captchetat_is_needed"]:
             flash("CAPTCHA", "error")
+            if session["visio_code"]["captchetat_is_dead"]:
+                flash("captchetat_is_dead", "error")
         return redirect(url_for("public.home"))
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)

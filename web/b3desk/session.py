@@ -50,17 +50,24 @@ def meeting_owner_needed(view_function):
 
 
 def visio_code_attempt_counter_update(success: bool):
-    visio_code_attempt_counter = (
-        session.get("visio_code_attempt_counter")
-        if "visio_code_attempt_counter" in session
-        else 0
-    )
-    visio_code_captcha = (
-        session.get("visio_code_captcha") if "visio_code_captcha" in session else False
+    visio_code_session = (
+        session.get("visio_code")
+        if "visio_code" in session
+        else {
+            "attempt_counter": 0,
+            "captchetat_is_needed": False,
+            "captchetat_is_dead": False,
+        }
     )
 
-    visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
-    visio_code_captcha = True if visio_code_attempt_counter > 5 else False
+    visio_code_session["attempt_counter"] = (
+        0 if success else visio_code_session["attempt_counter"] + 1
+    )
+    visio_code_session["captchetat_is_needed"] = (
+        True if visio_code_session["attempt_counter"] > 5 else False
+    )
+    visio_code_session["captchetat_is_dead"] = (
+        False if success else visio_code_session["captchetat_is_dead"]
+    )
 
-    session["visio_code_attempt_counter"] = visio_code_attempt_counter
-    session["visio_code_captcha"] = visio_code_captcha
+    session["visio_code"] = visio_code_session

@@ -28,7 +28,7 @@
         </div>
     </div>
     <br>
-    {% if session["visio_code_captcha"] %}
+    {% if session["visio_code"]["captchetat_is_needed"] %}
     <div id="captchetat" captchaStyleName="captchaFR" altImage="alternativeImage" urlBackend="urlBackend"></div>
     <input type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode"/>
     {% endif %}
