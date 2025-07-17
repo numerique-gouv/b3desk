@@ -25,8 +25,8 @@
                                 <p class="visio-code fr-px-4v fr-py-3v fr-mb-0" id="meeting-{{ meeting.id }}-moderator-url"><b>{{ meeting.visio_code }}</b></p>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}');" title="Copier le code de connexion dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-visio-code-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-visio-code-copy', '{{ meeting.visio_code }}');" title="Copier le code de connexion dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -41,8 +41,8 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.moderator) }}');" title="Copier le lien modérateur dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-copy', '{{ meeting.get_signin_url(Role.moderator) }}');" title="Copier le lien modérateur dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -59,8 +59,8 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le lien SIP dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-sip-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-sip-copy', '{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="Copier le lien SIP dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -78,8 +78,8 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.attendee) }}');" title="Copier le lien participant dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-attendee-copy', '{{ meeting.get_signin_url(Role.attendee) }}');" title="Copier le lien participant dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -94,8 +94,8 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="navigator.clipboard.writeText('{{ meeting.get_signin_url(Role.authenticated) }}');" title="Copier le lien participant authentifié dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-authenticated-attendee-copy', '{{ meeting.get_signin_url(Role.authenticated) }}');" title="Copier le lien participant authentifié dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>
@@ -112,8 +112,8 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="navigator.clipboard.writeText('n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="Copier les informations dans le presse-papiers">
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-phone-info-copy', 'n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="Copier les informations dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                         </div>

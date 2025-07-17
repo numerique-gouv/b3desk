@@ -280,9 +280,11 @@ dialog.scampi-modal {
 .fr-modal__body code {
   word-break: break-word;
 }
-
-button.btn-copy {
+.invite-accordion button.btn-copy {
   height: 100%;
+}
+button.btn-copy span::after {
+  content: "Copier";
 }
 .modal-body--center {
   text-align: center;
@@ -485,6 +487,28 @@ This is a fix until we deal with the update.
   align-items: center;
 }
 
- .main-connected-actions {
+.main-connected-actions {
   background-color: var(--background-alt-blue-france);
- }
+}
+
+.justify-content-space-between {
+  display: flex;
+  justify-content: space-between;
+  animation: 2s cubic-bezier(.5,0,1,.5) 0s copied;
+}
+
+@keyframes copied {
+  0% {
+    background-color: var(--background-action-high-success);
+  }
+  80% {
+    background-color: var(--background-action-high-success);
+  }
+  100% {
+    background-color: var(--background-action-high-blue-france);
+  }
+}
+
+.justify-content-space-between.btn-copy span::after {
+  content: "Copié";
+}

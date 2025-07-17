@@ -56,14 +56,12 @@
                     <td style="vertical-align: middle">
                         <div class="fr-grid-row fr-grid-row--gutters btn-actions">
                             <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ playback.url }}" title="Voir l'enregistrement"><span class="fr-icon-play-line"></span></a>
-                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ playback.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
-                                <span class="fr-icon-clipboard-line"></span>
+                            <button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line" id="meeting-{{ meeting.id }}-recording-link-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-link-copy', '{{ playback.url }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
                             </button>
                             {% if recording.playbacks.get("video") %}
                             <a class="fr-btn fr-btn--primary fr-ml-2w" target="_blank" rel="noopener" href="{{ recording.playbacks['video'].url }}" title="Voir l'enregistrement mp4"><span class="fr-icon-film-line"></span></a>
                             {% if recording.playbacks.video.get("direct_link") %}
-                            <button class="fr-btn fr-btn--primary fr-ml-1v" data-fr-opened="false" aria-controls="share-video-{{ recording.recordID }}" title="Partager l'enregistrement mp4">
-                                <span class="fr-icon-links-line" aria-hidden="true"></span>
+                            <button class="fr-btn fr-btn--primary fr-ml-1v fr-icon-links-line" data-fr-opened="false" aria-controls="share-video-{{ recording.recordID }}" title="Partager l'enregistrement mp4">
                             </button>
                             {% endif %}
                             {% endif %}
@@ -188,9 +186,8 @@
                             {% if recording.playbacks.video.get("direct_link") %}
                             <div class="fr-grid-row fr-grid-row--center">
                                 <input class="fr-input fr-col-9" type="text" readonly value="{{ recording.playbacks.video.direct_link }}">
-                                <button type="button" class="fr-btn fr-btn--sm fr-btn--primary fr-col-3" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ recording.playbacks.video.direct_link }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
-                                    <span class="fr-icon-clipboard-line"></span> 
-                                    Copier
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-recording-media-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-media-copy', '{{ recording.playbacks.video.direct_link }}');" title="Copier le lien de l'enregistrement dans le presse-papiers">
+                                    <span></span>
                                 </button>
                             </div>
                             {% endif %}
