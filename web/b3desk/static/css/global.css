@@ -469,7 +469,7 @@ This is a fix until we deal with the update.
   width: 100%;
 }
 
-.invite-accordion section p:first-child {
+.invite-accordion section.visio-code-invite p:first-child {
   font-weight: 500;
   color: var(--background-action-high-blue-france)
 }

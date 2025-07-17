@@ -54,6 +54,7 @@
                                     <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-sip">Le lien SIP</button>
                                 </h3>
                                 <div class="fr-collapse" id="accordion-{{meeting.id}}-sip">
+                                    <p class="fr-hint-text">Lien requis pour l’utilisation d’équipements SIP.</p>
                                     <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.visio_code }}@{{ config.get("FQDN_SIP_SERVER") }}</code>
                                 </div>
                             </section>
