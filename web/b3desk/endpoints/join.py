@@ -303,8 +303,8 @@ def visio_code_connexion():
             response = get_captchetat_token()
             if session["visio_code"]["captchetat_is_dead"]:
                 flash("captchetat_is_dead", "error")
-            if response.access_token:
-                flash(response.access_token, "success")
+            if "access_token" in response:
+                flash(response["access_token"], "success")
         return redirect(url_for("public.home"))
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)
