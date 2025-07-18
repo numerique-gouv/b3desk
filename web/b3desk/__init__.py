@@ -29,7 +29,7 @@ from b3desk.utils import is_rie
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.3.1"
+__version__ = "1.4.0"
 
 LANGUAGES = ["en", "fr"]
 

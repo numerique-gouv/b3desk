@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "b3desk"
-version = "1.3.1"
+version = "1.4.0"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
@@ -34,6 +34,7 @@ sqlalchemy-json = "^0.7.0"
 sqlalchemy-utils = "^0.41.1"
 webdavclient3 = "3.14.5"
 sentry-sdk = "^2.3.1"
+joserfc = "^1.1.0"
 
 [tool.poetry.group.dev]
 optional = true

@@ -144,6 +144,10 @@ class BBB:
             params["logoutURL"] = str(param)
         if param := self.meeting.duration:
             params["duration"] = str(param)
+        if current_app.config["ENABLE_PIN_MANAGEMENT"] and (
+            param := self.meeting.voiceBridge
+        ):
+            params["voiceBridge"] = str(param)
 
         # Pass the academy for statisticts purpose
         # https://github.com/numerique-gouv/b3desk/issues/80
@@ -191,7 +195,8 @@ class BBB:
 
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
-            return self.bbb_response(request)
+            data = self.bbb_response(request)
+            return data
 
         # default file is sent right away since it is need as the background
         # image for the meeting
@@ -203,7 +208,6 @@ class BBB:
         # TODO: xml as data is not sent anymore at BBB meeting creation to avoid delay
         request = self.bbb_request("create", "POST", params=params)
         data = self.bbb_response(request)
-
         # non default files are sent later
         if (
             self.meeting.files

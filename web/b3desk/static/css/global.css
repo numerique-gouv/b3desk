@@ -280,9 +280,11 @@ dialog.scampi-modal {
 .fr-modal__body code {
   word-break: break-word;
 }
-
-button.btn-copy {
+.invite-accordion button.btn-copy {
   height: 100%;
+}
+button.btn-copy span::after {
+  content: "Copier";
 }
 .modal-body--center {
   text-align: center;
@@ -430,8 +432,8 @@ This is a fix until we deal with the update.
 }
 
 .fr-btn--visio.fr-icon-live-line[target="_blank"]::after {
-  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
-  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+  mask-image: url("../dsfr-v1.14.0/icons/media/live-line.svg");
+  mask-image: url("../dsfr-v1.14.0/icons/media/live-line.svg");
 }
 
 .list-meeting-rooms-title {
@@ -446,4 +448,67 @@ This is a fix until we deal with the update.
 
 .list-meeting-rooms-title div a {
   align-self: flex-end;
+}
+
+.visio-code-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.visio-code-container input {
+  width: 65px;
+  text-align: center;
+}
+
+.invite-accordion {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.invite-accordion section {
+  width: 100%;
+}
+
+.invite-accordion section.visio-code-invite p:first-child {
+  font-weight: 500;
+  color: var(--background-action-high-blue-france)
+}
+
+.invite-accordion section.visio-code-invite p.visio-code {
+  background-color: var(--background-alt-green-tilleul-verveine);
+}
+
+.visio-code-invite {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-connected-actions {
+  background-color: var(--background-alt-blue-france);
+}
+
+.justify-content-space-between {
+  display: flex;
+  justify-content: space-between;
+  animation: 2s cubic-bezier(.5,0,1,.5) 0s copied;
+}
+
+@keyframes copied {
+  0% {
+    background-color: var(--background-action-high-success);
+  }
+  80% {
+    background-color: var(--background-action-high-success);
+  }
+  100% {
+    background-color: var(--background-action-high-blue-france);
+  }
+}
+
+.justify-content-space-between.btn-copy span::after {
+  content: "Copié";
 }

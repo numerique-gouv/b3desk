@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
+import random
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
@@ -16,6 +17,7 @@ from typing import Optional
 from flask import current_app
 from flask import url_for
 from sqlalchemy_utils import StringEncryptedType
+from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
@@ -82,6 +84,9 @@ class Meeting(db.Model):
     user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
+    last_connection_utc_datetime = db.Column(db.DateTime)
+    is_shadow = db.Column(db.Boolean, unique=False, default=False)
+    visio_code = db.Column(db.String)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -89,7 +94,7 @@ class Meeting(db.Model):
     moderatorPW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
     welcome = db.Column(db.UnicodeText())
     dialNumber = db.Column(db.Unicode(50))
-    voiceBridge = db.Column(db.Unicode(50))
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     maxParticipants = db.Column(db.Integer)
     logoutUrl = db.Column(db.Unicode(250))
     record = db.Column(db.Boolean, unique=False, default=True)
@@ -169,11 +174,23 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def create_bbb(self):
+        self.voiceBridge = (
+            pin_generation() if not self.voiceBridge else self.voiceBridge
+        )
         result = self.bbb.create()
         if result and result.get("returncode", "") == "SUCCESS":
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]
+            if (
+                current_app.config["ENABLE_PIN_MANAGEMENT"]
+                and self.voiceBridge != result["voiceBridge"]
+            ):
+                current_app.logger.error(
+                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
+                    self.voiceBridge,
+                    result["voiceBridge"],
+                )
         current_app.logger.warning("BBB room has not been properly created: %s", result)
         return result if result else {}
 
@@ -215,6 +232,8 @@ class Meeting(db.Model):
             data = self.create_bbb()
             if data.get("returncode", "") == "SUCCESS":
                 is_meeting_available = True
+                self.last_connection_utc_datetime = datetime.now()
+                self.save()
 
         if is_meeting_available:
             nickname = (
@@ -292,6 +311,29 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS"
 
 
+class PreviousVoiceBridge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
+    archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+def get_all_previous_voiceBridges():
+    return [
+        voiceBridge[0]
+        for voiceBridge in db.session.query(PreviousVoiceBridge.voiceBridge)
+    ]
+
+
+def delete_old_voiceBridges():
+    db.session.query(PreviousVoiceBridge).filter(
+        PreviousVoiceBridge.archived_at < datetime.now() - timedelta(days=365)
+    ).delete()
+
+
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     if random_string is None:
         random_string = get_random_alphanumeric_string(8)
@@ -358,3 +400,118 @@ def get_mail_meeting(random_string=None):
     )
     meeting.fake_id = random_string
     return meeting
+
+
+def pin_generation(forbidden_pins=None, clean_db=True):
+    if clean_db:
+        delete_old_voiceBridges()
+    forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
+    return create_unique_pin(forbidden_pins=forbidden_pins)
+
+
+def get_forbidden_pins(edited_meeting_id=None):
+    previous_pins = get_all_previous_voiceBridges()
+
+    existing_meeting_voiceBridges = db.session.query(Meeting.voiceBridge)
+
+    if edited_meeting_id:
+        existing_meeting_voiceBridges = existing_meeting_voiceBridges.filter(
+            Meeting.id != edited_meeting_id
+        )
+
+    return [
+        voiceBridge[0] for voiceBridge in existing_meeting_voiceBridges
+    ] + previous_pins
+
+
+def create_unique_pin(forbidden_pins, pin=None):
+    pin = random.randint(100000000, 999999999) if not pin else pin
+    if str(pin) in forbidden_pins:
+        pin += 1
+        pin = 100000000 if pin > 999999999 else pin
+        return create_unique_pin(forbidden_pins, pin)
+    else:
+        return str(pin)
+
+
+def pin_is_unique_validator(form, field):
+    if field.data in get_forbidden_pins(form.id.data):
+        raise ValidationError("Ce code PIN est déjà utilisé")
+
+
+def create_and_save_shadow_meeting(user):
+    random_string = get_random_alphanumeric_string(8)
+    meeting = Meeting(
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
+        user=user,
+        name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        is_shadow=True,
+        welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
+        moderatorPW=f"{user.hash}-{random_string}",
+        attendeePW=f"{random_string}-{random_string}",
+        voiceBridge=pin_generation(),
+        visio_code=unique_visio_code_generation(),
+    )
+    meeting.save()
+    return meeting
+
+
+def get_or_create_shadow_meeting(user):
+    shadow_meetings = [
+        shadow_meeting
+        for shadow_meeting in db.session.query(Meeting).filter(
+            Meeting.is_shadow,
+            Meeting.user_id == user.id,
+        )
+    ]
+    if len(shadow_meetings) > 1:
+        for shadow_meeting in shadow_meetings:
+            if shadow_meeting is not shadow_meetings[0]:
+                save_voiceBridge_and_delete_meeting(shadow_meeting)
+    meeting = (
+        create_and_save_shadow_meeting(user)
+        if not shadow_meetings
+        else shadow_meetings[0]
+    )
+    return meeting
+
+
+def save_voiceBridge_and_delete_meeting(meeting):
+    previous_voiceBridge = PreviousVoiceBridge()
+    previous_voiceBridge.voiceBridge = meeting.voiceBridge
+    previous_voiceBridge.save()
+    db.session.delete(meeting)
+    db.session.commit()
+
+
+def delete_all_old_shadow_meetings():
+    old_shadow_meetings = [
+        shadow_meeting
+        for shadow_meeting in db.session.query(Meeting).filter(
+            Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
+            Meeting.is_shadow,
+        )
+    ]
+
+    for shadow_meeting in old_shadow_meetings:
+        save_voiceBridge_and_delete_meeting(shadow_meeting)
+
+
+def unique_visio_code_generation(forbidden_visio_code=None):
+    forbidden_visio_code = (
+        get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
+    )
+    new_visio_code = create_unique_pin(forbidden_visio_code)
+    if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
+        return new_visio_code.upper()
+    return unique_visio_code_generation(forbidden_visio_code=forbidden_visio_code)
+
+
+def get_all_visio_codes():
+    existing_visio_code = db.session.query(Meeting.visio_code)
+    return [visio_code[0] for visio_code in existing_visio_code]
+
+
+def get_meeting_by_visio_code(visio_code):
+    return Meeting.query.filter_by(visio_code=visio_code).one_or_none()

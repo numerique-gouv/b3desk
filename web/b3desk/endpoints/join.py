@@ -15,10 +15,12 @@ from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
+from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
+from b3desk.utils import check_token_errors
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
@@ -248,3 +250,41 @@ def join_meeting_as_authenticated(meeting_id):
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
+
+
+@bp.route("/sip-connect/<visio_code>", methods=["GET"])
+@check_oidc_connection(auth)
+def join_waiting_meeting_from_sip(visio_code):
+    token = request.headers.get("Authorization")
+    if not check_token_errors(token):
+        meeting = get_meeting_by_visio_code(visio_code)
+        if not meeting:
+            current_app.logger.error(
+                "SQLAlchemy cannot find a meeting with this visio-code"
+            )
+            abort(404)
+        return join_waiting_meeting_with_visio_code(meeting)
+    abort(401)
+
+
+@bp.route("/meeting/visio_code", methods=["POST"])
+@check_oidc_connection(auth)
+def visio_code_connexion():
+    # csrf
+    # captcha?
+    visio_code = request.form.get("visio_code")
+    meeting = get_meeting_by_visio_code(visio_code)
+    if not meeting:
+        flash("Le code de connexion saisi est erroné", "error")
+        return redirect(url_for("public.home"))
+    return join_waiting_meeting_with_visio_code(meeting)
+
+
+def join_waiting_meeting_with_visio_code(meeting):
+    meeting_fake_id = str(meeting.id)
+    creator = User.query.get(meeting.user_id)
+    role = Role.moderator
+    h = meeting.get_hash(role=role)
+    return signin_meeting(
+        meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
+    )

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery --app tasks.celery worker --loglevel=info
+exec celery --app tasks.celery worker --loglevel=info

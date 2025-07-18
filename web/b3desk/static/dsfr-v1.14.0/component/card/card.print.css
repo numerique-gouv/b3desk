@@ -1,0 +1,25 @@
+/*!
+ * DSFR v1.14.0 | SPDX-License-Identifier: MIT | License-Filename: LICENSE.md | restricted use (see terms and conditions)
+ */
+@media print {
+  .fr-card {
+    page-break-inside: avoid;
+    border: 1px solid var(--border-default-grey);
+    background-image: none !important;
+  }
+
+  .fr-card__detail,
+  .fr-card__desc {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .fr-card__detail {
+    line-height: 1rem !important;
+  }
+
+  .fr-card__detail::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
