@@ -1,0 +1,5 @@
+secret:
+  ignored_matches:
+  - match: f05ab0ad52211580fabb86f05149168e47d2eb30fdc023370f175b7847007473
+    name: Generic Private Key - web/tests/conftest.py:l.131
+version: 2

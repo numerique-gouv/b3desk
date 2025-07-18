@@ -86,6 +86,7 @@ class Meeting(db.Model):
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
+    visio_code = db.Column(db.String)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -450,6 +451,7 @@ def create_and_save_shadow_meeting(user):
         moderatorPW=f"{user.hash}-{random_string}",
         attendeePW=f"{random_string}-{random_string}",
         voiceBridge=pin_generation(),
+        visio_code=unique_visio_code_generation(),
     )
     meeting.save()
     return meeting
@@ -494,3 +496,18 @@ def delete_all_old_shadow_meetings():
 
     for shadow_meeting in old_shadow_meetings:
         save_voiceBridge_and_delete_meeting(shadow_meeting)
+
+
+def unique_visio_code_generation(forbidden_visio_code=None):
+    forbidden_visio_code = (
+        get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
+    )
+    new_visio_code = create_unique_pin(forbidden_visio_code)
+    if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
+        return new_visio_code.upper()
+    return unique_visio_code_generation(forbidden_visio_code=forbidden_visio_code)
+
+
+def get_all_visio_codes():
+    existing_visio_code = db.session.query(Meeting.visio_code)
+    return [visio_code[0] for visio_code in existing_visio_code]

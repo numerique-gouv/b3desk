@@ -15,7 +15,9 @@ from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import create_unique_pin
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
+from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 
 
@@ -114,6 +116,8 @@ def test_save_new_meeting(client_app, authenticated_user, mock_meeting_is_not_ru
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
+    assert len(meeting.visio_code) == 9
+    assert meeting.visio_code.isdigit()
 
 
 def test_save_existing_meeting_not_running(
@@ -943,7 +947,6 @@ def test_generate_existing_pin(
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
     res = res.form.submit()
-    print(res.flashes)
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
@@ -1047,3 +1050,27 @@ def test_create_unique_pin():
     assert 100000000 <= int(create_unique_pin([])) <= 999999999
     assert create_unique_pin(["499999999"], pin=499999999) == "500000000"
     assert create_unique_pin(["999999998", "999999999"], pin=999999998) == "100000000"
+
+
+def test_unique_visio_code_generation(
+    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+):
+    random_visio_codes = []
+    for visio_code in range(100):
+        random_visio_codes.append(unique_visio_code_generation())
+    for visio_code in random_visio_codes:
+        assert len(visio_code) == 9
+        assert visio_code.isdigit()
+
+
+def test_get_all_visio_codes(
+    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+):
+    assert get_all_visio_codes() == [
+        "911111111",
+        "911111112",
+        "911111113",
+        "511111111",
+        "511111112",
+        "511111113",
+    ]

@@ -3,6 +3,8 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from flask import url_for
+from joserfc import jwt
+from joserfc.jwk import RSAKey
 
 from b3desk.models.roles import Role
 
@@ -231,3 +233,56 @@ def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
         fullname_suffix="",
     )
     client_app.get(waiting_meeting_url, status=200)
+
+
+def test_join_meeting_with_sip_connect(client_app, meeting):
+    header = {"alg": "RS256", "typ": "JWT"}
+    claims = {
+        "iss": f"{client_app.app.config['PREFERRED_URL_SCHEME']}://{client_app.app.config['SERVER_NAME']}"
+    }
+    private_key_from_settings = RSAKey.import_key(client_app.app.config["PRIVATE_KEY"])
+    token = jwt.encode(header, claims, private_key_from_settings)
+    response = client_app.get(
+        "/sip-connect/911111111", headers={"Authorization": token}, status=200
+    )
+    response.mustcontain("Rejoindre le séminaire")
+
+
+def test_join_meeting_with_sip_connect_no_token(client_app, meeting):
+    client_app.get("/sip-connect/911111111", status=401)
+
+
+def test_join_meeting_with_sip_connect_wrong_visio_code(client_app):
+    header = {"alg": "RS256", "typ": "JWT"}
+    claims = {
+        "iss": f"{client_app.app.config['PREFERRED_URL_SCHEME']}://{client_app.app.config['SERVER_NAME']}"
+    }
+    private_key_from_settings = RSAKey.import_key(client_app.app.config["PRIVATE_KEY"])
+    token = jwt.encode(header, claims, private_key_from_settings)
+    client_app.get("/sip-connect/1", headers={"Authorization": token}, status=404)
+
+
+def test_join_meeting_with_sip_connect_wrong_token(client_app):
+    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+    private_pem_bytes = private_key.as_pem(private=True)
+    private_key_from_settings = RSAKey.import_key(private_pem_bytes)
+    header = {"alg": "RS256", "typ": "JWT"}
+    claims = {
+        "iss": f"{client_app.app.config['PREFERRED_URL_SCHEME']}://{client_app.app.config['SERVER_NAME']}"
+    }
+    token = jwt.encode(header, claims, private_key_from_settings)
+
+    client_app.get(
+        "/sip-connect/911111111", headers={"Authorization": token}, status=401
+    )
+
+
+def test_join_meeting_with_sip_connect_token_with_wrong_iss_value(client_app):
+    header = {"alg": "RS256", "typ": "JWT"}
+    claims = {"iss": "http://wrong-domain.org"}
+    private_key_from_settings = RSAKey.import_key(client_app.app.config["PRIVATE_KEY"])
+    token = jwt.encode(header, claims, private_key_from_settings)
+
+    client_app.get(
+        "/sip-connect/911111111", headers={"Authorization": token}, status=401
+    )
