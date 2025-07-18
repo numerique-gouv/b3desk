@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 import uuid
@@ -164,6 +165,7 @@ def meeting(client_app, user):
         attendeePW="attendee",
         is_favorite=True,
         voiceBridge="111111111",
+        last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
     )
     meeting.save()
 
@@ -183,6 +185,7 @@ def meeting_2(client_app, user):
         attendeePW="attendee",
         is_favorite=True,
         voiceBridge="111111112",
+        last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
     )
     meeting.save()
 
@@ -201,6 +204,60 @@ def meeting_3(client_app, user):
         moderatorPW="moderator",
         attendeePW="attendee",
         voiceBridge="111111113",
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555551",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_2(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555552",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def shadow_meeting_3(client_app, user):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user,
+        name="shadow meeting must disappear too",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="555555553",
+        is_shadow=True,
+        last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
     )
     meeting.save()
 

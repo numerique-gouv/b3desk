@@ -84,6 +84,8 @@ class Meeting(db.Model):
     user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
+    last_connection_utc_datetime = db.Column(db.DateTime)
+    is_shadow = db.Column(db.Boolean, unique=False, default=False)
 
     # BBB params
     name = db.Column(db.Unicode(150))
@@ -229,6 +231,8 @@ class Meeting(db.Model):
             data = self.create_bbb()
             if data.get("returncode", "") == "SUCCESS":
                 is_meeting_available = True
+                self.last_connection_utc_datetime = datetime.now()
+                self.save()
 
         if is_meeting_available:
             nickname = (
@@ -432,3 +436,61 @@ def create_unique_pin(forbidden_pins, pin=None):
 def pin_is_unique_validator(form, field):
     if field.data in get_forbidden_pins(form.id.data):
         raise ValidationError("Ce code PIN est déjà utilisé")
+
+
+def create_and_save_shadow_meeting(user):
+    random_string = get_random_alphanumeric_string(8)
+    meeting = Meeting(
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
+        user=user,
+        name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        is_shadow=True,
+        welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
+        moderatorPW=f"{user.hash}-{random_string}",
+        attendeePW=f"{random_string}-{random_string}",
+        voiceBridge=pin_generation(),
+    )
+    meeting.save()
+    return meeting
+
+
+def get_or_create_shadow_meeting(user):
+    shadow_meetings = [
+        shadow_meeting
+        for shadow_meeting in db.session.query(Meeting).filter(
+            Meeting.is_shadow,
+            Meeting.user_id == user.id,
+        )
+    ]
+    if len(shadow_meetings) > 1:
+        for shadow_meeting in shadow_meetings:
+            if shadow_meeting is not shadow_meetings[0]:
+                save_voiceBridge_and_delete_meeting(shadow_meeting)
+    meeting = (
+        create_and_save_shadow_meeting(user)
+        if not shadow_meetings
+        else shadow_meetings[0]
+    )
+    return meeting
+
+
+def save_voiceBridge_and_delete_meeting(meeting):
+    previous_voiceBridge = PreviousVoiceBridge()
+    previous_voiceBridge.voiceBridge = meeting.voiceBridge
+    previous_voiceBridge.save()
+    db.session.delete(meeting)
+    db.session.commit()
+
+
+def delete_all_old_shadow_meetings():
+    old_shadow_meetings = [
+        shadow_meeting
+        for shadow_meeting in db.session.query(Meeting).filter(
+            Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
+            Meeting.is_shadow,
+        )
+    ]
+
+    for shadow_meeting in old_shadow_meetings:
+        save_voiceBridge_and_delete_meeting(shadow_meeting)
