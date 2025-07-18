@@ -1,3 +1,2 @@
 1 * * * * root find $UPLOAD_DIR -type f -mmin +60 -delete
-0 5 * * * docker exec -it <id_du_conteneur_B3Desk> flask delete-old-shadow-meetings
 0 5 * * * docker exec -it web flask delete-old-shadow-meetings
