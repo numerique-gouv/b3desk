@@ -36,7 +36,11 @@ def generate_private_key():
     if saved_private_pem_str:
         if (
             input(
-                "A private-key has already been saved in the settings.\nIf you choose to change the current private-key, all old tokens will become invalid.\nAre you sure you want to create a new private-key? (y/n)"
+                "A private-key has already been saved in the settings.\n"
+                "If you choose to change the current private-key, "
+                "all old tokens will become invalid.\n"
+                "Are you sure you want to get a new private-key "
+                "to copy in setting? (y/n) "
             )
             != "y"
         ):
@@ -65,7 +69,10 @@ def generate_sip_token():
             if key.is_private:
                 header = {"alg": "RS256", "typ": "JWT"}
                 claims = {
-                    "iss": f"{current_app.config['PREFERRED_URL_SCHEME']}://{current_app.config['SERVER_NAME']}"
+                    "iss": (
+                        f"{current_app.config['PREFERRED_URL_SCHEME']}"
+                        f"://{current_app.config['SERVER_NAME']}"
+                    )
                 }
                 private_key_from_settings = RSAKey.import_key(
                     current_app.config["PRIVATE_KEY"]
@@ -77,34 +84,47 @@ def generate_sip_token():
                 print(
                     "Your private-key is invalid. You must generate and save a new one."
                 )
-        except:
-            print("Your private-key is invalid. You must generate and save a new one.")
+        except Exception as e:
+            print(
+                "Your private-key is invalid. "
+                f"You must generate and save a new one. {e}"
+            )
 
 
 @bp.cli.command("check-sip-settings")
 def check_sip_settings():
-    error = False
+    error_message = ""
     from joserfc.jwk import RSAKey
 
     saved_private_pem_str = (
         current_app.config["PRIVATE_KEY"] if current_app.config["PRIVATE_KEY"] else None
     )
     if not current_app.config["ENABLE_SIP"]:
-        print("You need to turn on ENABLE_SIP")
-        error = True
+        error_message += "You need to turn on ENABLE_SIP\n"
     if not current_app.config["FQDN_SIP_SERVER"]:
-        print("You need to save the FQDN_SIP_SERVER")
-        error = True
+        error_message += "You need to save the FQDN_SIP_SERVER\n"
     if saved_private_pem_str is None:
-        print("You need to generate and save a private-key")
-        error = True
+        error_message += "You need to generate and save a private-key\n"
     try:
         key = RSAKey.import_key(saved_private_pem_str)
         if not key.is_private:
-            print("Your private-key is invalid. You must generate and save a new one.")
-            error = True
-    except:
-        print("Your private-key is invalid. You must generate and save a new one.")
-        error = True
-    if not error:
-        print("SIPMediaGW settings are OK.")
+            error_message += (
+                "Your private-key is invalid. You must generate and save a new one."
+            )
+    except Exception as e:
+        error_message += (
+            f"Your private-key is invalid. You must generate and save a new one. {e}"
+        )
+    print(error_message) if error_message else print("SIPMediaGW settings are OK.")
+
+
+@bp.cli.command("check-sip-token")
+@click.argument("token")
+def check_sip_token(token):
+    from b3desk.utils import check_token_errors
+
+    if not (errors := check_token_errors(token)):
+        print("Token provided is validated by current private key.")
+    else:
+        print(errors)
+        print("Token provided is not valid.")

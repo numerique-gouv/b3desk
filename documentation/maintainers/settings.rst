@@ -120,3 +120,8 @@ Une fois que B3Desk est correctement paramétré, la généreration de sip-token
 Il est possible de générer plusieurs sip-tokens. Tous seront valides sans limite de temps, tant que la clé privée reste la même. De plus, un même token pourra servir pour plusieurs services différents de visio SIPMediaGW.
 Il suffira de transmettre un sip-token au matériel SIP qui devra le joindre dans le header {"Authorization": token} lors de ses requêtes sur la route suivante :
 `https://<instance_b3desk.fr>/sip-connect/<visio_code>`
+
+#. Vous pouvez vérifier que le token est valide avec la commande :
+
+.. code-block:: bash
+   docker exec -it <id_du_conteneur_B3Desk> flask check-sip-token <token>

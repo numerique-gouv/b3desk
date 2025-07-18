@@ -1,12 +1,14 @@
-{% macro render_field(field, generate_button=False) %}
-<div class="fr-col-12 fr-py-0">
+{% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
   {% if field.type == "BooleanField" %}
+  <li>
     <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
       {{ field(value="on", class_="fr-toggle__input")}}
       {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
       <p class="fr-hint-text">{{ field.description }}</p>
     </div>
+  </li>
   {% else %}
+  <div class="fr-col-12 fr-py-0">
     <div class="fr-input-group fr-py-2w">
       {{ field.label(class_="fr-label") }}
       <p class="fr-hint-text">{{ field.description }}</p>
@@ -24,12 +26,21 @@
             <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
           </div>
         </div>
+      {% elif reset_visio_code_button %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            {{ field(class_="fr-input") }}
+          </div>
+          <div class="fr-col-2">
+            <button type="button" class="fr-btn fr-btn--secondary" onclick="getAvailableVisioCode(visioCodeInput=document.getElementById('{{ field.name }}'))"><i class="ri-refresh-fill"></i></button>
+          </div>
+        </div>
       {% else %}
         {{ field(class_="fr-input", **kwargs) }}
       {% endif %}
     </div>
+  </div>
   {% endif %}
-</div>
 {% endmacro %}
 
 {% if meeting is not none %}
@@ -54,9 +65,11 @@
           <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="false" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
-            <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-grid-row">
               <!--Accueil des participants -->
-              {{ render_field(form.guestPolicy) }}
+              <ul class="fr-toggle__list">
+                {{ render_field(form.guestPolicy) }}
+              </ul>
 
               {% if config.get("ENABLE_PIN_MANAGEMENT") %}
                 {{ render_field(form.voiceBridge) }}
@@ -85,18 +98,20 @@
           <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <p class="fr-px-2w">
+            <div class="fr-grid-row">
+              <p>
                 {% trans %}Tous ces paramètres sont modifiables directement depuis la salle de réunion à tout moment.{% endtrans %}
               </p>
               <!-- Interactions -->
-              {{ render_field(form.lockSettingsDisablePublicChat) }}
-              {{ render_field(form.lockSettingsDisablePrivateChat) }}
-              {{ render_field(form.lockSettingsDisableNote) }}
-              {{ render_field(form.lockSettingsDisableCam) }}
-              {{ render_field(form.lockSettingsDisableMic) }}
-              {{ render_field(form.muteOnStart) }}
-              {{ render_field(form.webcamsOnlyForModerator) }}
+              <ul class="fr-toggle__list">
+                  {{ render_field(form.lockSettingsDisablePublicChat) }}
+                  {{ render_field(form.lockSettingsDisablePrivateChat) }}
+                  {{ render_field(form.lockSettingsDisableNote) }}
+                  {{ render_field(form.lockSettingsDisableCam) }}
+                  {{ render_field(form.lockSettingsDisableMic) }}
+                  {{ render_field(form.muteOnStart) }}
+                  {{ render_field(form.webcamsOnlyForModerator) }}
+              </ul>
             </div>
         </div>
       </div>
@@ -106,14 +121,15 @@
           <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <p class="fr-px-2w">
+            <div class="fr-grid-row">
+              <p>
                 {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
               </p>
               <!-- Enregistrement -->
-              {{ render_field(form.allowStartStopRecording) }}
-              {{ render_field(form.autoStartRecording) }}
-
+               <ul class="fr-toggle__list">
+                 {{ render_field(form.allowStartStopRecording) }}
+                 {{ render_field(form.autoStartRecording) }}
+              </ul>
             </div>
         </div>
       </div>
@@ -123,8 +139,11 @@
         <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Paramètres avancés{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
-          <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-grid-row">
             <!-- Paramètres avancés -->
+            {% if meeting is not none %}
+              {{ render_field(form.visio_code, reset_visio_code_button=True) }}
+            {% endif %}
             {{ render_field(form.moderatorPW, generate_button=True) }}
             {{ render_field(form.attendeePW, generate_button=True) }}
             <div class="fr-grid-row fr-px-1w fr-grid-row--gutters">

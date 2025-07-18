@@ -11,8 +11,8 @@
 
         <!-- DSFR core CSS -->
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-1.7/utility/icons/icons.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/utility/icons/icons.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toc.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/remixicon/remixicon.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spinner.css') }}">
@@ -29,6 +29,35 @@
                     result += characters.charAt(Math.floor(Math.random() * charactersLength));
                 }
                 return result;
+            }
+
+            async function getAvailableVisioCode(visioCodeInput){
+                let method = "GET";
+                const url = "{{ url_for('meetings.get_available_visio_code') }}";
+                const response = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+                })
+                const json = await response.json();
+                visioCodeInput.value = json.available_visio_code;
+            }
+            function copyInClipboard(selector, textToCopy){
+                clickedButton = document.getElementById(selector);
+                navigator.clipboard.writeText(textToCopy);
+                clickedButton.classList.remove("fr-icon-clipboard-line")
+                clickedButton.classList.add("fr-icon-success-fill")
+                previousWidth = clickedButton.getBoundingClientRect().width
+                clickedButton.classList.add("justify-content-space-between")
+                clickedButton.style.width = previousWidth+"px"
+                setTimeout(function(clickedBtn) {
+                    clickedBtn.classList.remove("fr-icon-success-fill")
+                    clickedBtn.classList.remove("justify-content-space-between")
+                    clickedBtn.classList.add("fr-icon-clipboard-line")
+                    clickedBtn.style.width = ""
+                }, 2000, clickedButton);
+
             }
         </script>
     </head>
@@ -67,8 +96,8 @@
             {% endblock %}
 
             <!-- DSFR JavaScript -->
-            <script src="{{ url_for('static', filename='dsfr-1.7/dsfr/dsfr.module.min.js')}}"></script>
-            <script type="text/javascript" nomodule href="dsfr-1.7/dsfr/dsfr.nomodule.min.js" ></script>
+            <script src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.module.min.js')}}"></script>
+            <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
             <!-- Scampi Modal en attendant la modale GouvFr-->
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}

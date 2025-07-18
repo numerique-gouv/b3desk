@@ -195,6 +195,17 @@ class MeetingForm(FlaskForm):
             pin_is_unique_validator,
         ],
     )
+    visio_code = StringField(
+        label=_("Code de connexion"),
+        description=_(
+            "Code de connexion pour rejoindre %(the_meeting)s %(sip)s",
+            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            sip=_("(utilisé dans le lien SIP)")
+            if current_app.config["ENABLE_SIP"]
+            else "",
+        ),
+        render_kw={"readonly": True},
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

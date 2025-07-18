@@ -17,6 +17,7 @@ from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 
@@ -1074,3 +1075,19 @@ def test_get_all_visio_codes(
         "511111112",
         "511111113",
     ]
+
+
+def test_get_meeting_by_visio_code(meeting):
+    meeting = get_meeting_by_visio_code("911111111")
+    assert meeting.name == "meeting"
+
+
+def test_get_available_visio_code(client_app, authenticated_user):
+    response = client_app.get("/meeting/available-visio-code")
+    assert response.json.get("available_visio_code")
+    assert response.json.get("available_visio_code") not in get_all_visio_codes()
+
+
+def test_get_available_visio_code_no_user(client_app):
+    response = client_app.get("/meeting/available-visio-code", status=302)
+    response.location == "/home"

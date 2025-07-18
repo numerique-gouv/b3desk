@@ -511,3 +511,7 @@ def unique_visio_code_generation(forbidden_visio_code=None):
 def get_all_visio_codes():
     existing_visio_code = db.session.query(Meeting.visio_code)
     return [visio_code[0] for visio_code in existing_visio_code]
+
+
+def get_meeting_by_visio_code(visio_code):
+    return Meeting.query.filter_by(visio_code=visio_code).one_or_none()

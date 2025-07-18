@@ -28,7 +28,7 @@ def api_meetings():
                     "name": meeting.name,
                     "moderator_url": meeting.get_signin_url(Role.moderator),
                     "attendee_url": meeting.get_signin_url(Role.attendee),
-                    # "visio_code": meeting.visio_code,
+                    "visio_code": meeting.visio_code,
                 },
                 **(
                     {
@@ -72,7 +72,7 @@ def shadow_meeting():
                     "name": meeting.name,
                     "moderator_url": meeting.get_signin_url(Role.moderator),
                     "attendee_url": meeting.get_signin_url(Role.attendee),
-                    # "visio_code": meeting.visio_code,
+                    "visio_code": meeting.visio_code,
                 },
                 **(
                     {
