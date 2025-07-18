@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
+import random
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
@@ -16,6 +17,7 @@ from typing import Optional
 from flask import current_app
 from flask import url_for
 from sqlalchemy_utils import StringEncryptedType
+from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
@@ -89,7 +91,7 @@ class Meeting(db.Model):
     moderatorPW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
     welcome = db.Column(db.UnicodeText())
     dialNumber = db.Column(db.Unicode(50))
-    voiceBridge = db.Column(db.Unicode(50))
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     maxParticipants = db.Column(db.Integer)
     logoutUrl = db.Column(db.Unicode(250))
     record = db.Column(db.Boolean, unique=False, default=True)
@@ -169,11 +171,23 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
     def create_bbb(self):
+        self.voiceBridge = (
+            pin_generation() if not self.voiceBridge else self.voiceBridge
+        )
         result = self.bbb.create()
         if result and result.get("returncode", "") == "SUCCESS":
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]
+            if (
+                current_app.config["ENABLE_PIN_MANAGEMENT"]
+                and self.voiceBridge != result["voiceBridge"]
+            ):
+                current_app.logger.error(
+                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
+                    self.voiceBridge,
+                    result["voiceBridge"],
+                )
         current_app.logger.warning("BBB room has not been properly created: %s", result)
         return result if result else {}
 
@@ -292,6 +306,29 @@ class Meeting(db.Model):
         return data and data["returncode"] == "SUCCESS"
 
 
+class PreviousVoiceBridge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
+    archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+def get_all_previous_voiceBridges():
+    return [
+        voiceBridge[0]
+        for voiceBridge in db.session.query(PreviousVoiceBridge.voiceBridge)
+    ]
+
+
+def delete_old_voiceBridges():
+    db.session.query(PreviousVoiceBridge).filter(
+        PreviousVoiceBridge.archived_at < datetime.now() - timedelta(days=365)
+    ).delete()
+
+
 def get_quick_meeting_from_user_and_random_string(user, random_string=None):
     if random_string is None:
         random_string = get_random_alphanumeric_string(8)
@@ -358,3 +395,40 @@ def get_mail_meeting(random_string=None):
     )
     meeting.fake_id = random_string
     return meeting
+
+
+def pin_generation(forbidden_pins=None, clean_db=True):
+    if clean_db:
+        delete_old_voiceBridges()
+    forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
+    return create_unique_pin(forbidden_pins=forbidden_pins)
+
+
+def get_forbidden_pins(edited_meeting_id=None):
+    previous_pins = get_all_previous_voiceBridges()
+
+    existing_meeting_voiceBridges = db.session.query(Meeting.voiceBridge)
+
+    if edited_meeting_id:
+        existing_meeting_voiceBridges = existing_meeting_voiceBridges.filter(
+            Meeting.id != edited_meeting_id
+        )
+
+    return [
+        voiceBridge[0] for voiceBridge in existing_meeting_voiceBridges
+    ] + previous_pins
+
+
+def create_unique_pin(forbidden_pins, pin=None):
+    pin = random.randint(100000000, 999999999) if not pin else pin
+    if str(pin) in forbidden_pins:
+        pin += 1
+        pin = 100000000 if pin > 999999999 else pin
+        return create_unique_pin(forbidden_pins, pin)
+    else:
+        return str(pin)
+
+
+def pin_is_unique_validator(form, field):
+    if field.data in get_forbidden_pins(form.id.data):
+        raise ValidationError("Ce code PIN est déjà utilisé")
