@@ -432,8 +432,8 @@ This is a fix until we deal with the update.
 }
 
 .fr-btn--visio.fr-icon-live-line[target="_blank"]::after {
-  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
-  mask-image: url("../dsfr-1.7/icons/media/live-line.svg");
+  mask-image: url("../dsfr-v1.14.0/icons/media/live-line.svg");
+  mask-image: url("../dsfr-v1.14.0/icons/media/live-line.svg");
 }
 
 .list-meeting-rooms-title {
