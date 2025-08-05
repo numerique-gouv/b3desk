@@ -86,7 +86,7 @@ class Meeting(db.Model):
     externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
-    visio_code = db.Column(db.String)
+    visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
 
     # BBB params
     name = db.Column(db.Unicode(150))
