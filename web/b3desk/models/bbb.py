@@ -272,7 +272,7 @@ class BBB:
 
                     data["playbacks"] = {}
                     playback = recording.find("playback")
-                    if not playback:
+                    if playback is None:
                         continue
 
                     for format in playback.iter("format"):
