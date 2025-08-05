@@ -259,7 +259,7 @@ def get_or_create_user(user_info):
     family_name = user_info["family_name"]
     email = user_info["email"].lower()
 
-    user = User.query.filter_by(email=email).first()
+    user = db.session.query(User).filter(User.email == email).first()
 
     if user is None:
         user = User(

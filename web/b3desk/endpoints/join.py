@@ -282,7 +282,7 @@ def visio_code_connexion():
 
 def join_waiting_meeting_with_visio_code(meeting):
     meeting_fake_id = str(meeting.id)
-    creator = User.query.get(meeting.user_id)
+    creator = db.session.get(User, meeting.user_id)
     role = Role.moderator
     h = meeting.get_hash(role=role)
     return signin_meeting(
