@@ -219,7 +219,12 @@ class Meeting(db.Model):
         )
 
     def get_join_url(
-        self, meeting_role: Role, fullname, fullname_suffix="", create=False
+        self,
+        meeting_role: Role,
+        fullname,
+        fullname_suffix="",
+        create=False,
+        quick_meeting=False,
     ):
         is_meeting_available = self.is_running()
         should_create_room = (
@@ -232,8 +237,9 @@ class Meeting(db.Model):
             data = self.create_bbb()
             if data.get("returncode", "") == "SUCCESS":
                 is_meeting_available = True
-                self.last_connection_utc_datetime = datetime.now()
-                self.save()
+                if not quick_meeting:
+                    self.last_connection_utc_datetime = datetime.now()
+                    self.save()
 
         if is_meeting_available:
             nickname = (
