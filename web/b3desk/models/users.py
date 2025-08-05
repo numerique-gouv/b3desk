@@ -11,6 +11,7 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from datetime import timezone
 from datetime import timedelta
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
@@ -265,7 +266,7 @@ def get_or_create_user(user_info):
             email=email,
             given_name=given_name,
             family_name=family_name,
-            last_connection_utc_datetime=datetime.utcnow(),
+            last_connection_utc_datetime=datetime.now(timezone.utc),
         )
         update_user_nc_credentials(user, user_info)
         user.save()
@@ -285,7 +286,7 @@ def get_or_create_user(user_info):
             not user.last_connection_utc_datetime
             or user.last_connection_utc_datetime.date() < date.today()
         ):
-            user.last_connection_utc_datetime = datetime.utcnow()
+            user.last_connection_utc_datetime = datetime.now(timezone.utc)
             user_has_changed = True
 
         if user_has_changed:
