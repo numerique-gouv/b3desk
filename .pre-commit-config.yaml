@@ -1,7 +1,7 @@
 ---
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.9.4'
+    rev: 'v0.12.7'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -16,19 +16,13 @@ repos:
         exclude: "\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
       - id: check-toml
   - repo: https://github.com/pycqa/isort
-    rev: "6.0.0"
+    rev: "6.0.1"
     hooks:
       - id: isort
         name: isort (python)
         args: ["--force-single-line-imports", "--line-length", "120"]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: eb1df34
-    hooks:
-      - id: docformatter
-        additional_dependencies: [tomli]
-        args: [--in-place, --config, ./pyproject.toml]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.20.0
     hooks:
       - id: pyupgrade
         args: ["--py39-plus"]
