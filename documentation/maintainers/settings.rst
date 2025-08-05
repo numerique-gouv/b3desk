@@ -74,7 +74,7 @@ Si les droits ``real-management view-users`` et ``realm-management query-users``
 - Cocher « view-users » et « query-users » puis sur le bouton « Assign »
 
 
-Utilisation d'un méteriel visio SIPMediaGW
+Utilisation d'un materiel visio SIPMediaGW
 ==========================================
 
 Configuration de B3Desk
