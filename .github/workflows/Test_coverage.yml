@@ -16,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get the git branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main # TODO: dynamically get the branch against which the PR will be merged?
 
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
