@@ -21,11 +21,15 @@ depends_on = None
 
 def upgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("visio_code", sa.String(), nullable=True))
+        batch_op.add_column(
+            sa.Column("visio_code", sa.Unicode(length=50), nullable=True)
+        )
     bind = op.get_bind()
     session = Session(bind)
     meeting = sa.table(
-        "meeting", sa.column("id", sa.Integer), sa.column("visio_code", sa.String)
+        "meeting",
+        sa.column("id", sa.Integer),
+        sa.column("visio_code", sa.Unicode(length=50)),
     )
     generated_visio_code = []
     for (meeting_id,) in session.execute(select(meeting.c.id)):
