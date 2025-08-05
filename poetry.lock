@@ -123,14 +123,14 @@ tests-mypy = ["mypy (>=1.11.1) ; platform_python_implementation == \"CPython\" a
 
 [[package]]
 name = "authlib"
-version = "1.6.1"
+version = "1.5.2"
 description = "The ultimate Python library in building OAuth and OpenID Connect servers and clients."
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "authlib-1.6.1-py2.py3-none-any.whl", hash = "sha256:e9d2031c34c6309373ab845afc24168fe9e93dc52d252631f52642f21f5ed06e"},
-    {file = "authlib-1.6.1.tar.gz", hash = "sha256:4dffdbb1460ba6ec8c17981a4c67af7d8af131231b5a36a88a1e8c80c111cdfd"},
+    {file = "authlib-1.5.2-py2.py3-none-any.whl", hash = "sha256:8804dd4402ac5e4a0435ac49e0b6e19e395357cfa632a3f624dcb4f6df13b4b1"},
+    {file = "authlib-1.5.2.tar.gz", hash = "sha256:fe85ec7e50c5f86f1e2603518bb3b4f632985eb4a355e52256530790e326c512"},
 ]
 
 [package.dependencies]
@@ -236,14 +236,14 @@ files = [
 
 [[package]]
 name = "canaille"
-version = "0.0.55"
+version = "0.0.53"
 description = "Lightweight identity and authorization management software"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["dev"]
 files = [
-    {file = "canaille-0.0.55-cp312-cp312-manylinux_2_40_x86_64.whl", hash = "sha256:71b6bc214362bf0b8e0a372208366cabe8ef29e1b13a34e3895a4619dc1f561e"},
-    {file = "canaille-0.0.55.tar.gz", hash = "sha256:fb28da86dafa914e34dbb4fa91b36257426fcbb9e78d4e9eadd321974af57dcf"},
+    {file = "canaille-0.0.53-cp311-cp311-manylinux_2_39_x86_64.whl", hash = "sha256:e3fa454827174fb347bc1aedf1286bbe9b6beedabf3cf82d8fdba7fb7420a8be"},
+    {file = "canaille-0.0.53.tar.gz", hash = "sha256:c9b1579d63e9777528dff0f9071c8fe755a5da171f1018b4c41742781a7d73cd"},
 ]
 
 [package.dependencies]
@@ -254,11 +254,11 @@ pydantic-settings = ">=2.0.3,<3.0.0"
 wtforms = ">=3.1.1,<4.0.0"
 
 [package.extras]
-all = ["authlib (>=1.2.1,<2.0.0)", "email_validator (>=2.0.0,<3.0.0)", "flask-babel (>=4.0.0,<5.0.0)", "flask-themer (>=2.0.0,<3.0.0)", "passlib (>=1.7.4,<2.0.0)", "pycountry (>=22.1.10)", "python-ldap (>=3.4.0,<4.0.0)", "pytz (>=2022.7)", "sentry-sdk[flask] (>=2.0.0,<3.0.0)", "sqlalchemy (>=2.0.23,<3.0.0)", "sqlalchemy-json (>=0.7.0,<0.8.0)", "sqlalchemy-utils (>=0.41.1,<0.42.0)", "toml (>=0.10.0,<0.11.0) ; python_version < \"3.11\""]
+all = ["authlib (>=1.2.1,<2.0.0)", "email_validator (>=2.0.0,<3.0.0)", "flask-babel (>=4.0.0,<5.0.0)", "flask-themer (>=2.0.0,<3.0.0)", "passlib (>=1.7.4,<2.0.0)", "pycountry (>=22.1.10)", "python-ldap (>=3.4.0,<4.0.0)", "pytz (>=2022.7)", "sentry-sdk[flask] (<2)", "sqlalchemy (>=2.0.23,<3.0.0)", "sqlalchemy-json (>=0.7.0,<0.8.0)", "sqlalchemy-utils (>=0.41.1,<0.42.0)", "toml (>=0.10.0,<0.11.0) ; python_version < \"3.11\""]
 front = ["email_validator (>=2.0.0,<3.0.0)", "flask-babel (>=4.0.0,<5.0.0)", "flask-themer (>=2.0.0,<3.0.0)", "pycountry (>=22.1.10)", "pytz (>=2022.7)", "toml (>=0.10.0,<0.11.0) ; python_version < \"3.11\""]
 ldap = ["python-ldap (>=3.4.0,<4.0.0)"]
 oidc = ["authlib (>=1.2.1,<2.0.0)"]
-sentry = ["sentry-sdk[flask] (>=2.0.0,<3.0.0)"]
+sentry = ["sentry-sdk[flask] (<2)"]
 sql = ["passlib (>=1.7.4,<2.0.0)", "sqlalchemy (>=2.0.23,<3.0.0)", "sqlalchemy-json (>=0.7.0,<0.8.0)", "sqlalchemy-utils (>=0.41.1,<0.42.0)"]
 
 [[package]]
@@ -3267,4 +3267,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "e1e534f7ca1195b7a7f9f6d37e572932f9d7ee3d223e66a96ede533dbe459e1e"
+content-hash = "a83668e6dc9316dba897e80527797e38aba7812c767f4f832524ee201eee7f60"
