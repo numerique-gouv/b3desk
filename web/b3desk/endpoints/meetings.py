@@ -89,7 +89,11 @@ def quick_mail_meeting():
 def quick_meeting():
     user = get_current_user()
     meeting = get_quick_meeting_from_user_and_random_string(user)
-    return redirect(meeting.get_join_url(Role.moderator, user.fullname, create=True))
+    return redirect(
+        meeting.get_join_url(
+            Role.moderator, user.fullname, create=True, quick_meeting=True
+        )
+    )
 
 
 @bp.route("/meeting/show/<meeting:meeting>")

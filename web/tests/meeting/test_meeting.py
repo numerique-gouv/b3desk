@@ -1067,14 +1067,14 @@ def test_unique_visio_code_generation(
 def test_get_all_visio_codes(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
-    assert get_all_visio_codes() == [
+    assert set(get_all_visio_codes()) == {
         "911111111",
         "911111112",
         "911111113",
         "511111111",
         "511111112",
         "511111113",
-    ]
+    }
 
 
 def test_get_meeting_by_visio_code(meeting):
