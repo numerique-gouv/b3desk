@@ -33,6 +33,7 @@ web-lycees.env
 web-agents.env
 web-webinaire.env
 web-local.env
+dev-*.env
 *.swp
 
 messages.mo

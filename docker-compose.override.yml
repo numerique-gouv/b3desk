@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   web:
     depends_on:
@@ -30,7 +28,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - keycloak.env
+      - ${ENV_KC_FILE_OVERRIDE-keycloak.env}
     volumes:
       - ./keycloak/themes/dsfr:/opt/jboss/keycloak/themes/dsfr
     ports:
