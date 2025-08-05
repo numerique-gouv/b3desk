@@ -255,7 +255,7 @@ class BBB:
         return_code = root.find("returncode").text
         recordings = root.find("recordings")
         result = []
-        if return_code != "FAILED" and recordings:
+        if return_code != "FAILED" and recordings is not None:
             try:
                 for recording in recordings.iter("recording"):
                     data = {}
