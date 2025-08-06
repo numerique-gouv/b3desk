@@ -1,5 +1,7 @@
 import pyquery
 
+from b3desk.models.meetings import Meeting
+
 
 def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
     """No anonymous quick mail form should be displayed on the home page if it
@@ -45,3 +47,26 @@ def test_unauthenticated_quick_meeting_authorized_email(
 
     res = client_app.get(link)
     assert res.template == "meeting/joinmail.html"
+
+
+CREATE_RESPONSE = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <meetingID>Test</meetingID>
+  <voiceBridge>70757</voiceBridge>
+  <running>false</running>
+  <attendeePW>att123</attendeePW>
+  <moderatorPW>mode123</moderatorPW>
+</response>
+"""
+
+
+def test_quick_meeting_with_logged_user(client_app, authenticated_user, mocker):
+    class ResponseBBBcreate:
+        content = CREATE_RESPONSE
+        text = ""
+
+    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+    response = client_app.get("/meeting/quick", status=302)
+    assert response.location.startswith("https://bbb.test/join")
+    assert Meeting.query.all() == []
