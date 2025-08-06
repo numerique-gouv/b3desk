@@ -1,5 +1,7 @@
 import pyquery
 
+from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+
 from b3desk.models.meetings import Meeting
 
 
@@ -59,6 +61,24 @@ CREATE_RESPONSE = """
   <moderatorPW>mode123</moderatorPW>
 </response>
 """
+
+
+def test_join_mail_meeting_with_logged_user(client_app, user, mocker):
+    class ResponseBBBcreate:
+        content = CREATE_RESPONSE
+        text = ""
+
+    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+
+    meeting = get_quick_meeting_from_user_and_random_string(user)
+    moderator_mail_signin_url = meeting.get_mail_signin_url()
+
+    response = client_app.get(moderator_mail_signin_url, status=200)
+    response.mustcontain("Rejoindre le séminaire")
+
+    response.form["fullname"] = "Bob Dylan"
+    response = response.form.submit()
+    assert response.location.startswith("https://bbb.test/join")
 
 
 def test_quick_meeting_with_logged_user(client_app, authenticated_user, mocker):
