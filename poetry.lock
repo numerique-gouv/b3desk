@@ -3168,13 +3168,13 @@ files = [
 
 [[package]]
 name = "webdavclient3"
-version = "3.14.5"
+version = "3.14.6"
 description = "WebDAV client, based on original package https://github.com/designerror/webdav-client-python but uses requests instead of PyCURL"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "webdavclient3-3.14.5.tar.gz", hash = "sha256:6072f9a583059f8ff313f8544d415b4191fc89bdf6230259b0527b706ab1837b"},
+    {file = "webdavclient3-3.14.6.tar.gz", hash = "sha256:bcd22586bb0d58abc26ca56054fd04228e704bd36073c3080f4597c1556c880d"},
 ]
 
 [package.dependencies]
@@ -3303,4 +3303,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "c739906cd16914abb241a3427d9a167d5753800173ec2434ce72edb398fa1c35"
+content-hash = "7546233fee87f56f0b33a2bcbafde7ee596f194839a499cb2d65fecff5313b46"
