@@ -317,7 +317,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -333,7 +333,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "uploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -416,7 +416,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -432,7 +432,7 @@ def test_create_with_only_a_default_file(
         "uploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -515,7 +515,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -531,7 +531,7 @@ def test_create_with_files(
         "uploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://localhost:5000/meeting/{str(meeting.id)}/externalUpload",
+        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -553,7 +553,7 @@ def test_create_with_files(
         == "<?xml version='1.0' encoding='UTF-8'?> "
         + "<modules>  "
         + "<module name='presentation'> "
-        + f"<document downloadable='false' url='http://localhost:5000/ncdownload/0/1/{filehash}/file_title' filename='file_title' /> "
+        + f"<document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/file_title' filename='file_title' /> "
         + "</module>"
         + "</modules>"
     )
@@ -619,7 +619,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",
-        "uploadExternalUrl": "http://localhost:5000/meeting/None/externalUpload",
+        "uploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
         "uploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "attendeePW": meeting.attendeePW,
         "moderatorPW": meeting.moderatorPW,
@@ -628,7 +628,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
         "meta_academy": "domain.tld",
-        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://localhost:5000/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://localhost:5000/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
     }

@@ -18,8 +18,8 @@ def test_api_meetings_nominal(
     assert res.json["meetings"][2]["name"] == "meeting"
     assert res.json["meetings"][0] == {
         "PIN": "111111111",
-        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "911111111",
@@ -33,8 +33,8 @@ def test_api_meetings_nominal(
     )
 
     assert res.json["meetings"][0] == {
-        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "visio_code": "911111111",
         "SIPMediaGW_url": "911111111@example.serveur.com",
@@ -47,8 +47,8 @@ def test_api_meetings_nominal(
     )
 
     assert res.json["meetings"][0] == {
-        "attendee_url": "http://localhost:5000/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://localhost:5000/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/creator/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/creator/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "visio_code": "911111111",
     }

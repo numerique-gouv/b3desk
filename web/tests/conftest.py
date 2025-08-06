@@ -55,9 +55,9 @@ def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
         client_secret="client_secret",
-        redirect_uris=["http://localhost:5000/oidc_callback"],
+        redirect_uris=["http://b3desk.test/oidc_callback"],
         token_endpoint_auth_method="client_secret_post",
-        post_logout_redirect_uris=["http://localhost:5000/logout"],
+        post_logout_redirect_uris=["http://b3desk.test/logout"],
         grant_types=["authorization_code"],
         response_types=["code", "token", "id_token"],
         scope=["openid", "profile", "email"],
@@ -85,7 +85,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
     smtpd.config.use_starttls = True
     return {
         "SECRET_KEY": "test-secret-key",
-        "SERVER_NAME": "localhost:5000",
+        "SERVER_NAME": "b3desk.test",
         "PREFERRED_URL_SCHEME": "http",
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False,
