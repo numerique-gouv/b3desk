@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from flask import Blueprint
@@ -63,7 +64,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         meeting=meeting,
         meeting_fake_id=meeting.fake_id,
         expiration=expiration,
-        user_id="fakeuserId",
+        user_id=random.randint(100000, 999999),
         h=h,
         role=Role.moderator,
     )
@@ -222,7 +223,9 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
-    return redirect(meeting.get_join_url(Role.moderator, fullname, create=True))
+    return redirect(
+        meeting.get_join_url(Role.moderator, fullname, create=True, quick_meeting=True)
+    )
 
 
 # Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
