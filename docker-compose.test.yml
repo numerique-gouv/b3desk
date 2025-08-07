@@ -28,7 +28,7 @@ services:
     env_file:
       - web.env.example
     healthcheck:
-      test: "bash ./tokencheck.sh"
+      test: "bash ./healthcheck.sh"
       start_period: 5s
       interval: 5s
 

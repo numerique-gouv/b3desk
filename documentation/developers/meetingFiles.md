@@ -56,7 +56,7 @@ curl -X POST $NC_HOST/apps/sessiontoken/token -d "apikey=[nextcloud-sessiontoken
 
 - en local, faire un appel vers le service `tokenmock` en indiquant l'utilisateur concerné (comme le `bbb-visio-user` par exemple) :
 ```
-curl -X POST localhost:9000/index.php -H "x-api-key: $NC_LOGIN_API_KEY" -H 'Content-Type: application/json' -d '{"username":"relevant-b3desk-username"}'
+curl -X POST localhost:9000 -H "x-api-key: $NC_LOGIN_API_KEY" -H 'Content-Type: application/json' -d '{"username":"relevant-b3desk-username"}'
 ```
 - le service `tokenmock` devrait répondre :
 ```
