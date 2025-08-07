@@ -1,8 +1,7 @@
 import pyquery
 
-from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
-
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 
 
 def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
