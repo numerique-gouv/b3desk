@@ -105,7 +105,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "MEETING_KEY_WORDING": "seminaire",
         "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
-        "NC_LOGIN_API_URL": "http://tokenmock:80/index.php",
+        "NC_LOGIN_API_URL": "http://tokenmock:5000/",
         "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
