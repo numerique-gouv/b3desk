@@ -59,7 +59,6 @@ def visio_code_attempt_counter_update(success: bool):
             "captchetat_is_dead": False,
         }
     )
-
     visio_code_session["attempt_counter"] = (
         0 if success else visio_code_session["attempt_counter"] + 1
     )
@@ -69,5 +68,4 @@ def visio_code_attempt_counter_update(success: bool):
     visio_code_session["captchetat_is_dead"] = (
         False if success else visio_code_session["captchetat_is_dead"]
     )
-
     session["visio_code"] = visio_code_session

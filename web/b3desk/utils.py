@@ -11,7 +11,6 @@ from flask import current_app
 from flask import flash
 from flask import render_template
 from flask import request
-from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
@@ -163,15 +162,11 @@ def check_private_key():
                 current_app.config["ENABLE_SIP"]
                 and not current_app.config["PRIVATE_KEY"]
             ):
-                flash(
-                    _(
-                        "La clé privée n'a pas été configurée dans les paramètres "
-                        "B3Desk pour sécuriser la connexion SIPMediaGW"
-                    ),
-                    "error",
+                message = _(
+                    "La clé privée n'a pas été configurée dans les paramètres "
+                    "B3Desk pour sécuriser la connexion SIPMediaGW"
                 )
-                if ("error", message) not in flashed:
-                    flash(message, "error")
+                flash(message, "error")
 
             return initial_func(*args, **kwargs)
 
