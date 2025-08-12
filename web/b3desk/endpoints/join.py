@@ -9,7 +9,6 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
@@ -295,8 +294,6 @@ def visio_code_connexion():
     if not meeting:
         flash("Le code de connexion saisi est erroné", "error")
         visio_code_attempt_counter_update(False)
-        if session["visio_code"]["captcha_is_dead"]:
-            flash(_("Erreur Captcha : rechargez la page"), "error")
         return redirect(url_for("public.home"))
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)

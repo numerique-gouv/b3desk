@@ -1,11 +1,9 @@
 import requests
 from flask import Blueprint
 from flask import current_app
-from flask import flash
 from flask import jsonify
 from flask import request
 from flask import session
-from flask_babel import lazy_gettext as _
 
 bp = Blueprint("captcha", __name__)
 
@@ -22,7 +20,7 @@ def get_captchetat_token():
     response = requests.post(url, data=form_data, headers=headers)
     if response.status_code != 200 or "access_token" not in response.json():
         session["visio_code"]["captcha_is_dead"] = True
-        flash(_("Erreur Captcha : rechargez la page"), "error")
+        current_app.logger.error("Captcha error: OAuth access token not received")
         return
     else:
         session["visio_code"]["captcha_is_dead"] = False
@@ -45,9 +43,11 @@ def captcha_proxy():
             if "sound" == dict(request.args)["get"]
             else response.json()
         )
+        session["visio_code"]["captcha_is_dead"] = False
         return captcha_info
     except:
-        flash(_("Erreur Captcha : rechargez la page"), "error")
+        session["visio_code"]["captcha_is_dead"] = True
+        current_app.logger.error("Captcha error: Captcha image/sound not received")
         return
 
 
@@ -57,9 +57,17 @@ def captcha_validation():
     captcha_uuid = data.get("uuid")
     captcha_code = data.get("code")
     access_token = get_captchetat_token()
-    response = requests.post(
-        "https://api.piste.gouv.fr/piste/captchetat/v2/valider-captcha",
-        headers={"Authorization": f"Bearer {access_token}"},
-        json={"uuid": captcha_uuid, "code": captcha_code},
-    )
-    return jsonify({"success": response.json()})
+    try:
+        response = requests.post(
+            "https://api.piste.gouv.fr/piste/captchetat/v2/valider-captcha",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json={"uuid": captcha_uuid, "code": captcha_code},
+        )
+        session["visio_code"]["captcha_is_dead"] = False
+        return jsonify({"success": response.json()})
+    except:
+        session["visio_code"]["captcha_is_dead"] = True
+        current_app.logger.error(
+            "Captcha error: Captcha response validation not received"
+        )
+        return
