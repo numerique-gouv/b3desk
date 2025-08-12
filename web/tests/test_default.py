@@ -48,7 +48,7 @@ def test_root__authenticated_user(client_app, authenticated_user):
     assert "/welcome" in response.location
 
 
-def test_home__anonymous_user(client_app, mocker):
+def test_home__anonymous_user(client_app, mocker, visio_code_session):
     STATS = {
         "participantCount": 123,
         "runningCount": 33,

@@ -330,7 +330,12 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
             "given_name": "Alice",
             "preferred_username": "alice",
         }
-        session["refresh_token"] = ""
+        session["refresh_token"] = ("",)
+        session["visio_code"] = {
+            "attempt_counter": 0,
+            "captcha_is_needed": False,
+            "captcha_is_dead": False,
+        }
 
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
@@ -477,3 +482,13 @@ def valid_secondary_identity_token(mocker):
         "b3desk.models.users.get_secondary_identity_provider_token",
         return_value=ValidToken,
     )
+
+
+@pytest.fixture
+def visio_code_session(client_app):
+    with client_app.session_transaction() as session:
+        session["visio_code"] = {
+            "attempt_counter": 0,
+            "captcha_is_needed": False,
+            "captcha_is_dead": False,
+        }

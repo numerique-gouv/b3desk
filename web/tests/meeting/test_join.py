@@ -283,23 +283,22 @@ def test_join_meeting_with_sip_connect_token_with_wrong_iss_value(client_app):
     )
 
 
-def test_join_meeting_with_visio_code(client_app, meeting):
+def test_join_meeting_with_visio_code(client_app, meeting, visio_code_session):
     response = client_app.get("/home")
     response.forms[0]["visio_code"] = "911111111"
     response = response.forms[0].submit()
     response.mustcontain("Rejoindre le séminaire")
 
 
-def test_join_meeting_with_wrong_visio_code(client_app, meeting):
+def test_join_meeting_with_wrong_visio_code(client_app, meeting, visio_code_session):
     response = client_app.get("/home", status=200)
     response.forms[0]["visio_code"] = "123456789"
     response = response.forms[0].submit()
-    print(response.flashes)
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
 
 
 def test_join_meeting_with_visio_code_with_authenticated_user(
-    client_app, meeting, authenticated_user, user, bbb_response
+    client_app, meeting, authenticated_user, user, bbb_response, visio_code_session
 ):
     response = client_app.get("/welcome", status=200)
     response.forms[0]["visio_code"] = "911111111"
@@ -308,37 +307,9 @@ def test_join_meeting_with_visio_code_with_authenticated_user(
 
 
 def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
-    client_app, meeting, authenticated_user, user, bbb_response
+    client_app, meeting, authenticated_user, user, bbb_response, visio_code_session
 ):
     response = client_app.get("/welcome", status=200)
     response.forms[0]["visio_code"] = "123456789"
     response = response.forms[0].submit()
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-
-
-# @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
-# def test_join_meeting_with_wrong_visio_code_until_captcha(
-#     access_token, client_app, meeting,
-# ):
-#     print(access_token)
-#     access_token.return_value = "captchetat_access_token"
-
-#     def fill_and_submit_visio_code():
-#         response = client_app.get("/home", status=200)
-#         response.forms[0]["visio_code"] = "123456789"
-#         response = response.forms[0].submit()
-#         assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-#         return response
-
-#     for i in range(5):
-#         response = fill_and_submit_visio_code()
-#         assert ("error", "CAPTCHA") not in response.flashes
-#     response = fill_and_submit_visio_code()
-#     assert ("error", "CAPTCHA") in response.flashes
-
-#     response = client_app.get("/home", status=200)
-#     response.forms[0]["visio_code"] = "911111111"
-#     response = response.forms[0].submit()
-#     response.mustcontain("Rejoindre le séminaire")
-#     response = fill_and_submit_visio_code()
-#     assert ("error", "CAPTCHA") not in response.flashes
