@@ -11,6 +11,7 @@ from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
+from ..utils import check_captcha
 from ..utils import check_oidc_connection
 from ..utils import check_private_key
 from .meetings import meeting_mailto_params
@@ -54,6 +55,7 @@ def index():
 
 @bp.route("/home")
 @check_private_key()
+@check_captcha()
 def home():
     if has_user_session():
         return redirect(url_for("public.welcome"))
@@ -71,6 +73,7 @@ def home():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @check_private_key()
+@check_captcha()
 def welcome():
     user = get_current_user()
     stats = get_meetings_stats()

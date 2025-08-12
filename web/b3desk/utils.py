@@ -11,6 +11,7 @@ from flask import current_app
 from flask import flash
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
@@ -205,3 +206,17 @@ def check_token_errors(token):
     if error_message:
         current_app.logger.error(error_message)
     return error_message
+
+
+def check_captcha():
+    def decorator_func(initial_func):
+        @wraps(initial_func)
+        def wrapper_func(*args, **kwargs):
+            if session["visio_code"]["captcha_is_dead"]:
+                flash(_("Erreur Captcha : rechargez la page"), "error")
+
+            return initial_func(*args, **kwargs)
+
+        return wrapper_func
+
+    return decorator_func
