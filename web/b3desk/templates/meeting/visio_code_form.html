@@ -27,12 +27,12 @@
         </div>
     </div>
 
-    {% if "visio_code" in session and session["visio_code"]["captchetat_is_needed"] %}
+    {% if "visio_code" in session and session["visio_code"]["captcha_is_needed"] %}
     <div class="captcha-container">
         <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
     image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
+        <label class="fr-label" for="text-input" id="captcha-description"></label>
         <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
-        <span id="captcha-description" class="fr-hint-text"></span>
     </div>
     {% endif %}
     <br>
@@ -51,26 +51,34 @@
 
 <script>
     const session = {{session|tojson}};
-    const captchetatIsNeeded = session["visio_code"]["captchetat_is_needed"];
+    const captchaIsNeeded = session["visio_code"]["captcha_is_needed"];
     const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
-    if (captchetatIsNeeded) {
-        const captchaInput = document.getElementById("captchaCode");
-        const captchaDescription = document.getElementById("captcha-description");
+    let captchaInput = null;
+    let captchaDescription = null;
+    if (captchaIsNeeded) {
+        captchaInput = document.getElementById("captchaCode");
+        captchaDescription = document.getElementById("captcha-description");
     }
 
-    const allowSubmitButtonCondition = (event, input) => {
-        const visioCode = Array.from(inputs).map(i => i.value).join("");
-        const visioCodeIsComplete = visioCode.match(/\d{9}$/);
-        if (captchetatIsNeeded) {
-            const captchaInputIsComplete = captchaInput.value != "";
-            allowSubmitButton(event, input, visioCodeIsComplete && captchaInputIsComplete, visioCode);
+    const getVisioCode = () => {
+        return Array.from(inputs).map(i => i.value).join("");
+    }
+
+    const visioCodeIsComplete = () => {
+        const visioCode = getVisioCode();
+        return visioCode.match(/\d{9}$/);
+    }
+
+    const formIsComplete = () => {
+        if (captchaIsNeeded) {
+            return captchaInput.value != "" && visioCodeIsComplete();
         } else {
-            allowSubmitButton(event, input, visioCodeIsComplete, visioCode);
+            return visioCodeIsComplete();
         }
     }
 
-    const allowSubmitButton = (event, input, formIsComplete, visioCode) => {
-        if (formIsComplete) {
+    const allowSubmitButton = (event, input) => {
+        if (formIsComplete()) {
                 document.getElementById("submit-visio-code").disabled = false;
                 if (event.key == "Enter") {
                     formValidateAndSubmit(input);
@@ -81,25 +89,18 @@
     }
 
     const formValidateAndSubmit = async (input) => {
-        try {
-            const visioCode = Array.from(inputs).map(i => i.value).join("");
-            const visioCodeIsComplete = visioCode.match(/\d{9}$/);
-            if (captchetatIsNeeded) {
-                const captchaValidationResponse = await captchaValidation();
-                if (captchaValidationResponse && visioCodeIsComplete) {
-                    formValidation(visioCode);
-                } else {
-                    captchaDescription.innerHTML = "Captcha saisi incorrect";
-                }
-            } else if (visioCodeIsComplete) {
-                formValidation(visioCode);
+        if (captchaIsNeeded) {
+            if (await captchaValidation() && visioCodeIsComplete()) {
+                formValidation(getVisioCode());
             } else {
-                visualValidation(input);
+                captchaDescription.innerHTML = "Captcha saisi incorrect";
             }
-        } catch (error) {
-            console.error('Erreur lors de la requête CAPTCHA :', error);
+        } else if (visioCodeIsComplete()) {
+            formValidation(getVisioCode());
+        } else {
+            visualValidation(input);
         }
-        }
+    }
 
     const focusAtEnd = (input) => {
         input.focus();
@@ -148,9 +149,10 @@
         }
     }
 
-    if (captchetatIsNeeded) {
+    if (captchaIsNeeded) {
         captchaInput.addEventListener("keyup", (event) => {
-            allowSubmitButtonCondition(event, captchaInput)
+
+            allowSubmitButton(event, captchaInput)
     })
     }
 
@@ -166,7 +168,7 @@
                 moveToNextInputIfNeeded(input);
             }
             visualValidation(input);
-            allowSubmitButtonCondition(event, input)
+            allowSubmitButton(event, input)
         })
         input.addEventListener('paste', (event) => {
             event.preventDefault()

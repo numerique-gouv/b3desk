@@ -13,7 +13,6 @@ from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
-from b3desk.endpoints.captcha import get_captchetat_token
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
@@ -292,19 +291,13 @@ def join_waiting_meeting_from_sip(visio_code):
 @check_oidc_connection(auth)
 def visio_code_connexion():
     # csrf
-    # captcha?
     visio_code = request.form.get("visio_code")
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
         flash("Le code de connexion saisi est erroné", "error")
         visio_code_attempt_counter_update(False)
-        if session["visio_code"]["captchetat_is_needed"]:
-            flash("CAPTCHA", "error")
-            access_token = get_captchetat_token()
-            if session["visio_code"]["captchetat_is_dead"]:
-                flash("captchetat_is_dead", "error")
-            if access_token:
-                flash(access_token, "success")
+        if session["visio_code"]["captcha_is_dead"]:
+            flash(_("Erreur Captcha : rechargez la page"), "error")
         return redirect(url_for("public.home"))
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)
