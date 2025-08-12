@@ -190,6 +190,7 @@
     })
 
     const captchaValidation = async () => {
+        let csrf_token = document.getElementsByName("csrf_token")[0].value;
         let captchaValidationResponse = false;
         const postData = {
             uuid: document.getElementById('captchetat-uuid').value,
@@ -200,7 +201,8 @@
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json; charset=utf-8'
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'X-CSRFToken':csrf_token
                 },
                 body: JSON.stringify(postData)
             });

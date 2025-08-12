@@ -290,7 +290,6 @@ def join_waiting_meeting_from_sip(visio_code):
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_connexion():
-    # csrf
     visio_code = request.form.get("visio_code")
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:

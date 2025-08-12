@@ -7,8 +7,6 @@ from flask import request
 from flask import session
 from flask_babel import lazy_gettext as _
 
-from b3desk import csrf
-
 bp = Blueprint("captcha", __name__)
 
 
@@ -54,7 +52,6 @@ def captcha_proxy():
 
 
 @bp.route("/captcha-validation", methods=["POST"])
-@csrf.exempt
 def captcha_validation():
     data = request.get_json()
     captcha_uuid = data.get("uuid")
