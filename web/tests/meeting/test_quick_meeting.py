@@ -3,15 +3,19 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 
 
-def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
-    """No anonymous quick mail form should be displayed on the home page if it is not allowed by the configuration."""
+def test_no_unauthenticated_quick_meeting(client_app, bbb_response, visio_code_session):
+    """No anonymous quick mail form should be displayed on the home page if it
+    is not allowed by the configuration."""
     client_app.app.config["MAIL_MEETING"] = False
     res = client_app.get("/home")
     assert 1 not in res.forms.keys()
 
 
-def test_unauthenticated_quick_meeting_unauthorized_email(client_app, bbb_response):
-    """Only allowed email domains should be able to launch an anonymous quick mail meeting."""
+def test_unauthenticated_quick_meeting_unauthorized_email(
+    client_app, bbb_response, visio_code_session
+):
+    """Only allowed email domains should be able to launch an anonymous quick
+    mail meeting."""
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
@@ -24,7 +28,7 @@ def test_unauthenticated_quick_meeting_unauthorized_email(client_app, bbb_respon
 
 
 def test_unauthenticated_quick_meeting_authorized_email(
-    client_app, bbb_response, smtpd
+    client_app, bbb_response, smtpd, visio_code_session
 ):
     assert len(smtpd.messages) == 0
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
