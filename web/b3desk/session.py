@@ -55,17 +55,17 @@ def visio_code_attempt_counter_update(success: bool):
         if "visio_code" in session
         else {
             "attempt_counter": 0,
-            "captchetat_is_needed": False,
-            "captchetat_is_dead": False,
+            "captcha_is_needed": False,
+            "captcha_is_dead": False,
         }
     )
     visio_code_session["attempt_counter"] = (
         0 if success else visio_code_session["attempt_counter"] + 1
     )
-    visio_code_session["captchetat_is_needed"] = (
+    visio_code_session["captcha_is_needed"] = (
         True if visio_code_session["attempt_counter"] > 5 else False
     )
-    visio_code_session["captchetat_is_dead"] = (
-        False if success else visio_code_session["captchetat_is_dead"]
+    visio_code_session["captcha_is_dead"] = (
+        False if success else visio_code_session["captcha_is_dead"]
     )
     session["visio_code"] = visio_code_session
