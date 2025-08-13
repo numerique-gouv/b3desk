@@ -100,6 +100,20 @@ def send_quick_meeting_mail(meeting, to_email):
         smtp.send_message(msg)
 
 
+def visio_code_session_init():
+    visio_code_session = (
+        session.get("visio_code")
+        if "visio_code" in session
+        else {
+            "attempt_counter": 0,
+            "captcha_is_needed": False,
+            "captcha_is_dead": False,
+        }
+    )
+    session["visio_code"] = visio_code_session
+    return visio_code_session
+
+
 def model_converter(model):
     class ModelConverter(BaseConverter):
         def __init__(self, *args, required=True, **kwargs):
@@ -212,7 +226,8 @@ def check_captcha():
     def decorator_func(initial_func):
         @wraps(initial_func)
         def wrapper_func(*args, **kwargs):
-            if session["visio_code"]["captcha_is_dead"]:
+            visio_code_session = visio_code_session_init()
+            if visio_code_session["captcha_is_dead"]:
                 flash(_("Erreur Captcha : rechargez la page"), "error")
 
             return initial_func(*args, **kwargs)
