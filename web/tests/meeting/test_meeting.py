@@ -1089,5 +1089,4 @@ def test_get_available_visio_code(client_app, authenticated_user):
 
 
 def test_get_available_visio_code_no_user(client_app):
-    response = client_app.get("/meeting/available-visio-code", status=302)
-    response.location == "/home"
+    client_app.get("/meeting/available-visio-code", status=302)
