@@ -44,7 +44,7 @@ Si nécessaire, tester l'accès au keycloak [http://localhost:8080] via l'interf
 ### Environnement de développement
 
 #### Installation locale
-Installer localement le projet vous permettra de lancer black, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
+Installer localement le projet vous permettra de lancer ruff, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
 L'installation locale peut être réalisé avec le Makefile situé à la racine du projet :
 ```bash
 make install-dev
@@ -95,22 +95,23 @@ tox
 
 #### Conventions de code
 
-Le code python doit suivre les conventions de la PEP 8. Dans les dépendance de développement du projet, on retrouve `flake8` et `black`.
+Le code python doit suivre les conventions de la PEP 8. Dans les dépendance de développement du projet, on retrouve `ruff`.
 
-Le code peut donc être formatté avec [black](https://pypi.org/project/black/) (dont certains settings sont dans le fichier `pyproject.toml`) :
+Le code peut donc être formatté avec [ruff](https://astral.sh/ruff) :
 
 ```bash
-black .
+ruff check .
+ruff format .
 ```
 
-Vous pouvez également déléger cette tâche avec `pre-commit`.
+Vous pouvez également déléger cette tâche avec `prek`.
 
-Le paquet `pre-commit` est dans les dépendances de développement. Avec votre environnement activé, il vous suffit d'installer le hook git avec :
+Le paquet `prek` est dans les dépendances de développement. Avec votre environnement activé, il vous suffit d'installer le hook git avec :
 ```
-pre-commit install
+prek install
 ```
 
-Ainsi, lorsque vous ferez un commit, black sera automatiquement lancé et formatera le code si ça n'a pas été fait (il vous faudra ajouter ce nouveau changement avec git).
+Ainsi, lorsque vous ferez un commit, ruff sera automatiquement lancé et formatera le code si ça n'a pas été fait (il vous faudra ajouter ce nouveau changement avec git).
 
 #### Intégration continue GitHub
 
@@ -123,7 +124,7 @@ La CI GitHub est utilisée pour :
 - lancer les tests dans un conteneur : pour valider que l'app est iso dans un conteneur ou en local
 - lancer tous les conteneurs et faire un healthcheck sur chacun : pour valider que la configuration locale est fonctionnelle, et notamment qu'un token bien généré permet à B3Desk de communiquer avec une instance Nextcloud
 - valider que la couverture de test est au moins égale à la couverture précédente : pour inciter à ajouter des tests
-- valider que le code a bien été formaté : un `black . --check` est lancé
+- valider que le code a bien été formaté : un `ruff check .` est lancé
 
 ### Pull requests
 

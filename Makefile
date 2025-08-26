@@ -5,7 +5,7 @@
 install-dev:
 	# Install dependencies for local development usage
 	poetry install --with dev --with doc; poetry shell
-	pre-commit install
+	prek install
 
 export-dependencies: export-base-dependencies export-dev-dependencies export-doc-dependencies
 
