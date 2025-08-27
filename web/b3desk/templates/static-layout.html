@@ -37,8 +37,6 @@
             <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
             <!-- Scampi Modal en attendant la modale GouvFr-->
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
-            <!-- minified nc filepicker : from https://github.com/julien-nc/nextcloud-webdav-filepicker -->
-            <!-- <script src="{{ url_for('static', filename='js/filePickerWrapper.js')}}"></script> -->
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}
             <script>
                 var _paq = window._paq = window._paq || [];
