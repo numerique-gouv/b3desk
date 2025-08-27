@@ -17,11 +17,8 @@ jobs:
     steps:
       - name: Setup git
         uses: actions/checkout@v4
-
-      - name: Get the git branch
-        uses: actions/checkout@v4
         with:
-          ref: main # TODO: dynamically get the branch against which the PR will be merged?
+          fetch-depth: 0
 
       - name: Setup python
         uses: actions/setup-python@v5
@@ -36,7 +33,9 @@ jobs:
           pip install diff-cover
 
       - name: Run unit tests with coverage
-        run: pytest --cov --cov-report=xml
+        run: pytest --cov --cov-report=xml --cov-report=term
 
-      - name: Check that the edited lines are all covered
-        run: diff-cover coverage.xml --fail-under=100
+      - name: Check diff coverage for modified files
+        if: github.event_name == 'pull_request'
+        run: |
+          diff-cover coverage.xml --compare-branch=origin/${{ github.base_ref }} --fail-under=100 --format github-annotations:warnings
