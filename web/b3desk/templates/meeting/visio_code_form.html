@@ -15,9 +15,9 @@
     </form>
     <div class="fr-container--fluid fr-mb-3w">
         <div class="visio-code-container">
-            <input type="text" minlength="3" maxlength="3" id="visio-code1" class="fr-input" placeholder="- - -">
-            <input type="text" minlength="3" maxlength="3" id="visio-code2" class="fr-input" placeholder="- - -">
-            <input type="text" minlength="3" maxlength="3" id="visio-code3" class="fr-input" placeholder="- - -">
+            <input type="text" minlength="3" maxlength="3" id="visio-code1" class="fr-input" inputmode="numeric" pattern="^\d*$" oninput="this.value = this.value.replace(/\D/g, '')" placeholder="- - -">
+            <input type="text" minlength="3" maxlength="3" id="visio-code2" class="fr-input" inputmode="numeric" pattern="^\d*$" oninput="this.value = this.value.replace(/\D/g, '')" placeholder="- - -">
+            <input type="text" minlength="3" maxlength="3" id="visio-code3" class="fr-input" inputmode="numeric" pattern="^\d*$" oninput="this.value = this.value.replace(/\D/g, '')" placeholder="- - -">
         </div>
     </div>
     <div class="fr-container--fluid">
@@ -97,7 +97,7 @@
             }
         })
         input.addEventListener('paste', (event) => {
-            const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+            const pasteData = (event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
             const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
             inputs.forEach((pastedInput, index) => {
                 pastedInput.value = chars[index];

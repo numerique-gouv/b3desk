@@ -97,6 +97,14 @@ On peut ensuite configurer les paramètres suivants de manière identique pour t
 - :attr:`~b3desk.settings.MainSettings.FQDN_SIP_SERVER`
 - :attr:`~b3desk.settings.MainSettings.PRIVATE_KEY`
 
+.. code-block:: bash
+   # example : web.env
+   ENABLE_SIP=on
+   FQDN_SIP_SERVER=example.serveur.com
+   PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+   ThereIsAWonderfulPrivateKey
+   -----END PRIVATE KEY-----"
+
 Il est maintenant nécessaire de redémarrer le conteneur de chaque serveur :
 
 .. code-block:: bash
