@@ -10,6 +10,7 @@ import pytest
 from flask_migrate import Migrate
 from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
+from joserfc.jwk import RSAKey
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
 
@@ -83,6 +84,9 @@ def iam_token(iam_server, iam_client, iam_user):
 @pytest.fixture
 def configuration(tmp_path, iam_server, iam_client, smtpd):
     smtpd.config.use_starttls = True
+    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+    private_pem_bytes = private_key.as_pem(private=True)
+    private_pem_str = private_pem_bytes.decode("utf-8")
     return {
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
@@ -128,36 +132,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "ENABLE_PIN_MANAGEMENT": True,
         "ENABLE_SIP": True,
         "FQDN_SIP_SERVER": "example.serveur.com",
-        "PRIVATE_KEY": """
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPqUq5kkoF9Aj8
-rb5F1sfi+x0X5ATa557QE8xcWLiQIJCFTmlaQ+yy0KPAFUy0N1tt2wMe3Z12Zqfk
-mF63ixiwkcD6rRre3cMb11XciAM8jFnqZJKyjWd9pGwPmXNO8TGlTxHO7T0VA8L2
-TjdYzqPGCTH9ggrGm+z0SMalbaKqwF98FIlLVz9RpTwC+wrbY7u6cNILhc08lTA4
-AXgy4QnpJNcxfVXrkg9E4OYrEyNgON/qKBt6AaU1wQ0UR6hmceGW79rZeBLPLR74
-Fl6dip5KhuLAOPWQOLNKCJDejzILaKFCZGpWDMLAyr4NKMgXLLmr7cW5Vaw+k2qi
-q7Suub6tAgMBAAECggEAH1oRWJQQDfcKlk+K7xNeyVOdUFqSKxSWIxciHv0cHFJ2
-T1IH0ON5bIPYfSsaEglbienrfjD6UYJtLbOddTuQZjQTPSV+bZBwoRbxNSLpzi3o
-c11s0n1L1ynIUNCbmpsKokkeSK4Dr1UKjdJAQ+2qxz7jJ8GG6/Zln3oPV7GGQh4U
-OwPzLI/zBYPeIB+4uMQPshpIHkw7WYEEQuZS0BtoQUkBVDd0KN8YAK0hQlfcQTC/
-tXnqcXNCMfKOi01yNiKKBiW0dI2kjW92d5OahdWxdI0ElBjTJ7p5akqpEEYBpbkv
-bOk1ytL6jT+yfZ6Q3Pg6ormE4VTUAtZy87tnc+efEQKBgQD91CP/YFbgMBCXWnfI
-1MQXiSgZPzHwR8mHW51MvwAIcnBL5Cyl0E0KHuKsyL1DboXFXPAblhCsLcr7g7Q+
-nCAedrJ1PamBP5hQCXJVelF9LCnMafKUK/+/vp9tlLhSwevYlitasT5XmDHiFP2t
-SvP4GRJDsCNHfq5wG0u27nZNaQKBgQDRcAyhwnSQnTeqQo0lN3bkeDpyfIAdcEB4
-GwBsibJzbdmXXbLJ13nUgBD71UKSLoBAxeqGa5nXgeGJ4/2R050+EcVbTfPf6kP/
-JTsa9zUpzjxax+ylgCzC73JQRTF+isg9D0zFYzLLwyfdp+izwfyPWv5lGdPo2kXg
-2F+9mp3KpQKBgQDlqCtpxCDWdqaMSq5WZyuEn/RH44WrgUg10A5ige3ltqUkBS7g
-V7dckNVGv9l+SWF/ULduPjiXkFc3edJ7U4c8COkuarwS1RdaUzG/ZQyV1H99E98H
-cUfUlQRqgUTEm/Bn5ncTd4qQdoOrqpJbWJWkxApic9t3tIbfp9K5kMg5AQKBgGX4
-3V2hFSoYMjMmxhw5vhyNYT++2I38ypbv5qvx+z3yXUAysctOq5XIaPyEoC4WkAF5
-m6+pEjV4mnyN0jc/Rk8jTekfsj7yi/rdgMKnXG4naQF2WAVYu/KJrSniFrAbGFWK
-boGow+Gr+mwUxdtH9xVBY52MDr5QEDfigfMKJgu1AoGAXxgMmTGzoCdf+qA1BfGU
-2RqFCGZxCNEQvxUWH7QiqDHXVv3KwSCG4w2pcV3z/TBkP9u2jnRjv6pY+WybsUw8
-Bv5MNsMlw30mv0xhyDwa5TvvzBgWcU2xseTBWTKLaGUJ82oTtzG3eFHxZ7GLFlP4
-0fJCgDTN52LXjWmEyDeLA1c=
------END PRIVATE KEY-----
-""",
+        "PRIVATE_KEY": private_pem_str,
     }
 
 
