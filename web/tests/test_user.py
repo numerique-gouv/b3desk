@@ -14,6 +14,8 @@ from b3desk.models.users import make_nextcloud_credentials_request
 
 
 def test_get_or_create_user(client_app):
+    assert db.session.get(User, 1) is None
+
     user_info = {
         "given_name": "Alice",
         "family_name": "Cooper",
