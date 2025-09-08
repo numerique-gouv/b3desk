@@ -1,5 +1,4 @@
 import requests
-
 from b3desk.models import db
 from b3desk.models.users import User
 

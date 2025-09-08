@@ -81,23 +81,28 @@ class BBB:
         )
         try:
             response = session.send(request)
-        except requests.exceptions.ConnectionError:
-            raise BigBLueButtonUnavailable
+        except requests.exceptions.ConnectionError as err:
+            raise BigBLueButtonUnavailable from err
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     bbb_response.make_cache_key = cache_key
 
     def is_meeting_running(self):
-        """https://docs.bigbluebutton.org/development/api/#ismeetingrunning"""
+        """Check if the meeting is running.
+
+        https://docs.bigbluebutton.org/development/api/#ismeetingrunning
+        """
         request = self.bbb_request(
             "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
         return self.bbb_response(request)
 
     def create(self):
-        """https://docs.bigbluebutton.org/development/api/#create"""
+        """Create a new meeting.
 
+        https://docs.bigbluebutton.org/development/api/#create.
+        """
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
@@ -224,14 +229,20 @@ class BBB:
         return data
 
     def delete_recordings(self, recording_ids):
-        """https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
+        """Delete recordings.
+
+        https://docs.bigbluebutton.org/dev/api.html#deleterecordings
+        """
         request = self.bbb_request(
             "deleteRecordings", params={"recordID": recording_ids}
         )
         return self.bbb_response(request)
 
     def get_meeting_info(self):
-        """https://docs.bigbluebutton.org/development/api/#getmeetinginfo"""
+        """Retrieve metadata about a meeting.
+
+        https://docs.bigbluebutton.org/development/api/#getmeetinginfo
+        """
         request = self.bbb_request(
             "getMeetingInfo", params={"meetingID": self.meeting.meetingID}
         )
@@ -239,7 +250,10 @@ class BBB:
 
     @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
     def get_recordings(self):
-        """https://docs.bigbluebutton.org/development/api/#getrecordings"""
+        """Get the list of recordings for a meeting.
+
+        https://docs.bigbluebutton.org/development/api/#getrecordings
+        """
         request = self.bbb_request(
             "getRecordings", params={"meetingID": self.meeting.meetingID}
         )
@@ -248,8 +262,8 @@ class BBB:
         )
         try:
             response = requests.Session().send(request)
-        except requests.exceptions.ConnectionError:
-            raise BigBLueButtonUnavailable
+        except requests.exceptions.ConnectionError as err:
+            raise BigBLueButtonUnavailable from err
 
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
@@ -301,7 +315,10 @@ class BBB:
         return result
 
     def update_recordings(self, recording_ids, metadata):
-        """https://docs.bigbluebutton.org/dev/api.html#updaterecordings"""
+        """Update the recordings of a meeting.
+
+        https://docs.bigbluebutton.org/dev/api.html#updaterecordings
+        """
         meta = {f"meta_{key}": value for (key, value) in metadata.items()}
         request = self.bbb_request(
             "updateRecordings", params={"recordID": ",".join(recording_ids), **meta}
@@ -309,8 +326,10 @@ class BBB:
         return self.bbb_response(request)
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
-        """https://docs.bigbluebutton.org/dev/api.html#join"""
+        """Join a BBB meeting.
 
+        https://docs.bigbluebutton.org/dev/api.html#join
+        """
         params = {
             "fullName": fullname,
             "meetingID": self.meeting.meetingID,
@@ -327,7 +346,10 @@ class BBB:
         return self.bbb_request("join", params=params)
 
     def end(self):
-        """https://docs.bigbluebutton.org/development/api/#end"""
+        """Close a BBB meeting.
+
+        https://docs.bigbluebutton.org/development/api/#end
+        """
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
 

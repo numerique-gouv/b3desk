@@ -7,11 +7,10 @@ Create Date: 2025-06-10 12:41:24.218186
 
 import sqlalchemy as sa
 from alembic import op
+from b3desk.models.meetings import unique_visio_code_generation
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
-
-from b3desk.models.meetings import unique_visio_code_generation
 
 # revision identifiers, used by Alembic.
 revision = "0052f608f4b3"

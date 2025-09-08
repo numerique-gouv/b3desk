@@ -9,7 +9,7 @@ import pytest
 @pytest.fixture
 def bbb_getRecordings_response(mocker):
     class Response:
-        """https://docs.bigbluebutton.org/dev/api.html#getrecordings"""
+        """https://docs.bigbluebutton.org/dev/api.html#getrecordings."""
 
         content = """
 <response>

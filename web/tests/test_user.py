@@ -2,8 +2,6 @@ from datetime import date
 
 import pytest
 import requests
-from time_machine import travel
-
 from b3desk.models import db
 from b3desk.models.users import NoUserFound
 from b3desk.models.users import TooManyUsers
@@ -11,6 +9,7 @@ from b3desk.models.users import User
 from b3desk.models.users import get_or_create_user
 from b3desk.models.users import get_secondary_identity_provider_id_from_email
 from b3desk.models.users import make_nextcloud_credentials_request
+from time_machine import travel
 
 
 def test_get_or_create_user(client_app):

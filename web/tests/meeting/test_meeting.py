@@ -7,7 +7,6 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
-
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
@@ -672,12 +671,10 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
 
 
 def test_meeting_link_retrocompatibility(meeting):
-    """Old meeting links must still be usable for long lasting users, and for
-    links since 1.2.0.
+    """Old meeting links must still be usable for long lasting users, and for links since 1.2.0.
 
     https://github.com/numerique-gouv/b3desk/issues/128
     """
-
     old_hashed_moderator_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
@@ -1057,7 +1054,7 @@ def test_unique_visio_code_generation(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
     random_visio_codes = []
-    for visio_code in range(100):
+    for _ in range(100):
         random_visio_codes.append(unique_visio_code_generation())
     for visio_code in random_visio_codes:
         assert len(visio_code) == 9

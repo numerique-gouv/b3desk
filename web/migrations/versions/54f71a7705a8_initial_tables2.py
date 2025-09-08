@@ -16,7 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-import alembic_helpers
+import alembic_helpers  # noqa: E402
 
 # alembic_helpers = imp.load_source('alembic_helpers', (
 #    os.getcwd() + '/' + op.get_context().script.dir + '/alembic_helpers.py'))

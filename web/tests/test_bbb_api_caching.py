@@ -16,8 +16,7 @@ IS_MEETING_RUNNING_SUCCESS_RESPONSE = """
 
 
 def test_is_meeting_running(meeting, mocker):
-    """Tests that the requests to the ismeetingrunning endpoint of the BBB API
-    are cached."""
+    """Tests that the requests to the ismeetingrunning endpoint of the BBB API are cached."""
 
     class Response:
         content = IS_MEETING_RUNNING_SUCCESS_RESPONSE
@@ -138,8 +137,7 @@ GET_RECORDINGS_RESPONSE = """
 
 
 def test_get_recordings(meeting, mocker):
-    """Tests that the requests to the getrecordings endpoint of the BBB API are
-    cached."""
+    """Tests that the requests to the getrecordings endpoint of the BBB API are cached."""
 
     class Response:
         content = GET_RECORDINGS_RESPONSE
@@ -184,8 +182,7 @@ CREATE_RESPONSE = """
 
 
 def test_create(meeting, mocker):
-    """Tests that the requests to the create endpoint of the BBB API are NOT
-    cached."""
+    """Tests that the requests to the create endpoint of the BBB API are NOT cached."""
 
     class Response:
         content = CREATE_RESPONSE

@@ -2,11 +2,10 @@ import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
 from joserfc.jwk import RSAKey
-
-from b3desk.models.roles import Role
 
 
 def test_signin_meeting(client_app, meeting, user, bbb_response):
@@ -33,8 +32,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
     authenticated_user,
     bbb_response,
 ):
-    """If the meeting owner are authenticated, they must be automatically
-    promoted moderator in the meeting when clicking on an attendee link."""
+    """If the meeting owner are authenticated, they must be automatically promoted moderator in the meeting when clicking on an attendee link."""
     meeting_hash = meeting.get_hash(Role.attendee)
     url = f"/meeting/signin/{meeting.id}/creator/{meeting.user.id}/hash/{meeting_hash}"
 
@@ -59,8 +57,7 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
 
 
 def test_auth_attendee_disabled(client_app, meeting):
-    """If attendee authentication service is temporarily disabled, we should
-    skip the attendee authentication step.
+    """If attendee authentication service is temporarily disabled, we should skip the attendee authentication step.
 
     https://github.com/numerique-gouv/b3desk/issues/9
     """
@@ -89,12 +86,10 @@ def test_join_meeting_as_authenticated_attendee(
 
 
 def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
-    """The user names coming from the identity provider might be uppercase. In
-    such cases b3desk should correct the display.
+    """The user names coming from the identity provider might be uppercase. In such cases b3desk should correct the display.
 
     https://github.com/numerique-gouv/b3desk/issues/47
     """
-
     user.given_name = "JOHN"
     user.family_name = "LENNON"
     user.email = "john@lennon.com"

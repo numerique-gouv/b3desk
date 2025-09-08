@@ -34,8 +34,7 @@ def secret_key():
 
 
 def is_rie():
-    """Checks wether the request was made from inside the state network "Réseau
-    Interministériel de l’État"."""
+    """Check wether the request was made from inside the state network "Réseau Interministériel de l'État"."""
     if not request.remote_addr:
         return False
 

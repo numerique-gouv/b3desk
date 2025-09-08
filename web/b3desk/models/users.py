@@ -59,6 +59,7 @@ class MissingToken(Exception):
 
     Attributes:
         message -- explanation of the error
+
     """
 
     def __init__(self, message="No token given for the B3Desk instance"):
@@ -71,6 +72,7 @@ class TooManyUsers(Exception):
 
     Attributes:
         message -- explanation of the error
+
     """
 
     def __init__(self, message="More than one user is using this email"):
@@ -83,6 +85,7 @@ class NoUserFound(Exception):
 
     Attributes:
         message -- explanation of the error
+
     """
 
     def __init__(self, message="No user with this email was found"):
@@ -129,8 +132,10 @@ def get_secondary_identity_provider_id_from_email(email):
             raise MissingToken(
                 f"No token given for the B3Desk instance, {token_response}"
             )
-    except (AttributeError, KeyError):
-        raise MissingToken(f"No token given for the B3Desk instance, {token_response}")
+    except (AttributeError, KeyError) as err:
+        raise MissingToken(
+            f"No token given for the B3Desk instance, {token_response}"
+        ) from err
 
     try:
         users_response = get_secondary_identity_provider_users_from_email(

@@ -7,11 +7,10 @@ Create Date: 2025-03-25 08:23:29.169319
 
 import sqlalchemy as sa
 from alembic import op
+from b3desk.models.meetings import pin_generation
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
-
-from b3desk.models.meetings import pin_generation
 
 # revision identifiers, used by Alembic.
 revision = "c25342fd2428"

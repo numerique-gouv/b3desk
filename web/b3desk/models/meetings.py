@@ -142,9 +142,9 @@ class Meeting(db.Model):
     @property
     def meetingID(self):
         if self.id is not None:
-            fid = "meeting-persistent-%i" % (self.id)
+            fid = f"meeting-persistent-{self.id}"
         else:
-            fid = "meeting-vanish-%s" % (self.fake_id)
+            fid = f"meeting-vanish-{self.fake_id}"
         return "{}--{}".format(fid, self.user.hash if self.user else "")
 
     @property
@@ -394,10 +394,7 @@ def get_mail_meeting(random_string=None):
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW="{}-{}".format(
-            random_string,
-            random_string,
-        ),  # it is only usefull for bbb
+        moderatorPW=f"{random_string}-{random_string}",  # it is only usefull for bbb
         moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
         logoutUrl=(
             current_app.config["QUICK_MEETING_LOGOUT_URL"]

@@ -196,7 +196,6 @@ def join_mail_meeting():
 
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
-    form["user_id"].data
     expiration = form["expiration"].data
     h = form["h"].data
 

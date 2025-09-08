@@ -148,9 +148,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     else:
         message = result.get("message", "")
         flash(
-            "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}".format(
-                code=return_code, message=message
-            ),
+            f"Nous n'avons pas pu modifier cet enregistrement : {return_code}, {message}",
             "error",
         )
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
