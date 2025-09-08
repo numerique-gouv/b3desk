@@ -19,7 +19,7 @@
     <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
     <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
     {% for recording in meeting.get_recordings() %}
-    {% set recording_name = recording.name or recording.start_date.strftime("%d/%m/%Y") %}
+    {% set recording_name = recording.name or recording.start_date.strftime("%Y-%m-%d %H:%M:%S") %}
     <h3 class="fr-h3">
         {{ recording_name }}
         <button class="fr-btn fr-btn--secondary fr-icon-edit-line"  data-fr-opened="false" aria-controls="rename-video-{{ recording.recordID }}">
