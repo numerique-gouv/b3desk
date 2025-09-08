@@ -197,6 +197,6 @@ def test_delete_recordings(
     )
 
     assert (
-        f"séminaire meeting record {first_recording_id} was deleted by alice@domain.tld\n"
+        f"Meeting meeting {meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
