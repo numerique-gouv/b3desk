@@ -21,7 +21,7 @@ from flask import url_for
 
 from b3desk.tasks import background_upload
 
-from .. import BigBLueButtonUnavailable
+from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
 
@@ -82,7 +82,7 @@ class BBB:
         try:
             response = session.send(request)
         except requests.exceptions.ConnectionError as err:
-            raise BigBLueButtonUnavailable from err
+            raise BigBlueButtonUnavailable() from err
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
@@ -263,7 +263,7 @@ class BBB:
         try:
             response = requests.Session().send(request)
         except requests.exceptions.ConnectionError as err:
-            raise BigBLueButtonUnavailable from err
+            raise BigBlueButtonUnavailable() from err
 
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
@@ -365,7 +365,7 @@ class BBB:
                     f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
                 ).hexdigest()
                 current_app.logger.info(
-                    "Add document on BigBLueButton room %s %s creation for file %s",
+                    "Add document on BigBlueButton room %s %s creation for file %s",
                     self.meeting.name,
                     self.meeting.id,
                     meeting_file.title,

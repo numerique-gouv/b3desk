@@ -40,7 +40,7 @@ auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
 
 
-class BigBLueButtonUnavailable(Exception):
+class BigBlueButtonUnavailable(Exception):
     pass
 
 
@@ -209,7 +209,7 @@ def setup_error_pages(app):
     def internal_error(error):
         return render_template("errors/500.html", error=error), 500
 
-    @app.errorhandler(BigBLueButtonUnavailable)
+    @app.errorhandler(BigBlueButtonUnavailable)
     def bigbluebutton_unavailable_error(error):
         return render_template("errors/big-blue-button-error.html", error=error)
 
