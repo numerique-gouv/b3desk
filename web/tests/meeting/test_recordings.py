@@ -174,3 +174,29 @@ def test_update_recording_name(client_app, authenticated_user, meeting, bbb_resp
     assert bbb_params["recordID"] == "recording_id"
 
     assert f"meeting/recordings/{meeting.id}" in response.location
+
+
+def test_delete_recordings(
+    mocker, client_app, authenticated_user, meeting, bbb_getRecordings_response, caplog
+):
+    class DirectLinkRecording:
+        status_code = 200
+
+    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    recordings = meeting.bbb.get_recordings()
+
+    assert len(recordings) == 2
+    first_recording_id = recordings[0]["recordID"]
+
+    response = client_app.post(
+        "/meeting/video/delete",
+        {
+            "id": meeting.id,
+            "recordID": first_recording_id,
+        },
+    )
+
+    assert (
+        f"séminaire meeting record {first_recording_id} was deleted by alice@domain.tld\n"
+    ) in caplog.text
+    assert ("success", "Vidéo supprimée") in response.flashes
