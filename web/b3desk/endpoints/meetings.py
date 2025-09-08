@@ -233,14 +233,16 @@ def save_meeting():
     meeting.save()
     if is_new_meeting:
         current_app.logger.info(
-            "Meeting %s was created by %s",
+            "Meeting %s %s was created by %s",
             meeting.name,
+            meeting.id,
             user.email,
         )
     else:
         current_app.logger.info(
-            "Meeting %s was updated by %s",
+            "Meeting %s %s was updated by %s",
             meeting.name,
+            meeting.id,
             user.email,
         )
     flash(
@@ -333,9 +335,9 @@ def delete_meeting():
                 save_voiceBridge_and_delete_meeting(meeting)
                 flash(_("Élément supprimé"), "success")
                 current_app.logger.info(
-                    "%s %s was deleted by %s",
-                    current_app.config["WORDING_MEETING"],
+                    "Meeting %s %s was deleted by %s",
                     meeting.name,
+                    meeting.id,
                     user.email,
                 )
         else:
@@ -357,9 +359,9 @@ def delete_video_meeting():
         if return_code == "SUCCESS":
             flash(_("Vidéo supprimée"), "success")
             current_app.logger.info(
-                "%s %s record %s was deleted by %s",
-                current_app.config["WORDING_MEETING"],
+                "Meeting %s %s record %s was deleted by %s",
                 meeting.name,
+                meeting.id,
                 recordID,
                 user.email,
             )

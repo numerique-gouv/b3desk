@@ -121,7 +121,8 @@ def test_save_new_meeting(
     assert len(meeting.visio_code) == 9
     assert meeting.visio_code.isdigit()
     assert (
-        "Meeting Mon meeting de test was created by alice@domain.tld\n" in caplog.text
+        f"Meeting Mon meeting de test {meeting.id} was created by alice@domain.tld\n"
+        in caplog.text
     )
 
 
@@ -180,7 +181,9 @@ def test_save_existing_meeting_not_running(
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
-    assert "Meeting meeting was updated by alice@domain.tld\n" in caplog.text
+    assert (
+        f"Meeting meeting {meeting.id} was updated by alice@domain.tld\n" in caplog.text
+    )
 
 
 def test_save_existing_meeting_running(
