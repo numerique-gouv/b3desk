@@ -87,42 +87,37 @@ ignore = [
 ]
 
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = true
-skipsdist = true
-envlist =
-    style
-    py39
-    py310
-    py311
-    py312
-    py313
-    coverage
-    doc
+requires = ["tox>=4.19"]
+env_list = ["style", "py39", "py310", "py311", "py312", "py313", "coverage", "doc"]
+no_package = true
 
-[testenv]
-allowlist_externals = poetry
-commands =
-    poetry install --with dev
-    poetry run pytest {posargs}
+[tool.tox.env_run_base]
+allowlist_externals = ["poetry"]
+commands = [
+    ["poetry", "install", "--with", "dev"],
+    ["poetry", "run", "pytest", "{posargs:web}"]
+]
 
-[testenv:style]
-commands =
-    pip install prek
-    prek run --all-files
+[tool.tox.env.style]
+commands = [
+    ["poetry", "install", "--with", "dev"],
+    ["poetry", "run", "prek", "run", "--all-files"]
+]
 
-[testenv:coverage]
-commands =
-    poetry install --with dev
-    poetry run pytest --cov --cov-report term:skip-covered {posargs}
-    poetry run coverage html
+[tool.tox.env.coverage]
+allowlist_externals = ["poetry"]
+commands = [
+    ["poetry", "install", "--with", "dev"],
+    ["poetry", "run", "pytest", "--cov", "--cov-report", "term:skip-covered", "{posargs:web}"],
+    ["poetry", "run", "coverage", "html"]
+]
 
-[testenv:doc]
-commands =
-    poetry install --with doc
-	poetry run sphinx-build -W --keep-going documentation build/sphinx/html
-"""
+[tool.tox.env.doc]
+allowlist_externals = ["poetry"]
+commands = [
+    ["poetry", "install", "--with", "doc"],
+    ["poetry", "run", "sphinx-build", "-W", "--keep-going", "documentation", "build/sphinx/html"]
+]
 
 [tool.coverage.run]
 branch = true
