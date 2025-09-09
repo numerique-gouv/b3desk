@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Check container tests
-      run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml run --rm tests
+      run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml run
 
   test-local:
     name: Run test locally
