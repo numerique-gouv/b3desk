@@ -97,14 +97,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  tests:
-    container_name: tests
-    build:
-      context: ./web
-      dockerfile: Dockerfile-tests
-    env_file:
-      - ${ENV_FILE_OVERRIDE-web.env}
-    volumes:
-      - ./web/b3desk:/opt/bbb-visio/b3desk
-      - ./web/tests:/opt/bbb-visio/tests

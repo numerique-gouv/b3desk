@@ -1,3 +1,5 @@
+# test environment used in the CI
+
 version: '3.7'
 
 services:
