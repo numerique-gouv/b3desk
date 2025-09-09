@@ -31,6 +31,11 @@
 
 {% block js %}
 <script>
+    const focusAtEnd = (input) => {
+        input.focus();
+        input.selectionStart = 3;
+        input.selectionEnd = 3;
+    }
     const formValidation = (visioCode) => {
         document.getElementById("visio-code").value = visioCode;
         document.getElementById("visio-code-form").submit();
@@ -52,9 +57,7 @@
         const previousSibling = target.previousElementSibling;
         const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
         if (isAtBeginning && previousSiblingInput) {
-            previousSibling.focus();
-            previousSibling.selectionStart = 3;
-            previousSibling.selectionEnd = 3;
+            focusAtEnd(previousSibling);
         }
     }
 
@@ -97,15 +100,18 @@
             }
         })
         input.addEventListener('paste', (event) => {
+            event.preventDefault()
             const pasteData = (event.clipboardData || window.clipboardData).getData('text');
             const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
             inputs.forEach((pastedInput, index) => {
                 pastedInput.value = chars[index];
                 visualValidation(pastedInput);
-                if (index == 2) {
-                    pastedInput.focus();
-                    pastedInput.selectionStart = 3;
-                    pastedInput.selectionEnd = 3;
+                if (pasteData.length <= 3 && index == 0) {
+                    focusAtEnd(pastedInput);
+                } else if (pasteData.length > 3 && pasteData.length <= 6 && index == 1) {
+                    focusAtEnd(pastedInput);
+                } else if (pasteData.length > 6 && index == 2) {
+                    focusAtEnd(pastedInput);
                 }
             })
         });
