@@ -9,7 +9,7 @@ bp = Blueprint("captcha", __name__)
 
 
 def get_captchetat_token():
-    url = "https://oauth.piste.gouv.fr/api/oauth/token"
+    url = f"{current_app.config['PISTE_OAUTH_API_URL']}/oauth/token"
     form_data = {
         "grant_type": "client_credentials",
         "client_id": current_app.config["PISTE_OAUTH_CLIENT_ID"],
@@ -31,7 +31,7 @@ def get_captchetat_token():
 @bp.route("/simple-captcha-endpoint", methods=["GET"])
 def captcha_proxy():
     access_token = get_captchetat_token()
-    piste_url = "https://api.piste.gouv.fr/piste/captchetat/v2/simple-captcha-endpoint"
+    piste_url = f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/simple-captcha-endpoint"
     try:
         response = requests.get(
             piste_url,
@@ -59,7 +59,7 @@ def captcha_validation():
     access_token = get_captchetat_token()
     try:
         response = requests.post(
-            "https://api.piste.gouv.fr/piste/captchetat/v2/valider-captcha",
+            f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/valider-captcha",
             headers={"Authorization": f"Bearer {access_token}"},
             json={"uuid": captcha_uuid, "code": captcha_code},
         )

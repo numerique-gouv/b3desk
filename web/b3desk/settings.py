@@ -1171,3 +1171,15 @@ class MainSettings(BaseSettings):
     the following line: Identifiants Oauth
     under the following column: Secret Key
     """
+
+    CAPTCHETAT_API_URL: Optional[str] = "https://api.piste.gouv.fr/piste/"
+    """PISTE API url
+
+    basic url for PISTE API used to get and check captchetat
+    """
+
+    PISTE_OAUTH_API_URL: Optional[str] = "https://oauth.piste.gouv.fr/api"
+    """ PISTE OAUTH APU url
+
+    basic url for PISTE OAUTH API used to get access token to captchetat API
+    """
