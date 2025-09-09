@@ -12,8 +12,8 @@ def get_captchetat_token():
     url = "https://oauth.piste.gouv.fr/api/oauth/token"
     form_data = {
         "grant_type": "client_credentials",
-        "client_id": current_app.config["CLIENT_ID"],
-        "client_secret": current_app.config["CLIENT_SECRET"],
+        "client_id": current_app.config["PISTE_OAUTH_CLIENT_ID"],
+        "client_secret": current_app.config["PISTE_OAUTH_CLIENT_SECRET"],
         "scope": "piste.captchetat",
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
