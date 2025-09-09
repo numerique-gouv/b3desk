@@ -50,8 +50,7 @@
 <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
 
 <script>
-    const session = {{session|tojson}};
-    const captchaIsNeeded = session["visio_code"]["captcha_is_needed"];
+    const captchaIsNeeded = {{ session["visio_code"]["captcha_is_needed"] | tojson }};
     const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
     let captchaInput = null;
     let captchaDescription = null;
