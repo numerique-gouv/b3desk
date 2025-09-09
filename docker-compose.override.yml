@@ -67,7 +67,9 @@ services:
 
   tokenmock:
     container_name: id
-    image: php:7.2-apache
+    build:
+      context: ./tokenmock
+      dockerfile: Dockerfile
     depends_on:
       nextcloud:
         condition: service_healthy
@@ -76,10 +78,9 @@ services:
     environment:
       - NC_HOST=http://nextcloud  # nextcloud service in docker network
     volumes:
-      - ./tokenmock:/var/www/html
-      - ./nextcloud/conf:/var/www/conf  # to get shared Nextcloud Sessiontoken generated key
+      - ./nextcloud/conf:/opt/app/conf  # to get shared Nextcloud Sessiontoken generated key
     ports:
-      - 9000:80
+      - 9000:5000
 
   postgres:
     container_name: db

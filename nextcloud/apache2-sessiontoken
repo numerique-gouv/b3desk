@@ -7,8 +7,8 @@ chown -R www-data: /var/www/html/apps/sessiontoken
 ## install the sessiontoken key in /var/www/html/config/config.php
 mkdir -p /var/www/conf
 php /var/www/html/apps/sessiontoken/hash-apikey.php | tee > /var/www/conf/key.txt
-HASH=$(sed -e '8!d' -e 's/^[ ]*//' -e 's/,$//' /var/www/conf/key.txt)
-sed -i "/'datadirectory'/a $HASH," /var/www/html/config/config.php
+HASH=$(sed -n "8{s/^[[:space:]]*'[^']*' => '\([^']*\)',\?$/\1/p}" /var/www/conf/key.txt)
+sed -i "\$ a\\\$CONFIG['sessiontoken_apikey_hash'] = '$HASH';" /var/www/html/config/config.php
 sed -i -e '5!d' -e 's/[\t ]//g' /var/www/conf/key.txt
 #
 ## enable the sessiontoken app
@@ -17,7 +17,7 @@ su -p "www-data" -s /bin/sh -c "php occ app:enable sessiontoken"
 ## install and configure webapppassword
 wget -qO- https://github.com/digital-blueprint/webapppassword/releases/download/v24.4.0/webapppassword.tar.gz | tar xvz -C /var/www/html/apps/
 chown -R www-data: /var/www/html/apps/webapppassword
-sed -i "/'datadirectory'/a 'webapppassword.origins' => ['$NEXTCLOUD_ALLOW_ORIGIN']," /var/www/html/config/config.php
+sed -i "\$ a\\\$CONFIG['webapppassword.origins'] = ['$NEXTCLOUD_ALLOW_ORIGIN'];" /var/www/html/config/config.php
 su -p "www-data" -s /bin/sh -c "php occ app:enable webapppassword"
 
 # create bbb-visio-user
