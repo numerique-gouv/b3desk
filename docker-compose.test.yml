@@ -31,7 +31,3 @@ services:
       test: "bash ./healthcheck.sh"
       start_period: 5s
       interval: 5s
-
-  tests:
-    env_file:
-      - web.env.example
