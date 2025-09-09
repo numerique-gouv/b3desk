@@ -51,22 +51,17 @@ make install-dev
 ```
 Utilisez ce Makefile comme référence pour vos commandes shell.
 
-#### Poetry
-L'environnement de développement est géré avec [Poetry](https://python-poetry.org/).
+#### uv
+L'environnement de développement est géré avec [uv](https://docs.astral.sh/uv/).
 
 Installez l'environnement avec :
 ```bash
-poetry install [--with GROUPE]
+uv sync [--with GROUPE]
 ```
 
-activez-le avec :
+Si vous souhaitez ajouter des dépendances, utilisez également uv :
 ```bash
-poetry shell
-```
-
-Si vous souhaitez ajouter des dépendances, utilisez également Poetry :
-```bash
-poetry add [--group GROUPE] PAQUET-PIP
+uv add [--group GROUPE] PAQUET
 ```
 vous devez ensuite impérativement mettre à jour les requirements de l'environnement modifié qui seront utilisées pour les conteneurs Docker de la production et de l'intégration continue :
 ```bash
@@ -83,9 +78,9 @@ Le nouveau code doit être testé. Pour lancer les tests, vous pouvez le faire d
 ```bash
 docker compose run --rm tests [pytest params]
 ```
-ou bien dans l'environnement Poetry avec pytest (dont certains settings sont dans le fichier `pyproject.toml`) :
+ou bien dans l'environnement uv avec pytest (dont certains settings sont dans le fichier `pyproject.toml`) :
 ```bash
-pytest
+uv run pytest
 ```
 
 Pour tester le code sur les différentes versions de python en cours, et prévenir des incompatibilités avec des versions futures, utilisez :
