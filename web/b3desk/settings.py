@@ -1157,15 +1157,15 @@ class MainSettings(BaseSettings):
 
         return video_streaming_links
 
-    CLIENT_ID: str
-    """Oauth client_id
+    PISTE_OAUTH_CLIENT_ID: str
+    """Piste Oauth client_id
 
     Oauth client id can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
     """
 
-    CLIENT_SECRET: str
-    """Oauth client_secret
+    PISTE_OAUTH_CLIENT_SECRET: str
+    """ Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
