@@ -33,6 +33,9 @@
                     <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
                 {% endif %}
             {% endif %}
+            {% if debug %}
+                <span class="fr-badge fr-badge--sm fr-badge--error" title="{% trans %}L'instance est configurée en mode déboggage. Ne pas utiliser en production !{% endtrans %}">DEBUG</span>
+            {% endif %}
             </p>
         </a>
         <!-- Le service de réunions en ligne pour les agents de l'État -->

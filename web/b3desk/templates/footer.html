@@ -22,6 +22,9 @@
                         {% else %}
                             v{{ version }}
                         {% endif %}
+                        {% if debug %}
+                        <span class="fr-badge fr-badge--sm fr-badge--error" title="{% trans %}L'instance est configurée en mode déboggage. Ne pas utiliser en production !{% endtrans %}">DEBUG</span>
+                        {% endif %}
                     {% endif %}
                     </p>
                     <ul class="fr-footer__content-list">

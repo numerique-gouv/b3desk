@@ -45,11 +45,18 @@ class BigBlueButtonUnavailable(Exception):
 
 
 def setup_configuration(app, config=None):
+    debug = app.debug
+
     if config:
         app.config.from_mapping(config)
 
     config_obj = MainSettings.model_validate(config or {})
     app.config.from_object(config_obj)
+
+    # Flask reads the FLASK_DEBUG environment var
+    # This avoids the app.debug parameter to be overwritten by configuration defaults
+    if debug:
+        app.debug = True
 
 
 def setup_celery(app):
@@ -115,6 +122,26 @@ def setup_logging(app):
             }
         )
 
+    elif not app.testing:
+        dictConfig(
+            {
+                "version": 1,
+                "formatters": {
+                    "default": {
+                        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                    }
+                },
+                "handlers": {
+                    "console": {
+                        "class": "logging.StreamHandler",
+                        "stream": "ext://sys.stdout",
+                        "formatter": "default",
+                    }
+                },
+                "root": {"level": "DEBUG", "handlers": ["console"]},
+            }
+        )
+
 
 def setup_i18n(app):
     from flask import session
@@ -166,6 +193,7 @@ def setup_jinja(app):
             }
 
         return {
+            "debug": app.debug,
             "config": app.config,
             "beta": app.config["BETA"],
             "development_version": __version__ == "0.0.0" or "dev" in __version__,
