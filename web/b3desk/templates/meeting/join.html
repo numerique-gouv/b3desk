@@ -49,20 +49,6 @@
 </form>
 
 {% if role == Role.authenticated %}
-<script>
-    document.addEventListener('keyup', updatePreview);
-
-    function updatePreview(e) {
-        const fullnameField = document.getElementById('fullname')
-        const suffixField = document.getElementById('fullname_suffix')
-        const previewArea = document.getElementById('namePreview')
-        var namePreview = fullnameField.value
-        if (suffixField.value.length) {
-            namePreview += " - " + suffixField.value
-        }
-        previewArea.innerHTML = namePreview
-    }
-    updatePreview()
-</script>
+<script src="{{ url_for('static', filename='js/join_authenticated.js')}}"></script>
 {% endif %}
 {% endblock %}
