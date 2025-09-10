@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import os
 from logging.config import dictConfig
+from logging.config import fileConfig
 
 from flask import Flask
 from flask import render_template
@@ -102,7 +103,10 @@ def setup_sentry(app):  # pragma: no cover
 
 
 def setup_logging(app):
-    if not app.debug and not app.testing:
+    if log_config := app.config.get("LOG_CONFIG"):
+        fileConfig(log_config, disable_existing_loggers=False)
+
+    elif not app.debug and not app.testing:
         dictConfig(
             {
                 "version": 1,
