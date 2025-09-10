@@ -110,6 +110,10 @@ def visio_code_attempt_counter_init():
     return visio_code_attempt_counter
 
 
+def captcha_error(message):
+    current_app.logger.error("captcha error : %s", message)
+
+
 def model_converter(model):
     class ModelConverter(BaseConverter):
         def __init__(self, *args, required=True, **kwargs):
