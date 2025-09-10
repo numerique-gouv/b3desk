@@ -281,9 +281,14 @@ def create_meeting(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def externalUpload(meeting: Meeting, owner: User):
+def external_upload(meeting: Meeting, owner: User):
+    """Display the nextcloud file selector.
+
+    This endpoint is used by BBB during the meetings.
+    It is configurated by the 'uploadExternalUrl' parameter on the creation request.
+    """
     if meeting.is_running():
-        return render_template("meeting/externalUpload.html", meeting=meeting)
+        return render_template("meeting/external_upload.html", meeting=meeting)
     return redirect(url_for("public.welcome"))
 
 

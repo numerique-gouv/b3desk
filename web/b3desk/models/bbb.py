@@ -106,9 +106,13 @@ class BBB:
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
+            # TODO: This parameter name is probably wrong
+            # https://github.com/numerique-gouv/b3desk/issues/211
             "uploadExternalUrl": url_for(
-                "meetings.externalUpload", meeting=self.meeting, _external=True
+                "meetings.external_upload", meeting=self.meeting, _external=True
             ),
+            # TODO: check if there is really a need for
+            # a EXTERNAL_UPLOAD_DESCRIPTION settings
             "uploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
             ],
