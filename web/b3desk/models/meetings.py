@@ -226,6 +226,7 @@ class Meeting(db.Model):
         create=False,
         quick_meeting=False,
     ):
+        """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
         is_meeting_available = self.is_running()
         should_create_room = (
             not is_meeting_available and (meeting_role == Role.moderator) and create

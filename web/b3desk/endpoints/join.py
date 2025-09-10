@@ -77,7 +77,12 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     "/meeting/signin/<role:role>/<meeting_fake_id>/creator/<user:creator>/hash/<h>"
 )
 @bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
-def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
+def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
+    """Get users in the meeting.
+
+    - Unauthenticated users are display a name choosing form 'join.html'
+    - Authenticated users are redirected to 'waiting_meeting'
+    """
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
@@ -137,6 +142,10 @@ def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
     "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suffix=""):
+    """Display a page until the BBB meeting is created.
+
+    The page wait a few seconds, then redirect to 'join_meeting'.
+    """
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -160,6 +169,10 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
 
 @bp.route("/meeting/join", methods=["POST"])
 def join_meeting():
+    """Validate the form from wait.html and join.html.
+
+    Then redirect to the BBB meeting if available, and back to the waiting room if not.
+    """
     form = JoinMeetingForm(request.form)
     if not form.validate():
         return redirect(url_for("public.index"))
@@ -232,6 +245,8 @@ def join_mail_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
+    # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
+    # We should look if we can delete it.
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
