@@ -7,7 +7,7 @@ install-dev:
 	uv sync --all-groups --all-extras
 	uv run prek install
 
-export-dependencies: export-base-dependencies export-dev-dependencies export-doc-dependencies
+export-dependencies: export-base-dependencies export-dev-dependencies export-doc-dependencies export-worker-dependencies
 
 export-base-dependencies:
 	# Update requirements file for web service
@@ -20,6 +20,9 @@ export-dev-dependencies:
 export-doc-dependencies:
 	# Update requirements file for development environment used in GitHub Actions
 	uv export --group doc --no-hashes --no-annotate --output-file web/requirements.doc.txt
+
+export-worker-dependencies:
+	uv export --only-group worker --no-hashes --no-annotate --output-file web/requirements.celery.txt
 
 translation-extract:
 	# Extract messages to be translated with:

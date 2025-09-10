@@ -175,6 +175,11 @@ doc = [
     { name = "sphinx-issues" },
     { name = "sphinx-rtd-theme" },
 ]
+worker = [
+    { name = "celery" },
+    { name = "redis" },
+    { name = "requests" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -230,6 +235,11 @@ doc = [
     { name = "sphinx", specifier = ">=7.0.0,<8.0.0" },
     { name = "sphinx-issues", specifier = ">=4.0.0,<5.0.0" },
     { name = "sphinx-rtd-theme", specifier = ">=2.0.0,<3.0.0" },
+]
+worker = [
+    { name = "celery", specifier = ">=5.2.7,<6.0.0" },
+    { name = "redis", specifier = ">=5.0.1,<6.0.0" },
+    { name = "requests", specifier = ">=2.32.4,<3.0.0" },
 ]
 
 [[package]]
