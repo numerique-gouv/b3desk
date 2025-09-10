@@ -105,14 +105,14 @@
 
         <ul id="addFileButtonsHolder" class="fr-btns-group fr-btns-group--inline fr-btns-group--center">
             <li>
-                <button data-fr-opened="false" aria-controls="url" class="fr-btn title="URL">depuis une URL</button>
+                <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">depuis une URL</button>
             </li>
             {% if user.nc_login and user.nc_token and user.nc_locator %}
             <li>
-                <button onClick=openNCFilePicker(event) class="fr-btn title="nuage">depuis le Nuage</button>
+                <button onClick=openNCFilePicker(event) class="fr-btn" title="nuage">depuis le Nuage</button>
             </li>
             <li>
-                <button data-fr-opened="false" aria-controls="dropzone" class="fr-btn title="dropzone">par Téléversement</button>
+                <button data-fr-opened="false" aria-controls="dropzone" class="fr-btn" title="dropzone">par Téléversement</button>
             </li>
             {% endif %}
         </ul>
