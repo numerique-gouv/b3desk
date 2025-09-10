@@ -50,7 +50,7 @@ flask-webtest==0.1.6
 flask-wtf==1.2.2
 future==1.0.0
 greenlet==3.2.4 ; platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64'
-gunicorn==21.2.0
+gunicorn==23.0.0
 idna==3.10
 imagesize==1.4.1
 importlib-metadata==8.7.0 ; python_full_version < '3.10'
