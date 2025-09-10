@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import datetime
 from typing import Optional
@@ -9,9 +10,11 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
@@ -290,11 +293,25 @@ def join_waiting_meeting_from_sip(visio_code):
 @check_oidc_connection(auth)
 def visio_code_connexion():
     visio_code = request.form.get("visio_code")
+    captcha_uuid = request.form.get("captcha_uuid")
+    captcha_code = request.form.get("captcha_code")
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
         flash("Le code de connexion saisi est erroné", "error")
         visio_code_attempt_counter_update(False)
         return redirect(url_for("public.home"))
+    if (
+        session.get("visio_code_attempt_counter")
+        > current_app.config["CAPTCHA_NUMBER_ATTEMPTS"]
+    ):
+        response = captcha_validation(captcha_uuid, captcha_code)
+        raw_data = response.response[0]
+        json_string = raw_data.decode("utf-8")
+        data = json.loads(json_string)
+        success = data["success"]
+        if not success:
+            flash("Le captcha saisi est erroné", "error")
+            return redirect(url_for("public.home"))
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)
 

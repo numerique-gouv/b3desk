@@ -12,6 +12,8 @@
     <form id="visio-code-form" action="{{ url_for("join.visio_code_connexion") }}" method="POST">
         {% include 'meeting/csrf.html' %}
         <input type="hidden" id="visio-code" name="visio_code" value="" />
+        <input type="hidden" id="captcha-uuid" name="captcha_uuid" value="" />
+        <input type="hidden" id="captcha-code" name="captcha_code" value="" />
     </form>
     <div class="fr-container--fluid fr-mb-3w">
         <div class="visio-code-container">
@@ -109,6 +111,10 @@
     }
     const formValidation = (visioCode) => {
         document.getElementById("visio-code").value = visioCode;
+        if (captchaIsNeeded) {
+            document.getElementById("captcha-uuid").value = document.getElementById('captchetat-uuid').value,
+            document.getElementById("captcha-code").value = document.getElementById('captchaCode').value
+        }
         document.getElementById("visio-code-form").submit();
     }
 
@@ -194,7 +200,7 @@
             uuid: document.getElementById('captchetat-uuid').value,
             code: document.getElementById('captchaCode').value
         };
-        const url = "{{ url_for('captcha.captcha_validation') }}";
+        const url = "{{ url_for('captcha.prepare_captcha_validation') }}";
         try {
             const response = await fetch(url, {
                 method: 'POST',

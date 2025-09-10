@@ -3,7 +3,8 @@ from flask import Blueprint
 from flask import current_app
 from flask import jsonify
 from flask import request
-from flask import session
+
+from b3desk.utils import captcha_error
 
 bp = Blueprint("captcha", __name__)
 
@@ -19,11 +20,10 @@ def get_captchetat_token():
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(url, data=form_data, headers=headers)
     if response.status_code != 200 or "access_token" not in response.json():
-        session["visio_code"]["captcha_is_dead"] = True
+        message = f"access token status code : {response.status_code}"
+        captcha_error(message)
         current_app.logger.error("Captcha error: OAuth access token not received")
         return
-    else:
-        session["visio_code"]["captcha_is_dead"] = False
     json_response = response.json()
     return json_response["access_token"]
 
@@ -43,19 +43,22 @@ def captcha_proxy():
             if "sound" == dict(request.args)["get"]
             else response.json()
         )
-        session["visio_code"]["captcha_is_dead"] = False
         return captcha_info
     except:
-        session["visio_code"]["captcha_is_dead"] = True
-        current_app.logger.error("Captcha error: Captcha image/sound not received")
+        message = "Captcha error: Captcha image/sound not received"
+        captcha_error(message)
         return
 
 
-@bp.route("/captcha-validation", methods=["POST"])
-def captcha_validation():
+@bp.route("/prepare-captcha-validation", methods=["POST"])
+def prepare_captcha_validation():
     data = request.get_json()
     captcha_uuid = data.get("uuid")
     captcha_code = data.get("code")
+    return captcha_validation(captcha_uuid, captcha_code)
+
+
+def captcha_validation(captcha_uuid, captcha_code):
     access_token = get_captchetat_token()
     try:
         response = requests.post(
@@ -63,11 +66,8 @@ def captcha_validation():
             headers={"Authorization": f"Bearer {access_token}"},
             json={"uuid": captcha_uuid, "code": captcha_code},
         )
-        session["visio_code"]["captcha_is_dead"] = False
         return jsonify({"success": response.json()})
     except:
-        session["visio_code"]["captcha_is_dead"] = True
-        current_app.logger.error(
-            "Captcha error: Captcha response validation not received"
-        )
+        message = "Captcha error: Captcha response validation not received"
+        captcha_error(message)
         return
