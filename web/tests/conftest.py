@@ -331,11 +331,7 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
             "preferred_username": "alice",
         }
         session["refresh_token"] = ("",)
-        session["visio_code"] = {
-            "attempt_counter": 0,
-            "captcha_is_needed": False,
-            "captcha_is_dead": False,
-        }
+        session["visio_code_attempt_counter"] = 0
 
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
@@ -487,8 +483,4 @@ def valid_secondary_identity_token(mocker):
 @pytest.fixture
 def visio_code_session(client_app):
     with client_app.session_transaction() as session:
-        session["visio_code"] = {
-            "attempt_counter": 0,
-            "captcha_is_needed": False,
-            "captcha_is_dead": False,
-        }
+        session["visio_code_attempt_counter"] = 0
