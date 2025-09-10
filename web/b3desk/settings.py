@@ -1183,3 +1183,9 @@ class MainSettings(BaseSettings):
 
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
+
+    CAPTCHA_NUMBER_ATTEMPTS: Optional[int] = 5
+    """ Captcha number attemps
+
+    Number of attempts to enter the visio-code before submitting a captcha
+    """

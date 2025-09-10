@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    {% if "visio_code" in session and session["visio_code"]["captcha_is_needed"] %}
+    {% if "visio_code_attempt_counter" in session and session["visio_code_attempt_counter"] > config.get("CAPTCHA_NUMBER_ATTEMPTS") %}
     <div class="captcha-container">
         <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
     image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
@@ -50,7 +50,7 @@
 <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
 
 <script>
-    const captchaIsNeeded = {{ session["visio_code"]["captcha_is_needed"] | tojson }};
+    const captchaIsNeeded = Boolean({{ session.get("visio_code_attempt_counter") }} > {{ config.get("CAPTCHA_NUMBER_ATTEMPTS") }});
     const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
     let captchaInput = null;
     let captchaDescription = null;
@@ -150,7 +150,6 @@
 
     if (captchaIsNeeded) {
         captchaInput.addEventListener("keyup", (event) => {
-
             allowSubmitButton(event, captchaInput)
     })
     }

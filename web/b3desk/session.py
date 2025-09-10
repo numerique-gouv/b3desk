@@ -7,7 +7,7 @@ from flask import session
 from flask_pyoidc.user_session import UserSession
 
 from b3desk.models.users import get_or_create_user
-from b3desk.utils import visio_code_session_init
+from b3desk.utils import visio_code_attempt_counter_init
 
 
 def get_current_user():
@@ -51,14 +51,6 @@ def meeting_owner_needed(view_function):
 
 
 def visio_code_attempt_counter_update(success: bool):
-    visio_code_session = visio_code_session_init()
-    visio_code_session["attempt_counter"] = (
-        0 if success else visio_code_session["attempt_counter"] + 1
-    )
-    visio_code_session["captcha_is_needed"] = (
-        True if visio_code_session["attempt_counter"] > 5 else False
-    )
-    visio_code_session["captcha_is_dead"] = (
-        False if success else visio_code_session["captcha_is_dead"]
-    )
-    session["visio_code"] = visio_code_session
+    visio_code_attempt_counter = visio_code_attempt_counter_init()
+    visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
+    session["visio_code_attempt_counter"] = visio_code_attempt_counter
