@@ -1,10 +1,13 @@
+import json
+
 import requests
 from flask import Blueprint
 from flask import current_app
 from flask import jsonify
+from flask import redirect
 from flask import request
-
-from b3desk.utils import captcha_error
+from flask import session
+from flask import url_for
 
 bp = Blueprint("captcha", __name__)
 
@@ -20,9 +23,8 @@ def get_captchetat_token():
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(url, data=form_data, headers=headers)
     if response.status_code != 200 or "access_token" not in response.json():
-        message = f"access token status code : {response.status_code}"
+        message = "OAuth access token not received"
         captcha_error(message)
-        current_app.logger.error("Captcha error: OAuth access token not received")
         return
     json_response = response.json()
     return json_response["access_token"]
@@ -45,7 +47,7 @@ def captcha_proxy():
         )
         return captcha_info
     except:
-        message = "Captcha error: Captcha image/sound not received"
+        message = "Captcha image/sound not received"
         captcha_error(message)
         return
 
@@ -68,6 +70,24 @@ def captcha_validation(captcha_uuid, captcha_code):
         )
         return jsonify({"success": response.json()})
     except:
-        message = "Captcha error: Captcha response validation not received"
+        message = "Captcha response validation not received"
         captcha_error(message)
         return
+
+
+def captcha_error(message):
+    session["visio_code_attempt_counter"] = 0
+    current_app.logger.error("captcha error : %s", message)
+    return redirect(url_for("public.index"))
+
+
+def captchetat_service_status():
+    access_token = get_captchetat_token()
+    response = requests.get(
+        f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    raw_data = response.content
+    json_string = raw_data.decode("utf-8")
+    data = json.loads(json_string) if json_string else {"status": "DOWN"}
+    return data["status"]
