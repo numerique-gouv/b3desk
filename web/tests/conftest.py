@@ -132,8 +132,8 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "ENABLE_SIP": True,
         "FQDN_SIP_SERVER": "example.serveur.com",
         "PRIVATE_KEY": private_pem_str,
-        "PISTE_OAUTH_CLIENT_ID": "",
-        "PISTE_OAUTH_CLIENT_SECRET": "",
+        "PISTE_OAUTH_CLIENT_ID": "client-id",
+        "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
 
 
