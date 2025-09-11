@@ -28,6 +28,7 @@ def test_get_or_create_user(client_app):
     assert user.family_name == "Cooper"
     assert user.email == "alice@mydomain.test"
     assert user.last_connection_utc_datetime.date() == date.today()
+    assert user.created_at.date() == date.today()
 
 
 def test_update_last_connection_if_more_than_24h(client_app):
@@ -46,7 +47,8 @@ def test_update_last_connection_if_more_than_24h(client_app):
 
         get_or_create_user(user_info)
 
-        assert user.last_connection_utc_datetime.date() == date(2021, 8, 11)
+    assert user.last_connection_utc_datetime.date() == date(2021, 8, 11)
+    assert user.created_at.date() == date(2021, 8, 10)
 
 
 def test_make_nextcloud_credentials_request_with_scheme_response(
