@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from typing import Optional
 
 from flask import Blueprint
 from flask import abort
@@ -77,7 +78,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     "/meeting/signin/<role:role>/<meeting_fake_id>/creator/<user:creator>/hash/<h>"
 )
 @bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
-def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
+def signin_meeting(meeting_fake_id, creator: User, h, role: Optional[Role] = None):
     """Get users in the meeting.
 
     - Unauthenticated users are display a name choosing form 'join.html'
