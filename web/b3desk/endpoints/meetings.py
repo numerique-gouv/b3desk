@@ -231,6 +231,20 @@ def save_meeting():
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )
     meeting.save()
+    if is_new_meeting:
+        current_app.logger.info(
+            "Meeting %s %s was created by %s",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
+    else:
+        current_app.logger.info(
+            "Meeting %s %s was updated by %s",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
     flash(
         _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
         "success",
@@ -320,6 +334,12 @@ def delete_meeting():
             else:
                 save_voiceBridge_and_delete_meeting(meeting)
                 flash(_("Élément supprimé"), "success")
+                current_app.logger.info(
+                    "Meeting %s %s was deleted by %s",
+                    meeting.name,
+                    meeting.id,
+                    user.email,
+                )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("public.welcome"))
@@ -338,6 +358,13 @@ def delete_video_meeting():
         return_code = data.get("returncode")
         if return_code == "SUCCESS":
             flash(_("Vidéo supprimée"), "success")
+            current_app.logger.info(
+                "Meeting %s %s record %s was deleted by %s",
+                meeting.name,
+                meeting.id,
+                recordID,
+                user.email,
+            )
         else:
             message = data.get("message", "")
             flash(
