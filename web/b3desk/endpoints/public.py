@@ -11,6 +11,7 @@ from .. import cache
 from ..session import get_current_user
 from ..session import has_user_session
 from ..templates.content import FAQ_CONTENT
+from ..utils import check_captchetat_service_status
 from ..utils import check_oidc_connection
 from ..utils import check_private_key
 from ..utils import visio_code_attempt_counter_init
@@ -55,6 +56,7 @@ def index():
 
 @bp.route("/home")
 @check_private_key()
+@check_captchetat_service_status()
 def home():
     visio_code_attempt_counter_init()
     if has_user_session():
@@ -73,6 +75,7 @@ def home():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @check_private_key()
+@check_captchetat_service_status()
 def welcome():
     visio_code_attempt_counter_init()
     user = get_current_user()
