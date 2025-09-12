@@ -1,3 +1,6 @@
+import json
+from unittest import mock
+
 from b3desk.endpoints.captcha import get_captchetat_token
 
 
@@ -28,6 +31,19 @@ class Access_token_bad_response:
         return self.json_data
 
 
+class Captcha_response:
+    def __init__(self, status_code):
+        self.json_data = {
+            "imageb64": "data:image/png;base64",
+            "uuid": "captcha-uuid",
+        }
+        self.content = b"RIFF\xfa\x1a\x02\x00WAVEfmt"
+        self.status_code = status_code
+
+    def json(self):
+        return self.json_data
+
+
 def test_get_captchetat_token(client_app, mocker):
     mocker.patch("requests.post", return_value=Access_token_response(200))
     access_token = get_captchetat_token()
@@ -46,3 +62,26 @@ def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
     access_token = get_captchetat_token()
     assert not access_token == "valid-access-token"
     assert "captcha error : OAuth access token not received" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_proxy(access_token, client_app, mocker):
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", return_value=Captcha_response(200))
+    captcha_response = Captcha_response(200)
+    response = client_app.get(
+        "/simple-captcha-endpoint", params={"get": "sound", "c": "captchaFR"}
+    )
+    assert captcha_response.content == response.body
+    response = client_app.get(
+        "/simple-captcha-endpoint", params={"get": "image", "c": "captchaFR"}
+    )
+    assert captcha_response.json() == json.loads(response.body.decode("utf-8"))
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", return_value=Captcha_response(401))
+    client_app.get("/simple-captcha-endpoint")
+    assert "captcha error : Captcha image/sound not received" in caplog.text
