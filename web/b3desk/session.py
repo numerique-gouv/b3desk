@@ -7,6 +7,7 @@ from flask import session
 from flask_pyoidc.user_session import UserSession
 
 from b3desk.models.users import get_or_create_user
+from b3desk.utils import visio_code_attempt_counter_init
 
 
 def get_current_user():
@@ -47,3 +48,9 @@ def meeting_owner_needed(view_function):
         return view_function(*args, owner=user, **kwargs)
 
     return decorator
+
+
+def visio_code_attempt_counter_update(success: bool):
+    visio_code_attempt_counter = visio_code_attempt_counter_init()
+    visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
+    session["visio_code_attempt_counter"] = visio_code_attempt_counter

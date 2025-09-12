@@ -11,6 +11,7 @@ from flask import current_app
 from flask import flash
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
@@ -25,6 +26,8 @@ from netaddr import IPNetwork
 from slugify import slugify
 from werkzeug.routing import BaseConverter
 
+from b3desk.endpoints.captcha import captcha_error
+from b3desk.endpoints.captcha import captchetat_service_status
 from b3desk.models import db
 from b3desk.models.roles import Role
 
@@ -99,6 +102,16 @@ def send_quick_meeting_mail(meeting, to_email):
         smtp.send_message(msg)
 
 
+def visio_code_attempt_counter_init():
+    visio_code_attempt_counter = (
+        session.get("visio_code_attempt_counter")
+        if "visio_code_attempt_counter" in session
+        else 0
+    )
+    session["visio_code_attempt_counter"] = visio_code_attempt_counter
+    return visio_code_attempt_counter
+
+
 def model_converter(model):
     class ModelConverter(BaseConverter):
         def __init__(self, *args, required=True, **kwargs):
@@ -162,13 +175,12 @@ def check_private_key():
                 current_app.config["ENABLE_SIP"]
                 and not current_app.config["PRIVATE_KEY"]
             ):
-                flash(
-                    _(
-                        "La clé privée n'a pas été configurée dans les paramètres "
-                        "B3Desk pour sécuriser la connexion SIPMediaGW"
-                    ),
-                    "error",
+                message = _(
+                    "La clé privée n'a pas été configurée dans les paramètres "
+                    "B3Desk pour sécuriser la connexion SIPMediaGW"
                 )
+                flash(message, "error")
+
             return initial_func(*args, **kwargs)
 
         return wrapper_func
@@ -206,3 +218,23 @@ def check_token_errors(token):
     if error_message:
         current_app.logger.error(error_message)
     return error_message
+
+
+def check_captchetat_service_status():
+    def decorator_func(initial_func):
+        @wraps(initial_func)
+        def wrapper_func(*args, **kwargs):
+            if (
+                session.get("visio_code_attempt_counter")
+                > current_app.config["CAPTCHA_NUMBER_ATTEMPTS"]
+            ):
+                status = captchetat_service_status()
+                if status != "UP":
+                    message = "avoid captcha"
+                    captcha_error(message)
+
+            return initial_func(*args, **kwargs)
+
+        return wrapper_func
+
+    return decorator_func
