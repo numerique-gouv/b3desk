@@ -40,6 +40,10 @@ def captcha_proxy():
             params=dict(request.args),
             headers={"Authorization": f"Bearer {access_token}"},
         )
+        if response.status_code != 200:
+            message = "Captcha image/sound not received"
+            captcha_error(message)
+            return {"success": False}
         captcha_info = (
             response.content
             if "sound" == dict(request.args)["get"]
