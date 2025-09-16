@@ -7,10 +7,16 @@ from flask import jsonify
 from flask import request
 from flask import session
 
+from b3desk import cache
+
 bp = Blueprint("captcha", __name__)
+CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
 
 
 def get_captchetat_token():
+    if token := cache.get(CACHE_KEY_CAPTCHETAT_CREDENTIALS):
+        return token
+
     url = f"{current_app.config['PISTE_OAUTH_API_URL']}/oauth/token"
     form_data = {
         "grant_type": "client_credentials",
@@ -25,15 +31,18 @@ def get_captchetat_token():
         captcha_error(message)
         return None
 
-    json_response = response.json()
-    return json_response["access_token"]
+    response = response.json()
+    token = response["access_token"]
+    timeout = response.get("expires_in", 3600)
+    cache.set(CACHE_KEY_CAPTCHETAT_CREDENTIALS, token, timeout=timeout)
+    return token
 
 
 @bp.route("/simple-captcha-endpoint", methods=["GET"])
 def captcha_proxy():
     """Get the images and sound from the captcha service, and return it to be used by the JS."""
     if not (access_token := get_captchetat_token()):
-        captcha_error("Invalid credentials.")
+        captcha_error("Invalid PISTE credentials.")
         return {"success": False}, 403
 
     piste_url = f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/simple-captcha-endpoint"
@@ -95,6 +104,7 @@ def captcha_validation(captcha_uuid, captcha_code):
 def captcha_error(message):
     """Reset the attempt counter."""
     session["visio_code_attempt_counter"] = 0
+    cache.delete(CACHE_KEY_CAPTCHETAT_CREDENTIALS)
     current_app.logger.error("captcha error : %s", message)
 
 
