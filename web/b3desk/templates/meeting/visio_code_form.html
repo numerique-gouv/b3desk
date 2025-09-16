@@ -15,6 +15,7 @@
         <input type="hidden" id="captcha-uuid" name="captcha_uuid" value="" />
         <input type="hidden" id="captcha-code" name="captcha_code" value="" />
     </form>
+
     <div class="fr-container--fluid fr-mb-3w">
         <div class="visio-code-container">
             <div class="visio-code-input-container fr-input-group">
@@ -50,9 +51,7 @@
 
 {% block js %}
 <script>
-    window.captchaValidationUrl = "{{ url_for('captcha.prepare_captcha_validation') }}";
-    window.visioCodeAttemptCounter = "{{ session.get("visio_code_attempt_counter") }}";
-    window.captchaNumberAttemps = "{{ config.get("CAPTCHA_NUMBER_ATTEMPTS") }}";
+    window.shouldDisplayCaptcha = {{ should_display_captcha|tojson }};
 </script>
 <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
 <script src="{{ url_for('static', filename='js/visio_code_form.js')}}"></script>

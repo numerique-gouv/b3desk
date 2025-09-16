@@ -1,8 +1,7 @@
-const captchaIsNeeded = Boolean(window.visioCodeAttemptCounter > window.captchaNumberAttempt);
 const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
 let captchaInput = null;
 let captchaDescription = null;
-if (captchaIsNeeded) {
+if (window.shouldDisplayCaptcha) {
     captchaInput = document.getElementById("captchaCode");
     captchaDescription = document.getElementById("captcha-description");
 }
@@ -17,7 +16,7 @@ const visioCodeIsComplete = () => {
 }
 
 const formIsComplete = () => {
-    if (captchaIsNeeded) {
+    if (window.shouldDisplayCaptcha) {
         return captchaInput.value != "" && visioCodeIsComplete();
     } else {
         return visioCodeIsComplete();
@@ -36,13 +35,7 @@ const allowSubmitButton = (event, input) => {
 }
 
 const formValidateAndSubmit = async (input) => {
-    if (captchaIsNeeded) {
-        if (await captchaValidation() && visioCodeIsComplete()) {
-            formValidation(getVisioCode());
-        } else {
-            captchaDescription.innerHTML = "Captcha saisi incorrect";
-        }
-    } else if (visioCodeIsComplete()) {
+    if (visioCodeIsComplete()) {
         formValidation(getVisioCode());
     } else {
         visualValidation(input);
@@ -56,7 +49,7 @@ const focusAtEnd = (input) => {
 }
 const formValidation = (visioCode) => {
     document.getElementById("visio-code").value = visioCode;
-    if (captchaIsNeeded) {
+    if (window.shouldDisplayCaptcha) {
         document.getElementById("captcha-uuid").value = document.getElementById('captchetat-uuid').value,
         document.getElementById("captcha-code").value = document.getElementById('captchaCode').value
     }
@@ -100,10 +93,10 @@ const visualValidation = (target) => {
     }
 }
 
-if (captchaIsNeeded) {
+if (window.shouldDisplayCaptcha) {
     captchaInput.addEventListener("keyup", (event) => {
         allowSubmitButton(event, captchaInput)
-})
+    })
 }
 
 inputs.forEach((input) => {
@@ -137,32 +130,3 @@ inputs.forEach((input) => {
         })
     });
 })
-
-const captchaValidation = async () => {
-    let csrf_token = document.getElementsByName("csrf_token")[0].value;
-    let captchaValidationResponse = false;
-    const postData = {
-        uuid: document.getElementById('captchetat-uuid').value,
-        code: document.getElementById('captchaCode').value
-    };
-    try {
-        const response = await fetch(window.captchaValidationUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'X-CSRFToken':csrf_token
-            },
-            body: JSON.stringify(postData)
-        });
-        const data = await response.json();
-        if (data.success === false) {
-            window.captchetatComponentModule.refreshCaptcha();
-            captchaValidationResponse = false;
-        } else {
-            captchaValidationResponse = true;
-        }
-    } catch (error) {
-        console.error('Erreur lors de la requête CAPTCHA :', error);
-    }
-    return captchaValidationResponse;
-}

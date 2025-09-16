@@ -68,15 +68,6 @@ def captcha_proxy():
     return captcha_info
 
 
-@bp.route("/prepare-captcha-validation", methods=["POST"])
-def prepare_captcha_validation():
-    """Front-side captcha validation."""
-    data = request.get_json()
-    captcha_uuid = data.get("uuid")
-    captcha_code = data.get("code")
-    return captcha_validation(captcha_uuid, captcha_code)
-
-
 def captcha_validation(captcha_uuid, captcha_code):
     if not (access_token := get_captchetat_token()):
         captcha_error("Invalid credentials.")
