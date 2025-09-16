@@ -4,10 +4,8 @@ import requests
 from flask import Blueprint
 from flask import current_app
 from flask import jsonify
-from flask import redirect
 from flask import request
 from flask import session
-from flask import url_for
 
 bp = Blueprint("captcha", __name__)
 
@@ -25,14 +23,19 @@ def get_captchetat_token():
     if response.status_code != 200 or "access_token" not in response.json():
         message = "OAuth access token not received"
         captcha_error(message)
-        return
+        return None
+
     json_response = response.json()
     return json_response["access_token"]
 
 
 @bp.route("/simple-captcha-endpoint", methods=["GET"])
 def captcha_proxy():
-    access_token = get_captchetat_token()
+    """Get the images and sound from the captcha service, and return it to be used by the JS."""
+    if not (access_token := get_captchetat_token()):
+        captcha_error("Invalid credentials.")
+        return {"success": False}, 403
+
     piste_url = f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/simple-captcha-endpoint"
     try:
         response = requests.get(
@@ -40,24 +43,25 @@ def captcha_proxy():
             params=dict(request.args),
             headers={"Authorization": f"Bearer {access_token}"},
         )
-        if response.status_code != 200:
-            message = "Captcha image/sound not received"
-            captcha_error(message)
-            return {"success": False}
-        captcha_info = (
-            response.content
-            if "sound" == dict(request.args)["get"]
-            else response.json()
-        )
-        return captcha_info
-    except:
+    except requests.RequestException as exc:
+        message = f"Network issue during connection to captchetat {exc}"
+        captcha_error(message)
+        return {"success": False}, 503
+
+    if response.status_code != 200:
         message = "Captcha image/sound not received"
         captcha_error(message)
-        return
+        return {"success": False}, response.status_code
+
+    captcha_info = (
+        response.content if "sound" == dict(request.args)["get"] else response.json()
+    )
+    return captcha_info
 
 
 @bp.route("/prepare-captcha-validation", methods=["POST"])
 def prepare_captcha_validation():
+    """Front-side captcha validation."""
     data = request.get_json()
     captcha_uuid = data.get("uuid")
     captcha_code = data.get("code")
@@ -65,28 +69,41 @@ def prepare_captcha_validation():
 
 
 def captcha_validation(captcha_uuid, captcha_code):
-    access_token = get_captchetat_token()
+    if not (access_token := get_captchetat_token()):
+        captcha_error("Invalid credentials.")
+        return {"success": False}, 403
+
     try:
         response = requests.post(
             f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/valider-captcha",
             headers={"Authorization": f"Bearer {access_token}"},
             json={"uuid": captcha_uuid, "code": captcha_code},
         )
-        return jsonify({"success": response.json()})
-    except:
-        message = "Captcha response validation not received"
+
+    except requests.RequestException as exc:
+        message = f"Network issue during connection to captchetat {exc}"
         captcha_error(message)
-        return
+        return {"success": False}, 503
+
+    if response.status_code != 200:
+        captcha_error("An error happened during captcha validation.")
+        return {"success": False}, response.status_code
+
+    return jsonify({"success": response.json()})
 
 
 def captcha_error(message):
+    """Reset the attempt counter."""
     session["visio_code_attempt_counter"] = 0
     current_app.logger.error("captcha error : %s", message)
-    return redirect(url_for("public.index"))
 
 
 def captchetat_service_status():
-    access_token = get_captchetat_token()
+    """Perform a health check on captchetat."""
+    if not (access_token := get_captchetat_token()):
+        captcha_error("Invalid credentials.")
+        return {"success": False}, 403
+
     response = requests.get(
         f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
         headers={"Authorization": f"Bearer {access_token}"},

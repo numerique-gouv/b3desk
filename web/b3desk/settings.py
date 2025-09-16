@@ -6,6 +6,7 @@ from typing import Optional
 
 from flask_babel import lazy_gettext as _
 from pydantic import BeforeValidator
+from pydantic import PositiveInt
 from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
@@ -1157,14 +1158,14 @@ class MainSettings(BaseSettings):
 
         return video_streaming_links
 
-    PISTE_OAUTH_CLIENT_ID: str
+    PISTE_OAUTH_CLIENT_ID: Optional[str] = None
     """Piste Oauth client_id
 
     Oauth client id can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
     """
 
-    PISTE_OAUTH_CLIENT_SECRET: str
+    PISTE_OAUTH_CLIENT_SECRET: Optional[str] = None
     """ Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
@@ -1184,7 +1185,7 @@ class MainSettings(BaseSettings):
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
 
-    CAPTCHA_NUMBER_ATTEMPTS: Optional[int] = 5
+    CAPTCHA_NUMBER_ATTEMPTS: Optional[PositiveInt] = 5
     """ Captcha number attemps
 
     Number of attempts to enter the visio-code before submitting a captcha

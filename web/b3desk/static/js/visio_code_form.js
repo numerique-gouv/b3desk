@@ -1,8 +1,4 @@
-const dataContainer = document.getElementById('data-container');
-const visioCodeAttemptCounter = dataContainer.dataset.visioCodeAttemptCounter;
-const captchaNumberAttempt = dataContainer.dataset.captchaNumberAttempt;
-
-const captchaIsNeeded = Boolean(visioCodeAttemptCounter > captchaNumberAttempt);
+const captchaIsNeeded = Boolean(window.visioCodeAttemptCounter > window.captchaNumberAttempt);
 const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
 let captchaInput = null;
 let captchaDescription = null;
@@ -149,9 +145,8 @@ const captchaValidation = async () => {
         uuid: document.getElementById('captchetat-uuid').value,
         code: document.getElementById('captchaCode').value
     };
-    const url = "{{ url_for('captcha.prepare_captcha_validation') }}";
     try {
-        const response = await fetch(url, {
+        const response = await fetch(window.captchaValidationUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',

@@ -7,7 +7,6 @@ from flask import session
 from flask_pyoidc.user_session import UserSession
 
 from b3desk.models.users import get_or_create_user
-from b3desk.utils import visio_code_attempt_counter_init
 
 
 def get_current_user():
@@ -50,7 +49,42 @@ def meeting_owner_needed(view_function):
     return decorator
 
 
+def visio_code_attempt_counter_init() -> int:
+    visio_code_attempt_counter = (
+        session.get("visio_code_attempt_counter")
+        if "visio_code_attempt_counter" in session
+        else 0
+    )
+    session["visio_code_attempt_counter"] = visio_code_attempt_counter
+    return visio_code_attempt_counter
+
+
 def visio_code_attempt_counter_update(success: bool):
     visio_code_attempt_counter = visio_code_attempt_counter_init()
     visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
     session["visio_code_attempt_counter"] = visio_code_attempt_counter
+
+
+def should_display_captcha():
+    from b3desk.endpoints.captcha import captcha_error
+    from b3desk.endpoints.captcha import captchetat_service_status
+
+    if (
+        not current_app.config["PISTE_OAUTH_CLIENT_ID"]
+        or not current_app.config["PISTE_OAUTH_CLIENT_SECRET"]
+        or not current_app.config["CAPTCHETAT_API_URL"]
+        or not current_app.config["PISTE_OAUTH_API_URL"]
+    ):
+        return False
+
+    if session.get("visio_code_attempt_counter", 0) <= current_app.config.get(
+        "CAPTCHA_NUMBER_ATTEMPTS"
+    ):
+        return False
+
+    # TODO: hotfix comments
+    if captchetat_service_status() != "UP":
+        captcha_error("Captchetat service is down")
+        return False
+
+    return True

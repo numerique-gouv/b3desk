@@ -36,6 +36,7 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
+from ..session import should_display_captcha
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
@@ -115,6 +116,7 @@ def show_meeting(meeting: Meeting, owner: User):
         "meeting/show.html",
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
+        should_display_captcha=should_display_captcha(),
     )
 
 
