@@ -49,23 +49,16 @@ def meeting_owner_needed(view_function):
     return decorator
 
 
-def visio_code_attempt_counter_init() -> int:
-    visio_code_attempt_counter = (
-        session.get("visio_code_attempt_counter")
-        if "visio_code_attempt_counter" in session
-        else 0
-    )
-    session["visio_code_attempt_counter"] = visio_code_attempt_counter
-    return visio_code_attempt_counter
+def visio_code_attempt_counter_increment():
+    visio_code_attempt_counter = session.setdefault("visio_code_attempt_counter", 0)
+    session["visio_code_attempt_counter"] = visio_code_attempt_counter + 1
 
 
-def visio_code_attempt_counter_update(success: bool):
-    visio_code_attempt_counter = visio_code_attempt_counter_init()
-    visio_code_attempt_counter = 0 if success else visio_code_attempt_counter + 1
-    session["visio_code_attempt_counter"] = visio_code_attempt_counter
+def visio_code_attempt_counter_reset():
+    session.pop("visio_code_attempt_counter", None)
 
 
-def should_display_captcha():
+def should_display_captcha(check_service_status=True):
     from b3desk.endpoints.captcha import captcha_error
     from b3desk.endpoints.captcha import captchetat_service_status
 
@@ -83,7 +76,7 @@ def should_display_captcha():
         return False
 
     # TODO: hotfix comments
-    if captchetat_service_status() != "UP":
+    if check_service_status and captchetat_service_status() != "UP":
         captcha_error("Captchetat service is down")
         return False
 

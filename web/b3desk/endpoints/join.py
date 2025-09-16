@@ -1,4 +1,3 @@
-import json
 import random
 from datetime import datetime
 from typing import Optional
@@ -10,7 +9,6 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
@@ -24,7 +22,8 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
-from b3desk.session import visio_code_attempt_counter_update
+from b3desk.session import visio_code_attempt_counter_increment
+from b3desk.session import visio_code_attempt_counter_reset
 from b3desk.utils import check_oidc_connection
 from b3desk.utils import check_token_errors
 
@@ -33,6 +32,7 @@ from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
 from ..session import meeting_owner_needed
+from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
 
@@ -297,29 +297,22 @@ def visio_code_connexion():
         + request.form.get("visio_code2")
         + request.form.get("visio_code3")
     )
-    captcha_uuid = request.form.get("captchetat-uuid")
-    captcha_code = request.form.get("captchaCode")
-    meeting = get_meeting_by_visio_code(visio_code)
 
-    if not meeting:
-        flash("Le code de connexion saisi est erroné", "error")
-        visio_code_attempt_counter_update(False)
-        return redirect(url_for("public.home"))
-
-    if (
-        session.get("visio_code_attempt_counter")
-        > current_app.config["CAPTCHA_NUMBER_ATTEMPTS"]
-    ):
-        response = captcha_validation(captcha_uuid, captcha_code)
-        raw_data = response.response[0]
-        json_string = raw_data.decode("utf-8")
-        data = json.loads(json_string)
-        success = data["success"]
-        if not success:
+    if should_display_captcha(check_service_status=False):
+        captcha_uuid = request.form.get("captchetat-uuid")
+        captcha_code = request.form.get("captchaCode")
+        if not captcha_validation(captcha_uuid, captcha_code):
             flash("Le captcha saisi est erroné", "error")
             return redirect(url_for("public.home"))
 
-    visio_code_attempt_counter_update(True)
+        visio_code_attempt_counter_reset()
+
+    meeting = get_meeting_by_visio_code(visio_code)
+    if not meeting:
+        flash("Le code de connexion saisi est erroné", "error")
+        visio_code_attempt_counter_increment()
+        return redirect(url_for("public.home"))
+
     return join_waiting_meeting_with_visio_code(meeting)
 
 

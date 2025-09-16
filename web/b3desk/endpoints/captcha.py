@@ -3,11 +3,10 @@ import json
 import requests
 from flask import Blueprint
 from flask import current_app
-from flask import jsonify
 from flask import request
-from flask import session
 
 from b3desk import cache
+from b3desk.session import visio_code_attempt_counter_reset
 
 bp = Blueprint("captcha", __name__)
 CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
@@ -71,7 +70,7 @@ def captcha_proxy():
 def captcha_validation(captcha_uuid, captcha_code):
     if not (access_token := get_captchetat_token()):
         captcha_error("Invalid credentials.")
-        return {"success": False}, 403
+        return True
 
     try:
         response = requests.post(
@@ -83,18 +82,18 @@ def captcha_validation(captcha_uuid, captcha_code):
     except requests.RequestException as exc:
         message = f"Network issue during connection to captchetat {exc}"
         captcha_error(message)
-        return {"success": False}, 503
+        return True
 
     if response.status_code != 200:
         captcha_error("An error happened during captcha validation.")
-        return {"success": False}, response.status_code
+        return True
 
-    return jsonify({"success": response.json()})
+    return response.json()
 
 
 def captcha_error(message):
     """Reset the attempt counter."""
-    session["visio_code_attempt_counter"] = 0
+    visio_code_attempt_counter_reset()
     cache.delete(CACHE_KEY_CAPTCHETAT_CREDENTIALS)
     current_app.logger.error("captcha error : %s", message)
 
