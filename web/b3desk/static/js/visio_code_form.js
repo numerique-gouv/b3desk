@@ -1,4 +1,6 @@
 const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
+
+
 let captchaInput = null;
 let captchaDescription = null;
 if (window.shouldDisplayCaptcha) {
@@ -24,7 +26,7 @@ const formIsComplete = () => {
     }
 }
 
-const allowSubmitButton = (event, input) => {
+const updateSumbitButtonStatus = (event, input) => {
     if (formIsComplete()) {
         document.getElementById("submit-visio-code").disabled = false;
         if (event.key == "Enter") {
@@ -65,10 +67,13 @@ const moveToNextInputIfNeeded = (target) => {
 
 const moveToPreviousInputIfNeeded = (target) => {
     const isAtBeginning = target.selectionStart == 0 && target.selectionEnd == 0;
-    const previousSibling = target.previousElementSibling;
-    const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
-    if (isAtBeginning && previousSiblingInput) {
-        focusAtEnd(previousSibling);
+    const visioCodeId = target.dataset.visioCodeId;
+    const previousSibling = document.getElementById("visio-code" + (visioCodeId - 1))
+
+    if (isAtBeginning && previousSibling) {
+        previousSibling.focus();
+        previousSibling.selectionStart = 3;
+        previousSibling.selectionEnd = 3;
     }
 }
 
@@ -88,27 +93,37 @@ const visualValidation = (target) => {
 
 if (window.shouldDisplayCaptcha) {
     captchaInput.addEventListener("keyup", (event) => {
-        allowSubmitButton(event, captchaInput)
+        updateSumbitButtonStatus(event, captchaInput)
     })
 }
 
 inputs.forEach((input) => {
     visualValidation(input);
+
+    // Forbid non-digits characters in inputs
+    input.addEventListener("input", (event) => {
+        input.value = input.value.replace(/\D/g, '')
+    });
+
     input.addEventListener("keyup", (event) => {
-        if (input.value.length >= 3 && event.key.length == 1) {
+        var alphanumerical_input = event.key.length == 1;
+        if (input.value.length >= 3 && alphanumerical_input) {
             moveToNextInputIfNeeded(input);
         }
+
         if (event.key == "Backspace" || event.key == "ArrowLeft") {
             moveToPreviousInputIfNeeded(input);
         } else if (event.key == "ArrowRight") {
             moveToNextInputIfNeeded(input);
         }
+
         visualValidation(input);
-        allowSubmitButton(event, input)
+        updateSumbitButtonStatus(event, input)
     })
+
     input.addEventListener('paste', (event) => {
         event.preventDefault()
-        const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+        const pasteData = (event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
         const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
         inputs.forEach((pastedInput, index) => {
             pastedInput.value = chars[index];
