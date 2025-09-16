@@ -11,41 +11,40 @@
     </p>
     <form id="visio-code-form" action="{{ url_for("join.visio_code_connexion") }}" method="POST">
         {% include 'meeting/csrf.html' %}
-        <input type="hidden" id="visio-code" name="visio_code" value="" />
-        <input type="hidden" id="captcha-uuid" name="captcha_uuid" value="" />
-        <input type="hidden" id="captcha-code" name="captcha_code" value="" />
+        <div class="fr-container--fluid fr-mb-3w">
+            <div class="visio-code-container">
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code1" name="visio_code1" class="fr-input" placeholder="- - -">
+                </div>
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code2" name="visio_code2" class="fr-input" placeholder="- - -">
+                </div>
+                <div class="visio-code-input-container fr-input-group">
+                    <input type="text" minlength="3" maxlength="3" id="visio-code3" name="visio_code3" class="fr-input" placeholder="- - -">
+                </div>
+            </div>
+        </div>
+
+        {% if should_display_captcha %}
+        <div class="captcha-container">
+            <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
+        image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
+            <label class="fr-label" for="text-input" id="captcha-description"></label>
+            <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
+        </div>
+        {% endif %}
+
+        <br>
+
+        <div class="fr-container--fluid">
+            <div class="fr-grid-row">
+                <button type="submit" id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}">
+                    {% trans %}Connexion{% endtrans %}
+                </button>
+            </div>
+        </div>
     </form>
 
-    <div class="fr-container--fluid fr-mb-3w">
-        <div class="visio-code-container">
-            <div class="visio-code-input-container fr-input-group">
-                <input type="text" minlength="3" maxlength="3" id="visio-code1" class="fr-input" placeholder="- - -">
-            </div>
-            <div class="visio-code-input-container fr-input-group">
-                <input type="text" minlength="3" maxlength="3" id="visio-code2" class="fr-input" placeholder="- - -">
-            </div>
-            <div class="visio-code-input-container fr-input-group">
-                <input type="text" minlength="3" maxlength="3" id="visio-code3" class="fr-input" placeholder="- - -">
-            </div>
-        </div>
-    </div>
-
-    {% if should_display_captcha %}
-    <div class="captcha-container">
-        <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
-    image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
-        <label class="fr-label" for="text-input" id="captcha-description"></label>
-        <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
-    </div>
-    {% endif %}
-    <br>
-    <div class="fr-container--fluid">
-        <div class="fr-grid-row">
-            <button id="submit-visio-code" class="fr-btn fr-btn--primary" disabled title="{% trans %}Connexion{% endtrans %}" onclick="formValidateAndSubmit()">
-                {% trans %}Connexion{% endtrans %}
-            </button>
-        </div>
-    </div>
     <br>
 </div>
 

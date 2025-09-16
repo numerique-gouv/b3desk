@@ -292,14 +292,20 @@ def join_waiting_meeting_from_sip(visio_code):
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_connexion():
-    visio_code = request.form.get("visio_code")
-    captcha_uuid = request.form.get("captcha_uuid")
-    captcha_code = request.form.get("captcha_code")
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+    captcha_uuid = request.form.get("captchetat-uuid")
+    captcha_code = request.form.get("captchaCode")
     meeting = get_meeting_by_visio_code(visio_code)
+
     if not meeting:
         flash("Le code de connexion saisi est erroné", "error")
         visio_code_attempt_counter_update(False)
         return redirect(url_for("public.home"))
+
     if (
         session.get("visio_code_attempt_counter")
         > current_app.config["CAPTCHA_NUMBER_ATTEMPTS"]
@@ -312,6 +318,7 @@ def visio_code_connexion():
         if not success:
             flash("Le captcha saisi est erroné", "error")
             return redirect(url_for("public.home"))
+
     visio_code_attempt_counter_update(True)
     return join_waiting_meeting_with_visio_code(meeting)
 

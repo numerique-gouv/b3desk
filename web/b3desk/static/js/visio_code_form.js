@@ -6,6 +6,7 @@ if (window.shouldDisplayCaptcha) {
     captchaDescription = document.getElementById("captcha-description");
 }
 
+
 const getVisioCode = () => {
     return Array.from(inputs).map(i => i.value).join("");
 }
@@ -25,18 +26,18 @@ const formIsComplete = () => {
 
 const allowSubmitButton = (event, input) => {
     if (formIsComplete()) {
-            document.getElementById("submit-visio-code").disabled = false;
-            if (event.key == "Enter") {
-                formValidateAndSubmit(input);
-            }
-        } else {
-            document.getElementById("submit-visio-code").disabled = true;
+        document.getElementById("submit-visio-code").disabled = false;
+        if (event.key == "Enter") {
+            formValidateAndSubmit(input);
         }
+    } else {
+        document.getElementById("submit-visio-code").disabled = true;
+    }
 }
 
 const formValidateAndSubmit = async (input) => {
     if (visioCodeIsComplete()) {
-        formValidation(getVisioCode());
+        document.getElementById("visio-code-form").submit();
     } else {
         visualValidation(input);
     }
@@ -46,14 +47,6 @@ const focusAtEnd = (input) => {
     input.focus();
     input.selectionStart = 3;
     input.selectionEnd = 3;
-}
-const formValidation = (visioCode) => {
-    document.getElementById("visio-code").value = visioCode;
-    if (window.shouldDisplayCaptcha) {
-        document.getElementById("captcha-uuid").value = document.getElementById('captchetat-uuid').value,
-        document.getElementById("captcha-code").value = document.getElementById('captchaCode').value
-    }
-    document.getElementById("visio-code-form").submit();
 }
 
 const moveToNextInputIfNeeded = (target) => {
@@ -130,3 +123,6 @@ inputs.forEach((input) => {
         })
     });
 })
+
+
+document.getElementById("visio-code-form").addEventListener("submit", formValidateAndSubmit);
