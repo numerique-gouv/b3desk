@@ -75,7 +75,10 @@ def should_display_captcha(check_service_status=True):
     ):
         return False
 
-    # TODO: hotfix comments
+    # hotfix until the captchetat js lib allow custom handling of errors
+    # When it is done, we can just hide the captcha in the front if
+    # something happened, and avoid perform a healthcheck query here.
+    # https://gitlab.adullact.net/captchetat/client-libraries/js/-/issues/4
     if check_service_status and captchetat_service_status() != "UP":
         captcha_error("Captchetat service is down")
         return False
