@@ -1,9 +1,11 @@
 import json
 from unittest import mock
 
+import requests
 from b3desk.endpoints.captcha import captcha_validation
 from b3desk.endpoints.captcha import captchetat_service_status
 from b3desk.endpoints.captcha import get_captchetat_token
+from b3desk.session import should_display_captcha
 
 
 class Access_token_response:
@@ -110,6 +112,19 @@ def test_captcha_proxy(access_token, client_app, mocker):
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_proxy_but_captchetat_is_down(access_token, client_app, mocker, caplog):
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", side_effect=requests.exceptions.ConnectionError())
+    response = client_app.get(
+        "/simple-captcha-endpoint",
+        params={"get": "sound", "c": "captchaFR"},
+        status=503,
+    )
+    assert json.loads(response.body.decode("utf-8")) == {"success": False}
+    assert "Network issue during connection to captchetat" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_proxy_with_no_token(access_token, client_app, mocker, caplog):
     access_token.return_value = None
     mocker.patch("requests.get", return_value=Captcha_response(200))
@@ -136,6 +151,17 @@ def test_captcha_validation(access_token, client_app, mocker):
     mocker.patch("requests.post", return_value=Captcha_validation_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
     assert validation == {"true"}
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_validation_but_captchetat_is_down(
+    access_token, client_app, mocker, caplog
+):
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.post", side_effect=requests.exceptions.ConnectionError())
+    validation = captcha_validation("captcha_uuid", "captcha_code")
+    assert validation
+    assert "Network issue during connection to captchetat" in caplog.text
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
@@ -186,7 +212,6 @@ def test_join_with_visio_code_and_captcha_needed(
     visio_code_session,
     mocker,
     meeting,
-    caplog,
 ):
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
@@ -220,38 +245,35 @@ def test_join_with_visio_code_with_wrong_visio_code_and_wrong_captcha(
     visio_code_session,
     mocker,
     meeting,
-    caplog,
 ):
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = False
-    params = {"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"}
-    # 1st attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-    # 2nd attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    # 3rd attempt with captcha
-    response = client_app.post(
-        "/meeting/visio_code",
-        params={
-            "visio_code1": "123",
-            "visio_code2": "456",
-            "visio_code3": "789",
-            "captchaCode": "captchaCode",
-            "captchetat-uuid": "captchetat-uuid",
-        },
-    )
-    assert ("error", "Le captcha saisi est erroné") in response.flashes
-    # the existence of the meeting should not be revealed at this stage
-    assert ("error", "Le code de connexion saisi est erroné") not in response.flashes
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    with client_app.app.test_request_context("/"):
+        from flask import session
+
+        session.update(sess)
+        response = client_app.post(
+            "/meeting/visio_code",
+            params={
+                "visio_code1": "123",
+                "visio_code2": "456",
+                "visio_code3": "789",
+                "captchaCode": "captchaCode",
+                "captchetat-uuid": "captchetat-uuid",
+            },
+        )
+        assert ("error", "Le captcha saisi est erroné") in response.flashes
+        # the existence of the meeting should not be revealed at this stage
+        assert (
+            "error",
+            "Le code de connexion saisi est erroné",
+        ) not in response.flashes
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
@@ -265,37 +287,31 @@ def test_join_with_visio_code_with_wrong_visio_code_and_valid_captcha(
     visio_code_session,
     mocker,
     meeting,
-    caplog,
 ):
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = True
-    params = {"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"}
-    # 1st attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-    # 2nd attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    # 3rd attempt with captcha
-    response = client_app.post(
-        "/meeting/visio_code",
-        params={
-            "visio_code1": "123",
-            "visio_code2": "456",
-            "visio_code3": "789",
-            "captchaCode": "captchaCode",
-            "captchetat-uuid": "captchetat-uuid",
-        },
-    )
-    assert ("error", "Le captcha saisi est erroné") not in response.flashes
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    with client_app.app.test_request_context("/"):
+        from flask import session
+
+        session.update(sess)
+        response = client_app.post(
+            "/meeting/visio_code",
+            params={
+                "visio_code1": "123",
+                "visio_code2": "456",
+                "visio_code3": "789",
+                "captchaCode": "captchaCode",
+                "captchetat-uuid": "captchetat-uuid",
+            },
+        )
+        assert ("error", "Le captcha saisi est erroné") not in response.flashes
+        assert ("error", "Le code de connexion saisi est erroné") in response.flashes
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
@@ -309,37 +325,35 @@ def test_join_with_visio_code_with_valid_visio_code_and_wrong_captcha(
     visio_code_session,
     mocker,
     meeting,
-    caplog,
 ):
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = False
-    params = {"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"}
-    # 1st attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-    # 2nd attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    # 3rd attempt with captcha
-    response = client_app.post(
-        "/meeting/visio_code",
-        params={
-            "visio_code1": "911",
-            "visio_code2": "111",
-            "visio_code3": "111",
-            "captchaCode": "captchaCode",
-            "captchetat-uuid": "captchetat-uuid",
-        },
-    )
-    assert ("error", "Le captcha saisi est erroné") in response.flashes
-    assert ("error", "Le code de connexion saisi est erroné") not in response.flashes
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    with client_app.app.test_request_context("/"):
+        from flask import session
+
+        session.update(sess)
+
+        response = client_app.post(
+            "/meeting/visio_code",
+            params={
+                "visio_code1": "911",
+                "visio_code2": "111",
+                "visio_code3": "111",
+                "captchaCode": "captchaCode",
+                "captchetat-uuid": "captchetat-uuid",
+            },
+        )
+        assert ("error", "Le captcha saisi est erroné") in response.flashes
+        assert (
+            "error",
+            "Le code de connexion saisi est erroné",
+        ) not in response.flashes
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
@@ -353,33 +367,64 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
     visio_code_session,
     mocker,
     meeting,
-    caplog,
 ):
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = True
-    params = {"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"}
-    # 1st attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
-    # 2nd attempt
-    response = client_app.post(
-        "/meeting/visio_code",
-        params=params,
-    )
-    # 3rd attempt with captcha
-    response = client_app.post(
-        "/meeting/visio_code",
-        params={
-            "visio_code1": "911",
-            "visio_code2": "111",
-            "visio_code3": "111",
-            "captchaCode": "captchaCode",
-            "captchetat-uuid": "captchetat-uuid",
-        },
-    )
-    response.mustcontain("Rejoindre le séminaire")
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    with client_app.app.test_request_context("/"):
+        from flask import session
+
+        session.update(sess)
+
+        response = client_app.post(
+            "/meeting/visio_code",
+            params={
+                "visio_code1": "911",
+                "visio_code2": "111",
+                "visio_code3": "111",
+                "captchaCode": "captchaCode",
+                "captchetat-uuid": "captchetat-uuid",
+            },
+        )
+        response.mustcontain("Rejoindre le séminaire")
+
+
+def test_should_display_captcha_with_no_PISTE_OAUTH_CLIENT_ID(client_app):
+    client_app.app.config["PISTE_OAUTH_CLIENT_ID"] = None
+    assert not should_display_captcha()
+
+
+def test_should_display_captcha_with_no_PISTE_OAUTH_CLIENT_SECRET(client_app):
+    client_app.app.config["PISTE_OAUTH_CLIENT_SECRET"] = None
+    assert not should_display_captcha()
+
+
+def test_should_display_captcha_with_no_CAPTCHETAT_API_URL(client_app):
+    client_app.app.config["CAPTCHETAT_API_URL"] = None
+    assert not should_display_captcha()
+
+
+def test_should_display_captcha_with_no_PISTE_OAUTH_API_URL(client_app):
+    client_app.app.config["PISTE_OAUTH_API_URL"] = None
+    assert not should_display_captcha()
+
+
+def test_should_display_captcha_with_no_token(client_app, caplog):
+    client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    with client_app.app.test_request_context("/"):
+        from flask import session
+
+        session.update(sess)
+
+        result = should_display_captcha()
+        assert not result
+        assert "captcha error : Captchetat service is down" in caplog.text
