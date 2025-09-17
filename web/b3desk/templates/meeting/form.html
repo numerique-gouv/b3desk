@@ -1,45 +1,45 @@
 {% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
   {% if field.type == "BooleanField" %}
-  <li>
-    <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
-      {{ field(value="on", class_="fr-toggle__input")}}
-      {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
-      <p class="fr-hint-text">{{ field.description }}</p>
-    </div>
-  </li>
+    <li>
+      <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
+        {{ field(value="on", class_="fr-toggle__input")}}
+        {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
+        <p class="fr-hint-text">{{ field.description }}</p>
+      </div>
+    </li>
   {% else %}
-  <div class="fr-col-12 fr-py-0">
-    <div class="fr-input-group fr-py-2w">
-      {{ field.label(class_="fr-label") }}
-      <p class="fr-hint-text">{{ field.description }}</p>
-      {% if field.errors %}
-        {% for error in field.errors %}
-        <p class="fr-error-text">{{ error }}</p>
-        {% endfor %}
-      {% endif %}
-      {% if generate_button %}
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6">
-            {{ field(class_="fr-input") }}
+    <div class="fr-col-12 fr-py-0">
+      <div class="fr-input-group fr-py-2w">
+        {{ field.label(class_="fr-label") }}
+        <p class="fr-hint-text">{{ field.description }}</p>
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <p class="fr-error-text">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
+        {% if generate_button %}
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-6">
+              {{ field(class_="fr-input") }}
+            </div>
+            <div class="fr-col-2">
+              <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+            </div>
           </div>
-          <div class="fr-col-2">
-            <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+        {% elif reset_visio_code_button %}
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-6">
+              {{ field(class_="fr-input") }}
+            </div>
+            <div class="fr-col-2">
+              <button type="button" class="fr-btn fr-btn--secondary" onclick="getAvailableVisioCode(visioCodeInput=document.getElementById('{{ field.name }}'))"><i class="ri-refresh-fill"></i></button>
+            </div>
           </div>
-        </div>
-      {% elif reset_visio_code_button %}
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6">
-            {{ field(class_="fr-input") }}
-          </div>
-          <div class="fr-col-2">
-            <button type="button" class="fr-btn fr-btn--secondary" onclick="getAvailableVisioCode(visioCodeInput=document.getElementById('{{ field.name }}'))"><i class="ri-refresh-fill"></i></button>
-          </div>
-        </div>
-      {% else %}
-        {{ field(class_="fr-input", **kwargs) }}
-      {% endif %}
+        {% else %}
+          {{ field(class_="fr-input", **kwargs) }}
+        {% endif %}
+      </div>
     </div>
-  </div>
   {% endif %}
 {% endmacro %}
 
@@ -51,7 +51,7 @@
 
 <form id="meeting-form" action="{{ url_for("meetings.save_meeting") }}" method="POST">
   {% if form.errors %}
-  <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
+    <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
   {% endif %}
 
   {% include 'meeting/csrf.html' %}
@@ -60,77 +60,77 @@
   {{ render_field(form.name, pattern="[^\\x22]+", disabled=name_disabled) }}
   <br><br>
   <div class="fr-accordions-group" id="meeting-form-accordion">
-      <div class="fr-accordion">
-        <h2 class="fr-accordion__title fr-h3">
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="false" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
-        </h2>
-        <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
-            <div class="fr-grid-row">
+    <div class="fr-accordion">
+      <h2 class="fr-accordion__title fr-h3">
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="false" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
+      </h2>
+      <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
+        <div class="fr-grid-row">
               <!--Accueil des participants -->
-              <ul class="fr-toggle__list">
-                {{ render_field(form.guestPolicy) }}
-              </ul>
+          <ul class="fr-toggle__list">
+            {{ render_field(form.guestPolicy) }}
+          </ul>
 
-              {% if config.get("ENABLE_PIN_MANAGEMENT") %}
-                {{ render_field(form.voiceBridge) }}
-              {% endif %}
-              {{ render_field(form.welcome) }}
-              {{ render_field(form.moderatorOnlyMessage) }}
-              <div class="fr-notice fr-notice--info">
-                <div class="fr-container">
-                    <div class="fr-notice__body">
-                        <p class="fr-notice__title">
-                          Conseils pour la mise en forme
-                        </p>
-                    </div>
-                    <p>
-                      &lt;u&gt;&lt;strong> %%CONFNAME%% &lt;/strong&gt;&lt;/u&gt;<br>
-                      %%CONFNAME%% : affiche le nom de votre salle
-                    </p>
-                </div>
-            </div>
-            </div>
-        </div>
-      </div>
-
-      <div class="fr-accordion">
-        <h2 class="fr-accordion__title fr-h3">
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
-        </h2>
-        <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
-            <div class="fr-grid-row">
+          {% if config.get("ENABLE_PIN_MANAGEMENT") %}
+            {{ render_field(form.voiceBridge) }}
+          {% endif %}
+          {{ render_field(form.welcome) }}
+          {{ render_field(form.moderatorOnlyMessage) }}
+          <div class="fr-notice fr-notice--info">
+            <div class="fr-container">
+              <div class="fr-notice__body">
+                <p class="fr-notice__title">
+                  Conseils pour la mise en forme
+                </p>
+              </div>
               <p>
-                {% trans %}Tous ces paramètres sont modifiables directement depuis la salle de réunion à tout moment.{% endtrans %}
+                &lt;u&gt;&lt;strong> %%CONFNAME%% &lt;/strong&gt;&lt;/u&gt;<br>
+                %%CONFNAME%% : affiche le nom de votre salle
               </p>
-              <!-- Interactions -->
-              <ul class="fr-toggle__list">
-                  {{ render_field(form.lockSettingsDisablePublicChat) }}
-                  {{ render_field(form.lockSettingsDisablePrivateChat) }}
-                  {{ render_field(form.lockSettingsDisableNote) }}
-                  {{ render_field(form.lockSettingsDisableCam) }}
-                  {{ render_field(form.lockSettingsDisableMic) }}
-                  {{ render_field(form.muteOnStart) }}
-                  {{ render_field(form.webcamsOnlyForModerator) }}
-              </ul>
             </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="fr-accordion">
+      <h2 class="fr-accordion__title fr-h3">
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
+      </h2>
+      <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
+        <div class="fr-grid-row">
+          <p>
+            {% trans %}Tous ces paramètres sont modifiables directement depuis la salle de réunion à tout moment.{% endtrans %}
+          </p>
+              <!-- Interactions -->
+          <ul class="fr-toggle__list">
+            {{ render_field(form.lockSettingsDisablePublicChat) }}
+            {{ render_field(form.lockSettingsDisablePrivateChat) }}
+            {{ render_field(form.lockSettingsDisableNote) }}
+            {{ render_field(form.lockSettingsDisableCam) }}
+            {{ render_field(form.lockSettingsDisableMic) }}
+            {{ render_field(form.muteOnStart) }}
+            {{ render_field(form.webcamsOnlyForModerator) }}
+          </ul>
+        </div>
+      </div>
+    </div>
     {% if recording %}
       <div class="fr-accordion">
         <h2 class="fr-accordion__title fr-h3">
           <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
-            <div class="fr-grid-row">
-              <p>
-                {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
-              </p>
+          <div class="fr-grid-row">
+            <p>
+              {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
+            </p>
               <!-- Enregistrement -->
-               <ul class="fr-toggle__list">
-                 {{ render_field(form.allowStartStopRecording) }}
-                 {{ render_field(form.autoStartRecording) }}
-              </ul>
-            </div>
+            <ul class="fr-toggle__list">
+              {{ render_field(form.allowStartStopRecording) }}
+              {{ render_field(form.autoStartRecording) }}
+            </ul>
+          </div>
         </div>
       </div>
     {% endif %}
@@ -139,23 +139,23 @@
         <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Paramètres avancés{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
-          <div class="fr-grid-row">
+        <div class="fr-grid-row">
             <!-- Paramètres avancés -->
-            {% if meeting is not none %}
-              {{ render_field(form.visio_code, reset_visio_code_button=True) }}
-            {% endif %}
-            {{ render_field(form.moderatorPW, generate_button=True) }}
-            {{ render_field(form.attendeePW, generate_button=True) }}
-            <div class="fr-grid-row fr-px-1w fr-grid-row--gutters">
-              <div class="fr-col-lg-6 fr-col-12">
-                {{ render_field(form.maxParticipants) }}
-              </div>
-              <div class="fr-col-lg-6 fr-col-12">
-                {{ render_field(form.duration) }}
-              </div>
+          {% if meeting is not none %}
+            {{ render_field(form.visio_code, reset_visio_code_button=True) }}
+          {% endif %}
+          {{ render_field(form.moderatorPW, generate_button=True) }}
+          {{ render_field(form.attendeePW, generate_button=True) }}
+          <div class="fr-grid-row fr-px-1w fr-grid-row--gutters">
+            <div class="fr-col-lg-6 fr-col-12">
+              {{ render_field(form.maxParticipants) }}
             </div>
-            {{ render_field(form.logoutUrl, pattern="[^\\x22]+") }}
+            <div class="fr-col-lg-6 fr-col-12">
+              {{ render_field(form.duration) }}
+            </div>
           </div>
+          {{ render_field(form.logoutUrl, pattern="[^\\x22]+") }}
+        </div>
       </div>
     </div>
   </div>

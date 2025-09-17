@@ -3,104 +3,104 @@
         <div class="list-meeting-rooms-title">
             <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
             {% if can_create_meetings == True %}
-            <div>
-                <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
-                    Créer une salle permanente
-                </a>
-            </div>
+                <div>
+                    <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
+                        Créer une salle permanente
+                    </a>
+                </div>
             {% endif %}
         </div>
     </div>
     {% if not can_create_meetings %}
-    <div class="fr-highlight error">
-        <p class="">
-        <i class="ri-error-warning-line"></i>
-        {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} {{ meeting_label }}s. Pour pouvoir en créer davantage, veuillez supprimer des {{ meeting_label }}s inactives.{% endtrans %}
-        </p>
-    </div>
+        <div class="fr-highlight error">
+            <p class="">
+                <i class="ri-error-warning-line"></i>
+                {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} {{ meeting_label }}s. Pour pouvoir en créer davantage, veuillez supprimer des {{ meeting_label }}s inactives.{% endtrans %}
+            </p>
+        </div>
     {% endif %}
 
     {% if not user.meetings %}
-    <div class="fr-grid-row">
-        <div class="fr-col-md-4 image-no-meetings">
-        </div>
-        <div class="fr-col-md-8">
-            <p>Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.</p>
-            <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
-                Créer une salle permanente
-            </a>
-            <p class="fr-mt-2w fr-text--sm">
-            En créant une salle de réunion permanente, vous pouvez créer une base de documents permanente, choisir d'ajouter une salle d'attente, de bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de discussions privés et publiques, ou encore accéder aux enregistrements à la fin de votre réunion.
-            </p>
-        </div>
-    </div>
-    {% else %}
-    <p>Trier par :</p>
-    <ul class="fr-tags-group">
-        <li>
-            {% if order_key == "created_at" %}
-            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order={{ 'False' if reverse_order == True else 'True' }}&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
-            class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
-            aria-pressed="true"
-            target="_self">Date</a>
-            {% else %}
-            <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order=True&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
-            class="fr-tag"
-            target="_self">Date</a>
-            {% endif %}
-        </li>
-        <li>
-            {% if order_key == "name" %}
-            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order={{ 'True' if reverse_order == False else 'False' }}&favorite-filter={{'True' if favorite_filter == True else 'False' }}"
-            class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
-            aria-pressed="true"
-            target="_self">Alphabétique</a>
-            {% else %}
-            <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order=False&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
-            class="fr-tag"
-            target="_self">Alphabétique</a>
-            {% endif %}
-        </li>
-        <li>
-            <a href="{{ url_for("public.welcome") }}?order-key={{ order_key }}&reverse-order={{ 'True' if reverse_order == True else 'False' }}&favorite-filter={{ 'True' if favorite_filter == False else 'False' }}"
-            class="fr-tag"
-            aria-pressed="{{ 'true' if favorite_filter == True else 'false' }}"
-            target="_self">Favoris</a>
-        </li>
-    </ul>
-    {% for meeting in meetings %}
-    <div class="fr-grid-row">
-        <div class="fr-col meeting-room">
-            <div class="fr-grid-row">
-                <div class="fr-col-8">
-                    <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
-                </div>
-                <div class="fr-col-offset-3"></div>
-                <form action="{{ url_for("meetings.meeting_favorite") }}?order-key={{ order_key }}&reverse-order={{ reverse_order }}&favorite-filter={{ favorite_filter }}" method="POST">
-                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
-                    {% include 'meeting/id.html' %}
-                    {% include 'meeting/csrf.html' %}
-                        <div class="fr-col-1">
-                            <button class="fr-btn fr-btn--tertiary-no-outline {{ 'fr-icon-star-line' if meeting.is_favorite == False else 'fr-icon-star-fill' }}" title="{{ 'Ajouter aux favoris' if meeting.is_favorite == False else 'Retirer des favoris' }}">
-                                Label bouton
-                            </button>
-                        </div>
-                    </div>
-                </form>
+        <div class="fr-grid-row">
+            <div class="fr-col-md-4 image-no-meetings">
             </div>
-            {% include 'meeting/row.html' %}
+            <div class="fr-col-md-8">
+                <p>Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.</p>
+                <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
+                    Créer une salle permanente
+                </a>
+                <p class="fr-mt-2w fr-text--sm">
+                    En créant une salle de réunion permanente, vous pouvez créer une base de documents permanente, choisir d'ajouter une salle d'attente, de bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de discussions privés et publiques, ou encore accéder aux enregistrements à la fin de votre réunion.
+                </p>
+            </div>
         </div>
-    </div>
-    {% include 'meeting/modals/delete.html' %}
-    {% include 'meeting/modals/invite.html' %}
-    {% include 'meeting/modals/recordings.html' %}
-    {% endfor %}
-    {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
-    <iframe id="iframe-poll"
-        frameborder=0
-        src="{{ config.get("SATISFACTION_POLL_URL") }}"
-        height="500" scrolling="no"
-        sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    {% else %}
+        <p>Trier par :</p>
+        <ul class="fr-tags-group">
+            <li>
+                {% if order_key == "created_at" %}
+                    <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order={{ 'False' if reverse_order == True else 'True' }}&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
+                       class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
+                       aria-pressed="true"
+                       target="_self">Date</a>
+                {% else %}
+                    <a href="{{ url_for("public.welcome") }}?order-key=created_at&reverse-order=True&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
+                       class="fr-tag"
+                       target="_self">Date</a>
+                {% endif %}
+            </li>
+            <li>
+                {% if order_key == "name" %}
+                    <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order={{ 'True' if reverse_order == False else 'False' }}&favorite-filter={{'True' if favorite_filter == True else 'False' }}"
+                       class="fr-tag fr-tag--icon-left {{ 'fr-fi-arrow-down-line' if reverse_order == False else 'fr-fi-arrow-up-line' }}"
+                       aria-pressed="true"
+                       target="_self">Alphabétique</a>
+                {% else %}
+                    <a href="{{ url_for("public.welcome") }}?order-key=name&reverse-order=False&favorite-filter={{ 'True' if favorite_filter == True else 'False' }}"
+                       class="fr-tag"
+                       target="_self">Alphabétique</a>
+                {% endif %}
+            </li>
+            <li>
+                <a href="{{ url_for("public.welcome") }}?order-key={{ order_key }}&reverse-order={{ 'True' if reverse_order == True else 'False' }}&favorite-filter={{ 'True' if favorite_filter == False else 'False' }}"
+                   class="fr-tag"
+                   aria-pressed="{{ 'true' if favorite_filter == True else 'false' }}"
+                   target="_self">Favoris</a>
+            </li>
+        </ul>
+        {% for meeting in meetings %}
+            <div class="fr-grid-row">
+                <div class="fr-col meeting-room">
+                    <div class="fr-grid-row">
+                        <div class="fr-col-8">
+                            <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
+                        </div>
+                        <div class="fr-col-offset-3"></div>
+                        <form action="{{ url_for("meetings.meeting_favorite") }}?order-key={{ order_key }}&reverse-order={{ reverse_order }}&favorite-filter={{ favorite_filter }}" method="POST">
+                            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
+                                {% include 'meeting/id.html' %}
+                                {% include 'meeting/csrf.html' %}
+                                <div class="fr-col-1">
+                                    <button class="fr-btn fr-btn--tertiary-no-outline {{ 'fr-icon-star-line' if meeting.is_favorite == False else 'fr-icon-star-fill' }}" title="{{ 'Ajouter aux favoris' if meeting.is_favorite == False else 'Retirer des favoris' }}">
+                                        Label bouton
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% include 'meeting/row.html' %}
+                </div>
+            </div>
+            {% include 'meeting/modals/delete.html' %}
+            {% include 'meeting/modals/invite.html' %}
+            {% include 'meeting/modals/recordings.html' %}
+        {% endfor %}
+        {% if meetings|length and config.get("SATISFACTION_POLL_URL") %}
+            <iframe id="iframe-poll"
+                    frameborder=0
+                    src="{{ config.get("SATISFACTION_POLL_URL") }}"
+                    height="500" scrolling="no"
+                    sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        {% endif %}
+        </div>
     {% endif %}
-</div>
-{% endif %}

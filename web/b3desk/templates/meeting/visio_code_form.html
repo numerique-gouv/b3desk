@@ -1,10 +1,10 @@
 <div>
     {% if user %}
-    <h4>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h4>
+        <h4>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h4>
     {% elif config.get("ENABLE_LASUITENUMERIQUE") and not user %}
-    <h2>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h2>
+        <h2>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h2>
     {% else %}
-    <h6>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h6>
+        <h6>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h6>
     {% endif %}
     <p>
         {% trans %}Remplissez le code de connexion reçu dans l’invitation {{ of_the_meeting }}.{% endtrans %}<br><br>
@@ -30,100 +30,100 @@
 </div>
 
 {% block js %}
-<script>
-    const focusAtEnd = (input) => {
-        input.focus();
-        input.selectionStart = 3;
-        input.selectionEnd = 3;
-    }
-    const formValidation = (visioCode) => {
-        document.getElementById("visio-code").value = visioCode;
-        document.getElementById("visio-code-form").submit();
-    }
-
-    const moveToNextInputIfNeeded = (target) => {
-        const isAtEnd = target.selectionStart == target.value.length && target.value.length == target.selectionEnd;
-        const nextSibling = target.nextElementSibling;
-        const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
-        if (nextSiblingInput && isAtEnd) {
-            nextSibling.focus();
-            nextSibling.selectionStart = 0;
-            nextSibling.selectionEnd = 0;
+    <script>
+        const focusAtEnd = (input) => {
+            input.focus();
+            input.selectionStart = 3;
+            input.selectionEnd = 3;
         }
-    }
-
-    const moveToPreviousInputIfNeeded = (target) => {
-        const isAtBeginning = target.selectionStart == 0 && target.selectionEnd == 0;
-        const previousSibling = target.previousElementSibling;
-        const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
-        if (isAtBeginning && previousSiblingInput) {
-            focusAtEnd(previousSibling);
+        const formValidation = (visioCode) => {
+            document.getElementById("visio-code").value = visioCode;
+            document.getElementById("visio-code-form").submit();
         }
-    }
 
-    const visualValidation = (target) => {
-        if (target.value == "") {
-            target.classList.remove("fr-input--valid")
-            target.classList.remove("fr-input--error")
-        } else if (!target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--error")) {
-            target.classList.remove("fr-input--valid")
-            target.classList.add("fr-input--error")
-        } else if (target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--valid")) {
-            target.classList.remove("fr-input--error")
-            target.classList.add("fr-input--valid")
-        }
-    }
-
-    const inputs = document.querySelectorAll(".visio-code-container input");
-
-    inputs.forEach((input) => {
-        visualValidation(input);
-        input.addEventListener("keyup", (event) => {
-            if (input.value.length >= 3 && event.key.length == 1) {
-                moveToNextInputIfNeeded(input);
+        const moveToNextInputIfNeeded = (target) => {
+            const isAtEnd = target.selectionStart == target.value.length && target.value.length == target.selectionEnd;
+            const nextSibling = target.nextElementSibling;
+            const nextSiblingInput = nextSibling && target.nextElementSibling.nodeName === "INPUT";
+            if (nextSiblingInput && isAtEnd) {
+                nextSibling.focus();
+                nextSibling.selectionStart = 0;
+                nextSibling.selectionEnd = 0;
             }
-            if (event.key == "Backspace" || event.key == "ArrowLeft") {
-                moveToPreviousInputIfNeeded(input);
-            } else if (event.key == "ArrowRight") {
-                moveToNextInputIfNeeded(input);
+        }
+
+        const moveToPreviousInputIfNeeded = (target) => {
+            const isAtBeginning = target.selectionStart == 0 && target.selectionEnd == 0;
+            const previousSibling = target.previousElementSibling;
+            const previousSiblingInput = previousSibling && target.previousElementSibling.nodeName === "INPUT";
+            if (isAtBeginning && previousSiblingInput) {
+                focusAtEnd(previousSibling);
             }
+        }
+
+        const visualValidation = (target) => {
+            if (target.value == "") {
+                target.classList.remove("fr-input--valid")
+                target.classList.remove("fr-input--error")
+            } else if (!target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--error")) {
+                target.classList.remove("fr-input--valid")
+                target.classList.add("fr-input--error")
+            } else if (target.value.match(/\d{3}$/) && !target.classList.contains("fr-input--valid")) {
+                target.classList.remove("fr-input--error")
+                target.classList.add("fr-input--valid")
+            }
+        }
+
+        const inputs = document.querySelectorAll(".visio-code-container input");
+
+        inputs.forEach((input) => {
             visualValidation(input);
-
-            const visioCode = Array.from(inputs).map(i => i.value).join("");
-            if (visioCode.match(/\d{9}$/)) {
-                document.getElementById("submit-visio-code").disabled = false;
-                if (event.key == "Enter") {
-                    formValidation(visioCode);
+            input.addEventListener("keyup", (event) => {
+                if (input.value.length >= 3 && event.key.length == 1) {
+                    moveToNextInputIfNeeded(input);
                 }
-            } else {
-                document.getElementById("submit-visio-code").disabled = true;
-            }
-        })
-        input.addEventListener('paste', (event) => {
-            event.preventDefault()
-            const pasteData = (event.clipboardData || window.clipboardData).getData('text');
-            const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
-            inputs.forEach((pastedInput, index) => {
-                pastedInput.value = chars[index];
-                visualValidation(pastedInput);
-                if (pasteData.length <= 3 && index == 0) {
-                    focusAtEnd(pastedInput);
-                } else if (pasteData.length > 3 && pasteData.length <= 6 && index == 1) {
-                    focusAtEnd(pastedInput);
-                } else if (pasteData.length > 6 && index == 2) {
-                    focusAtEnd(pastedInput);
+                if (event.key == "Backspace" || event.key == "ArrowLeft") {
+                    moveToPreviousInputIfNeeded(input);
+                } else if (event.key == "ArrowRight") {
+                    moveToNextInputIfNeeded(input);
+                }
+                visualValidation(input);
+
+                const visioCode = Array.from(inputs).map(i => i.value).join("");
+                if (visioCode.match(/\d{9}$/)) {
+                    document.getElementById("submit-visio-code").disabled = false;
+                    if (event.key == "Enter") {
+                        formValidation(visioCode);
+                    }
+                } else {
+                    document.getElementById("submit-visio-code").disabled = true;
                 }
             })
-        });
-    })
+            input.addEventListener('paste', (event) => {
+                event.preventDefault()
+                const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+                const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
+                inputs.forEach((pastedInput, index) => {
+                    pastedInput.value = chars[index];
+                    visualValidation(pastedInput);
+                    if (pasteData.length <= 3 && index == 0) {
+                        focusAtEnd(pastedInput);
+                    } else if (pasteData.length > 3 && pasteData.length <= 6 && index == 1) {
+                        focusAtEnd(pastedInput);
+                    } else if (pasteData.length > 6 && index == 2) {
+                        focusAtEnd(pastedInput);
+                    }
+                })
+            });
+        })
 
-    const formValidateAndSubmit = () => {
-        const visioCode = Array.from(inputs).map(i => i.value).join("");
-        if (visioCode.match(/\d{9}$/)) {
+        const formValidateAndSubmit = () => {
+            const visioCode = Array.from(inputs).map(i => i.value).join("");
+            if (visioCode.match(/\d{9}$/)) {
                 formValidation(visioCode);
-        } else {
-            visualValidation(input);
+            } else {
+                visualValidation(input);
+            }
         }
-    }
-</script>
+    </script>
 {% endblock %}
