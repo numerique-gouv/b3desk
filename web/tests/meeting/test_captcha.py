@@ -83,12 +83,12 @@ def test_captcha_proxy(access_token, client_app, mocker):
 def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.get", return_value=Captcha_response(401))
-    client_app.get("/simple-captcha-endpoint")
+    client_app.get("/simple-captcha-endpoint", status=401)
     assert "captcha error : Captcha image/sound not received" in caplog.text
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
-@mock.patch("b3desk.utils.captchetat_service_status")
+@mock.patch("b3desk.endpoints.captcha.captchetat_service_status")
 def test_join_with_visio_code_and_captcha_needed(
     status, access_token, client_app, visio_code_session, mocker
 ):
@@ -96,11 +96,13 @@ def test_join_with_visio_code_and_captcha_needed(
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
     response = client_app.post(
-        "/meeting/visio_code", params={"visio_code": "123456789"}
+        "/meeting/visio_code",
+        params={"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"},
     )
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
     response = client_app.post(
-        "/meeting/visio_code", params={"visio_code": "123456789"}
+        "/meeting/visio_code",
+        params={"visio_code1": "123", "visio_code2": "456", "visio_code3": "789"},
     )
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
     response = response.follow()
