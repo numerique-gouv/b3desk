@@ -3,4 +3,5 @@ keycloak
 postgres
 *.map
 *.min.*
+*.svg
 web/b3desk/static/dsfr-v1.14.0
