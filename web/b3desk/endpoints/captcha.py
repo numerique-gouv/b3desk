@@ -1,5 +1,3 @@
-import json
-
 import requests
 from flask import Blueprint
 from flask import current_app
@@ -87,7 +85,6 @@ def captcha_validation(captcha_uuid, captcha_code):
     if response.status_code != 200:
         captcha_error("An error happened during captcha validation.")
         return True
-
     return response.json()
 
 
@@ -108,7 +105,5 @@ def captchetat_service_status():
         f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
         headers={"Authorization": f"Bearer {access_token}"},
     )
-    raw_data = response.content
-    json_string = raw_data.decode("utf-8")
-    data = json.loads(json_string) if json_string else {"status": "DOWN"}
+    data = response.json()
     return data["status"]
