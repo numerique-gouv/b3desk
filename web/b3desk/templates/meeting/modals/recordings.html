@@ -11,8 +11,10 @@
             <div class="fr-table fr-table--bordered fr-table--layout-fixed">
                 <table>
                     <thead>
-                        <th>{% trans %}Images{% endtrans %}</th>
-                        <th>{% trans %}Lien{% endtrans %}</th>
+                        <tr>
+                            <th>{% trans %}Images{% endtrans %}</th>
+                            <th>{% trans %}Lien{% endtrans %}</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for p in r.playbacks %}

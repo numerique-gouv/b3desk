@@ -16,10 +16,10 @@
             {% endif %}
             <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
         </div>
-        <div class="rf-col">
-            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="rf-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="rf-fi-edit-line"></span></a>
+        <div class="fr-col">
+            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-fi-edit-line"></span></a>
             {% if config.get("FILE_SHARING") %}
-                <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="rf-tag" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="rf-fi-file-pdf-line"></span></a>
+                <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-tag" title="Fichiers associés à {{ meeting.name }}" aria-label="Fichiers associés à {{ meeting.name }}"><span class="fr-fi-file-pdf-line"></span></a>
             {% endif %}
             <a href="#"
                class="js-modal fr-tag"
