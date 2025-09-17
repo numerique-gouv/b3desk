@@ -9,7 +9,6 @@
 
         <title>{{ config["TITLE"] }}</title>
 
-        <!-- DSFR core CSS -->
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/utility/icons/icons.css') }}">
@@ -69,15 +68,14 @@
                 {% include 'footer.html' %}
             {% endblock %}
 
-            <!-- DSFR JavaScript -->
+            {# DSFR JavaScript #}
             <script src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.module.min.js')}}"></script>
             <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
-            <!-- Scampi Modal en attendant la modale GouvFr-->
+            {# Scampi Modal en attendant la modale GouvFr #}
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}
                 <script>
                     var _paq = window._paq = window._paq || [];
-                /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
                     _paq.push(['trackPageView']);
                     _paq.push(['enableLinkTracking']);
                     (function() {
