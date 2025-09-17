@@ -26,12 +26,12 @@
         </div>
 
         {% if should_display_captcha %}
-        <div class="captcha-container">
-            <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
-        image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
-            <label class="fr-label" for="text-input" id="captcha-description"></label>
-            <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
-        </div>
+            <div class="captcha-container">
+                <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
+                                                                            image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
+                <label class="fr-label" for="text-input" id="captcha-description"></label>
+                <input class="fr-input" type="text" placeholder="SAISIR LE CAPTCHA" id="captchaCode" name="captchaCode" maxlength="12"/>
+            </div>
         {% endif %}
 
         <br>
@@ -49,9 +49,9 @@
 </div>
 
 {% block js %}
-<script>
-    window.shouldDisplayCaptcha = {{ should_display_captcha|tojson }};
-</script>
-<script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
-<script src="{{ url_for('static', filename='js/visio_code_form.js')}}"></script>
+    <script>
+        window.shouldDisplayCaptcha = {{ should_display_captcha|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/visio_code_form.js')}}"></script>
 {% endblock %}
