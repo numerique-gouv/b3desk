@@ -5,13 +5,17 @@ repos:
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
+        exclude: ^(postgres/|nextcloud/|keycloak/)
       - id: ruff-format
+        exclude: ^(postgres/|nextcloud/|keycloak/)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: fix-byte-order-marker
+        exclude: ^(postgres/|nextcloud/|keycloak/)
       - id: trailing-whitespace
-        exclude: "\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
+        exclude: "^(postgres/|nextcloud/|keycloak/)|\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
       - id: end-of-file-fixer
-        exclude: "\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
+        exclude: "^(postgres/|nextcloud/|keycloak/)|\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
       - id: check-toml
+        exclude: ^(postgres/|nextcloud/|keycloak/)

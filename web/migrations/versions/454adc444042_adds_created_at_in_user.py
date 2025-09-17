@@ -1,4 +1,4 @@
-"""adds created_at in user
+"""Add created_at field in user.
 
 Revision ID: 454adc444042
 Revises: 3c8b6c640fee
