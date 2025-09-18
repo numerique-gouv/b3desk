@@ -162,13 +162,12 @@ def check_private_key():
                 current_app.config["ENABLE_SIP"]
                 and not current_app.config["PRIVATE_KEY"]
             ):
-                flash(
-                    _(
-                        "La clé privée n'a pas été configurée dans les paramètres "
-                        "B3Desk pour sécuriser la connexion SIPMediaGW"
-                    ),
-                    "error",
+                message = _(
+                    "La clé privée n'a pas été configurée dans les paramètres "
+                    "B3Desk pour sécuriser la connexion SIPMediaGW"
                 )
+                flash(message, "error")
+
             return initial_func(*args, **kwargs)
 
         return wrapper_func

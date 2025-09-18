@@ -246,6 +246,7 @@ def setup_endpoints(app):
     with app.app_context():
         import b3desk.commands
         import b3desk.endpoints.api
+        import b3desk.endpoints.captcha
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
         import b3desk.endpoints.meetings
@@ -257,6 +258,7 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.api.bp)
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
+        app.register_blueprint(b3desk.endpoints.captcha.bp)
 
 
 def setup_oidc(app):
