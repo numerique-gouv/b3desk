@@ -182,7 +182,8 @@ def test_save_existing_meeting_not_running(
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
     assert (
-        f"Meeting meeting {meeting.id} was updated by alice@domain.tld\n" in caplog.text
+        "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        in caplog.text
     )
 
 

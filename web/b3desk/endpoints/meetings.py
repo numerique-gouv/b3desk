@@ -228,6 +228,11 @@ def save_meeting():
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
+    updated_data = {
+        key: form.data[key]
+        for key in form.data
+        if getattr(meeting, key) != form.data[key]
+    }
     form.populate_obj(meeting)
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
@@ -242,10 +247,11 @@ def save_meeting():
         )
     else:
         current_app.logger.info(
-            "Meeting %s %s was updated by %s",
+            "Meeting %s %s was updated by %s. Updated fields : %s",
             meeting.name,
             meeting.id,
             user.email,
+            updated_data,
         )
     flash(
         _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
