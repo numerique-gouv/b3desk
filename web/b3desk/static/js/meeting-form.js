@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", async (event) => {
             let visioCodeInput = document.getElementById(event.target.dataset.fieldName)
             const response = await fetch(window.visioCodeUrl, {
-                "GET",
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 }
