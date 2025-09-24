@@ -52,7 +52,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         return redirect(url_for("public.welcome"))
 
     # we test webdav connection here, with a simple 'list' command
-    if owner.nc_login and owner.nc_token and owner.nc_locator:
+    if owner.has_nc_credentials:
         options = {
             "webdav_root": f"/remote.php/dav/files/{owner.nc_login}/",
             "webdav_hostname": owner.nc_locator,

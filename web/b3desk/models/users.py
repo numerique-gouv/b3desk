@@ -189,6 +189,7 @@ def get_user_nc_credentials(preferred_username="", email=""):
             pass
         except (TooManyUsers, NoUserFound) as e:
             current_app.logger.warning(e)
+
     payload = {"username": nc_username}
     headers = {"X-API-KEY": current_app.config["NC_LOGIN_API_KEY"]}
     current_app.logger.info(
@@ -205,6 +206,7 @@ def get_user_nc_credentials(preferred_username="", email=""):
             current_app.config["NC_LOGIN_API_URL"],
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
+
     if "nclogin" not in result:
         result["nclogin"] = nc_username
     return result
@@ -326,6 +328,10 @@ class User(db.Model):
     @property
     def can_create_meetings(self):
         return len(self.meetings) < current_app.config["MAX_MEETINGS_PER_USER"]
+
+    @property
+    def has_nc_credentials(self):
+        return self.nc_login and self.nc_token and self.nc_locator
 
     @property
     def mail_domain(self):

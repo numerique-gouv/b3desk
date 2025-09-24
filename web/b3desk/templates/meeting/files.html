@@ -104,7 +104,7 @@
             <li>
                 <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">depuis une URL</button>
             </li>
-            {% if user.nc_login and user.nc_token and user.nc_locator %}
+            {% if user.has_nc_credentials %}
                 <li>
                     <button onClick=openNCFilePicker(event) class="fr-btn" title="nuage">depuis le Nuage</button>
                 </li>
@@ -138,7 +138,7 @@
                         </thead>
                         <tbody id="fileslist">
                             {% for file in meeting.files %}
-                                {% if (user.nc_login and user.nc_token and user.nc_locator) or file.url %}
+                                {% if user.has_nc_credentials or file.url %}
                             <!-- Supprimer MeetingFile -->
                                     <dialog id="delete-file-{{ file.id }}" class="fr-modal" role="dialog" aria-labelledby="delete-file-{{ file.id }}-title">
                                         <div class="fr-container fr-container--fluid fr-container-md">
