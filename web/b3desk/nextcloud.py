@@ -200,7 +200,7 @@ def get_user_nc_credentials(user):
     return result
 
 
-def update_user_nc_credentials(user):
+def update_user_nc_credentials(user, force_renew=False):
     # preferred_username is login from keycloak, REQUIRED for nc_login connexion
     # data is conveyed like following :
     # user logs in to keycloak
@@ -211,7 +211,8 @@ def update_user_nc_credentials(user):
         return False
 
     if (
-        user.nc_last_auto_enroll
+        not force_renew
+        and user.nc_last_auto_enroll
         and user.nc_locator
         and user.nc_token
         and (
@@ -245,8 +246,13 @@ def update_user_nc_credentials(user):
 
 
 def nextcloud_healthcheck(user):
+    """Perform a simple WebDAV operation to check the server connection.
+
+    On errors, attempt to renew the credentials and perform one single retry.
+    """
+
     # we test webdav connection here, with a simple 'list' command
-    if user.has_nc_credentials:
+    def _healthcheck():
         options = {
             "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
             "webdav_hostname": user.nc_locator,
@@ -257,7 +263,20 @@ def nextcloud_healthcheck(user):
             client = webdavClient(options)
             client.list()
         except WebDavException as exception:
-            current_app.logger.warning(
-                "WebDAV error, user data disabled: %s", exception
-            )
-            user.disable_nextcloud()
+            current_app.logger.warning("WebDAV error: %s", exception)
+            return False
+        return True
+
+    if _healthcheck():
+        return True
+
+    update_user_nc_credentials(user, force_renew=True)
+
+    if _healthcheck():
+        return True
+
+    current_app.logger.error(
+        f"Too many WedDAV errors. Disabling nextcloud credentials for user {user.id} and Nextcloud login {user.nc_login}"
+    )
+    user.disable_nextcloud()
+    return False
