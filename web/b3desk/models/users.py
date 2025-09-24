@@ -37,11 +37,11 @@ def get_or_create_user(user_info):
             preferred_username=preferred_username,
             last_connection_utc_datetime=datetime.now(timezone.utc),
         )
-        update_user_nc_credentials(user, user_info)
+        update_user_nc_credentials(user)
         user.save()
 
     else:
-        user_has_changed = update_user_nc_credentials(user, user_info)
+        user_has_changed = update_user_nc_credentials(user)
 
         if user.given_name != given_name:
             user.given_name = given_name

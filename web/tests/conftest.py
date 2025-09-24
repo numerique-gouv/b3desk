@@ -28,6 +28,7 @@ def iam_user(iam_server):
         given_name="Alice",
         user_name="Alice_user_name",
         family_name="Cooper",
+        preferred_username="alice",
     )
     iam_user.save()
 
@@ -284,6 +285,7 @@ def user(client_app, iam_user):
         email=iam_user.emails[0],
         given_name=iam_user.given_name,
         family_name=iam_user.family_name,
+        preferred_username=iam_user.preferred_username,
     )
     user.save()
 
