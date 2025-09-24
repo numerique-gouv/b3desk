@@ -159,17 +159,19 @@ def can_get_file_sharing_credentials(preferred_username, email):
     )
 
 
-def get_user_nc_credentials(preferred_username="", email=""):
-    if not can_get_file_sharing_credentials(preferred_username, email):
+def get_user_nc_credentials(user):
+    if not can_get_file_sharing_credentials(user.preferred_username, user.email):
         current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
-    nc_username = preferred_username
-    if has_secondary_identity_with_email(email):
+    nc_username = user.preferred_username
+    if has_secondary_identity_with_email(user.email):
         try:
-            nc_username = get_secondary_identity_provider_id_from_email(email=email)
+            nc_username = get_secondary_identity_provider_id_from_email(
+                email=user.email
+            )
         except requests.exceptions.HTTPError:
             pass
         except (TooManyUsers, NoUserFound) as e:
@@ -194,16 +196,20 @@ def get_user_nc_credentials(preferred_username="", email=""):
 
     if "nclogin" not in result:
         result["nclogin"] = nc_username
+
     return result
 
 
-def update_user_nc_credentials(user, user_info):
+def update_user_nc_credentials(user):
     # preferred_username is login from keycloak, REQUIRED for nc_login connexion
     # data is conveyed like following :
     # user logs in to keycloak
     # visio-agent retrives preferred_username from keycloack ( aka keycloak LOGIN, which is immutable )
     # visio-agent calls EDNAT API for NC_DATA retrieval, passing LOGIN as postData
     # visio-agent can now connect to remote NC with NC_DATA
+    if not current_app.config["FILE_SHARING"]:
+        return False
+
     if (
         user.nc_last_auto_enroll
         and user.nc_locator
@@ -221,15 +227,7 @@ def update_user_nc_credentials(user, user_info):
         )
         return False
 
-    data = get_user_nc_credentials(
-        preferred_username=(
-            user_info.get("preferred_username")
-            if current_app.config["FILE_SHARING"]
-            else None
-        ),
-        email=(user_info.get("email") if current_app.config["FILE_SHARING"] else None),
-    )
-
+    data = get_user_nc_credentials(user)
     if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
         current_app.logger.info(
             "No new Nextcloud enroll needed for user %s with those data %s", user, data
