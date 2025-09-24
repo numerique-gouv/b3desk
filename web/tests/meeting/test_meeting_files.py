@@ -20,7 +20,7 @@ def test_nextcloud_authentication_issue(
         "nclogin": None,
     }
     mocker.patch(
-        "b3desk.models.users.make_nextcloud_credentials_request", return_value=response
+        "b3desk.nextcloud.make_nextcloud_credentials_request", return_value=response
     )
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting), status=200

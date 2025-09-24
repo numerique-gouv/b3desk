@@ -31,6 +31,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.models.users import User
+from b3desk.nextcloud import nextcloud_healthcheck
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -51,22 +52,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    # we test webdav connection here, with a simple 'list' command
-    if owner.has_nc_credentials:
-        options = {
-            "webdav_root": f"/remote.php/dav/files/{owner.nc_login}/",
-            "webdav_hostname": owner.nc_locator,
-            "webdav_verbose": True,
-            "webdav_token": owner.nc_token,
-        }
-        try:
-            client = webdavClient(options)
-            client.list()
-        except WebDavException as exception:
-            current_app.logger.warning(
-                "WebDAV error, owner data disabled: %s", exception
-            )
-            owner.disable_nextcloud()
+    nextcloud_healthcheck(owner)
 
     return render_template(
         "meeting/filesform.html",

@@ -443,7 +443,7 @@ def nextcloud_credentials(mocker, webdav_server):
         nc_locator=f"http://{webdav_server.config['host']}:{webdav_server.config['port']}",
     ).data
     mocker.patch(
-        "b3desk.models.users.make_nextcloud_credentials_request", return_value=response
+        "b3desk.nextcloud.make_nextcloud_credentials_request", return_value=response
     )
     return response
 
@@ -474,6 +474,6 @@ class ValidToken:
 @pytest.fixture
 def valid_secondary_identity_token(mocker):
     mocker.patch(
-        "b3desk.models.users.get_secondary_identity_provider_token",
+        "b3desk.nextcloud.get_secondary_identity_provider_token",
         return_value=ValidToken,
     )
