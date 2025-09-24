@@ -24,6 +24,7 @@ from . import db
 def get_or_create_user(user_info):
     given_name = user_info["given_name"]
     family_name = user_info["family_name"]
+    preferred_username = user_info.get("preferred_username")
     email = user_info["email"].lower()
 
     user = db.session.query(User).filter(User.email == email).first()
@@ -33,6 +34,7 @@ def get_or_create_user(user_info):
             email=email,
             given_name=given_name,
             family_name=family_name,
+            preferred_username=preferred_username,
             last_connection_utc_datetime=datetime.now(timezone.utc),
         )
         update_user_nc_credentials(user, user_info)
@@ -47,6 +49,10 @@ def get_or_create_user(user_info):
 
         if user.family_name != family_name:
             user.family_name = family_name
+            user_has_changed = True
+
+        if user.preferred_username != preferred_username:
+            user.preferred_username = preferred_username
             user_has_changed = True
 
         if (
@@ -67,6 +73,7 @@ class User(db.Model):
     email = db.Column(db.Unicode(150), unique=True)
     given_name = db.Column(db.Unicode(50))
     family_name = db.Column(db.Unicode(50))
+    preferred_username = db.Column(db.Unicode(50), nullable=True)
     nc_locator = db.Column(db.Unicode(255))
     nc_login = db.Column(db.Unicode(255))
     nc_token = db.Column(db.Unicode(255))
