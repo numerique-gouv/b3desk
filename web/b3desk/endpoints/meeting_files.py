@@ -52,7 +52,8 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    nextcloud_healthcheck(owner)
+    if owner.has_nc_credentials:
+        nextcloud_healthcheck(owner)
 
     return render_template(
         "meeting/filesform.html",
