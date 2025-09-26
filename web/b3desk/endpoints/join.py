@@ -163,10 +163,8 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect(url_for("public.index"))
-    seconds_before_refresh = (
-        request.args.get("seconds_before_refresh")
-        if "seconds_before_refresh" in request.args
-        else SECONDS_BEFORE_REFRESH
+    seconds_before_refresh = request.args.get(
+        "seconds_before_refresh", SECONDS_BEFORE_REFRESH
     )
 
     return render_template(
