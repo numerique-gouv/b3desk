@@ -36,6 +36,7 @@ from ..session import should_display_captcha
 bp = Blueprint("join", __name__)
 
 SECONDS_BEFORE_REFRESH = 10
+INCREASE_REFRESH_TIME = 1.5
 
 
 @bp.route(
@@ -197,7 +198,9 @@ def join_meeting():
     h = form["h"].data
     seconds_before_refresh = None
     if "seconds_before_refresh" in form:
-        seconds_before_refresh = form["seconds_before_refresh"].data * 1.5
+        seconds_before_refresh = (
+            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
+        )
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect(url_for("public.index"))
