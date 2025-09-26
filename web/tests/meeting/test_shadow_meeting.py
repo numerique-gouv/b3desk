@@ -26,6 +26,8 @@ def test_delete_all_old_shadow_meetings(
 
 def test_get_or_create_shadow_meeting(user):
     assert get_or_create_shadow_meeting(user).name == "le séminaire de Alice Cooper"
+    assert not get_or_create_shadow_meeting(user).record
+    assert not get_or_create_shadow_meeting(user).autoStartRecording
 
 
 def test_get_or_create_shadow_meeting_with_existing_shadow_meeting(
