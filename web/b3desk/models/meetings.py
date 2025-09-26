@@ -460,6 +460,8 @@ def create_and_save_shadow_meeting(user):
         attendeePW=f"{random_string}-{random_string}",
         voiceBridge=pin_generation(),
         visio_code=unique_visio_code_generation(),
+        record=False,
+        autoStartRecording=False,
     )
     meeting.save()
     return meeting
