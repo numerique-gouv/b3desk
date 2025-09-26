@@ -1,5 +1,5 @@
-const seconds_before_refresh = 10;
+secondsBeforeRefresh = document.getElementById("seconds_before_refresh").value
 let joinMeeting = () => {
     document.getElementById("joinMeetingForm").submit()
 }
-setTimeout(joinMeeting, seconds_before_refresh * 1000)
+setTimeout(joinMeeting, secondsBeforeRefresh * 1000)
