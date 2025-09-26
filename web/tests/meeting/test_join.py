@@ -346,3 +346,24 @@ def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
     response.forms[0]["visio_code3"] = "789"
     response = response.forms[0].submit()
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+
+
+def test_rasing_time_before_refresh_in_waiting_meeting(
+    client_app, meeting, authenticated_user, mocker
+):
+    """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
+
+    class Response:
+        content = """<response><returncode>FAIL</returncode></response>"""
+        status_code = 401
+        text = ""
+
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    response = client_app.get("/meeting/join/1/moderateur")
+    response = client_app.get(response.location)
+    assert response.form["seconds_before_refresh"].value == "10"
+    response = response.form.submit()
+    url = urlparse(response.location)
+    url_role = parse_qs(url.query)["seconds_before_refresh"]
+    assert url_role == ["15.0"]
