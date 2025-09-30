@@ -1119,19 +1119,17 @@ class MainSettings(BaseSettings):
     required if enabled.
     """
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def fqdn_sip_server_required(
         cls,
         enable_sip: Optional[bool],
         info: ValidationInfo,
     ) -> bool:
-        if enable_sip:
-            assert info.data["FQDN_SIP_SERVER"], (
-                "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
-            )
+        if enable_sip and not info.data["FQDN_SIP_SERVER"]:
+            print("FQDN_SIP_SERVER configuration required when enabling SIPMediaGW")
         return enable_sip
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def private_key_server_required(
         cls,
         enable_sip: Optional[bool],
