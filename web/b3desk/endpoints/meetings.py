@@ -365,12 +365,12 @@ def meeting_favorite():
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
 
-    if meeting.user_id == user.id:
-        meeting.is_favorite = not meeting.is_favorite
-        db.session.commit()
-        meeting.save()
-    else:
+    if meeting.user_id != user.id:
         abort(403)
+
+    meeting.is_favorite = not meeting.is_favorite
+    db.session.commit()
+    meeting.save()
 
     return redirect(url_for("public.welcome", **request.args))
 
