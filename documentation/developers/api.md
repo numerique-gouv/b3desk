@@ -27,6 +27,28 @@ L'API renvoie la liste des meetings de l'utilisateurs.
 Chaque utilisateur possède un meeting 'silencieux' invisible dans l'interface b3desk, mais utilisable par des greffons.
 L'API renvoie les liens d'invitation du meeting silencieux.
 
+Voici les principales valeur par défaut d'un meeting 'silencieux' :
++ name= <wording_meeting> de <user_name>",
++ welcome= Bienvenue dans <ording_the_meeting> de <user_name>",
++ logoutUrl= <settings_meeting_logout_url>,
++ record=False,
++ autoStartRecording=False,
++ allowModsToUnmuteUsers=False,
++ allowStartStopRecording=True,
++ duration=280,
++ guestPolicy=True,
++ lockSettingsDisableCam=True,
++ lockSettingsDisableMic=Ttrue,
++ lockSettingsDisableNote=True,
++ lockSettingsDisablePrivateChat=True,
++ lockSettingsDisablePublicChat=True,
++ logo=None,
++ maxParticipants=None,
++ moderatorOnlyMessage=None,
++ muteOnStart=True,
++ webcamsOnlyForModerator=True,
+
+
 ## Authentification
 
 L'authentification à l'API se fait en passant un jeton OIDC émis par le serveur d'identifié configuré dans `OIDC_ISSUER`.
