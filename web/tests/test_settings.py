@@ -12,7 +12,7 @@ def test_list_of_strings_type(configuration):
 
 
 def test_enable_sip_true_with_and_without_private_key_home_page(
-    client_app, visio_code_session
+    client_app,
 ):
     response = client_app.get("/", status=302)
     assert "/home" in response.location
@@ -29,7 +29,8 @@ def test_enable_sip_true_with_and_without_private_key_home_page(
 
 
 def test_enable_sip_true_with_and_without_private_key_welcome_page(
-    client_app, authenticated_user, visio_code_session
+    client_app,
+    authenticated_user,
 ):
     response = client_app.get("/", status=302)
     assert "/welcome" in response.location
