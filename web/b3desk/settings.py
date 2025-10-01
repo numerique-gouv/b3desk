@@ -1127,7 +1127,9 @@ class MainSettings(BaseSettings):
         info: ValidationInfo,
     ) -> bool:
         if enable_sip and not info.data["FQDN_SIP_SERVER"]:
-            print("FQDN_SIP_SERVER configuration required when enabling SIPMediaGW")
+            raise ValueError(
+                "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
+            )
         return enable_sip
 
     @field_validator("ENABLE_SIP", mode="after")
@@ -1137,7 +1139,9 @@ class MainSettings(BaseSettings):
         info: ValidationInfo,
     ) -> bool:
         if enable_sip and not info.data["PRIVATE_KEY"]:
-            print("PRIVATE_KEY configuration required when enabling SIPMediaGW")
+            raise ValueError(
+                "PRIVATE_KEY configuration required when enabling SIPMediaGW"
+            )
         return enable_sip
 
     VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}

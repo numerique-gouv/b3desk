@@ -1,3 +1,4 @@
+import pytest
 from b3desk.settings import MainSettings
 
 
@@ -45,3 +46,49 @@ def test_enable_sip_true_with_and_without_private_key_welcome_page(
         "error",
         "La clé privée n'a pas été configurée dans les paramètres B3Desk pour sécuriser la connexion SIPMediaGW",
     ) in response.flashes
+
+
+def test_sip_settings_raised_error_messages_without_fqdn_and_private_key(configuration):
+    """Test settings raised error only on FQDN SIP server."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = None
+    configuration["PRIVATE_KEY"] = None
+
+    with pytest.raises(ValueError) as value_error_infos:
+        MainSettings.model_validate(configuration)
+
+    assert "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW" in str(
+        value_error_infos.value
+    )
+
+
+def test_sip_settings_raised_error_messages_without_private_key(configuration):
+    """Test settings raised error only on private key."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = "000.000.000.00"
+    configuration["PRIVATE_KEY"] = None
+
+    with pytest.raises(ValueError) as value_error_infos:
+        MainSettings.model_validate(configuration)
+
+    assert "PRIVATE_KEY configuration required when enabling SIPMediaGW" in str(
+        value_error_infos.value
+    )
+
+
+def test_sip_settings_raised_no_error_with_sip_disabled(configuration):
+    """Test settings raised no error when sip is disabled."""
+    configuration["ENABLE_SIP"] = False
+    configuration["FQDN_SIP_SERVER"] = None
+    configuration["PRIVATE_KEY"] = None
+
+    MainSettings.model_validate(configuration)
+
+
+def test_sip_settings_correctly_completed(configuration):
+    """Test settings raised no error when correctly completed."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = "000.000.000.00"
+    configuration["PRIVATE_KEY"] = "very_private_key"
+
+    MainSettings.model_validate(configuration)
