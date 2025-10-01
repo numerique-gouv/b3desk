@@ -1083,8 +1083,8 @@ class MainSettings(BaseSettings):
     ENABLE_PIN_MANAGEMENT: Optional[bool] = False
     """Enable mangement of PIN by B3Desk.
 
-    PIN allows users joining meeting by phone. ENABLE_PIN_MANAGEMENT
-    required if enabled.
+    PIN allows users joining meeting by phone. BIGBLUEBUTTON_DIALNUMBER
+    required if PIN management enabled.
     """
 
     @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
@@ -1102,7 +1102,7 @@ class MainSettings(BaseSettings):
     FQDN_SIP_SERVER: Optional[str] = None
     """FQDN SIP server.
 
-    Required if visio_code is enabled.
+    Required if SIP is enabled.
     """
 
     PRIVATE_KEY: Optional[str] = None
@@ -1110,13 +1110,14 @@ class MainSettings(BaseSettings):
 
     It will be used to generate a token for SIPMediaGW connection
     security. Changing the private-key makes all tokens invalid.
+    Required if SIP is enabled.
     """
 
     ENABLE_SIP: Optional[bool] = False
     """Enable SIPMediaGW.
 
-    SIPMediaGW url allows users connecting SIPMediaGW. NABLE_SIP
-    required if enabled.
+    SIPMediaGW url allows users connecting SIPMediaGW. FQDN_SIP_SERVER
+    required if SIP enabled.
     """
 
     @field_validator("ENABLE_SIP", mode="after")
