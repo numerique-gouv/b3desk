@@ -342,10 +342,10 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -441,10 +441,10 @@ def test_create_with_only_a_default_file(
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -540,10 +540,10 @@ def test_create_with_files(
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -634,8 +634,8 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",
-        "uploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
-        "uploadExternalDescription": "Fichiers depuis votre Nextcloud",
+        "presentationUploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
+        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "attendeePW": meeting.attendeePW,
         "moderatorPW": meeting.moderatorPW,
         "logoutURL": "http://education.gouv.fr/",
