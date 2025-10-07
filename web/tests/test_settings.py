@@ -57,8 +57,8 @@ def test_sip_settings_raised_error_messages_without_fqdn_and_private_key(configu
     with pytest.raises(ValueError) as value_error_infos:
         MainSettings.model_validate(configuration)
 
-    assert "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW" in str(
-        value_error_infos.value
+    value_error_infos.match(
+        "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
     )
 
 
@@ -71,8 +71,8 @@ def test_sip_settings_raised_error_messages_without_private_key(configuration):
     with pytest.raises(ValueError) as value_error_infos:
         MainSettings.model_validate(configuration)
 
-    assert "PRIVATE_KEY configuration required when enabling SIPMediaGW" in str(
-        value_error_infos.value
+    value_error_infos.match(
+        "PRIVATE_KEY configuration required when enabling SIPMediaGW"
     )
 
 
