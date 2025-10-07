@@ -1,3 +1,6 @@
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
+
 import pyquery
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
@@ -96,3 +99,27 @@ def test_quick_meeting_with_logged_user(client_app, authenticated_user, mocker):
     response = client_app.get("/meeting/quick", status=302)
     assert response.location.startswith("https://bbb.test/join")
     assert Meeting.query.all() == []
+
+
+def test_quick_meeting_rasing_time_before_refresh_in_waiting_meeting(
+    client_app, meeting, authenticated_user, mocker
+):
+    """Tests seconds_before_refresh increases each time waiting_meeting is refreshed and quick_meeting stays True."""
+
+    class Response:
+        content = """<response><returncode>FAIL</returncode></response>"""
+        status_code = 401
+        text = ""
+
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    response = client_app.get("/meeting/quick")
+    response = client_app.get(response.location)
+    assert response.form["seconds_before_refresh"].value == "10"
+    assert response.form["quick_meeting"].value
+    response = response.form.submit()
+    url = urlparse(response.location)
+    url_role = parse_qs(url.query)["seconds_before_refresh"]
+    assert url_role == ["15.0"]
+    url_role = parse_qs(url.query)["quick_meeting"]
+    assert url_role
