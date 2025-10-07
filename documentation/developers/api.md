@@ -28,8 +28,8 @@ Chaque utilisateur possède un meeting 'silencieux' invisible dans l'interface b
 L'API renvoie les liens d'invitation du meeting silencieux.
 
 Voici les principales valeur par défaut d'un meeting 'silencieux' :
-+ name= <wording_meeting> de <user_name>"
-+ welcome= Bienvenue dans <wording_the_meeting> de <user_name>"
++ name= <wording_meeting> de <user_name>
++ welcome= Bienvenue dans <wording_the_meeting> de <user_name>
 + duration= <default_shadow_meeting_duration> (200 par défaut)
 + maxParticipants= 350
 + logoutUrl= <settings_meeting_logout_url>
@@ -47,6 +47,8 @@ Voici les principales valeur par défaut d'un meeting 'silencieux' :
 + muteOnStart= True
 + guestPolicy= False
 + logo= None
+
+Ces paramètres sont détaillés et commentés dans l'[API de BBB](https://docs.bigbluebutton.org/development/api/#get-post-create)
 
 
 ## Authentification
