@@ -102,9 +102,26 @@ def setup_sentry(app):  # pragma: no cover
     return sentry_sdk
 
 
+def load_toml_log_config(path: str):
+    try:
+        import tomllib
+    except ImportError:  # pragma: no cover
+        return None
+
+    try:
+        with open(path, "rb") as fd:
+            return tomllib.load(fd)
+
+    except tomllib.TOMLDecodeError:
+        return None
+
+
 def setup_logging(app):
     if log_config := app.config.get("LOG_CONFIG"):
-        fileConfig(log_config, disable_existing_loggers=False)
+        if payload := load_toml_log_config(log_config):
+            dictConfig(payload)
+        else:
+            fileConfig(log_config, disable_existing_loggers=False)
 
     elif not app.debug and not app.testing:
         dictConfig(
