@@ -166,6 +166,7 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", SECONDS_BEFORE_REFRESH
     )
+    quick_meeting = request.args.get("quick_meeting", False)
 
     return render_template(
         "meeting/wait.html",
@@ -177,6 +178,7 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         fullname=fullname,
         fullname_suffix=fullname_suffix,
         seconds_before_refresh=seconds_before_refresh,
+        quick_meeting=quick_meeting,
     )
 
 
@@ -195,10 +197,16 @@ def join_meeting():
     user_id = form["user_id"].data
     h = form["h"].data
     seconds_before_refresh = None
-    if "seconds_before_refresh" in form:
+    if (
+        "seconds_before_refresh" in form
+        and form["seconds_before_refresh"].data is not None
+    ):
         seconds_before_refresh = (
             form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
         )
+    quick_meeting = None
+    if "quick_meeting" in form:
+        quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -218,6 +226,7 @@ def join_meeting():
             fullname_suffix=fullname_suffix,
             create=True,
             seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
     )
 

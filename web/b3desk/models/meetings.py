@@ -281,6 +281,7 @@ class Meeting(db.Model):
             fullname=fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
 
     def get_signin_url(self, meeting_role: Role):
