@@ -451,12 +451,12 @@ def pin_is_unique_validator(form, field):
 def create_and_save_shadow_meeting(user):
     random_string = get_random_alphanumeric_string(8)
     meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"] or 280,
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
         user=user,
         name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         is_shadow=True,
         welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
-        logoutUrl=current_app.config["MEETING_LOGOUT_URL"] or None,
+        logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
         moderatorPW=f"{user.hash}-{random_string}",
         attendeePW=f"{random_string}-{random_string}",
         voiceBridge=pin_generation(),
