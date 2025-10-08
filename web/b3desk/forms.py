@@ -2,6 +2,7 @@ from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
 from wtforms import BooleanField
+from wtforms import FloatField
 from wtforms import Form
 from wtforms import HiddenField
 from wtforms import IntegerField
@@ -19,6 +20,8 @@ class JoinMeetingForm(FlaskForm):
     user_id = IntegerField()
     h = StringField()
     fullname_suffix = StringField()
+    seconds_before_refresh = FloatField()
+    quick_meeting = BooleanField()
 
 
 class JoinMailMeetingForm(JoinMeetingForm):

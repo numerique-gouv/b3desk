@@ -36,6 +36,9 @@ from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
 
+SECONDS_BEFORE_REFRESH = 10
+INCREASE_REFRESH_TIME = 1.5
+
 
 @bp.route(
     "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<h>",
@@ -159,6 +162,10 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect(url_for("public.index"))
+    seconds_before_refresh = request.args.get(
+        "seconds_before_refresh", SECONDS_BEFORE_REFRESH
+    )
+    quick_meeting = request.args.get("quick_meeting", False)
 
     return render_template(
         "meeting/wait.html",
@@ -169,6 +176,8 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
+        seconds_before_refresh=seconds_before_refresh,
+        quick_meeting=quick_meeting,
     )
 
 
@@ -186,6 +195,17 @@ def join_meeting():
     meeting_fake_id = form["meeting_fake_id"].data
     user_id = form["user_id"].data
     h = form["h"].data
+    seconds_before_refresh = None
+    if (
+        "seconds_before_refresh" in form
+        and form["seconds_before_refresh"].data is not None
+    ):
+        seconds_before_refresh = (
+            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
+        )
+    quick_meeting = None
+    if "quick_meeting" in form:
+        quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -200,7 +220,12 @@ def join_meeting():
 
     return redirect(
         meeting.get_join_url(
-            role, fullname, fullname_suffix=fullname_suffix, create=True
+            role,
+            fullname,
+            fullname_suffix=fullname_suffix,
+            create=True,
+            seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
     )
 
