@@ -10,13 +10,13 @@ Here is the steps you need to follow to have a local BBB container that is corre
 - As specified in the doc, copy the `create_bbb.sh` in the current folder and set it as executable
 - Launch the script to create the BBB image and to run it in a container:
 
-```
+```bash
 ./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:2.6.x-develop --update bbb26
 ```
 The image is quite large (~8Go) so you will have to be patient.
 
 - The script should prompt the url and the secret of the BBB service. If it does not, you can connect to it and ask for those variables:
-```
+```bash
 ssh bbb26
 
 bigbluebutton@bbb26:~$ bbb-conf --salt

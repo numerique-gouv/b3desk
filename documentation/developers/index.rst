@@ -13,3 +13,4 @@ Cette documentation est à destination des développeurs.
    translation
    meetingFiles
    imitateProduction
+   bigbluebutton
