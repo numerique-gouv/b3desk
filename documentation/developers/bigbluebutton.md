@@ -11,7 +11,7 @@ Here is the steps you need to follow to have a local BBB container that is corre
 - Launch the script to create the BBB image and to run it in a container:
 
 ```bash
-./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:2.6.x-develop --update bbb30
+./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:3.0.x-develop --update bbb30
 ```
 The image is quite large (~8Go) so you will have to be patient.
 
