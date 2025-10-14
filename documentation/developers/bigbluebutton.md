@@ -39,13 +39,7 @@ This command also shows you how to access the BBB API-Mate.
 docker network connect b3desk_default bbb30
 ```
 
-- You can check if those services are effectively connected with a curl from bbb30 to a B3Desk service for instance
-- To fully use this BBB local instance, you need to change all your python request to ignore SSL certificates. Add `verify=False` argument in those requests, or on each modules using `requests`, set:
-
-```
-session = requests.Session()
-session.verify = False
-```
+You can check if those services are effectively connected with a curl from bbb30 to a B3Desk service for instance
 
 ## Launch existing container
 

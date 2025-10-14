@@ -73,6 +73,10 @@ class BBB:
     )
     def bbb_response(self, request):
         session = requests.Session()
+        if current_app.debug:
+            # In local development environment, BBB is not served as https
+            session.verify = False  # pragma: no cover
+
         current_app.logger.debug(
             "BBB API request method:%s url:%s data:%s",
             request.method,
@@ -266,7 +270,10 @@ class BBB:
             "BBB API request method:%s url:%s", request.method, request.url
         )
         try:
-            response = requests.Session().send(request)
+            session = requests.Session()
+            if current_app.debug:
+                session.verify = False  # pragma: no cover
+            response = session.send(request)
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
