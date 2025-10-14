@@ -1044,7 +1044,7 @@ class MainSettings(BaseSettings):
     BIGBLUEBUTTON_ENDPOINT: Optional[str] = None
     """URL du service BBB.
 
-    Par exemple ``https://bbb26.test/bigbluebutton/api``
+    Par exemple ``https://bbb30.test/bigbluebutton/api``
     """
 
     BIGBLUEBUTTON_SECRET: Optional[str] = None

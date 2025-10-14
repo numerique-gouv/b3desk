@@ -17,7 +17,7 @@ fi
 NAME=
 DOMAIN=test
 IP=172.17.0.2
-IMAGE=imdt/bigbluebutton:2.6.x-develop
+IMAGE=imdt/bigbluebutton:3.0.x-develop
 GITHUB_USER=
 CERT_DIR=
 CUSTOM_SCRIPT=
