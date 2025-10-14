@@ -82,8 +82,9 @@ class BBB:
         try:
             response = session.send(request)
         except requests.exceptions.ConnectionError as err:
+            current_app.logger.debug("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
-        current_app.logger.debug("BBB API response %s", response.text)
+        current_app.logger.warning("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     bbb_response.make_cache_key = cache_key
@@ -267,6 +268,7 @@ class BBB:
         try:
             response = requests.Session().send(request)
         except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
 
         root = ElementTree.fromstring(response.content)
