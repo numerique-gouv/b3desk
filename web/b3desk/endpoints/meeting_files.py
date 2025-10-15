@@ -595,17 +595,15 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
         "webdav_verbose": True,
         "webdav_token": meeting_file.meeting.user.nc_token,
     }
+    TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
+    Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
+    uniqfile = str(uuid.uuid4())
+    tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
+
     try:
         client = webdavClient(options)
-        TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
-        Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-        uniqfile = str(uuid.uuid4())
-        tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
-        kwargs = {
-            "remote_path": meeting_file.nc_path,
-            "local_path": tmp_name,
-        }
-        client.download_sync(**kwargs)
+        mimetype = client.info(meeting_file.nc_path).get("content_type")
+        client.download_sync(remote_path=meeting_file.nc_path, local_path=tmp_name)
 
     except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
@@ -613,5 +611,5 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
 
     # send the downloaded file to the BBB:
     return send_from_directory(
-        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title
+        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title, mimetype=mimetype
     )
