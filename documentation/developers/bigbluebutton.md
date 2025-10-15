@@ -9,6 +9,8 @@ Here is the steps you need to follow to have a local BBB container that is corre
 There is an [official script](https://github.com/bigbluebutton/docker-dev) to build BBB Docker image.
 It has been copied in `bigbluebutton/create_bbb.sh`.
 
+### Create the BBB container
+
 ```bash
 ./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:3.0.x-develop --update bbb30
 ```
@@ -30,11 +32,22 @@ This command also shows you how to access the BBB API-Mate.
 - You know have a b3desk_default with all services running in it and a standalone BBB service
 - You need to connect them together with:
 
-```
+### Add the BBB container to the local network
+
+```bash
 docker network connect b3desk_default bbb30
 ```
 
 You can check if those services are effectively connected with a curl from bbb30 to a B3Desk service for instance
+
+### Allow http requests with BBB
+
+BBB must explictly allow http requests to b3desk:
+
+```bash
+docker exec bbb30 sed -i '$ a insertDocumentSupportedProtocols=https,http' /etc/bigbluebutton/bbb-web.properties
+docker exec bbb30 bbb-conf --restart
+```
 
 ## Launch existing container
 
