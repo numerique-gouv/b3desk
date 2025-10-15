@@ -73,9 +73,9 @@ class BBB:
     )
     def bbb_response(self, request):
         session = requests.Session()
-        if current_app.debug:
+        if current_app.debug:  # pragma: no cover
             # In local development environment, BBB is not served as https
-            session.verify = False  # pragma: no cover
+            session.verify = False
 
         current_app.logger.debug(
             "BBB API request method:%s url:%s data:%s",
@@ -271,8 +271,8 @@ class BBB:
         )
         try:
             session = requests.Session()
-            if current_app.debug:
-                session.verify = False  # pragma: no cover
+            if current_app.debug:  # pragma: no cover
+                session.verify = False
             response = session.send(request)
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning("BBB API error %s", err)

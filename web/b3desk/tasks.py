@@ -16,6 +16,8 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="background_upload")
 def background_upload(endpoint, xml):
+    logger.info("BBB API request %s: xml:%s", endpoint, xml)
+
     session = requests.Session()
     if DEBUG:  # pragma: no cover
         # In local development environment, BBB is not served as https
@@ -27,6 +29,5 @@ def background_upload(endpoint, xml):
         data=xml,
     )
 
-    logger.info("BBB API request %s: xml:%s", endpoint, xml)
     logger.info("BBB API response %s", response.text)
     return True

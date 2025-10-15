@@ -30,16 +30,9 @@ docker compose up  # ou docker-compose up
 # docker compose down pour tout couper
 ```
 
-3. Pour que l'authentification via le conteneur keycloak fonctionne depuis votre navigateur (cf https://stackoverflow.com/a/59579592) et pour que le conteneur Nextcloud soit accessible dans le réseau docker et requêtable depuis votre navigateur, vous devez ajouter les entrées suivantes dans votre fichier hosts (`/etc/hosts` sur une machine linux ou macOS) :
-
-```
-127.0.0.1 keycloak
-127.0.0.1 nextcloud
-```
-
-4. Tester l'accès [http://localhost:5000] puis se connecter.
+3. Tester l'accès [http://b3desk.localhost:5000] puis se connecter.
 Le compte d'accès est `bbb-visio-user`, mot de passe `Pa55w0rd`.
-Si nécessaire, tester l'accès au keycloak [http://localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
+Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
 
 ### Environnement de développement
 

@@ -360,7 +360,7 @@ class MainSettings(BaseSettings):
     """URL de B3Desk vers laquelle le serveur d’identité redirige les
     utilisateurs après authentification.
 
-    Par exemple ``http://localhost:5000/oidc_callback``
+    Par exemple ``https://visio-test.education.fr/oidc_callback``
 
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/configuration.html?highlight=OIDC_REDIRECT_URI#static-client-registration
     """
@@ -1035,7 +1035,7 @@ class MainSettings(BaseSettings):
     STATS_URL: Optional[str] = None
     """URL du fichier de statistiques des réunions.
 
-    Par exemple ``http://localhost:5000/static/local/stats.csv``
+    Par exemple ``https://visio-test.education.fr/static/local/stats.csv``
     """
 
     STATS_INDEX: int = 2

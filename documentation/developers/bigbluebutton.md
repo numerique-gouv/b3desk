@@ -6,26 +6,21 @@ Here is the steps you need to follow to have a local BBB container that is corre
 
 ## Installation steps
 
-- The repo to get the installation script is here: https://github.com/bigbluebutton/docker-dev
-- As specified in the doc, copy the `create_bbb.sh` in the current folder and set it as executable
-- Launch the script to create the BBB image and to run it in a container:
+There is an [official script](https://github.com/bigbluebutton/docker-dev) to build BBB Docker image.
+It has been copied in `bigbluebutton/create_bbb.sh`.
 
 ```bash
 ./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:3.0.x-develop --update bbb30
 ```
 The image is quite large (~8Go) so you will have to be patient.
 
-- The script should prompt the url and the secret of the BBB service. If it does not, you can connect to it and ask for those variables:
-```bash
-ssh bbb30
-
-bigbluebutton@bbb30:~$ bbb-conf --salt
-
+- The script should prompt the url and the secret of the BBB service.
+```
     URL: https://bbb30.test/bigbluebutton/
     Secret: unknownBbbSecretKey
 
     Link to the API-Mate:
-    https://mconf.github.io/api-mate/#server=https://bbb30.test/bigbluebutton/&sharedSecret=bbbSecretKey
+    https://bbb30.test/api-mate/#server=https://bbb30.test/bigbluebutton/&sharedSecret=bbbSecretKey
 
 ```
 This command also shows you how to access the BBB API-Mate.
