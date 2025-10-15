@@ -209,7 +209,6 @@ def test_join_with_visio_code_and_captcha_needed(
     status,
     access_token,
     client_app,
-    visio_code_session,
     mocker,
     meeting,
 ):
@@ -242,7 +241,6 @@ def test_join_with_visio_code_with_wrong_visio_code_and_wrong_captcha(
     status,
     access_token,
     client_app,
-    visio_code_session,
     mocker,
     meeting,
 ):
@@ -284,7 +282,6 @@ def test_join_with_visio_code_with_wrong_visio_code_and_valid_captcha(
     status,
     access_token,
     client_app,
-    visio_code_session,
     mocker,
     meeting,
 ):
@@ -322,7 +319,6 @@ def test_join_with_visio_code_with_valid_visio_code_and_wrong_captcha(
     status,
     access_token,
     client_app,
-    visio_code_session,
     mocker,
     meeting,
 ):
@@ -364,7 +360,6 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
     status,
     access_token,
     client_app,
-    visio_code_session,
     mocker,
     meeting,
 ):
