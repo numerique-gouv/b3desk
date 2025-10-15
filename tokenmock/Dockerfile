@@ -11,7 +11,7 @@ COPY healthcheck.sh .
 
 RUN mkdir -p /opt/app/conf
 
-EXPOSE 5000
+EXPOSE 9000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD ["./healthcheck.sh"]

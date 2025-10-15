@@ -80,7 +80,7 @@ services:
     volumes:
       - ./nextcloud/conf:/opt/app/conf  # to get shared Nextcloud Sessiontoken generated key
     ports:
-      - 9000:5000
+      - 9000:9000
 
   postgres:
     container_name: db
