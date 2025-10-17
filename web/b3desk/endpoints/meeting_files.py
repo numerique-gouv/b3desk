@@ -32,6 +32,7 @@ from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.models.users import User
 from b3desk.nextcloud import nextcloud_healthcheck
+from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -151,56 +152,20 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 @auth.oidc_auth("default")
 def insertDocuments(meeting: Meeting):
     """Insert documents from Nextcloud into a running BBB meeting."""
-    from flask import request
 
     filenames = request.get_json()
-    secret_key = current_app.config["SECRET_KEY"]
-
-    xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-    xml_end = " </module></modules>"
-    xml_mid = ""
     # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
-    for filename in filenames:
-        id = add_external_meeting_file_nextcloud(filename, meeting.id)
-        filehash = hashlib.sha1(
-            f"{secret_key}-1-{id}-{secret_key}".encode()
-        ).hexdigest()
-        current_app.logger.info(
-            "Call insert document BigBlueButton API in running room for %s", filename
-        )
-        url = url_for(
-            "meeting_files.ncdownload",
-            isexternal=1,
-            mfid=id,
-            mftoken=filehash,
-            filename=filename,
-            _external=True,
-        )
-        xml_mid += f"<document url='{url}' filename='{filename}' />"
+    meeting_files = [
+        add_external_meeting_file_nextcloud(filename, meeting.id)
+        for filename in filenames
+    ]
+    xml = meeting.bbb.meeting_file_addition_xml(meeting_files)
+    bbb_request = meeting.bbb.bbb_request(
+        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
+    )
 
-    bbb_endpoint = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
-    xml = xml_beg + xml_mid + xml_end
-    params = {"meetingID": meeting.meetingID}
-    request = requests.Request(
-        "POST",
-        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
-        params=params,
-    )
-    pr = request.prepare()
-    bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "{}{}".format(
-        pr.url.replace("?", "").replace(
-            current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
-        ),
-        bigbluebutton_secret,
-    )
-    params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-    requests.post(
-        f"{bbb_endpoint}/insertDocument",
-        headers={"Content-Type": "application/xml"},
-        data=xml,
-        params=params,
-    )
+    background_upload.delay(bbb_request.url, xml)
+
     return jsonify(status=200, msg="SUCCESS")
 
 
@@ -439,10 +404,10 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 def add_external_meeting_file_nextcloud(path, meeting_id):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = MeetingFilesExternal(
-        title=path, meeting_id=meeting_id, nc_path=path
+        title=path.split("/")[-1], meeting_id=meeting_id, nc_path=path
     )
     externalMeetingFile.save()
-    return externalMeetingFile.id
+    return externalMeetingFile
 
 
 # for dropzone multiple files uploading at once
