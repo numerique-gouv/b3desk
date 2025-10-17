@@ -297,7 +297,6 @@ def create_meeting(meeting: Meeting, owner: User):
     return redirect(url_for("public.welcome"))
 
 
-#
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
