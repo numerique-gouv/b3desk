@@ -19,6 +19,7 @@ from flask import current_app
 from flask import render_template
 from flask import url_for
 
+from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.tasks import background_upload
 
 from .. import BigBlueButtonUnavailable
@@ -111,14 +112,10 @@ class BBB:
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
-            # TODO: This parameter name is probably wrong
-            # https://github.com/numerique-gouv/b3desk/issues/211
-            "uploadExternalUrl": url_for(
+            "presentationUploadExternalUrl": url_for(
                 "meetings.external_upload", meeting=self.meeting, _external=True
             ),
-            # TODO: check if there is really a need for
-            # a EXTERNAL_UPLOAD_DESCRIPTION settings
-            "uploadExternalDescription": current_app.config[
+            "presentationUploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
             ],
         }
@@ -371,11 +368,12 @@ class BBB:
         xml_end = " </module></modules>"
         xml_mid = ""
         for meeting_file in meeting_files:
-            if meeting_file.url:
+            isexternal = isinstance(meeting_file, MeetingFilesExternal)
+            if not isexternal and meeting_file.url:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL nor NC hence it was uploaded
                 filehash = hashlib.sha1(
-                    f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
+                    f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
                 ).hexdigest()
                 current_app.logger.info(
                     "Add document on BigBlueButton room %s %s creation for file %s",
@@ -385,13 +383,17 @@ class BBB:
                 )
                 url = url_for(
                     "meeting_files.ncdownload",
-                    isexternal=0,
+                    isexternal=1 if isexternal else 0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
                     filename=meeting_file.title,
                     _external=True,
                     _scheme=current_app.config["PREFERRED_URL_SCHEME"],
                 )
-                xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
-
+                if not isexternal:
+                    xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{url}' filename='{meeting_file.title}' />"
+                else:
+                    xml_mid += (
+                        f"<document url='{url}' filename='{meeting_file.title}' />"
+                    )
         return xml_beg + xml_mid + xml_end
