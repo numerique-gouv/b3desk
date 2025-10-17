@@ -152,6 +152,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def insertDocuments(meeting: Meeting):
+    """Insert documents from Nextcloud into a running BBB meeting."""
     filenames = request.get_json()
     # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
     meeting_files = [
