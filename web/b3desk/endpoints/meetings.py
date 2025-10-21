@@ -251,6 +251,10 @@ def save_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def end_meeting():
+    """End the meeting on BBB.
+
+    Called from EndMeetingForm.
+    """
     user = get_current_user()
     form = EndMeetingForm(request.form)
 
