@@ -77,8 +77,8 @@ Si les droits ``real-management view-users`` et ``realm-management query-users``
 Utilisation d'un materiel visio SIPMediaGW
 ==========================================
 
-Configuration de B3Desk
------------------------
+Configuration de la SIP dans B3Desk
+-----------------------------------
 
 Afin de permettre au matériel visio SIPMediaGW de rejoindre une visio via B3Desk, il faut lui communiquer un token qui sécurisera la connexion à B3Desk.
 
