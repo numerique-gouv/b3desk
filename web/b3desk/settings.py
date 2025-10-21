@@ -160,6 +160,11 @@ class MainSettings(BaseSettings):
     Le fichier doit être au :ref:`format de fichiers de logs officiel Python <logging-config-fileformat>`.
     Il peut être au format INI ou à partir de Python 3.11 au format TOML (qui est recommandé):
 
+    .. tip:: Par défaut les images Docker montent le répertoire ``conf`` dans ``/opt/bbb-visio/conf``.
+        On peut donc créer un fichier ``conf/logging.toml`` dans le projet avec la configuration voulue.
+        On indiquera ensuite ``LOG_CONFIG=/opt/bbb-visio/conf/logging.toml`` pour que ce fichier soit chargé
+        par l'image Docker.
+
     .. note:: `[root]` désigne un logger par défaut qui traite tous les messages de log qui ne sont pas traités par d'autres loggers.
 
     .. code-block:: toml
