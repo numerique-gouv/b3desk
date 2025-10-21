@@ -9,6 +9,7 @@ nextcloud/html/*
 !nextcloud/html/.keep
 nextcloud/conf/*
 
+web/conf/*
 web/logs/*
 web/upload/*
 web/instance/.env
