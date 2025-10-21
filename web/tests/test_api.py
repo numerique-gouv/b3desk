@@ -78,7 +78,7 @@ def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user
         status=403,
     )
 
-    iam_token.delete()
+    iam_server.backend.delete(iam_token)
 
 
 def test_api_meetings_client_id_missing_in_token_audience(
@@ -96,7 +96,7 @@ def test_api_meetings_client_id_missing_in_token_audience(
         status=403,
     )
 
-    iam_token.delete()
+    iam_server.backend.delete(iam_token)
 
 
 def test_api_meetings_missing_scope_in_token(
@@ -114,7 +114,7 @@ def test_api_meetings_missing_scope_in_token(
         status=403,
     )
 
-    iam_token.delete()
+    iam_server.backend.delete(iam_token)
 
 
 def test_api_existing_shadow_meeting(
