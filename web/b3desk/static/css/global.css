@@ -467,6 +467,10 @@ This is a fix until we deal with the update.
   border: None;
 }
 
+.visio-code-error {
+    margin-top: 1em;
+}
+
 .captcha-container {
   display: flex;
   flex-direction: column;
