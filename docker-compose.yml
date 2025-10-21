@@ -13,8 +13,8 @@ services:
     environment:
       - FLASK_APP=b3desk
     volumes:
-      - ./conf:/opt/bbb-visio/conf
       - ./web/logs:/var/log
+      - ./web/conf:/opt/bbb-visio/conf
       - ./web/b3desk:/opt/bbb-visio/b3desk
       - ./web/instance:/opt/bbb-visio/instance
       - ./web/migrations:/opt/bbb-visio/migrations
