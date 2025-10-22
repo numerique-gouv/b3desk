@@ -17,7 +17,7 @@ def test_list_of_strings_type(configuration):
 
 
 def test_enable_sip_true_with_and_without_private_key_home_page(
-    client_app, visio_code_session
+    client_app,
 ):
     response = client_app.get("/", status=302)
     assert "/home" in response.location
@@ -34,7 +34,8 @@ def test_enable_sip_true_with_and_without_private_key_home_page(
 
 
 def test_enable_sip_true_with_and_without_private_key_welcome_page(
-    client_app, authenticated_user, visio_code_session
+    client_app,
+    authenticated_user,
 ):
     response = client_app.get("/", status=302)
     assert "/welcome" in response.location
@@ -138,3 +139,46 @@ handlers = ["wsgi"]
 
     create_app(configuration)
     mock_dictConfig.assert_called_once()
+
+
+def test_sip_settings_raised_error_messages_without_fqdn_and_private_key(configuration):
+    """Test settings raised error only on FQDN SIP server."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = None
+    configuration["PRIVATE_KEY"] = None
+
+    with pytest.raises(
+        ValueError,
+        match="FQDN_SIP_SERVER configuration required when enabling SIPMediaGW",
+    ):
+        MainSettings.model_validate(configuration)
+
+
+def test_sip_settings_raised_error_messages_without_private_key(configuration):
+    """Test settings raised error only on private key."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = "000.000.000.00"
+    configuration["PRIVATE_KEY"] = None
+
+    with pytest.raises(
+        ValueError, match="PRIVATE_KEY configuration required when enabling SIPMediaGW"
+    ):
+        MainSettings.model_validate(configuration)
+
+
+def test_sip_settings_raised_no_error_with_sip_disabled(configuration):
+    """Test settings raised no error when sip is disabled."""
+    configuration["ENABLE_SIP"] = False
+    configuration["FQDN_SIP_SERVER"] = None
+    configuration["PRIVATE_KEY"] = None
+
+    MainSettings.model_validate(configuration)
+
+
+def test_sip_settings_correctly_completed(configuration):
+    """Test settings raised no error when correctly completed."""
+    configuration["ENABLE_SIP"] = True
+    configuration["FQDN_SIP_SERVER"] = "000.000.000.00"
+    configuration["PRIVATE_KEY"] = "very_private_key"
+
+    MainSettings.model_validate(configuration)
