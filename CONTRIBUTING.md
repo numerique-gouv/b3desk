@@ -21,7 +21,7 @@ Vous trouverez plus d'informations concernant la persistance des données pour c
 
 1. Configurer l'application web en créant le fichier `web.env` à partir du fichier `web.env.example`. Ce nouveau fichier est précisé dans `docker-compose.override.yml` qui vient surcharger le fichier `docker-compose.yml` lorsqu'aucun fichier n'est précisé dans la commande `docker compose`.
 Pour que les liens vers le service BBB fonctionne, il est nécessaire de configurer les variables d'environnement BIGBLUEBUTTON_ENDPOINT et BIGBLUEBUTTON_SECRET.
-**Si une seule variable d'environnement manque, toute ou partie de l'application dysfonctionne.** Si vous n'avez pas d'instance BBB à disposition, vous pouvez lancer votre propre instance localement en suivant le fichier `./bigbluebutton/Run-local-bbb.md`.
+**Si une seule variable d'environnement manque, toute ou partie de l'application dysfonctionne.** Si vous n'avez pas d'instance BBB à disposition, vous pouvez lancer votre propre instance localement en suivant le chapitre `bigbluebutton <bigbluebutton>`.
 
 2. Démarrer l'application web, la base de données postgresql et le serveur d'authentification oidc keycloak préconfiguré avec docker-compose et attendre que les 3 soient prêts à accepter des connections (l'application web ne démarre pas correctement tant que les deux autres ne sont pas prêts et redémarre automatiquement jusqu'à ce qu'elle réussisse)
 
@@ -30,16 +30,9 @@ docker compose up  # ou docker-compose up
 # docker compose down pour tout couper
 ```
 
-3. Pour que l'authentification via le conteneur keycloak fonctionne depuis votre navigateur (cf https://stackoverflow.com/a/59579592) et pour que le conteneur Nextcloud soit accessible dans le réseau docker et requêtable depuis votre navigateur, vous devez ajouter les entrées suivantes dans votre fichier hosts (`/etc/hosts` sur une machine linux ou macOS) :
-
-```
-127.0.0.1 keycloak
-127.0.0.1 nextcloud
-```
-
-4. Tester l'accès [http://localhost:5000] puis se connecter.
+3. Tester l'accès [http://b3desk.localhost:5000] puis se connecter.
 Le compte d'accès est `bbb-visio-user`, mot de passe `Pa55w0rd`.
-Si nécessaire, tester l'accès au keycloak [http://localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
+Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
 
 ### Environnement de développement
 

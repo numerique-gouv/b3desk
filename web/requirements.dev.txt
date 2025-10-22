@@ -2,79 +2,86 @@
 #    uv export --only-group dev --no-hashes --no-annotate --output-file web/requirements.dev.txt
 aiosmtpd==1.4.6
 annotated-types==0.7.0
-atpublic==6.0.1
-attrs==25.3.0
-authlib==1.5.2
-beautifulsoup4==4.13.5
+anyio==4.11.0
+atpublic==6.0.2
+attrs==25.4.0
+authlib==1.6.5
+beautifulsoup4==4.14.2
 blinker==1.9.0
-cachetools==6.2.0
-canaille==0.0.53
+cachelib==0.13.0
+cachetools==6.2.1
+canaille==0.0.86
+certifi==2025.10.5
 cffi==2.0.0 ; platform_python_implementation != 'PyPy'
 chardet==5.2.0
-click==8.1.8 ; python_full_version < '3.10'
-click==8.2.1 ; python_full_version >= '3.10'
+click==8.3.0
 colorama==0.4.6
-coverage==7.10.6
-cryptography==45.0.7
+coverage==7.11.0
+cryptography==46.0.3
 cssselect==1.3.0
 defusedxml==0.7.1
 distlib==0.4.0
 exceptiongroup==1.3.0 ; python_full_version < '3.11'
-faker==37.6.0
-filelock==3.19.1
+faker==37.11.0
+filelock==3.20.0
 flake8==7.3.0
 flask==3.1.2
+flask-caching==2.3.1
 flask-webtest==0.1.6
 flask-wtf==1.2.2
-importlib-metadata==8.7.0 ; python_full_version < '3.10'
-iniconfig==2.1.0
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.11
+iniconfig==2.3.0
 itsdangerous==2.2.0
 jinja2==3.1.6
+joserfc==1.4.0
 json5==0.12.1
 legacy-cgi==2.6.3 ; python_full_version >= '3.13'
-lxml==6.0.1
-markupsafe==3.0.2
+lxml==6.0.2
+markupsafe==3.0.3
 mccabe==0.7.0
 packaging==25.0
-platformdirs==4.4.0
+platformdirs==4.5.0
 pluggy==1.6.0
 portpicker==1.6.0
 prek==0.1.6
-psutil==7.0.0
+psutil==7.1.1
 pycodestyle==2.14.0
 pycparser==2.23 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'
-pydantic==2.11.7
-pydantic-core==2.33.2
-pydantic-settings==2.10.1
+pydantic==2.12.3
+pydantic-core==2.41.4
+pydantic-settings==2.11.0
 pyflakes==3.4.0
 pygments==2.19.2
-pyproject-api==1.9.1
+pyproject-api==1.10.0
 pyquery==2.0.1
 pytest==8.4.2
 pytest-cov==7.0.0
 pytest-dotenv==0.5.2
-pytest-iam==0.0.12
-pytest-mock==3.15.0
+pytest-iam==0.2.4
+pytest-mock==3.15.1
 pytest-smtpd==0.1.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
-pyyaml==6.0.2
+pyyaml==6.0.3
 six==1.17.0
 smtpdfix==0.5.2
+sniffio==1.3.1
 soupsieve==2.8
 time-machine==2.19.0
-tomli==2.2.1 ; python_full_version <= '3.11'
-tox==4.30.2
-tox-uv==1.28.0
+tomli==2.3.0 ; python_full_version <= '3.11'
+tox==4.31.0
+tox-uv==1.29.0
 typing-extensions==4.15.0
-typing-inspection==0.4.1
+typing-inspection==0.4.2
 tzdata==2025.2
-uv==0.8.16
-virtualenv==20.34.0
+uv==0.9.4
+virtualenv==20.35.3
 waitress==3.0.2
 webob==1.8.9
-webtest==3.0.6
+webtest==3.0.7
 werkzeug==3.1.3
 wsgidav==4.3.3
 wtforms==3.2.1
-zipp==3.23.0 ; python_full_version < '3.10'

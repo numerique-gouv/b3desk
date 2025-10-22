@@ -73,6 +73,10 @@ class BBB:
     )
     def bbb_response(self, request):
         session = requests.Session()
+        if current_app.debug:  # pragma: no cover
+            # In local development environment, BBB is not served as https
+            session.verify = False
+
         current_app.logger.debug(
             "BBB API request method:%s url:%s data:%s",
             request.method,
@@ -82,6 +86,7 @@ class BBB:
         try:
             response = session.send(request)
         except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
@@ -265,8 +270,12 @@ class BBB:
             "BBB API request method:%s url:%s", request.method, request.url
         )
         try:
-            response = requests.Session().send(request)
+            session = requests.Session()
+            if current_app.debug:  # pragma: no cover
+                session.verify = False
+            response = session.send(request)
         except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
 
         root = ElementTree.fromstring(response.content)

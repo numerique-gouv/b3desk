@@ -1,4 +1,3 @@
-import requests
 from b3desk.models import db
 from b3desk.models.users import User
 
@@ -21,7 +20,7 @@ def test_user_authentication(
     res1 = client_app.get("/welcome", status=302)
 
     # 2. authorization code request
-    res2 = requests.get(res1.location, allow_redirects=False)
+    res2 = iam_server.test_client.get(res1.location)
     assert res2.status_code == 302
 
     # 3. load your application authorization endpoint
@@ -58,7 +57,7 @@ def test_lasuite_user_authentication(
     res1 = client_app.get("/welcome", status=302)
 
     # 2. authorization code request
-    res2 = requests.get(res1.location, allow_redirects=False)
+    res2 = iam_server.test_client.get(res1.location)
     assert res2.status_code == 302
 
     # 3. load your application authorization endpoint

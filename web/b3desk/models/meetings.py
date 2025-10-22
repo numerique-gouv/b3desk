@@ -12,10 +12,10 @@ import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
-from typing import Optional
 
 from flask import current_app
 from flask import url_for
+from flask_babel import lazy_gettext as _
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -291,7 +291,7 @@ class Meeting(db.Model):
             _external=True,
         )
 
-    def get_role(self, hashed_role, user_id=None) -> Optional[Role]:
+    def get_role(self, hashed_role, user_id=None) -> Role | None:
         if user_id and self.user.id == user_id:
             return Role.moderator
         elif hashed_role in [
@@ -450,14 +450,29 @@ def pin_is_unique_validator(form, field):
 def create_and_save_shadow_meeting(user):
     random_string = get_random_alphanumeric_string(8)
     meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
         name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
-        is_shadow=True,
         welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        duration=current_app.config["DEFAULT_MEETING_DURATION"],
+        maxParticipants=350,
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
-        moderatorPW=f"{user.hash}-{random_string}",
+        moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
+        record=False,
+        autoStartRecording=False,
+        allowStartStopRecording=False,
+        lockSettingsDisableMic=False,
+        lockSettingsDisablePrivateChat=False,
+        lockSettingsDisablePublicChat=False,
+        lockSettingsDisableNote=False,
+        lockSettingsDisableCam=False,
+        allowModsToUnmuteUsers=False,
+        webcamsOnlyForModerator=False,
+        muteOnStart=True,
+        guestPolicy=False,
+        logo=None,
+        is_shadow=True,
+        user=user,
         attendeePW=f"{random_string}-{random_string}",
+        moderatorPW=f"{user.hash}-{random_string}",
         voiceBridge=pin_generation(),
         visio_code=unique_visio_code_generation(),
     )

@@ -5,7 +5,7 @@ services:
     env_file:
       - web.env.example
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/home"]
+      test: ["CMD", "curl", "-f", "http://b3desk.localhost:5000/home"]
       start_period: 10s
       interval: 5s
 

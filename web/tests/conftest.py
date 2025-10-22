@@ -30,10 +30,10 @@ def iam_user(iam_server):
         family_name="Cooper",
         preferred_username="alice",
     )
-    iam_user.save()
+    iam_server.backend.save(iam_user)
 
     yield iam_user
-    iam_user.delete()
+    iam_server.backend.delete(iam_user)
 
 
 @pytest.fixture
@@ -45,10 +45,10 @@ def iam_user_2(iam_server):
         user_name="Berenice_user_name",
         family_name="Cooler",
     )
-    iam_user_2.save()
+    iam_server.backend.save(iam_user_2)
 
     yield iam_user_2
-    iam_user_2.delete()
+    iam_server.backend.delete(iam_user_2)
 
 
 @pytest.fixture
@@ -64,11 +64,11 @@ def iam_client(iam_server):
         scope=["openid", "profile", "email"],
         preconsent=True,
     )
-    iam_client.save()
+    iam_server.backend.save(iam_client)
     iam_client.audience = [iam_client]
-    iam_client.save()
+    iam_server.backend.save(iam_client)
     yield iam_client
-    iam_client.delete()
+    iam_server.backend.delete(iam_client)
 
 
 @pytest.fixture
@@ -77,8 +77,9 @@ def iam_token(iam_server, iam_client, iam_user):
         client=iam_client,
         subject=iam_user,
     )
+    iam_server.backend.save(iam_token)
     yield iam_token
-    iam_token.delete()
+    iam_server.backend.delete(iam_token)
 
 
 @pytest.fixture
@@ -110,7 +111,7 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "MEETING_KEY_WORDING": "seminaire",
         "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
-        "NC_LOGIN_API_URL": "http://tokenmock:5000/",
+        "NC_LOGIN_API_URL": "http://tokenmock.localhost:9000/",
         "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker

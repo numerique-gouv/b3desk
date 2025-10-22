@@ -1678,7 +1678,7 @@ e915762a-6efc-4bd6-96bc-8bb512d4e371	t	f	realm-management	0	f	f5bbc3d8-db33-4f8b
 9098959a-5e24-40f1-9b06-7bc629136be8	t	f	broker	0	f	e1aaf995-5156-420d-9c56-fdd5a93285d7	\N	f	\N	f	apps	openid-connect	0	f	f	${client_broker}	f	client-secret	\N	\N	\N	t	f	f	f
 f17bfceb-76f1-4119-ba55-528255b3d1e7	t	f	security-admin-console	0	t	5c7db94e-71ad-471d-9747-06e2664fa545	/admin/apps/console/	f	\N	f	apps	openid-connect	0	f	f	${client_security-admin-console}	f	client-secret	${authAdminUrl}	\N	\N	t	f	f	f
 7b330f03-9b9f-4dfe-9bf7-0e1527a9ee0b	t	f	admin-cli	0	t	d0a41afc-5b0b-492e-a3c6-1abf2e07fe4a	\N	f	\N	f	apps	openid-connect	0	f	f	${client_admin-cli}	f	client-secret	\N	\N	\N	f	f	t	f
-cd7f999d-693c-4cb3-aec5-c96712243773	t	t	bbb-visio	0	f	e873443f-47cd-43a4-bae1-07ee1ade68c6	\N	f	http://localhost:5000	f	apps	openid-connect	-1	f	f	bbb-visio	f	client-secret	http://localhost:5000	bbb-visio	\N	t	f	t	f
+cd7f999d-693c-4cb3-aec5-c96712243773	t	t	bbb-visio	0	f	e873443f-47cd-43a4-bae1-07ee1ade68c6	\N	f	http://b3desk.localhost:5000	f	apps	openid-connect	-1	f	f	bbb-visio	f	client-secret	http://b3desk.localhost:5000	bbb-visio	\N	t	f	t	f
 \.
 
 
@@ -3097,7 +3097,7 @@ COPY public.redirect_uris (client_id, value) FROM stdin;
 52c26f8f-3ca6-42f8-b63e-6b200fbfc18f	/realms/apps/account/*
 82e70c4e-3c5a-4637-bc93-c8b8c16c1665	/realms/apps/account/*
 f17bfceb-76f1-4119-ba55-528255b3d1e7	/admin/apps/console/*
-cd7f999d-693c-4cb3-aec5-c96712243773	http://localhost:5000/*
+cd7f999d-693c-4cb3-aec5-c96712243773	http://b3desk.localhost:5000/*
 \.
 
 
@@ -3357,7 +3357,7 @@ COPY public.username_login_failure (realm_id, username, failed_login_not_before,
 COPY public.web_origins (client_id, value) FROM stdin;
 2db59d5d-3b62-4da1-a063-c819ae967ff3	+
 f17bfceb-76f1-4119-ba55-528255b3d1e7	+
-cd7f999d-693c-4cb3-aec5-c96712243773	http://localhost:5000
+cd7f999d-693c-4cb3-aec5-c96712243773	http://b3desk.localhost:5000
 \.
 
 

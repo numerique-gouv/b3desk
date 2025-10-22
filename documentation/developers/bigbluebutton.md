@@ -6,45 +6,47 @@ Here is the steps you need to follow to have a local BBB container that is corre
 
 ## Installation steps
 
-- The repo to get the installation script is here: https://github.com/bigbluebutton/docker-dev
-- As specified in the doc, copy the `create_bbb.sh` in the current folder and set it as executable
-- Launch the script to create the BBB image and to run it in a container:
+There is an [official script](https://github.com/bigbluebutton/docker-dev) to build BBB Docker image.
+It has been copied in `bigbluebutton/create_bbb.sh`.
 
-```
-./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:2.6.x-develop --update bbb26
+### Create the BBB container
+
+```bash
+./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:3.0.x-develop --update bbb30
 ```
 The image is quite large (~8Go) so you will have to be patient.
 
-- The script should prompt the url and the secret of the BBB service. If it does not, you can connect to it and ask for those variables:
+- The script should prompt the url and the secret of the BBB service.
 ```
-ssh bbb26
-
-bigbluebutton@bbb26:~$ bbb-conf --salt
-
-    URL: https://bbb26.test/bigbluebutton/
+    URL: https://bbb30.test/bigbluebutton/
     Secret: unknownBbbSecretKey
 
     Link to the API-Mate:
-    https://mconf.github.io/api-mate/#server=https://bbb26.test/bigbluebutton/&sharedSecret=bbbSecretKey
+    https://bbb30.test/api-mate/#server=https://bbb30.test/bigbluebutton/&sharedSecret=bbbSecretKey
 
 ```
 This command also shows you how to access the BBB API-Mate.
 
 - Copy the BBB url (BIGBLUEBUTTON_ENDPOINT) and add `api` in the end and secret key (BIGBLUEBUTTON_SECRET) in your web.env file
 - Launch B3Desk containers
-- You know have a visio-bbb_default with all services running in it and a standalone BBB service
+- You know have a b3desk_default with all services running in it and a standalone BBB service
 - You need to connect them together with:
 
-```
-docker network connect visio-bbb_default bbb26
+### Add the BBB container to the local network
+
+```bash
+docker network connect b3desk_default bbb30
 ```
 
-- You can check if those services are effectively connected with a curl from bbb26 to a B3Desk service for instance
-- To fully use this BBB local instance, you need to change all your python request to ignore SSL certificates. Add `verify=False` argument in those requests, or on each modules using `requests`, set:
+You can check if those services are effectively connected with a curl from bbb30 to a B3Desk service for instance
 
-```
-session = requests.Session()
-session.verify = False
+### Allow http requests with BBB
+
+BBB must explictly allow http requests to b3desk:
+
+```bash
+docker exec bbb30 sed -i '$ a insertDocumentSupportedProtocols=https,http' /etc/bigbluebutton/bbb-web.properties
+docker exec bbb30 bbb-conf --restart
 ```
 
 ## Launch existing container
@@ -53,12 +55,12 @@ If you have already installed BBB and the container still exists, there is no ne
 
 You just need to connect the services :
 ```
-docker network connect visio-bbb_default bbb26
+docker network connect b3desk_default bbb30
 ```
 
 And run the BBB container :
 ```
-docker start bbb26
+docker start bbb30
 ```
 
 You can check if it is effectively running with :
@@ -73,7 +75,7 @@ To configure BBB to process recordings as MP4 video, as in production, you need 
 - Open a session in the container:
 
 ```
-ssh bbb26
+ssh bbb30
 ```
 
 - Install the bbb-playback-video packaging:

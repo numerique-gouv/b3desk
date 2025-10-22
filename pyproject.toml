@@ -10,7 +10,7 @@ authors = [
     { name = "Your Name", email = "you@example.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "celery>=5.2.7,<6.0.0",
     "filetype>=1.2.0,<2.0.0",
@@ -26,7 +26,7 @@ dependencies = [
     "joserfc>=1.1.0,<2.0.0",
     "netaddr>=1.2.1,<2.0.0",
     "psycopg2>=2.9.3,<3.0.0",
-    "pydantic>=2.11.0,<3.0.0",
+    "pydantic>=2.12.0,<3.0.0",
     "pydantic-settings>=2.10.0,<3.0.0",
     "python-slugify>=8.0.4,<9.0.0",
     "redis>=5.0.1,<6.0.0",
@@ -54,16 +54,13 @@ dev = [
     "pytest>=8.0.0,<9.0.0",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
-    "pytest-iam>=0.0.12,<0.1",
+    "pytest-iam>=0.2.4",
     "pytest-mock>=3.11.1,<4.0.0",
     "pytest-smtpd>=0.1.0,<0.2.0",
     "time-machine>=2.19.0,<3.0.0",
     "wsgidav>=4.3.1,<5.0.0",
     # This is used to allow flask-webtest > webtest > webob to be compatible with py3.13+
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
-    # Set a maximum version for Canaille, until we can upgrade to pytest-iam 0.2.4
-    "Canaille<0.0.54",
-    "authlib<1.6.0",
     "tox-uv>=1.28.0",
 ]
 doc = [
@@ -120,7 +117,7 @@ docstring-code-format = true
 
 [tool.tox]
 requires = ["tox>=4.19"]
-env_list = ["style", "py39", "py310", "py311", "py312", "py313", "coverage", "doc"]
+env_list = ["style", "py310", "py311", "py312", "py313", "coverage", "doc"]
 
 [tool.tox.env_run_base]
 dependency_groups = ["dev"]
