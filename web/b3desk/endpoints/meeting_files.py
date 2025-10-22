@@ -406,7 +406,8 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
     externalMeetingFile = MeetingFilesExternal(
         title=path.split("/")[-1], meeting_id=meeting_id, nc_path=path
     )
-    externalMeetingFile.save()
+    # For now, it is useless to save files added during a running meeting.
+    # externalMeetingFile.save()
     return externalMeetingFile
 
 
