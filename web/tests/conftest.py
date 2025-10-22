@@ -483,9 +483,3 @@ def valid_secondary_identity_token(mocker):
         "b3desk.nextcloud.get_secondary_identity_provider_token",
         return_value=ValidToken,
     )
-
-
-@pytest.fixture
-def visio_code_session(client_app):
-    with client_app.session_transaction() as session:
-        session["visio_code_attempt_counter"] = 0

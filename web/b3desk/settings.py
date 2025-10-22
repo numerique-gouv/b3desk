@@ -1082,8 +1082,8 @@ class MainSettings(BaseSettings):
     ENABLE_PIN_MANAGEMENT: bool | None = False
     """Enable mangement of PIN by B3Desk.
 
-    PIN allows users joining meeting by phone. ENABLE_PIN_MANAGEMENT
-    required if enabled.
+    PIN allows users joining meeting by phone. BIGBLUEBUTTON_DIALNUMBER
+    required if PIN management enabled.
     """
 
     @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
@@ -1101,7 +1101,7 @@ class MainSettings(BaseSettings):
     FQDN_SIP_SERVER: str | None = None
     """FQDN SIP server.
 
-    Required if visio_code is enabled.
+    Required if SIP is enabled.
     """
 
     PRIVATE_KEY: str | None = None
@@ -1109,35 +1109,38 @@ class MainSettings(BaseSettings):
 
     It will be used to generate a token for SIPMediaGW connection
     security. Changing the private-key makes all tokens invalid.
+    Required if SIP is enabled.
     """
 
     ENABLE_SIP: bool | None = False
     """Enable SIPMediaGW.
 
-    SIPMediaGW url allows users connecting SIPMediaGW. NABLE_SIP
-    required if enabled.
+    SIPMediaGW url allows users connecting SIPMediaGW. FQDN_SIP_SERVER
+    required if SIP enabled.
     """
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def fqdn_sip_server_required(
         cls,
         enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
-        if enable_sip:
-            assert info.data["FQDN_SIP_SERVER"], (
+        if enable_sip and not info.data["FQDN_SIP_SERVER"]:
+            raise ValueError(
                 "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
             )
         return enable_sip
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def private_key_server_required(
         cls,
         enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
         if enable_sip and not info.data["PRIVATE_KEY"]:
-            print("PRIVATE_KEY configuration required when enabling SIPMediaGW")
+            raise ValueError(
+                "PRIVATE_KEY configuration required when enabling SIPMediaGW"
+            )
         return enable_sip
 
     VIDEO_STREAMING_LINKS: dict[str, str] | None = {}

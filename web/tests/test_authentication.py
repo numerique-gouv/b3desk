@@ -3,7 +3,10 @@ from b3desk.models.users import User
 
 
 def test_user_authentication(
-    client_app, configuration, iam_server, iam_client, visio_code_session
+    client_app,
+    configuration,
+    iam_server,
+    iam_client,
 ):
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     iam_user = iam_server.random_user()
@@ -40,7 +43,10 @@ def test_user_authentication(
 
 
 def test_lasuite_user_authentication(
-    client_app, configuration, iam_server, iam_client, visio_code_session
+    client_app,
+    configuration,
+    iam_server,
+    iam_client,
 ):
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = True
     iam_user = iam_server.random_user()
