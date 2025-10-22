@@ -86,4 +86,6 @@ Les infos pour cela sont passées lors de la création du salon, via les paramè
 L'URL fournie en l'occurence pour B3desk est `/meeting/files/<meeting_id>/insertDocuments`.
 La description fournie est modifiable via la var d'env `EXTERNAL_UPLOAD_DESCRIPTION` dans le fichier `web.env`.
 
+**N.B.** ces fichiers ne seront pas enregistrés dans B3desk.
+
 **Remarque : sur l'interface d'ajout de fichiers par l'extérieur, la personne qui s'y rend doit avoir une connexion Nextcloud valide.**
