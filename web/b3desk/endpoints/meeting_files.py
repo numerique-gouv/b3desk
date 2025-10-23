@@ -28,9 +28,9 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import MeetingFilesExternal
 from b3desk.models.users import User
 from b3desk.nextcloud import nextcloud_healthcheck
 from b3desk.tasks import background_upload
@@ -403,7 +403,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
 def add_external_meeting_file_nextcloud(path, meeting_id):
     """Create an external meeting file record for a Nextcloud document."""
-    externalMeetingFile = MeetingFilesExternal(
+    externalMeetingFile = BaseMeetingFiles(
         title=path.split("/")[-1],
         meeting_id=meeting_id,
         nc_path=path,
@@ -562,11 +562,9 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     current_app.logger.info("Service requesting file url %s", ncpath)
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
-    # get file through NC credentials - HOW POSSIBLE ?
     # return file as response to BBB server
     # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
     if isexternal == 0:
-        # model = MeetingFiles if isexternal == 0 else MeetingFilesExternal
         meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
         if not meeting_file:
             abort(404, "Bad token provided, no file matching")
@@ -574,7 +572,7 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
         meeting_file = create_external_meeting_file(ncpath, meetingid)
     meeting = db.session.get(Meeting, meetingid)
 
-    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
+    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB (or random if external) - secret key"
 
     if (
         mftoken

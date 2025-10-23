@@ -325,8 +325,6 @@ def delete_meeting():
         if meeting.user_id == user.id:
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
-            for meeting_file_external in meeting.externalFiles:
-                db.session.delete(meeting_file_external)
 
             data = meeting.delete_all_recordings()
             return_code = data.get("returncode", "SUCCESS")

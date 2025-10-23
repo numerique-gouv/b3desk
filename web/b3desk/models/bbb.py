@@ -19,7 +19,7 @@ from flask import current_app
 from flask import render_template
 from flask import url_for
 
-from b3desk.models.meetings import MeetingFilesExternal
+from b3desk.models.meetings import MeetingFiles
 from b3desk.tasks import background_upload
 
 from .. import BigBlueButtonUnavailable
@@ -373,7 +373,7 @@ class BBB:
         xml_end = " </module></modules>"
         xml_mid = ""
         for meeting_file in meeting_files:
-            isexternal = isinstance(meeting_file, MeetingFilesExternal)
+            isexternal = not isinstance(meeting_file, MeetingFiles)
             if not isexternal and meeting_file.url:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL nor NC hence it was uploaded
