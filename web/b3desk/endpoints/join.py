@@ -40,6 +40,7 @@ bp = Blueprint("join", __name__)
     "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<h>",
 )
 def signin_mail_meeting(meeting_fake_id, expiration, h):
+    """Display the join form for quick meetings accessed via email link."""
     meeting = get_mail_meeting(meeting_fake_id)
     wordings = current_app.config["WORDINGS"]
 
@@ -123,6 +124,7 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
+    """Authenticate user via OIDC then redirect to meeting signin page."""
     return redirect(
         url_for(
             "join.signin_meeting",
@@ -206,6 +208,7 @@ def join_meeting():
 
 @bp.route("/meeting/joinmail", methods=["POST"])
 def join_mail_meeting():
+    """Process the join form submission for email-accessed quick meetings."""
     form = JoinMailMeetingForm(request.form)
     if not form.validate():
         flash("Lien invalide", "error")
@@ -249,6 +252,7 @@ def join_mail_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
+    """Join a meeting with authenticated attendee role using OIDC."""
     # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
     # We should look if we can delete it.
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
@@ -270,12 +274,14 @@ def join_meeting_as_authenticated(meeting_id):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
+    """Join a meeting as the owner with a specific role."""
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])
 @check_oidc_connection(auth)
 def join_waiting_meeting_from_sip(visio_code):
+    """Join a meeting using visio code from SIP phone connection."""
     token = request.headers.get("Authorization")
     if not check_token_errors(token):
         meeting = get_meeting_by_visio_code(visio_code)
@@ -291,6 +297,7 @@ def join_waiting_meeting_from_sip(visio_code):
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_connexion():
+    """Process visio code form submission and redirect to meeting if valid."""
     visio_code = (
         request.form.get("visio_code1")
         + request.form.get("visio_code2")
@@ -315,6 +322,7 @@ def visio_code_connexion():
 
 
 def join_waiting_meeting_with_visio_code(meeting):
+    """Redirect to the meeting signin page after successful visio code validation."""
     meeting_fake_id = str(meeting.id)
     creator = db.session.get(User, meeting.user_id)
     role = Role.moderator

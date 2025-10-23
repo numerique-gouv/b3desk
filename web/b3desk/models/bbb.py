@@ -27,6 +27,7 @@ from .roles import Role
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
+    """Generate a cache key based on the request URL."""
     return prepped.url
 
 
@@ -47,9 +48,11 @@ class BBB:
     """Interface to BBB API."""
 
     def __init__(self, meeting):
+        """Initialize BBB API interface with a meeting instance."""
         self.meeting = meeting
 
     def bbb_request(self, action, method="GET", **kwargs):
+        """Prepare a BBB API request with authentication checksum."""
         request = requests.Request(
             method=method,
             url="{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
@@ -72,6 +75,7 @@ class BBB:
         timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"],
     )
     def bbb_response(self, request):
+        """Send the BBB API request and parse the XML response."""
         session = requests.Session()
         if current_app.debug:  # pragma: no cover
             # In local development environment, BBB is not served as https
@@ -367,6 +371,7 @@ class BBB:
         return self.bbb_response(request)
 
     def meeting_file_addition_xml(self, meeting_files):
+        """Generate XML for adding files to a BBB meeting."""
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
         xml_mid = ""
