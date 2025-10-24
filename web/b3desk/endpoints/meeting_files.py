@@ -48,6 +48,7 @@ bp = Blueprint("meeting_files", __name__)
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def edit_meeting_files(meeting: Meeting, owner: User):
+    """Display the meeting files management page."""
     form = MeetingFilesForm()
 
     if not current_app.config["FILE_SHARING"]:
@@ -69,6 +70,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_meeting_files(meeting: Meeting, owner: User):
+    """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
     data = request.get_json()
     is_default = False
     if len(meeting.files) == 0:
@@ -96,6 +98,7 @@ def add_meeting_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
+    """Download a meeting file from URL or Nextcloud."""
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
     tmp_name = f"{current_app.config['TMP_DOWNLOAD_DIR']}{secrets.token_urlsafe(32)}"
@@ -169,6 +172,7 @@ def insertDocuments(meeting: Meeting):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def toggledownload(meeting: Meeting, owner: User):
+    """Toggle the downloadable status of a meeting file."""
     data = request.get_json()
     meeting_file = db.session.get(MeetingFiles, data["id"])
     if not meeting_file:
@@ -185,6 +189,7 @@ def toggledownload(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def set_meeting_default_file(meeting: Meeting, owner: User):
+    """Set a file as the default file for a meeting."""
     data = request.get_json()
 
     actual_default_file = meeting.default_file
@@ -202,11 +207,13 @@ def set_meeting_default_file(meeting: Meeting, owner: User):
 
 
 def remove_dropzone_file(absolutePath):
+    """Remove a file from the dropzone temporary directory."""
     os.remove(absolutePath)
 
 
 # called when a file has been uploaded : send it to nextcloud
 def add_meeting_file_dropzone(title, meeting_id, is_default):
+    """Upload a dropzone file to Nextcloud and associate it with a meeting."""
     user = get_current_user()
     # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
@@ -278,6 +285,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
+    """Add a meeting file from an external URL."""
     title = url.rsplit("/", 1)[-1]
 
     # test MAX_SIZE_UPLOAD for 20Mo
@@ -326,6 +334,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
 
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
+    """Add a meeting file from a Nextcloud path."""
     user = get_current_user()
 
     options = {
@@ -396,6 +405,7 @@ def create_external_meeting_file(path, meeting_id):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_dropzone_files(meeting: Meeting, owner: User):
+    """Handle chunked file uploads from dropzone."""
     file = request.files["dropzoneFiles"]
     # for dropzone chunk file by file validation
     # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
@@ -440,6 +450,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting_file():
+    """Delete a meeting file and reassign default if necessary."""
     user = get_current_user()
     data = request.get_json()
     meeting_file_id = data["id"]
@@ -473,6 +484,7 @@ def delete_meeting_file():
 # @TODO: can we remove this def entirely?
 @bp.route("/insertDoc/<token>")
 def insertDoc(token):
+    """Insert a document into a BBB meeting using a token (draft implementation)."""
     # select good file from token
     # get file through NC credentials - HOW POSSIBLE ?
     # return file as response to BBB server

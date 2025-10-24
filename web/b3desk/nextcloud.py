@@ -10,6 +10,10 @@ from webdav3.exceptions import WebDavException
 
 
 def make_nextcloud_credentials_request(url, payload, headers):
+    """Make a POST request to Nextcloud API to retrieve credentials.
+
+    Handles URL validation and HTTPS enforcement based on configuration.
+    """
     try:
         response = requests.post(url, json=payload, headers=headers)
         data = response.json()
@@ -79,6 +83,7 @@ class NoUserFound(Exception):
 
 
 def get_secondary_identity_provider_token():
+    """Retrieve OAuth access token from secondary identity provider using client credentials."""
     return requests.post(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/protocol/openid-connect/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -91,6 +96,7 @@ def get_secondary_identity_provider_token():
 
 
 def get_secondary_identity_provider_users_from_email(email, access_token):
+    """Query secondary identity provider API to retrieve users matching the given email."""
     return requests.get(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/admin/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/users",
         headers={
@@ -102,6 +108,11 @@ def get_secondary_identity_provider_users_from_email(email, access_token):
 
 
 def get_secondary_identity_provider_id_from_email(email):
+    """Get username from secondary identity provider by email.
+
+    Returns the unique username associated with the given email address.
+    Raises exceptions if no user or multiple users are found.
+    """
     try:
         token_response = get_secondary_identity_provider_token()
         token_response.raise_for_status()
@@ -143,10 +154,12 @@ def get_secondary_identity_provider_id_from_email(email):
 
 
 def has_secondary_identity_with_email(email):
+    """Check if secondary identity provider is enabled and email is present."""
     return current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] and email
 
 
 def can_get_file_sharing_credentials(preferred_username, email):
+    """Determine if file sharing credentials can be retrieved for the user."""
     is_cloud_configured = (
         current_app.config["NC_LOGIN_API_KEY"]
         and current_app.config["NC_LOGIN_API_URL"]
@@ -160,6 +173,10 @@ def can_get_file_sharing_credentials(preferred_username, email):
 
 
 def get_user_nc_credentials(user):
+    """Retrieve Nextcloud credentials (login, token, locator) for the given user.
+
+    Uses secondary identity provider if configured, otherwise uses preferred_username.
+    """
     if not can_get_file_sharing_credentials(user.preferred_username, user.email):
         current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
@@ -201,6 +218,11 @@ def get_user_nc_credentials(user):
 
 
 def update_user_nc_credentials(user, force_renew=False):
+    """Update user's Nextcloud credentials if needed.
+
+    Credentials are renewed if force_renew is True or if the last update exceeds the configured timedelta.
+    Returns True if credentials were updated, False otherwise.
+    """
     # preferred_username is login from keycloak, REQUIRED for nc_login connexion
     # data is conveyed like following :
     # user logs in to keycloak

@@ -22,6 +22,10 @@ from . import db
 
 
 def get_or_create_user(user_info):
+    """Get existing user by email or create a new user from user_info dictionary.
+
+    Updates user information if any fields have changed and saves to database.
+    """
     given_name = user_info["given_name"]
     family_name = user_info["family_name"]
     preferred_username = user_info.get("preferred_username")
@@ -85,30 +89,37 @@ class User(db.Model):
 
     @property
     def fullname(self):
+        """Return user's full name combining given name and family name."""
         return f"{self.given_name} {self.family_name}"
 
     @property
     def hash(self):
+        """Generate SHA1 hash from user's email and application secret key."""
         s = f"{self.email}|{secret_key()}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     @property
     def can_create_meetings(self):
+        """Check if user has not reached the maximum number of meetings allowed."""
         return len(self.meetings) < current_app.config["MAX_MEETINGS_PER_USER"]
 
     @property
     def has_nc_credentials(self):
+        """Check if user has valid Nextcloud credentials (login, token, and locator)."""
         return self.nc_login and self.nc_token and self.nc_locator
 
     @property
     def mail_domain(self):
+        """Extract and return the domain part of the user's email address."""
         return self.email.split("@")[1] if self.email and "@" in self.email else None
 
     def save(self):
+        """Add user to database session and commit changes."""
         db.session.add(self)
         db.session.commit()
 
     def disable_nextcloud(self):
+        """Clear all Nextcloud credentials and save to database."""
         self.nc_login = None
         self.nc_locator = None
         self.nc_token = None

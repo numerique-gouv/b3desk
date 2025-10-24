@@ -23,6 +23,7 @@ bp = Blueprint("public", __name__)
     timeout=current_app.config["STATS_CACHE_DURATION"], key_prefix="meetings_stats"
 )
 def get_meetings_stats():
+    """Retrieve current meeting statistics from the configured stats URL."""
     # TODO: do this asynchroneously
     # Currently, the page needs to wait another network request in get_meetings_stats
     # before it can be rendered. This is mitigated by caching though.
@@ -47,6 +48,7 @@ def get_meetings_stats():
 
 @bp.route("/")
 def index():
+    """Redirect to welcome page if authenticated, otherwise to home page."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
     else:
@@ -56,6 +58,7 @@ def index():
 @bp.route("/home")
 @check_private_key()
 def home():
+    """Render the public home page for unauthenticated users."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
 
@@ -74,6 +77,7 @@ def home():
 @auth.oidc_auth("default")
 @check_private_key()
 def welcome():
+    """Render the authenticated user's welcome page with their meetings."""
     user = get_current_user()
     stats = get_meetings_stats()
 
@@ -129,6 +133,7 @@ def welcome():
 
 @bp.route("/mentions_legales")
 def mentions_legales():
+    """Render the legal notices page."""
     return render_template(
         "footer/mentions_legales.html",
         service_title=current_app.config["SERVICE_TITLE"],
@@ -138,6 +143,7 @@ def mentions_legales():
 
 @bp.route("/cgu")
 def cgu():
+    """Render the terms of service page."""
     return render_template(
         "footer/cgu.html",
         service_title=current_app.config["SERVICE_TITLE"],
@@ -147,6 +153,7 @@ def cgu():
 
 @bp.route("/donnees_personnelles")
 def donnees_personnelles():
+    """Render the personal data policy page."""
     return render_template(
         "footer/donnees_personnelles.html",
         service_title=current_app.config["SERVICE_TITLE"],
@@ -156,6 +163,7 @@ def donnees_personnelles():
 
 @bp.route("/accessibilite")
 def accessibilite():
+    """Render the accessibility statement page."""
     return render_template(
         "footer/accessibilite.html",
         service_title=current_app.config["SERVICE_TITLE"],
@@ -165,6 +173,7 @@ def accessibilite():
 
 @bp.route("/documentation")
 def documentation():
+    """Redirect to external documentation or render internal documentation page."""
     if current_app.config["DOCUMENTATION_LINK"]["is_external"]:
         return redirect(current_app.config["DOCUMENTATION_LINK"]["url"])
     return render_template(
@@ -176,11 +185,13 @@ def documentation():
 @check_oidc_connection(auth)
 @auth.oidc_logout
 def logout():
+    """Log out the current user and redirect to the index page."""
     return redirect(url_for("public.index"))
 
 
 @bp.route("/faq")
 def faq():
+    """Render the frequently asked questions page."""
     return render_template(
         "faq.html",
         contents=FAQ_CONTENT,

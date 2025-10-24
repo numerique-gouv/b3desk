@@ -16,6 +16,7 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="background_upload")
 def background_upload(endpoint, xml):
+    """Celery task to upload XML documents to BigBlueButton API in background."""
     logger.info("BBB API request %s: xml:%s", endpoint, xml)
 
     session = requests.Session()

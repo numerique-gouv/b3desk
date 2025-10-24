@@ -16,6 +16,7 @@ from b3desk.constants import DEFAULT_EMAIL_WHITELIST
 
 
 def split_comma_separated_strings(value):
+    """Convert a comma-separated string into a list of stripped strings."""
     if not isinstance(value, str):
         return value
 
@@ -274,6 +275,7 @@ class MainSettings(BaseSettings):
         allowed_mime_types_server_side: list[str] | None,
         info: ValidationInfo,
     ) -> list[str]:
+        """Return allowed MIME types parsed from string or list."""
         if not allowed_mime_types_server_side:
             return []
 
@@ -462,30 +464,35 @@ class MainSettings(BaseSettings):
 
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
+        """Return OIDC_ISSUER if attendee issuer is not specified."""
         return attendee_issuer or info.data.get("OIDC_ISSUER")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_ID")
     def get_attendee_client_id(
         cls, attendee_client_id: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_ID if attendee client ID is not specified."""
         return attendee_client_id or info.data.get("OIDC_CLIENT_ID")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_SECRET")
     def get_attendee_client_secret(
         cls, attendee_client_secret: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_SECRET if attendee client secret is not specified."""
         return attendee_client_secret or info.data.get("OIDC_CLIENT_SECRET")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_AUTH_METHOD")
     def get_attendee_client_auth_method(
         cls, attendee_client_auth_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_AUTH_METHOD if attendee client auth method is not specified."""
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
 
     @field_validator("OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD")
     def get_attendee_introspection_endpoint_auth_method(
         cls, attendee_introspection_endpoint_auth_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_INTROSPECTION_AUTH_METHOD if attendee introspection auth method is not specified."""
         return attendee_introspection_endpoint_auth_method or info.data.get(
             "OIDC_INTROSPECTION_AUTH_METHOD"
         )
@@ -494,6 +501,7 @@ class MainSettings(BaseSettings):
     def get_attendee_userinfo_http_method(
         cls, attendee_userinfo_http_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_USERINFO_HTTP_METHOD if attendee userinfo HTTP method is not specified."""
         return attendee_userinfo_http_method or info.data.get(
             "OIDC_USERINFO_HTTP_METHOD"
         )
@@ -502,12 +510,14 @@ class MainSettings(BaseSettings):
     def get_attendee_attendee_service_name(
         cls, attendee_attendee_service_name: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_SERVICE_NAME if attendee service name is not specified."""
         return attendee_attendee_service_name or info.data.get("OIDC_SERVICE_NAME")
 
     @field_validator("OIDC_ATTENDEE_SCOPES")
     def get_attendee_attendee_scopes(
         cls, attendee_scopes: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_SCOPES if attendee scopes are not specified."""
         return attendee_scopes or info.data.get("OIDC_SCOPES")
 
     DOCUMENTATION_LINK_URL: str | None = None
@@ -518,6 +528,7 @@ class MainSettings(BaseSettings):
 
     @computed_field
     def DOCUMENTATION_LINK(self) -> dict[str, Any]:
+        """Return documentation link metadata including URL and external flag."""
         return {
             "url": self.DOCUMENTATION_LINK_URL,
             "label": self.DOCUMENTATION_LINK_LABEL,
@@ -568,6 +579,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_A_MEETING")
     def get_wording_a_meeting(cls, wording_a_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'a meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_a_meeting
             or AVAILABLE_WORDINGS["A_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -584,6 +596,7 @@ class MainSettings(BaseSettings):
     def get_wording_my_meeting(
         cls, wording_my_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'my meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_my_meeting
             or AVAILABLE_WORDINGS["MY_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -599,6 +612,7 @@ class MainSettings(BaseSettings):
     def get_wording_the_meeting(
         cls, wording_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_the_meeting
             or AVAILABLE_WORDINGS["THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -615,6 +629,7 @@ class MainSettings(BaseSettings):
     def get_wording_of_the_meeting(
         cls, wording_of_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'of the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_of_the_meeting
             or AVAILABLE_WORDINGS["OF_THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -628,6 +643,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MEETING")
     def get_wording_meeting(cls, wording_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_meeting
             or AVAILABLE_WORDINGS["MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -641,6 +657,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MEETINGS")
     def get_wording_meetings(cls, wording_meetings: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'meetings' based on MEETING_KEY_WORDING."""
         return (
             wording_meetings
             or AVAILABLE_WORDINGS["MEETINGS"][info.data["MEETING_KEY_WORDING"]]
@@ -657,6 +674,7 @@ class MainSettings(BaseSettings):
     def get_wording_this_meeting(
         cls, wording_this_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'this meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_this_meeting
             or AVAILABLE_WORDINGS["THIS_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -673,6 +691,7 @@ class MainSettings(BaseSettings):
     def get_wording_to_the_meeting(
         cls, wording_to_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'to the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_to_the_meeting
             or AVAILABLE_WORDINGS["TO_THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -689,6 +708,7 @@ class MainSettings(BaseSettings):
     def get_wording_improvised_meeting(
         cls, wording_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'improvised meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_improvised_meeting
             or AVAILABLE_WORDINGS["IMPROVISED_MEETING"][
@@ -707,6 +727,7 @@ class MainSettings(BaseSettings):
     def get_wording_an_improvised_meeting(
         cls, wording_an_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'an improvised meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_an_improvised_meeting
             or AVAILABLE_WORDINGS["AN_IMPROVISED_MEETING"][
@@ -725,6 +746,7 @@ class MainSettings(BaseSettings):
     def get_wording_a_quick_meeting(
         cls, wording_a_quick_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'a quick meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_a_quick_meeting
             or AVAILABLE_WORDINGS["A_QUICK_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -741,6 +763,7 @@ class MainSettings(BaseSettings):
     def get_wording_private_meetings(
         cls, wording_private_meetings: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'private meetings' based on MEETING_KEY_WORDING."""
         return (
             wording_private_meetings
             or AVAILABLE_WORDINGS["PRIVATE_MEETINGS"][info.data["MEETING_KEY_WORDING"]]
@@ -757,6 +780,7 @@ class MainSettings(BaseSettings):
     def get_wording_good_meeting(
         cls, wording_good_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'good meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_good_meeting
             or AVAILABLE_WORDINGS["GOOD_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -773,6 +797,7 @@ class MainSettings(BaseSettings):
     def get_wording_meeting_undefined_article(
         cls, wording_meeting_undefined_article: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for meeting indefinite article based on MEETING_KEY_WORDING."""
         return (
             wording_meeting_undefined_article
             or AVAILABLE_WORDINGS["MEETING_UNDEFINED_ARTICLE"][
@@ -791,6 +816,7 @@ class MainSettings(BaseSettings):
     def get_wording_a_meeting_to_which(
         cls, wording_a_meeting_to_which: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'a meeting to which' based on MEETING_KEY_WORDING."""
         return (
             wording_a_meeting_to_which
             or AVAILABLE_WORDINGS["A_MEETING_TO_WHICH"][
@@ -808,6 +834,7 @@ class MainSettings(BaseSettings):
     def get_welcome_page_subtitle(
         cls, welcome_page_subtitle: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate welcome page subtitle based on MEETING_KEY_WORDING."""
         return (
             welcome_page_subtitle
             or AVAILABLE_WORDINGS["WELCOME_PAGE_SUBTITLE"][
@@ -825,6 +852,7 @@ class MainSettings(BaseSettings):
     def get_meeting_mail_subject(
         cls, meeting_mail_subject: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate meeting email subject based on MEETING_KEY_WORDING."""
         return (
             meeting_mail_subject
             or AVAILABLE_WORDINGS["MEETING_MAIL_SUBJECT"][
@@ -854,6 +882,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("A_NEW_MEETING")
     def get_a_new_meeting(cls, a_new_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'a new meeting' based on MEETING_KEY_WORDING."""
         return (
             a_new_meeting
             or AVAILABLE_WORDINGS["A_NEW_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -861,6 +890,7 @@ class MainSettings(BaseSettings):
 
     @computed_field
     def WORDINGS(self) -> dict[str, Any]:
+        """Return a dictionary of all meeting-related wordings for templates."""
         return {
             "a_meeting": self.WORDING_A_MEETING,
             "the_meeting": self.WORDING_THE_MEETING,
@@ -899,6 +929,7 @@ class MainSettings(BaseSettings):
     def get_quick_meeting_default_value(
         cls, quick_meeting_default_value: str | None, info: ValidationInfo
     ) -> Any:
+        """Return capitalized WORDING_IMPROVISED_MEETING if quick meeting name is not specified."""
         return (
             quick_meeting_default_value
             or info.data["WORDING_IMPROVISED_MEETING"].capitalize()
@@ -922,6 +953,7 @@ class MainSettings(BaseSettings):
         quick_meeting_moderator_welcome_message: str | None,
         info: ValidationInfo,
     ) -> Any:
+        """Return moderator welcome message for quick meetings with appropriate wording."""
         return quick_meeting_moderator_welcome_message or _(
             "Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
             this_meeting=info.data["WORDING_THIS_MEETING"],
@@ -945,6 +977,7 @@ class MainSettings(BaseSettings):
     def get_moderator_welcome_message(
         cls, moderator_welcome_message: str | None, info: ValidationInfo
     ) -> Any:
+        """Return moderator welcome message for email-invited meetings with appropriate wording."""
         return moderator_welcome_message or _(
             "Bienvenue. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
             this_meeting=info.data["WORDING_THIS_MEETING"],
@@ -1002,6 +1035,7 @@ class MainSettings(BaseSettings):
     def get_email_whitelist(
         cls, email_whitelist: list[str], info: ValidationInfo
     ) -> str:
+        """Return DEFAULT_EMAIL_WHITELIST and normalize to list format."""
         if not email_whitelist:
             return DEFAULT_EMAIL_WHITELIST
         return (
@@ -1092,6 +1126,7 @@ class MainSettings(BaseSettings):
         enable_pin_management: bool | None,
         info: ValidationInfo,
     ) -> bool:
+        """Validate that BIGBLUEBUTTON_DIALNUMBER is set when PIN management is enabled."""
         if enable_pin_management:
             assert info.data["BIGBLUEBUTTON_DIALNUMBER"], (
                 "BIGBLUEBUTTON_DIALNUMBER configuration required when enabling pin management"
@@ -1125,6 +1160,7 @@ class MainSettings(BaseSettings):
         enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
+        """Validate that FQDN_SIP_SERVER is set when SIP is enabled."""
         if enable_sip and not info.data["FQDN_SIP_SERVER"]:
             raise ValueError(
                 "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
@@ -1137,6 +1173,7 @@ class MainSettings(BaseSettings):
         enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
+        """Validate that PRIVATE_KEY is set when SIP is enabled."""
         if enable_sip and not info.data["PRIVATE_KEY"]:
             raise ValueError(
                 "PRIVATE_KEY configuration required when enabling SIPMediaGW"
@@ -1152,6 +1189,7 @@ class MainSettings(BaseSettings):
         video_streaming_links: dict[str, str] | None,
         info: ValidationInfo,
     ) -> dict[str, str]:
+        """Return video streaming links parsed from JSON string or as dictionary."""
         if not video_streaming_links:
             return {}
 
