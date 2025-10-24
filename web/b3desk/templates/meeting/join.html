@@ -21,12 +21,12 @@
             {% if role == Role.authenticated %}
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col">
-                        <label for="fullname_suffix" class="fr-label" aria-describedby="text-input-desc">Informations facultatives</label>
-                        <p class="fr-hint-text" id="text-input-desc">Si ce champ est rempli, il sera affiché dans BBB.</p>
+                        <label for="fullname_suffix" class="fr-label" aria-describedby="text-input-desc">{% trans %}Informations facultatives{% endtrans %}</label>
+                        <p class="fr-hint-text" id="text-input-desc">{% trans %}Si ce champ est rempli, il sera affiché dans BBB.{% endtrans %}</p>
                         <input type="text" class="fr-input" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />
                     </div>
                 </div>
-                <p>Le nom affiché sera « <tt id="namePreview"></tt> ».</p>
+                <p>{% trans %}Le nom affiché sera «{% endtrans %} <tt id="namePreview"></tt> {% trans %}».{% endtrans %}</p>
             {% endif %}
 
             <div class="fr-grid-row fr-grid-row--gutters">
