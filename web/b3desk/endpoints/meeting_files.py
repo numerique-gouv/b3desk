@@ -1,5 +1,6 @@
 import hashlib
 import os
+import random
 import secrets
 import uuid
 from datetime import date
@@ -156,8 +157,7 @@ def insertDocuments(meeting: Meeting):
     filenames = request.get_json()
     # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
     meeting_files = [
-        add_external_meeting_file_nextcloud(filename, meeting.id)
-        for filename in filenames
+        create_external_meeting_file(filename, meeting.id) for filename in filenames
     ]
     xml = meeting.bbb.meeting_file_addition_xml(meeting_files)
     bbb_request = meeting.bbb.bbb_request(
@@ -404,10 +404,11 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 def add_external_meeting_file_nextcloud(path, meeting_id):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = MeetingFilesExternal(
-        title=path.split("/")[-1], meeting_id=meeting_id, nc_path=path
+        title=path.split("/")[-1],
+        meeting_id=meeting_id,
+        nc_path=path,
+        id=random.randint(100000, 999999),
     )
-    # For now, it is useless to save files added during a running meeting.
-    # externalMeetingFile.save()
     return externalMeetingFile
 
 
@@ -536,7 +537,8 @@ def insertDoc(token):
         isexternal=0,
         mfid=meeting_file.id,
         mftoken=meeting_file.download_hash,
-        filename=meeting_file.title,
+        meetingid=meeting_file.meeting_id,
+        ncpath=meeting_file.nc_path,
         _external=True,
     )
     xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{url}' filename='{meeting_file.title}' /> </module></modules>"
@@ -554,23 +556,26 @@ def insertDoc(token):
     return make_response("ok", 200)
 
 
-@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>")
-@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<filename>")
-def ncdownload(isexternal, mfid, mftoken, filename=None):
+@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<int:meetingid>/<path:ncpath>")
+def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     """Download a file from Nextcloud for BBB using a secure token."""
-    current_app.logger.info("Service requesting file url %s", filename)
+    current_app.logger.info("Service requesting file url %s", ncpath)
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
     # get file through NC credentials - HOW POSSIBLE ?
     # return file as response to BBB server
     # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
-    model = MeetingFiles if isexternal == 0 else MeetingFilesExternal
-    meeting_file = model.query.filter_by(id=mfid).one_or_none()
-
-    if not meeting_file:
-        abort(404, "Bad token provided, no file matching")
+    if isexternal == 0:
+        # model = MeetingFiles if isexternal == 0 else MeetingFilesExternal
+        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
+        if not meeting_file:
+            abort(404, "Bad token provided, no file matching")
+    else:
+        meeting_file = create_external_meeting_file(ncpath, meetingid)
+    meeting = db.session.get(Meeting, meetingid)
 
     # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
+
     if (
         mftoken
         != hashlib.sha1(
@@ -581,10 +586,10 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
 
     # download the file using webdavClient from the Nextcloud to a temporary folder (that will need cleaning)
     options = {
-        "webdav_root": f"/remote.php/dav/files/{meeting_file.meeting.user.nc_login}/",
-        "webdav_hostname": meeting_file.meeting.user.nc_locator,
+        "webdav_root": f"/remote.php/dav/files/{meeting.user.nc_login}/",
+        "webdav_hostname": meeting.user.nc_locator,
         "webdav_verbose": True,
-        "webdav_token": meeting_file.meeting.user.nc_token,
+        "webdav_token": meeting.user.nc_token,
     }
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -593,8 +598,8 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
 
     try:
         client = webdavClient(options)
-        mimetype = client.info(meeting_file.nc_path).get("content_type")
-        client.download_sync(remote_path=meeting_file.nc_path, local_path=tmp_name)
+        mimetype = client.info(ncpath).get("content_type")
+        client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
