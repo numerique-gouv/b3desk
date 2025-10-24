@@ -19,6 +19,7 @@ class Access_token_response:
         self.status_code = status_code
 
     def json(self):
+        """Return mock access token response data."""
         return self.json_data
 
 
@@ -32,6 +33,7 @@ class Access_token_bad_response:
         self.status_code = status_code
 
     def json(self):
+        """Return mock access token bad response data."""
         return self.json_data
 
 
@@ -45,6 +47,7 @@ class Captcha_response:
         self.status_code = status_code
 
     def json(self):
+        """Return mock captcha response data."""
         return self.json_data
 
 
@@ -54,6 +57,7 @@ class Captcha_validation_response:
         self.status_code = 200
 
     def json(self):
+        """Return mock captcha validation response data."""
         return self.json_data
 
 
@@ -70,10 +74,12 @@ class Captcha_healthcheck_response:
         self.status_code = 200
 
     def json(self):
+        """Return mock captcha healthcheck response data."""
         return self.json_data
 
 
 def test_get_captchetat_token(client_app, mocker):
+    """Test that captchetat access token is retrieved successfully."""
     mocker.patch("requests.post", return_value=Access_token_response(200))
     access_token = get_captchetat_token()
     assert access_token == "valid-access-token"
@@ -83,6 +89,7 @@ def test_get_captchetat_token(client_app, mocker):
 
 
 def test_get_captchetat_token_bad_status_code(client_app, mocker, caplog):
+    """Test that bad status code is logged when getting captchetat token."""
     mocker.patch("requests.post", return_value=Access_token_response(401))
     access_token = get_captchetat_token()
     assert not access_token == "valid-access-token"
@@ -90,6 +97,7 @@ def test_get_captchetat_token_bad_status_code(client_app, mocker, caplog):
 
 
 def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
+    """Test that bad response format is logged when getting captchetat token."""
     mocker.patch("requests.post", return_value=Access_token_bad_response(200))
     access_token = get_captchetat_token()
     assert not access_token == "valid-access-token"
@@ -98,6 +106,7 @@ def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_proxy(access_token, client_app, mocker):
+    """Test that captcha proxy returns captcha image and sound correctly."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.get", return_value=Captcha_response(200))
     captcha_response = Captcha_response(200)
@@ -113,6 +122,7 @@ def test_captcha_proxy(access_token, client_app, mocker):
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_proxy_but_captchetat_is_down(access_token, client_app, mocker, caplog):
+    """Test that captcha proxy returns error when captchetat service is down."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.get", side_effect=requests.exceptions.ConnectionError())
     response = client_app.get(
@@ -126,6 +136,7 @@ def test_captcha_proxy_but_captchetat_is_down(access_token, client_app, mocker, 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_proxy_with_no_token(access_token, client_app, mocker, caplog):
+    """Test that captcha proxy returns 403 when token is missing."""
     access_token.return_value = None
     mocker.patch("requests.get", return_value=Captcha_response(200))
     response = client_app.get(
@@ -139,6 +150,7 @@ def test_captcha_proxy_with_no_token(access_token, client_app, mocker, caplog):
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
+    """Test that bad response from captchetat is logged."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.get", return_value=Captcha_response(401))
     client_app.get("/simple-captcha-endpoint", status=401)
@@ -147,6 +159,7 @@ def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_validation(access_token, client_app, mocker):
+    """Test that captcha validation returns correct result."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.post", return_value=Captcha_validation_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
@@ -157,6 +170,7 @@ def test_captcha_validation(access_token, client_app, mocker):
 def test_captcha_validation_but_captchetat_is_down(
     access_token, client_app, mocker, caplog
 ):
+    """Test that captcha validation passes when captchetat service is down."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.post", side_effect=requests.exceptions.ConnectionError())
     validation = captcha_validation("captcha_uuid", "captcha_code")
@@ -166,6 +180,7 @@ def test_captcha_validation_but_captchetat_is_down(
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_validation_with_no_token(access_token, client_app, mocker, caplog):
+    """Test that captcha validation passes when token is missing."""
     access_token.return_value = None
     mocker.patch("requests.post", return_value=Captcha_validation_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
@@ -175,6 +190,7 @@ def test_captcha_validation_with_no_token(access_token, client_app, mocker, capl
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captcha_validation_bad_response(access_token, client_app, mocker, caplog):
+    """Test that captcha validation passes when response is bad."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.post", return_value=Captcha_validation_bad_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
@@ -184,6 +200,7 @@ def test_captcha_validation_bad_response(access_token, client_app, mocker, caplo
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 def test_captchetat_service_status(access_token, client_app, mocker):
+    """Test that captchetat service status is retrieved correctly."""
     access_token.return_value = "valid-access-token"
     mocker.patch("requests.get", return_value=Captcha_healthcheck_response())
     status = captchetat_service_status()
@@ -194,6 +211,7 @@ def test_captchetat_service_status(access_token, client_app, mocker):
 def test_captchetat_service_status_with_no_token(
     access_token, client_app, mocker, caplog
 ):
+    """Test that captchetat service status returns error when token is missing."""
     access_token.return_value = None
     mocker.patch("requests.get", return_value=Captcha_healthcheck_response())
     response = captchetat_service_status()
@@ -212,6 +230,7 @@ def test_join_with_visio_code_and_captcha_needed(
     mocker,
     meeting,
 ):
+    """Test that captcha is displayed after multiple failed visio code attempts."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
@@ -244,6 +263,7 @@ def test_join_with_visio_code_with_wrong_visio_code_and_wrong_captcha(
     mocker,
     meeting,
 ):
+    """Test that wrong captcha shows error without revealing meeting existence."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
@@ -285,6 +305,7 @@ def test_join_with_visio_code_with_wrong_visio_code_and_valid_captcha(
     mocker,
     meeting,
 ):
+    """Test that valid captcha with wrong visio code shows visio code error."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
@@ -322,6 +343,7 @@ def test_join_with_visio_code_with_valid_visio_code_and_wrong_captcha(
     mocker,
     meeting,
 ):
+    """Test that wrong captcha shows error even with valid visio code."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
@@ -363,6 +385,7 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
     mocker,
     meeting,
 ):
+    """Test that valid captcha and visio code allows joining meeting."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
     status.return_value = "UP"
     access_token.return_value = "valid-access-token"
@@ -390,26 +413,31 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
 
 
 def test_should_display_captcha_with_no_PISTE_OAUTH_CLIENT_ID(client_app):
+    """Test that captcha is not displayed when PISTE OAuth client ID is missing."""
     client_app.app.config["PISTE_OAUTH_CLIENT_ID"] = None
     assert not should_display_captcha()
 
 
 def test_should_display_captcha_with_no_PISTE_OAUTH_CLIENT_SECRET(client_app):
+    """Test that captcha is not displayed when PISTE OAuth client secret is missing."""
     client_app.app.config["PISTE_OAUTH_CLIENT_SECRET"] = None
     assert not should_display_captcha()
 
 
 def test_should_display_captcha_with_no_CAPTCHETAT_API_URL(client_app):
+    """Test that captcha is not displayed when captchetat API URL is missing."""
     client_app.app.config["CAPTCHETAT_API_URL"] = None
     assert not should_display_captcha()
 
 
 def test_should_display_captcha_with_no_PISTE_OAUTH_API_URL(client_app):
+    """Test that captcha is not displayed when PISTE OAuth API URL is missing."""
     client_app.app.config["PISTE_OAUTH_API_URL"] = None
     assert not should_display_captcha()
 
 
 def test_should_display_captcha_with_no_token(client_app, caplog):
+    """Test that captcha is not displayed when captchetat service is down."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
 
     with client_app.session_transaction() as sess:

@@ -8,9 +8,9 @@
 {% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
   {% if field.type == "BooleanField" %}
     <li>
-      <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé">
+      <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="{% trans %}Activé{% endtrans %}" data-fr-unchecked-label="{% trans %}Désactivé{% endtrans %}">
         {{ field(value="on", class_="fr-toggle__input")}}
-        {{ field.label(class_="fr-toggle__label", data_fr_checked_label="Activé", data_fr_unchecked_label="Désactivé") }}
+        {{ field.label(class_="fr-toggle__label", data_fr_checked_label="{% trans %}Activé{% endtrans %}", data_fr_unchecked_label="{% trans %}Désactivé{% endtrans %}") }}
         <p class="fr-hint-text">{{ field.description }}</p>
       </div>
     </li>
@@ -89,12 +89,12 @@
             <div class="fr-container">
               <div class="fr-notice__body">
                 <p class="fr-notice__title">
-                  Conseils pour la mise en forme
+                  {% trans %}Conseils pour la mise en forme{% endtrans %}
                 </p>
               </div>
               <p>
                 &lt;u&gt;&lt;strong> %%CONFNAME%% &lt;/strong&gt;&lt;/u&gt;<br>
-                %%CONFNAME%% : affiche le nom de votre salle
+                {% trans %}%%CONFNAME%% : affiche le nom de votre salle{% endtrans %}
               </p>
             </div>
           </div>

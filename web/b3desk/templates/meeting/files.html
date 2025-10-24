@@ -36,15 +36,15 @@
 
 <script src="{{ url_for('static', filename='js/dropzone-min.js') }}"></script>
 
-<h1 class="fr-h2">Gestion des {{ meeting_presentation }}s associées à <em>{{ meeting.name }}</em></h1>
+<h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des {{ meeting_presentation }}s associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>Retour à mes {{ meeting_label }}s</a>
+    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
 </div>
 
 <div id="messageHolder">
     {% if form.errors %}
-        <p class="fr-error-text">Enregistrement impossible car certains champs sont mal renseignés.</p>
+        <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
     {% endif %}
 </div>
 
@@ -54,7 +54,7 @@
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="dropzone" title="Fermer"></button>
+                        <button class="fr-btn--close fr-btn" aria-controls="dropzone" title="{% trans %}Fermer{% endtrans %}"></button>
                     </div>
                     <div class="fr-modal__content">
                         <form method="POST" action="{{ url_for("meeting_files.add_dropzone_files", meeting=meeting) }}" class="dropzone dz-clickable" id="dropper" enctype="multipart/form-data">
@@ -76,7 +76,7 @@
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="url" title="Fermer"></button>
+                        <button class="fr-btn--close fr-btn" aria-controls="url" title="{% trans %}Fermer{% endtrans %}"></button>
                     </div>
                     <div class="fr-modal__content">
                         <form id="meeting-form" >
@@ -84,7 +84,7 @@
                             {% include 'meeting/id.html' %}
                             <div class="pres_button_parent">
                                 {{ render_field(form.url) }}
-                                <button type="submit" class="fr-btn fr-btn--primary">Ajouter</button>
+                                <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Ajouter{% endtrans %}</button>
                             </div>
                         </form>
                     </div>
@@ -97,19 +97,19 @@
 </div>
 
 <div class="fr-container fr-mt-2w">
-    <h2 class="fr-h3">Vous pouvez ajouter un fichier :</h2>
+    <h2 class="fr-h3">{% trans %}Vous pouvez ajouter un fichier :{% endtrans %}</h2>
     <div class="fr-grid-row">
 
         <ul id="addFileButtonsHolder" class="fr-btns-group fr-btns-group--inline fr-btns-group--center">
             <li>
-                <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">depuis une URL</button>
+                <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">{% trans %}depuis une URL{% endtrans %}</button>
             </li>
             {% if user.has_nc_credentials %}
                 <li>
-                    <button onClick=openNCFilePicker(event) class="fr-btn" title="nuage">depuis le Nuage</button>
+                    <button onClick=openNCFilePicker(event) class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
                 </li>
                 <li>
-                    <button data-fr-opened="false" aria-controls="dropzone" class="fr-btn" title="dropzone">par Téléversement</button>
+                    <button data-fr-opened="false" aria-controls="dropzone" class="fr-btn" title="{% trans %}dropzone{% endtrans %}">{% trans %}par Téléversement{% endtrans %}</button>
                 </li>
             {% endif %}
         </ul>
@@ -125,15 +125,15 @@
             <div class="fr-table__container">
                 <div class="fr-table__content">
                     <table>
-                        <caption>Vos fichiers associés sont :</caption>
+                        <caption>{% trans %}Vos fichiers associés sont :{% endtrans %}</caption>
                         <thead>
                             <tr>
                                 <!-- <th scope="col">Défaut</th> -->
-                                <th scope="col">Téléchargeable</th>
-                                <th id="titleFileColumn" scope="col">Titre</th>
-                                <th scope="col">Ajouté le</th>
-                                <th scope="col">Supprimer</th>
-                                <th scope="col">Télécharger</th>
+                                <th scope="col">{% trans %}Téléchargeable{% endtrans %}</th>
+                                <th id="titleFileColumn" scope="col">{% trans %}Titre{% endtrans %}</th>
+                                <th scope="col">{% trans %}Ajouté le{% endtrans %}</th>
+                                <th scope="col">{% trans %}Supprimer{% endtrans %}</th>
+                                <th scope="col">{% trans %}Télécharger{% endtrans %}</th>
                             </tr>
                         </thead>
                         <tbody id="fileslist">
@@ -146,23 +146,23 @@
                                                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                                                     <div class="fr-modal__body">
                                                         <div class="fr-modal__header">
-                                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="Fermer">Fermer</button>
+                                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Fermer{% endtrans %}">{% trans %}Fermer{% endtrans %}</button>
                                                         </div>
                                                         <div class="fr-modal__content">
                                                             <h1 id="delete-file-{{ file.id }}-title" class="fr-modal__title">
-                                                                Supprimer
+                                                                {% trans %}Supprimer{% endtrans %}
                                                             </h1>
-                                                            <p class="padbot">Voulez-vous vraiment supprimer le fichier <em>{{ file.short_title }}</em> ?</p>
+                                                            <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
                                                         </div>
                                                         <div class="fr-modal__footer">
                                                             <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
                                                                 <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
                                                                 <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                                                     <li>
-                                                                        <button type="submit" class="fr-btn fr-btn--primary fr-btn--delete" >Supprimer</button>
+                                                                        <button type="submit" class="fr-btn fr-btn--primary fr-btn--delete" >{% trans %}Supprimer{% endtrans %}</button>
                                                                     </li>
                                                                     <li>
-                                                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="Annuler">Annuler</button>
+                                                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
                                                                     </li>
                                                                 </ul>
                                                                 {% include 'meeting/csrf.html' %}
@@ -192,21 +192,21 @@
                                             <div class="fr-toggle">
                                                 {% if file.is_downloadable %}
                                                     <input onclick=toggleIsDownloadable(event) checked type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
-                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="Oui" data-fr-unchecked-label="Non"></label>
+                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                                 {% else %}
                                                     <input onclick=toggleIsDownloadable(event) type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
-                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="Oui" data-fr-unchecked-label="Non"></label>
+                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                                 {% endif %}
                                             </div>
                                         </td>
                                         <td>{{ file.short_title }}</td>
                                         <td>{{ file.created_at }}</td>
                                         <td>
-                                            <button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="Supprimer"></button>
+                                            <button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="{% trans %}Supprimer{% endtrans %}"></button>
                                         </td>
                                         <td>
                                             <a href="{{ url_for("meeting_files.download_meeting_files", meeting=meeting, file_id=file.id) }}">
-                                                <button class="fr-btn fr-icon-download-fill" title="Télécharger"></button>
+                                                <button class="fr-btn fr-icon-download-fill" title="{% trans %}Télécharger{% endtrans %}"></button>
                                             </a>
                                         </td>
                                     </tr>
@@ -218,7 +218,7 @@
             </div>
         </div>
         {% if not meeting.files|length %}
-            <p id="nofileavailable" >Aucun document de présentation n'est prévu pour cette réunion actuellement</p>
+            <p id="nofileavailable" >{% trans %}Aucun document de présentation n'est prévu pour cette réunion actuellement{% endtrans %}</p>
         {% endif %}
     </div>
 </div>
@@ -226,6 +226,6 @@
 <div class="fr-container fr-mt-4w">
     <a href="{{ url_for("public.welcome") }}">
         <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
-        Retour à mes {{ meeting_label }}s
+        {% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}
     </a>
 </div>

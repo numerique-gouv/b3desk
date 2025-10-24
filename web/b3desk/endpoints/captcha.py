@@ -11,6 +11,7 @@ CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
 
 
 def get_captchetat_token():
+    """Retrieve and cache OAuth access token for captchetat service."""
     if token := cache.get(CACHE_KEY_CAPTCHETAT_CREDENTIALS):
         return token
 
@@ -66,6 +67,7 @@ def captcha_proxy():
 
 
 def captcha_validation(captcha_uuid, captcha_code):
+    """Validate a captcha code against the captchetat service."""
     if not (access_token := get_captchetat_token()):
         captcha_error("Invalid credentials.")
         return True

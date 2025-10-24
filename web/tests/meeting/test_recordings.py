@@ -8,6 +8,8 @@ import pytest
 
 @pytest.fixture
 def bbb_getRecordings_response(mocker):
+    """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
+
     class Response:
         """https://docs.bigbluebutton.org/dev/api.html#getrecordings."""
 
@@ -118,6 +120,8 @@ def bbb_getRecordings_response(mocker):
 
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
+    """Test that recordings are retrieved and parsed correctly from BBB."""
+
     class DirectLinkRecording:
         status_code = 200
 
@@ -157,6 +161,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
 
 
 def test_update_recording_name(client_app, authenticated_user, meeting, bbb_response):
+    """Test that recording name can be updated via BBB API."""
     response = client_app.post(
         f"/meeting/{meeting.id}/recordings/recording_id",
         {"name": "First recording"},

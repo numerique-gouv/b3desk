@@ -23,33 +23,39 @@ from b3desk.models.roles import Role
 
 @pytest.fixture()
 def mock_meeting_is_running(mocker):
+    """Mock meeting.is_running() to return True."""
     mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
 
 
 @pytest.fixture()
 def mock_meeting_is_not_running(mocker):
+    """Mock meeting.is_running() to return False."""
     mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
 
 
 def test_show_meeting(client_app, authenticated_user, meeting, bbb_response):
+    """Test that meeting details page displays correctly."""
     response = client_app.get(f"/meeting/show/{meeting.id}", status=200)
 
     assert "meeting/show.html" in response.contexts
 
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
+    """Test that meeting recordings page displays correctly."""
     response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
 
     assert "meeting/recordings.html" in response.contexts
 
 
 def test_new_meeting(client_app, authenticated_user):
+    """Test that new meeting form displays correctly."""
     response = client_app.get("/meeting/new", status=200)
 
     assert response.template == "meeting/wizard.html"
 
 
 def test_new_meeting_when_recording_not_configured(client_app, authenticated_user):
+    """Test that recording options are hidden when recording is disabled."""
     client_app.app.config["RECORDING"] = False
 
     response = client_app.get("/meeting/new")
@@ -58,6 +64,7 @@ def test_new_meeting_when_recording_not_configured(client_app, authenticated_use
 
 
 def test_edit_meeting(client_app, authenticated_user, meeting, bbb_response):
+    """Test that meeting edit form displays correctly."""
     response = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
 
     assert response.template == "meeting/wizard.html"
@@ -66,6 +73,7 @@ def test_edit_meeting(client_app, authenticated_user, meeting, bbb_response):
 def test_save_new_meeting(
     client_app, authenticated_user, mock_meeting_is_not_running, caplog
 ):
+    """Test that new meeting can be created with all settings."""
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
     res.form["welcome"] = "Bienvenue dans mon meeting de test"
@@ -129,6 +137,7 @@ def test_save_new_meeting(
 def test_save_existing_meeting_not_running(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):
+    """Test that existing meeting can be updated when not running."""
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
@@ -190,6 +199,7 @@ def test_save_existing_meeting_not_running(
 def test_save_existing_meeting_running(
     mocker, client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
+    """Test that existing meeting can be updated and ended when running."""
     mocker.patch("b3desk.models.meetings.Meeting.end_bbb", return_value=True)
     assert len(Meeting.query.all()) == 1
 
@@ -211,6 +221,7 @@ def test_save_existing_meeting_running(
 def test_save_moderatorOnlyMessage_too_long(
     client_app, authenticated_user, mock_meeting_is_not_running
 ):
+    """Test that validation fails when moderator message is too long."""
     res = client_app.get("/meeting/new")
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
     res.form["moderatorOnlyMessage"] = moderator_only_message
@@ -225,6 +236,7 @@ def test_save_moderatorOnlyMessage_too_long(
 def test_save_no_recording_by_default(
     client_app, authenticated_user, mock_meeting_is_not_running
 ):
+    """Test that recording is disabled by default."""
     res = client_app.get("/meeting/new")
     res.form["name"] = "Mon meeting de test"
     res.form["maxParticipants"] = 5
@@ -247,6 +259,7 @@ def test_save_no_recording_by_default(
 def test_save_meeting_in_no_recording_environment(
     client_app, authenticated_user, mock_meeting_is_not_running
 ):
+    """Test that meeting can be created when recording is disabled globally."""
     assert len(Meeting.query.all()) == 0
     client_app.app.config["RECORDING"] = False
 
@@ -571,6 +584,7 @@ def test_create_with_files(
 def test_create_without_logout_url_gets_default(
     app, client_app, authenticated_user, mock_meeting_is_not_running
 ):
+    """Test that default logout URL is used when none specified."""
     res = client_app.get("/meeting/new")
     res = res.form.submit()
     assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
@@ -583,6 +597,7 @@ def test_create_without_logout_url_gets_default(
 def test_save_existing_meeting_gets_default_logoutUrl(
     client_app, authenticated_user, meeting, mocker, bbb_response
 ):
+    """Test that empty logout URL gets replaced with default."""
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
@@ -609,6 +624,7 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
+    """Test that quick meeting is created with correct default parameters."""
     from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
@@ -644,6 +660,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
 
 
 def test_edit_files_meeting(client_app, authenticated_user, meeting, bbb_response):
+    """Test that meeting files edit page displays correctly."""
     client_app.app.config["FILE_SHARING"] = True
 
     response = client_app.get(f"/meeting/files/{meeting.id}", status=200)
@@ -654,6 +671,7 @@ def test_edit_files_meeting(client_app, authenticated_user, meeting, bbb_respons
 def test_deactivated_meeting_files_cannot_access_files(
     client_app, authenticated_user, meeting, bbb_response
 ):
+    """Test that file sharing link is hidden when feature is disabled."""
     client_app.app.config["FILE_SHARING"] = False
 
     response = client_app.get("/welcome", status=200)
@@ -664,6 +682,7 @@ def test_deactivated_meeting_files_cannot_access_files(
 def test_deactivated_meeting_files_cannot_edit(
     client_app, authenticated_user, meeting, bbb_response
 ):
+    """Test that file edit page is inaccessible when feature is disabled."""
     client_app.app.config["FILE_SHARING"] = False
 
     response = client_app.get(f"/meeting/files/{meeting.id}", status=302)
@@ -672,6 +691,7 @@ def test_deactivated_meeting_files_cannot_edit(
 
 
 def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
+    """Test that meeting can be deleted and voiceBridge is archived."""
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
@@ -722,6 +742,7 @@ def test_meeting_order_default(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings are ordered by creation date descending by default."""
     response = client_app.get("/welcome", status=200)
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
 
@@ -735,6 +756,7 @@ def test_meeting_order_alpha_asc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings can be ordered alphabetically ascending."""
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=false&favorite-filter=false", status=200
     )
@@ -750,6 +772,7 @@ def test_meeting_order_alpha_desc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings can be ordered alphabetically descending."""
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=true&favorite-filter=false", status=200
     )
@@ -765,6 +788,7 @@ def test_meeting_order_date_desc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings can be ordered by creation date descending."""
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=true&favorite-filter=false",
         status=200,
@@ -781,6 +805,7 @@ def test_meeting_order_date_asc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings can be ordered by creation date ascending."""
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=false&favorite-filter=false",
         status=200,
@@ -797,6 +822,7 @@ def test_favorite_meeting_order_alpha_asc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that favorite meetings can be ordered alphabetically ascending."""
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=false&favorite-filter=true", status=200
     )
@@ -812,6 +838,7 @@ def test_favorite_meeting_order_alpha_desc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that favorite meetings can be ordered alphabetically descending."""
     response = client_app.get(
         "/welcome?order-key=name&reverse-order=true&favorite-filter=true", status=200
     )
@@ -827,6 +854,7 @@ def test_favorite_meeting_order_date_desc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that favorite meetings can be ordered by creation date descending."""
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=true&favorite-filter=true",
         status=200,
@@ -843,6 +871,7 @@ def test_favorite_meeting_order_date_asc(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that favorite meetings can be ordered by creation date ascending."""
     response = client_app.get(
         "/welcome?order-key=created_at&reverse-order=false&favorite-filter=true",
         status=200,
@@ -859,6 +888,7 @@ def test_add_and_remove_favorite(
     shadow_meeting,
     bbb_response,
 ):
+    """Test that meetings can be added and removed from favorites."""
     assert not meeting_3.is_favorite
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
@@ -884,6 +914,7 @@ def test_add_favorite_by_wrong_user_failed(
     meeting_3,
     shadow_meeting,
 ):
+    """Test that user cannot favorite another user's meeting."""
     response = client_app.get("/welcome", status=200)
     response.mustcontain("Berenice Cooler")
     response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
@@ -892,6 +923,7 @@ def test_add_favorite_by_wrong_user_failed(
 def test_create_meeting_with_wrong_PIN(
     client_app, meeting, authenticated_user, mock_meeting_is_not_running, bbb_response
 ):
+    """Test that invalid PIN formats are rejected with appropriate error messages."""
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     res = client_app.get("/meeting/new")
@@ -937,6 +969,7 @@ def test_generate_existing_pin(
     mock_meeting_is_not_running,
     mocker,
 ):
+    """Test that PIN generation increments when suggested PIN already exists."""
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     mocker.patch("b3desk.models.meetings.random.randint", return_value=111111111)
@@ -953,6 +986,7 @@ def test_generate_existing_pin(
 
 
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
+    """Test that meeting can be saved without making any changes."""
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
     res = res.form.submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -969,6 +1003,7 @@ def test_delete_old_voiceBridges_with_form(
     iam_server,
     iam_user,
 ):
+    """Test that old voiceBridges are automatically deleted after one year via form submission."""
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
     today = datetime.datetime.now()
     one_year_after = today + datetime.timedelta(days=366)
@@ -1017,6 +1052,7 @@ def test_delete_old_voiceBridges_with_form(
 
 
 def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
+    """Test that old voiceBridges are deleted after one year."""
     assert get_all_previous_voiceBridges()
     assert previous_voiceBridge.voiceBridge == "487604786"
     assert previous_voiceBridge.archived_at.date() == datetime.date.today()
@@ -1032,6 +1068,7 @@ def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
 def test_get_forbidden_pins(
     previous_voiceBridge, meeting, meeting_2, meeting_3, shadow_meeting
 ):
+    """Test that forbidden PINs include active and archived voiceBridges."""
     assert (
         get_forbidden_pins().sort()
         == [
@@ -1053,6 +1090,7 @@ def test_get_forbidden_pins(
 
 
 def test_create_unique_pin():
+    """Test that unique PIN generation creates valid 9-digit codes."""
     assert create_unique_pin([]).isdigit()
     assert len(create_unique_pin([])) == 9
     assert 100000000 <= int(create_unique_pin([])) <= 999999999
@@ -1063,6 +1101,7 @@ def test_create_unique_pin():
 def test_unique_visio_code_generation(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
+    """Test that visio code generation creates valid unique 9-digit codes."""
     random_visio_codes = []
     for _ in range(100):
         random_visio_codes.append(unique_visio_code_generation())
@@ -1074,6 +1113,7 @@ def test_unique_visio_code_generation(
 def test_get_all_visio_codes(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
+    """Test that all visio codes are retrieved correctly."""
     assert set(get_all_visio_codes()) == {
         "911111111",
         "911111112",
@@ -1085,15 +1125,18 @@ def test_get_all_visio_codes(
 
 
 def test_get_meeting_by_visio_code(meeting):
+    """Test that meeting can be retrieved by visio code."""
     meeting = get_meeting_by_visio_code("911111111")
     assert meeting.name == "meeting"
 
 
 def test_get_available_visio_code(client_app, authenticated_user):
+    """Test that available visio code endpoint returns unique code."""
     response = client_app.get("/meeting/available-visio-code")
     assert response.json.get("available_visio_code")
     assert response.json.get("available_visio_code") not in get_all_visio_codes()
 
 
 def test_get_available_visio_code_no_user(client_app):
+    """Test that unauthenticated user is redirected from visio code endpoint."""
     client_app.get("/meeting/available-visio-code", status=302)

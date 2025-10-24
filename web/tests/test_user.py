@@ -13,6 +13,7 @@ from time_machine import travel
 
 
 def test_get_or_create_user(client_app):
+    """Test that user is created from user info."""
     assert db.session.get(User, 1) is None
 
     user_info = {
@@ -32,6 +33,7 @@ def test_get_or_create_user(client_app):
 
 
 def test_update_last_connection_if_more_than_24h(client_app):
+    """Test that last connection date updates after 24 hours."""
     user_info = {
         "given_name": "Alice",
         "family_name": "Cooper",
@@ -54,6 +56,7 @@ def test_update_last_connection_if_more_than_24h(client_app):
 def test_make_nextcloud_credentials_request_with_scheme_response(
     client_app, app, cloud_service_response, mocker
 ):
+    """Test that Nextcloud credentials request preserves HTTP scheme."""
     assert cloud_service_response.data["nclocator"].startswith("http://")
     mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
@@ -69,6 +72,7 @@ def test_make_nextcloud_credentials_request_with_scheme_response(
 def test_make_nextcloud_credentials_request_with_secure_response(
     client_app, app, cloud_service_response, mocker
 ):
+    """Test that Nextcloud credentials request preserves HTTPS scheme."""
     assert cloud_service_response.data["nclocator"].startswith("https://")
     mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
@@ -83,6 +87,7 @@ def test_make_nextcloud_credentials_request_with_secure_response(
 def test_make_nextcloud_credentials_request_force_secure_for_unsecure(
     client_app, app, cloud_service_response, mocker
 ):
+    """Test that HTTP URLs are forced to HTTPS when configured."""
     assert cloud_service_response.data["nclocator"].startswith("http://")
     mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
@@ -98,6 +103,7 @@ def test_make_nextcloud_credentials_request_force_secure_for_unsecure(
 def test_make_nextcloud_credentials_request_force_secure_for_missing_scheme(
     client_app, app, cloud_service_response, mocker
 ):
+    """Test that missing scheme is forced to HTTPS when configured."""
     assert not cloud_service_response.data["nclocator"].startswith("http")
     mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
@@ -112,6 +118,8 @@ def test_make_nextcloud_credentials_request_force_secure_for_missing_scheme(
 def test_get_secondary_identity_provider_id_from_email_token_error(
     client_app, mocker, caplog
 ):
+    """Test that token error is logged when getting secondary identity provider ID."""
+
     class TokenErrorAnswer:
         text = "Unable to get token"
 
@@ -130,6 +138,8 @@ def test_get_secondary_identity_provider_id_from_email_token_error(
 def test_get_secondary_identity_provider_id_from_email_request_error(
     client_app, mocker, caplog, valid_secondary_identity_token
 ):
+    """Test that request error is logged when getting secondary identity provider ID."""
+
     class RequestErrorAnswer:
         text = "Unable to ask identity provider"
 
@@ -148,6 +158,8 @@ def test_get_secondary_identity_provider_id_from_email_request_error(
 def test_get_secondary_identity_provider_id_from_email_many_users(
     client_app, app, mocker, valid_secondary_identity_token
 ):
+    """Test that TooManyUsers exception is raised when multiple users found."""
+
     class ManyUsersAnswer:
         def raise_for_status():
             pass
@@ -166,6 +178,8 @@ def test_get_secondary_identity_provider_id_from_email_many_users(
 def test_get_secondary_identity_provider_id_from_email_no_user(
     client_app, app, mocker, valid_secondary_identity_token
 ):
+    """Test that NoUserFound exception is raised when no user found."""
+
     class NoUsersAnswer:
         def raise_for_status():
             pass

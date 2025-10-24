@@ -46,6 +46,7 @@ class BigBlueButtonUnavailable(Exception):
 
 
 def setup_configuration(app, config=None):
+    """Configure Flask application with settings from config dict or environment."""
     debug = app.debug
 
     if config:
@@ -61,12 +62,14 @@ def setup_configuration(app, config=None):
 
 
 def setup_celery(app):
+    """Configure Celery task queue for the application."""
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
 
 
 def setup_cache(app):
+    """Initialize caching system (Redis or FileSystem) based on configuration."""
     if app.config.get("CACHE_TYPE"):
         config = None
 
@@ -88,6 +91,7 @@ def setup_cache(app):
 
 
 def setup_sentry(app):  # pragma: no cover
+    """Initialize Sentry error tracking if DSN is configured."""
     if not app.config.get("SENTRY_DSN"):
         return None
 
@@ -117,6 +121,7 @@ def load_toml_log_config(path: str):
 
 
 def setup_logging(app):
+    """Configure application logging to file or console based on environment."""
     if log_config := app.config.get("LOG_CONFIG"):
         if payload := load_toml_log_config(log_config):
             dictConfig(payload)
@@ -165,6 +170,7 @@ def setup_logging(app):
 
 
 def setup_i18n(app):
+    """Initialize internationalization with Babel and language selector."""
     from flask import session
 
     def locale_selector():
@@ -176,6 +182,7 @@ def setup_i18n(app):
 
 
 def setup_csrf(app):
+    """Initialize CSRF protection and register error handler."""
     csrf.init_app(app)
 
     @app.errorhandler(CSRFError)
@@ -185,6 +192,7 @@ def setup_csrf(app):
 
 
 def setup_database(app):
+    """Initialize database and migrations with Flask-Migrate."""
     from .models import db
 
     db.init_app(app)
@@ -192,6 +200,7 @@ def setup_database(app):
 
 
 def setup_jinja(app):
+    """Configure Jinja2 template engine with global context variables."""
     from b3desk.models.roles import Role
     from b3desk.session import get_current_user
     from b3desk.session import has_user_session
@@ -229,6 +238,7 @@ def setup_jinja(app):
 
 
 def setup_flask(app):
+    """Register custom URL converters for models and enums."""
     with app.app_context():
         from b3desk.models.meetings import Meeting
         from b3desk.models.roles import Role
@@ -242,6 +252,8 @@ def setup_flask(app):
 
 
 def setup_error_pages(app):
+    """Register HTTP error handlers for common error codes."""
+
     @app.errorhandler(400)
     def bad_request(error):
         return render_template("errors/400.html", error=error), 400
@@ -264,6 +276,7 @@ def setup_error_pages(app):
 
 
 def setup_endpoints(app):
+    """Import and register all application blueprints."""
     with app.app_context():
         import b3desk.commands
         import b3desk.endpoints.api
@@ -283,6 +296,7 @@ def setup_endpoints(app):
 
 
 def setup_oidc(app):
+    """Configure OpenID Connect authentication for users and attendees."""
     from flask_pyoidc.provider_configuration import ClientMetadata
     from flask_pyoidc.provider_configuration import ProviderConfiguration
 
@@ -333,6 +347,7 @@ def setup_oidc(app):
 
 
 def create_app(test_config=None):
+    """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
     setup_configuration(app, test_config)
     sentry_sdk = setup_sentry(app)

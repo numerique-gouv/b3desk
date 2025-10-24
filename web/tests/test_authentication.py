@@ -8,6 +8,7 @@ def test_user_authentication(
     iam_server,
     iam_client,
 ):
+    """Test that user authentication flow works correctly."""
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
@@ -48,6 +49,7 @@ def test_lasuite_user_authentication(
     iam_server,
     iam_client,
 ):
+    """Test that LaSuite authentication flow works correctly."""
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = True
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)

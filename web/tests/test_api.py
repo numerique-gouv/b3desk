@@ -10,6 +10,7 @@ def test_api_meetings_nominal(
     shadow_meeting,
     iam_token,
 ):
+    """Test that API returns meetings list with correct format."""
     res = client_app.get(
         "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
     )
@@ -56,16 +57,19 @@ def test_api_meetings_nominal(
 
 
 def test_api_meetings_no_token(client_app):
+    """Test that API returns 401 without authentication token."""
     client_app.get("/api/meetings", status=401)
 
 
 def test_api_meetings_invalid_token(client_app):
+    """Test that API returns 403 with invalid authentication token."""
     client_app.get(
         "/api/meetings", headers={"Authorization": "Bearer invalid-token"}, status=403
     )
 
 
 def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user, user):
+    """Test that API returns 403 with expired authentication token."""
     iam_token = iam_server.random_token(
         client=iam_client,
         subject=iam_user,
@@ -84,6 +88,7 @@ def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user
 def test_api_meetings_client_id_missing_in_token_audience(
     client_app, iam_server, iam_client, iam_user, user
 ):
+    """Test that API returns 403 when client ID is missing in token audience."""
     iam_token = iam_server.models.Token(
         client=iam_client,
         subject=iam_user,
@@ -102,6 +107,7 @@ def test_api_meetings_client_id_missing_in_token_audience(
 def test_api_meetings_missing_scope_in_token(
     client_app, iam_server, iam_client, iam_user, user
 ):
+    """Test that API returns 403 when required scope is missing in token."""
     iam_token = iam_server.models.Token(
         client=iam_client,
         subject=iam_user,
@@ -126,6 +132,7 @@ def test_api_existing_shadow_meeting(
     meeting,
     iam_token,
 ):
+    """Test that API returns existing shadow meeting for user."""
     res = client_app.get(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
@@ -163,6 +170,7 @@ def test_api_new_shadow_meeting(
     meeting,
     iam_token,
 ):
+    """Test that API creates and returns new shadow meeting if none exists."""
     res = client_app.get(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
