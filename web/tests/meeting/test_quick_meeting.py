@@ -14,7 +14,7 @@ def test_unauthenticated_quick_meeting_unauthorized_email(
     client_app,
     bbb_response,
 ):
-    """Only allowed email domains should be able to launch an anonymous quick mail meeting."""
+    """Test that unauthorized email domain cannot launch anonymous quick meeting."""
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
@@ -31,6 +31,7 @@ def test_unauthenticated_quick_meeting_authorized_email(
     bbb_response,
     smtpd,
 ):
+    """Test that authorized email domain receives meeting link via email."""
     assert len(smtpd.messages) == 0
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
@@ -65,6 +66,8 @@ CREATE_RESPONSE = """
 
 
 def test_join_mail_meeting_with_logged_user(client_app, user, mocker):
+    """Test that logged user can join meeting via email link."""
+
     class ResponseBBBcreate:
         content = CREATE_RESPONSE
         text = ""
@@ -83,6 +86,8 @@ def test_join_mail_meeting_with_logged_user(client_app, user, mocker):
 
 
 def test_quick_meeting_with_logged_user(client_app, authenticated_user, mocker):
+    """Test that authenticated user can create quick meeting."""
+
     class ResponseBBBcreate:
         content = CREATE_RESPONSE
         text = ""

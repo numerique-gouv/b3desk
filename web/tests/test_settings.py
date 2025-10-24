@@ -3,6 +3,7 @@ from b3desk.settings import MainSettings
 
 
 def test_list_of_strings_type(configuration):
+    """Test that comma-separated string is parsed into list of strings."""
     configuration["OIDC_SCOPES"] = "openid, profile, ect.scope.cv"
     configuration["OIDC_ATTENDEE_SCOPES"] = "openid, profile, ect.scope.cv"
 
@@ -15,6 +16,7 @@ def test_list_of_strings_type(configuration):
 def test_enable_sip_true_with_and_without_private_key_home_page(
     client_app,
 ):
+    """Test that missing private key shows error on home page when SIP is enabled."""
     response = client_app.get("/", status=302)
     assert "/home" in response.location
     assert (
@@ -33,6 +35,7 @@ def test_enable_sip_true_with_and_without_private_key_welcome_page(
     client_app,
     authenticated_user,
 ):
+    """Test that missing private key shows error on welcome page when SIP is enabled."""
     response = client_app.get("/", status=302)
     assert "/welcome" in response.location
     assert (

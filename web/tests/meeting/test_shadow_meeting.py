@@ -17,6 +17,7 @@ def test_delete_all_old_shadow_meetings(
     shadow_meeting_3,
     user,
 ):
+    """Test that old shadow meetings are deleted except the most recent one."""
     delete_all_old_shadow_meetings()
     voiceBridges = get_all_previous_voiceBridges()
     assert voiceBridges == ["555555552", "555555553"]
@@ -25,6 +26,7 @@ def test_delete_all_old_shadow_meetings(
 
 
 def test_get_or_create_shadow_meeting(client_app, user):
+    """Test that shadow meeting is created with default configuration."""
     assert get_or_create_shadow_meeting(user).name == "le séminaire de Alice Cooper"
     assert (
         get_or_create_shadow_meeting(user).welcome
@@ -64,6 +66,7 @@ def test_get_or_create_shadow_meeting(client_app, user):
 def test_get_or_create_shadow_meeting_with_existing_shadow_meeting(
     user, shadow_meeting
 ):
+    """Test that existing shadow meeting is returned instead of creating new one."""
     assert get_or_create_shadow_meeting(user) == shadow_meeting
 
 
@@ -80,6 +83,8 @@ CREATE_RESPONSE = """
 def test_join_meeting_as_moderator_correctly_save_last_connection_date(
     client_app, shadow_meeting, user, mocker
 ):
+    """Test that last connection date is updated when moderator joins meeting."""
+
     class ResponseBBBcreate:
         content = CREATE_RESPONSE
         text = ""
@@ -108,6 +113,8 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 def test_join_meeting_as_attendee_not_save_last_connection_date(
     client_app, shadow_meeting, authenticated_attendee, mocker
 ):
+    """Test that last connection date is not updated when attendee joins meeting."""
+
     class ResponseBBBcreate:
         content = CREATE_RESPONSE
         text = ""
