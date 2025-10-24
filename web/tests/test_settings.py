@@ -1,4 +1,8 @@
+import sys
+from unittest.mock import Mock
+
 import pytest
+from b3desk import create_app
 from b3desk.settings import MainSettings
 
 
@@ -49,6 +53,95 @@ def test_enable_sip_true_with_and_without_private_key_welcome_page(
         "error",
         "La clé privée n'a pas été configurée dans les paramètres B3Desk pour sécuriser la connexion SIPMediaGW",
     ) in response.flashes
+
+
+def test_log_config_with_ini_file(configuration, monkeypatch, tmp_path):
+    """Test LOG_CONFIG parameter with an INI configuration file."""
+    ini_file = tmp_path / "logging.ini"
+    ini_file.write_text("""[loggers]
+keys=root,b3desk
+
+[handlers]
+keys=wsgi,b3desk
+
+[formatters]
+keys=default
+
+[logger_root]
+level=INFO
+handlers=wsgi
+
+[logger_b3desk]
+level=INFO
+handlers=b3desk
+qualname=b3desk
+
+[handler_wsgi]
+class=logging.handlers.WatchedFileHandler
+level=NOTSET
+formatter=default
+args=('/var/log/wsgi.log',)
+
+[handler_b3desk]
+class=logging.handlers.WatchedFileHandler
+level=NOTSET
+formatter=default
+args=('/var/log/b3desk.log',)
+
+[formatter_default]
+format=[%(asctime)s] %(levelname)s in %(module)s: %(message)s
+""")
+
+    configuration["LOG_CONFIG"] = str(ini_file)
+    config_obj = MainSettings.model_validate(configuration)
+    assert config_obj.LOG_CONFIG == ini_file
+
+    mock_fileConfig = Mock()
+    monkeypatch.setattr("b3desk.fileConfig", mock_fileConfig)
+
+    create_app(configuration)
+    mock_fileConfig.assert_called_once_with(ini_file, disable_existing_loggers=False)
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 11), reason="Needs Python 3.11 for toml config"
+)
+def test_log_config_with_toml_file(configuration, monkeypatch, tmp_path):
+    """Test LOG_CONFIG parameter with an INI configuration file."""
+    toml_file = tmp_path / "logging.toml"
+    toml_file.write_text("""version = 1
+
+[formatters.default]
+format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+[handlers.wsgi]
+class = "logging.handlers.WatchedFileHandler"
+filename = "/var/log/wsgi.log"
+formatter = "default"
+
+[handlers.b3desk]
+class = "logging.handlers.WatchedFileHandler"
+filename = "/var/log/b3desk.log"
+formatter = "default"
+
+[loggers.b3desk]
+level = "INFO"
+handlers = ["b3desk"]
+
+[root]
+level = "INFO"
+handlers = ["wsgi"]
+""")
+
+    configuration["LOG_CONFIG"] = str(toml_file)
+    config_obj = MainSettings.model_validate(configuration)
+    assert config_obj.LOG_CONFIG == toml_file
+
+    mock_dictConfig = Mock()
+    monkeypatch.setattr("b3desk.dictConfig", mock_dictConfig)
+
+    create_app(configuration)
+    mock_dictConfig.assert_called_once()
 
 
 def test_sip_settings_raised_error_messages_without_fqdn_and_private_key(configuration):

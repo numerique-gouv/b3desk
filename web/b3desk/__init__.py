@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import os
 from logging.config import dictConfig
+from logging.config import fileConfig
 
 from flask import Flask
 from flask import render_template
@@ -105,9 +106,29 @@ def setup_sentry(app):  # pragma: no cover
     return sentry_sdk
 
 
+def load_toml_log_config(path: str):
+    try:
+        import tomllib
+    except ImportError:  # pragma: no cover
+        return None
+
+    try:
+        with open(path, "rb") as fd:
+            return tomllib.load(fd)
+
+    except tomllib.TOMLDecodeError:
+        return None
+
+
 def setup_logging(app):
     """Configure application logging to file or console based on environment."""
-    if not app.debug and not app.testing:
+    if log_config := app.config.get("LOG_CONFIG"):
+        if payload := load_toml_log_config(log_config):
+            dictConfig(payload)
+        else:
+            fileConfig(log_config, disable_existing_loggers=False)
+
+    elif not app.debug and not app.testing:
         dictConfig(
             {
                 "version": 1,
