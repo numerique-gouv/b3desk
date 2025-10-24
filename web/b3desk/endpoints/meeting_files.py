@@ -546,6 +546,7 @@ def insertDoc(token):
 
 @bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<int:meetingid>/<path:ncpath>")
 def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
+    """Download a file from Nextcloud for BBB using a secure token."""
     current_app.logger.info("Service requesting file url %s", ncpath)
     secret_key = current_app.config["SECRET_KEY"]
     # select good file from token
@@ -560,6 +561,8 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     meeting = db.session.get(Meeting, meetingid)
 
     # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB (or random if external) - secret key"
+
+    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
 
     if (
         mftoken
