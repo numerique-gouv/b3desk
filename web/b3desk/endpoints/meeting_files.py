@@ -1,6 +1,5 @@
 import hashlib
 import os
-import random
 import secrets
 import uuid
 from datetime import date
@@ -406,7 +405,7 @@ def add_external_meeting_file_nextcloud(path, meeting_id):
         title=path.split("/")[-1],
         meeting_id=meeting_id,
         nc_path=path,
-        id=random.randint(100000, 999999),
+        id=uuid.uuid4(),
     )
     return externalMeetingFile
 
