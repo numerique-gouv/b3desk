@@ -1,5 +1,7 @@
+import json
 import os
 
+import pytest
 from flask import url_for
 from webdav3.exceptions import WebDavException
 
@@ -89,3 +91,27 @@ def test_add_dropzone_file(
 
     with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
         assert jpg_file_content == fd.read()
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+
+
+def test_external_upload_called_by_bbb(
+    client_app, authenticated_user, meeting, mock_meeting_is_running
+):
+    response = client_app.get("/meeting/1/externalUpload")
+    assert "meeting/external_upload.html" in vars(response)["contexts"]
+
+
+def test_insertDocuments(client_app, authenticated_user, meeting, mocker):
+    post_data = ["/folder/file1.pdf", "file2.jpg"]
+
+    mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
+    client_app.post(
+        f"/meeting/files/{meeting.id}/insertDocuments",
+        params=json.dumps(post_data),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        status=200,
+    )
