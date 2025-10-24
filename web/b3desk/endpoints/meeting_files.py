@@ -573,6 +573,8 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
 
     # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB (or random if external) - secret key"
 
+    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
+
     if (
         mftoken
         != hashlib.sha1(
