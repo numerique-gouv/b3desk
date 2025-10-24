@@ -211,7 +211,7 @@ def join_mail_meeting():
     """Process the join form submission for email-accessed quick meetings."""
     form = JoinMailMeetingForm(request.form)
     if not form.validate():
-        flash("Lien invalide", "error")
+        flash(_("Lien invalide"), "error")
         return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
@@ -308,12 +308,12 @@ def visio_code_connexion():
         captcha_uuid = request.form.get("captchetat-uuid")
         captcha_code = request.form.get("captchaCode")
         if not captcha_validation(captcha_uuid, captcha_code):
-            flash("Le captcha saisi est erroné", "error")
+            flash(_("Le captcha saisi est erroné"), "error")
             return redirect(url_for("public.home"))
 
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
-        flash("Le code de connexion saisi est erroné", "error")
+        flash(_("Le code de connexion saisi est erroné"), "error")
         visio_code_attempt_counter_increment()
         return redirect(url_for("public.home"))
 

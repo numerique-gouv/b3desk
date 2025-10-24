@@ -141,7 +141,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         current_app.logger.warning(
             "webdav call encountered following exception : %s", exception
         )
-        flash("Le fichier ne semble pas accessible", "error")
+        flash(_("Le fichier ne semble pas accessible"), "error")
         return redirect(url_for("public.welcome"))
 
 
@@ -261,7 +261,9 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         return jsonify(
             status=500,
             isfrom="dropzone",
-            msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
+            msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
+                title=title
+            ),
         )
 
     options = {
@@ -292,7 +294,9 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
         return jsonify(
-            status=500, isfrom="dropzone", msg="La connexion avec Nextcloud est rompue"
+            status=500,
+            isfrom="dropzone",
+            msg=_("La connexion avec Nextcloud est rompue"),
         )
 
     try:
@@ -317,7 +321,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
-            status=500, isfrom="dropzone", msg="Le fichier a déjà été mis en ligne"
+            status=500, isfrom="dropzone", msg=_("Le fichier a déjà été mis en ligne")
         )
 
 
@@ -331,14 +335,18 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         return jsonify(
             status=404,
             isfrom="url",
-            msg=f"Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée",
+            msg=_(
+                "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
+            ).format(title=title),
         )
 
     if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
             isfrom="url",
-            msg=f"Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo",
+            msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
+                title=title
+            ),
         )
 
     meeting_file = MeetingFiles(
@@ -366,7 +374,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
-            status=500, isfrom="url", msg="Le fichier a déjà été mis en ligne"
+            status=500, isfrom="url", msg=_("Le fichier a déjà été mis en ligne")
         )
 
 
@@ -389,14 +397,16 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         return jsonify(
             status=500,
             isfrom="nextcloud",
-            msg="La connexion avec Nextcloud semble rompue",
+            msg=_("La connexion avec Nextcloud semble rompue"),
         )
 
     if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
             isfrom="nextcloud",
-            msg=f"Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo",
+            msg=_("Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
+                path=path
+            ),
         )
 
     meeting_file = MeetingFiles(
@@ -422,7 +432,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
-            status=500, isfrom="nextcloud", msg="Le fichier a déjà été mis en ligne"
+            status=500, isfrom="nextcloud", msg=_("Le fichier a déjà été mis en ligne")
         )
 
 
@@ -456,7 +466,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
         # 400 and 500s will tell dropzone that an error occurred and show an error
-        return make_response(("Le fichier a déjà été mis en ligne", 500))
+        return make_response((_("Le fichier a déjà été mis en ligne"), 500))
 
     try:
         with open(save_path, "ab") as f:
@@ -465,7 +475,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 
     except OSError:
         return make_response(
-            ("Not sure why, but we couldn't write the file to disk", 500)
+            (_("Erreur lors de l'écriture du fichier sur le disque"), 500)
         )
 
     total_chunks = int(request.form["dztotalchunkcount"])
@@ -495,7 +505,7 @@ def delete_meeting_file():
 
     if cur_meeting.user_id != user.id:
         return jsonify(
-            status=500, id=data["id"], msg="Vous ne pouvez pas supprimer cet élément"
+            status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )
 
     db.session.delete(meeting_file)
@@ -512,7 +522,7 @@ def delete_meeting_file():
         status=200,
         newDefaultId=new_default_id,
         id=data["id"],
-        msg="Fichier supprimé avec succès",
+        msg=_("Fichier supprimé avec succès"),
     )
 
 
@@ -622,7 +632,7 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
 
     except WebDavException:
         meeting_file.meeting.user.disable_nextcloud()
-        return jsonify(status=500, msg="La connexion avec Nextcloud semble rompue")
+        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     # send the downloaded file to the BBB:
     return send_from_directory(
