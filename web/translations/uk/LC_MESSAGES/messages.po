@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-31 10:58+0100\n"
+"POT-Creation-Date: 2025-10-31 11:03+0100\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -309,25 +309,25 @@ msgstr ""
 msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:63 web/b3desk/endpoints/join.py:241
-#: web/b3desk/endpoints/join.py:264
+#: web/b3desk/endpoints/join.py:63 web/b3desk/endpoints/join.py:244
+#: web/b3desk/endpoints/join.py:267
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:269
+#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:272
 msgid "Lien expiré"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:253
+#: web/b3desk/endpoints/join.py:256
 #, python-format
 msgid "%(meeting_label)s inexistante"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:338
+#: web/b3desk/endpoints/join.py:341
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:343
+#: web/b3desk/endpoints/join.py:346
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
