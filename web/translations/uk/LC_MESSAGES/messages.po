@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-24 14:25+0200\n"
+"POT-Creation-Date: 2025-10-31 17:08+0100\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -145,7 +145,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:148 web/b3desk/models/meetings.py:494
+#: web/b3desk/forms.py:148 web/b3desk/models/meetings.py:484
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -331,56 +331,56 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:53
+#: web/b3desk/endpoints/meeting_files.py:54
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:144
+#: web/b3desk/endpoints/meeting_files.py:145
 msgid "Le fichier ne semble pas accessible"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:264
-#: web/b3desk/endpoints/meeting_files.py:347
+#: web/b3desk/endpoints/meeting_files.py:227
+#: web/b3desk/endpoints/meeting_files.py:310
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:299
+#: web/b3desk/endpoints/meeting_files.py:262
 msgid "La connexion avec Nextcloud est rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:324
-#: web/b3desk/endpoints/meeting_files.py:377
-#: web/b3desk/endpoints/meeting_files.py:435
-#: web/b3desk/endpoints/meeting_files.py:469
+#: web/b3desk/endpoints/meeting_files.py:287
+#: web/b3desk/endpoints/meeting_files.py:340
+#: web/b3desk/endpoints/meeting_files.py:398
+#: web/b3desk/endpoints/meeting_files.py:434
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:339
+#: web/b3desk/endpoints/meeting_files.py:302
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:400
-#: web/b3desk/endpoints/meeting_files.py:635
+#: web/b3desk/endpoints/meeting_files.py:363
+#: web/b3desk/endpoints/meeting_files.py:602
 msgid "La connexion avec Nextcloud semble rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:407
+#: web/b3desk/endpoints/meeting_files.py:370
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:478
+#: web/b3desk/endpoints/meeting_files.py:443
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:508
-#: web/b3desk/endpoints/meetings.py:348
+#: web/b3desk/endpoints/meeting_files.py:473
+#: web/b3desk/endpoints/meetings.py:346
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:525
+#: web/b3desk/endpoints/meeting_files.py:490
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
@@ -423,27 +423,27 @@ msgstr ""
 msgid "{meeting_name} modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:337
+#: web/b3desk/endpoints/meetings.py:335
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:346
+#: web/b3desk/endpoints/meetings.py:344
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:365
+#: web/b3desk/endpoints/meetings.py:363
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:370
+#: web/b3desk/endpoints/meetings.py:368
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:378
+#: web/b3desk/endpoints/meetings.py:376
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
@@ -2666,7 +2666,7 @@ msgid "Avec droits restreints :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:74
-#, fuzzy, python-format
+#, fuzzy
 msgid "Le lien participant"
 msgstr ""
 
