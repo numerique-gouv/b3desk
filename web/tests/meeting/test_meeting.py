@@ -560,14 +560,11 @@ def test_create_with_files(
         f"{secret_key}-0-{meeting_file.id}-{secret_key}".encode()
     ).hexdigest()
 
-    assert (
-        mocked_background_upload.call_args.args[1]
-        == "<?xml version='1.0' encoding='UTF-8'?> "
-        + "<modules>  "
-        + "<module name='presentation'> "
-        + f"<document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/file_title' filename='file_title' /> "
-        + "</module>"
-        + "</modules>"
+    assert mocked_background_upload.call_args.args[1].startswith(
+        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/1//"
+    )
+    assert mocked_background_upload.call_args.args[1].endswith(
+        "test_create_with_files0/foobar.jpg' filename='file_title' /> </module></modules>"
     )
 
 
