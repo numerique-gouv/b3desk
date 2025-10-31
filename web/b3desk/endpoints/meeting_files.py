@@ -399,7 +399,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         )
 
 
-def add_external_meeting_file_nextcloud(path, meeting_id):
+def create_external_meeting_file(path, meeting_id):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = BaseMeetingFiles(
         title=path.split("/")[-1],
