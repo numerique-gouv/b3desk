@@ -37,6 +37,7 @@ bp = Blueprint("join", __name__)
 
 SECONDS_BEFORE_REFRESH = 10
 INCREASE_REFRESH_TIME = 1.5
+MAXIMUM_REFRESH_TIME = 60
 
 
 @bp.route(
@@ -202,8 +203,12 @@ def join_meeting():
         and form["seconds_before_refresh"].data is not None
     ):
         seconds_before_refresh = (
-            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
+            (form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME)
+            if form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
+            < MAXIMUM_REFRESH_TIME
+            else MAXIMUM_REFRESH_TIME
         )
+
     quick_meeting = None
     if "quick_meeting" in form:
         quick_meeting = form["quick_meeting"].data

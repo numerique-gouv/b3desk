@@ -348,16 +348,16 @@ def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
 
 
+class Response:
+    content = """<response><returncode>FAIL</returncode></response>"""
+    status_code = 401
+    text = ""
+
+
 def test_rasing_time_before_refresh_in_waiting_meeting(
     client_app, meeting, authenticated_user, mocker
 ):
     """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
-
-    class Response:
-        content = """<response><returncode>FAIL</returncode></response>"""
-        status_code = 401
-        text = ""
-
     mocker.patch("requests.Session.send", return_value=Response)
 
     response = client_app.get("/meeting/join/1/moderateur")
@@ -367,3 +367,25 @@ def test_rasing_time_before_refresh_in_waiting_meeting(
     url = urlparse(response.location)
     url_role = parse_qs(url.query)["seconds_before_refresh"]
     assert url_role == ["15.0"]
+
+
+def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
+    client_app, meeting, authenticated_user, mocker
+):
+    """Tests seconds_before_refresh does not increase beyong maximum_refresh_time each time waiting_meeting is refreshed."""
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    def increase_waiting_time(previous_waiting_time="10"):
+        response = client_app.get("/meeting/join/1/moderateur")
+        response = client_app.get(response.location)
+        response.form["seconds_before_refresh"].value = previous_waiting_time
+        response = response.form.submit()
+        url = urlparse(response.location)
+        url_role = parse_qs(url.query)["seconds_before_refresh"]
+        return url_role[0]
+
+    assert increase_waiting_time() == "15.0"
+    assert increase_waiting_time("15.0") == "22.5"
+    assert increase_waiting_time("22.5") == "33.75"
+    assert increase_waiting_time("33.75") == "50.625"
+    assert increase_waiting_time("50.625") == "60"
