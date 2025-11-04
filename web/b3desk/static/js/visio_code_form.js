@@ -8,6 +8,19 @@ if (window.shouldDisplayCaptcha) {
     captchaDescription = document.getElementById("captcha-description");
 }
 
+const initCaptchaInput = () => {
+    captchaInput = document.getElementById("captchaCode");
+    captchaDescription = document.getElementById("captcha-description");
+
+    // Add event listener for captcha input
+    if (captchaInput && !captchaInput.dataset.listenerAdded) {
+        captchaInput.addEventListener("keyup", (event) => {
+            updateSumbitButtonStatus(event, captchaInput);
+        });
+        captchaInput.dataset.listenerAdded = "true";
+    }
+}
+
 
 const getVisioCode = () => {
     return Array.from(inputs).map(i => i.value).join("");
@@ -34,6 +47,23 @@ const formIsValid = async () => {
         body: formData,
     })
     const data = await response.json();
+
+    // Handle dynamic captcha display
+    if ("shouldDisplayCaptcha" in data && data.shouldDisplayCaptcha && !window.shouldDisplayCaptcha) {
+        window.shouldDisplayCaptcha = true;
+        const captchaContainer = document.getElementById("captcha-container");
+        captchaContainer.style.display = "block";
+
+        initCaptchaInput();
+
+        if (window.captchetatComponentModule && window.captchetatComponentModule.refreshCaptcha) {
+            await window.captchetatComponentModule.refreshCaptcha();
+        }
+
+        // Update button status since captcha is now required
+        updateSumbitButtonStatus(null, null);
+        valid = false; // Form is not valid yet since captcha needs to be filled
+    }
 
     if ("visioCode" in data) {
         var existingError = document.getElementById("visioCodeError");
@@ -151,9 +181,7 @@ const updateVisioCodeVisualIndicator = (input) => {
 }
 
 if (window.shouldDisplayCaptcha) {
-    captchaInput.addEventListener("keyup", (event) => {
-        updateSumbitButtonStatus(event, captchaInput)
-    })
+    initCaptchaInput();
 }
 
 inputs.forEach((input) => {

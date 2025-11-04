@@ -324,13 +324,19 @@ def visio_code_connection():
 @bp.route("/meeting/visio_code_form", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_form_validation():
+    """Validate the visio-code from from the front."""
     visio_code = (
         request.form.get("visio_code1")
         + request.form.get("visio_code2")
         + request.form.get("visio_code3")
     )
+    meeting_exists = bool(get_meeting_by_visio_code(visio_code))
+    if not meeting_exists:
+        visio_code_attempt_counter_increment()
+
     result = {
-        "visioCode": bool(get_meeting_by_visio_code(visio_code)),
+        "visioCode": meeting_exists,
+        "shouldDisplayCaptcha": should_display_captcha(check_service_status=False),
     }
 
     captcha_uuid = request.form.get("captchetat-uuid")

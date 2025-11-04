@@ -357,7 +357,7 @@ def test_visio_code_form_validation_valid_code_without_captcha(client_app, meeti
             "visio_code3": "111",
         },
     )
-    assert response.json == {"visioCode": True}
+    assert response.json == {"visioCode": True, "shouldDisplayCaptcha": False}
 
 
 def test_visio_code_form_validation_invalid_code_without_captcha(client_app, meeting):
@@ -369,7 +369,7 @@ def test_visio_code_form_validation_invalid_code_without_captcha(client_app, mee
             "visio_code3": "789",
         },
     )
-    assert response.json == {"visioCode": False}
+    assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
 
 
 def test_visio_code_form_validation_with_captcha(client_app, meeting, mocker):
@@ -384,7 +384,11 @@ def test_visio_code_form_validation_with_captcha(client_app, meeting, mocker):
             "captchetat-uuid": "test-uuid",
         },
     )
-    assert response.json == {"visioCode": True, "captchaCode": True}
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": True,
+    }
 
 
 def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mocker):
@@ -399,4 +403,8 @@ def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mo
             "captchetat-uuid": "test-uuid",
         },
     )
-    assert response.json == {"visioCode": True, "captchaCode": False}
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": False,
+    }
