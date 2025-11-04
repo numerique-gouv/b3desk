@@ -29,6 +29,12 @@ from .users import User
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
 
+def get_meeting_file_hash(meeting_file_id, isexternal):
+    return hashlib.sha1(
+        f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file_id}-{current_app.config['SECRET_KEY']}".encode()
+    ).hexdigest()
+
+
 class BaseMeetingFiles:
     def __init__(self, id=None, title=None, nc_path=None, meeting_id=None, **kwargs):
         self.id = id

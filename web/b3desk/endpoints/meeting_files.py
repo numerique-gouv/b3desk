@@ -1,4 +1,3 @@
-import hashlib
 import os
 import secrets
 import uuid
@@ -30,6 +29,7 @@ from b3desk.models import db
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import nextcloud_healthcheck
 from b3desk.tasks import background_upload
@@ -501,7 +501,6 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     When isexternal is false, the file comes from the b3desk interface.
     """
     current_app.logger.info("Service requesting file url %s", ncpath)
-    secret_key = current_app.config["SECRET_KEY"]
     if isexternal == 0:
         meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
         if not meeting_file:
@@ -510,12 +509,8 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
         meeting_file = create_external_meeting_file(ncpath, meetingid)
     meeting = db.session.get(Meeting, meetingid)
 
-    if (
-        mftoken
-        != hashlib.sha1(
-            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
-        ).hexdigest()
-    ):
+    if mftoken != get_meeting_file_hash(mfid, isexternal):
+        breakpoint()
         abort(404, "Bad token provided, no file matching")
 
     # TODO: clean the temporary directory

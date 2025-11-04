@@ -20,6 +20,7 @@ from flask import render_template
 from flask import url_for
 
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.tasks import background_upload
 
 from .. import BigBlueButtonUnavailable
@@ -377,9 +378,7 @@ class BBB:
             if not isexternal and meeting_file.url:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL nor NC hence it was uploaded
-                filehash = hashlib.sha1(
-                    f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
-                ).hexdigest()
+                filehash = get_meeting_file_hash(meeting_file.id, isexternal)
                 current_app.logger.info(
                     "Add document on BigBlueButton room %s %s creation for file %s",
                     self.meeting.name,
