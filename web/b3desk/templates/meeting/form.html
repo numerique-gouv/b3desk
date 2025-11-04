@@ -10,7 +10,7 @@
     <li>
       <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="{% trans %}Activé{% endtrans %}" data-fr-unchecked-label="{% trans %}Désactivé{% endtrans %}">
         {{ field(value="on", class_="fr-toggle__input")}}
-        {{ field.label(class_="fr-toggle__label", data_fr_checked_label="{% trans %}Activé{% endtrans %}", data_fr_unchecked_label="{% trans %}Désactivé{% endtrans %}") }}
+        {{ field.label(class_="fr-toggle__label", data_fr_checked_label=_("Activé"), data_fr_unchecked_label=_("Désactivé")) }}
         <p class="fr-hint-text">{{ field.description }}</p>
       </div>
     </li>

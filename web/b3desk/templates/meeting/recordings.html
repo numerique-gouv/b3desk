@@ -103,7 +103,7 @@
                                                 <button type="submit" class="fr-btn fr-btn--primary" >{% trans %}Supprimer{% endtrans %}</button>
                                             </li>
                                             <li>
-                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
+                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
                                             </li>
                                         </ul>
                                         {% include 'meeting/id.html' %}
@@ -145,7 +145,7 @@
                                                 <input type="submit" class="fr-btn fr-btn--primary fr-mt-1w" id="update-recording-{{ recording.recordID }}" title="{% trans %}Modifier le nom de l'enregistrement{% endtrans %}" value="{% trans %}Renommer{% endtrans %}">
                                             </li>
                                             <li>
-                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="rename-video-{{ recording.recordID }}" title="Annuler">{% trans %}Annuler{% endtrans %}</button>
+                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="rename-video-{{ recording.recordID }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
                                             </li>
                                         </ul>
                                     </form>

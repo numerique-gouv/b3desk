@@ -180,10 +180,10 @@
                                         <div class="fr-toggle">
                                         {% if file.is_default %}
                                         <input disabled onclick=submitDefaultFile(event) checked type="checkbox" class="fr-toggle__input" id="isDefault-{{ file.id }}">
-                                        <label class="fr-toggle__label" for="isDefault-{{ file.id }}" data-fr-checked-label="Oui" data-fr-unchecked-label="Non"></label>
+                                        <label class="fr-toggle__label" for="isDefault-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                         {% else %}
                                         <input onclick=submitDefaultFile(event) type="checkbox" class="fr-toggle__input" id="isDefault-{{ file.id }}">
-                                        <label class="fr-toggle__label" for="isDefault-{{ file.id }}" data-fr-checked-label="Oui" data-fr-unchecked-label="Non"></label>
+                                        <label class="fr-toggle__label" for="isDefault-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                         {% endif %}
                                         </div>
                                         </td>
