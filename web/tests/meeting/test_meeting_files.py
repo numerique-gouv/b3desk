@@ -152,3 +152,10 @@ def test_ncdownload_with_file_not_in_db_abort_404(
     client_app, authenticated_user, caplog
 ):
     client_app.get("/ncdownload/0/mfid/mftoken/1/badfile1.pdf", status=404)
+
+
+def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, caplog):
+    client_app.get(
+        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/invalid-token/1/folder/file1.pdf",
+        status=404,
+    )

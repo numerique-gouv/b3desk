@@ -510,7 +510,6 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     meeting = db.session.get(Meeting, meetingid)
 
     if mftoken != get_meeting_file_hash(mfid, isexternal):
-        breakpoint()
         abort(404, "Bad token provided, no file matching")
 
     # TODO: clean the temporary directory
