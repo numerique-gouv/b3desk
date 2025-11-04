@@ -530,8 +530,7 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        if isinstance(meeting_file, MeetingFiles):
-            meeting_file.meeting.user.disable_nextcloud()
+        meeting.user.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     return send_from_directory(

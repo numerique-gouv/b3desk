@@ -1,7 +1,10 @@
 import json
 import os
+from datetime import date
 
 import pytest
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import get_meeting_file_hash
 from flask import url_for
 from webdav3.exceptions import WebDavException
 
@@ -159,3 +162,36 @@ def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, cap
         "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/invalid-token/1/folder/file1.pdf",
         status=404,
     )
+
+
+def test_ncdownload_webdav_exception_disables_nextcloud(
+    client_app, authenticated_user, meeting, mocker
+):
+    """Test that WebDAV exception disables Nextcloud for non-external MeetingFiles."""
+    meeting_file = MeetingFiles(
+        nc_path="/folder/test.pdf",
+        title="test.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+    )
+    meeting_file.save()
+
+    meeting.user.nc_locator = "alice"
+    meeting.user.nc_token = "nctoken"
+    meeting.user.save()
+
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.webdavClient",
+        side_effect=WebDavException,
+    )
+
+    disable_mock = mocker.patch.object(meeting.user, "disable_nextcloud")
+
+    token = get_meeting_file_hash(meeting_file.id, 0)
+    response = client_app.get(
+        f"/ncdownload/0/{meeting_file.id}/{token}/{meeting.id}/folder/test.pdf",
+        status=200,
+    )
+
+    disable_mock.assert_called_once()
+    assert response.json["status"] == 500
