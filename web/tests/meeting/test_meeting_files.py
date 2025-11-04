@@ -115,3 +115,40 @@ def test_insertDocuments(client_app, authenticated_user, meeting, mocker):
         headers={"Accept": "application/json", "Content-Type": "application/json"},
         status=200,
     )
+
+
+def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
+    class FakeClient:
+        def info(self, ncpath):
+            return {"content_type": "application/pdf"}
+
+        def download_sync(self, remote_path, local_path):
+            pass
+
+    meeting.user.nc_locator = "alice"
+    meeting.user.nc_token = "nctoken"
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.webdavClient", return_value=FakeClient()
+    )
+    mocked_send = mocker.patch(
+        "b3desk.endpoints.meeting_files.send_from_directory",
+        return_value="fake_response",
+    )
+
+    response = client_app.get(
+        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/666acf548b967aaa49c24efe1d9da24ce0d22d98/1//folder/file1.pdf"
+    ).follow()
+
+    assert "Service requesting file url folder/file1.pdf" in caplog.text
+    args, kwargs = mocked_send.call_args
+    assert kwargs["download_name"] == "file1.pdf"
+    assert kwargs["mimetype"] == "application/pdf"
+    assert response.body == b"fake_response"
+    args[0].startswith("/tmp/")
+    args[0].endswith("/test_ncdownload0")
+
+
+def test_ncdownload_with_file_not_in_db_abort_404(
+    client_app, authenticated_user, caplog
+):
+    client_app.get("/ncdownload/0/mfid/mftoken/1/badfile1.pdf", status=404)
