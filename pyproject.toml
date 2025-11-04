@@ -82,6 +82,9 @@ markers = [
     "secure: cloud auth responds with a https url",
     "no_scheme: cloud auth responds without any scheme for url",
 ]
+filterwarnings = [
+    "ignore::joserfc.errors.SecurityWarning",
+]
 
 [tool.ruff.lint]
 select = [

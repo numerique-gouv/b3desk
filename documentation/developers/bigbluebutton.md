@@ -1,22 +1,22 @@
-# BigBlueButton container
+# Instance locale de BigBlueButton
 
-If you don't have access to a BBB instance to run B3Desk and test it, you can run a BBB container.
+Si vous n'avez pas accès à une instance BBB pour exécuter B3Desk et la tester, vous pouvez lancer un conteneur BBB.
 
-Here is the steps you need to follow to have a local BBB container that is correctly configured.
+Voici les étapes à suivre pour avoir un conteneur BBB local correctement configuré.
 
-## Installation steps
+## Étapes d'installation
 
-There is an [official script](https://github.com/bigbluebutton/docker-dev) to build BBB Docker image.
-It has been copied in `bigbluebutton/create_bbb.sh`.
+Il existe un [script officiel](https://github.com/bigbluebutton/docker-dev) pour construire l'image Docker de BBB.
+Il a été copié dans `bigbluebutton/create_bbb.sh`.
 
-### Create the BBB container
+### Créer le conteneur BBB
 
 ```bash
 ./bigbluebutton/create_bbb.sh --image=imdt/bigbluebutton:3.0.x-develop --update bbb30
 ```
-The image is quite large (~8Go) so you will have to be patient.
+L'image est assez volumineuse (~8Go), il faudra donc être patient.
 
-- The script should prompt the url and the secret of the BBB service.
+- Le script devrait afficher l'url et le secret du service BBB.
 ```
     URL: https://bbb30.test/bigbluebutton/
     Secret: unknownBbbSecretKey
@@ -25,72 +25,72 @@ The image is quite large (~8Go) so you will have to be patient.
     https://bbb30.test/api-mate/#server=https://bbb30.test/bigbluebutton/&sharedSecret=bbbSecretKey
 
 ```
-This command also shows you how to access the BBB API-Mate.
+Cette commande vous montre également comment accéder au BBB API-Mate.
 
-- Copy the BBB url (BIGBLUEBUTTON_ENDPOINT) and add `api` in the end and secret key (BIGBLUEBUTTON_SECRET) in your web.env file
-- Launch B3Desk containers
-- You know have a b3desk_default with all services running in it and a standalone BBB service
-- You need to connect them together with:
+- Copiez l'url BBB (BIGBLUEBUTTON_ENDPOINT) et ajoutez `api` à la fin, ainsi que la clé secrète (BIGBLUEBUTTON_SECRET) dans votre fichier web.env
+- Lancez les conteneurs B3Desk
+- Vous avez maintenant un réseau b3desk_default avec tous les services en cours d'exécution et un service BBB autonome
+- Vous devez les connecter ensemble avec :
 
-### Add the BBB container to the local network
+### Ajouter le conteneur BBB au réseau local
 
 ```bash
 docker network connect b3desk_default bbb30
 ```
 
-You can check if those services are effectively connected with a curl from bbb30 to a B3Desk service for instance
+Vous pouvez vérifier si ces services sont effectivement connectés avec un curl depuis bbb30 vers un service B3Desk par exemple
 
-### Allow http requests with BBB
+### Autoriser les requêtes http avec BBB
 
-BBB must explictly allow http requests to b3desk:
+BBB doit explicitement autoriser les requêtes http vers b3desk :
 
 ```bash
 docker exec bbb30 sed -i '$ a insertDocumentSupportedProtocols=https,http' /etc/bigbluebutton/bbb-web.properties
 docker exec bbb30 bbb-conf --restart
 ```
 
-## Launch existing container
+## Lancer un conteneur existant
 
-If you have already installed BBB and the container still exists, there is no need to install it again (the script `create_bbb.sh` removes any instance and recreates an updated version).
+Si vous avez déjà installé BBB et que le conteneur existe toujours, il n'est pas nécessaire de le réinstaller (le script `create_bbb.sh` supprime toute instance existante et recrée une version mise à jour).
 
-You just need to connect the services :
+Vous devez simplement connecter les services :
 ```
 docker network connect b3desk_default bbb30
 ```
 
-And run the BBB container :
+Et lancer le conteneur BBB :
 ```
 docker start bbb30
 ```
 
-You can check if it is effectively running with :
+Vous pouvez vérifier qu'il fonctionne effectivement avec :
 ```
 docker ps -a
 ```
 
-## Configure MP4 recording
+## Configurer l'enregistrement MP4
 
-To configure BBB to process recordings as MP4 video, as in production, you need some [manual intervention](https://docs.bigbluebutton.org/administration/customize/#install-additional-recording-processing-formats). This is an issue that is [not yet fixed](https://github.com/bigbluebutton/bigbluebutton/issues/12241).
+Pour configurer BBB afin qu'il traite les enregistrements en vidéo MP4, comme en production, vous devez effectuer une [intervention manuelle](https://docs.bigbluebutton.org/administration/customize/#install-additional-recording-processing-formats). Il s'agit d'un problème qui n'est [pas encore résolu](https://github.com/bigbluebutton/bigbluebutton/issues/12241).
 
-- Open a session in the container:
+- Ouvrir une session dans le conteneur :
 
 ```
 ssh bbb30
 ```
 
-- Install the bbb-playback-video packaging:
+- Installer le paquet bbb-playback-video :
 
 ```
 sudo apt-get install bbb-playback-video
 ```
 
-- Edit the `/usr/local/bigbluebutton/core/scripts/bigbluebutton.yml` file:
+- Éditer le fichier `/usr/local/bigbluebutton/core/scripts/bigbluebutton.yml` :
 
 ```
 sudo vim /usr/local/bigbluebutton/core/scripts/bigbluebutton.yml
 ```
 
-- Add video processing and publishing in the file:
+- Ajouter le traitement et la publication vidéo dans le fichier :
 
 ```
 steps:
@@ -103,7 +103,7 @@ steps:
   "process:video": "publish:video"
 ```
 
-- Restart the recording processing queue
+- Redémarrer la file d'attente de traitement des enregistrements
 
 ```
 sudo systemctl restart bbb-rap-resque-worker.service
