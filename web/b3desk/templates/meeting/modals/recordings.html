@@ -39,7 +39,7 @@
                                                data-modal-content-id="delete-video-{{ r.recordID }}"
                                                data-modal-title="{% trans %}Suppression d'enregistrement{% endtrans %}"
                                                data-modal-close-text="x"
-                                               data-modal-close-title="Fermer la fenêtre modale"><span class="fr-fi-delete-line"></span></a>
+                                               data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></a>
                                             <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ f.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
                                                 <span class="ri-clipboard-line"></span>
                                             </button>
