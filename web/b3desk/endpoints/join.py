@@ -202,11 +202,9 @@ def join_meeting():
         "seconds_before_refresh" in form
         and form["seconds_before_refresh"].data is not None
     ):
-        seconds_before_refresh = (
-            (form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME)
-            if form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME
-            < MAXIMUM_REFRESH_TIME
-            else MAXIMUM_REFRESH_TIME
+        seconds_before_refresh = min(
+            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME,
+            MAXIMUM_REFRESH_TIME,
         )
 
     quick_meeting = None
