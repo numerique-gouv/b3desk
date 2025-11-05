@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-24 14:25+0200\n"
+"POT-Creation-Date: 2025-11-04 17:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -456,6 +456,7 @@ msgid "Menu"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
+#: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/tools.html:41 web/b3desk/templates/tools.html:43
 msgid "Les services de La Suite numérique"
 msgstr ""
@@ -719,6 +720,12 @@ msgstr ""
 
 #: web/b3desk/templates/footer.html:58 web/b3desk/templates/footer/cgu.html:5
 msgid "Conditions générales d’utilisation"
+msgstr ""
+
+#: web/b3desk/templates/header-lasuite.html:13
+#: web/b3desk/templates/header-lasuite.html:14
+#, python-format
+msgid "Accueil - %(service_title)s"
 msgstr ""
 
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
@@ -991,6 +998,7 @@ msgid ""
 "noreferrer\" >annuaire de l'administration</a>"
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:6
 #: web/b3desk/templates/footer/cgu.html:7
 msgid "Objet"
 msgstr ""
@@ -1016,6 +1024,7 @@ msgid ""
 "CGU disponible en permanence sur le site."
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:11
 #: web/b3desk/templates/footer/cgu.html:12
 msgid "Code de conduite et responsabilités des Utilisateurs"
 msgstr ""
@@ -1043,6 +1052,7 @@ msgid ""
 " l’utilisation du pseudonyme soit ou non dénigrante."
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:15
 #: web/b3desk/templates/footer/cgu.html:16
 msgid "Description du Service"
 msgstr ""
@@ -1095,6 +1105,7 @@ msgid ""
 "frontal de gestion des salons en heures ouvrées."
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:24
 #: web/b3desk/templates/footer/cgu.html:25
 msgid "Accès et utilisation du Service"
 msgstr ""
@@ -1196,6 +1207,10 @@ msgid ""
 "doit contacter l’équipe support :"
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:40
+msgid "Limitations d'utilisation du Service"
+msgstr ""
+
 #: web/b3desk/templates/footer/cgu.html:41
 msgid "Limitations d’utilisation du Service"
 msgstr ""
@@ -1213,6 +1228,7 @@ msgid ""
 "d’utilisation peut le signaler en s’adressant au support :"
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:44
 #: web/b3desk/templates/footer/cgu.html:45
 msgid "Disponibilité et sécurité du Service"
 msgstr ""
@@ -1234,6 +1250,7 @@ msgid ""
 "telles situations n'ouvriront droit à aucune compensation financière."
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:48
 #: web/b3desk/templates/footer/cgu.html:49
 #: web/b3desk/templates/footer/donnees_personnelles.html:5
 msgid "Données personnelles"
@@ -1289,6 +1306,7 @@ msgid ""
 "mail à l’adresse :"
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:55
 #: web/b3desk/templates/footer/cgu.html:56
 msgid "Responsabilités"
 msgstr ""
@@ -1327,12 +1345,17 @@ msgid ""
 "encontre."
 msgstr ""
 
+#: web/b3desk/templates/footer/cgu.html:62
 #: web/b3desk/templates/footer/cgu.html:63
 msgid "Contact"
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:64
 msgid "Pour toute question sur le Service, vous pouvez écrire à l’adresse mail :"
+msgstr ""
+
+#: web/b3desk/templates/footer/cgu.html:65
+msgid "Évolution des conditions d'utilisation"
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:66
@@ -1388,12 +1411,22 @@ msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:14
 #, python-format
+msgid "Créer %(a_meeting)s improvisée"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:14
+#, python-format
 msgid "Créer %(an_improvised_meeting)s"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:15
 #, python-format
 msgid "Participer à %(a_meeting)s"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:16
+#, python-format
+msgid "Créer et parametrer une salle de %(a_meeting)s"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:16
@@ -1446,7 +1479,23 @@ msgid "Gérer la mise en page"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:27
+msgid "Extension contrôle du volume"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:27
 msgid "Contrôle du volume"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:103
+msgid "Liste des serveurs BigBlueButton pour l'Éducation"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:104
+msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
+msgstr ""
+
+#: web/b3desk/templates/footer/documentation.html:105
+msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
 msgstr ""
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:7
@@ -2091,10 +2140,12 @@ msgid "Aucun document de présentation n'est prévu pour cette réunion actuelle
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:11
+#: web/b3desk/templates/meeting/form.html:13
 msgid "Activé"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:11
+#: web/b3desk/templates/meeting/form.html:13
 msgid "Désactivé"
 msgstr ""
 
@@ -2192,6 +2243,7 @@ msgstr ""
 msgid "Nouveau webinaire"
 msgstr ""
 
+#: web/b3desk/templates/meeting/jumbotron.html:7
 #: web/b3desk/templates/meeting/jumbotron.html:8
 msgid "Retour au tableau de bord"
 msgstr ""
@@ -2431,6 +2483,7 @@ msgstr ""
 msgid "Supprimer %(meeting_name)s"
 msgstr ""
 
+#: web/b3desk/templates/meeting/modals/recordings.html:42
 #: web/b3desk/templates/meeting/row.html:31
 msgid "Fermer la fenêtre modale"
 msgstr ""
@@ -2472,6 +2525,10 @@ msgstr ""
 #: web/b3desk/templates/meeting/visio_code_form.html:10
 #, python-format
 msgid "Remplissez le code de connexion reçu dans l’invitation %(of_the_meeting)s."
+msgstr ""
+
+#: web/b3desk/templates/meeting/visio_code_form.html:33
+msgid "SAISIR LE CAPTCHA"
 msgstr ""
 
 #: web/b3desk/templates/meeting/visio_code_form.html:41
