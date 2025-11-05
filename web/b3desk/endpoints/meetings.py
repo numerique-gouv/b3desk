@@ -152,11 +152,13 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     result = meeting.update_recording_name(recording_id, form.data["name"])
     return_code = result.get("returncode")
     if return_code == "SUCCESS":
-        flash("Enregistrement renommé", "success")
+        flash(_("Enregistrement renommé"), "success")
     else:
         message = result.get("message", "")
         flash(
-            f"Nous n'avons pas pu modifier cet enregistrement : {return_code}, {message}",
+            _(
+                "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
+            ).format(code=return_code, message=message),
             "error",
         )
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
@@ -217,7 +219,7 @@ def save_meeting():
         return redirect(url_for("public.welcome"))
 
     if not form.validate():
-        flash("Le formulaire contient des erreurs", "error")
+        flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
             "meeting/wizard.html",
             meeting=None if is_new_meeting else db.session.get(Meeting, form.id.data),
@@ -263,7 +265,9 @@ def save_meeting():
             updated_data,
         )
     flash(
-        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
+        _("{meeting_name} modifications prises en compte").format(
+            meeting_name=meeting.name
+        ),
         "success",
     )
 
@@ -349,9 +353,12 @@ def delete_meeting():
             if return_code != "SUCCESS":
                 message = data.get("message", "")
                 flash(
-                    "Nous n'avons pas pu supprimer les vidéos de cette "
-                    + current_app.config["WORDINGS"]["meeting_label"]
-                    + f" : {message}",
+                    _(
+                        "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
+                    ).format(
+                        meeting_label=current_app.config["WORDINGS"]["meeting_label"],
+                        message=message,
+                    ),
                     "error",
                 )
             else:
