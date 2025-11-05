@@ -242,7 +242,7 @@ def save_meeting():
     updated_data = {
         key: form.data[key]
         for key in form.data
-        if getattr(meeting, key) != form.data[key]
+        if hasattr(meeting, key) and getattr(meeting, key) != form.data[key]
     }
     form.populate_obj(meeting)
     meeting.visio_code = (
