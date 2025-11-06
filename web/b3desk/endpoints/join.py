@@ -324,7 +324,7 @@ def join_waiting_meeting_from_sip(visio_code):
 
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
-def visio_code_connexion():
+def visio_code_connection():
     """Process visio code form submission and redirect to meeting if valid."""
     visio_code = (
         request.form.get("visio_code1")
@@ -347,6 +347,32 @@ def visio_code_connexion():
 
     visio_code_attempt_counter_reset()
     return join_waiting_meeting_with_visio_code(meeting)
+
+
+@bp.route("/meeting/visio_code_form", methods=["POST"])
+@check_oidc_connection(auth)
+def visio_code_form_validation():
+    """Validate the visio-code from from the front."""
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+    meeting_exists = bool(get_meeting_by_visio_code(visio_code))
+    if not meeting_exists:
+        visio_code_attempt_counter_increment()
+
+    result = {
+        "visioCode": meeting_exists,
+        "shouldDisplayCaptcha": should_display_captcha(check_service_status=False),
+    }
+
+    captcha_uuid = request.form.get("captchetat-uuid")
+    captcha_code = request.form.get("captchaCode")
+    if captcha_code:
+        result["captchaCode"] = captcha_validation(captcha_uuid, captcha_code)
+
+    return result
 
 
 def join_waiting_meeting_with_visio_code(meeting):

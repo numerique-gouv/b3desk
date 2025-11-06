@@ -389,3 +389,65 @@ def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
     assert increase_waiting_time("22.5") == "33.75"
     assert increase_waiting_time("33.75") == "50.625"
     assert increase_waiting_time("50.625") == "60"
+
+
+def test_visio_code_form_validation_valid_code_without_captcha(client_app, meeting):
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+        },
+    )
+    assert response.json == {"visioCode": True, "shouldDisplayCaptcha": False}
+
+
+def test_visio_code_form_validation_invalid_code_without_captcha(client_app, meeting):
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "123",
+            "visio_code2": "456",
+            "visio_code3": "789",
+        },
+    )
+    assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
+
+
+def test_visio_code_form_validation_with_captcha(client_app, meeting, mocker):
+    mocker.patch("b3desk.endpoints.join.captcha_validation", return_value=True)
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+            "captchaCode": "ABCD1234",
+            "captchetat-uuid": "test-uuid",
+        },
+    )
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": True,
+    }
+
+
+def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mocker):
+    mocker.patch("b3desk.endpoints.join.captcha_validation", return_value=False)
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+            "captchaCode": "WRONG",
+            "captchetat-uuid": "test-uuid",
+        },
+    )
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": False,
+    }
