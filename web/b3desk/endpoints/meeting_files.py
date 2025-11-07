@@ -1,4 +1,3 @@
-import hashlib
 import os
 import secrets
 import uuid
@@ -27,11 +26,13 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import MeetingFilesExternal
+from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import nextcloud_healthcheck
+from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -145,62 +146,26 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return redirect(url_for("public.welcome"))
 
 
-# called by NextcloudfilePicker when documents should be added to a running room:
 @bp.route("/meeting/files/<meeting:meeting>/insertDocuments", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def insertDocuments(meeting: Meeting):
-    """Insert documents from Nextcloud into a running BBB meeting."""
-    from flask import request
+    """Insert documents from Nextcloud into a running BBB meeting.
 
+    This is called by the Nextcloud filePicker when users select a document.
+    This makes BBB download the document from the 'ncdownload' endpoint.
+    """
     filenames = request.get_json()
-    secret_key = current_app.config["SECRET_KEY"]
+    meeting_files = [
+        create_external_meeting_file(filename, meeting.id) for filename in filenames
+    ]
+    xml = meeting.bbb.meeting_file_addition_xml(meeting_files)
+    bbb_request = meeting.bbb.bbb_request(
+        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
+    )
 
-    xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
-    xml_end = " </module></modules>"
-    xml_mid = ""
-    # @FIX We ONLY send the documents that have been uploaded NOW, not ALL of them for this meetingid ;)
-    for filename in filenames:
-        id = add_external_meeting_file_nextcloud(filename, meeting.id)
-        filehash = hashlib.sha1(
-            f"{secret_key}-1-{id}-{secret_key}".encode()
-        ).hexdigest()
-        current_app.logger.info(
-            "Call insert document BigBlueButton API in running room for %s", filename
-        )
-        url = url_for(
-            "meeting_files.ncdownload",
-            isexternal=1,
-            mfid=id,
-            mftoken=filehash,
-            filename=filename,
-            _external=True,
-        )
-        xml_mid += f"<document url='{url}' filename='{filename}' />"
+    background_upload.delay(bbb_request.url, xml)
 
-    bbb_endpoint = current_app.config["BIGBLUEBUTTON_ENDPOINT"]
-    xml = xml_beg + xml_mid + xml_end
-    params = {"meetingID": meeting.meetingID}
-    request = requests.Request(
-        "POST",
-        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], "insertDocument"),
-        params=params,
-    )
-    pr = request.prepare()
-    bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "{}{}".format(
-        pr.url.replace("?", "").replace(
-            current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
-        ),
-        bigbluebutton_secret,
-    )
-    params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-    requests.post(
-        f"{bbb_endpoint}/insertDocument",
-        headers={"Content-Type": "application/xml"},
-        data=xml,
-        params=params,
-    )
     return jsonify(status=200, msg="SUCCESS")
 
 
@@ -436,13 +401,15 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         )
 
 
-def add_external_meeting_file_nextcloud(path, meeting_id):
+def create_external_meeting_file(path, meeting_id):
     """Create an external meeting file record for a Nextcloud document."""
-    externalMeetingFile = MeetingFilesExternal(
-        title=path, meeting_id=meeting_id, nc_path=path
+    externalMeetingFile = BaseMeetingFiles(
+        title=path.split("/")[-1],
+        meeting_id=meeting_id,
+        nc_path=path,
+        id=uuid.uuid4(),
     )
-    externalMeetingFile.save()
-    return externalMeetingFile.id
+    return externalMeetingFile
 
 
 # for dropzone multiple files uploading at once
@@ -526,99 +493,31 @@ def delete_meeting_file():
     )
 
 
-# draft for insertDocument calls to BBB API
-# @TODO: can we remove this def entirely?
-@bp.route("/insertDoc/<token>")
-def insertDoc(token):
-    """Insert a document into a BBB meeting using a token (draft implementation)."""
-    # select good file from token
-    # get file through NC credentials - HOW POSSIBLE ?
-    # return file as response to BBB server
+@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<int:meetingid>/<path:ncpath>")
+def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
+    """Download a file from Nextcloud for BBB using a secure token.
 
-    meeting_file = MeetingFiles.query.filter_by(download_hash=token).one()
-    secret_key = current_app.config["SECRET_KEY"]
-    if (
-        meeting_file
-        or meeting_file.token
-        != hashlib.sha1(
-            f"{secret_key}{meeting_file.id}{secret_key}".encode()
-        ).hexdigest()
-    ):
-        make_response("NOT OK", 500)
+    When isexternal is true, the file comes from the embedded nextcloud file picker.
+    When isexternal is false, the file comes from the b3desk interface.
+    """
+    current_app.logger.info("Service requesting file url %s", ncpath)
+    if isexternal == 0:
+        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
+        if not meeting_file:
+            abort(404, "Bad token provided, no file matching")
+    else:
+        meeting_file = create_external_meeting_file(ncpath, meetingid)
+    meeting = db.session.get(Meeting, meetingid)
 
-    params = {"meetingID": meeting_file.meeting.meetingID}
-    action = "insertDocument"
-    req = requests.Request(
-        "POST",
-        "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
-        params=params,
-    )
-    headers = {"Content-Type": "application/xml"}
-    pr = req.prepare()
-    bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
-    s = "{}{}".format(
-        pr.url.replace("?", "").replace(
-            current_app.config["BIGBLUEBUTTON_ENDPOINT"] + "/", ""
-        ),
-        bigbluebutton_secret,
-    )
-    params["checksum"] = hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-    # xml now use
-    url = url_for(
-        "meeting_files.ncdownload",
-        isexternal=0,
-        mfid=meeting_file.id,
-        mftoken=meeting_file.download_hash,
-        filename=meeting_file.title,
-        _external=True,
-    )
-    xml = f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'><document url='{url}' filename='{meeting_file.title}' /> </module></modules>"
-
-    current_app.logger.info(
-        "Call insert document BigBlueButton API for %s", meeting_file.title
-    )
-    requests.post(
-        f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument",
-        data=xml,
-        headers=headers,
-        params=params,
-    )
-
-    return make_response("ok", 200)
-
-
-@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>")
-@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<filename>")
-def ncdownload(isexternal, mfid, mftoken, filename=None):
-    """Download a file from Nextcloud for BBB using a secure token."""
-    current_app.logger.info("Service requesting file url %s", filename)
-    secret_key = current_app.config["SECRET_KEY"]
-    # select good file from token
-    # get file through NC credentials - HOW POSSIBLE ?
-    # return file as response to BBB server
-    # isexternal tells if the file has been chosen earlier from the visio-agent interface (0) or if it has been uploaded from BBB itself (1)
-    model = MeetingFiles if isexternal == 0 else MeetingFilesExternal
-    meeting_file = model.query.filter_by(id=mfid).one_or_none()
-
-    if not meeting_file:
+    if mftoken != get_meeting_file_hash(mfid, isexternal):
         abort(404, "Bad token provided, no file matching")
 
-    # the hash token consist of the sha1 of "secret key - 0/1 (internal/external) - id in the DB - secret key"
-    if (
-        mftoken
-        != hashlib.sha1(
-            f"{secret_key}-{isexternal}-{mfid}-{secret_key}".encode()
-        ).hexdigest()
-    ):
-        abort(404, "Bad token provided, no file matching")
-
-    # download the file using webdavClient from the Nextcloud to a temporary folder (that will need cleaning)
+    # TODO: clean the temporary directory
     options = {
-        "webdav_root": f"/remote.php/dav/files/{meeting_file.meeting.user.nc_login}/",
-        "webdav_hostname": meeting_file.meeting.user.nc_locator,
+        "webdav_root": f"/remote.php/dav/files/{meeting.user.nc_login}/",
+        "webdav_hostname": meeting.user.nc_locator,
         "webdav_verbose": True,
-        "webdav_token": meeting_file.meeting.user.nc_token,
+        "webdav_token": meeting.user.nc_token,
     }
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -627,14 +526,13 @@ def ncdownload(isexternal, mfid, mftoken, filename=None):
 
     try:
         client = webdavClient(options)
-        mimetype = client.info(meeting_file.nc_path).get("content_type")
-        client.download_sync(remote_path=meeting_file.nc_path, local_path=tmp_name)
+        mimetype = client.info(ncpath).get("content_type")
+        client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        meeting_file.meeting.user.disable_nextcloud()
+        meeting.user.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
-    # send the downloaded file to the BBB:
     return send_from_directory(
         TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title, mimetype=mimetype
     )

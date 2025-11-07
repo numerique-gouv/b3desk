@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-31 11:03+0100\n"
+"POT-Creation-Date: 2025-11-07 15:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:151 web/b3desk/models/meetings.py:497
+#: web/b3desk/forms.py:151 web/b3desk/models/meetings.py:493
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -208,88 +208,88 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/settings.py:69
+#: web/b3desk/settings.py:70
 msgid "une réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:74
+#: web/b3desk/settings.py:75
 msgid "une réunion immédiate"
 msgstr ""
 
-#: web/b3desk/settings.py:79
+#: web/b3desk/settings.py:80
 msgid "réunions privées"
 msgstr ""
 
-#: web/b3desk/settings.py:84
+#: web/b3desk/settings.py:85
 msgid "bonne réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:89
+#: web/b3desk/settings.py:90
 msgid "une"
 msgstr ""
 
-#: web/b3desk/settings.py:94
+#: web/b3desk/settings.py:95
 msgid "une réunion à laquelle"
 msgstr ""
 
-#: web/b3desk/settings.py:99
+#: web/b3desk/settings.py:100
 msgid ""
 "Créez en un clic un cours aux réglages standards. Il ne sera pas "
 "enregistré dans votre liste de salles."
 msgstr ""
 
-#: web/b3desk/settings.py:102
+#: web/b3desk/settings.py:103
 msgid ""
 "Créez en un clic une réunion aux réglages standards. Elle ne sera pas "
 "enregistrée dans votre liste de salles."
 msgstr ""
 
-#: web/b3desk/settings.py:105
+#: web/b3desk/settings.py:106
 msgid ""
 "Créez en un clic un séminaire aux réglages standards. Il ne sera pas "
 "enregistré dans votre liste de salles."
 msgstr ""
 
-#: web/b3desk/settings.py:109
+#: web/b3desk/settings.py:110
 msgid "Invitation à un cours en ligne immédiat du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:111
+#: web/b3desk/settings.py:112
 msgid "Invitation à une réunion en ligne immédiat du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:114
+#: web/b3desk/settings.py:115
 msgid "Invitation à un séminaire en ligne immédiat du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:118
+#: web/b3desk/settings.py:119
 msgid "un nouveau cours"
 msgstr ""
 
-#: web/b3desk/settings.py:119
+#: web/b3desk/settings.py:120
 msgid "une nouvelle réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:120
+#: web/b3desk/settings.py:121
 msgid "un nouveau séminaire"
 msgstr ""
 
-#: web/b3desk/settings.py:938
+#: web/b3desk/settings.py:1012
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:941
+#: web/b3desk/settings.py:1015
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:958
+#: web/b3desk/settings.py:1032
 #, python-format
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, "
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/settings.py:982
+#: web/b3desk/settings.py:1056
 #, python-format
 msgid ""
 "Bienvenue. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de"
@@ -307,78 +307,78 @@ msgstr ""
 msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:63 web/b3desk/endpoints/join.py:244
-#: web/b3desk/endpoints/join.py:267
+#: web/b3desk/endpoints/join.py:63 web/b3desk/endpoints/join.py:242
+#: web/b3desk/endpoints/join.py:265
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:272
+#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:270
 msgid "Lien expiré"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:256
+#: web/b3desk/endpoints/join.py:254
 #, python-format
 msgid "%(meeting_label)s inexistante"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:341
+#: web/b3desk/endpoints/join.py:339
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:346
+#: web/b3desk/endpoints/join.py:344
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:53
+#: web/b3desk/endpoints/meeting_files.py:54
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:144
+#: web/b3desk/endpoints/meeting_files.py:145
 msgid "Le fichier ne semble pas accessible"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:264
-#: web/b3desk/endpoints/meeting_files.py:347
+#: web/b3desk/endpoints/meeting_files.py:229
+#: web/b3desk/endpoints/meeting_files.py:312
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:299
+#: web/b3desk/endpoints/meeting_files.py:264
 msgid "La connexion avec Nextcloud est rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:324
-#: web/b3desk/endpoints/meeting_files.py:377
-#: web/b3desk/endpoints/meeting_files.py:435
-#: web/b3desk/endpoints/meeting_files.py:469
+#: web/b3desk/endpoints/meeting_files.py:289
+#: web/b3desk/endpoints/meeting_files.py:342
+#: web/b3desk/endpoints/meeting_files.py:400
+#: web/b3desk/endpoints/meeting_files.py:436
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:339
+#: web/b3desk/endpoints/meeting_files.py:304
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:400
-#: web/b3desk/endpoints/meeting_files.py:635
+#: web/b3desk/endpoints/meeting_files.py:365
+#: web/b3desk/endpoints/meeting_files.py:534
 msgid "La connexion avec Nextcloud semble rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:407
+#: web/b3desk/endpoints/meeting_files.py:372
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:478
+#: web/b3desk/endpoints/meeting_files.py:445
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:508
-#: web/b3desk/endpoints/meetings.py:348
+#: web/b3desk/endpoints/meeting_files.py:475
+#: web/b3desk/endpoints/meetings.py:372
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:525
+#: web/b3desk/endpoints/meeting_files.py:492
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
@@ -416,32 +416,32 @@ msgstr ""
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:248
+#: web/b3desk/endpoints/meetings.py:268
 #, python-brace-format
 msgid "{meeting_name} modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:337
+#: web/b3desk/endpoints/meetings.py:355
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:346
+#: web/b3desk/endpoints/meetings.py:364
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:365
+#: web/b3desk/endpoints/meetings.py:389
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:370
+#: web/b3desk/endpoints/meetings.py:401
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:378
+#: web/b3desk/endpoints/meetings.py:409
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
@@ -2527,12 +2527,12 @@ msgstr ""
 msgid "Remplissez le code de connexion reçu dans l’invitation %(of_the_meeting)s."
 msgstr ""
 
-#: web/b3desk/templates/meeting/visio_code_form.html:33
+#: web/b3desk/templates/meeting/visio_code_form.html:32
 msgid "SAISIR LE CAPTCHA"
 msgstr ""
 
-#: web/b3desk/templates/meeting/visio_code_form.html:41
-#: web/b3desk/templates/meeting/visio_code_form.html:42
+#: web/b3desk/templates/meeting/visio_code_form.html:39
+#: web/b3desk/templates/meeting/visio_code_form.html:40
 msgid "Connexion"
 msgstr ""
 
