@@ -346,3 +346,108 @@ def test_join_meeting_with_wrong_visio_code_with_authenticated_user(
     response.forms[0]["visio_code3"] = "789"
     response = response.forms[0].submit()
     assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+
+
+class Response:
+    content = """<response><returncode>FAIL</returncode></response>"""
+    status_code = 401
+    text = ""
+
+
+def test_rasing_time_before_refresh_in_waiting_meeting(
+    client_app, meeting, authenticated_user, mocker
+):
+    """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    response = client_app.get("/meeting/join/1/moderateur")
+    response = client_app.get(response.location)
+    assert response.form["seconds_before_refresh"].value == "10"
+    response = response.form.submit()
+    url = urlparse(response.location)
+    url_role = parse_qs(url.query)["seconds_before_refresh"]
+    assert url_role == ["15.0"]
+
+
+def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
+    client_app, meeting, authenticated_user, mocker
+):
+    """Tests seconds_before_refresh does not increase beyong maximum_refresh_time each time waiting_meeting is refreshed."""
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    def increase_waiting_time(previous_waiting_time="10"):
+        response = client_app.get("/meeting/join/1/moderateur")
+        response = client_app.get(response.location)
+        response.form["seconds_before_refresh"].value = previous_waiting_time
+        response = response.form.submit()
+        url = urlparse(response.location)
+        url_role = parse_qs(url.query)["seconds_before_refresh"]
+        return url_role[0]
+
+    assert increase_waiting_time() == "15.0"
+    assert increase_waiting_time("15.0") == "22.5"
+    assert increase_waiting_time("22.5") == "33.75"
+    assert increase_waiting_time("33.75") == "50.625"
+    assert increase_waiting_time("50.625") == "60"
+
+
+def test_visio_code_form_validation_valid_code_without_captcha(client_app, meeting):
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+        },
+    )
+    assert response.json == {"visioCode": True, "shouldDisplayCaptcha": False}
+
+
+def test_visio_code_form_validation_invalid_code_without_captcha(client_app, meeting):
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "123",
+            "visio_code2": "456",
+            "visio_code3": "789",
+        },
+    )
+    assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
+
+
+def test_visio_code_form_validation_with_captcha(client_app, meeting, mocker):
+    mocker.patch("b3desk.endpoints.join.captcha_validation", return_value=True)
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+            "captchaCode": "ABCD1234",
+            "captchetat-uuid": "test-uuid",
+        },
+    )
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": True,
+    }
+
+
+def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mocker):
+    mocker.patch("b3desk.endpoints.join.captcha_validation", return_value=False)
+    response = client_app.post(
+        "/meeting/visio_code_form",
+        params={
+            "visio_code1": "911",
+            "visio_code2": "111",
+            "visio_code3": "111",
+            "captchaCode": "WRONG",
+            "captchetat-uuid": "test-uuid",
+        },
+    )
+    assert response.json == {
+        "visioCode": True,
+        "shouldDisplayCaptcha": False,
+        "captchaCode": False,
+    }

@@ -8,6 +8,19 @@ if (window.shouldDisplayCaptcha) {
     captchaDescription = document.getElementById("captcha-description");
 }
 
+const initCaptchaInput = () => {
+    captchaInput = document.getElementById("captchaCode");
+    captchaDescription = document.getElementById("captcha-description");
+
+    // Add event listener for captcha input
+    if (captchaInput && !captchaInput.dataset.listenerAdded) {
+        captchaInput.addEventListener("keyup", (event) => {
+            updateSumbitButtonStatus(event, captchaInput);
+        });
+        captchaInput.dataset.listenerAdded = "true";
+    }
+}
+
 
 const getVisioCode = () => {
     return Array.from(inputs).map(i => i.value).join("");
@@ -26,22 +39,97 @@ const formIsComplete = () => {
     }
 }
 
-const updateSumbitButtonStatus = (event, input) => {
-    if (formIsComplete()) {
-        document.getElementById("submit-visio-code").disabled = false;
-        if (event.key == "Enter") {
-            formValidateAndSubmit(input);
+const formIsValid = async () => {
+    var valid = true;
+    var formData = new FormData(document.getElementById("visio-code-form"));
+    const response = await fetch(window.visioCodeFormValidationUrl, {
+        method: "POST",
+        body: formData,
+    })
+    const data = await response.json();
+
+    // Handle dynamic captcha display
+    if ("shouldDisplayCaptcha" in data && data.shouldDisplayCaptcha && !window.shouldDisplayCaptcha) {
+        window.shouldDisplayCaptcha = true;
+        const captchaContainer = document.getElementById("captcha-container");
+        captchaContainer.style.display = "block";
+
+        initCaptchaInput();
+
+        if (window.captchetatComponentModule && window.captchetatComponentModule.refreshCaptcha) {
+            await window.captchetatComponentModule.refreshCaptcha();
         }
-    } else {
-        document.getElementById("submit-visio-code").disabled = true;
+
+        // Update button status since captcha is now required
+        updateSumbitButtonStatus(null, null);
+        valid = false; // Form is not valid yet since captcha needs to be filled
     }
+
+    if ("visioCode" in data) {
+        var existingError = document.getElementById("visioCodeError");
+        if (existingError) {
+            existingError.remove();
+        }
+
+        if (data.visioCode) {
+            inputs.forEach((input) => {
+                var parent = input.parentElement;
+                parent.classList.add("fr-input-group--valid")
+                parent.classList.remove("fr-input-group--error")
+            })
+        }
+        else {
+            inputs.forEach((input) => {
+                var parent = input.parentElement;
+                parent.classList.remove("fr-input-group--valid")
+                parent.classList.add("fr-input-group--error")
+            })
+
+            var errorMessage = document.createElement("div");
+            errorMessage.id = "visioCodeError";
+            errorMessage.className = "visio-code-error fr-error-text";
+            errorMessage.textContent = "Code de connexion incorrect";
+            var container = inputs[0].parentElement.parentElement.parentElement;
+            container.appendChild(errorMessage);
+            valid = false;
+        }
+    }
+
+    if ("captchaCode" in data){
+        var parent = document.getElementById("captchaCode").parentElement;
+
+        var existingError = document.getElementById("captchaCodeError");
+        if (existingError) {
+            existingError.remove();
+        }
+
+        if(data.captchaCode) {
+            parent.classList.add("fr-input-group--valid")
+            parent.classList.remove("fr-input-group--error")
+        }
+        else {
+            parent.classList.remove("fr-input-group--valid")
+            parent.classList.add("fr-input-group--error")
+
+            var errorMessage = document.createElement("p");
+            errorMessage.id = "captchaCodeError";
+            errorMessage.className = "fr-error-text";
+            errorMessage.textContent = "Code de sécurité incorrect";
+            parent.appendChild(errorMessage);
+            valid = false;
+        }
+    }
+    return valid;
 }
 
-const formValidateAndSubmit = async (input) => {
-    if (visioCodeIsComplete()) {
+const updateSumbitButtonStatus = (event, input) => {
+    document.getElementById("submit-visio-code").disabled = !formIsComplete();
+}
+
+const onFormValidate = async (event) => {
+    event.preventDefault();
+    if (formIsComplete() && await formIsValid(event)) {
         document.getElementById("visio-code-form").submit();
-    } else {
-        visualValidation(input);
     }
 }
 
@@ -77,28 +165,27 @@ const moveToPreviousInputIfNeeded = (target) => {
     }
 }
 
-const visualValidation = (target) => {
-    parent = target.parentElement;
-    if (target.value == "") {
+const updateVisioCodeVisualIndicator = (input) => {
+    var is_numerical = input.value.match(/\d{3}$/);
+    var parent = input.parentElement;
+    if (input.value == "") {
         parent.classList.remove("fr-input-group--valid")
         parent.classList.remove("fr-input-group--error")
-    } else if (!target.value.match(/\d{3}$/) && !parent.classList.contains("fr-input-group--error")) {
+    } else if (!is_numerical && !parent.classList.contains("fr-input-group--error")) {
         parent.classList.remove("fr-input-group--valid")
         parent.classList.add("fr-input-group--error")
-    } else if (target.value.match(/\d{3}$/) && !parent.classList.contains("fr-input-group--valid")) {
+    } else if (is_numerical && !parent.classList.contains("fr-input-group--valid")) {
         parent.classList.remove("fr-input-group--error")
         parent.classList.add("fr-input-group--valid")
     }
 }
 
 if (window.shouldDisplayCaptcha) {
-    captchaInput.addEventListener("keyup", (event) => {
-        updateSumbitButtonStatus(event, captchaInput)
-    })
+    initCaptchaInput();
 }
 
 inputs.forEach((input) => {
-    visualValidation(input);
+    updateVisioCodeVisualIndicator(input);
 
     // Forbid non-digits characters in inputs
     input.addEventListener("input", (event) => {
@@ -117,7 +204,7 @@ inputs.forEach((input) => {
             moveToNextInputIfNeeded(input);
         }
 
-        visualValidation(input);
+        updateVisioCodeVisualIndicator(input);
         updateSumbitButtonStatus(event, input)
     })
 
@@ -127,7 +214,7 @@ inputs.forEach((input) => {
         const chars = [pasteData.slice(0,3), pasteData.slice(3,6), pasteData.slice(6,9)];
         inputs.forEach((pastedInput, index) => {
             pastedInput.value = chars[index];
-            visualValidation(pastedInput);
+            updateVisioCodeVisualIndicator(pastedInput);
             if (pasteData.length <= 3 && index == 0) {
                 focusAtEnd(pastedInput);
             } else if (pasteData.length > 3 && pasteData.length <= 6 && index == 1) {
@@ -140,4 +227,4 @@ inputs.forEach((input) => {
 })
 
 
-document.getElementById("visio-code-form").addEventListener("submit", formValidateAndSubmit);
+document.getElementById("visio-code-form").addEventListener("submit", onFormValidate);

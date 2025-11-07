@@ -5,6 +5,7 @@ from typing import Any
 
 from flask_babel import lazy_gettext as _
 from pydantic import BeforeValidator
+from pydantic import FilePath
 from pydantic import PositiveInt
 from pydantic import ValidationInfo
 from pydantic import computed_field
@@ -151,6 +152,79 @@ class MainSettings(BaseSettings):
 
     Plus d'infos sur
     https://flask.palletsprojects.com/en/3.0.x/config/#PREFERRED_URL_SCHEME.
+    """
+
+    LOG_CONFIG: FilePath | None = None
+    """Chemin vers un fichier de configuration de logs Python.
+
+    Le fichier doit être au :ref:`format de fichiers de logs officiel Python <logging-config-fileformat>`.
+    Il peut être au format INI ou à partir de Python 3.11 au format TOML (qui est recommandé):
+
+    .. tip:: Par défaut les images Docker montent le répertoire ``web/conf`` dans ``/opt/bbb-visio/conf``.
+        On peut donc créer un fichier ``web/conf/logging.toml`` dans le projet avec la configuration voulue.
+        On indiquera ensuite ``LOG_CONFIG=/opt/bbb-visio/conf/logging.toml`` pour que ce fichier soit chargé
+        par l'image Docker.
+
+    .. note:: `[root]` désigne un logger par défaut qui traite tous les messages de log qui ne sont pas traités par d'autres loggers.
+
+    .. code-block:: toml
+        :caption: Exemple de fichier de configuration de logs au format toml
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.b3desk]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/b3desk.log"
+        formatter = "default"
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["b3desk"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+    .. code-block:: toml
+        :caption: Exemple de configuration avec un fichier destiné aux erreurs
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.b3desk]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/b3desk.log"
+        formatter = "default"
+
+        [handlers.errors]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/errors.log"
+        formatter = "default"
+        level = "WARNING"
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["b3desk", "errors"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
     """
 
     REDIS_URL: str | None = None

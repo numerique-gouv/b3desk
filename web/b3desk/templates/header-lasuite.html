@@ -10,8 +10,8 @@
                         <a
                             class="lasuite-header__service-link"
                             href="/"
-                            title="Accueil - {{ service_title }}"
-                            aria-label="Accueil - {{ service_title }}"
+                            title="{% trans service_title %}Accueil - {{ service_title }}{% endtrans %}"
+                            aria-label="{% trans service_title %}Accueil - {{ service_title }}{% endtrans %}"
                         >
                             <img
                                 class="lasuite-header__service-logo fr-responsive-img"
@@ -32,7 +32,7 @@
                         <button
                             type="button"
                             class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
-                            title="Les services de La Suite numérique"
+                            title="{% trans %}Les services de La Suite numérique{% endtrans %}"
                         >
                             Les services de La Suite numérique
                         </button>

@@ -35,6 +35,10 @@ from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
 
+SECONDS_BEFORE_REFRESH = 10
+INCREASE_REFRESH_TIME = 1.5
+MAXIMUM_REFRESH_TIME = 60
+
 
 @bp.route(
     "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<h>",
@@ -160,6 +164,10 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect(url_for("public.index"))
+    seconds_before_refresh = request.args.get(
+        "seconds_before_refresh", SECONDS_BEFORE_REFRESH
+    )
+    quick_meeting = request.args.get("quick_meeting", False)
 
     return render_template(
         "meeting/wait.html",
@@ -170,6 +178,8 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
+        seconds_before_refresh=seconds_before_refresh,
+        quick_meeting=quick_meeting,
     )
 
 
@@ -187,6 +197,19 @@ def join_meeting():
     meeting_fake_id = form["meeting_fake_id"].data
     user_id = form["user_id"].data
     h = form["h"].data
+    seconds_before_refresh = None
+    if (
+        "seconds_before_refresh" in form
+        and form["seconds_before_refresh"].data is not None
+    ):
+        seconds_before_refresh = min(
+            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME,
+            MAXIMUM_REFRESH_TIME,
+        )
+
+    quick_meeting = None
+    if "quick_meeting" in form:
+        quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -201,7 +224,12 @@ def join_meeting():
 
     return redirect(
         meeting.get_join_url(
-            role, fullname, fullname_suffix=fullname_suffix, create=True
+            role,
+            fullname,
+            fullname_suffix=fullname_suffix,
+            create=True,
+            seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
     )
 
@@ -296,7 +324,7 @@ def join_waiting_meeting_from_sip(visio_code):
 
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
-def visio_code_connexion():
+def visio_code_connection():
     """Process visio code form submission and redirect to meeting if valid."""
     visio_code = (
         request.form.get("visio_code1")
@@ -319,6 +347,32 @@ def visio_code_connexion():
 
     visio_code_attempt_counter_reset()
     return join_waiting_meeting_with_visio_code(meeting)
+
+
+@bp.route("/meeting/visio_code_form", methods=["POST"])
+@check_oidc_connection(auth)
+def visio_code_form_validation():
+    """Validate the visio-code from from the front."""
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+    meeting_exists = bool(get_meeting_by_visio_code(visio_code))
+    if not meeting_exists:
+        visio_code_attempt_counter_increment()
+
+    result = {
+        "visioCode": meeting_exists,
+        "shouldDisplayCaptcha": should_display_captcha(check_service_status=False),
+    }
+
+    captcha_uuid = request.form.get("captchetat-uuid")
+    captcha_code = request.form.get("captchaCode")
+    if captcha_code:
+        result["captchaCode"] = captcha_validation(captcha_uuid, captcha_code)
+
+    return result
 
 
 def join_waiting_meeting_with_visio_code(meeting):
