@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 
 @pytest.fixture
@@ -201,3 +202,23 @@ def test_create(meeting, mocker):
     data = meeting.bbb.create()
     assert data["returncode"] == "SUCCESS"
     assert send.call_count == 2
+
+
+def test_timeout_bbb_request(client_app, mocker, authenticated_user, meeting, caplog):
+    mocker.patch(
+        "requests.Session.send", side_effect=requests.Timeout("timeout message")
+    )
+    client_app.get("/meeting/join/1/moderateur")
+    assert "BBB API timeout error timeout message" in caplog.text
+
+
+def test_timeout_bbb_get_recordings_request(
+    client_app, mocker, authenticated_user, meeting, caplog
+):
+    mocker.patch(
+        "requests.Session.send", side_effect=requests.Timeout("timeout message")
+    )
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
+    client_app.get("/meeting/recordings/1")
+    assert "BBB API timeout error timeout message" in caplog.text

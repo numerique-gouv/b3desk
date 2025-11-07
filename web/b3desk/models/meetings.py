@@ -249,6 +249,7 @@ class Meeting(db.Model):
         fullname_suffix="",
         create=False,
         quick_meeting=False,
+        seconds_before_refresh=None,
     ):
         """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
         is_meeting_available = self.is_running()
@@ -279,6 +280,8 @@ class Meeting(db.Model):
             h=self.get_hash(meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
+            seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
 
     def get_signin_url(self, meeting_role: Role):

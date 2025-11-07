@@ -25,6 +25,8 @@ from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
 
+BBB_REQUEST_TIMEOUT = 2
+
 
 def cache_key(func, caller, prepped, *args, **kwargs):
     """Generate a cache key based on the request URL."""
@@ -88,7 +90,10 @@ class BBB:
             request.body,
         )
         try:
-            response = session.send(request)
+            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+        except requests.Timeout as err:
+            current_app.logger.warning("BBB API timeout error %s", err)
+            raise BigBlueButtonUnavailable() from err
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
@@ -277,7 +282,10 @@ class BBB:
             session = requests.Session()
             if current_app.debug:  # pragma: no cover
                 session.verify = False
-            response = session.send(request)
+            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+        except requests.Timeout as err:
+            current_app.logger.warning("BBB API timeout error %s", err)
+            raise BigBlueButtonUnavailable() from err
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning("BBB API error %s", err)
             raise BigBlueButtonUnavailable() from err
