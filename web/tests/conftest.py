@@ -83,12 +83,11 @@ def iam_token(iam_server, iam_client, iam_user):
 
 
 @pytest.fixture
-def configuration(tmp_path, iam_server, iam_client, smtpd):
-    smtpd.config.use_starttls = True
+def configuration(tmp_path, iam_server, iam_client, request):
     private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
-    return {
+    configuration = {
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
         "PREFERRED_URL_SCHEME": "http",
@@ -123,12 +122,6 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "MEETING_LOGOUT_URL": "https://example.org/logout",
         "MAIL_MEETING": True,
         "SMTP_FROM": "from@example.org",
-        "SMTP_HOST": smtpd.hostname,
-        "SMTP_PORT": smtpd.port,
-        "SMTP_SSL": smtpd.config.use_ssl,
-        "SMTP_STARTTLS": smtpd.config.use_starttls,
-        "SMTP_USERNAME": smtpd.config.login_username,
-        "SMTP_PASSWORD": smtpd.config.login_password,
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,
         "ENABLE_SIP": True,
@@ -137,6 +130,18 @@ def configuration(tmp_path, iam_server, iam_client, smtpd):
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
+
+    if "smtpd" in request.fixturenames:
+        smtpd = request.getfixturevalue("smtpd")
+        smtpd.config.use_starttls = True
+        configuration["SMTP_HOST"] = smtpd.hostname
+        configuration["SMTP_PORT"] = smtpd.port
+        configuration["SMTP_SSL"] = smtpd.config.use_ssl
+        configuration["SMTP_STARTTLS"] = smtpd.config.use_starttls
+        configuration["SMTP_USERNAME"] = smtpd.config.login_username
+        configuration["SMTP_PASSWORD"] = smtpd.config.login_password
+
+    return configuration
 
 
 @pytest.fixture(scope="session")
