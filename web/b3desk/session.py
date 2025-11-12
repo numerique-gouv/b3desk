@@ -14,6 +14,8 @@ def get_current_user():
     if "user" not in g:
         user_session = UserSession(session)
         info = user_session.userinfo
+        if 'attributes' in info:
+            info = info['attributes']
         g.user = get_or_create_user(info)
         current_app.logger.debug(
             f"User authenticated with token: {user_session.access_token}"
@@ -31,6 +33,8 @@ def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
+    if 'attributes' in attendee_info:
+        attendee_info = attendee_info['attributes']
     given_name = attendee_info.get("given_name", "").title()
     family_name = attendee_info.get("family_name", "").title()
     fullname = f"{given_name} {family_name}".strip()
