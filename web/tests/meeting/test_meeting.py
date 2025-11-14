@@ -880,20 +880,20 @@ def test_add_and_remove_favorite(
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
-    assert authenticated_user not in meeting_3.is_favorite
+    assert authenticated_user not in meeting_3.favorite_of
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
-    assert authenticated_user in meeting_3.is_favorite
+    assert authenticated_user in meeting_3.favorite_of
 
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
-    assert authenticated_user not in meeting_3.is_favorite
+    assert authenticated_user not in meeting_3.favorite_of
 
 
 def test_create_meeting_with_wrong_PIN(

@@ -120,7 +120,7 @@ class Meeting(db.Model):
     delegates = db.relationship(
         "User", secondary=delegate_table, back_populates="delegated_meetings"
     )
-    is_favorite = db.relationship(
+    favorite_of = db.relationship(
         "User", secondary=favorite_table, back_populates="favorites"
     )
 

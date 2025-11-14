@@ -81,7 +81,7 @@
                                 {% include 'meeting/id.html' %}
                                 {% include 'meeting/csrf.html' %}
                                 <div class="fr-col-1">
-                                    {% if user not in meeting.is_favorite %}
+                                    {% if user not in meeting.favorite_of %}
                                         <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line" title="{% trans %}Ajouter aux favoris{% endtrans %}">
                                             {% trans %}Label bouton{% endtrans %}
                                         </button>

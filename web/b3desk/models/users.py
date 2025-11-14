@@ -92,7 +92,7 @@ class User(db.Model):
         "Meeting", secondary=delegate_table, back_populates="delegates"
     )
     favorites = db.relationship(
-        "Meeting", secondary=favorite_table, back_populates="is_favorite"
+        "Meeting", secondary=favorite_table, back_populates="favorite_of"
     )
 
     @property
