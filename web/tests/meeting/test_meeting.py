@@ -880,35 +880,20 @@ def test_add_and_remove_favorite(
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
-    assert not meeting_3.is_favorite
+    assert authenticated_user not in meeting_3.is_favorite
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
-    assert meeting_3.is_favorite
+    assert authenticated_user in meeting_3.is_favorite
 
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
-    assert not meeting_3.is_favorite
-
-
-def test_add_favorite_by_wrong_user_failed(
-    client_app,
-    bbb_response,
-    authenticated_user_2,
-    meeting,
-    meeting_2,
-    meeting_3,
-    shadow_meeting,
-):
-    """Test that user cannot favorite another user's meeting."""
-    response = client_app.get("/welcome", status=200)
-    response.mustcontain("Berenice Cooler")
-    response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
+    assert authenticated_user not in meeting_3.is_favorite
 
 
 def test_create_meeting_with_wrong_PIN(

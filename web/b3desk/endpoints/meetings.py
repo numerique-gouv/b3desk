@@ -393,11 +393,10 @@ def meeting_favorite():
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-
-    if meeting.user_id != user.id:
-        abort(403)
-
-    meeting.is_favorite = not meeting.is_favorite
+    if user in meeting.is_favorite:
+        meeting.is_favorite.remove(user)
+    else:
+        meeting.is_favorite.append(user)
     db.session.commit()
     meeting.save()
 

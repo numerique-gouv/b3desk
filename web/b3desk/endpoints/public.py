@@ -96,7 +96,7 @@ def welcome():
     favorite_meetings = []
     if favorite_filter:
         favorite_meetings = [
-            meeting for meeting in user.meetings if meeting.is_favorite
+            meeting for meeting in user.meetings if user in meeting.is_favorite
         ]
         if favorite_meetings:
             meetings = favorite_meetings

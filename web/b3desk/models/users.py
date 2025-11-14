@@ -15,6 +15,8 @@ from datetime import timezone
 
 from flask import current_app
 
+from b3desk.models.intermediate_tables import delegate_table
+from b3desk.models.intermediate_tables import favorite_table
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
 
@@ -86,6 +88,12 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
     meetings = db.relationship("Meeting", back_populates="user")
+    delegated_meetings = db.relationship(
+        "Meeting", secondary=delegate_table, back_populates="delegates"
+    )
+    favorites = db.relationship(
+        "Meeting", secondary=favorite_table, back_populates="is_favorite"
+    )
 
     @property
     def fullname(self):
