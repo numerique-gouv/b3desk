@@ -408,3 +408,9 @@ def meeting_favorite():
 def get_available_visio_code():
     """Generate and return an available unique visio code."""
     return jsonify(available_visio_code=unique_visio_code_generation())
+
+
+@bp.route("/meeting/manage-delegation")
+@auth.oidc_auth("default")
+def manage_delegation():
+    return

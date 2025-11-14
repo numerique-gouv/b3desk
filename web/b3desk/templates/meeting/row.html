@@ -36,8 +36,16 @@
             <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
                 {% trans %}Inviter{% endtrans %}
             </button>
+            {% if meeting in user.delegated_meetings %}
+                <i class="fr-icon-team-line" aria-hidden="true" title="{% trans meeting_name=meeting.name %}Vous êtes délégataire de {{ meeting_name }}{% endtrans %}"></i>
+            {% endif %}
         </div>
         <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
+            {% if meeting in user.meetings %}
+                <a href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
+                    {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
+                </a>
+            {% endif %}
             {% if config.get("RECORDING") %}
                 <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
                     {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
@@ -47,9 +55,11 @@
             {% if config.get("FILE_SHARING") %}
                 <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}</a>
             {% endif %}
-            <button class="fr-btn fr-btn--secondary fr-fi-delete-line"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
-                {% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}
-            </button>
+            {% if meeting in user.meetings %}
+                <button class="fr-btn fr-btn--secondary fr-fi-delete-line"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
+                    {% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}
+                </button>
+            {% endif %}
         </div>
     {% endif %}
 </div>

@@ -403,6 +403,26 @@ def meeting_3(client_app, user):
 
 
 @pytest.fixture
+def meeting_1_user_2(client_app, user, user_2):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        user=user_2,
+        name="delegated meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="222222223",
+        visio_code="922222223",
+        delegates=[user],
+    )
+    meeting.save()
+
+    yield meeting
+
+
+@pytest.fixture
 def shadow_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
