@@ -33,13 +33,6 @@ def mock_meeting_is_not_running(mocker):
     mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
 
 
-def test_show_meeting(client_app, authenticated_user, meeting, bbb_response):
-    """Test that meeting details page displays correctly."""
-    response = client_app.get(f"/meeting/show/{meeting.id}", status=200)
-
-    assert "meeting/show.html" in response.contexts
-
-
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
     """Test that meeting recordings page displays correctly."""
     response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)

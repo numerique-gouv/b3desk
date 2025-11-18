@@ -23,7 +23,6 @@ from b3desk.forms import EndMeetingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
-from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
@@ -36,7 +35,6 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
-from ..session import should_display_captcha
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
@@ -97,30 +95,6 @@ def quick_meeting():
         meeting.get_join_url(
             Role.moderator, user.fullname, create=True, quick_meeting=True
         )
-    )
-
-
-@bp.route("/meeting/show/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def show_meeting(meeting: Meeting, owner: User):
-    """Display the meeting details page with sharing links."""
-    # TODO: appears unused
-
-    form = ShowMeetingForm(data={"meeting_id": meeting.id})
-    if not form.validate():
-        flash(
-            _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
-            "warning",
-        )
-        return redirect(url_for("public.welcome"))
-
-    return render_template(
-        "meeting/show.html",
-        meeting_mailto_params=meeting_mailto_params,
-        meeting=meeting,
-        should_display_captcha=should_display_captcha(),
     )
 
 
