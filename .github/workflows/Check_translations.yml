@@ -35,7 +35,8 @@ jobs:
           # Filter out auto-generated headers and line number comments from current catalog
           grep -v '^"POT-Creation-Date:' web/translations/messages.pot | \
           grep -v '^"Generated-By:' | \
-          grep -v '^#:' > /tmp/messages.pot.before
+          grep -v '^#:' | \
+          grep -v '^#,' > /tmp/messages.pot.before
 
       - name: Extract translation strings
         run: make translation-extract
@@ -45,7 +46,8 @@ jobs:
           # Filter out auto-generated headers and line number comments from new catalog
           grep -v '^"POT-Creation-Date:' web/translations/messages.pot | \
           grep -v '^"Generated-By:' | \
-          grep -v '^#:' > /tmp/messages.pot.after
+          grep -v '^#:' | \
+          grep -v '^#,' > /tmp/messages.pot.after
 
       - name: Check for uncommitted changes in catalogs
         run: |
