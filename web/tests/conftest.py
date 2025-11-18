@@ -82,11 +82,16 @@ def iam_token(iam_server, iam_client, iam_user):
     iam_server.backend.delete(iam_token)
 
 
-@pytest.fixture
-def configuration(tmp_path, iam_server, iam_client, request):
-    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+@pytest.fixture(scope="session")
+def private_key():
+    private_key = RSAKey.generate_key(1024, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
+    return private_pem_str
+
+
+@pytest.fixture
+def configuration(tmp_path, iam_server, iam_client, request, private_key):
     configuration = {
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
@@ -126,7 +131,7 @@ def configuration(tmp_path, iam_server, iam_client, request):
         "ENABLE_PIN_MANAGEMENT": True,
         "ENABLE_SIP": True,
         "FQDN_SIP_SERVER": "example.serveur.com",
-        "PRIVATE_KEY": private_pem_str,
+        "PRIVATE_KEY": private_key,
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
