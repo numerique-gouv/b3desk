@@ -19,11 +19,17 @@
                     <div class="fr-table__container">
                         <div class="fr-table__content">
                             <table id="delegation">
-                                <tbody>
+                                <thead class="fr-container--fluid">
+                                    <tr class="fr-grid-row">
+                                        <th class="fr-col-8"> Délégataires </th>
+                                        <th class="fr-col-4"> {{ meeting.delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fr-container--fluid">
                                     {% for delegate in meeting.delegates %}
-                                        <tr>
-                                            <td> <i class="ri-account-circle-line"></i> {{delegate.preferred_username}} </td>
-                                            <td class="btn-actions">
+                                        <tr class="fr-grid-row">
+                                            <td class="fr-col-8"> {{delegate.preferred_username}} </td>
+                                            <td class="fr-col-4">
                                                 <a class="fr-btn fr-btn--secondary fr-fi-delete-line" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
                                             </td>
                                         </tr>
