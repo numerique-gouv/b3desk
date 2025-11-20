@@ -432,7 +432,7 @@ def manage_delegation(meeting: Meeting, owner: User):
         if user is None:
             flash(_("L'utilisateur recherché n'existe pas"), "error")
         elif user in meeting.delegates:
-            flash(_("L'utilisateur est déjà délégataire"), "success")
+            flash(_("L'utilisateur est déjà délégataire"), "warning")
         elif len(meeting.delegates) >= current_app.config["MAXIMUM_MEETING_DELEGATES"]:
             flash(
                 _(
@@ -444,7 +444,7 @@ def manage_delegation(meeting: Meeting, owner: User):
         else:
             meeting.delegates.append(user)
             meeting.save()
-            flash(_("L'utilisateur a été ajouté aux délégataires"), "warning")
+            flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
 
     return render_template(
         "meeting/delegation.html",
