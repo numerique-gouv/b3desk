@@ -37,21 +37,27 @@ def get_authenticated_attendee_fullname():
     return fullname
 
 
-def meeting_owner_needed(view_function):
+def meeting_permission_required(delegate=False):
     """Require that the authenticated user owns the meeting."""
 
-    @wraps(view_function)
-    def decorator(*args, **kwargs):
-        if not has_user_session():
-            abort(403)
+    def wrapper(view_function):
+        @wraps(view_function)
+        def decorator(*args, **kwargs):
+            if not has_user_session():
+                abort(403)
 
-        user = get_current_user()
-        if not user or kwargs["meeting"].user != user:
-            abort(403)
+            user = get_current_user()
+            if not user or (
+                kwargs["meeting"].user != user
+                and (delegate and user not in kwargs["meeting"].delegates)
+            ):
+                abort(403)
 
-        return view_function(*args, owner=user, **kwargs)
+            return view_function(*args, owner=user, **kwargs)
 
-    return decorator
+        return decorator
+
+    return wrapper
 
 
 def visio_code_attempt_counter_increment():

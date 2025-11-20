@@ -19,6 +19,7 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.forms import DelegationSearchForm
 from b3desk.forms import EndMeetingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
@@ -34,7 +35,8 @@ from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_current_user
-from ..session import meeting_owner_needed
+from ..session import meeting_permission_required
+from ..session import should_display_captcha
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
@@ -101,7 +103,7 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required(delegate=True)
 def show_meeting_recording(meeting: Meeting, owner: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
@@ -116,7 +118,7 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required(delegate=True)
 def update_recording_name(meeting: Meeting, recording_id, owner: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
@@ -160,7 +162,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required(delegate=True)
 def edit_meeting(meeting: Meeting, owner: User):
     """Display the form to edit an existing meeting."""
     form = (
@@ -280,7 +282,7 @@ def end_meeting():
 @bp.route("/meeting/create/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required()
 def create_meeting(meeting: Meeting, owner: User):
     """Create the meeting on BBB server."""
     meeting.create_bbb()
@@ -294,7 +296,7 @@ def create_meeting(meeting: Meeting, owner: User):
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required()
 def external_upload(meeting: Meeting, owner: User):
     """Display the nextcloud file selector.
 
@@ -355,7 +357,7 @@ def delete_video_meeting():
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-    if meeting.user_id == user.id:
+    if meeting.user_id == user.id or user in meeting.delegates:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)
         return_code = data.get("returncode")
@@ -410,7 +412,57 @@ def get_available_visio_code():
     return jsonify(available_visio_code=unique_visio_code_generation())
 
 
-@bp.route("/meeting/manage-delegation")
+@bp.route("/meeting/manage-delegation/<meeting:meeting>", methods=["GET", "POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def manage_delegation():
-    return
+@meeting_permission_required()
+def manage_delegation(meeting: Meeting, owner: User):
+    """Display the page for manage meeting delegation."""
+    form = DelegationSearchForm(request.form)
+    if request.form and form.validate():
+        data = form.search.data
+        user = (
+            db.session.query(User)
+            .filter(
+                User.email == data,
+                owner.email != User.email,
+            )
+            .first()
+        )
+        if user is None:
+            flash(_("L'utilisateur recherché n'existe pas"), "error")
+        elif user in meeting.delegates:
+            flash(_("L'utilisateur est déjà délégataire"), "success")
+        elif len(meeting.delegates) >= current_app.config["MAXIMUM_MEETING_DELEGATES"]:
+            flash(
+                _(
+                    "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
+                    meeting_label=current_app.config["WORDINGS"]["this_meeting"],
+                ),
+                "warning",
+            )
+        else:
+            meeting.delegates.append(user)
+            meeting.save()
+            flash(_("L'utilisateur a été ajouté aux délégataires"), "warning")
+
+    return render_template(
+        "meeting/delegation.html",
+        meeting=meeting,
+        form=form,
+    )
+
+
+@bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_permission_required()
+def remove_delegate(meeting: Meeting, owner: User, delegate: User):
+    if delegate not in meeting.delegates:
+        flash(_("L'utilisateur ne fait pas partie des délégataires"), "warning")
+    else:
+        meeting.delegates.remove(delegate)
+        meeting.save()
+        flash(_("L'utilisateur a été retiré des délégataires"), "success")
+
+    return redirect(url_for("meetings.manage_delegation", meeting=meeting))

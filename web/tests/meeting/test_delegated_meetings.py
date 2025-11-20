@@ -57,3 +57,51 @@ def test_add_and_remove_favorite_delegated_meeting(
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
     assert authenticated_user not in meeting_1_user_2.favorite_of
+
+
+def test_delegate_can_launch_delegated_meeting(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that delegate can launch delegated meeting as owner."""
+    response = client_app.get(
+        f"/meeting/join/{meeting_1_user_2.id}/moderateur", status=302
+    )
+    assert (
+        "https://bbb.test/join?fullName=Alice+Cooper&meetingID=meeting-persistent-1"
+        in response.location
+    )
+
+
+def test_delegate_can_see_records_of_delegated_meeting(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that delegate can see and manage records of a delegated meeting as owner."""
+    client_app.get("/meeting/recordings/1", status=200)
+
+
+def test_delegate_can_edit_delegated_meeting(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that meeting edit form displays as owner."""
+    response = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}", status=200)
+    assert response.template == "meeting/wizard.html"
+
+
+def test_delegate_can_see_delegated_meeting_files(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that meeting see delegated meeting files as owner."""
+    response = client_app.get(f"/meeting/files/{meeting_1_user_2.id}", status=200)
+    assert response.template == "meeting/filesform.html"

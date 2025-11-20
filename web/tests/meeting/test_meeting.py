@@ -1116,3 +1116,72 @@ def test_get_available_visio_code(client_app, authenticated_user):
 def test_get_available_visio_code_no_user(client_app):
     """Test that unauthenticated user is redirected from visio code endpoint."""
     client_app.get("/meeting/available-visio-code", status=302)
+
+
+def test_delegate_can_save_existing_delegated_meeting_not_running(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    """Test that existing meeting can be updated when not running."""
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.form["name"] = "Mon meeting de test"
+    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["guestPolicy"] = "on"
+    res.form["webcamsOnlyForModerator"] = "on"
+    res.form["muteOnStart"] = "on"
+    res.form["lockSettingsDisableCam"] = False
+    res.form["lockSettingsDisableMic"] = False
+    res.form["lockSettingsDisablePrivateChat"] = False
+    res.form["lockSettingsDisablePublicChat"] = False
+    res.form["lockSettingsDisableNote"] = False
+    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.form["logoutUrl"] = "https://log.out"
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
+    res.form["autoStartRecording"] = "on"
+    res.form["allowStartStopRecording"] = "on"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        res.form["voiceBridge"] = "123456789"
+
+    res = res.form.submit()
+    assert (
+        "success",
+        "delegated meeting modifications prises en compte",
+    ) in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+
+    assert meeting.user_id == 2
+    assert meeting.name == "delegated meeting"  # Name can not be edited
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+    assert meeting.maxParticipants == 5
+    assert meeting.duration == 60
+    assert meeting.guestPolicy is True
+    assert meeting.webcamsOnlyForModerator is True
+    assert meeting.muteOnStart is True
+    assert meeting.lockSettingsDisableCam is True
+    assert meeting.lockSettingsDisableMic is True
+    assert meeting.lockSettingsDisablePrivateChat is True
+    assert meeting.lockSettingsDisablePublicChat is True
+    assert meeting.lockSettingsDisableNote is True
+    assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
+    assert meeting.logoutUrl == "https://log.out"
+    assert meeting.moderatorPW == "Motdepasse1"
+    assert meeting.attendeePW == "Motdepasse2"
+    assert meeting.record is True
+    assert meeting.autoStartRecording is True
+    assert meeting.allowStartStopRecording is True
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        assert meeting.voiceBridge == "123456789"
+    assert (
+        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        in caplog.text
+    )

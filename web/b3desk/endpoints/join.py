@@ -30,7 +30,7 @@ from .. import auth
 from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
-from ..session import meeting_owner_needed
+from ..session import meeting_permission_required
 from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
@@ -300,7 +300,7 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
+@meeting_permission_required(delegate=True)
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     """Join a meeting as the owner with a specific role."""
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
