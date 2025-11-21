@@ -29,7 +29,22 @@ from .users import User
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
 
-class MeetingFiles(db.Model):
+def get_meeting_file_hash(meeting_file_id, isexternal):
+    return hashlib.sha1(
+        f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file_id}-{current_app.config['SECRET_KEY']}".encode()
+    ).hexdigest()
+
+
+class BaseMeetingFiles:
+    def __init__(self, id=None, title=None, nc_path=None, meeting_id=None, **kwargs):
+        self.id = id
+        self.title = title
+        self.nc_path = nc_path
+        self.meeting_id = meeting_id
+        super().__init__(**kwargs)
+
+
+class MeetingFiles(BaseMeetingFiles, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Unicode(4096))
     url = db.Column(db.Unicode(4096))
@@ -60,24 +75,6 @@ class MeetingFiles(db.Model):
         db.session.commit()
 
 
-class MeetingFilesExternal(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(4096))
-    nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-
-    meeting = db.relationship("Meeting", back_populates="externalFiles")
-
-    def update(self):
-        """Commit changes to the database."""
-        db.session.commit()
-
-    def save(self):
-        """Save the external meeting file to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -88,7 +85,6 @@ class Meeting(db.Model):
     is_favorite = db.Column(db.Boolean, unique=False, default=False)
     user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
-    externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)

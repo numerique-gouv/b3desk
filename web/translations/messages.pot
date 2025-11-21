@@ -143,7 +143,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:151 web/b3desk/models/meetings.py:497
+#: web/b3desk/forms.py:151 web/b3desk/models/meetings.py:493
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -329,56 +329,56 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:53
+#: web/b3desk/endpoints/meeting_files.py:54
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:144
+#: web/b3desk/endpoints/meeting_files.py:145
 msgid "Le fichier ne semble pas accessible"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:264
-#: web/b3desk/endpoints/meeting_files.py:347
+#: web/b3desk/endpoints/meeting_files.py:229
+#: web/b3desk/endpoints/meeting_files.py:312
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:299
+#: web/b3desk/endpoints/meeting_files.py:264
 msgid "La connexion avec Nextcloud est rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:324
-#: web/b3desk/endpoints/meeting_files.py:377
-#: web/b3desk/endpoints/meeting_files.py:435
-#: web/b3desk/endpoints/meeting_files.py:469
+#: web/b3desk/endpoints/meeting_files.py:289
+#: web/b3desk/endpoints/meeting_files.py:342
+#: web/b3desk/endpoints/meeting_files.py:400
+#: web/b3desk/endpoints/meeting_files.py:436
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:339
+#: web/b3desk/endpoints/meeting_files.py:304
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:400
-#: web/b3desk/endpoints/meeting_files.py:635
+#: web/b3desk/endpoints/meeting_files.py:365
+#: web/b3desk/endpoints/meeting_files.py:534
 msgid "La connexion avec Nextcloud semble rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:407
+#: web/b3desk/endpoints/meeting_files.py:372
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:478
+#: web/b3desk/endpoints/meeting_files.py:445
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:508
-#: web/b3desk/endpoints/meetings.py:348
+#: web/b3desk/endpoints/meeting_files.py:475
+#: web/b3desk/endpoints/meetings.py:372
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:525
+#: web/b3desk/endpoints/meeting_files.py:492
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
@@ -428,7 +428,7 @@ msgstr ""
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:365
+#: web/b3desk/endpoints/meetings.py:389
 msgid "Vidéo supprimée"
 msgstr ""
 

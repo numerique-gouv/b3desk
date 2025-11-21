@@ -345,10 +345,10 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -444,10 +444,10 @@ def test_create_with_only_a_default_file(
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -543,10 +543,10 @@ def test_create_with_files(
         "lockSettingsDisableNote": "false",
         "guestPolicy": "ASK_MODERATOR",
         "checksum": mock.ANY,
-        "uploadExternalDescription": client_app.app.config[
+        "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "uploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -563,14 +563,11 @@ def test_create_with_files(
         f"{secret_key}-0-{meeting_file.id}-{secret_key}".encode()
     ).hexdigest()
 
-    assert (
-        mocked_background_upload.call_args.args[1]
-        == "<?xml version='1.0' encoding='UTF-8'?> "
-        + "<modules>  "
-        + "<module name='presentation'> "
-        + f"<document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/file_title' filename='file_title' /> "
-        + "</module>"
-        + "</modules>"
+    assert mocked_background_upload.call_args.args[1].startswith(
+        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/1//"
+    )
+    assert mocked_background_upload.call_args.args[1].endswith(
+        "test_create_with_files0/foobar.jpg' filename='file_title' /> </module></modules>"
     )
 
 
@@ -637,8 +634,8 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",
-        "uploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
-        "uploadExternalDescription": "Fichiers depuis votre Nextcloud",
+        "presentationUploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
+        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "attendeePW": meeting.attendeePW,
         "moderatorPW": meeting.moderatorPW,
         "logoutURL": "http://education.gouv.fr/",
