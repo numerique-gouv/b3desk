@@ -29,7 +29,8 @@ def delete_old_shadow_meetings():
 
 
 @bp.cli.command("generate-private-key")
-def generate_private_key():
+@click.option("--size", default=2048, help="RSA key size in bits")
+def generate_private_key(size):
     """CLI command to generate a new RSA private key for JWT signing."""
     from joserfc.jwk import RSAKey
 
@@ -48,7 +49,7 @@ def generate_private_key():
             != "y"
         ):
             exit()
-    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+    private_key = RSAKey.generate_key(size, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
     print("private key to save in settings")

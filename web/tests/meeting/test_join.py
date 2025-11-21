@@ -274,7 +274,7 @@ def test_join_meeting_with_sip_connect_wrong_visio_code(client_app):
 
 def test_join_meeting_with_sip_connect_wrong_token(client_app):
     """Test that SIP connect with wrong token signature returns 401."""
-    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+    private_key = RSAKey.generate_key(1024, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_key_from_settings = RSAKey.import_key(private_pem_bytes)
     header = {"alg": "RS256", "typ": "JWT"}

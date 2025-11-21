@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-07 15:08+0100\n"
+"POT-Creation-Date: 2025-11-18 12:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -382,53 +382,49 @@ msgstr ""
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:67
+#: web/b3desk/endpoints/meetings.py:65
 msgid ""
 "Courriel invalide. Avez vous bien tapé votre email ? Vous pouvez "
 "réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:75
+#: web/b3desk/endpoints/meetings.py:73
 msgid ""
 "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez "
 "à un service de l'État mais votre courriel n'est pas reconnu par "
 "Webinaire, contactez-nous pour que nous le rajoutions !"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:85
+#: web/b3desk/endpoints/meetings.py:83
 msgid "Vous avez reçu un courriel pour vous connecter"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:114
-msgid "Vous ne pouvez pas voir cet élément (identifiant incorrect)"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:155
+#: web/b3desk/endpoints/meetings.py:129
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:160
+#: web/b3desk/endpoints/meetings.py:134
 #, python-brace-format
 msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:222
+#: web/b3desk/endpoints/meetings.py:196
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:268
+#: web/b3desk/endpoints/meetings.py:242
 #, python-brace-format
 msgid "{meeting_name} modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:355
+#: web/b3desk/endpoints/meetings.py:331
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:364
+#: web/b3desk/endpoints/meetings.py:340
 msgid "Élément supprimé"
 msgstr ""
 
@@ -436,12 +432,12 @@ msgstr ""
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:401
+#: web/b3desk/endpoints/meetings.py:377
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:409
+#: web/b3desk/endpoints/meetings.py:385
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
