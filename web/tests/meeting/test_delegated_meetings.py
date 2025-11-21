@@ -105,3 +105,191 @@ def test_delegate_can_see_delegated_meeting_files(
     """Test that meeting see delegated meeting files as owner."""
     response = client_app.get(f"/meeting/files/{meeting_1_user_2.id}", status=200)
     assert response.template == "meeting/filesform.html"
+
+
+def test_delegate_cannot_delete_meeting(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that delegate cannot delete a delegated meeting."""
+    response = client_app.post("/meeting/delete", {"id": meeting_1_user_2.id})
+    assert ("error", "Vous ne pouvez pas supprimer cet élément") in response.flashes
+
+
+def test_owner_can_add_new_delegate(
+    client_app,
+    authenticated_user,
+    user_2,
+    meeting,
+    bbb_response,
+    caplog,
+):
+    """Test that delegate can add a new delegate."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.delegates
+    assert (
+        f"{user_2.email} became delegate of meeting {meeting.id} {meeting.name}"
+        in caplog.text
+    )
+
+
+def test_add_new_delegate_with_wrong_email(
+    client_app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+):
+    """Test there is a flash message when adding a wrong email."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "wrong@domain.tld"
+    response = form.submit()
+    assert ("error", "L'utilisateur recherché n'existe pas") in response.flashes
+    assert meeting.delegates == []
+
+
+def test_maximum_delegate_number_limit(
+    client_app,
+    authenticated_user,
+    meeting,
+    bbb_response,
+    user_2,
+    user_3,
+):
+    """Test that owner cannot add a new delegate beyong the MAXIMUM_MEETING_DELEGATES."""
+    client_app.app.config["MAXIMUM_MEETING_DELEGATES"] = 1
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.delegates
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "charlie@domain.tld"
+    response = form.submit()
+    assert (
+        "warning",
+        "ce séminaire ne peut plus recevoir de nouvelle délégation",
+    ) in response.flashes
+    assert user_3 not in meeting.delegates
+
+
+def test_owner_cannot_add_himself_as_delegate(
+    client_app,
+    authenticated_user,
+    user,
+    meeting,
+    bbb_response,
+):
+    """Test that owner cannot add himself as delegate."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "alice@domain.tld"
+    response = form.submit()
+    assert ("error", "L'utilisateur recherché n'existe pas") in response.flashes
+    assert meeting.delegates == []
+
+
+def test_add_delegate_who_is_already_delegate(
+    client_app,
+    authenticated_user,
+    user,
+    meeting,
+    bbb_response,
+    user_2,
+):
+    """Test that there is a flash message when adding a delegate aready delegate."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.delegates
+
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert ("warning", "L'utilisateur est déjà délégataire") in response.flashes
+    assert len(meeting.delegates) == 1
+
+
+def test_owner_can_remove_delegation(
+    client_app,
+    authenticated_user,
+    user,
+    meeting,
+    bbb_response,
+    user_2,
+    caplog,
+):
+    """Test that owner can remove delegation."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.delegates
+    response = client_app.get("/meeting/remove-delegation/1/2", status=302)
+    assert (
+        "success",
+        "L'utilisateur a été retiré des délégataires",
+    ) in response.flashes
+    assert meeting.delegates == []
+    assert (
+        f"{user_2.email} removed from delegates of meeting {meeting.id} {meeting.name}"
+        in caplog.text
+    )
+
+
+def test_flash_message_when_delete_wrong_delegation(
+    client_app,
+    authenticated_user,
+    user,
+    meeting,
+    bbb_response,
+    user_2,
+):
+    """Test there is a flash message when owner delete a wrong delegation."""
+    response = client_app.get("/meeting/remove-delegation/1/2")
+    assert (
+        "error",
+        "L'utilisateur ne fait pas partie des délégataires",
+    ) in response.flashes
+
+
+def test_delegate_cannot_remove_delegation(
+    client_app, authenticated_user, user, meeting_1_user_2, bbb_response, user_2
+):
+    """Test that delegate cannot remove delegation."""
+    client_app.get("/meeting/remove-delegation/1/1", status=403)
+    assert user in meeting_1_user_2.delegates
+
+
+def test_delegate_cannot_access_delegation_page(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test that delegate cannot access to the delegation page of a delegated meeting."""
+    client_app.get("/meeting/manage-delegation/1", status=403)

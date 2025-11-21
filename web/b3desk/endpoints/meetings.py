@@ -103,7 +103,7 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def show_meeting_recording(meeting: Meeting, owner: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
@@ -118,7 +118,7 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def update_recording_name(meeting: Meeting, recording_id, owner: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
@@ -162,7 +162,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def edit_meeting(meeting: Meeting, owner: User):
     """Display the form to edit an existing meeting."""
     form = (
@@ -445,6 +445,12 @@ def manage_delegation(meeting: Meeting, owner: User):
             meeting.delegates.append(user)
             meeting.save()
             flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
+            current_app.logger.info(
+                "%s became delegate of meeting %s %s",
+                user.email,
+                meeting.id,
+                meeting.name,
+            )
 
     return render_template(
         "meeting/delegation.html",
@@ -459,10 +465,15 @@ def manage_delegation(meeting: Meeting, owner: User):
 @meeting_permission_required()
 def remove_delegate(meeting: Meeting, owner: User, delegate: User):
     if delegate not in meeting.delegates:
-        flash(_("L'utilisateur ne fait pas partie des délégataires"), "warning")
+        flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
         meeting.delegates.remove(delegate)
         meeting.save()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
-
+        current_app.logger.info(
+            "%s removed from delegates of meeting %s %s",
+            delegate.email,
+            meeting.id,
+            meeting.name,
+        )
     return redirect(url_for("meetings.manage_delegation", meeting=meeting))

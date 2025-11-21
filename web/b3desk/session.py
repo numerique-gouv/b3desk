@@ -37,23 +37,32 @@ def get_authenticated_attendee_fullname():
     return fullname
 
 
-def meeting_permission_required(delegate=False):
+def meeting_permission_required(allow_delegate=False):
+    from b3desk.models import db
+    from b3desk.models.meetings import Meeting
+
     """Require that the authenticated user owns the meeting."""
 
     def wrapper(view_function):
         @wraps(view_function)
-        def decorator(*args, **kwargs):
+        def decorator(*args, meeting, **kwargs):
             if not has_user_session():
                 abort(403)
-
             user = get_current_user()
-            if not user or (
-                kwargs["meeting"].user != user
-                and (delegate and user not in kwargs["meeting"].delegates)
+            if not user:
+                abort(403)
+
+            meeting = db.session.get(Meeting, meeting.id)
+
+            is_owner = meeting.user == user
+            is_delegate = user in meeting.delegates
+
+            if (not allow_delegate and not is_owner) or (
+                allow_delegate and not is_owner and not is_delegate
             ):
                 abort(403)
 
-            return view_function(*args, owner=user, **kwargs)
+            return view_function(*args, owner=user, meeting=meeting, **kwargs)
 
         return decorator
 

@@ -221,6 +221,21 @@ def iam_user_2(iam_server):
 
 
 @pytest.fixture
+def iam_user_3(iam_server):
+    iam_user_3 = iam_server.random_user(
+        id="user_id3",
+        emails=["charlie@domain.tld"],
+        given_name="Charlie",
+        user_name="Charlie_user_name",
+        family_name="Crooner",
+    )
+    iam_server.backend.save(iam_user_3)
+
+    yield iam_user_3
+    iam_server.backend.delete(iam_user_3)
+
+
+@pytest.fixture
 def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
@@ -506,6 +521,20 @@ def user_2(client_app, iam_user_2):
     user_2.save()
 
     yield user_2
+
+
+@pytest.fixture
+def user_3(client_app, iam_user_3):
+    from b3desk.models.users import User
+
+    user_3 = User(
+        email=iam_user_3.emails[0],
+        given_name=iam_user_3.given_name,
+        family_name=iam_user_3.family_name,
+    )
+    user_3.save()
+
+    yield user_3
 
 
 @pytest.fixture

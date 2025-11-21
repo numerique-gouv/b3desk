@@ -45,7 +45,7 @@ bp = Blueprint("meeting_files", __name__)
 @bp.route("/meeting/files/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def edit_meeting_files(meeting: Meeting, owner: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
@@ -67,7 +67,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def add_meeting_files(meeting: Meeting, owner: User):
     """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
     data = request.get_json()
@@ -95,7 +95,7 @@ def add_meeting_files(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     """Download a meeting file from URL or Nextcloud."""
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
@@ -172,7 +172,7 @@ def insertDocuments(meeting: Meeting):
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def toggledownload(meeting: Meeting, owner: User):
     """Toggle the downloadable status of a meeting file."""
     data = request.get_json()
@@ -189,7 +189,7 @@ def toggledownload(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def set_meeting_default_file(meeting: Meeting, owner: User):
     """Set a file as the default file for a meeting."""
     data = request.get_json()
@@ -416,7 +416,7 @@ def create_external_meeting_file(path, meeting_id):
 @bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(delegate=True)
+@meeting_permission_required(allow_delegate=True)
 def add_dropzone_files(meeting: Meeting, owner: User):
     """Handle chunked file uploads from dropzone."""
     file = request.files["dropzoneFiles"]
