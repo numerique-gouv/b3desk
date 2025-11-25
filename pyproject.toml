@@ -62,6 +62,7 @@ dev = [
     # This is used to allow flask-webtest > webtest > webob to be compatible with py3.13+
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
     "tox-uv>=1.28.0",
+    "diff-cover>=9.7.2",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",

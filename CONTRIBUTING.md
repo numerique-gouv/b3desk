@@ -114,6 +114,12 @@ La CI GitHub est utilisée pour :
 - valider que la couverture de test est au moins égale à la couverture précédente : pour inciter à ajouter des tests
 - valider que le code a bien été formaté : un `ruff check .` est lancé
 
+#### Vérification de la couverture
+Vous pouvez anticiper anticiper la validation de couverture effectuée par la CI de GitHub avec :
+```bash
+uv run pytest --cov --cov-report=xml && diff-cover coverage.xml --compare-branch=main --html-report diff-coverage.html && xdg-open diff-coverage.html
+```
+
 ### Pull requests
 
 Les commit ne sont pas réalisés directement sur le dépot principal du projet. Pour contribuer, il est nécessaire de faire un [fork](https://help.github.com/articles/fork-a-repo/) et de proposer des pull request.
