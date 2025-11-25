@@ -4,6 +4,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from tests.meeting.test_delegated_meetings import create_delegate_permission_for_user
 
 
 @pytest.fixture
@@ -218,6 +219,7 @@ def test_delegate_can_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
+    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
     recordings = meeting_1_user_2.bbb.get_recordings()
 

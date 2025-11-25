@@ -55,7 +55,7 @@ def meeting_permission_required(allow_delegate=False):
             meeting = db.session.get(Meeting, meeting.id)
 
             is_owner = meeting.user == user
-            is_delegate = user in meeting.delegates
+            is_delegate = meeting in user.get_all_delegated_meetings
 
             if (not allow_delegate and not is_owner) or (
                 allow_delegate and not is_owner and not is_delegate

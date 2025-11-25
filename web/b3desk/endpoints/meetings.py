@@ -25,6 +25,8 @@ from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
+from b3desk.models.intermediate_tables import Permission
+from b3desk.models.intermediate_tables import get_permission
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
@@ -36,7 +38,6 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_permission_required
-from ..session import should_display_captcha
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_quick_meeting_mail
@@ -357,7 +358,7 @@ def delete_video_meeting():
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-    if meeting.user_id == user.id or user in meeting.delegates:
+    if meeting.user_id == user.id or user in meeting.get_all_delegates:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)
         return_code = data.get("returncode")
@@ -421,7 +422,7 @@ def manage_delegation(meeting: Meeting, owner: User):
     form = DelegationSearchForm(request.form)
     if request.form and form.validate():
         data = form.search.data
-        user = (
+        new_delegate = (
             db.session.query(User)
             .filter(
                 User.email == data,
@@ -429,11 +430,14 @@ def manage_delegation(meeting: Meeting, owner: User):
             )
             .first()
         )
-        if user is None:
+        if new_delegate is None:
             flash(_("L'utilisateur recherché n'existe pas"), "error")
-        elif user in meeting.delegates:
+        elif new_delegate in meeting.get_all_delegates:
             flash(_("L'utilisateur est déjà délégataire"), "warning")
-        elif len(meeting.delegates) >= current_app.config["MAXIMUM_MEETING_DELEGATES"]:
+        elif (
+            len(meeting.get_all_delegates)
+            >= current_app.config["MAXIMUM_MEETING_DELEGATES"]
+        ):
             flash(
                 _(
                     "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
@@ -442,12 +446,16 @@ def manage_delegation(meeting: Meeting, owner: User):
                 "warning",
             )
         else:
-            meeting.delegates.append(user)
-            meeting.save()
+            permission = Permission(
+                meeting_id=meeting.id,
+                user_id=new_delegate.id,
+                permission=1,
+            )
+            permission.save()
             flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
             current_app.logger.info(
                 "%s became delegate of meeting %s %s",
-                user.email,
+                new_delegate.email,
                 meeting.id,
                 meeting.name,
             )
@@ -464,11 +472,12 @@ def manage_delegation(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_permission_required()
 def remove_delegate(meeting: Meeting, owner: User, delegate: User):
-    if delegate not in meeting.delegates:
+    if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
-        meeting.delegates.remove(delegate)
-        meeting.save()
+        permission = get_permission(delegate.id, meeting.id)
+        db.session.delete(permission)
+        db.session.commit()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
         current_app.logger.info(
             "%s removed from delegates of meeting %s %s",

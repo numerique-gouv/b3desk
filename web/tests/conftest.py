@@ -430,7 +430,6 @@ def meeting_1_user_2(client_app, user, user_2):
         attendeePW="attendee",
         voiceBridge="222222223",
         visio_code="922222223",
-        delegates=[user],
     )
     meeting.save()
 

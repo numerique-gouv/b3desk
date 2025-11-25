@@ -19,7 +19,7 @@ from flask_babel import lazy_gettext as _
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
-from b3desk.models.intermediate_tables import delegate_table
+from b3desk.models.intermediate_tables import Permission
 from b3desk.models.intermediate_tables import favorite_table
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
@@ -117,9 +117,6 @@ class Meeting(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     user = db.relationship("User")
-    delegates = db.relationship(
-        "User", secondary=delegate_table, back_populates="delegated_meetings"
-    )
     favorite_of = db.relationship(
         "User", secondary=favorite_table, back_populates="favorites"
     )
@@ -351,6 +348,20 @@ class Meeting(db.Model):
         """End the BBB meeting."""
         data = self.bbb.end()
         return data and data["returncode"] == "SUCCESS"
+
+    @property
+    def get_all_delegates(self):
+        from b3desk.models.users import User
+
+        meeting_delegate_permissions = Permission.query.filter_by(
+            meeting_id=self.id, permission=1
+        ).all()
+        delegates = []
+        for permission in meeting_delegate_permissions:
+            user = db.session.get(User, permission.user_id)
+            delegates.append(user)
+
+        return delegates
 
 
 class PreviousVoiceBridge(db.Model):

@@ -93,7 +93,7 @@ def welcome():
         order_key = "created_at"
 
     meetings = [meeting for meeting in user.meetings if not meeting.is_shadow] + [
-        meeting for meeting in user.delegated_meetings
+        meeting for meeting in user.get_all_delegated_meetings
     ]
     favorite_meetings = []
     if favorite_filter:

@@ -20,11 +20,11 @@
                                 <thead class="fr-container--fluid">
                                     <tr class="fr-grid-row">
                                         <th class="fr-col-8"> Délégataires </th>
-                                        <th class="fr-col-4"> {{ meeting.delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
+                                        <th class="fr-col-4"> {{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
                                     </tr>
                                 </thead>
                                 <tbody class="fr-container--fluid">
-                                    {% for delegate in meeting.delegates %}
+                                    {% for delegate in meeting.get_all_delegates %}
                                         <tr class="fr-grid-row">
                                             <td class="fr-col-8"> {{delegate.preferred_username}} </td>
                                             <td class="fr-col-4">

@@ -36,7 +36,7 @@
             <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
                 {% trans %}Inviter{% endtrans %}
             </button>
-            {% if meeting in user.delegated_meetings %}
+            {% if meeting in user.get_all_delegated_meetings %}
                 <i class="fr-icon-team-line" aria-hidden="true" title="{% trans meeting_name=meeting.name %}Vous êtes délégataire de {{ meeting_name }}{% endtrans %}"></i>
             {% endif %}
         </div>
