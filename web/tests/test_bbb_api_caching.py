@@ -3,7 +3,7 @@ import requests
 
 
 @pytest.fixture
-def configuration(configuration):
+def configuration(configuration, db):
     """Fixture that configures BBB API cache duration for testing."""
     configuration["BIGBLUEBUTTON_API_CACHE_DURATION"] = 5
     return configuration

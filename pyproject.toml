@@ -55,13 +55,16 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
     "pytest-iam>=0.2.4",
+    "pytest-lazy-fixtures>=1.0.0,<2.0.0",
     "pytest-mock>=3.11.1,<4.0.0",
+    "pytest-postgresql>=6.0.0,<7.0.0",
     "pytest-smtpd>=0.1.0,<0.2.0",
     "time-machine>=2.19.0,<3.0.0",
     "wsgidav>=4.3.1,<5.0.0",
     # This is used to allow flask-webtest > webtest > webob to be compatible with py3.13+
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
     "tox-uv>=1.28.0",
+    "diff-cover>=9.7.2",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",
@@ -123,29 +126,24 @@ requires = ["tox>=4.19"]
 env_list = ["style", "py310", "py311", "py312", "py313", "coverage", "doc"]
 
 [tool.tox.env_run_base]
+uv_seed = true
 dependency_groups = ["dev"]
-commands = [
-    ["pytest", "{posargs:web}"]
-]
+commands = [["pytest", "--db=sqlite", "--db=postgresql", "{posargs:web}"]]
 
 [tool.tox.env.style]
 dependency_groups = ["dev"]
-commands = [
-    ["prek", "run", "--all-files"]
-]
+commands = [["prek", "run", "--all-files"]]
 
 [tool.tox.env.coverage]
 dependency_groups = ["dev"]
 commands = [
-    ["pytest", "--cov", "--cov-report", "term:skip-covered", "{posargs:web}"],
-    ["coverage", "html"]
+    ["pytest", "--cov", "--cov-report", "term:skip-covered", "--db=sqlite", "--db=postgresql", "{posargs:web}"],
+    ["coverage", "html"],
 ]
 
 [tool.tox.env.doc]
 dependency_groups = ["doc"]
-commands = [
-    ["sphinx-build", "-W", "--keep-going", "documentation", "build/sphinx/html"]
-]
+commands = [["sphinx-build", "-W", "--keep-going", "documentation", "build/sphinx/html"]]
 
 [tool.coverage.run]
 branch = true
