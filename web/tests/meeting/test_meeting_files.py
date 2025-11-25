@@ -1,5 +1,10 @@
+import json
 import os
+from datetime import date
 
+import pytest
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import get_meeting_file_hash
 from flask import url_for
 from webdav3.exceptions import WebDavException
 
@@ -89,3 +94,104 @@ def test_add_dropzone_file(
 
     with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
         assert jpg_file_content == fd.read()
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+
+
+def test_external_upload_called_by_bbb(
+    client_app, authenticated_user, meeting, mock_meeting_is_running
+):
+    response = client_app.get("/meeting/1/externalUpload")
+    assert "meeting/external_upload.html" in vars(response)["contexts"]
+
+
+def test_insertDocuments(client_app, authenticated_user, meeting, mocker):
+    post_data = ["/folder/file1.pdf", "file2.jpg"]
+
+    mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
+    client_app.post(
+        f"/meeting/files/{meeting.id}/insertDocuments",
+        params=json.dumps(post_data),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        status=200,
+    )
+
+
+def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
+    class FakeClient:
+        def info(self, ncpath):
+            return {"content_type": "application/pdf"}
+
+        def download_sync(self, remote_path, local_path):
+            pass
+
+    meeting.user.nc_locator = "alice"
+    meeting.user.nc_token = "nctoken"
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.webdavClient", return_value=FakeClient()
+    )
+    mocked_send = mocker.patch(
+        "b3desk.endpoints.meeting_files.send_from_directory",
+        return_value="fake_response",
+    )
+
+    response = client_app.get(
+        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/666acf548b967aaa49c24efe1d9da24ce0d22d98/1//folder/file1.pdf"
+    ).follow()
+
+    assert "Service requesting file url folder/file1.pdf" in caplog.text
+    args, kwargs = mocked_send.call_args
+    assert kwargs["download_name"] == "file1.pdf"
+    assert kwargs["mimetype"] == "application/pdf"
+    assert response.body == b"fake_response"
+    args[0].startswith("/tmp/")
+    args[0].endswith("/test_ncdownload0")
+
+
+def test_ncdownload_with_file_not_in_db_abort_404(
+    client_app, authenticated_user, caplog
+):
+    client_app.get("/ncdownload/0/mfid/mftoken/1/badfile1.pdf", status=404)
+
+
+def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, caplog):
+    client_app.get(
+        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/invalid-token/1/folder/file1.pdf",
+        status=404,
+    )
+
+
+def test_ncdownload_webdav_exception_disables_nextcloud(
+    client_app, authenticated_user, meeting, mocker
+):
+    """Test that WebDAV exception disables Nextcloud for non-external MeetingFiles."""
+    meeting_file = MeetingFiles(
+        nc_path="/folder/test.pdf",
+        title="test.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+    )
+    meeting_file.save()
+
+    meeting.user.nc_locator = "alice"
+    meeting.user.nc_token = "nctoken"
+    meeting.user.save()
+
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.webdavClient",
+        side_effect=WebDavException,
+    )
+
+    disable_mock = mocker.patch.object(meeting.user, "disable_nextcloud")
+
+    token = get_meeting_file_hash(meeting_file.id, 0)
+    response = client_app.get(
+        f"/ncdownload/0/{meeting_file.id}/{token}/{meeting.id}/folder/test.pdf",
+        status=200,
+    )
+
+    disable_mock.assert_called_once()
+    assert response.json["status"] == 500

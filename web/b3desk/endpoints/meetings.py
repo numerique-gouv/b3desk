@@ -299,7 +299,7 @@ def external_upload(meeting: Meeting, owner: User):
     """Display the nextcloud file selector.
 
     This endpoint is used by BBB during the meetings.
-    It is configurated by the 'uploadExternalUrl' parameter on the creation request.
+    It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
     if meeting.is_running():
         return render_template("meeting/external_upload.html", meeting=meeting)
@@ -319,8 +319,6 @@ def delete_meeting():
         if meeting.user_id == user.id:
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
-            for meeting_file_external in meeting.externalFiles:
-                db.session.delete(meeting_file_external)
 
             data = meeting.delete_all_recordings()
             return_code = data.get("returncode", "SUCCESS")
