@@ -16,6 +16,7 @@ bp = Blueprint("api", __name__)
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["profile", "email"])
 def api_meetings():
+    """Return all non-shadow meetings for the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
@@ -58,6 +59,7 @@ def api_meetings():
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["profile", "email"])
 def shadow_meeting():
+    """Get or create the shadow meeting for the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()

@@ -1,4 +1,5 @@
 # Name of the target container to check
+# Used by the postgresql container
 container_name="$1"
 # Timeout in seconds. Default: 60
 timeout=$((${2:-60}));

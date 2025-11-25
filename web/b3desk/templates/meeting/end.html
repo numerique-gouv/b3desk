@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-<p>
-{{ this_meeting.capitalize() }} est actuellement en cours avec les anciens paramètres.<br>
-Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.
-</p>
+    <p>
+        {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est actuellement en cours avec les anciens paramètres.<br>
+            Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.{% endtrans %}
+    </p>
 
-<form action="{{ url_for("meetings.end_meeting") }}" method="POST">
-    {{ form.hidden_tag() }}
-    <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">Mettre fin {{ to_the_meeting }} en cours</button>
-    <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">Patienter jusqu'à la fin {{ of_the_meeting }}</a>
-</form>
+    <form action="{{ url_for("meetings.end_meeting") }}" method="POST">
+        {{ form.hidden_tag() }}
+        <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin {{ to_the_meeting }} en cours{% endtrans %}</button>
+        <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">{% trans %}Patienter jusqu'à la fin {{ of_the_meeting }}{% endtrans %}</a>
+    </form>
 {% endblock %}

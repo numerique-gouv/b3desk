@@ -11,33 +11,23 @@ on:
       - main
 
 jobs:
-  test-container:
-    name: Run tests in container
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup git
-      uses: actions/checkout@v3
-
-    - name: Check container tests
-      run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml run --rm tests
-
   test-local:
-    name: Run test locally
+    name: Run unit tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python:
+          - '3.13'
           - '3.12'
           - '3.11'
           - '3.10'
-          - '3.9'
 
     steps:
       - name: Setup git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
@@ -54,7 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
+
+      - name: Dump docker version
+        run: docker --version
 
       - name: Run all containers
         run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml up -d

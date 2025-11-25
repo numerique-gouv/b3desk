@@ -123,7 +123,7 @@ Pour le moment, le filepicker envoie bien le token de l'utilisateur, mais la fen
 
 Pour cela, Nextcloud doit autoriser le Filepicker à retrouver ses fichiers et donc être configuré pour cela.
 
-#### Nextcloud
+#### Configuration Nextcloud
 
 Le plugin [WebAppPassword](https://apps.nextcloud.com/apps/webapppassword) doit être installé sur le Nextcloud.
 
@@ -145,7 +145,7 @@ Après cette modification, les utilisateurs devraient pouvoir retrouver leurs fi
 
 Le téléversement utilise également la connexion Nextcloud. les fichiers ajoutés se retrouvent dans un dossier "visio-agents" à la racine du Nextcloud de l'utilisateur.
 
-La documentation {ref}`Authentification de l'utilisateur<maintainers/fileSharingProcess:Par le Nuage:Authentification de l'utilisateur>` ci-dessus est donc à suivre.
+La documentation {ref}`Authentification de l'utilisateur<maintainers/fileSharingProcess:Authentification de l'utilisateur>` ci-dessus est donc à suivre.
 
 La configuration d'un WebAppPassword n'est ici pas nécessaire car il n'y a pas d'interaction directe avec le Nextcloud. Le fichier est téléversé dans Nextcloud et il sera récupéré par la suite par BBB.
 

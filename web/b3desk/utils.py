@@ -30,12 +30,12 @@ from b3desk.models.roles import Role
 
 
 def secret_key():
+    """Return the application's secret key from configuration."""
     return current_app.config["SECRET_KEY"]
 
 
 def is_rie():
-    """Checks wether the request was made from inside the state network "Réseau
-    Interministériel de l’État"."""
+    """Check wether the request was made from inside the state network "Réseau Interministériel de l'État"."""
     if not request.remote_addr:
         return False
 
@@ -47,6 +47,7 @@ def is_rie():
 
 
 def is_accepted_email(email):
+    """Check if email matches any regex pattern in the configured whitelist."""
     for regex in current_app.config["EMAIL_WHITELIST"]:
         if re.search(regex, email):
             return True
@@ -54,6 +55,7 @@ def is_accepted_email(email):
 
 
 def is_valid_email(email):
+    """Validate email address format using regex pattern."""
     if not email or not re.search(
         r"^([a-zA-Z0-9_\-\.']+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email
     ):
@@ -62,12 +64,14 @@ def is_valid_email(email):
 
 
 def get_random_alphanumeric_string(length):
+    """Generate a random alphanumeric string of specified length."""
     letters_and_digits = string.ascii_letters + string.digits
     result_str = "".join(random.choice(letters_and_digits) for i in range(length))
     return result_str
 
 
 def send_quick_meeting_mail(meeting, to_email):
+    """Send quick meeting invitation email with meeting access link."""
     smtp_from = current_app.config["SMTP_FROM"]
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]
@@ -101,6 +105,8 @@ def send_quick_meeting_mail(meeting, to_email):
 
 
 def model_converter(model):
+    """Create a Flask URL converter for database model instances."""
+
     class ModelConverter(BaseConverter):
         def __init__(self, *args, required=True, **kwargs):
             self.required = required
@@ -120,6 +126,8 @@ def model_converter(model):
 
 
 def enum_converter(enum):
+    """Create a Flask URL converter for enum values."""
+
     class EnumConverter(BaseConverter):
         def __init__(self, *args, required=True, **kwargs):
             self.required = required
@@ -138,6 +146,8 @@ def enum_converter(enum):
 
 
 def check_oidc_connection(auth):
+    """Ensure OIDC client connection is properly initialized."""
+
     def decorator_func(initial_func):
         @wraps(initial_func)
         def wrapper_func(*args, **kwargs):
@@ -156,6 +166,8 @@ def check_oidc_connection(auth):
 
 
 def check_private_key():
+    """Check if private key is configured when SIP is enabled."""
+
     def decorator_func(initial_func):
         @wraps(initial_func)
         def wrapper_func(*args, **kwargs):
@@ -163,13 +175,12 @@ def check_private_key():
                 current_app.config["ENABLE_SIP"]
                 and not current_app.config["PRIVATE_KEY"]
             ):
-                flash(
-                    _(
-                        "La clé privée n'a pas été configurée dans les paramètres "
-                        "B3Desk pour sécuriser la connexion SIPMediaGW"
-                    ),
-                    "error",
+                message = _(
+                    "La clé privée n'a pas été configurée dans les paramètres "
+                    "B3Desk pour sécuriser la connexion SIPMediaGW"
                 )
+                flash(message, "error")
+
             return initial_func(*args, **kwargs)
 
         return wrapper_func
@@ -178,6 +189,10 @@ def check_private_key():
 
 
 def check_token_errors(token):
+    """Validate JWT token signature and claims against application's private key.
+
+    Returns error message if token is invalid, empty string otherwise.
+    """
     error_message = ""
     if token is None:
         error_message = "No token provided"

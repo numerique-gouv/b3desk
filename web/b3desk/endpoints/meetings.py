@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------------+
-# | BBB-VISIO                                                                  |
+# | B3DESK                                                                  |
 # +----------------------------------------------------------------------------+
 #
 #   This program is free software: you can redistribute it and/or modify it
@@ -23,7 +23,6 @@ from b3desk.forms import EndMeetingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
-from b3desk.forms import ShowMeetingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
@@ -44,6 +43,7 @@ bp = Blueprint("meetings", __name__)
 
 
 def meeting_mailto_params(meeting: Meeting, role: Role):
+    """Generate mailto URL parameters for sharing meeting invitation links."""
     if role == Role.moderator:
         return render_template(
             "meeting/mailto/mail_href.txt", meeting=meeting, role=role
@@ -56,6 +56,7 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 
 @bp.route("/meeting/mail", methods=["POST"])
 def quick_mail_meeting():
+    """Send a quick meeting invitation link to the provided email address."""
     #### Almost the same as quick meeting but we do not redirect to join
     email = request.form.get("mail")
     if not is_valid_email(email):
@@ -87,30 +88,13 @@ def quick_mail_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def quick_meeting():
+    """Create and join a quick meeting for the authenticated user."""
     user = get_current_user()
     meeting = get_quick_meeting_from_user_and_random_string(user)
-    return redirect(meeting.get_join_url(Role.moderator, user.fullname, create=True))
-
-
-@bp.route("/meeting/show/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def show_meeting(meeting: Meeting, owner: User):
-    # TODO: appears unused
-
-    form = ShowMeetingForm(data={"meeting_id": meeting.id})
-    if not form.validate():
-        flash(
-            _("Vous ne pouvez pas voir cet élément (identifiant incorrect)"),
-            "warning",
+    return redirect(
+        meeting.get_join_url(
+            Role.moderator, user.fullname, create=True, quick_meeting=True
         )
-        return redirect(url_for("public.welcome"))
-
-    return render_template(
-        "meeting/show.html",
-        meeting_mailto_params=meeting_mailto_params,
-        meeting=meeting,
     )
 
 
@@ -119,6 +103,7 @@ def show_meeting(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def show_meeting_recording(meeting: Meeting, owner: User):
+    """Display the list of recordings for a meeting."""
     form = RecordingForm()
     return render_template(
         "meeting/recordings.html",
@@ -133,6 +118,7 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def update_recording_name(meeting: Meeting, recording_id, owner: User):
+    """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
     if not form.validate():
         abort(403)
@@ -140,13 +126,13 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     result = meeting.update_recording_name(recording_id, form.data["name"])
     return_code = result.get("returncode")
     if return_code == "SUCCESS":
-        flash("Enregistrement renommé", "success")
+        flash(_("Enregistrement renommé"), "success")
     else:
         message = result.get("message", "")
         flash(
-            "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}".format(
-                code=return_code, message=message
-            ),
+            _(
+                "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
+            ).format(code=return_code, message=message),
             "error",
         )
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
@@ -156,6 +142,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def new_meeting():
+    """Display the form to create a new meeting."""
     user = get_current_user()
     if not user.can_create_meetings:
         return redirect(url_for("public.welcome"))
@@ -175,6 +162,7 @@ def new_meeting():
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def edit_meeting(meeting: Meeting, owner: User):
+    """Display the form to edit an existing meeting."""
     form = (
         MeetingWithRecordForm(obj=meeting)
         if current_app.config["RECORDING"]
@@ -192,6 +180,7 @@ def edit_meeting(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def save_meeting():
+    """Save a new or updated meeting from the meeting form submission."""
     user = get_current_user()
     form = (
         MeetingWithRecordForm(request.form)
@@ -204,7 +193,7 @@ def save_meeting():
         return redirect(url_for("public.welcome"))
 
     if not form.validate():
-        flash("Le formulaire contient des erreurs", "error")
+        flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
             "meeting/wizard.html",
             meeting=None if is_new_meeting else db.session.get(Meeting, form.id.data),
@@ -224,13 +213,35 @@ def save_meeting():
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
+    updated_data = {
+        key: form.data[key]
+        for key in form.data
+        if hasattr(meeting, key) and getattr(meeting, key) != form.data[key]
+    }
     form.populate_obj(meeting)
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )
     meeting.save()
+    if is_new_meeting:
+        current_app.logger.info(
+            "Meeting %s %s was created by %s",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
+    else:
+        current_app.logger.info(
+            "Meeting %s %s was updated by %s. Updated fields : %s",
+            meeting.name,
+            meeting.id,
+            user.email,
+            updated_data,
+        )
     flash(
-        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
+        _("{meeting_name} modifications prises en compte").format(
+            meeting_name=meeting.name
+        ),
         "success",
     )
 
@@ -247,6 +258,10 @@ def save_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def end_meeting():
+    """End the meeting on BBB.
+
+    Called from EndMeetingForm.
+    """
     user = get_current_user()
     form = EndMeetingForm(request.form)
 
@@ -267,6 +282,7 @@ def end_meeting():
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def create_meeting(meeting: Meeting, owner: User):
+    """Create the meeting on BBB server."""
     meeting.create_bbb()
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
@@ -279,9 +295,14 @@ def create_meeting(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def externalUpload(meeting: Meeting, owner: User):
+def external_upload(meeting: Meeting, owner: User):
+    """Display the nextcloud file selector.
+
+    This endpoint is used by BBB during the meetings.
+    It is configurated by the 'uploadExternalUrl' parameter on the creation request.
+    """
     if meeting.is_running():
-        return render_template("meeting/externalUpload.html", meeting=meeting)
+        return render_template("meeting/external_upload.html", meeting=meeting)
     return redirect(url_for("public.welcome"))
 
 
@@ -289,6 +310,7 @@ def externalUpload(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting():
+    """Delete a meeting and all its associated files and recordings."""
     if request.method == "POST":
         user = get_current_user()
         meeting_id = request.form["id"]
@@ -305,14 +327,23 @@ def delete_meeting():
             if return_code != "SUCCESS":
                 message = data.get("message", "")
                 flash(
-                    "Nous n'avons pas pu supprimer les vidéos de cette "
-                    + current_app.config["WORDINGS"]["meeting_label"]
-                    + f" : {message}",
+                    _(
+                        "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
+                    ).format(
+                        meeting_label=current_app.config["WORDINGS"]["meeting_label"],
+                        message=message,
+                    ),
                     "error",
                 )
             else:
                 save_voiceBridge_and_delete_meeting(meeting)
                 flash(_("Élément supprimé"), "success")
+                current_app.logger.info(
+                    "Meeting %s %s was deleted by %s",
+                    meeting.name,
+                    meeting.id,
+                    user.email,
+                )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("public.welcome"))
@@ -322,6 +353,7 @@ def delete_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_video_meeting():
+    """Delete a specific recording from a meeting."""
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
@@ -331,6 +363,13 @@ def delete_video_meeting():
         return_code = data.get("returncode")
         if return_code == "SUCCESS":
             flash(_("Vidéo supprimée"), "success")
+            current_app.logger.info(
+                "Meeting %s %s record %s was deleted by %s",
+                meeting.name,
+                meeting.id,
+                recordID,
+                user.email,
+            )
         else:
             message = data.get("message", "")
             flash(
@@ -352,16 +391,17 @@ def delete_video_meeting():
 @bp.route("/meeting/favorite", methods=["POST"])
 @auth.oidc_auth("default")
 def meeting_favorite():
+    """Toggle the favorite status of a meeting."""
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
 
-    if meeting.user_id == user.id:
-        meeting.is_favorite = not meeting.is_favorite
-        db.session.commit()
-        meeting.save()
-    else:
+    if meeting.user_id != user.id:
         abort(403)
+
+    meeting.is_favorite = not meeting.is_favorite
+    db.session.commit()
+    meeting.save()
 
     return redirect(url_for("public.welcome", **request.args))
 
@@ -369,4 +409,5 @@ def meeting_favorite():
 @bp.route("/meeting/available-visio-code", methods=["GET"])
 @auth.oidc_auth("default")
 def get_available_visio_code():
+    """Generate and return an available unique visio code."""
     return jsonify(available_visio_code=unique_visio_code_generation())

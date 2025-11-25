@@ -33,8 +33,7 @@ year = datetime.datetime.now().strftime("%Y")
 copyright = f"{year}, Ministère de l'Éducation Nationale"
 author = "Ministère de l'Éducation Nationale"
 
-release = b3desk.__version__
-version = "%s.%s" % tuple(map(int, release.split(".")[:2]))
+version = b3desk.__version__
 language = "fr"
 exclude_patterns = []
 pygments_style = "sphinx"

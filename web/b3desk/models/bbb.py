@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------------+
-# | BBB-VISIO                                                                  |
+# | B3DESK                                                                  |
 # +----------------------------------------------------------------------------+
 #
 #   This program is free software: you can redistribute it and/or modify it
@@ -21,12 +21,15 @@ from flask import url_for
 
 from b3desk.tasks import background_upload
 
-from .. import BigBLueButtonUnavailable
+from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
 
+BBB_REQUEST_TIMEOUT = 2
+
 
 def cache_key(func, caller, prepped, *args, **kwargs):
+    """Generate a cache key based on the request URL."""
     return prepped.url
 
 
@@ -47,9 +50,11 @@ class BBB:
     """Interface to BBB API."""
 
     def __init__(self, meeting):
+        """Initialize BBB API interface with a meeting instance."""
         self.meeting = meeting
 
     def bbb_request(self, action, method="GET", **kwargs):
+        """Prepare a BBB API request with authentication checksum."""
         request = requests.Request(
             method=method,
             url="{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
@@ -72,7 +77,12 @@ class BBB:
         timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"],
     )
     def bbb_response(self, request):
+        """Send the BBB API request and parse the XML response."""
         session = requests.Session()
+        if current_app.debug:  # pragma: no cover
+            # In local development environment, BBB is not served as https
+            session.verify = False
+
         current_app.logger.debug(
             "BBB API request method:%s url:%s data:%s",
             request.method,
@@ -80,30 +90,43 @@ class BBB:
             request.body,
         )
         try:
-            response = session.send(request)
-        except requests.exceptions.ConnectionError:
-            raise BigBLueButtonUnavailable
+            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+        except requests.Timeout as err:
+            current_app.logger.warning("BBB API timeout error %s", err)
+            raise BigBlueButtonUnavailable() from err
+        except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API error %s", err)
+            raise BigBlueButtonUnavailable() from err
         current_app.logger.debug("BBB API response %s", response.text)
         return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
 
     bbb_response.make_cache_key = cache_key
 
     def is_meeting_running(self):
-        """https://docs.bigbluebutton.org/development/api/#ismeetingrunning"""
+        """Check if the meeting is running.
+
+        https://docs.bigbluebutton.org/development/api/#ismeetingrunning
+        """
         request = self.bbb_request(
             "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
         )
         return self.bbb_response(request)
 
     def create(self):
-        """https://docs.bigbluebutton.org/development/api/#create"""
+        """Create a new meeting.
 
+        https://docs.bigbluebutton.org/development/api/#create.
+        """
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
+            # TODO: This parameter name is probably wrong
+            # https://github.com/numerique-gouv/b3desk/issues/211
             "uploadExternalUrl": url_for(
-                "meetings.externalUpload", meeting=self.meeting, _external=True
+                "meetings.external_upload", meeting=self.meeting, _external=True
             ),
+            # TODO: check if there is really a need for
+            # a EXTERNAL_UPLOAD_DESCRIPTION settings
             "uploadExternalDescription": current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
             ],
@@ -224,14 +247,20 @@ class BBB:
         return data
 
     def delete_recordings(self, recording_ids):
-        """https://docs.bigbluebutton.org/dev/api.html#deleterecordings"""
+        """Delete recordings.
+
+        https://docs.bigbluebutton.org/dev/api.html#deleterecordings
+        """
         request = self.bbb_request(
             "deleteRecordings", params={"recordID": recording_ids}
         )
         return self.bbb_response(request)
 
     def get_meeting_info(self):
-        """https://docs.bigbluebutton.org/development/api/#getmeetinginfo"""
+        """Retrieve metadata about a meeting.
+
+        https://docs.bigbluebutton.org/development/api/#getmeetinginfo
+        """
         request = self.bbb_request(
             "getMeetingInfo", params={"meetingID": self.meeting.meetingID}
         )
@@ -239,7 +268,10 @@ class BBB:
 
     @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
     def get_recordings(self):
-        """https://docs.bigbluebutton.org/development/api/#getrecordings"""
+        """Get the list of recordings for a meeting.
+
+        https://docs.bigbluebutton.org/development/api/#getrecordings
+        """
         request = self.bbb_request(
             "getRecordings", params={"meetingID": self.meeting.meetingID}
         )
@@ -247,15 +279,22 @@ class BBB:
             "BBB API request method:%s url:%s", request.method, request.url
         )
         try:
-            response = requests.Session().send(request)
-        except requests.exceptions.ConnectionError:
-            raise BigBLueButtonUnavailable
+            session = requests.Session()
+            if current_app.debug:  # pragma: no cover
+                session.verify = False
+            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+        except requests.Timeout as err:
+            current_app.logger.warning("BBB API timeout error %s", err)
+            raise BigBlueButtonUnavailable() from err
+        except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API error %s", err)
+            raise BigBlueButtonUnavailable() from err
 
         root = ElementTree.fromstring(response.content)
         return_code = root.find("returncode").text
         recordings = root.find("recordings")
         result = []
-        if return_code != "FAILED" and recordings:
+        if return_code != "FAILED" and recordings is not None:
             try:
                 for recording in recordings.iter("recording"):
                     data = {}
@@ -272,7 +311,7 @@ class BBB:
 
                     data["playbacks"] = {}
                     playback = recording.find("playback")
-                    if not playback:
+                    if playback is None:
                         continue
 
                     for format in playback.iter("format"):
@@ -301,7 +340,10 @@ class BBB:
         return result
 
     def update_recordings(self, recording_ids, metadata):
-        """https://docs.bigbluebutton.org/dev/api.html#updaterecordings"""
+        """Update the recordings of a meeting.
+
+        https://docs.bigbluebutton.org/dev/api.html#updaterecordings
+        """
         meta = {f"meta_{key}": value for (key, value) in metadata.items()}
         request = self.bbb_request(
             "updateRecordings", params={"recordID": ",".join(recording_ids), **meta}
@@ -309,8 +351,10 @@ class BBB:
         return self.bbb_response(request)
 
     def prepare_request_to_join_bbb(self, meeting_role, fullname):
-        """https://docs.bigbluebutton.org/dev/api.html#join"""
+        """Join a BBB meeting.
 
+        https://docs.bigbluebutton.org/dev/api.html#join
+        """
         params = {
             "fullName": fullname,
             "meetingID": self.meeting.meetingID,
@@ -327,11 +371,15 @@ class BBB:
         return self.bbb_request("join", params=params)
 
     def end(self):
-        """https://docs.bigbluebutton.org/development/api/#end"""
+        """Close a BBB meeting.
+
+        https://docs.bigbluebutton.org/development/api/#end
+        """
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
 
     def meeting_file_addition_xml(self, meeting_files):
+        """Generate XML for adding files to a BBB meeting."""
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
         xml_mid = ""
@@ -343,7 +391,7 @@ class BBB:
                     f"{current_app.config['SECRET_KEY']}-0-{meeting_file.id}-{current_app.config['SECRET_KEY']}".encode()
                 ).hexdigest()
                 current_app.logger.info(
-                    "Add document on BigBLueButton room %s %s creation for file %s",
+                    "Add document on BigBlueButton room %s %s creation for file %s",
                     self.meeting.name,
                     self.meeting.id,
                     meeting_file.title,

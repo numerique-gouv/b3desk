@@ -27,6 +27,30 @@ L'API renvoie la liste des meetings de l'utilisateurs.
 Chaque utilisateur possède un meeting 'silencieux' invisible dans l'interface b3desk, mais utilisable par des greffons.
 L'API renvoie les liens d'invitation du meeting silencieux.
 
+Voici les principales valeur par défaut d'un meeting 'silencieux' :
++ name= <wording_meeting> de <user_name>
++ welcome= Bienvenue dans <wording_the_meeting> de <user_name>
++ duration= <default_shadow_meeting_duration> (280 par défaut)
++ maxParticipants= 350
++ logoutUrl= <settings_meeting_logout_url>
++ moderatorOnlyMessage= Bienvenue aux modérateurs
++ record= False
++ autoStartRecording= False
++ allowStartStopRecording= False
++ lockSettingsDisableMic= False
++ lockSettingsDisablePrivateChat= False
++ lockSettingsDisablePublicChat= False
++ lockSettingsDisableNote= False
++ lockSettingsDisableCam= False
++ allowModsToUnmuteUsers= False
++ webcamsOnlyForModerator= False
++ muteOnStart= True
++ guestPolicy= False
++ logo= None
+
+Ces paramètres sont détaillés et commentés dans l'[API de BBB](https://docs.bigbluebutton.org/development/api/#get-post-create)
+
+
 ## Authentification
 
 L'authentification à l'API se fait en passant un jeton OIDC émis par le serveur d'identifié configuré dans `OIDC_ISSUER`.

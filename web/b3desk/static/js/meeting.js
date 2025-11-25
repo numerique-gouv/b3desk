@@ -150,6 +150,7 @@ function append_file_to_fileslist(title, id, date, isDefault) {
     tdTitle.innerHTML=title;
     tdDate.innerHTML=date;
 
+    /*
     inputDefault.classList.add('fr-toggle__input');
     inputDefault.setAttribute('id', 'isDefault-'+id);
     inputDefault.setAttribute('type', 'checkbox');
@@ -167,8 +168,8 @@ function append_file_to_fileslist(title, id, date, isDefault) {
     divDefault.appendChild(labelDefault);
     tdDefault.appendChild(divDefault);
 
-
     tr.appendChild(tdDefault);
+    */
     tr.appendChild(tdIsDownloadable);
     tr.appendChild(tdTitle);
     tr.appendChild(tdDate);

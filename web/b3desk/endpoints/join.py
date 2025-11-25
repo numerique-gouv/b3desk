@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from flask import Blueprint
@@ -10,6 +11,7 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
+from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
@@ -19,6 +21,8 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id_and_user_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.session import visio_code_attempt_counter_increment
+from b3desk.session import visio_code_attempt_counter_reset
 from b3desk.utils import check_oidc_connection
 from b3desk.utils import check_token_errors
 
@@ -27,14 +31,20 @@ from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
 from ..session import meeting_owner_needed
+from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
+
+SECONDS_BEFORE_REFRESH = 10
+INCREASE_REFRESH_TIME = 1.5
+MAXIMUM_REFRESH_TIME = 60
 
 
 @bp.route(
     "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<h>",
 )
 def signin_mail_meeting(meeting_fake_id, expiration, h):
+    """Display the join form for quick meetings accessed via email link."""
     meeting = get_mail_meeting(meeting_fake_id)
     wordings = current_app.config["WORDINGS"]
 
@@ -63,7 +73,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         meeting=meeting,
         meeting_fake_id=meeting.fake_id,
         expiration=expiration,
-        user_id="fakeuserId",
+        user_id=random.randint(100000, 999999),
         h=h,
         role=Role.moderator,
     )
@@ -76,7 +86,12 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
     "/meeting/signin/<role:role>/<meeting_fake_id>/creator/<user:creator>/hash/<h>"
 )
 @bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<h>")
-def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
+def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
+    """Get users in the meeting.
+
+    - Unauthenticated users are display a name choosing form 'join.html'
+    - Authenticated users are redirected to 'waiting_meeting'
+    """
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     wordings = current_app.config["WORDINGS"]
     if meeting is None:
@@ -113,6 +128,7 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role = None):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
+    """Authenticate user via OIDC then redirect to meeting signin page."""
     return redirect(
         url_for(
             "join.signin_meeting",
@@ -136,6 +152,10 @@ def authenticate_then_signin_meeting(meeting_fake_id, creator: User, h):
     "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<h>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suffix=""):
+    """Display a page until the BBB meeting is created.
+
+    The page wait a few seconds, then redirect to 'join_meeting'.
+    """
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -144,6 +164,10 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     role = meeting.get_role(h, current_user_id)
     if not role:
         return redirect(url_for("public.index"))
+    seconds_before_refresh = request.args.get(
+        "seconds_before_refresh", SECONDS_BEFORE_REFRESH
+    )
+    quick_meeting = request.args.get("quick_meeting", False)
 
     return render_template(
         "meeting/wait.html",
@@ -154,11 +178,17 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
+        seconds_before_refresh=seconds_before_refresh,
+        quick_meeting=quick_meeting,
     )
 
 
 @bp.route("/meeting/join", methods=["POST"])
 def join_meeting():
+    """Validate the form from wait.html and join.html.
+
+    Then redirect to the BBB meeting if available, and back to the waiting room if not.
+    """
     form = JoinMeetingForm(request.form)
     if not form.validate():
         return redirect(url_for("public.index"))
@@ -167,6 +197,19 @@ def join_meeting():
     meeting_fake_id = form["meeting_fake_id"].data
     user_id = form["user_id"].data
     h = form["h"].data
+    seconds_before_refresh = None
+    if (
+        "seconds_before_refresh" in form
+        and form["seconds_before_refresh"].data is not None
+    ):
+        seconds_before_refresh = min(
+            form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME,
+            MAXIMUM_REFRESH_TIME,
+        )
+
+    quick_meeting = None
+    if "quick_meeting" in form:
+        quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
         return redirect(url_for("public.index"))
@@ -181,21 +224,26 @@ def join_meeting():
 
     return redirect(
         meeting.get_join_url(
-            role, fullname, fullname_suffix=fullname_suffix, create=True
+            role,
+            fullname,
+            fullname_suffix=fullname_suffix,
+            create=True,
+            seconds_before_refresh=seconds_before_refresh,
+            quick_meeting=quick_meeting,
         )
     )
 
 
 @bp.route("/meeting/joinmail", methods=["POST"])
 def join_mail_meeting():
+    """Process the join form submission for email-accessed quick meetings."""
     form = JoinMailMeetingForm(request.form)
     if not form.validate():
-        flash("Lien invalide", "error")
+        flash(_("Lien invalide"), "error")
         return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
     meeting_fake_id = form["meeting_fake_id"].data
-    form["user_id"].data
     expiration = form["expiration"].data
     h = form["h"].data
 
@@ -222,7 +270,9 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
-    return redirect(meeting.get_join_url(Role.moderator, fullname, create=True))
+    return redirect(
+        meeting.get_join_url(Role.moderator, fullname, create=True, quick_meeting=True)
+    )
 
 
 # Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
@@ -230,6 +280,9 @@ def join_mail_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
+    """Join a meeting with authenticated attendee role using OIDC."""
+    # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
+    # We should look if we can delete it.
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
@@ -249,12 +302,14 @@ def join_meeting_as_authenticated(meeting_id):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
+    """Join a meeting as the owner with a specific role."""
     return redirect(meeting.get_join_url(role, owner.fullname, create=True))
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])
 @check_oidc_connection(auth)
 def join_waiting_meeting_from_sip(visio_code):
+    """Join a meeting using visio code from SIP phone connection."""
     token = request.headers.get("Authorization")
     if not check_token_errors(token):
         meeting = get_meeting_by_visio_code(visio_code)
@@ -269,20 +324,61 @@ def join_waiting_meeting_from_sip(visio_code):
 
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
-def visio_code_connexion():
-    # csrf
-    # captcha?
-    visio_code = request.form.get("visio_code")
+def visio_code_connection():
+    """Process visio code form submission and redirect to meeting if valid."""
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+
+    if should_display_captcha(check_service_status=False):
+        captcha_uuid = request.form.get("captchetat-uuid")
+        captcha_code = request.form.get("captchaCode")
+        if not captcha_validation(captcha_uuid, captcha_code):
+            flash(_("Le captcha saisi est erroné"), "error")
+            return redirect(url_for("public.home"))
+
     meeting = get_meeting_by_visio_code(visio_code)
     if not meeting:
-        flash("Le code de connexion saisi est erroné", "error")
+        flash(_("Le code de connexion saisi est erroné"), "error")
+        visio_code_attempt_counter_increment()
         return redirect(url_for("public.home"))
+
+    visio_code_attempt_counter_reset()
     return join_waiting_meeting_with_visio_code(meeting)
 
 
+@bp.route("/meeting/visio_code_form", methods=["POST"])
+@check_oidc_connection(auth)
+def visio_code_form_validation():
+    """Validate the visio-code from from the front."""
+    visio_code = (
+        request.form.get("visio_code1")
+        + request.form.get("visio_code2")
+        + request.form.get("visio_code3")
+    )
+    meeting_exists = bool(get_meeting_by_visio_code(visio_code))
+    if not meeting_exists:
+        visio_code_attempt_counter_increment()
+
+    result = {
+        "visioCode": meeting_exists,
+        "shouldDisplayCaptcha": should_display_captcha(check_service_status=False),
+    }
+
+    captcha_uuid = request.form.get("captchetat-uuid")
+    captcha_code = request.form.get("captchaCode")
+    if captcha_code:
+        result["captchaCode"] = captcha_validation(captcha_uuid, captcha_code)
+
+    return result
+
+
 def join_waiting_meeting_with_visio_code(meeting):
+    """Redirect to the meeting signin page after successful visio code validation."""
     meeting_fake_id = str(meeting.id)
-    creator = User.query.get(meeting.user_id)
+    creator = db.session.get(User, meeting.user_id)
     role = Role.moderator
     h = meeting.get_hash(role=role)
     return signin_meeting(

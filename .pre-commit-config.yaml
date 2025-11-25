@@ -1,34 +1,26 @@
 ---
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.9.4'
+    rev: 'v0.13.0'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
+        exclude: ^(postgres/|nextcloud/|keycloak/)
       - id: ruff-format
+        exclude: ^(postgres/|nextcloud/|keycloak/)
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: fix-byte-order-marker
+        exclude: ^(postgres/|nextcloud/|keycloak/)
       - id: trailing-whitespace
-        exclude: "\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
+        exclude: "^(postgres/|nextcloud/|keycloak/)|\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
       - id: end-of-file-fixer
-        exclude: "\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
+        exclude: "^(postgres/|nextcloud/|keycloak/)|\\.svg$|\\.map$|\\.min\\.css$|\\.min\\.js$|\\.po$|\\.pot$"
       - id: check-toml
-  - repo: https://github.com/pycqa/isort
-    rev: "6.0.0"
+        exclude: ^(postgres/|nextcloud/|keycloak/)
+  - repo: https://github.com/rtts/djhtml
+    rev: 3.0.9
     hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--force-single-line-imports", "--line-length", "120"]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: eb1df34
-    hooks:
-      - id: docformatter
-        additional_dependencies: [tomli]
-        args: [--in-place, --config, ./pyproject.toml]
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
-    hooks:
-      - id: pyupgrade
-        args: ["--py39-plus"]
+      - id: djhtml
+        exclude: ^(postgres/|nextcloud/|keycloak/)

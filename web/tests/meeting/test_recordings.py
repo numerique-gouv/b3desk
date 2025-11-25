@@ -8,8 +8,10 @@ import pytest
 
 @pytest.fixture
 def bbb_getRecordings_response(mocker):
+    """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
+
     class Response:
-        """https://docs.bigbluebutton.org/dev/api.html#getrecordings"""
+        """https://docs.bigbluebutton.org/dev/api.html#getrecordings."""
 
         content = """
 <response>
@@ -118,6 +120,8 @@ def bbb_getRecordings_response(mocker):
 
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
+    """Test that recordings are retrieved and parsed correctly from BBB."""
+
     class DirectLinkRecording:
         status_code = 200
 
@@ -157,6 +161,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
 
 
 def test_update_recording_name(client_app, authenticated_user, meeting, bbb_response):
+    """Test that recording name can be updated via BBB API."""
     response = client_app.post(
         f"/meeting/{meeting.id}/recordings/recording_id",
         {"name": "First recording"},
@@ -174,3 +179,29 @@ def test_update_recording_name(client_app, authenticated_user, meeting, bbb_resp
     assert bbb_params["recordID"] == "recording_id"
 
     assert f"meeting/recordings/{meeting.id}" in response.location
+
+
+def test_delete_recordings(
+    mocker, client_app, authenticated_user, meeting, bbb_getRecordings_response, caplog
+):
+    class DirectLinkRecording:
+        status_code = 200
+
+    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    recordings = meeting.bbb.get_recordings()
+
+    assert len(recordings) == 2
+    first_recording_id = recordings[0]["recordID"]
+
+    response = client_app.post(
+        "/meeting/video/delete",
+        {
+            "id": meeting.id,
+            "recordID": first_recording_id,
+        },
+    )
+
+    assert (
+        f"Meeting meeting {meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
+    ) in caplog.text
+    assert ("success", "Vidéo supprimée") in response.flashes

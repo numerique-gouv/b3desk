@@ -2,53 +2,55 @@
 <div class="modal-template" id="recordings-{{ meeting.id }}">
     <div class="modal-body modal-body--center">
         {% if meeting.is_running() %}
-        <p>{% trans the_meeting=the_meeting.capitalize %}{{ the_meeting }} est toujours en cours. Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}.{% endtrans %}</p>
+            <p>{% trans the_meeting=the_meeting.capitalize %}{{ the_meeting }} est toujours en cours. Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}.{% endtrans %}</p>
         {% endif %}
         <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
         <p>{% trans %}Si aucun modérateur ne met fin {{ to_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
         {% for r in meeting.get_recordings() %}
-        <h3>{{ r.name }} - {{ r.participants }}</h3>
-        <div class="fr-table fr-table--bordered fr-table--layout-fixed">
-            <table>
-                <thead>
-                    <th>{% trans %}Images{% endtrans %}</th>
-                    <th>{% trans %}Lien{% endtrans %}</th>
-                </thead>
-                <tbody>
-                    {% for p in r.playbacks %}
-                    {% for f in p %}
-                    <tr>
-                        <td>
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                                {% for i in f.images %}
-                                <div class="fr-col">
-                                    <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </td>
-                        <td style="vertical-align: middle">
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                                <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ f.url }}"><span class="fr-fi-play-line"></span></a>
-                                <a href="#"
-                                    class="fr-btn fr-btn--primary js-modal js-modal-close"
-                                    title="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
-                                    aria-label="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
-                                    data-modal-content-id="delete-video-{{ r.recordID }}"
-                                    data-modal-title="{% trans %}Suppression d'enregistrement{% endtrans %}"
-                                    data-modal-close-text="x"
-                                    data-modal-close-title="Fermer la fenêtre modale"><span class="fr-fi-delete-line"></span></a>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ f.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
-                                    <span class="ri-clipboard-line"></span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <h3>{{ r.name }} - {{ r.participants }}</h3>
+            <div class="fr-table fr-table--bordered fr-table--layout-fixed">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{% trans %}Images{% endtrans %}</th>
+                            <th>{% trans %}Lien{% endtrans %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in r.playbacks %}
+                            {% for f in p %}
+                                <tr>
+                                    <td>
+                                        <div class="fr-grid-row fr-grid-row--gutters">
+                                            {% for i in f.images %}
+                                                <div class="fr-col">
+                                                    <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}"/>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <div class="fr-grid-row fr-grid-row--gutters">
+                                            <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ f.url }}"><span class="fr-fi-play-line"></span></a>
+                                            <a href="#"
+                                               class="fr-btn fr-btn--primary js-modal js-modal-close"
+                                               title="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
+                                               aria-label="{% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}"
+                                               data-modal-content-id="delete-video-{{ r.recordID }}"
+                                               data-modal-title="{% trans %}Suppression d'enregistrement{% endtrans %}"
+                                               data-modal-close-text="x"
+                                               data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></a>
+                                            <button type="button" class="btn-copy fr-btn fr-btn--primary" id="meeting-{{ meeting.id }}-moderator-copy" onclick="navigator.clipboard.writeText('{{ f.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                                <span class="ri-clipboard-line"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endfor %}
     </div>
 </div>

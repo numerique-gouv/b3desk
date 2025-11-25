@@ -9,6 +9,7 @@ nextcloud/html/*
 !nextcloud/html/.keep
 nextcloud/conf/*
 
+web/conf/*
 web/logs/*
 web/upload/*
 web/instance/.env
@@ -33,6 +34,7 @@ web-lycees.env
 web-agents.env
 web-webinaire.env
 web-local.env
+dev-*.env
 *.swp
 
 messages.mo

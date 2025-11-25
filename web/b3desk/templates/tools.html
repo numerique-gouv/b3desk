@@ -3,7 +3,7 @@
         <ul class="fr-btns-group">
             <li>
                 {% for language in LANGUAGES %}
-                <a href="?lang={{ language }}" class="fr-btn">{{ language}}</a>
+                    <a href="?lang={{ language }}" class="fr-btn">{{ language}}</a>
                 {% endfor %}
             </li>
 
@@ -34,24 +34,24 @@
                     </a>
                 </li>
                 {% if config.get("ENABLE_LASUITENUMERIQUE") %}
-                <li class="fr-ml-2w">
-                    <button
-                        type="button"
-                        class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
-                        title="Les services de La Suite numérique"
+                    <li class="fr-ml-2w">
+                        <button
+                            type="button"
+                            class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
+                            title="{% trans %}Les services de La Suite numérique{% endtrans %}"
                         >
-                        Les services de La Suite numérique
-                    </button>
-                </li>
+                            {% trans %}Les services de La Suite numérique{% endtrans %}
+                        </button>
+                    </li>
                 {% endif %}
-                {% else %}
+            {% else %}
                 <li>
                     <a class="fr-btn" href="{{ url_for("public.welcome") }}">
                         <span aria-hidden="true" class="ri-account-circle-line fr-mr-1w"></span>
                         {% trans %}S’identifier{% endtrans %}
                     </a>
                 </li>
-                {% endif %}
+            {% endif %}
         </ul>
     </div>
 </div>

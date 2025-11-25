@@ -1,0 +1,68 @@
+name: Check translation catalogs are up to date
+
+on:
+  pull_request:
+    branches:
+      - production
+      - main
+  push:
+    branches:
+      - production
+      - main
+
+jobs:
+  check-translations:
+    name: Verify translation catalogs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync --all-groups --all-extras
+
+      - name: Save current catalog (filtered)
+        run: |
+          # Filter out auto-generated headers and line number comments from current catalog
+          grep -v '^"POT-Creation-Date:' web/translations/messages.pot | \
+          grep -v '^"Generated-By:' | \
+          grep -v '^#:' | \
+          grep -v '^#,' > /tmp/messages.pot.before
+
+      - name: Extract translation strings
+        run: make translation-extract
+
+      - name: Save new catalog (filtered)
+        run: |
+          # Filter out auto-generated headers and line number comments from new catalog
+          grep -v '^"POT-Creation-Date:' web/translations/messages.pot | \
+          grep -v '^"Generated-By:' | \
+          grep -v '^#:' | \
+          grep -v '^#,' > /tmp/messages.pot.after
+
+      - name: Check for uncommitted changes in catalogs
+        run: |
+          # Compare filtered files
+          if diff -u /tmp/messages.pot.before /tmp/messages.pot.after; then
+            echo "✅ Translation catalogs are up to date"
+          else
+            echo "❌ Translation catalogs are NOT up to date!"
+            echo ""
+            echo "New translatable strings were found or existing ones were modified."
+            echo "Please run the following commands and commit the changes:"
+            echo ""
+            echo "  make translation-extract"
+            echo "  make translation-update"
+            echo "  git add web/translations/"
+            echo ""
+            exit 1
+          fi

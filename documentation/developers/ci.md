@@ -40,7 +40,7 @@ GitHub Actions va vérifier que le code a bien été formatté :
 
 - Les espaces de fin de ligne sont supprimés.
 - Les imports python sont triés
-- Le code est formatté à l’aide de `black`
+- Le code est formatté à l’aide de `ruff`
 - Quelques vérifications statiques sont effectuées avec `ruff`
 
 À l’avenir, `mypy` pourrait être utilisé.

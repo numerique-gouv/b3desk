@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------------+
-# | BBB-VISIO                                                                  |
+# | B3DESK                                                                  |
 # +----------------------------------------------------------------------------+
 #
 #   This program is free software: you can redistribute it and/or modify it
@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import os
 from logging.config import dictConfig
+from logging.config import fileConfig
 
 from flask import Flask
 from flask import render_template
@@ -29,7 +30,7 @@ from b3desk.utils import is_rie
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.4.1"
+__version__ = "1.5.0"
 
 LANGUAGES = ["en", "fr"]
 
@@ -40,25 +41,35 @@ auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
 
 
-class BigBLueButtonUnavailable(Exception):
+class BigBlueButtonUnavailable(Exception):
     pass
 
 
 def setup_configuration(app, config=None):
+    """Configure Flask application with settings from config dict or environment."""
+    debug = app.debug
+
     if config:
         app.config.from_mapping(config)
 
     config_obj = MainSettings.model_validate(config or {})
     app.config.from_object(config_obj)
 
+    # Flask reads the FLASK_DEBUG environment var
+    # This avoids the app.debug parameter to be overwritten by configuration defaults
+    if debug:
+        app.debug = True
+
 
 def setup_celery(app):
+    """Configure Celery task queue for the application."""
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
 
 
 def setup_cache(app):
+    """Initialize caching system (Redis or FileSystem) based on configuration."""
     if app.config.get("CACHE_TYPE"):
         config = None
 
@@ -80,6 +91,7 @@ def setup_cache(app):
 
 
 def setup_sentry(app):  # pragma: no cover
+    """Initialize Sentry error tracking if DSN is configured."""
     if not app.config.get("SENTRY_DSN"):
         return None
 
@@ -94,8 +106,29 @@ def setup_sentry(app):  # pragma: no cover
     return sentry_sdk
 
 
+def load_toml_log_config(path: str):
+    try:
+        import tomllib
+    except ImportError:  # pragma: no cover
+        return None
+
+    try:
+        with open(path, "rb") as fd:
+            return tomllib.load(fd)
+
+    except tomllib.TOMLDecodeError:
+        return None
+
+
 def setup_logging(app):
-    if not app.debug and not app.testing:
+    """Configure application logging to file or console based on environment."""
+    if log_config := app.config.get("LOG_CONFIG"):
+        if payload := load_toml_log_config(log_config):
+            dictConfig(payload)
+        else:
+            fileConfig(log_config, disable_existing_loggers=False)
+
+    elif not app.debug and not app.testing:
         dictConfig(
             {
                 "version": 1,
@@ -115,8 +148,29 @@ def setup_logging(app):
             }
         )
 
+    elif not app.testing:
+        dictConfig(
+            {
+                "version": 1,
+                "formatters": {
+                    "default": {
+                        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                    }
+                },
+                "handlers": {
+                    "console": {
+                        "class": "logging.StreamHandler",
+                        "stream": "ext://sys.stdout",
+                        "formatter": "default",
+                    }
+                },
+                "root": {"level": "DEBUG", "handlers": ["console"]},
+            }
+        )
+
 
 def setup_i18n(app):
+    """Initialize internationalization with Babel and language selector."""
     from flask import session
 
     def locale_selector():
@@ -128,6 +182,7 @@ def setup_i18n(app):
 
 
 def setup_csrf(app):
+    """Initialize CSRF protection and register error handler."""
     csrf.init_app(app)
 
     @app.errorhandler(CSRFError)
@@ -137,6 +192,7 @@ def setup_csrf(app):
 
 
 def setup_database(app):
+    """Initialize database and migrations with Flask-Migrate."""
     from .models import db
 
     db.init_app(app)
@@ -144,6 +200,7 @@ def setup_database(app):
 
 
 def setup_jinja(app):
+    """Configure Jinja2 template engine with global context variables."""
     from b3desk.models.roles import Role
     from b3desk.session import get_current_user
     from b3desk.session import has_user_session
@@ -166,6 +223,7 @@ def setup_jinja(app):
             }
 
         return {
+            "debug": app.debug,
             "config": app.config,
             "beta": app.config["BETA"],
             "development_version": __version__ == "0.0.0" or "dev" in __version__,
@@ -180,6 +238,7 @@ def setup_jinja(app):
 
 
 def setup_flask(app):
+    """Register custom URL converters for models and enums."""
     with app.app_context():
         from b3desk.models.meetings import Meeting
         from b3desk.models.roles import Role
@@ -193,6 +252,8 @@ def setup_flask(app):
 
 
 def setup_error_pages(app):
+    """Register HTTP error handlers for common error codes."""
+
     @app.errorhandler(400)
     def bad_request(error):
         return render_template("errors/400.html", error=error), 400
@@ -209,15 +270,17 @@ def setup_error_pages(app):
     def internal_error(error):
         return render_template("errors/500.html", error=error), 500
 
-    @app.errorhandler(BigBLueButtonUnavailable)
+    @app.errorhandler(BigBlueButtonUnavailable)
     def bigbluebutton_unavailable_error(error):
         return render_template("errors/big-blue-button-error.html", error=error)
 
 
 def setup_endpoints(app):
+    """Import and register all application blueprints."""
     with app.app_context():
         import b3desk.commands
         import b3desk.endpoints.api
+        import b3desk.endpoints.captcha
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
         import b3desk.endpoints.meetings
@@ -229,9 +292,11 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.api.bp)
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
+        app.register_blueprint(b3desk.endpoints.captcha.bp)
 
 
 def setup_oidc(app):
+    """Configure OpenID Connect authentication for users and attendees."""
     from flask_pyoidc.provider_configuration import ClientMetadata
     from flask_pyoidc.provider_configuration import ProviderConfiguration
 
@@ -282,6 +347,7 @@ def setup_oidc(app):
 
 
 def create_app(test_config=None):
+    """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
     setup_configuration(app, test_config)
     sentry_sdk = setup_sentry(app)

@@ -10,6 +10,7 @@ bp = Blueprint("commands", __name__, cli_group=None)
 @bp.cli.command("get-apps-id")
 @click.argument("email")
 def get_apps_id(email):
+    """CLI command to retrieve user ID from secondary identity provider using email."""
     from b3desk.models.users import get_secondary_identity_provider_id_from_email
 
     try:
@@ -23,11 +24,14 @@ def get_apps_id(email):
 
 @bp.cli.command("delete-old-shadow-meetings")
 def delete_old_shadow_meetings():
+    """CLI command to delete expired shadow meetings from database."""
     delete_all_old_shadow_meetings()
 
 
 @bp.cli.command("generate-private-key")
-def generate_private_key():
+@click.option("--size", default=2048, help="RSA key size in bits")
+def generate_private_key(size):
+    """CLI command to generate a new RSA private key for JWT signing."""
     from joserfc.jwk import RSAKey
 
     saved_private_pem_str = (
@@ -45,7 +49,7 @@ def generate_private_key():
             != "y"
         ):
             exit()
-    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+    private_key = RSAKey.generate_key(size, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
     print("private key to save in settings")
@@ -54,6 +58,7 @@ def generate_private_key():
 
 @bp.cli.command("generate-sip-token")
 def generate_sip_token():
+    """CLI command to generate JWT token for SIPMediaGW authentication."""
     from joserfc.jwk import RSAKey
     from joserfc.jwt import encode
 
@@ -93,6 +98,7 @@ def generate_sip_token():
 
 @bp.cli.command("check-sip-settings")
 def check_sip_settings():
+    """CLI command to validate SIPMediaGW configuration settings."""
     error_message = ""
     from joserfc.jwk import RSAKey
 
@@ -121,6 +127,7 @@ def check_sip_settings():
 @bp.cli.command("check-sip-token")
 @click.argument("token")
 def check_sip_token(token):
+    """CLI command to validate a JWT token against the configured private key."""
     from b3desk.utils import check_token_errors
 
     if not (errors := check_token_errors(token)):

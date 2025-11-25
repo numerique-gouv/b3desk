@@ -2,10 +2,11 @@ import datetime
 import json
 from typing import Annotated
 from typing import Any
-from typing import Optional
 
 from flask_babel import lazy_gettext as _
 from pydantic import BeforeValidator
+from pydantic import FilePath
+from pydantic import PositiveInt
 from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
@@ -16,6 +17,7 @@ from b3desk.constants import DEFAULT_EMAIL_WHITELIST
 
 
 def split_comma_separated_strings(value):
+    """Convert a comma-separated string into a list of stripped strings."""
     if not isinstance(value, str):
         return value
 
@@ -152,7 +154,80 @@ class MainSettings(BaseSettings):
     https://flask.palletsprojects.com/en/3.0.x/config/#PREFERRED_URL_SCHEME.
     """
 
-    REDIS_URL: Optional[str] = None
+    LOG_CONFIG: FilePath | None = None
+    """Chemin vers un fichier de configuration de logs Python.
+
+    Le fichier doit être au :ref:`format de fichiers de logs officiel Python <logging-config-fileformat>`.
+    Il peut être au format INI ou à partir de Python 3.11 au format TOML (qui est recommandé):
+
+    .. tip:: Par défaut les images Docker montent le répertoire ``web/conf`` dans ``/opt/bbb-visio/conf``.
+        On peut donc créer un fichier ``web/conf/logging.toml`` dans le projet avec la configuration voulue.
+        On indiquera ensuite ``LOG_CONFIG=/opt/bbb-visio/conf/logging.toml`` pour que ce fichier soit chargé
+        par l'image Docker.
+
+    .. note:: `[root]` désigne un logger par défaut qui traite tous les messages de log qui ne sont pas traités par d'autres loggers.
+
+    .. code-block:: toml
+        :caption: Exemple de fichier de configuration de logs au format toml
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.b3desk]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/b3desk.log"
+        formatter = "default"
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["b3desk"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+    .. code-block:: toml
+        :caption: Exemple de configuration avec un fichier destiné aux erreurs
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.b3desk]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/b3desk.log"
+        formatter = "default"
+
+        [handlers.errors]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/errors.log"
+        formatter = "default"
+        level = "WARNING"
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["b3desk", "errors"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+    """
+
+    REDIS_URL: str | None = None
     """L’URL du serveur redis utilisé pour les tâches asynchrones.
 
     Par exemple ``localhost:6379``.
@@ -161,13 +236,13 @@ class MainSettings(BaseSettings):
     NC_LOGIN_TIMEDELTA_DAYS: int = 30
     """Durée en jours avant l’expiration des autorisations Nextcloud."""
 
-    NC_LOGIN_API_URL: Optional[str] = None
+    NC_LOGIN_API_URL: str | None = None
     """URL du fournisseur d'accès utilisé par Nextcloud.
 
     Par exemple ``https://auth.example.org``.
     """
 
-    NC_LOGIN_API_KEY: Optional[str] = None
+    NC_LOGIN_API_KEY: str | None = None
     """Clé d'API Nextcloud."""
 
     FORCE_HTTPS_ON_EXTERNAL_URLS: bool = False
@@ -234,7 +309,7 @@ class MainSettings(BaseSettings):
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
-    ALLOWED_MIME_TYPES_SERVER_SIDE: Optional[list[str]] = [
+    ALLOWED_MIME_TYPES_SERVER_SIDE: list[str] | None = [
         "application/pdf",
         "image/vnd.dwg",
         "image/x-xcf",
@@ -271,9 +346,10 @@ class MainSettings(BaseSettings):
     @field_validator("ALLOWED_MIME_TYPES_SERVER_SIDE", mode="before")
     def get_allowed_mime_types_server_side(
         cls,
-        allowed_mime_types_server_side: Optional[list[str]],
+        allowed_mime_types_server_side: list[str] | None,
         info: ValidationInfo,
     ) -> list[str]:
+        """Return allowed MIME types parsed from string or list."""
         if not allowed_mime_types_server_side:
             return []
 
@@ -282,7 +358,7 @@ class MainSettings(BaseSettings):
 
         return allowed_mime_types_server_side
 
-    ACCEPTED_FILES_CLIENT_SIDE: Optional[str] = (
+    ACCEPTED_FILES_CLIENT_SIDE: str | None = (
         "image/*,.pdf,.doc,.docx,.htm,.html,.odp,.ods,.odt,.ppt,.pptx,.xls,.xlsx"
     )
     """Liste de mime-types autorisés par le navigateur pour le téléversement
@@ -324,29 +400,29 @@ class MainSettings(BaseSettings):
     OIDC_INFO_REQUESTED_FIELDS: list[str] = ["email", "given_name", "family_name"]
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
-    OIDC_ISSUER: Optional[str] = None
+    OIDC_ISSUER: str | None = None
     """URL du serveur d’identité des organisateurs de réunion.
 
     Par exemple : https://auth.example.com
     """
 
-    OIDC_AUTH_URI: Optional[str] = None
+    OIDC_AUTH_URI: str | None = None
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
-    OIDC_USERINFO_URI: Optional[str] = None
+    OIDC_USERINFO_URI: str | None = None
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
-    OIDC_TOKEN_URI: Optional[str] = None
+    OIDC_TOKEN_URI: str | None = None
     """Probablement un relicat de flask-oidc, semble inutilisé."""
 
-    OIDC_CLIENT_ID: Optional[str] = None
+    OIDC_CLIENT_ID: str | None = None
     """ID du client auprès du serveur d’identité des organisateurs."""
 
-    OIDC_CLIENT_SECRET: Optional[str] = None
+    OIDC_CLIENT_SECRET: str | None = None
     """Secret permettant d’identifier le client auprès du serveur d’identité
     des organisateurs."""
 
-    OIDC_CLIENT_AUTH_METHOD: Optional[str] = "client_secret_post"
+    OIDC_CLIENT_AUTH_METHOD: str | None = "client_secret_post"
     """Méthode de communication avec le point d’entrée ``token_endpoint`` du
     serveur d’identité des organisateurs."""
 
@@ -355,21 +431,21 @@ class MainSettings(BaseSettings):
     ``token_introspection`` du serveur d’identité des organisateurs."""
 
     # TODO: replace by OIDCAuthentication.redirect_uri_config
-    OIDC_REDIRECT_URI: Optional[str] = None
+    OIDC_REDIRECT_URI: str | None = None
     """URL de B3Desk vers laquelle le serveur d’identité redirige les
     utilisateurs après authentification.
 
-    Par exemple ``http://localhost:5000/oidc_callback``
+    Par exemple ``https://visio-test.education.fr/oidc_callback``
 
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/configuration.html?highlight=OIDC_REDIRECT_URI#static-client-registration
     """
 
-    OIDC_SERVICE_NAME: Optional[str] = None
+    OIDC_SERVICE_NAME: str | None = None
     """Probablement un relicat de flask-oidc, semble inutilisé à part en valeur
     par défaut de ``OIDC_ATTENDEE_SERVICE_NAME``."""
 
     # Attendee OIDC Configuration (back to default if empty)
-    OIDC_ATTENDEE_ENABLED: Optional[bool] = True
+    OIDC_ATTENDEE_ENABLED: bool | None = True
     """Indique si le serveur d’authentification des participants est activé ou
     non.
 
@@ -377,26 +453,26 @@ class MainSettings(BaseSettings):
     l’authentification ne sera plus nécessaire pour les liens d’invitation authentifiés, ce qui permet de faire en sorte que les liens restent valides.
     """
 
-    OIDC_ATTENDEE_ISSUER: Optional[str] = None
+    OIDC_ATTENDEE_ISSUER: str | None = None
     """URL du serveur d’identité des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_ISSUER``.
     """
 
-    OIDC_ATTENDEE_CLIENT_ID: Optional[str] = None
+    OIDC_ATTENDEE_CLIENT_ID: str | None = None
     """ID du client auprès du serveur d’identité des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
     """
 
-    OIDC_ATTENDEE_CLIENT_SECRET: Optional[str] = None
+    OIDC_ATTENDEE_CLIENT_SECRET: str | None = None
     """Secret permettant d’identifier le client auprès du serveur d’identité
     des participants authentifiés.
 
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
     """
 
-    OIDC_ATTENDEE_CLIENT_AUTH_METHOD: Optional[str] = None
+    OIDC_ATTENDEE_CLIENT_AUTH_METHOD: str | None = None
     """Méthode de communication avec le point d’entrée ``token_endpoint`` du
     serveur d’identité des participants authentifiés.
 
@@ -411,7 +487,7 @@ class MainSettings(BaseSettings):
     Si non renseigné, prend la valeur de ``OIDC_INTROSPECTION_AUTH_METHOD``.
     """
 
-    OIDC_ATTENDEE_USERINFO_HTTP_METHOD: Optional[str] = None
+    OIDC_ATTENDEE_USERINFO_HTTP_METHOD: str | None = None
     """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
     d’entrée *UserInfo* du serveur d’identité.
 
@@ -420,14 +496,14 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
-    OIDC_ATTENDEE_SERVICE_NAME: Optional[str] = None
+    OIDC_ATTENDEE_SERVICE_NAME: str | None = None
     """Nom du service d’authentification des participants authentifiés. Utilisé
     pour l’affichage dans la modale d’invitation de participants authentifés.
 
     Si non renseigné, prend la valeur de ``OIDC_SERVICE_NAME``.
     """
 
-    OIDC_ATTENDEE_SCOPES: Optional[ListOfStrings] = None
+    OIDC_ATTENDEE_SCOPES: ListOfStrings | None = None
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
     demandée au serveur d’identité des participants authentifiés, séparés par
     des virgules.
@@ -438,7 +514,7 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
-    SECONDARY_IDENTITY_PROVIDER_ENABLED: Optional[bool] = False
+    SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
     Nextcloud est activée.
 
@@ -447,45 +523,50 @@ class MainSettings(BaseSettings):
     l'utilisateur sera recherché à partir de son mail.
     """
 
-    SECONDARY_IDENTITY_PROVIDER_URI: Optional[str] = None
+    SECONDARY_IDENTITY_PROVIDER_URI: str | None = None
     """Url du serveur d'identité permettant de retrouver un id utilisateur à
     partir de son email."""
 
-    SECONDARY_IDENTITY_PROVIDER_REALM: Optional[str] = None
+    SECONDARY_IDENTITY_PROVIDER_REALM: str | None = None
     """Groupe sous lequel est enregistré l'utilisateur."""
 
-    SECONDARY_IDENTITY_PROVIDER_CLIENT_ID: Optional[str] = None
+    SECONDARY_IDENTITY_PROVIDER_CLIENT_ID: str | None = None
     """ID du client B3desk dans ce serveur d'identité."""
 
-    SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: Optional[str] = None
+    SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: str | None = None
     """Secret du client B3desk dans ce serveur d'identité."""
 
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
+        """Return OIDC_ISSUER if attendee issuer is not specified."""
         return attendee_issuer or info.data.get("OIDC_ISSUER")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_ID")
     def get_attendee_client_id(
         cls, attendee_client_id: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_ID if attendee client ID is not specified."""
         return attendee_client_id or info.data.get("OIDC_CLIENT_ID")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_SECRET")
     def get_attendee_client_secret(
         cls, attendee_client_secret: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_SECRET if attendee client secret is not specified."""
         return attendee_client_secret or info.data.get("OIDC_CLIENT_SECRET")
 
     @field_validator("OIDC_ATTENDEE_CLIENT_AUTH_METHOD")
     def get_attendee_client_auth_method(
         cls, attendee_client_auth_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_CLIENT_AUTH_METHOD if attendee client auth method is not specified."""
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
 
     @field_validator("OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD")
     def get_attendee_introspection_endpoint_auth_method(
         cls, attendee_introspection_endpoint_auth_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_INTROSPECTION_AUTH_METHOD if attendee introspection auth method is not specified."""
         return attendee_introspection_endpoint_auth_method or info.data.get(
             "OIDC_INTROSPECTION_AUTH_METHOD"
         )
@@ -494,6 +575,7 @@ class MainSettings(BaseSettings):
     def get_attendee_userinfo_http_method(
         cls, attendee_userinfo_http_method: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_USERINFO_HTTP_METHOD if attendee userinfo HTTP method is not specified."""
         return attendee_userinfo_http_method or info.data.get(
             "OIDC_USERINFO_HTTP_METHOD"
         )
@@ -502,22 +584,25 @@ class MainSettings(BaseSettings):
     def get_attendee_attendee_service_name(
         cls, attendee_attendee_service_name: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_SERVICE_NAME if attendee service name is not specified."""
         return attendee_attendee_service_name or info.data.get("OIDC_SERVICE_NAME")
 
     @field_validator("OIDC_ATTENDEE_SCOPES")
     def get_attendee_attendee_scopes(
         cls, attendee_scopes: str, info: ValidationInfo
     ) -> str:
+        """Return OIDC_SCOPES if attendee scopes are not specified."""
         return attendee_scopes or info.data.get("OIDC_SCOPES")
 
-    DOCUMENTATION_LINK_URL: Optional[str] = None
+    DOCUMENTATION_LINK_URL: str | None = None
     """Surcharge l’adresse de la page de documentation si renseigné."""
 
-    DOCUMENTATION_LINK_LABEL: Optional[str] = None
+    DOCUMENTATION_LINK_LABEL: str | None = None
     """Semble inutilisé."""
 
     @computed_field
     def DOCUMENTATION_LINK(self) -> dict[str, Any]:
+        """Return documentation link metadata including URL and external flag."""
         return {
             "url": self.DOCUMENTATION_LINK_URL,
             "label": self.DOCUMENTATION_LINK_LABEL,
@@ -533,10 +618,10 @@ class MainSettings(BaseSettings):
     SERVICE_TAGLINE: str = "Le service de webinaire pour les agents de l’État"
     """Slogan du service B3Desk."""
 
-    MEETING_LOGOUT_URL: Optional[str] = None
+    MEETING_LOGOUT_URL: str | None = None
     """URL vers laquelle sont redirigés les utilisateurs après un séminaire."""
 
-    SATISFACTION_POLL_URL: Optional[str] = None
+    SATISFACTION_POLL_URL: str | None = None
     """URL de l’iframe du formulaire de satisfaction."""
 
     SQLALCHEMY_DATABASE_URI: str
@@ -568,6 +653,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_A_MEETING")
     def get_wording_a_meeting(cls, wording_a_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'a meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_a_meeting
             or AVAILABLE_WORDINGS["A_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -584,6 +670,7 @@ class MainSettings(BaseSettings):
     def get_wording_my_meeting(
         cls, wording_my_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'my meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_my_meeting
             or AVAILABLE_WORDINGS["MY_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -599,6 +686,7 @@ class MainSettings(BaseSettings):
     def get_wording_the_meeting(
         cls, wording_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_the_meeting
             or AVAILABLE_WORDINGS["THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -615,6 +703,7 @@ class MainSettings(BaseSettings):
     def get_wording_of_the_meeting(
         cls, wording_of_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'of the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_of_the_meeting
             or AVAILABLE_WORDINGS["OF_THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -628,6 +717,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MEETING")
     def get_wording_meeting(cls, wording_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_meeting
             or AVAILABLE_WORDINGS["MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -641,6 +731,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("WORDING_MEETINGS")
     def get_wording_meetings(cls, wording_meetings: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'meetings' based on MEETING_KEY_WORDING."""
         return (
             wording_meetings
             or AVAILABLE_WORDINGS["MEETINGS"][info.data["MEETING_KEY_WORDING"]]
@@ -657,6 +748,7 @@ class MainSettings(BaseSettings):
     def get_wording_this_meeting(
         cls, wording_this_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'this meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_this_meeting
             or AVAILABLE_WORDINGS["THIS_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -673,6 +765,7 @@ class MainSettings(BaseSettings):
     def get_wording_to_the_meeting(
         cls, wording_to_the_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'to the meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_to_the_meeting
             or AVAILABLE_WORDINGS["TO_THE_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -689,6 +782,7 @@ class MainSettings(BaseSettings):
     def get_wording_improvised_meeting(
         cls, wording_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'improvised meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_improvised_meeting
             or AVAILABLE_WORDINGS["IMPROVISED_MEETING"][
@@ -707,6 +801,7 @@ class MainSettings(BaseSettings):
     def get_wording_an_improvised_meeting(
         cls, wording_an_improvised_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'an improvised meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_an_improvised_meeting
             or AVAILABLE_WORDINGS["AN_IMPROVISED_MEETING"][
@@ -725,6 +820,7 @@ class MainSettings(BaseSettings):
     def get_wording_a_quick_meeting(
         cls, wording_a_quick_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'a quick meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_a_quick_meeting
             or AVAILABLE_WORDINGS["A_QUICK_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -741,6 +837,7 @@ class MainSettings(BaseSettings):
     def get_wording_private_meetings(
         cls, wording_private_meetings: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'private meetings' based on MEETING_KEY_WORDING."""
         return (
             wording_private_meetings
             or AVAILABLE_WORDINGS["PRIVATE_MEETINGS"][info.data["MEETING_KEY_WORDING"]]
@@ -757,6 +854,7 @@ class MainSettings(BaseSettings):
     def get_wording_good_meeting(
         cls, wording_good_meeting: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'good meeting' based on MEETING_KEY_WORDING."""
         return (
             wording_good_meeting
             or AVAILABLE_WORDINGS["GOOD_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -773,6 +871,7 @@ class MainSettings(BaseSettings):
     def get_wording_meeting_undefined_article(
         cls, wording_meeting_undefined_article: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for meeting indefinite article based on MEETING_KEY_WORDING."""
         return (
             wording_meeting_undefined_article
             or AVAILABLE_WORDINGS["MEETING_UNDEFINED_ARTICLE"][
@@ -791,6 +890,7 @@ class MainSettings(BaseSettings):
     def get_wording_a_meeting_to_which(
         cls, wording_a_meeting_to_which: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate wording for 'a meeting to which' based on MEETING_KEY_WORDING."""
         return (
             wording_a_meeting_to_which
             or AVAILABLE_WORDINGS["A_MEETING_TO_WHICH"][
@@ -808,6 +908,7 @@ class MainSettings(BaseSettings):
     def get_welcome_page_subtitle(
         cls, welcome_page_subtitle: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate welcome page subtitle based on MEETING_KEY_WORDING."""
         return (
             welcome_page_subtitle
             or AVAILABLE_WORDINGS["WELCOME_PAGE_SUBTITLE"][
@@ -825,6 +926,7 @@ class MainSettings(BaseSettings):
     def get_meeting_mail_subject(
         cls, meeting_mail_subject: Any, info: ValidationInfo
     ) -> Any:
+        """Return appropriate meeting email subject based on MEETING_KEY_WORDING."""
         return (
             meeting_mail_subject
             or AVAILABLE_WORDINGS["MEETING_MAIL_SUBJECT"][
@@ -842,7 +944,7 @@ class MainSettings(BaseSettings):
     FILE_SHARING: bool = False
     """Active la fonctionnalité de téléversement de fichiers."""
 
-    DOCUMENTATION_PAGE_SUBTITLE: Optional[str] = None
+    DOCUMENTATION_PAGE_SUBTITLE: str | None = None
     """Sous-titre de la page de documentation."""
 
     A_NEW_MEETING: Any = None
@@ -854,6 +956,7 @@ class MainSettings(BaseSettings):
 
     @field_validator("A_NEW_MEETING")
     def get_a_new_meeting(cls, a_new_meeting: Any, info: ValidationInfo) -> Any:
+        """Return appropriate wording for 'a new meeting' based on MEETING_KEY_WORDING."""
         return (
             a_new_meeting
             or AVAILABLE_WORDINGS["A_NEW_MEETING"][info.data["MEETING_KEY_WORDING"]]
@@ -861,6 +964,7 @@ class MainSettings(BaseSettings):
 
     @computed_field
     def WORDINGS(self) -> dict[str, Any]:
+        """Return a dictionary of all meeting-related wordings for templates."""
         return {
             "a_meeting": self.WORDING_A_MEETING,
             "the_meeting": self.WORDING_THE_MEETING,
@@ -889,7 +993,7 @@ class MainSettings(BaseSettings):
     QUICK_MEETING: bool = True
     """Affiche le lien de création de réunions improvisées."""
 
-    QUICK_MEETING_DEFAULT_NAME: Optional[str] = None
+    QUICK_MEETING_DEFAULT_NAME: str | None = None
     """Nom par défaut des réunions improvisées.
 
     Par défaut prend la valeur de ``WORDING_IMPROVISED_MEETING``.
@@ -897,8 +1001,9 @@ class MainSettings(BaseSettings):
 
     @field_validator("QUICK_MEETING_DEFAULT_NAME")
     def get_quick_meeting_default_value(
-        cls, quick_meeting_default_value: Optional[str], info: ValidationInfo
+        cls, quick_meeting_default_value: str | None, info: ValidationInfo
     ) -> Any:
+        """Return capitalized WORDING_IMPROVISED_MEETING if quick meeting name is not specified."""
         return (
             quick_meeting_default_value
             or info.data["WORDING_IMPROVISED_MEETING"].capitalize()
@@ -919,15 +1024,16 @@ class MainSettings(BaseSettings):
     @field_validator("QUICK_MEETING_MODERATOR_WELCOME_MESSAGE")
     def get_quick_meeting_moderator_welcome_message(
         cls,
-        quick_meeting_moderator_welcome_message: Optional[str],
+        quick_meeting_moderator_welcome_message: str | None,
         info: ValidationInfo,
     ) -> Any:
+        """Return moderator welcome message for quick meetings with appropriate wording."""
         return quick_meeting_moderator_welcome_message or _(
             "Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
             this_meeting=info.data["WORDING_THIS_MEETING"],
         )
 
-    QUICK_MEETING_LOGOUT_URL: Optional[str] = None
+    QUICK_MEETING_LOGOUT_URL: str | None = None
     """Lien vers lequel sont redirigés les participants à la fin d’une réunion
     improvisée.
 
@@ -943,8 +1049,9 @@ class MainSettings(BaseSettings):
 
     @field_validator("MAIL_MODERATOR_WELCOME_MESSAGE")
     def get_moderator_welcome_message(
-        cls, moderator_welcome_message: Optional[str], info: ValidationInfo
+        cls, moderator_welcome_message: str | None, info: ValidationInfo
     ) -> Any:
+        """Return moderator welcome message for email-invited meetings with appropriate wording."""
         return moderator_welcome_message or _(
             "Bienvenue. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
             this_meeting=info.data["WORDING_THIS_MEETING"],
@@ -963,7 +1070,7 @@ class MainSettings(BaseSettings):
     RECORDING: bool = False
     """Active la fonctionnalité d’enregistrement des réunions."""
 
-    RECORDING_DURATION: Optional[datetime.timedelta] = datetime.timedelta(days=365)
+    RECORDING_DURATION: datetime.timedelta | None = datetime.timedelta(days=365)
     """Durée par défaut de conservation des enregistrements.
 
     Utilisé à des fins d’affichage seulement.
@@ -975,25 +1082,25 @@ class MainSettings(BaseSettings):
     MAIL_MEETING: bool = False
     """Active l’organisation de réunion par envoi de liens par email."""
 
-    SMTP_FROM: Optional[str] = None
+    SMTP_FROM: str | None = None
     """Adresse email d’expéditeur pour les mails d’invitation."""
 
-    SMTP_HOST: Optional[str] = None
+    SMTP_HOST: str | None = None
     """Addresse du serveur SMTP."""
 
-    SMTP_PORT: Optional[int] = None
+    SMTP_PORT: int | None = None
     """Port du serveur SMTP."""
 
-    SMTP_USERNAME: Optional[str] = None
+    SMTP_USERNAME: str | None = None
     """Identifiant auprès du serveur SMTP."""
 
-    SMTP_PASSWORD: Optional[str] = None
+    SMTP_PASSWORD: str | None = None
     """Mot de passe du serveur SMTP."""
 
-    SMTP_SSL: Optional[bool] = False
+    SMTP_SSL: bool | None = False
     """Connexion SSL au serveur SMTP."""
 
-    SMTP_STARTTLS: Optional[bool] = False
+    SMTP_STARTTLS: bool | None = False
     """Connexion StartTLS au serveur SMTP."""
 
     EMAIL_WHITELIST: Any = None
@@ -1002,6 +1109,7 @@ class MainSettings(BaseSettings):
     def get_email_whitelist(
         cls, email_whitelist: list[str], info: ValidationInfo
     ) -> str:
+        """Return DEFAULT_EMAIL_WHITELIST and normalize to list format."""
         if not email_whitelist:
             return DEFAULT_EMAIL_WHITELIST
         return (
@@ -1015,7 +1123,7 @@ class MainSettings(BaseSettings):
     https://docs.bigbluebutton.org/development/api/#create
     """
 
-    RIE_NETWORK_IPS: Optional[ListOfStrings] = None
+    RIE_NETWORK_IPS: ListOfStrings | None = None
     """Plages d’adresses IP du réseau interministériel de l'État.
 
     Affiche un encart particulier pour les utilisateurs se connectant
@@ -1031,124 +1139,131 @@ class MainSettings(BaseSettings):
     STATS_CACHE_DURATION: int = 1800
     """Durée de rétention du cache des statistiques des réunions."""
 
-    STATS_URL: Optional[str] = None
+    STATS_URL: str | None = None
     """URL du fichier de statistiques des réunions.
 
-    Par exemple ``http://localhost:5000/static/local/stats.csv``
+    Par exemple ``https://visio-test.education.fr/static/local/stats.csv``
     """
 
     STATS_INDEX: int = 2
     """Numéro de ligne des statistiques de réunion dans le fichier CSV."""
 
-    BIGBLUEBUTTON_ENDPOINT: Optional[str] = None
+    BIGBLUEBUTTON_ENDPOINT: str | None = None
     """URL du service BBB.
 
-    Par exemple ``https://bbb26.test/bigbluebutton/api``
+    Par exemple ``https://bbb30.test/bigbluebutton/api``
     """
 
-    BIGBLUEBUTTON_SECRET: Optional[str] = None
+    BIGBLUEBUTTON_SECRET: str | None = None
     """Mot de passe du service BBB."""
 
-    BIGBLUEBUTTON_DIALNUMBER: Optional[str] = None
+    BIGBLUEBUTTON_DIALNUMBER: str | None = None
     """The dial access number that participants can call in using regular
     phone.
 
     Required if pin management is enabled.
     """
 
-    BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL: Optional[str] = None
+    BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL: str | None = None
     """Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
 
     Plus d’informations sur
     https://docs.bigbluebutton.org/development/api/#create
     """
 
-    MATOMO_URL: Optional[str] = None
+    MATOMO_URL: str | None = None
     """URL de l’instance de Matomo vers laquelle envoyer des statistiques."""
 
-    MATOMO_SITE_ID: Optional[str] = None
+    MATOMO_SITE_ID: str | None = None
     """ID de l’instance B3Desk dans Matomo."""
 
     BIGBLUEBUTTON_API_CACHE_DURATION: int = 5
     """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
     l'API BBB."""
 
-    SENTRY_DSN: Optional[str] = None
+    SENTRY_DSN: str | None = None
     """Sentry DSN to catch exceptions."""
 
-    ENABLE_LASUITENUMERIQUE: Optional[bool] = False
+    ENABLE_LASUITENUMERIQUE: bool | None = False
     """Enable LaSuite numerique homepage style."""
 
-    ENABLE_PIN_MANAGEMENT: Optional[bool] = False
+    ENABLE_PIN_MANAGEMENT: bool | None = False
     """Enable mangement of PIN by B3Desk.
 
-    PIN allows users joining meeting by phone. ENABLE_PIN_MANAGEMENT
-    required if enabled.
+    PIN allows users joining meeting by phone. BIGBLUEBUTTON_DIALNUMBER
+    required if PIN management enabled.
     """
 
     @field_validator("ENABLE_PIN_MANAGEMENT", mode="before")
     def dial_number_required(
         cls,
-        enable_pin_management: Optional[bool],
+        enable_pin_management: bool | None,
         info: ValidationInfo,
     ) -> bool:
+        """Validate that BIGBLUEBUTTON_DIALNUMBER is set when PIN management is enabled."""
         if enable_pin_management:
             assert info.data["BIGBLUEBUTTON_DIALNUMBER"], (
                 "BIGBLUEBUTTON_DIALNUMBER configuration required when enabling pin management"
             )
         return enable_pin_management
 
-    FQDN_SIP_SERVER: Optional[str] = None
+    FQDN_SIP_SERVER: str | None = None
     """FQDN SIP server.
 
-    Required if visio_code is enabled.
+    Required if SIP is enabled.
     """
 
-    PRIVATE_KEY: Optional[str] = None
+    PRIVATE_KEY: str | None = None
     """Private key generated by joserfc, double quotes are mandatory.
 
     It will be used to generate a token for SIPMediaGW connection
     security. Changing the private-key makes all tokens invalid.
+    Required if SIP is enabled.
     """
 
-    ENABLE_SIP: Optional[bool] = False
+    ENABLE_SIP: bool | None = False
     """Enable SIPMediaGW.
 
-    SIPMediaGW url allows users connecting SIPMediaGW. NABLE_SIP
-    required if enabled.
+    SIPMediaGW url allows users connecting SIPMediaGW. FQDN_SIP_SERVER
+    required if SIP enabled.
     """
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def fqdn_sip_server_required(
         cls,
-        enable_sip: Optional[bool],
+        enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
-        if enable_sip:
-            assert info.data["FQDN_SIP_SERVER"], (
+        """Validate that FQDN_SIP_SERVER is set when SIP is enabled."""
+        if enable_sip and not info.data["FQDN_SIP_SERVER"]:
+            raise ValueError(
                 "FQDN_SIP_SERVER configuration required when enabling SIPMediaGW"
             )
         return enable_sip
 
-    @field_validator("ENABLE_SIP", mode="before")
+    @field_validator("ENABLE_SIP", mode="after")
     def private_key_server_required(
         cls,
-        enable_sip: Optional[bool],
+        enable_sip: bool | None,
         info: ValidationInfo,
     ) -> bool:
+        """Validate that PRIVATE_KEY is set when SIP is enabled."""
         if enable_sip and not info.data["PRIVATE_KEY"]:
-            print("PRIVATE_KEY configuration required when enabling SIPMediaGW")
+            raise ValueError(
+                "PRIVATE_KEY configuration required when enabling SIPMediaGW"
+            )
         return enable_sip
 
-    VIDEO_STREAMING_LINKS: Optional[dict[str, str]] = {}
+    VIDEO_STREAMING_LINKS: dict[str, str] | None = {}
     """List of streaming service for video sharing."""
 
     @field_validator("VIDEO_STREAMING_LINKS", mode="before")
     def get_video_streaming_links(
         cls,
-        video_streaming_links: Optional[dict[str, str]],
+        video_streaming_links: dict[str, str] | None,
         info: ValidationInfo,
     ) -> dict[str, str]:
+        """Return video streaming links parsed from JSON string or as dictionary."""
         if not video_streaming_links:
             return {}
 
@@ -1156,3 +1271,36 @@ class MainSettings(BaseSettings):
             return json.loads(video_streaming_links)
 
         return video_streaming_links
+
+    PISTE_OAUTH_CLIENT_ID: str | None = None
+    """Piste Oauth client_id
+
+    Oauth client id can be retrieved from the PISTE site under APPLICATION on
+    the following line: Identifiants Oauth
+    """
+
+    PISTE_OAUTH_CLIENT_SECRET: str | None = None
+    """ Piste Oauth client_secret
+
+    Oauth client secret can be retrieved from the PISTE site under APPLICATION on
+    the following line: Identifiants Oauth
+    under the following column: Secret Key
+    """
+
+    CAPTCHETAT_API_URL: str | None = "https://api.piste.gouv.fr/piste/"
+    """PISTE API url
+
+    basic url for PISTE API used to get and check captchetat
+    """
+
+    PISTE_OAUTH_API_URL: str | None = "https://oauth.piste.gouv.fr/api"
+    """ PISTE OAUTH APU url
+
+    basic url for PISTE OAUTH API used to get access token to captchetat API
+    """
+
+    CAPTCHA_NUMBER_ATTEMPTS: PositiveInt | None = 5
+    """ Captcha number attemps
+
+    Number of attempts to enter the visio-code before submitting a captcha
+    """

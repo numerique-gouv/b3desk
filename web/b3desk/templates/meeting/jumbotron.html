@@ -1,10 +1,10 @@
 <div class="fr-callout fr-fi-information-line">
     {% if meeting is not none %}
-    <h4 class="fr-callout__title">{% trans %}Webinaire{% endtrans %} {{ meeting.name }}</h4>
+        <h4 class="fr-callout__title">{% trans %}Webinaire{% endtrans %} {{ meeting.name }}</h4>
     {% else %}
-    <h4 class="fr-callout__title">{% trans %}Nouveau webinaire{% endtrans %}</h4>
+        <h4 class="fr-callout__title">{% trans %}Nouveau webinaire{% endtrans %}</h4>
     {% endif %}
-    <a class="fr-btn" title="Retour au tableau de bord" href="{{ url_for("public.welcome") }}">
+    <a class="fr-btn" title="{% trans %}Retour au tableau de bord{% endtrans %}" href="{{ url_for("public.welcome") }}">
         {% trans %}Retour au tableau de bord{% endtrans %}
     </a>
 </div>

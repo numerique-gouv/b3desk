@@ -2,37 +2,40 @@
     <div class="fr-header__brand-top">
         <div class="fr-header__logo">
             <p class="fr-logo">
-            République
-            <br>Française
+                {% trans %}République
+                    <br>Française{% endtrans %}
             </p>
         </div>
         <div class="fr-header__navbar">
-            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-616" aria-haspopup="menu" id="button-617" title="Menu">
-                Menu
+            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-616" aria-haspopup="menu" id="button-617" title="{% trans %}Menu{% endtrans %}">
+                {% trans %}Menu{% endtrans %}
             </button>
             {% if config.get("ENABLE_LASUITENUMERIQUE") %}
                 <button
                     type="button"
                     class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
-                    title="Les services de La Suite numérique"
-                    >
-                    Les services de La Suite numérique
+                    title="{% trans %}Les services de La Suite numérique{% endtrans %}"
+                >
+                    {% trans %}Les services de La Suite numérique{% endtrans %}
                 </button>
             {% endif %}
         </div>
     </div>
     <div class="fr-header__service">
-        <a href="{{ url_for("public.index") }}" title="Accueil - {{ service_title }} - République Française">
+        <a href="{{ url_for("public.index") }}" title="{% trans %}Accueil - {{ service_title }} - République Française{% endtrans %}">
             <!-- Webinaire de l'État -->
             <p class="fr-header__service-title">
-            {% trans %}{{ service_title }}{% endtrans %}
-            {% if config.get("BETA") %}
-                {% if development_version %}
-                    <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
-                {% else %}
-                    <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+                {% trans %}{{ service_title }}{% endtrans %}
+                {% if config.get("BETA") %}
+                    {% if development_version %}
+                        <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
+                    {% else %}
+                        <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+                {% if debug %}
+                    <span class="fr-badge fr-badge--sm fr-badge--error" title="{% trans %}L'instance est configurée en mode déboggage. Ne pas utiliser en production !{% endtrans %}">DEBUG</span>
+                {% endif %}
             </p>
         </a>
         <!-- Le service de réunions en ligne pour les agents de l'État -->

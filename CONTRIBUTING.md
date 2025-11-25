@@ -21,7 +21,7 @@ Vous trouverez plus d'informations concernant la persistance des données pour c
 
 1. Configurer l'application web en créant le fichier `web.env` à partir du fichier `web.env.example`. Ce nouveau fichier est précisé dans `docker-compose.override.yml` qui vient surcharger le fichier `docker-compose.yml` lorsqu'aucun fichier n'est précisé dans la commande `docker compose`.
 Pour que les liens vers le service BBB fonctionne, il est nécessaire de configurer les variables d'environnement BIGBLUEBUTTON_ENDPOINT et BIGBLUEBUTTON_SECRET.
-**Si une seule variable d'environnement manque, toute ou partie de l'application dysfonctionne.** Si vous n'avez pas d'instance BBB à disposition, vous pouvez lancer votre propre instance localement en suivant le fichier `./bigbluebutton/Run-local-bbb.md`.
+**Si une seule variable d'environnement manque, toute ou partie de l'application dysfonctionne.** Si vous n'avez pas d'instance BBB à disposition, vous pouvez lancer votre propre instance localement en suivant le chapitre `bigbluebutton <bigbluebutton>`.
 
 2. Démarrer l'application web, la base de données postgresql et le serveur d'authentification oidc keycloak préconfiguré avec docker-compose et attendre que les 3 soient prêts à accepter des connections (l'application web ne démarre pas correctement tant que les deux autres ne sont pas prêts et redémarre automatiquement jusqu'à ce qu'elle réussisse)
 
@@ -30,43 +30,31 @@ docker compose up  # ou docker-compose up
 # docker compose down pour tout couper
 ```
 
-3. Pour que l'authentification via le conteneur keycloak fonctionne depuis votre navigateur (cf https://stackoverflow.com/a/59579592) et pour que le conteneur Nextcloud soit accessible dans le réseau docker et requêtable depuis votre navigateur, vous devez ajouter les entrées suivantes dans votre fichier hosts (`/etc/hosts` sur une machine linux ou macOS) :
-
-```
-127.0.0.1 keycloak
-127.0.0.1 nextcloud
-```
-
-4. Tester l'accès [http://localhost:5000] puis se connecter.
+3. Tester l'accès [http://b3desk.localhost:5000] puis se connecter.
 Le compte d'accès est `bbb-visio-user`, mot de passe `Pa55w0rd`.
-Si nécessaire, tester l'accès au keycloak [http://localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
+Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
 
 ### Environnement de développement
 
 #### Installation locale
-Installer localement le projet vous permettra de lancer black, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
+Installer localement le projet vous permettra de lancer ruff, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
 L'installation locale peut être réalisé avec le Makefile situé à la racine du projet :
 ```bash
 make install-dev
 ```
 Utilisez ce Makefile comme référence pour vos commandes shell.
 
-#### Poetry
-L'environnement de développement est géré avec [Poetry](https://python-poetry.org/).
+#### uv
+L'environnement de développement est géré avec [uv](https://docs.astral.sh/uv/).
 
 Installez l'environnement avec :
 ```bash
-poetry install [--with GROUPE]
+uv sync [--with GROUPE]
 ```
 
-activez-le avec :
+Si vous souhaitez ajouter des dépendances, utilisez également uv :
 ```bash
-poetry shell
-```
-
-Si vous souhaitez ajouter des dépendances, utilisez également Poetry :
-```bash
-poetry add [--group GROUPE] PAQUET-PIP
+uv add [--group GROUPE] PAQUET
 ```
 vous devez ensuite impérativement mettre à jour les requirements de l'environnement modifié qui seront utilisées pour les conteneurs Docker de la production et de l'intégration continue :
 ```bash
@@ -83,9 +71,9 @@ Le nouveau code doit être testé. Pour lancer les tests, vous pouvez le faire d
 ```bash
 docker compose run --rm tests [pytest params]
 ```
-ou bien dans l'environnement Poetry avec pytest (dont certains settings sont dans le fichier `pyproject.toml`) :
+ou bien dans l'environnement uv avec pytest (dont certains settings sont dans le fichier `pyproject.toml`) :
 ```bash
-pytest
+uv run pytest
 ```
 
 Pour tester le code sur les différentes versions de python en cours, et prévenir des incompatibilités avec des versions futures, utilisez :
@@ -95,22 +83,23 @@ tox
 
 #### Conventions de code
 
-Le code python doit suivre les conventions de la PEP 8. Dans les dépendance de développement du projet, on retrouve `flake8` et `black`.
+Le code python doit suivre les conventions de la PEP 8. Dans les dépendance de développement du projet, on retrouve `ruff`.
 
-Le code peut donc être formatté avec [black](https://pypi.org/project/black/) (dont certains settings sont dans le fichier `pyproject.toml`) :
+Le code peut donc être formatté avec [ruff](https://astral.sh/ruff) :
 
 ```bash
-black .
+ruff check .
+ruff format .
 ```
 
-Vous pouvez également déléger cette tâche avec `pre-commit`.
+Vous pouvez également déléger cette tâche avec `prek`.
 
-Le paquet `pre-commit` est dans les dépendances de développement. Avec votre environnement activé, il vous suffit d'installer le hook git avec :
+Le paquet `prek` est dans les dépendances de développement. Avec votre environnement activé, il vous suffit d'installer le hook git avec :
 ```
-pre-commit install
+prek install
 ```
 
-Ainsi, lorsque vous ferez un commit, black sera automatiquement lancé et formatera le code si ça n'a pas été fait (il vous faudra ajouter ce nouveau changement avec git).
+Ainsi, lorsque vous ferez un commit, ruff sera automatiquement lancé et formatera le code si ça n'a pas été fait (il vous faudra ajouter ce nouveau changement avec git).
 
 #### Intégration continue GitHub
 
@@ -123,7 +112,7 @@ La CI GitHub est utilisée pour :
 - lancer les tests dans un conteneur : pour valider que l'app est iso dans un conteneur ou en local
 - lancer tous les conteneurs et faire un healthcheck sur chacun : pour valider que la configuration locale est fonctionnelle, et notamment qu'un token bien généré permet à B3Desk de communiquer avec une instance Nextcloud
 - valider que la couverture de test est au moins égale à la couverture précédente : pour inciter à ajouter des tests
-- valider que le code a bien été formaté : un `black . --check` est lancé
+- valider que le code a bien été formaté : un `ruff check .` est lancé
 
 ### Pull requests
 

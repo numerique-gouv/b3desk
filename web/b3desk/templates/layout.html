@@ -9,7 +9,6 @@
 
         <title>{{ config["TITLE"] }}</title>
 
-        <!-- DSFR core CSS -->
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/global.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/utility/icons/icons.css') }}">
@@ -20,66 +19,26 @@
         {% if config.get("ENABLE_LASUITENUMERIQUE") %}
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lasuite/homepage-gaufre.css') }}">
         {% endif %}
-        <script>
-            function generatePassWord(n){
-                var result = '';
-                var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var charactersLength = characters.length;
-                for ( var i = 0; i < n; i++ ) {
-                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                }
-                return result;
-            }
-
-            async function getAvailableVisioCode(visioCodeInput){
-                let method = "GET";
-                const url = "{{ url_for('meetings.get_available_visio_code') }}";
-                const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json"
-                }
-                })
-                const json = await response.json();
-                visioCodeInput.value = json.available_visio_code;
-            }
-            function copyInClipboard(selector, textToCopy){
-                clickedButton = document.getElementById(selector);
-                navigator.clipboard.writeText(textToCopy);
-                clickedButton.classList.remove("fr-icon-clipboard-line")
-                clickedButton.classList.add("fr-icon-success-fill")
-                previousWidth = clickedButton.getBoundingClientRect().width
-                clickedButton.classList.add("justify-content-space-between")
-                clickedButton.style.width = previousWidth+"px"
-                setTimeout(function(clickedBtn) {
-                    clickedBtn.classList.remove("fr-icon-success-fill")
-                    clickedBtn.classList.remove("justify-content-space-between")
-                    clickedBtn.classList.add("fr-icon-clipboard-line")
-                    clickedBtn.style.width = ""
-                }, 2000, clickedButton);
-
-            }
-        </script>
     </head>
 
     <body>
         <div id="js-modal-page">
             {% block header %}
-            {% if config.get("ENABLE_LASUITENUMERIQUE") and not user %}
-                {% include 'header-lasuite.html' %}
-            {% else %}
-                {% include 'header.html' %}
-            {% endif %}
+                {% if config.get("ENABLE_LASUITENUMERIQUE") and not user %}
+                    {% include 'header-lasuite.html' %}
+                {% else %}
+                    {% include 'header.html' %}
+                {% endif %}
             {% endblock %}
             <main role="main" id="main" >
                 {% with messages = get_flashed_messages(with_categories=true, category_filter=["error","success", "message", "warning"]) %}
-                {% if messages %}
-                {% for category,message in messages %}
-                <div class="fr-alert fr-alert-sm fr-alert--{{ 'info' if category == 'message' else category }}">
-                    <p>{{ message }}</p>
-                </div>
-                {% endfor %}
-                {% endif %}
+                    {% if messages %}
+                        {% for category,message in messages %}
+                            <div class="fr-alert fr-alert-sm fr-alert--{{ 'info' if category == 'message' else category }}">
+                                <p>{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endwith %}
                 {% block jumbotron %}{% endblock %}
                 <div id='layoutContainer' class="fr-container">
@@ -92,32 +51,32 @@
             </main>
 
             {% block footer %}
-            {% include 'footer.html' %}
+                {% include 'footer.html' %}
             {% endblock %}
 
-            <!-- DSFR JavaScript -->
+            {# DSFR JavaScript #}
             <script src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.module.min.js')}}"></script>
             <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
-            <!-- Scampi Modal en attendant la modale GouvFr-->
+            {# Scampi Modal en attendant la modale GouvFr #}
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}
-            <script>
-                var _paq = window._paq = window._paq || [];
-                /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+                <script>
+                    var _paq = window._paq = window._paq || [];
                     _paq.push(['trackPageView']);
-                _paq.push(['enableLinkTracking']);
-                (function() {
-                    var u="{{ config.get("MATOMO_URL") }}";
-                    _paq.push(['setTrackerUrl', u+'piwik.php']);
-                    _paq.push(['setSiteId', '{{ config.get("MATOMO_SITE_ID") }}']);
-                    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                    g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-                })();
-            </script>
+                    _paq.push(['enableLinkTracking']);
+                    (function() {
+                        var u="{{ config.get("MATOMO_URL") }}";
+                        _paq.push(['setTrackerUrl', u+'piwik.php']);
+                        _paq.push(['setSiteId', '{{ config.get("MATOMO_SITE_ID") }}']);
+                        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                        g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+                    })();
+                </script>
             {% endif %}
             {% if config.get("ENABLE_LASUITENUMERIQUE") %}
                 <script id="lasuite-gaufre-script" async defer src="https://integration.lasuite.numerique.gouv.fr/api/v1/gaufre.js"></script>
             {% endif %}
+            <script src="{{ url_for('static', filename='js/layout.js')}}"></script>
             {% block js %}{% endblock %}
         </div>
     </body>

@@ -1,5 +1,3 @@
-version: '3.7'
-
   # These containers are the one needed to make the app work
   # Other container are available in docker-compose.override.yml if needed
   # see documentation [link] for more info
@@ -16,6 +14,7 @@ services:
       - FLASK_APP=b3desk
     volumes:
       - ./web/logs:/var/log
+      - ./web/conf:/opt/bbb-visio/conf
       - ./web/b3desk:/opt/bbb-visio/b3desk
       - ./web/instance:/opt/bbb-visio/instance
       - ./web/migrations:/opt/bbb-visio/migrations

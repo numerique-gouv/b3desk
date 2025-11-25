@@ -457,10 +457,32 @@ This is a fix until we deal with the update.
   gap: 6px;
 }
 
-.visio-code-container input {
+.visio-code-input-container::before {
+  background-image: None !important;
+}
+
+.visio-code-container .visio-code-input-container input {
   width: 65px;
   text-align: center;
+  border: None;
 }
+
+.visio-code-error {
+    margin-top: 1em;
+}
+
+.captcha-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.captcha-container input {
+  width: 200px;
+  text-align: center;
+}
+
 
 .invite-accordion {
   display: flex;

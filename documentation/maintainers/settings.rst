@@ -77,8 +77,8 @@ Si les droits ``real-management view-users`` et ``realm-management query-users``
 Utilisation d'un materiel visio SIPMediaGW
 ==========================================
 
-Configuration de B3Desk
------------------------
+Configuration de la SIP dans B3Desk
+-----------------------------------
 
 Afin de permettre au matériel visio SIPMediaGW de rejoindre une visio via B3Desk, il faut lui communiquer un token qui sécurisera la connexion à B3Desk.
 
@@ -96,6 +96,18 @@ On peut ensuite configurer les paramètres suivants de manière identique pour t
 - :attr:`~b3desk.settings.MainSettings.ENABLE_SIP`
 - :attr:`~b3desk.settings.MainSettings.FQDN_SIP_SERVER`
 - :attr:`~b3desk.settings.MainSettings.PRIVATE_KEY`
+
+.. code-block:: bash
+   :caption: web.env
+
+   ENABLE_SIP=on
+   FQDN_SIP_SERVER=example.serveur.com
+   PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+   ThereIsAWonderfulPrivateKey
+   -----END PRIVATE KEY-----"
+
+.. warning::
+   Pour les données s'étalant sur plusieurs lignes, pensez à les entourer de guillements doubles ``"``.
 
 Il est maintenant nécessaire de redémarrer le conteneur de chaque serveur :
 

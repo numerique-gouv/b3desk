@@ -1,7 +1,6 @@
-version: '3.7'
-
 services:
   web:
+    hostname: b3desk.localhost
     depends_on:
       nextcloud:
         condition: service_started
@@ -15,32 +14,36 @@ services:
       - ${ENV_FILE_OVERRIDE-web.env}
 
   worker:
+    hostname: worker.localhost
     environment:
       - FLASK_DEBUG=1
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
 
   broker:
+    hostname: broker.localhost
     ports:
       - 127.0.0.1:6379:6379
 
   keycloak:
+    hostname: keycloak.localhost
     container_name: kc
     image: quay.io/keycloak/keycloak:legacy
     depends_on:
       - postgres
     env_file:
-      - keycloak.env
+      - ${ENV_KC_FILE_OVERRIDE-keycloak.env}
     volumes:
       - ./keycloak/themes/dsfr:/opt/jboss/keycloak/themes/dsfr
     ports:
       - 8080:8080
       - 8443:8443
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+      test: ["CMD", "curl", "-f", "http://keycloak.localhost:8080/auth"]
       start_period: 20s
 
   nextcloud:
+    hostname: nextcloud.localhost
     container_name: nc
     depends_on:
       postgres:
@@ -56,36 +59,39 @@ services:
       - NEXTCLOUD_ADMIN_PASSWORD=Pa55w0rd
       - NEXTCLOUD_USER=bbb-visio-user
       - NEXTCLOUD_USER_PASS=passwordSTRONG
-      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud  # service name in docker network
-      - NEXTCLOUD_ALLOW_ORIGIN=http://localhost:5000  # allow local browser to pick nextcloud files
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.localhost  # service name in docker network
+      - NEXTCLOUD_ALLOW_ORIGIN=http://b3desk.localhost:5000  # allow local browser to pick nextcloud files
     volumes:
       - ./nextcloud/html:/var/www/html
       - ./nextcloud/conf:/var/www/conf  # to share Nextcloud Sessiontoken generated key file
     ports:
       - 80:80
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/login"]
+      test: ["CMD", "curl", "-f", "http://nextcloud.localhost:80/login"]
       start_period: 60s
 
   tokenmock:
+    hostname: tokenmock.localhost
     container_name: id
-    image: php:7.2-apache
+    build:
+      context: ./tokenmock
+      dockerfile: Dockerfile
     depends_on:
       nextcloud:
         condition: service_healthy
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NC_LOGIN_API_KEY
     environment:
-      - NC_HOST=http://nextcloud  # nextcloud service in docker network
+      - NC_HOST=http://nextcloud.localhost  # nextcloud service in docker network
     volumes:
-      - ./tokenmock:/var/www/html
-      - ./nextcloud/conf:/var/www/conf  # to get shared Nextcloud Sessiontoken generated key
+      - ./nextcloud/conf:/opt/app/conf  # to get shared Nextcloud Sessiontoken generated key
     ports:
-      - 9000:80
+      - 9000:9000
 
   postgres:
+    hostname: postgres.localhost
     container_name: db
-    image: postgres
+    image: postgres:17
     env_file:
       - postgres.env
     ports:
@@ -98,14 +104,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  tests:
-    container_name: tests
-    build:
-      context: ./web
-      dockerfile: Dockerfile-tests
-    env_file:
-      - ${ENV_FILE_OVERRIDE-web.env}
-    volumes:
-      - ./web/b3desk:/opt/bbb-visio/b3desk
-      - ./web/tests:/opt/bbb-visio/tests
