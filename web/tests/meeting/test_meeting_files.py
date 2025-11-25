@@ -154,7 +154,7 @@ def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
 def test_ncdownload_with_file_not_in_db_abort_404(
     client_app, authenticated_user, caplog
 ):
-    client_app.get("/ncdownload/0/mfid/mftoken/1/badfile1.pdf", status=404)
+    client_app.get("/ncdownload/0/999999/mftoken/1/badfile1.pdf", status=404)
 
 
 def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, caplog):

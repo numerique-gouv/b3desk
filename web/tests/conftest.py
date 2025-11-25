@@ -1,4 +1,6 @@
 import datetime
+import shutil
+import tempfile
 import threading
 import time
 import uuid
@@ -7,17 +9,184 @@ from pathlib import Path
 
 import b3desk.utils
 import portpicker
+import psycopg
 import pytest
 from b3desk import create_app
 from b3desk.models import db
+from flask import Flask
 from flask_migrate import Migrate
 from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
 from joserfc.jwk import RSAKey
+from pytest_lazy_fixtures import lf
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
+
+
+def pytest_addoption(parser):
+    """Add --db command-line option to pytest."""
+    parser.addoption(
+        "--db",
+        action="append",
+        default=[],
+        help="database to test (sqlite, postgresql)",
+    )
+
+
+def pytest_generate_tests(metafunc):
+    """Parametrize tests with db fixture based on --db option."""
+    dbs = metafunc.config.getoption("db") or ["sqlite"]
+
+    if "db" in metafunc.fixturenames:
+        fixture_names = [f"{db}_db" for db in dbs]
+        metafunc.parametrize("db", [lf(name) for name in fixture_names], ids=dbs)
+
+
+@pytest.fixture(scope="session")
+def sqlite_template_db(tmp_path_factory):
+    """Create a SQLite template database with schema."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as f:
+        template_db_path = f.name
+
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{template_db_path}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.init_app(app)
+
+    with app.app_context():
+        Migrate(app, db, compare_type=True)
+        db.create_all()
+
+    yield Path(template_db_path)
+
+    Path(template_db_path).unlink(missing_ok=True)
+
+
+@pytest.fixture
+def sqlite_db(sqlite_template_db):
+    """Create a fresh SQLite database by copying the template."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as f:
+        test_db_path = f.name
+
+    shutil.copy2(sqlite_template_db, test_db_path)
+
+    yield f"sqlite:///{test_db_path}"
+
+    Path(test_db_path).unlink(missing_ok=True)
+
+
+@pytest.fixture(scope="session")
+def postgresql_template_db(postgresql_proc):
+    """Create a PostgreSQL template database with schema."""
+    pytest.importorskip("pytest_postgresql")
+
+    proc_info = postgresql_proc
+    template_dbname = "b3desk_template"
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(f'DROP DATABASE IF EXISTS "{template_dbname}"')
+    cursor.execute(f'CREATE DATABASE "{template_dbname}"')
+    cursor.close()
+    conn.close()
+
+    uri = f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{template_dbname}"
+
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = uri
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.init_app(app)
+
+    with app.app_context():
+        Migrate(app, db, compare_type=True)
+        db.create_all()
+        db.session.remove()
+        db.engine.dispose()
+
+    yield template_dbname
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{template_dbname}'
+        AND pid <> pg_backend_pid()
+        """
+    )
+    cursor.execute(f'DROP DATABASE IF EXISTS "{template_dbname}"')
+    cursor.close()
+    conn.close()
+
+
+@pytest.fixture
+def postgresql_db(postgresql_proc, postgresql_template_db):
+    """Create a fresh PostgreSQL database by cloning the template."""
+    pytest.importorskip("pytest_postgresql")
+
+    proc_info = postgresql_proc
+    test_dbname = f"b3desk_test_{uuid.uuid4().hex[:8]}"
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f'CREATE DATABASE "{test_dbname}" TEMPLATE "{postgresql_template_db}"'
+    )
+    cursor.close()
+    conn.close()
+
+    uri = (
+        f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{test_dbname}"
+    )
+
+    yield uri
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{test_dbname}'
+        AND pid <> pg_backend_pid()
+        """
+    )
+    cursor.execute(f'DROP DATABASE IF EXISTS "{test_dbname}"')
+    cursor.close()
+    conn.close()
 
 
 @pytest.fixture
@@ -91,12 +260,12 @@ def private_key():
 
 
 @pytest.fixture
-def configuration(tmp_path, iam_server, iam_client, request, private_key):
+def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
     configuration = {
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
         "PREFERRED_URL_SCHEME": "http",
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SQLALCHEMY_DATABASE_URI": db,
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",

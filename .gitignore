@@ -1,6 +1,6 @@
 *.pyc
 __pycache__/
-
+prof
 
 postgres/data/*
 !postgres/data/.keep
