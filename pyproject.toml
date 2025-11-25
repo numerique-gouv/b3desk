@@ -123,7 +123,7 @@ docstring-code-format = true
 
 [tool.tox]
 requires = ["tox>=4.19"]
-env_list = ["style", "py310", "py311", "py312", "py313", "coverage", "doc"]
+env_list = ["style", "py310", "py311", "py312", "py313", "py314", "coverage", "doc"]
 
 [tool.tox.env_run_base]
 uv_seed = true
