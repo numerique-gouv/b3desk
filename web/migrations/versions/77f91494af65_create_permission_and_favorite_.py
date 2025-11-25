@@ -1,8 +1,8 @@
-"""creates delegate table for meeting delegation.
+"""create permission and favorite intermediate tables.
 
-Revision ID: d01b2eda957f
-Revises: f68adee062bf
-Create Date: 2025-11-12 14:04:20.242269
+Revision ID: 77f91494af65
+Revises: 9869cacd37a4
+Create Date: 2025-11-25 14:42:01.974634
 
 """
 
@@ -14,18 +14,19 @@ from sqlalchemy.sql import select
 from sqlalchemy.sql import update
 
 # revision identifiers, used by Alembic.
-revision = "d01b2eda957f"
-down_revision = "f68adee062bf"
+revision = "77f91494af65"
+down_revision = "9869cacd37a4"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    # create new table : delegate
+    # create new table : permission
     op.create_table(
-        "delegate",
+        "permission",
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("meeting_id", sa.Integer(), nullable=False),
+        sa.Column("permission", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["meeting_id"],
             ["meeting.id"],
@@ -117,4 +118,4 @@ def downgrade():
 
     # delete favorite and delegate tables
     op.drop_table("favorite")
-    op.drop_table("delegate")
+    op.drop_table("permission")
