@@ -14,6 +14,8 @@ jobs:
   linter:
     name: run pre-commit
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6

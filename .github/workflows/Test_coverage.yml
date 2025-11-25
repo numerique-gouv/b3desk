@@ -14,6 +14,8 @@ jobs:
   compare-coverage:
     name: Compare with previous coverage
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - name: Setup git
         uses: actions/checkout@v5
