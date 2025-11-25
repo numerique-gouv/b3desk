@@ -14,6 +14,8 @@ jobs:
   test-local:
     name: Run unit tests
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     strategy:
       matrix:
         python:
@@ -42,6 +44,8 @@ jobs:
   healthy-containers:
     name: Check containers run
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - name: Setup git
         uses: actions/checkout@v5
