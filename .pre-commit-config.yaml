@@ -1,7 +1,7 @@
 ---
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.13.0'
+    rev: 'v0.14.6'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -20,7 +20,15 @@ repos:
       - id: check-toml
         exclude: ^(postgres/|nextcloud/|keycloak/)
   - repo: https://github.com/rtts/djhtml
-    rev: 3.0.9
+    rev: 3.0.10
     hooks:
       - id: djhtml
         exclude: ^(postgres/|nextcloud/|keycloak/)
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.3.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [
+          "--verbose",
+        ]
