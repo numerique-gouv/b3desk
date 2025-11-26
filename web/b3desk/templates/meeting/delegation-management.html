@@ -1,33 +1,32 @@
-<div class="fr-container--fluid">
-    <h4 class="fr-icon-user-setting-line fr-icon--lg">{% trans meeting_name=meeting.name %} Délégation du {{ meeting_label }} {{ meeting_name }} {% endtrans %}</h4>
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-6">
-            <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
-        </div>
-        <form class="fr-search-bar fr-col-6" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" method="post">
-            {% include 'meeting/csrf.html' %}
-            {{ form.search }}
-            <button title="{% trans %}Rechercher{% endtrans %}" type="submit" class="fr-btn"></button>
-        </form>
-    </div>
+<div class="fr-container">
+    <h4 class="fr-icon-user-setting-line fr-icon--lg">
+        {% trans meeting_name=meeting.name %} Délégation du {{ meeting_label }} {{ meeting_name }} {% endtrans %}
+    </h4>
+    <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
+    <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" method="post">
+        {% include 'meeting/csrf.html' %}
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="delegation-component">
-                <div class="fr-table__wrapper">
+                <div class="fr-table__wrapper ">
                     <div class="fr-table__container">
                         <div class="fr-table__content">
                             <table id="delegation">
-                                <thead class="fr-container--fluid">
-                                    <tr class="fr-grid-row">
-                                        <th class="fr-col-8"> Délégataires </th>
-                                        <th class="fr-col-4"> {{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
+                                <thead class="">
+                                    <tr class="">
+                                        <th class="fr-col--lg fr-cell--center"> Délégataires </th>
+                                        <th class="fr-col--xs fr-cell--center"> {{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
                                     </tr>
                                 </thead>
-                                <tbody class="fr-container--fluid">
+                                <tbody class="">
                                     {% for delegate in meeting.get_all_delegates %}
-                                        <tr class="fr-grid-row">
-                                            <td class="fr-col-8"> {{delegate.preferred_username}} </td>
-                                            <td class="fr-col-4">
+                                        <tr class="">
+                                            <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
+                                            <td class="fr-col--xs fr-cell--center">
                                                 <a class="fr-btn fr-btn--secondary fr-fi-delete-line" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
                                             </td>
                                         </tr>
