@@ -145,8 +145,10 @@ def test_owner_can_add_new_delegate(
     meeting,
     bbb_response,
     caplog,
+    smtpd,
 ):
     """Test that delegate can add a new delegate."""
+    assert len(smtpd.messages) == 0
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
@@ -160,6 +162,7 @@ def test_owner_can_add_new_delegate(
         f"{user_2.email} became delegate of meeting {meeting.id} {meeting.name}"
         in caplog.text
     )
+    assert len(smtpd.messages) == 1
 
 
 def test_add_new_delegate_with_wrong_email(
@@ -184,8 +187,10 @@ def test_maximum_delegate_number_limit(
     bbb_response,
     user_2,
     user_3,
+    smtpd,
 ):
     """Test that owner cannot add a new delegate beyong the MAXIMUM_MEETING_DELEGATES."""
+    assert len(smtpd.messages) == 0
     client_app.app.config["MAXIMUM_MEETING_DELEGATES"] = 1
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
@@ -196,6 +201,7 @@ def test_maximum_delegate_number_limit(
         "L'utilisateur a été ajouté aux délégataires",
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
+    assert len(smtpd.messages) == 1
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
     form["search"] = "charlie@domain.tld"
@@ -205,6 +211,7 @@ def test_maximum_delegate_number_limit(
         "ce séminaire ne peut plus recevoir de nouvelle délégation",
     ) in response.flashes
     assert user_3 not in meeting.get_all_delegates
+    assert len(smtpd.messages) == 1
 
 
 def test_owner_cannot_add_himself_as_delegate(
@@ -230,8 +237,10 @@ def test_add_delegate_who_is_already_delegate(
     meeting,
     bbb_response,
     user_2,
+    smtpd,
 ):
     """Test that there is a flash message when adding a delegate aready delegate."""
+    assert len(smtpd.messages) == 0
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
@@ -241,6 +250,7 @@ def test_add_delegate_who_is_already_delegate(
         "L'utilisateur a été ajouté aux délégataires",
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
+    assert len(smtpd.messages) == 1
 
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
@@ -248,6 +258,7 @@ def test_add_delegate_who_is_already_delegate(
     response = form.submit()
     assert ("warning", "L'utilisateur est déjà délégataire") in response.flashes
     assert len(meeting.get_all_delegates) == 1
+    assert len(smtpd.messages) == 1
 
 
 def test_owner_can_remove_delegation(
@@ -258,8 +269,10 @@ def test_owner_can_remove_delegation(
     bbb_response,
     user_2,
     caplog,
+    smtpd,
 ):
     """Test that owner can remove delegation."""
+    assert len(smtpd.messages) == 0
     response = client_app.get("/meeting/manage-delegation/1", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
@@ -269,6 +282,7 @@ def test_owner_can_remove_delegation(
         "L'utilisateur a été ajouté aux délégataires",
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
+    assert len(smtpd.messages) == 1
     response = client_app.get("/meeting/remove-delegation/1/2", status=302)
     assert (
         "success",
@@ -279,6 +293,7 @@ def test_owner_can_remove_delegation(
         f"{user_2.email} removed from delegates of meeting {meeting.id} {meeting.name}"
         in caplog.text
     )
+    assert len(smtpd.messages) == 2
 
 
 def test_flash_message_when_delete_wrong_delegation(

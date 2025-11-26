@@ -40,6 +40,7 @@ from ..session import get_current_user
 from ..session import meeting_permission_required
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
+from ..utils import send_delegation_mail
 from ..utils import send_quick_meeting_mail
 
 bp = Blueprint("meetings", __name__)
@@ -452,6 +453,7 @@ def manage_delegation(meeting: Meeting, user: User):
                 permission=1,
             )
             permission.save()
+            send_delegation_mail(meeting, new_delegate, new_delegation=True)
             flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
             current_app.logger.info(
                 "%s became delegate of meeting %s %s",
@@ -479,6 +481,7 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
         db.session.delete(permission)
         db.session.commit()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
+        send_delegation_mail(meeting, delegate, new_delegation=False)
         current_app.logger.info(
             "%s removed from delegates of meeting %s %s",
             delegate.email,
