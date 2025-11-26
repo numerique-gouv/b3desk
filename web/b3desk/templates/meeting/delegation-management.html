@@ -1,7 +1,7 @@
 <div class="fr-container">
-    <h4 class="fr-icon-user-setting-line fr-icon--lg">
+    <h1 class="fr-h2 fr-icon-user-setting-line fr-icon--lg">
         {% trans meeting_name=meeting.name %} Délégation du {{ meeting_label }} {{ meeting_name }} {% endtrans %}
-    </h4>
+    </h1>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
     <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" method="post">
         {% include 'meeting/csrf.html' %}
@@ -18,7 +18,7 @@
                             <table id="delegation">
                                 <thead class="">
                                     <tr class="">
-                                        <th class="fr-col--lg fr-cell--center"> Délégataires </th>
+                                        <th class="fr-col--lg fr-cell--center"> Liste des délégataires </th>
                                         <th class="fr-col--xs fr-cell--center"> {{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
                                     </tr>
                                 </thead>
