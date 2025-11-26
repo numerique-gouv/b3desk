@@ -301,9 +301,9 @@ def join_meeting_as_authenticated(meeting_id):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
+def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
-    return redirect(meeting.get_join_url(role, owner.fullname, create=True))
+    return redirect(meeting.get_join_url(role, user.fullname, create=True))
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])

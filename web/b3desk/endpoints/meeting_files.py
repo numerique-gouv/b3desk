@@ -46,7 +46,7 @@ bp = Blueprint("meeting_files", __name__)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def edit_meeting_files(meeting: Meeting, owner: User):
+def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
 
@@ -54,8 +54,8 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    if owner.has_nc_credentials:
-        nextcloud_healthcheck(owner)
+    if user.has_nc_credentials:
+        nextcloud_healthcheck(user)
 
     return render_template(
         "meeting/filesform.html",
@@ -68,7 +68,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def add_meeting_files(meeting: Meeting, owner: User):
+def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
     data = request.get_json()
     is_default = False
@@ -96,7 +96,7 @@ def add_meeting_files(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
+def download_meeting_files(meeting: Meeting, user: User, file_id=None):
     """Download a meeting file from URL or Nextcloud."""
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -119,9 +119,9 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     # get file from nextcloud WEBDAV and send it
     try:
         dav_user = {
-            "nc_locator": owner.nc_locator,
-            "nc_login": owner.nc_login,
-            "nc_token": owner.nc_token,
+            "nc_locator": user.nc_locator,
+            "nc_login": user.nc_login,
+            "nc_token": user.nc_token,
         }
         options = {
             "webdav_root": f"/remote.php/dav/files/{dav_user['nc_login']}/",
@@ -138,7 +138,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     except WebDavException as exception:
-        owner.disable_nextcloud()
+        user.disable_nextcloud()
         current_app.logger.warning(
             "webdav call encountered following exception : %s", exception
         )
@@ -173,7 +173,7 @@ def insertDocuments(meeting: Meeting):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def toggledownload(meeting: Meeting, owner: User):
+def toggledownload(meeting: Meeting, user: User):
     """Toggle the downloadable status of a meeting file."""
     data = request.get_json()
     meeting_file = db.session.get(MeetingFiles, data["id"])
@@ -190,7 +190,7 @@ def toggledownload(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def set_meeting_default_file(meeting: Meeting, owner: User):
+def set_meeting_default_file(meeting: Meeting, user: User):
     """Set a file as the default file for a meeting."""
     data = request.get_json()
 
@@ -417,7 +417,7 @@ def create_external_meeting_file(path, meeting_id):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def add_dropzone_files(meeting: Meeting, owner: User):
+def add_dropzone_files(meeting: Meeting, user: User):
     """Handle chunked file uploads from dropzone."""
     file = request.files["dropzoneFiles"]
     # for dropzone chunk file by file validation
@@ -425,7 +425,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
+        DROPZONE_DIR, secure_filename(f"{user.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 

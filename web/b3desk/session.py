@@ -41,7 +41,7 @@ def meeting_permission_required(allow_delegate=False):
     from b3desk.models import db
     from b3desk.models.meetings import Meeting
 
-    """Require that the authenticated user owns the meeting."""
+    """Require that the authenticated user owns the meeting or has the permission."""
 
     def wrapper(view_function):
         @wraps(view_function)
@@ -62,7 +62,7 @@ def meeting_permission_required(allow_delegate=False):
             ):
                 abort(403)
 
-            return view_function(*args, owner=user, meeting=meeting, **kwargs)
+            return view_function(*args, user=user, meeting=meeting, **kwargs)
 
         return decorator
 

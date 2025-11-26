@@ -105,7 +105,7 @@ def quick_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def show_meeting_recording(meeting: Meeting, owner: User):
+def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
     return render_template(
@@ -120,7 +120,7 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def update_recording_name(meeting: Meeting, recording_id, owner: User):
+def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
     if not form.validate():
@@ -164,7 +164,7 @@ def new_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required(allow_delegate=True)
-def edit_meeting(meeting: Meeting, owner: User):
+def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting."""
     form = (
         MeetingWithRecordForm(obj=meeting)
@@ -284,7 +284,7 @@ def end_meeting():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required()
-def create_meeting(meeting: Meeting, owner: User):
+def create_meeting(meeting: Meeting, user: User):
     """Create the meeting on BBB server."""
     meeting.create_bbb()
     meeting.visio_code = (
@@ -298,7 +298,7 @@ def create_meeting(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required()
-def external_upload(meeting: Meeting, owner: User):
+def external_upload(meeting: Meeting, user: User):
     """Display the nextcloud file selector.
 
     This endpoint is used by BBB during the meetings.
@@ -417,7 +417,7 @@ def get_available_visio_code():
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required()
-def manage_delegation(meeting: Meeting, owner: User):
+def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
     form = DelegationSearchForm(request.form)
     if request.form and form.validate():
@@ -426,7 +426,7 @@ def manage_delegation(meeting: Meeting, owner: User):
             db.session.query(User)
             .filter(
                 User.email == data,
-                owner.email != User.email,
+                user.email != User.email,
             )
             .first()
         )
@@ -471,7 +471,7 @@ def manage_delegation(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_permission_required()
-def remove_delegate(meeting: Meeting, owner: User, delegate: User):
+def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
