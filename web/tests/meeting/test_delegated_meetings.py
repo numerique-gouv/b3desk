@@ -1,16 +1,3 @@
-from b3desk.models.intermediate_tables import Permission
-
-
-def create_delegate_permission_for_user(user_id, meeting_id):
-    permission = Permission(
-        user_id=user_id,
-        meeting_id=meeting_id,
-        permission=1,
-    )
-    permission.save()
-    return
-
-
 def test_delegated_meetings_visibility_on_welcome_page(
     client_app,
     authenticated_user,
@@ -22,7 +9,6 @@ def test_delegated_meetings_visibility_on_welcome_page(
     bbb_response,
 ):
     """Test that the delegated meeting appears in meeting list."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     response = client_app.get("/welcome", status=200)
     response.mustcontain("delegated meeting")
     html = response.body.decode("utf-8")
@@ -48,7 +34,6 @@ def test_add_and_remove_favorite_delegated_meeting(
     bbb_response,
 ):
     """Test that delegated meetings can be added and removed from favorites."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     assert authenticated_user not in meeting_1_user_2.favorite_of
     response = client_app.get("/welcome")
     response.mustcontain("delegated meeting")
@@ -81,7 +66,6 @@ def test_delegate_can_launch_delegated_meeting(
     bbb_response,
 ):
     """Test that delegate can launch delegated meeting as owner."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     response = client_app.get(
         f"/meeting/join/{meeting_1_user_2.id}/moderateur", status=302
     )
@@ -98,7 +82,6 @@ def test_delegate_can_see_records_of_delegated_meeting(
     bbb_response,
 ):
     """Test that delegate can see and manage records of a delegated meeting as owner."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     client_app.get("/meeting/recordings/1", status=200)
 
 
@@ -109,7 +92,6 @@ def test_delegate_can_edit_delegated_meeting(
     bbb_response,
 ):
     """Test that meeting edit form displays as owner."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     response = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}", status=200)
     assert response.template == "meeting/wizard.html"
 
@@ -121,7 +103,6 @@ def test_delegate_can_see_delegated_meeting_files(
     bbb_response,
 ):
     """Test that meeting see delegated meeting files as owner."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     response = client_app.get(f"/meeting/files/{meeting_1_user_2.id}", status=200)
     assert response.template == "meeting/filesform.html"
 
@@ -133,7 +114,6 @@ def test_delegate_cannot_delete_meeting(
     bbb_response,
 ):
     """Test that delegate cannot delete a delegated meeting."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     response = client_app.post("/meeting/delete", {"id": meeting_1_user_2.id})
     assert ("error", "Vous ne pouvez pas supprimer cet élément") in response.flashes
 
@@ -316,7 +296,6 @@ def test_delegate_cannot_remove_delegation(
     client_app, authenticated_user, user, meeting_1_user_2, bbb_response, user_2
 ):
     """Test that delegate cannot remove delegation."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     client_app.get("/meeting/remove-delegation/1/1", status=403)
     assert user in meeting_1_user_2.get_all_delegates
 
@@ -328,5 +307,4 @@ def test_delegate_cannot_access_delegation_page(
     bbb_response,
 ):
     """Test that delegate cannot access to the delegation page of a delegated meeting."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     client_app.get("/meeting/manage-delegation/1", status=403)

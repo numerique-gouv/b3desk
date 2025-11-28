@@ -19,7 +19,6 @@ from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
-from tests.meeting.test_delegated_meetings import create_delegate_permission_for_user
 
 
 @pytest.fixture()
@@ -1127,7 +1126,6 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     caplog,
 ):
     """Test that existing meeting can be updated when not running."""
-    create_delegate_permission_for_user(authenticated_user.id, meeting_1_user_2.id)
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
