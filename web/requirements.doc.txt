@@ -32,6 +32,7 @@ coverage==7.11.0
 cryptography==46.0.3
 cssselect==1.3.0
 defusedxml==0.7.1
+diff-cover==9.7.2
 distlib==0.4.0
 docutils==0.20.1
 exceptiongroup==1.3.0 ; python_full_version < '3.11'
@@ -71,16 +72,19 @@ markupsafe==3.0.3
 mccabe==0.7.0
 mdit-py-plugins==0.5.0
 mdurl==0.1.2
+mirakuru==3.0.1
 myst-parser==2.0.0
 netaddr==1.3.0
 oic==1.6.1
 packaging==25.0
 platformdirs==4.5.0
 pluggy==1.6.0
+port-for==1.0.0
 portpicker==1.6.0
 prek==0.1.6
 prompt-toolkit==3.0.52
 psutil==7.1.1
+psycopg==3.2.13
 psycopg2==2.9.11
 pycodestyle==2.14.0
 pycparser==2.23 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'
@@ -98,7 +102,9 @@ pytest==8.4.2
 pytest-cov==7.0.0
 pytest-dotenv==0.5.2
 pytest-iam==0.2.4
+pytest-lazy-fixtures==1.4.0
 pytest-mock==3.15.1
+pytest-postgresql==6.1.1
 pytest-smtpd==0.1.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
@@ -108,6 +114,7 @@ pyyaml==6.0.3
 redis==5.3.1
 requests==2.32.5
 sentry-sdk==2.42.1
+setuptools==80.9.0
 six==1.17.0
 smtpdfix==0.5.2
 sniffio==1.3.1
