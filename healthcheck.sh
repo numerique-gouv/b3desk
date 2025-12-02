@@ -30,3 +30,7 @@ do
     exit 1;
   fi
 done
+
+echo "";
+echo "=== Docker logs for $container_name ===";
+docker logs $container_name 2>&1 | tail -100;
