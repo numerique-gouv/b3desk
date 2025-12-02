@@ -3,8 +3,8 @@ FROM python:3.14-slim-trixie
 # Install.
 RUN \
   apt update && \
-  apt -y upgrade && \
-  apt install -y gcc libpq-dev
+  apt --yes upgrade && \
+  apt install --yes gcc curl libc6-dev libpq-dev
 
 RUN pip install --upgrade pip setuptools wheel
 
