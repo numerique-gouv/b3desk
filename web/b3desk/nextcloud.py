@@ -9,8 +9,11 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 
 
-def create_webdav_client(user):
+def create_webdav_client(user) -> webdavClient | None:
     """Create a WebDAV client configured for a user's Nextcloud account."""
+    if not user.nc_login or not user.nc_locator or not user.nc_token:
+        return None
+
     options = {
         "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
         "webdav_hostname": user.nc_locator,
@@ -291,10 +294,10 @@ def nextcloud_healthcheck(user):
     """
 
     def _healthcheck():
-        if not user.nc_login or not user.nc_locator or not user.nc_token:
-            return False
         try:
-            client = create_webdav_client(user)
+            if (client := create_webdav_client(user)) is None:
+                return False
+
             client.list()
         except WebDavException as exception:
             current_app.logger.warning("WebDAV error: %s", exception)
