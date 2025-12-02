@@ -131,16 +131,16 @@ class User(db.Model):
 
     @property
     def get_all_delegated_meetings(self):
+        from b3desk.models.meetings import Delegation
+        from b3desk.models.meetings import DelegationLevel
         from b3desk.models.meetings import Meeting
-        from b3desk.models.meetings import Permission
-        from b3desk.models.meetings import PermissionLevel
 
-        user_delegate_permissions = Permission.query.filter_by(
-            user_id=self.id, permission=PermissionLevel.DELEGATE
+        user_delegations = Delegation.query.filter_by(
+            user_id=self.id, level=DelegationLevel.DELEGATE
         ).all()
         delegated_meetings = []
-        for permission in user_delegate_permissions:
-            meeting = db.session.get(Meeting, permission.meeting_id)
+        for delegation in user_delegations:
+            meeting = db.session.get(Meeting, delegation.meeting_id)
             delegated_meetings.append(meeting)
 
         return delegated_meetings

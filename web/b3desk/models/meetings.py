@@ -27,26 +27,26 @@ from . import db
 from .roles import Role
 
 
-class PermissionLevel(IntEnum):
+class DelegationLevel(IntEnum):
     NONE = 0
     DELEGATE = 1
 
 
-class Permission(db.Model):
+class Delegation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
-    permission = db.Column(db.Integer, nullable=False)
+    level = db.Column(db.Integer, nullable=False)
 
-    user = db.relationship("User", backref="user_permission")
-    meeting = db.relationship("Meeting", backref="meeting_permission")
+    user = db.relationship("User", backref="user_delegation")
+    meeting = db.relationship("Meeting", backref="meeting_delegation")
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
 
-def get_permission(user_id, meeting_id):
-    return Permission.query.filter_by(
+def get_delegation(user_id, meeting_id):
+    return Delegation.query.filter_by(
         user_id=user_id, meeting_id=meeting_id
     ).one_or_none()
 
@@ -382,12 +382,12 @@ class Meeting(db.Model):
     def get_all_delegates(self):
         from b3desk.models.users import User
 
-        meeting_delegate_permissions = Permission.query.filter_by(
-            meeting_id=self.id, permission=PermissionLevel.DELEGATE
+        meeting_delegations = Delegation.query.filter_by(
+            meeting_id=self.id, level=DelegationLevel.DELEGATE
         ).all()
         delegates = []
-        for permission in meeting_delegate_permissions:
-            user = db.session.get(User, permission.user_id)
+        for delegation in meeting_delegations:
+            user = db.session.get(User, delegation.user_id)
             delegates.append(user)
 
         return delegates

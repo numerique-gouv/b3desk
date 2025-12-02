@@ -1,4 +1,4 @@
-"""create permission and favorite intermediate tables.
+"""create delegation and favorite intermediate tables.
 
 Revision ID: 77f91494af65
 Revises: 9869cacd37a4
@@ -21,12 +21,12 @@ depends_on = None
 
 
 def upgrade():
-    # create new table : permission
+    # create new table : delegation
     op.create_table(
-        "permission",
+        "delegation",
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("meeting_id", sa.Integer(), nullable=False),
-        sa.Column("permission", sa.Integer(), nullable=False),
+        sa.Column("level", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["meeting_id"],
             ["meeting.id"],
@@ -116,6 +116,6 @@ def downgrade():
         )
     session.commit()
 
-    # delete favorite and delegate tables
+    # delete favorite and delegation tables
     op.drop_table("favorite")
-    op.drop_table("permission")
+    op.drop_table("delegation")

@@ -25,10 +25,10 @@ from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
+from b3desk.models.meetings import Delegation
+from b3desk.models.meetings import DelegationLevel
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import Permission
-from b3desk.models.meetings import PermissionLevel
-from b3desk.models.meetings import get_permission
+from b3desk.models.meetings import get_delegation
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
@@ -448,12 +448,12 @@ def manage_delegation(meeting: Meeting, user: User):
                 "warning",
             )
         else:
-            permission = Permission(
+            delegation = Delegation(
                 meeting_id=meeting.id,
                 user_id=new_delegate.id,
-                permission=PermissionLevel.DELEGATE,
+                level=DelegationLevel.DELEGATE,
             )
-            permission.save()
+            delegation.save()
             send_delegation_mail(meeting, new_delegate, new_delegation=True)
             flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
             current_app.logger.info(
@@ -478,8 +478,8 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
-        permission = get_permission(delegate.id, meeting.id)
-        db.session.delete(permission)
+        delegation = get_delegation(delegate.id, meeting.id)
+        db.session.delete(delegation)
         db.session.commit()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
         send_delegation_mail(meeting, delegate, new_delegation=False)
