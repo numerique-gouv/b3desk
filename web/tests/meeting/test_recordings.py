@@ -236,3 +236,31 @@ def test_delegate_can_delete_recordings(
         f"Meeting delegated meeting {meeting_1_user_2.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
+
+
+def test_open_recordings_page(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Test that recordings are retrieved and parsed correctly from BBB."""
+
+    class DirectLinkRecording:
+        status_code = 200
+
+    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+
+    response = client_app.get(f"/meeting/recordings/{meeting.id}")
+    print(response.body)
+    html = response.body.decode("utf-8")
+    assert (
+        html.count(
+            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line"'
+        )
+        == 2
+    )
+    assert len(meeting.get_recordings()) == 2
