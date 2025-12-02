@@ -56,10 +56,6 @@ Si vous souhaitez ajouter des dépendances, utilisez également uv :
 ```bash
 uv add [--group GROUPE] PAQUET
 ```
-vous devez ensuite impérativement mettre à jour les requirements de l'environnement modifié qui seront utilisées pour les conteneurs Docker de la production et de l'intégration continue :
-```bash
-make export-XXX-dependencies
-```
 
 ## Soumettre des modifications
 
@@ -105,7 +101,7 @@ Ainsi, lorsque vous ferez un commit, ruff sera automatiquement lancé et formate
 
 GitHub Actions est utilisé afin de s'assurer que le code reste propre et fonctionnel et que les conteneurs peuvent communiquer entre eux pour s'assurer que l'embarquement de nouveaux développeur·euses sur de nouvelles machines est possible.
 
-Cette intégration continue fait tourner des conteneurs Docker, les fichiers de requirements doivent donc être maintenus à jour.
+Cette intégration continue fait tourner des conteneurs Docker.
 
 La CI GitHub est utilisée pour :
 - lancer les tests dans un environnement local (sans conteneur docker) : pour permettre aux développeurs d'être indépendant de docker sur leurs machines
