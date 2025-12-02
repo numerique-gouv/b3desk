@@ -419,9 +419,9 @@ def meeting_3(client_app, user):
 
 @pytest.fixture
 def meeting_1_user_2(client_app, user, user_2):
-    from b3desk.models.meetings import Delegation
-    from b3desk.models.meetings import DelegationLevel
+    from b3desk.models.meetings import AccessLevel
     from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingAccess
 
     meeting = Meeting(
         user=user_2,
@@ -435,12 +435,12 @@ def meeting_1_user_2(client_app, user, user_2):
     )
     meeting.save()
 
-    delegation = Delegation(
+    access = MeetingAccess(
         user_id=user.id,
         meeting_id=meeting.id,
-        level=DelegationLevel.DELEGATE,
+        level=AccessLevel.DELEGATE,
     )
-    delegation.save()
+    access.save()
 
     yield meeting
 

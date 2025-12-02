@@ -25,10 +25,10 @@ from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
-from b3desk.models.meetings import Delegation
-from b3desk.models.meetings import DelegationLevel
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_delegation
+from b3desk.models.meetings import MeetingAccess
+from b3desk.models.meetings import get_meeting_access
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
@@ -106,7 +106,7 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=DelegationLevel.DELEGATE)
+@meeting_access_required(level=AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
@@ -121,7 +121,7 @@ def show_meeting_recording(meeting: Meeting, user: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=DelegationLevel.DELEGATE)
+@meeting_access_required(level=AccessLevel.DELEGATE)
 def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
@@ -165,7 +165,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=DelegationLevel.DELEGATE)
+@meeting_access_required(level=AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting."""
     form = (
@@ -448,12 +448,12 @@ def manage_delegation(meeting: Meeting, user: User):
                 "warning",
             )
         else:
-            delegation = Delegation(
+            access = MeetingAccess(
                 meeting_id=meeting.id,
                 user_id=new_delegate.id,
-                level=DelegationLevel.DELEGATE,
+                level=AccessLevel.DELEGATE,
             )
-            delegation.save()
+            access.save()
             send_delegation_mail(meeting, new_delegate, new_delegation=True)
             flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
             current_app.logger.info(
@@ -478,8 +478,8 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
-        delegation = get_delegation(delegate.id, meeting.id)
-        db.session.delete(delegation)
+        access = get_meeting_access(delegate.id, meeting.id)
+        db.session.delete(access)
         db.session.commit()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
         send_delegation_mail(meeting, delegate, new_delegation=False)

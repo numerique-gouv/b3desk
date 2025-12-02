@@ -38,9 +38,9 @@ def get_authenticated_attendee_fullname():
 
 
 def meeting_access_required(level=None):
-    """Require that the authenticated user owns the meeting or has the required delegation level."""
+    """Require that the authenticated user owns the meeting or has the required access level."""
     from b3desk.models import db
-    from b3desk.models.meetings import DelegationLevel
+    from b3desk.models.meetings import AccessLevel
     from b3desk.models.meetings import Meeting
 
     def wrapper(view_function):
@@ -57,7 +57,7 @@ def meeting_access_required(level=None):
             is_owner = meeting.user == user
             is_delegate = (
                 level is not None
-                and level >= DelegationLevel.DELEGATE
+                and level >= AccessLevel.DELEGATE
                 and meeting in user.get_all_delegated_meetings
             )
 

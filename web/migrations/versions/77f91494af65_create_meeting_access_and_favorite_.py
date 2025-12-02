@@ -1,4 +1,4 @@
-"""create delegation and favorite intermediate tables.
+"""create meeting_access and favorite intermediate tables.
 
 Revision ID: 77f91494af65
 Revises: 9869cacd37a4
@@ -21,9 +21,9 @@ depends_on = None
 
 
 def upgrade():
-    # create new table : delegation
+    # create new table : meeting_access
     op.create_table(
-        "delegation",
+        "meeting_access",
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("meeting_id", sa.Integer(), nullable=False),
         sa.Column("level", sa.Integer(), nullable=False),
@@ -116,6 +116,6 @@ def downgrade():
         )
     session.commit()
 
-    # delete favorite and delegation tables
+    # delete favorite and meeting_access tables
     op.drop_table("favorite")
-    op.drop_table("delegation")
+    op.drop_table("meeting_access")
