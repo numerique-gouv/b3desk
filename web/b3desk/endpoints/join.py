@@ -291,7 +291,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "join.waiting_meeting",
             meeting_fake_id=meeting_id,
-            creator=meeting.user,
+            creator=meeting.owner,
             h=meeting.get_hash(role),
             fullname=fullname,
         )
@@ -379,7 +379,7 @@ def visio_code_form_validation():
 def join_waiting_meeting_with_visio_code(meeting):
     """Redirect to the meeting signin page after successful visio code validation."""
     meeting_fake_id = str(meeting.id)
-    creator = db.session.get(User, meeting.user_id)
+    creator = db.session.get(User, meeting.owner_id)
     role = Role.moderator
     h = meeting.get_hash(role=role)
     return signin_meeting(

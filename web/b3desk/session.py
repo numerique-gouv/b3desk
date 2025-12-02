@@ -54,7 +54,7 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            is_owner = meeting.user == user
+            is_owner = meeting.owner == user
             is_delegate = (
                 level is not None
                 and level >= AccessLevel.DELEGATE

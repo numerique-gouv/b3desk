@@ -208,7 +208,7 @@ def save_meeting():
 
     if is_new_meeting:
         meeting = Meeting()
-        meeting.user = user
+        meeting.owner = user
     else:
         meeting_id = form.data["id"]
         meeting = db.session.get(Meeting, meeting_id)
@@ -273,7 +273,7 @@ def end_meeting():
     meeting_id = form.data["meeting_id"]
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
-    if user == meeting.user:
+    if user == meeting.owner:
         meeting.end_bbb()
         flash(
             f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
@@ -321,7 +321,7 @@ def delete_meeting():
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
-        if meeting.user_id == user.id:
+        if meeting.owner_id == user.id:
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
 
@@ -360,7 +360,7 @@ def delete_video_meeting():
     user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-    if meeting.user_id == user.id or user in meeting.get_all_delegates:
+    if meeting.owner_id == user.id or user in meeting.get_all_delegates:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)
         return_code = data.get("returncode")

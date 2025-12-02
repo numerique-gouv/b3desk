@@ -2,5 +2,5 @@
 {% trans %}Bonjour{% endtrans %} {{ delegate.given_name }} {{ delegate.family_name }},
 <br/>
 <br/>
-{{ meeting.user.fullname }} {% trans %}vous a retiré des délégataires {{ of_the_meeting }}{% endtrans %} {{ meeting.name }}.
+{{ meeting.owner.fullname }} {% trans %}vous a retiré des délégataires {{ of_the_meeting }}{% endtrans %} {{ meeting.name }}.
 </html>

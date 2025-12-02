@@ -108,12 +108,12 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    user = db.relationship("User", back_populates="meetings")
+    owner = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
@@ -143,9 +143,7 @@ class Meeting(db.Model):
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    user = db.relationship("User")
     favorite_of = db.relationship(
         "User", secondary=favorite_table, back_populates="favorites"
     )
@@ -183,7 +181,7 @@ class Meeting(db.Model):
             fid = f"meeting-persistent-{self.id}"
         else:
             fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.user.hash if self.user else "")
+        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
 
     @property
     def fake_id(self):
@@ -305,7 +303,7 @@ class Meeting(db.Model):
         return url_for(
             "join.waiting_meeting",
             meeting_fake_id=self.fake_id,
-            creator=self.user,
+            creator=self.owner,
             h=self.get_hash(meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
@@ -318,7 +316,7 @@ class Meeting(db.Model):
         return url_for(
             "join.signin_meeting",
             meeting_fake_id=self.fake_id,
-            creator=self.user,
+            creator=self.owner,
             h=self.get_hash(meeting_role),
             role=meeting_role,
             _external=True,
@@ -348,7 +346,7 @@ class Meeting(db.Model):
 
     def get_role(self, hashed_role, user_id=None) -> Role | None:
         """Determine the meeting role based on hash and user ID."""
-        if user_id and self.user.id == user_id:
+        if user_id and self.owner.id == user_id:
             return Role.moderator
         elif hashed_role in [
             self.get_hash(Role.attendee),
@@ -426,7 +424,7 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
 
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
+        owner=user,
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
         moderatorPW=f"{user.hash}-{random_string}",
         attendeePW=f"{random_string}-{random_string}",
@@ -554,7 +552,7 @@ def create_and_save_shadow_meeting(user):
         guestPolicy=False,
         logo=None,
         is_shadow=True,
-        user=user,
+        owner=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
         voiceBridge=pin_generation(),
@@ -570,7 +568,7 @@ def get_or_create_shadow_meeting(user):
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
             Meeting.is_shadow,
-            Meeting.user_id == user.id,
+            Meeting.owner_id == user.id,
         )
     ]
     if len(shadow_meetings) > 1:

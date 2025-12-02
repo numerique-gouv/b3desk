@@ -97,7 +97,7 @@ def test_save_new_meeting(
 
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "Mon meeting de test"
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -161,7 +161,7 @@ def test_save_existing_meeting_not_running(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "meeting"  # Name can not be edited
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -697,29 +697,29 @@ def test_meeting_link_retrocompatibility(meeting):
     https://github.com/numerique-gouv/b3desk/issues/128
     """
     old_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
 
@@ -1159,7 +1159,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 2
+    assert meeting.owner_id == 2
     assert meeting.name == "delegated meeting"  # Name can not be edited
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5

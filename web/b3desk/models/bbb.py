@@ -172,8 +172,8 @@ class BBB:
 
         # Pass the academy for statisticts purpose
         # https://github.com/numerique-gouv/b3desk/issues/80
-        if self.meeting.user and self.meeting.user.mail_domain:
-            params["meta_academy"] = self.meeting.user.mail_domain
+        if self.meeting.owner and self.meeting.owner.mail_domain:
+            params["meta_academy"] = self.meeting.owner.mail_domain
 
         bigbluebutton_analytics_callback_url = current_app.config[
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"

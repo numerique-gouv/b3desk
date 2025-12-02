@@ -361,7 +361,7 @@ def meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="meeting",
         maxParticipants=99,
         duration=999,
@@ -382,7 +382,7 @@ def meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="a meeting",
         maxParticipants=99,
         duration=999,
@@ -403,7 +403,7 @@ def meeting_3(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="meeting",
         maxParticipants=99,
         duration=999,
@@ -424,7 +424,7 @@ def meeting_1_user_2(client_app, user, user_2):
     from b3desk.models.meetings import MeetingAccess
 
     meeting = Meeting(
-        user=user_2,
+        owner=user_2,
         name="delegated meeting",
         maxParticipants=99,
         duration=999,
@@ -450,7 +450,7 @@ def shadow_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -469,7 +469,7 @@ def shadow_meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting must disappear",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -488,7 +488,7 @@ def shadow_meeting_3(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting must disappear too",
         moderatorPW="moderator",
         attendeePW="attendee",

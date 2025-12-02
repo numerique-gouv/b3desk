@@ -85,7 +85,7 @@ class User(db.Model):
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
-    meetings = db.relationship("Meeting", back_populates="user")
+    meetings = db.relationship("Meeting", back_populates="owner")
     favorites = db.relationship(
         "Meeting", secondary="favorite", back_populates="favorite_of"
     )

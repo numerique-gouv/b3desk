@@ -2,7 +2,7 @@
 {% trans %}Bonjour{% endtrans %} {{ delegate.given_name }} {{ delegate.family_name }},
 <br/>
 <br/>
-{{ meeting.user.fullname }} {% trans %}vous a nommé délégataire {{ of_the_meeting }}{% endtrans %} {{ meeting.name }}.
+{{ meeting.owner.fullname }} {% trans %}vous a nommé délégataire {{ of_the_meeting }}{% endtrans %} {{ meeting.name }}.
 <br/>
 <br/>
 {% trans %}Vous pouvez dès à présent consulter et gérer l'édition, les enregistrements et les fichiers associés à {{ this_meeting }}.{% endtrans %}

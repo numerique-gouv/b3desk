@@ -438,7 +438,7 @@ def delete_meeting_file():
     meeting_file = MeetingFiles.query.get(meeting_file_id)
     cur_meeting = Meeting.query.get(meeting_file.meeting_id)
 
-    if cur_meeting.user_id != user.id:
+    if cur_meeting.owner_id != user.id:
         return jsonify(
             status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )
@@ -487,12 +487,12 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
     try:
-        client = create_webdav_client(meeting.user)
+        client = create_webdav_client(meeting.owner)
         mimetype = client.info(ncpath).get("content_type")
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        meeting.user.disable_nextcloud()
+        meeting.owner.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     return send_from_directory(
