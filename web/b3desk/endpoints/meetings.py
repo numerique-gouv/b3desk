@@ -106,7 +106,7 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=AccessLevel.DELEGATE)
+@meeting_access_required(AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
@@ -121,7 +121,7 @@ def show_meeting_recording(meeting: Meeting, user: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=AccessLevel.DELEGATE)
+@meeting_access_required(AccessLevel.DELEGATE)
 def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
@@ -165,7 +165,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=AccessLevel.DELEGATE)
+@meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting."""
     form = (

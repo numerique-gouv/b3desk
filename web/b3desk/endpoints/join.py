@@ -301,7 +301,7 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_access_required(level=AccessLevel.DELEGATE)
+@meeting_access_required(AccessLevel.DELEGATE)
 def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
     return redirect(meeting.get_join_url(role, user.fullname, create=True))
