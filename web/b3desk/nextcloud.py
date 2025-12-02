@@ -285,6 +285,8 @@ def nextcloud_healthcheck(user):
     """
 
     def _healthcheck():
+        if not user.nc_login or not user.nc_locator or not user.nc_token:
+            return False
         try:
             client = create_webdav_client(user)
             client.list()
