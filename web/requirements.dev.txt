@@ -84,7 +84,7 @@ tox-uv==1.29.0
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 tzdata==2025.2
-uv==0.9.4
+uv==0.9.6
 virtualenv==20.35.3
 waitress==3.0.2
 webob==1.8.9
