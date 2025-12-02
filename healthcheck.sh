@@ -24,6 +24,9 @@ do
   sleep 1;
   if [[ $try -eq $timeout ]]; then
     echo " Container is not working as expected in healthcheck within timeout";
+    echo "";
+    echo "=== Docker logs for $container_name ===";
+    docker logs $container_name 2>&1 | tail -100;
     exit 1;
   fi
 done
