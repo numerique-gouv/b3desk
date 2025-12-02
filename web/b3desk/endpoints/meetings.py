@@ -422,46 +422,56 @@ def get_available_visio_code():
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
     form = DelegationSearchForm(request.form)
-    if request.form and form.validate():
-        data = form.search.data
-        new_delegate = (
-            db.session.query(User)
-            .filter(
-                User.email == data,
-                user.email != User.email,
-            )
-            .first()
+    if not request.form or not form.validate():
+        return render_template(
+            "meeting/delegation.html",
+            meeting=meeting,
+            form=form,
         )
-        if new_delegate is None:
-            flash(_("L'utilisateur recherché n'existe pas"), "error")
-        elif new_delegate in meeting.get_all_delegates:
-            flash(_("L'utilisateur est déjà délégataire"), "warning")
-        elif (
-            len(meeting.get_all_delegates)
-            >= current_app.config["MAXIMUM_MEETING_DELEGATES"]
-        ):
-            flash(
-                _(
-                    "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
-                    meeting_label=current_app.config["WORDINGS"]["this_meeting"],
-                ),
-                "warning",
-            )
-        else:
-            access = MeetingAccess(
-                meeting_id=meeting.id,
-                user_id=new_delegate.id,
-                level=AccessLevel.DELEGATE,
-            )
-            access.save()
-            send_delegation_mail(meeting, new_delegate, new_delegation=True)
-            flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
-            current_app.logger.info(
-                "%s became delegate of meeting %s %s",
-                new_delegate.email,
-                meeting.id,
-                meeting.name,
-            )
+
+    data = form.search.data
+    new_delegate = (
+        db.session.query(User)
+        .filter(
+            User.email == data,
+            user.email != User.email,
+        )
+        .first()
+    )
+
+    if new_delegate is None:
+        flash(_("L'utilisateur recherché n'existe pas"), "error")
+
+    elif new_delegate in meeting.get_all_delegates:
+        flash(_("L'utilisateur est déjà délégataire"), "warning")
+
+    elif (
+        len(meeting.get_all_delegates)
+        >= current_app.config["MAXIMUM_MEETING_DELEGATES"]
+    ):
+        flash(
+            _(
+                "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
+                meeting_label=current_app.config["WORDINGS"]["this_meeting"],
+            ),
+            "warning",
+        )
+
+    else:
+        access = MeetingAccess(
+            meeting_id=meeting.id,
+            user_id=new_delegate.id,
+            level=AccessLevel.DELEGATE,
+        )
+        access.save()
+        send_delegation_mail(meeting, new_delegate, new_delegation=True)
+        flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
+        current_app.logger.info(
+            "%s became delegate of meeting %s %s",
+            new_delegate.email,
+            meeting.id,
+            meeting.name,
+        )
 
     return render_template(
         "meeting/delegation.html",
