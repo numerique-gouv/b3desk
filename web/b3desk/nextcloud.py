@@ -9,6 +9,17 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 
 
+def create_webdav_client(user):
+    """Create a WebDAV client configured for a user's Nextcloud account."""
+    options = {
+        "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
+        "webdav_hostname": user.nc_locator,
+        "webdav_verbose": True,
+        "webdav_token": user.nc_token,
+    }
+    return webdavClient(options)
+
+
 def make_nextcloud_credentials_request(url, payload, headers):
     """Make a POST request to Nextcloud API to retrieve credentials.
 
@@ -273,16 +284,9 @@ def nextcloud_healthcheck(user):
     On errors, attempt to renew the credentials and perform one single retry.
     """
 
-    # we test webdav connection here, with a simple 'list' command
     def _healthcheck():
-        options = {
-            "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-            "webdav_hostname": user.nc_locator,
-            "webdav_verbose": True,
-            "webdav_token": user.nc_token,
-        }
         try:
-            client = webdavClient(options)
+            client = create_webdav_client(user)
             client.list()
         except WebDavException as exception:
             current_app.logger.warning("WebDAV error: %s", exception)

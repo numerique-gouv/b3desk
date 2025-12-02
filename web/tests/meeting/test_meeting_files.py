@@ -130,9 +130,7 @@ def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
 
     meeting.user.nc_locator = "alice"
     meeting.user.nc_token = "nctoken"
-    mocker.patch(
-        "b3desk.endpoints.meeting_files.webdavClient", return_value=FakeClient()
-    )
+    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
     mocked_send = mocker.patch(
         "b3desk.endpoints.meeting_files.send_from_directory",
         return_value="fake_response",
@@ -181,7 +179,7 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
     meeting.user.save()
 
     mocker.patch(
-        "b3desk.endpoints.meeting_files.webdavClient",
+        "b3desk.nextcloud.webdavClient",
         side_effect=WebDavException,
     )
 

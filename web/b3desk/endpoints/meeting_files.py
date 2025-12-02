@@ -20,7 +20,6 @@ from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from sqlalchemy import exc
-from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
@@ -31,6 +30,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
+from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import nextcloud_healthcheck
 from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
@@ -118,23 +118,8 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 
     # get file from nextcloud WEBDAV and send it
     try:
-        dav_user = {
-            "nc_locator": owner.nc_locator,
-            "nc_login": owner.nc_login,
-            "nc_token": owner.nc_token,
-        }
-        options = {
-            "webdav_root": f"/remote.php/dav/files/{dav_user['nc_login']}/",
-            "webdav_hostname": dav_user["nc_locator"],
-            "webdav_verbose": True,
-            "webdav_token": dav_user["nc_token"],
-        }
-        client = webdavClient(options)
-        kwargs = {
-            "remote_path": current_file.nc_path,
-            "local_path": f"{tmp_name}",
-        }
-        client.download_sync(**kwargs)
+        client = create_webdav_client(owner)
+        client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     except WebDavException as exception:
@@ -231,22 +216,11 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             ),
         )
 
-    options = {
-        "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-        "webdav_hostname": user.nc_locator,
-        "webdav_verbose": True,
-        "webdav_token": user.nc_token,
-    }
     try:
-        client = webdavClient(options)
+        client = create_webdav_client(user)
         client.mkdir("visio-agents")  # does not fail if dir already exists
-        # Upload resource
         nc_path = os.path.join("/visio-agents/" + title)
-        kwargs = {
-            "remote_path": nc_path,
-            "local_path": dropzone_path,
-        }
-        client.upload_sync(**kwargs)
+        client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
 
         meeting_file = MeetingFiles(
             nc_path=nc_path,
@@ -347,14 +321,8 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     """Add a meeting file from a Nextcloud path."""
     user = get_current_user()
 
-    options = {
-        "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-        "webdav_hostname": user.nc_locator,
-        "webdav_verbose": True,
-        "webdav_token": user.nc_token,
-    }
     try:
-        client = webdavClient(options)
+        client = create_webdav_client(user)
         metadata = client.info(path)
 
     except WebDavException:
@@ -513,19 +481,13 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
         abort(404, "Bad token provided, no file matching")
 
     # TODO: clean the temporary directory
-    options = {
-        "webdav_root": f"/remote.php/dav/files/{meeting.user.nc_login}/",
-        "webdav_hostname": meeting.user.nc_locator,
-        "webdav_verbose": True,
-        "webdav_token": meeting.user.nc_token,
-    }
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
     uniqfile = str(uuid.uuid4())
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
     try:
-        client = webdavClient(options)
+        client = create_webdav_client(meeting.user)
         mimetype = client.info(ncpath).get("content_type")
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
