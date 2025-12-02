@@ -352,21 +352,20 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
 
     try:
         meeting_file.save()
-        return jsonify(
-            status=200,
-            isfrom="nextcloud",
-            isDefault=is_default,
-            title=meeting_file.short_title,
-            id=meeting_file.id,
-            created_at=meeting_file.created_at.strftime(
-                current_app.config["TIME_FORMAT"]
-            ),
-        )
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
             status=500, isfrom="nextcloud", msg=_("Le fichier a déjà été mis en ligne")
         )
+
+    return jsonify(
+        status=200,
+        isfrom="nextcloud",
+        isDefault=is_default,
+        title=meeting_file.short_title,
+        id=meeting_file.id,
+        created_at=meeting_file.created_at.strftime(current_app.config["TIME_FORMAT"]),
+    )
 
 
 def create_external_meeting_file(path, meeting_id):
