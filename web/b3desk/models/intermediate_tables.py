@@ -11,7 +11,7 @@ class PermissionLevel(IntEnum):
 class Permission(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
-    permission = db.Column(db.Integer, nullable=False)
+    permission = db.Column(db.Enum(PermissionLevel), nullable=False)
 
     user = db.relationship("User", backref="user_permission")
     meeting = db.relationship("Meeting", backref="meeting_permission")

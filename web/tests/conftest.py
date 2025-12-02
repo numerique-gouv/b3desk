@@ -420,6 +420,7 @@ def meeting_3(client_app, user):
 @pytest.fixture
 def meeting_1_user_2(client_app, user, user_2):
     from b3desk.models.intermediate_tables import Permission
+    from b3desk.models.intermediate_tables import PermissionLevel
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
@@ -437,7 +438,7 @@ def meeting_1_user_2(client_app, user, user_2):
     permission = Permission(
         user_id=user.id,
         meeting_id=meeting.id,
-        permission=1,
+        permission=PermissionLevel.DELEGATE,
     )
     permission.save()
 

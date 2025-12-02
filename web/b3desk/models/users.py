@@ -16,6 +16,7 @@ from datetime import timezone
 from flask import current_app
 
 from b3desk.models.intermediate_tables import Permission
+from b3desk.models.intermediate_tables import PermissionLevel
 from b3desk.models.intermediate_tables import favorite_table
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
@@ -136,7 +137,7 @@ class User(db.Model):
         from b3desk.models.meetings import Meeting
 
         user_delegate_permissions = Permission.query.filter_by(
-            user_id=self.id, permission=1
+            user_id=self.id, permission=PermissionLevel.DELEGATE
         ).all()
         delegated_meetings = []
         for permission in user_delegate_permissions:

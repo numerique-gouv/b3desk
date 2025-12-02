@@ -26,6 +26,7 @@ from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
 from b3desk.models.intermediate_tables import Permission
+from b3desk.models.intermediate_tables import PermissionLevel
 from b3desk.models.intermediate_tables import get_permission
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
@@ -450,7 +451,7 @@ def manage_delegation(meeting: Meeting, user: User):
             permission = Permission(
                 meeting_id=meeting.id,
                 user_id=new_delegate.id,
-                permission=1,
+                permission=PermissionLevel.DELEGATE,
             )
             permission.save()
             send_delegation_mail(meeting, new_delegate, new_delegation=True)

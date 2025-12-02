@@ -20,6 +20,7 @@ from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
 from b3desk.models.intermediate_tables import Permission
+from b3desk.models.intermediate_tables import PermissionLevel
 from b3desk.models.intermediate_tables import favorite_table
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
@@ -354,7 +355,7 @@ class Meeting(db.Model):
         from b3desk.models.users import User
 
         meeting_delegate_permissions = Permission.query.filter_by(
-            meeting_id=self.id, permission=1
+            meeting_id=self.id, permission=PermissionLevel.DELEGATE
         ).all()
         delegates = []
         for permission in meeting_delegate_permissions:
