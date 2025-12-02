@@ -28,7 +28,7 @@ from .roles import Role
 
 
 class PermissionLevel(IntEnum):
-    No_PERMISSION = 0
+    NONE = 0
     DELEGATE = 1
 
 
