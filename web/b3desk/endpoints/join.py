@@ -15,6 +15,7 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
+from b3desk.models.meetings import DelegationLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_by_visio_code
@@ -30,7 +31,7 @@ from .. import auth
 from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
-from ..session import meeting_permission_required
+from ..session import meeting_access_required
 from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
@@ -300,7 +301,7 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(allow_delegate=True)
+@meeting_access_required(level=DelegationLevel.DELEGATE)
 def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
     return redirect(meeting.get_join_url(role, user.fullname, create=True))

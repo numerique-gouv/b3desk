@@ -38,7 +38,7 @@ from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_current_user
-from ..session import meeting_permission_required
+from ..session import meeting_access_required
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
 from ..utils import send_delegation_mail
@@ -106,7 +106,7 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(allow_delegate=True)
+@meeting_access_required(level=DelegationLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
@@ -121,7 +121,7 @@ def show_meeting_recording(meeting: Meeting, user: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(allow_delegate=True)
+@meeting_access_required(level=DelegationLevel.DELEGATE)
 def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
@@ -165,7 +165,7 @@ def new_meeting():
 @bp.route("/meeting/edit/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required(allow_delegate=True)
+@meeting_access_required(level=DelegationLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting."""
     form = (
@@ -285,7 +285,7 @@ def end_meeting():
 @bp.route("/meeting/create/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required()
+@meeting_access_required()
 def create_meeting(meeting: Meeting, user: User):
     """Create the meeting on BBB server."""
     meeting.create_bbb()
@@ -299,7 +299,7 @@ def create_meeting(meeting: Meeting, user: User):
 @bp.route("/meeting/<meeting:meeting>/externalUpload")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required()
+@meeting_access_required()
 def external_upload(meeting: Meeting, user: User):
     """Display the nextcloud file selector.
 
@@ -418,7 +418,7 @@ def get_available_visio_code():
 @bp.route("/meeting/manage-delegation/<meeting:meeting>", methods=["GET", "POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required()
+@meeting_access_required()
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
     form = DelegationSearchForm(request.form)
@@ -473,7 +473,7 @@ def manage_delegation(meeting: Meeting, user: User):
 @bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_permission_required()
+@meeting_access_required()
 def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
