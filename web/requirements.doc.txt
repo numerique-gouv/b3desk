@@ -142,7 +142,7 @@ typing-extensions==4.15.0
 typing-inspection==0.4.2
 tzdata==2025.2
 urllib3==2.5.0
-uv==0.9.4
+uv==0.9.6
 vine==5.1.0
 virtualenv==20.35.3
 waitress==3.0.2
