@@ -25,10 +25,10 @@ from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
-from b3desk.models.intermediate_tables import Permission
-from b3desk.models.intermediate_tables import PermissionLevel
-from b3desk.models.intermediate_tables import get_permission
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import Permission
+from b3desk.models.meetings import PermissionLevel
+from b3desk.models.meetings import get_permission
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation

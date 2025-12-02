@@ -15,9 +15,6 @@ from datetime import timezone
 
 from flask import current_app
 
-from b3desk.models.intermediate_tables import Permission
-from b3desk.models.intermediate_tables import PermissionLevel
-from b3desk.models.intermediate_tables import favorite_table
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
 
@@ -90,7 +87,7 @@ class User(db.Model):
 
     meetings = db.relationship("Meeting", back_populates="user")
     favorites = db.relationship(
-        "Meeting", secondary=favorite_table, back_populates="favorite_of"
+        "Meeting", secondary="favorite", back_populates="favorite_of"
     )
 
     @property
@@ -135,6 +132,8 @@ class User(db.Model):
     @property
     def get_all_delegated_meetings(self):
         from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import Permission
+        from b3desk.models.meetings import PermissionLevel
 
         user_delegate_permissions = Permission.query.filter_by(
             user_id=self.id, permission=PermissionLevel.DELEGATE

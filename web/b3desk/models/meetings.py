@@ -12,6 +12,7 @@ import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
+from enum import IntEnum
 
 from flask import current_app
 from flask import url_for
@@ -19,15 +20,42 @@ from flask_babel import lazy_gettext as _
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
-from b3desk.models.intermediate_tables import Permission
-from b3desk.models.intermediate_tables import PermissionLevel
-from b3desk.models.intermediate_tables import favorite_table
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
 from .roles import Role
-from .users import User
+
+
+class PermissionLevel(IntEnum):
+    No_PERMISSION = 0
+    DELEGATE = 1
+
+
+class Permission(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
+    permission = db.Column(db.Integer, nullable=False)
+
+    user = db.relationship("User", backref="user_permission")
+    meeting = db.relationship("Meeting", backref="meeting_permission")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+def get_permission(user_id, meeting_id):
+    return Permission.query.filter_by(
+        user_id=user_id, meeting_id=meeting_id
+    ).one_or_none()
+
+
+favorite_table = db.Table(
+    "favorite",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+)
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
@@ -416,6 +444,8 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
 
 def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
+    from b3desk.models.users import User
+
     if meeting_fake_id.isdigit():
         try:
             meeting = db.session.get(Meeting, meeting_fake_id)
