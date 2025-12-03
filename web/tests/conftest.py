@@ -57,6 +57,9 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         db.create_all()
 
@@ -109,6 +112,9 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         db.create_all()
         db.session.remove()
@@ -344,6 +350,9 @@ def app(configuration, jinja_cache_directory):
     app.jinja_env.bytecode_cache = FileSystemBytecodeCache(jinja_cache_directory)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         db.create_all()
 
