@@ -65,6 +65,7 @@ dev = [
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
     "tox-uv>=1.28.0",
     "diff-cover>=9.7.2",
+    "pytest-xdist>=3.8.0",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",
