@@ -466,10 +466,12 @@ def get_forbidden_pins(edited_meeting_id=None):
 
 def create_unique_pin(forbidden_pins, pin=None):
     """Create a unique 9-digit PIN that is not in the forbidden list."""
-    pin = random.randint(100000000, 999999999) if not pin else pin
+    MIN_PIN = 100000000
+    MAX_PIN = 999999999
+    pin = random.randint(MIN_PIN, MAX_PIN) if not pin else pin
     if str(pin) in forbidden_pins:
         pin += 1
-        pin = 100000000 if pin > 999999999 else pin
+        pin = MIN_PIN if pin > MAX_PIN else pin
         return create_unique_pin(forbidden_pins, pin)
     else:
         return str(pin)
