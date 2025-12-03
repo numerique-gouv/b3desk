@@ -78,12 +78,13 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User")
+
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
     is_favorite = db.Column(db.Boolean, unique=False, default=False)
-    user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
@@ -113,9 +114,6 @@ class Meeting(db.Model):
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    user = db.relationship("User")
 
     _bbb = None
 
