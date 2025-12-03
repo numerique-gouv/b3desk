@@ -68,7 +68,24 @@ jobs:
         run: docker --version
 
       - name: Run all containers
-        run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml up -d
+        run: ENV_FILE_OVERRIDE=web.env.example docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.test.yml up -d --renew-anon-volumes
+        id: compose-up
+
+      - name: Debug container status on failure
+        if: steps.compose-up.outcome == 'failure'
+        run: |
+          echo "=== Container status ==="
+          docker ps -a
+          echo ""
+          echo "=== Nextcloud logs ==="
+          docker logs nc 2>&1 || echo "Container nc not found"
+          echo ""
+          echo "=== Nextcloud healthcheck details ==="
+          docker inspect nc --format='{{json .State.Health}}' 2>/dev/null | jq . || echo "No healthcheck info"
+          echo ""
+          echo "=== All container logs ==="
+          docker compose -f docker-compose.yml -f docker-compose.test.yml logs
+          exit 1
 
       - name: Check postgres health
         run: /bin/bash healthcheck.sh db 60

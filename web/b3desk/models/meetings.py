@@ -109,11 +109,13 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner = db.relationship("User")
+
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    owner = db.relationship("User", back_populates="meetings")
+    is_favorite = db.Column(db.Boolean, unique=False, default=False)
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
@@ -513,10 +515,12 @@ def get_forbidden_pins(edited_meeting_id=None):
 
 def create_unique_pin(forbidden_pins, pin=None):
     """Create a unique 9-digit PIN that is not in the forbidden list."""
-    pin = random.randint(100000000, 999999999) if not pin else pin
+    MIN_PIN = 100000000
+    MAX_PIN = 999999999
+    pin = random.randint(MIN_PIN, MAX_PIN) if not pin else pin
     if str(pin) in forbidden_pins:
         pin += 1
-        pin = 100000000 if pin > 999999999 else pin
+        pin = MIN_PIN if pin > MAX_PIN else pin
         return create_unique_pin(forbidden_pins, pin)
     else:
         return str(pin)
