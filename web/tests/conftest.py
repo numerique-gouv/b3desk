@@ -37,7 +37,7 @@ def pytest_addoption(parser):
 
 def pytest_generate_tests(metafunc):
     """Parametrize tests with db fixture based on --db option."""
-    dbs = metafunc.config.getoption("db") or ["sqlite"]
+    dbs = metafunc.config.getoption("db") or ["sqlite", "postgresql"]
 
     if "db" in metafunc.fixturenames:
         fixture_names = [f"{db}_db" for db in dbs]
