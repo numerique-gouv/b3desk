@@ -241,10 +241,11 @@ def setup_flask(app):
     """Register custom URL converters for models and enums."""
     with app.app_context():
         from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import MeetingFiles
         from b3desk.models.roles import Role
         from b3desk.models.users import User
 
-        for model in (Meeting, User):
+        for model in (Meeting, User, MeetingFiles):
             app.url_map.converters[model.__name__.lower()] = model_converter(model)
 
         for enum in (Role,):
