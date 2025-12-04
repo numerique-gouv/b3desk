@@ -115,7 +115,6 @@ class Meeting(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    is_favorite = db.Column(db.Boolean, unique=False, default=False)
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
