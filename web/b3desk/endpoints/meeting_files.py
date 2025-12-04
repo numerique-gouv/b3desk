@@ -460,8 +460,10 @@ def delete_meeting_file():
     )
 
 
-@bp.route("/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<int:meetingid>/<path:ncpath>")
-def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
+@bp.route(
+    "/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<meeting:meeting>/<path:ncpath>"
+)
+def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
     """Download a file from Nextcloud for BBB using a secure token.
 
     When isexternal is true, the file comes from the embedded nextcloud file picker.
@@ -473,8 +475,7 @@ def ncdownload(isexternal, mfid, mftoken, meetingid, ncpath):
         if not meeting_file:
             abort(404, "Bad token provided, no file matching")
     else:
-        meeting_file = create_external_meeting_file(ncpath, meetingid)
-    meeting = db.session.get(Meeting, meetingid)
+        meeting_file = create_external_meeting_file(ncpath, meeting.id)
 
     if mftoken != get_meeting_file_hash(mfid, isexternal):
         abort(404, "Bad token provided, no file matching")

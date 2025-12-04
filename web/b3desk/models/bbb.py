@@ -399,7 +399,7 @@ class BBB:
                     isexternal=1 if isexternal else 0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
-                    meetingid=meeting_file.meeting_id,
+                    meeting=self.meeting,
                     ncpath=meeting_file.nc_path,
                     _external=True,
                     _scheme=current_app.config["PREFERRED_URL_SCHEME"],
