@@ -113,7 +113,7 @@ def model_converter(model):
             super().__init__(self, *args, **kwargs)
 
         def to_url(self, instance):
-            return str(instance.id)
+            return str(instance.id) if instance.id else None
 
         def to_python(self, identifier):
             instance = db.session.get(model, identifier)

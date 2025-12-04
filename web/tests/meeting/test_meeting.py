@@ -635,8 +635,6 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",
-        "presentationUploadExternalUrl": "http://b3desk.test/meeting/None/externalUpload",
-        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "attendeePW": meeting.attendeePW,
         "moderatorPW": meeting.moderatorPW,
         "logoutURL": "http://education.gouv.fr/",

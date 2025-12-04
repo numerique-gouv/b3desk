@@ -122,13 +122,14 @@ class BBB:
         params = {
             "meetingID": self.meeting.meetingID,
             "name": self.meeting.name,
-            "presentationUploadExternalUrl": url_for(
-                "meetings.external_upload", meeting=self.meeting, _external=True
-            ),
-            "presentationUploadExternalDescription": current_app.config[
-                "EXTERNAL_UPLOAD_DESCRIPTION"
-            ],
         }
+        if self.meeting.id:
+            params["presentationUploadExternalUrl"] = url_for(
+                "meetings.external_upload", meeting=self.meeting, _external=True
+            )
+            params["presentationUploadExternalDescription"] = current_app.config[
+                "EXTERNAL_UPLOAD_DESCRIPTION"
+            ]
         if (param := self.meeting.record) is not None:
             params["record"] = str(param).lower()
         if (param := self.meeting.autoStartRecording) is not None:
