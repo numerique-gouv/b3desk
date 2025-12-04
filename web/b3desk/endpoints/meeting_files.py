@@ -362,7 +362,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     )
 
 
-def create_external_meeting_file(path, meeting_id):
+def create_external_meeting_file(path, meeting_id=None):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = BaseMeetingFiles(
         title=path.split("/")[-1],
@@ -492,24 +492,15 @@ def file_picker_callback(meeting: Meeting):
     return jsonify(status=200, msg="SUCCESS")
 
 
-@bp.route(
-    "/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<meeting:meeting>/<path:ncpath>"
-)
-def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
+@bp.route("/ncdownload/<token>/<user:user>/<path:ncpath>")
+def ncdownload(token, user, ncpath):
     """Download a file from Nextcloud for BBB using a secure token.
 
     When isexternal is true, the file comes from the embedded nextcloud file picker.
     When isexternal is false, the file comes from the b3desk interface.
     """
     current_app.logger.info("Service requesting file url %s", ncpath)
-    if isexternal == 0:
-        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
-        if not meeting_file:
-            abort(404, "Bad token provided, no file matching")
-    else:
-        meeting_file = create_external_meeting_file(ncpath, meeting.id)
-
-    if mftoken != get_meeting_file_hash(mfid, isexternal):
+    if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")
 
     # TODO: clean the temporary directory
@@ -518,7 +509,7 @@ def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
     uniqfile = str(uuid.uuid4())
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
-    if (client := create_webdav_client(meeting.user)) is None:
+    if (client := create_webdav_client(user)) is None:
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     try:
@@ -526,9 +517,10 @@ def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        meeting.user.disable_nextcloud()
+        user.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
+    title = ncpath.split("/")[-1]
     return send_from_directory(
-        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title, mimetype=mimetype
+        TMP_DOWNLOAD_DIR, uniqfile, download_name=title, mimetype=mimetype
     )

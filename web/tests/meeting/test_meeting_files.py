@@ -142,9 +142,9 @@ def test_ncdownload(
         return_value="fake_response",
     )
 
-    response = client_app.get(
-        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/666acf548b967aaa49c24efe1d9da24ce0d22d98/1//folder/file1.pdf"
-    ).follow()
+    nc_path = "folder/file1.pdf"
+    token = get_meeting_file_hash(meeting.user.id, nc_path)
+    response = client_app.get(f"/ncdownload/{token}/{meeting.user.id}/{nc_path}")
 
     assert "Service requesting file url folder/file1.pdf" in caplog.text
     args, kwargs = mocked_send.call_args
@@ -155,15 +155,12 @@ def test_ncdownload(
     args[0].endswith("/test_ncdownload0")
 
 
-def test_ncdownload_with_file_not_in_db_abort_404(
-    client_app, authenticated_user, caplog
+def test_ncdownload_with_bad_token_abort_404(
+    client_app, authenticated_user, meeting, caplog
 ):
-    client_app.get("/ncdownload/0/999999/mftoken/1/badfile1.pdf", status=404)
-
-
-def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, caplog):
+    nc_path = "folder/file1.pdf"
     client_app.get(
-        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/invalid-token/1/folder/file1.pdf",
+        f"/ncdownload/invalid-token/{meeting.user.id}/{nc_path}",
         status=404,
     )
 
@@ -194,9 +191,10 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
 
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
 
-    token = get_meeting_file_hash(meeting_file.id, 0)
+    nc_path = "folder/test.pdf"
+    token = get_meeting_file_hash(meeting.user.id, nc_path)
     response = client_app.get(
-        f"/ncdownload/0/{meeting_file.id}/{token}/{meeting.id}/folder/test.pdf",
+        f"/ncdownload/{token}/{meeting.user.id}/{nc_path}",
         status=200,
     )
 
