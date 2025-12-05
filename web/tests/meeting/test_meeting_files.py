@@ -3,6 +3,7 @@ import os
 from datetime import date
 
 import pytest
+from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from flask import url_for
@@ -120,7 +121,9 @@ def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
     )
 
 
-def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
+def test_ncdownload(
+    client_app, authenticated_user, meeting, mocker, caplog, nextcloud_credentials
+):
     class FakeClient:
         def info(self, ncpath):
             return {"content_type": "application/pdf"}
@@ -128,8 +131,11 @@ def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
         def download_sync(self, remote_path, local_path):
             pass
 
-    meeting.user.nc_locator = "alice"
-    meeting.user.nc_token = "nctoken"
+    meeting.user.nc_login = nextcloud_credentials["nclogin"]
+    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.user.nc_token = nextcloud_credentials["nctoken"]
+    meeting.user.save()
+
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
     mocked_send = mocker.patch(
         "b3desk.endpoints.meeting_files.send_from_directory",
@@ -163,7 +169,7 @@ def test_ncdownload_with_bad_token_abort_404(client_app, authenticated_user, cap
 
 
 def test_ncdownload_webdav_exception_disables_nextcloud(
-    client_app, authenticated_user, meeting, mocker
+    client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
     """Test that WebDAV exception disables Nextcloud for non-external MeetingFiles."""
     meeting_file = MeetingFiles(
@@ -174,16 +180,19 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
     )
     meeting_file.save()
 
-    meeting.user.nc_locator = "alice"
-    meeting.user.nc_token = "nctoken"
+    meeting.user.nc_login = nextcloud_credentials["nclogin"]
+    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.user.nc_token = nextcloud_credentials["nctoken"]
     meeting.user.save()
 
-    mocker.patch(
-        "b3desk.nextcloud.webdavClient",
-        side_effect=WebDavException,
-    )
+    assert meeting.user.nc_locator is not None
+    assert meeting.user.nc_token is not None
 
-    disable_mock = mocker.patch.object(meeting.user, "disable_nextcloud")
+    class FakeClient:
+        def info(self, ncpath):
+            raise WebDavException()
+
+    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
 
     token = get_meeting_file_hash(meeting_file.id, 0)
     response = client_app.get(
@@ -191,5 +200,7 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
         status=200,
     )
 
-    disable_mock.assert_called_once()
     assert response.json["status"] == 500
+    db.session.refresh(meeting.user)
+    assert meeting.user.nc_locator is None
+    assert meeting.user.nc_token is None

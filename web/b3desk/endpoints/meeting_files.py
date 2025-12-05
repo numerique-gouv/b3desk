@@ -117,8 +117,12 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     # get file from nextcloud WEBDAV and send it
+    if (client := create_webdav_client(owner)) is None:
+        current_app.logger.warning("User %s has no Webdav credentials", owner.id)
+        flash(_("Le fichier ne semble pas accessible"), "error")
+        return redirect(url_for("public.welcome"))
+
     try:
-        client = create_webdav_client(owner)
         client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
@@ -193,8 +197,15 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             ),
         )
 
+    if (client := create_webdav_client(user)) is None:
+        current_app.logger.warning("WebDAV error: User %s has no credentials", user.id)
+        return jsonify(
+            status=500,
+            isfrom="dropzone",
+            msg=_("La connexion avec Nextcloud est rompue"),
+        )
+
     try:
-        client = create_webdav_client(user)
         client.mkdir("visio-agents")  # does not fail if dir already exists
         nc_path = os.path.join("/visio-agents/" + title)
         client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
@@ -298,8 +309,14 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     """Add a meeting file from a Nextcloud path."""
     user = get_current_user()
 
+    if (client := create_webdav_client(user)) is None:
+        return jsonify(
+            status=500,
+            isfrom="nextcloud",
+            msg=_("La connexion avec Nextcloud semble rompue"),
+        )
+
     try:
-        client = create_webdav_client(user)
         metadata = client.info(path)
 
     except WebDavException:
@@ -501,8 +518,10 @@ def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
     uniqfile = str(uuid.uuid4())
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
+    if (client := create_webdav_client(meeting.user)) is None:
+        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
+
     try:
-        client = create_webdav_client(meeting.user)
         mimetype = client.info(ncpath).get("content_type")
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
