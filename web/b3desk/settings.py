@@ -1304,3 +1304,9 @@ class MainSettings(BaseSettings):
 
     Number of attempts to enter the visio-code before submitting a captcha
     """
+
+    CONTACT_LINK: str | None = None
+    """ Contact link
+
+    If entered, a 'contact' button wil appear in footer
+    """
