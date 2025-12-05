@@ -222,8 +222,8 @@ class BBB:
 
         # default file is sent right away since it is need as the background
         # image for the meeting
-        # xml = (
-        #     self.meeting_file_addition_xml([self.meeting.default_file])
+        # payload = (
+        #     self.meeting_files_payload([self.meeting.default_file])
         #     if self.meeting.default_file
         #     else None
         # )
@@ -236,12 +236,12 @@ class BBB:
             and "returncode" in data
             and data["returncode"] == "SUCCESS"
         ):
-            xml = self.meeting_file_addition_xml(self.meeting.files)
+            payload = self.meeting_files_payload(self.meeting.files)
             # TODO: send all files and not only the non default ones
             request = self.bbb_request(
                 "insertDocument", params={"meetingID": self.meeting.meetingID}
             )
-            background_upload.delay(request.url, xml)
+            background_upload.delay(request.url, payload)
 
         return data
 
@@ -377,7 +377,7 @@ class BBB:
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
 
-    def meeting_file_addition_xml(self, meeting_files):
+    def meeting_files_payload(self, meeting_files):
         """Generate XML for adding files to a BBB meeting."""
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"

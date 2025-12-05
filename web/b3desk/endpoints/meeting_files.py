@@ -144,12 +144,12 @@ def insertDocuments(meeting: Meeting):
     meeting_files = [
         create_external_meeting_file(filename, meeting.id) for filename in filenames
     ]
-    xml = meeting.bbb.meeting_file_addition_xml(meeting_files)
+    payload = meeting.bbb.meeting_files_payload(meeting_files)
     bbb_request = meeting.bbb.bbb_request(
         "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
     )
 
-    background_upload.delay(bbb_request.url, xml)
+    background_upload.delay(bbb_request.url, payload)
 
     return jsonify(status=200, msg="SUCCESS")
 
