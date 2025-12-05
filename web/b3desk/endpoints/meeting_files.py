@@ -131,44 +131,6 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/<meeting:meeting>/file-picker")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def file_picker(meeting: Meeting, owner: User):
-    """Display the nextcloud file selector.
-
-    This endpoint is used by BBB during the meetings.
-    It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
-    """
-    if meeting.is_running():
-        return render_template("meeting/file_picker.html", meeting=meeting)
-    return redirect(url_for("public.welcome"))
-
-
-@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-def file_picker_callback(meeting: Meeting):
-    """Insert documents from Nextcloud into a running BBB meeting.
-
-    This is called by the Nextcloud filePicker when users select a document.
-    This makes BBB download the document from the 'ncdownload' endpoint.
-    """
-    filenames = request.get_json()
-    meeting_files = [
-        create_external_meeting_file(filename, meeting.id) for filename in filenames
-    ]
-    payload = meeting.bbb.meeting_files_payload(meeting_files)
-    bbb_request = meeting.bbb.bbb_request(
-        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
-    )
-
-    background_upload.delay(bbb_request.url, payload)
-
-    return jsonify(status=200, msg="SUCCESS")
-
-
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
@@ -473,6 +435,44 @@ def delete_meeting_file():
         id=data["id"],
         msg=_("Fichier supprimé avec succès"),
     )
+
+
+@bp.route("/meeting/<meeting:meeting>/file-picker")
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_owner_needed
+def file_picker(meeting: Meeting, owner: User):
+    """Display the nextcloud file selector.
+
+    This endpoint is used by BBB during the meetings.
+    It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
+    """
+    if meeting.is_running():
+        return render_template("meeting/file_picker.html", meeting=meeting)
+    return redirect(url_for("public.welcome"))
+
+
+@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+def file_picker_callback(meeting: Meeting):
+    """Insert documents from Nextcloud into a running BBB meeting.
+
+    This is called by the Nextcloud filePicker when users select a document.
+    This makes BBB download the document from the 'ncdownload' endpoint.
+    """
+    filenames = request.get_json()
+    meeting_files = [
+        create_external_meeting_file(filename, meeting.id) for filename in filenames
+    ]
+    payload = meeting.bbb.meeting_files_payload(meeting_files)
+    bbb_request = meeting.bbb.bbb_request(
+        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
+    )
+
+    background_upload.delay(bbb_request.url, payload)
+
+    return jsonify(status=200, msg="SUCCESS")
 
 
 @bp.route(
