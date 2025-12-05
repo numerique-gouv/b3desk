@@ -131,10 +131,10 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/files/<meeting:meeting>/insertDocuments", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def insertDocuments(meeting: Meeting):
+def file_picker_callback(meeting: Meeting):
     """Insert documents from Nextcloud into a running BBB meeting.
 
     This is called by the Nextcloud filePicker when users select a document.

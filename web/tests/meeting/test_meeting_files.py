@@ -108,12 +108,12 @@ def test_external_upload_called_by_bbb(
     assert "meeting/external_upload.html" in vars(response)["contexts"]
 
 
-def test_insertDocuments(client_app, authenticated_user, meeting, mocker):
+def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
     post_data = ["/folder/file1.pdf", "file2.jpg"]
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     client_app.post(
-        f"/meeting/files/{meeting.id}/insertDocuments",
+        f"/meeting/files/{meeting.id}/file-picker-callback",
         params=json.dumps(post_data),
         headers={"Accept": "application/json", "Content-Type": "application/json"},
         status=200,
