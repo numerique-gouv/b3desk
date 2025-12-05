@@ -25,6 +25,7 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -37,7 +38,7 @@ from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import get_current_user
-from ..session import meeting_owner_needed
+from ..session import meeting_access_required
 
 bp = Blueprint("meeting_files", __name__)
 
@@ -45,8 +46,8 @@ bp = Blueprint("meeting_files", __name__)
 @bp.route("/meeting/files/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def edit_meeting_files(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
 
@@ -54,8 +55,8 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    if owner.has_nc_credentials:
-        nextcloud_healthcheck(owner)
+    if user.has_nc_credentials:
+        nextcloud_healthcheck(user)
 
     return render_template(
         "meeting/filesform.html",
@@ -67,8 +68,8 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def add_meeting_files(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
     data = request.get_json()
     is_default = False
@@ -95,8 +96,8 @@ def add_meeting_files(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
+@meeting_access_required(AccessLevel.DELEGATE)
+def download_meeting_files(meeting: Meeting, user: User, file_id=None):
     """Download a meeting file from URL or Nextcloud."""
     TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -118,12 +119,12 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
 
     # get file from nextcloud WEBDAV and send it
     try:
-        client = create_webdav_client(owner)
+        client = create_webdav_client(user)
         client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     except WebDavException as exception:
-        owner.disable_nextcloud()
+        user.disable_nextcloud()
         current_app.logger.warning(
             "webdav call encountered following exception : %s", exception
         )
@@ -157,8 +158,8 @@ def insertDocuments(meeting: Meeting):
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def toggledownload(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def toggledownload(meeting: Meeting, user: User):
     """Toggle the downloadable status of a meeting file."""
     data = request.get_json()
     meeting_file = db.session.get(MeetingFiles, data["id"])
@@ -174,8 +175,8 @@ def toggledownload(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def set_meeting_default_file(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def set_meeting_default_file(meeting: Meeting, user: User):
     """Set a file as the default file for a meeting."""
     data = request.get_json()
 
@@ -383,8 +384,8 @@ def create_external_meeting_file(path, meeting_id):
 @bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def add_dropzone_files(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def add_dropzone_files(meeting: Meeting, user: User):
     """Handle chunked file uploads from dropzone."""
     file = request.files["dropzoneFiles"]
     # for dropzone chunk file by file validation
@@ -392,7 +393,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
+        DROPZONE_DIR, secure_filename(f"{user.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
@@ -437,7 +438,7 @@ def delete_meeting_file():
     meeting_file = MeetingFiles.query.get(meeting_file_id)
     cur_meeting = Meeting.query.get(meeting_file.meeting_id)
 
-    if cur_meeting.user_id != user.id:
+    if cur_meeting.owner_id != user.id:
         return jsonify(
             status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )
@@ -487,12 +488,12 @@ def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
     try:
-        client = create_webdav_client(meeting.user)
+        client = create_webdav_client(meeting.owner)
         mimetype = client.info(ncpath).get("content_type")
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        meeting.user.disable_nextcloud()
+        meeting.owner.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     return send_from_directory(

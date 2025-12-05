@@ -15,6 +15,7 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.models import db
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_by_visio_code
@@ -30,7 +31,7 @@ from .. import auth
 from ..session import get_authenticated_attendee_fullname
 from ..session import get_current_user
 from ..session import has_user_session
-from ..session import meeting_owner_needed
+from ..session import meeting_access_required
 from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
@@ -290,7 +291,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "join.waiting_meeting",
             meeting_fake_id=meeting_id,
-            creator=meeting.user,
+            creator=meeting.owner,
             h=meeting.get_hash(role),
             fullname=fullname,
         )
@@ -300,10 +301,10 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
-    return redirect(meeting.get_join_url(role, owner.fullname, create=True))
+    return redirect(meeting.get_join_url(role, user.fullname, create=True))
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])
@@ -378,7 +379,7 @@ def visio_code_form_validation():
 def join_waiting_meeting_with_visio_code(meeting):
     """Redirect to the meeting signin page after successful visio code validation."""
     meeting_fake_id = str(meeting.id)
-    creator = db.session.get(User, meeting.user_id)
+    creator = db.session.get(User, meeting.owner_id)
     role = Role.moderator
     h = meeting.get_hash(role=role)
     return signin_meeting(

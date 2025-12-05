@@ -12,6 +12,7 @@ import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
+from enum import IntEnum
 
 from flask import current_app
 from flask import url_for
@@ -24,7 +25,37 @@ from b3desk.utils import secret_key
 
 from . import db
 from .roles import Role
-from .users import User
+
+
+class AccessLevel(IntEnum):
+    NONE = 0
+    DELEGATE = 1
+
+
+class MeetingAccess(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
+    level = db.Column(db.Integer, nullable=False)
+
+    user = db.relationship("User", backref="user_meeting_access")
+    meeting = db.relationship("Meeting", backref="meeting_access")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+def get_meeting_access(user_id, meeting_id):
+    return MeetingAccess.query.filter_by(
+        user_id=user_id, meeting_id=meeting_id
+    ).one_or_none()
+
+
+favorite_table = db.Table(
+    "favorite",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+)
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
@@ -77,14 +108,13 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    user = db.relationship("User")
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner = db.relationship("User")
 
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    is_favorite = db.Column(db.Boolean, unique=False, default=False)
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
@@ -114,6 +144,10 @@ class Meeting(db.Model):
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
+
+    favorite_of = db.relationship(
+        "User", secondary=favorite_table, back_populates="favorites"
+    )
 
     _bbb = None
 
@@ -148,7 +182,7 @@ class Meeting(db.Model):
             fid = f"meeting-persistent-{self.id}"
         else:
             fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.user.hash if self.user else "")
+        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
 
     @property
     def fake_id(self):
@@ -270,7 +304,7 @@ class Meeting(db.Model):
         return url_for(
             "join.waiting_meeting",
             meeting_fake_id=self.fake_id,
-            creator=self.user,
+            creator=self.owner,
             h=self.get_hash(meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
@@ -283,7 +317,7 @@ class Meeting(db.Model):
         return url_for(
             "join.signin_meeting",
             meeting_fake_id=self.fake_id,
-            creator=self.user,
+            creator=self.owner,
             h=self.get_hash(meeting_role),
             role=meeting_role,
             _external=True,
@@ -313,7 +347,7 @@ class Meeting(db.Model):
 
     def get_role(self, hashed_role, user_id=None) -> Role | None:
         """Determine the meeting role based on hash and user ID."""
-        if user_id and self.user.id == user_id:
+        if user_id and self.owner.id == user_id:
             return Role.moderator
         elif hashed_role in [
             self.get_hash(Role.attendee),
@@ -342,6 +376,20 @@ class Meeting(db.Model):
         """End the BBB meeting."""
         data = self.bbb.end()
         return data and data["returncode"] == "SUCCESS"
+
+    @property
+    def get_all_delegates(self):
+        from b3desk.models.users import User
+
+        meeting_accesses = MeetingAccess.query.filter_by(
+            meeting_id=self.id, level=AccessLevel.DELEGATE
+        ).all()
+        delegates = []
+        for access in meeting_accesses:
+            user = db.session.get(User, access.user_id)
+            delegates.append(user)
+
+        return delegates
 
 
 class PreviousVoiceBridge(db.Model):
@@ -377,7 +425,7 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
 
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
+        owner=user,
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
         moderatorPW=f"{user.hash}-{random_string}",
         attendeePW=f"{random_string}-{random_string}",
@@ -395,6 +443,8 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
 
 def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
+    from b3desk.models.users import User
+
     if meeting_fake_id.isdigit():
         try:
             meeting = db.session.get(Meeting, meeting_fake_id)
@@ -505,7 +555,7 @@ def create_and_save_shadow_meeting(user):
         guestPolicy=False,
         logo=None,
         is_shadow=True,
-        user=user,
+        owner=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
         voiceBridge=pin_generation(),
@@ -521,7 +571,7 @@ def get_or_create_shadow_meeting(user):
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
             Meeting.is_shadow,
-            Meeting.user_id == user.id,
+            Meeting.owner_id == user.id,
         )
     ]
     if len(shadow_meetings) > 1:

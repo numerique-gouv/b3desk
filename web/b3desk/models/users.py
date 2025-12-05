@@ -85,7 +85,10 @@ class User(db.Model):
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
-    meetings = db.relationship("Meeting", back_populates="user")
+    meetings = db.relationship("Meeting", back_populates="owner")
+    favorites = db.relationship(
+        "Meeting", secondary="favorite", back_populates="favorite_of"
+    )
 
     @property
     def fullname(self):
@@ -125,3 +128,19 @@ class User(db.Model):
         self.nc_token = None
         self.nc_last_auto_enroll = None
         self.save()
+
+    @property
+    def get_all_delegated_meetings(self):
+        from b3desk.models.meetings import AccessLevel
+        from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import MeetingAccess
+
+        user_accesses = MeetingAccess.query.filter_by(
+            user_id=self.id, level=AccessLevel.DELEGATE
+        ).all()
+        delegated_meetings = []
+        for access in user_accesses:
+            meeting = db.session.get(Meeting, access.meeting_id)
+            delegated_meetings.append(meeting)
+
+        return delegated_meetings

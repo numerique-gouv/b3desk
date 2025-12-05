@@ -1304,3 +1304,9 @@ class MainSettings(BaseSettings):
 
     Number of attempts to enter the visio-code before submitting a captcha
     """
+
+    MAXIMUM_MEETING_DELEGATES: int | None = 1
+    """ Maximum meeting delegates
+
+    Maximum number of delegates for one meeting
+    """

@@ -97,7 +97,7 @@ def test_save_new_meeting(
 
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "Mon meeting de test"
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -161,7 +161,7 @@ def test_save_existing_meeting_not_running(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "meeting"  # Name can not be edited
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -695,29 +695,29 @@ def test_meeting_link_retrocompatibility(meeting):
     https://github.com/numerique-gouv/b3desk/issues/128
     """
     old_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
     assert meeting.get_role(old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
 
@@ -878,35 +878,20 @@ def test_add_and_remove_favorite(
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
-    assert not meeting_3.is_favorite
+    assert authenticated_user not in meeting_3.favorite_of
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
-    assert meeting_3.is_favorite
+    assert authenticated_user in meeting_3.favorite_of
 
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
-    assert not meeting_3.is_favorite
-
-
-def test_add_favorite_by_wrong_user_failed(
-    client_app,
-    bbb_response,
-    authenticated_user_2,
-    meeting,
-    meeting_2,
-    meeting_3,
-    shadow_meeting,
-):
-    """Test that user cannot favorite another user's meeting."""
-    response = client_app.get("/welcome", status=200)
-    response.mustcontain("Berenice Cooler")
-    response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
+    assert authenticated_user not in meeting_3.favorite_of
 
 
 def test_create_meeting_with_wrong_PIN(
@@ -1129,3 +1114,72 @@ def test_get_available_visio_code(client_app, authenticated_user):
 def test_get_available_visio_code_no_user(client_app):
     """Test that unauthenticated user is redirected from visio code endpoint."""
     client_app.get("/meeting/available-visio-code", status=302)
+
+
+def test_delegate_can_save_existing_delegated_meeting_not_running(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    """Test that existing meeting can be updated when not running."""
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.form["name"] = "Mon meeting de test"
+    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.form["maxParticipants"] = 5
+    res.form["duration"] = 60
+    res.form["guestPolicy"] = "on"
+    res.form["webcamsOnlyForModerator"] = "on"
+    res.form["muteOnStart"] = "on"
+    res.form["lockSettingsDisableCam"] = False
+    res.form["lockSettingsDisableMic"] = False
+    res.form["lockSettingsDisablePrivateChat"] = False
+    res.form["lockSettingsDisablePublicChat"] = False
+    res.form["lockSettingsDisableNote"] = False
+    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.form["logoutUrl"] = "https://log.out"
+    res.form["moderatorPW"] = "Motdepasse1"
+    res.form["attendeePW"] = "Motdepasse2"
+    res.form["autoStartRecording"] = "on"
+    res.form["allowStartStopRecording"] = "on"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        res.form["voiceBridge"] = "123456789"
+
+    res = res.form.submit()
+    assert (
+        "success",
+        "delegated meeting modifications prises en compte",
+    ) in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+
+    assert meeting.owner_id == 2
+    assert meeting.name == "delegated meeting"  # Name can not be edited
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+    assert meeting.maxParticipants == 5
+    assert meeting.duration == 60
+    assert meeting.guestPolicy is True
+    assert meeting.webcamsOnlyForModerator is True
+    assert meeting.muteOnStart is True
+    assert meeting.lockSettingsDisableCam is True
+    assert meeting.lockSettingsDisableMic is True
+    assert meeting.lockSettingsDisablePrivateChat is True
+    assert meeting.lockSettingsDisablePublicChat is True
+    assert meeting.lockSettingsDisableNote is True
+    assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
+    assert meeting.logoutUrl == "https://log.out"
+    assert meeting.moderatorPW == "Motdepasse1"
+    assert meeting.attendeePW == "Motdepasse2"
+    assert meeting.record is True
+    assert meeting.autoStartRecording is True
+    assert meeting.allowStartStopRecording is True
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        assert meeting.voiceBridge == "123456789"
+    assert (
+        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        in caplog.text
+    )
