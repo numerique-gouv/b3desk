@@ -55,7 +55,8 @@ class BBB:
         """Initialize BBB API interface with a meeting instance."""
         self.meeting = meeting
 
-    def bbb_request(self, action, method="GET", **kwargs):
+    @classmethod
+    def bbb_request(cls, action, method="GET", **kwargs):
         """Prepare a BBB API request with authentication checksum."""
         request = requests.Request(
             method=method,
@@ -125,7 +126,9 @@ class BBB:
         }
         if self.meeting.id:
             params["presentationUploadExternalUrl"] = url_for(
-                "meeting_files.file_picker", meeting=self.meeting, _external=True
+                "meeting_files.file_picker",
+                bbb_meeting_id=self.meeting.meetingID,
+                _external=True,
             )
             params["presentationUploadExternalDescription"] = current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -223,7 +226,7 @@ class BBB:
         # default file is sent right away since it is need as the background
         # image for the meeting
         # payload = (
-        #     self.meeting_files_payload([self.meeting.default_file])
+        #     self.meeting_files_payload([self.meeting.default_file], self.meeting.user, self.meeting)
         #     if self.meeting.default_file
         #     else None
         # )
@@ -236,7 +239,9 @@ class BBB:
             and "returncode" in data
             and data["returncode"] == "SUCCESS"
         ):
-            payload = self.meeting_files_payload(self.meeting.files)
+            payload = self.meeting_files_payload(
+                self.meeting.files, self.meeting.user, self.meeting
+            )
             # TODO: send all files and not only the non default ones
             request = self.bbb_request(
                 "insertDocument", params={"meetingID": self.meeting.meetingID}
@@ -377,7 +382,8 @@ class BBB:
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
 
-    def meeting_files_payload(self, meeting_files):
+    @staticmethod
+    def meeting_files_payload(meeting_files, user, meeting=None):
         """Generate XML for adding files to a BBB meeting."""
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
@@ -387,19 +393,17 @@ class BBB:
             if not isexternal and meeting_file.url:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL nor NC hence it was uploaded
-                token = get_meeting_file_hash(
-                    self.meeting.user.id, meeting_file.nc_path
-                )
+                token = get_meeting_file_hash(user.id, meeting_file.nc_path)
                 current_app.logger.info(
                     "Add document on BigBlueButton room %s %s creation for file %s",
-                    self.meeting.name,
-                    self.meeting.id,
+                    meeting.name if meeting else "",
+                    meeting.id if meeting else "<quick meeting>",
                     meeting_file.title,
                 )
                 url = url_for(
                     "meeting_files.ncdownload",
                     token=token,
-                    user=self.meeting.user,
+                    user=user,
                     ncpath=meeting_file.nc_path,
                     _external=True,
                     _scheme=current_app.config["PREFERRED_URL_SCHEME"],

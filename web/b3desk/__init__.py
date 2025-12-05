@@ -27,6 +27,7 @@ from jinja2 import StrictUndefined
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 
+from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
@@ -250,6 +251,8 @@ def setup_flask(app):
 
         for enum in (Role,):
             app.url_map.converters[enum.__name__.lower()] = enum_converter(enum)
+
+        app.url_map.converters["signed"] = SignedConverter
 
 
 def setup_error_pages(app):

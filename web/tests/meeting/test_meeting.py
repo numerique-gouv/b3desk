@@ -20,6 +20,7 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
+from flask import url_for
 
 
 @pytest.fixture()
@@ -349,7 +350,11 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -448,7 +453,11 @@ def test_create_with_only_a_default_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -547,7 +556,11 @@ def test_create_with_files(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:

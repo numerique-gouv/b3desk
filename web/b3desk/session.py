@@ -37,6 +37,23 @@ def get_authenticated_attendee_fullname():
     return fullname
 
 
+def user_needed(view_function):
+    """Require that the authenticated user owns the meeting."""
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not has_user_session():
+            abort(403)
+
+        user = get_current_user()
+        if not user:
+            abort(403)
+
+        return view_function(*args, user=user, **kwargs)
+
+    return decorator
+
+
 def meeting_owner_needed(view_function):
     """Require that the authenticated user owns the meeting."""
 

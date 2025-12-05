@@ -25,6 +25,7 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.bbb import BBB
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -38,6 +39,7 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
+from ..session import user_needed
 
 bp = Blueprint("meeting_files", __name__)
 
@@ -454,37 +456,36 @@ def delete_meeting_file():
     )
 
 
-@bp.route("/meeting/<meeting:meeting>/file-picker")
+@bp.route("/meeting/<signed:bbb_meeting_id>/file-picker")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def file_picker(meeting: Meeting, owner: User):
+@user_needed
+def file_picker(user: User, bbb_meeting_id: str):
     """Display the nextcloud file selector.
 
     This endpoint is used by BBB during the meetings.
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
-    if meeting.is_running():
-        return render_template("meeting/file_picker.html", meeting=meeting)
-    return redirect(url_for("public.welcome"))
+    return render_template("meeting/file_picker.html", bbb_meeting_id=bbb_meeting_id)
 
 
-@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
+@bp.route(
+    "/meeting/files/<signed:bbb_meeting_id>/file-picker-callback", methods=["POST"]
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def file_picker_callback(meeting: Meeting):
+@user_needed
+def file_picker_callback(user: User, bbb_meeting_id: str):
     """Insert documents from Nextcloud into a running BBB meeting.
 
-    This is called by the Nextcloud filePicker when users select a document.
+    This is called by the Nextcloud file picker when users select a document.
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
     filenames = request.get_json()
-    meeting_files = [
-        create_external_meeting_file(filename, meeting.id) for filename in filenames
-    ]
-    payload = meeting.bbb.meeting_files_payload(meeting_files)
-    bbb_request = meeting.bbb.bbb_request(
-        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
+    meeting_files = [create_external_meeting_file(filename) for filename in filenames]
+    payload = BBB.meeting_files_payload(meeting_files, user)
+    bbb_request = BBB.bbb_request(
+        "insertDocument", params={"meetingID": bbb_meeting_id}
     )
 
     background_upload.delay(bbb_request.url, payload)
@@ -494,11 +495,7 @@ def file_picker_callback(meeting: Meeting):
 
 @bp.route("/ncdownload/<token>/<user:user>/<path:ncpath>")
 def ncdownload(token, user, ncpath):
-    """Download a file from Nextcloud for BBB using a secure token.
-
-    When isexternal is true, the file comes from the embedded nextcloud file picker.
-    When isexternal is false, the file comes from the b3desk interface.
-    """
+    """Download a file from Nextcloud for BBB using a secure token."""
     current_app.logger.info("Service requesting file url %s", ncpath)
     if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")

@@ -105,16 +105,24 @@ def mock_meeting_is_running(mocker):
 def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
-    response = client_app.get("/meeting/1/file-picker")
+    from flask import url_for
+
+    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.meetingID)
+    response = client_app.get(url)
     assert "meeting/file_picker.html" in vars(response)["contexts"]
 
 
 def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
+    from flask import url_for
+
     post_data = ["/folder/file1.pdf", "file2.jpg"]
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
+    url = url_for(
+        "meeting_files.file_picker_callback", bbb_meeting_id=meeting.meetingID
+    )
     client_app.post(
-        f"/meeting/files/{meeting.id}/file-picker-callback",
+        url,
         params=json.dumps(post_data),
         headers={"Accept": "application/json", "Content-Type": "application/json"},
         status=200,
