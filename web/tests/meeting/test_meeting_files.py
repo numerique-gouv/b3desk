@@ -101,11 +101,11 @@ def mock_meeting_is_running(mocker):
     mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
 
 
-def test_external_upload_called_by_bbb(
+def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
-    response = client_app.get("/meeting/1/externalUpload")
-    assert "meeting/external_upload.html" in vars(response)["contexts"]
+    response = client_app.get("/meeting/1/file-picker")
+    assert "meeting/file_picker.html" in vars(response)["contexts"]
 
 
 def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):

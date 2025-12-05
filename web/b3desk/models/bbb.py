@@ -125,7 +125,7 @@ class BBB:
         }
         if self.meeting.id:
             params["presentationUploadExternalUrl"] = url_for(
-                "meetings.external_upload", meeting=self.meeting, _external=True
+                "meeting_files.file_picker", meeting=self.meeting, _external=True
             )
             params["presentationUploadExternalDescription"] = current_app.config[
                 "EXTERNAL_UPLOAD_DESCRIPTION"

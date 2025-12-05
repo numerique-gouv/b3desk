@@ -348,7 +348,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -447,7 +447,7 @@ def test_create_with_only_a_default_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
@@ -546,7 +546,7 @@ def test_create_with_files(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/externalUpload",
+        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
     }
 
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
