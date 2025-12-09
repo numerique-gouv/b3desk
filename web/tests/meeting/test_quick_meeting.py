@@ -53,7 +53,7 @@ def test_unauthenticated_quick_meeting_authorized_email(
     assert "/meeting/signinmail/" in link
 
     res = client_app.get(link)
-    assert res.template == "meeting/joinmail.html"
+    assert res.template == "meeting/signinmail.html"
 
 
 CREATE_RESPONSE = """

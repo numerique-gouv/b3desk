@@ -69,7 +69,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         return redirect(url_for("public.index"))
 
     return render_template(
-        "meeting/joinmail.html",
+        "meeting/signinmail.html",
         meeting=meeting,
         meeting_fake_id=meeting.fake_id,
         expiration=expiration,
