@@ -69,13 +69,54 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
         return redirect(url_for("public.index"))
 
     return render_template(
-        "meeting/joinmail.html",
+        "meeting/signinmail.html",
         meeting=meeting,
         meeting_fake_id=meeting.fake_id,
         expiration=expiration,
         user_id=random.randint(100000, 999999),
         h=h,
         role=Role.moderator,
+    )
+
+
+@bp.route("/meeting/joinmail", methods=["POST"])
+def join_mail_meeting():
+    """Process the join form submission for email-accessed quick meetings."""
+    form = JoinMailMeetingForm(request.form)
+    if not form.validate():
+        flash(_("Lien invalide"), "error")
+        return redirect(url_for("public.index"))
+
+    fullname = form["fullname"].data
+    meeting_fake_id = form["meeting_fake_id"].data
+    expiration = form["expiration"].data
+    h = form["h"].data
+
+    meeting = get_mail_meeting(meeting_fake_id)
+    if meeting is None:
+        flash(
+            _(
+                "%(meeting_label)s inexistante",
+                meeting_label=current_app.config["WORDINGS"][
+                    "meeting_label"
+                ].capitalize(),
+            ),
+            "error",
+        )
+        return redirect(url_for("public.index"))
+
+    hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
+    if not hash_matches:
+        flash(_("Lien invalide"), "error")
+        return redirect(url_for("public.index"))
+
+    is_expired = datetime.fromtimestamp(expiration) < datetime.now()
+    if is_expired:
+        flash(_("Lien expiré"), "error")
+        return redirect(url_for("public.index"))
+
+    return redirect(
+        meeting.get_join_url(Role.moderator, fullname, create=True, quick_meeting=True)
     )
 
 
@@ -231,47 +272,6 @@ def join_meeting():
             seconds_before_refresh=seconds_before_refresh,
             quick_meeting=quick_meeting,
         )
-    )
-
-
-@bp.route("/meeting/joinmail", methods=["POST"])
-def join_mail_meeting():
-    """Process the join form submission for email-accessed quick meetings."""
-    form = JoinMailMeetingForm(request.form)
-    if not form.validate():
-        flash(_("Lien invalide"), "error")
-        return redirect(url_for("public.index"))
-
-    fullname = form["fullname"].data
-    meeting_fake_id = form["meeting_fake_id"].data
-    expiration = form["expiration"].data
-    h = form["h"].data
-
-    meeting = get_mail_meeting(meeting_fake_id)
-    if meeting is None:
-        flash(
-            _(
-                "%(meeting_label)s inexistante",
-                meeting_label=current_app.config["WORDINGS"][
-                    "meeting_label"
-                ].capitalize(),
-            ),
-            "error",
-        )
-        return redirect(url_for("public.index"))
-
-    hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == h
-    if not hash_matches:
-        flash(_("Lien invalide"), "error")
-        return redirect(url_for("public.index"))
-
-    is_expired = datetime.fromtimestamp(expiration) < datetime.now()
-    if is_expired:
-        flash(_("Lien expiré"), "error")
-        return redirect(url_for("public.index"))
-
-    return redirect(
-        meeting.get_join_url(Role.moderator, fullname, create=True, quick_meeting=True)
     )
 
 
