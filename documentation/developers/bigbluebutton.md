@@ -7,7 +7,7 @@ Voici les étapes à suivre pour avoir un conteneur BBB local correctement confi
 ## Étapes d'installation
 
 Il existe un [script officiel](https://github.com/bigbluebutton/docker-dev) pour construire l'image Docker de BBB.
-Il a été copié dans `bigbluebutton/create_bbb.sh`.
+Il est disponible `bigbluebutton/create_bbb.sh` après avoir lancé la commande `git submodule update --init`.
 
 ### Créer le conteneur BBB
 

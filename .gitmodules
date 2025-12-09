@@ -1,0 +1,3 @@
+[submodule "bigbluebutton"]
+	path = bigbluebutton
+	url = https://github.com/bigbluebutton/docker-dev.git
