@@ -25,6 +25,7 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.bbb import BBB
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -38,6 +39,7 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import get_current_user
 from ..session import meeting_owner_needed
+from ..session import user_needed
 
 bp = Blueprint("meeting_files", __name__)
 
@@ -117,8 +119,12 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     # get file from nextcloud WEBDAV and send it
+    if (client := create_webdav_client(owner)) is None:
+        current_app.logger.warning("User %s has no Webdav credentials", owner.id)
+        flash(_("Le fichier ne semble pas accessible"), "error")
+        return redirect(url_for("public.welcome"))
+
     try:
-        client = create_webdav_client(owner)
         client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
@@ -193,8 +199,15 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             ),
         )
 
+    if (client := create_webdav_client(user)) is None:
+        current_app.logger.warning("WebDAV error: User %s has no credentials", user.id)
+        return jsonify(
+            status=500,
+            isfrom="dropzone",
+            msg=_("La connexion avec Nextcloud est rompue"),
+        )
+
     try:
-        client = create_webdav_client(user)
         client.mkdir("visio-agents")  # does not fail if dir already exists
         nc_path = os.path.join("/visio-agents/" + title)
         client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
@@ -298,8 +311,14 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     """Add a meeting file from a Nextcloud path."""
     user = get_current_user()
 
+    if (client := create_webdav_client(user)) is None:
+        return jsonify(
+            status=500,
+            isfrom="nextcloud",
+            msg=_("La connexion avec Nextcloud semble rompue"),
+        )
+
     try:
-        client = create_webdav_client(user)
         metadata = client.info(path)
 
     except WebDavException:
@@ -345,7 +364,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     )
 
 
-def create_external_meeting_file(path, meeting_id):
+def create_external_meeting_file(path, meeting_id=None):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = BaseMeetingFiles(
         title=path.split("/")[-1],
@@ -437,37 +456,36 @@ def delete_meeting_file():
     )
 
 
-@bp.route("/meeting/<meeting:meeting>/file-picker")
+@bp.route("/meeting/<signed:bbb_meeting_id>/file-picker")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def file_picker(meeting: Meeting, owner: User):
+@user_needed
+def file_picker(user: User, bbb_meeting_id: str):
     """Display the nextcloud file selector.
 
     This endpoint is used by BBB during the meetings.
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
-    if meeting.is_running():
-        return render_template("meeting/file_picker.html", meeting=meeting)
-    return redirect(url_for("public.welcome"))
+    return render_template("meeting/file_picker.html", bbb_meeting_id=bbb_meeting_id)
 
 
-@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
+@bp.route(
+    "/meeting/files/<signed:bbb_meeting_id>/file-picker-callback", methods=["POST"]
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def file_picker_callback(meeting: Meeting):
+@user_needed
+def file_picker_callback(user: User, bbb_meeting_id: str):
     """Insert documents from Nextcloud into a running BBB meeting.
 
-    This is called by the Nextcloud filePicker when users select a document.
+    This is called by the Nextcloud file picker when users select a document.
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
     filenames = request.get_json()
-    meeting_files = [
-        create_external_meeting_file(filename, meeting.id) for filename in filenames
-    ]
-    payload = meeting.bbb.meeting_files_payload(meeting_files)
-    bbb_request = meeting.bbb.bbb_request(
-        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
+    meeting_files = [create_external_meeting_file(filename) for filename in filenames]
+    payload = BBB.meeting_files_payload(meeting_files, user)
+    bbb_request = BBB.bbb_request(
+        "insertDocument", params={"meetingID": bbb_meeting_id}
     )
 
     background_upload.delay(bbb_request.url, payload)
@@ -475,24 +493,11 @@ def file_picker_callback(meeting: Meeting):
     return jsonify(status=200, msg="SUCCESS")
 
 
-@bp.route(
-    "/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<meeting:meeting>/<path:ncpath>"
-)
-def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
-    """Download a file from Nextcloud for BBB using a secure token.
-
-    When isexternal is true, the file comes from the embedded nextcloud file picker.
-    When isexternal is false, the file comes from the b3desk interface.
-    """
+@bp.route("/ncdownload/<token>/<user:user>/<path:ncpath>")
+def ncdownload(token, user, ncpath):
+    """Download a file from Nextcloud for BBB using a secure token."""
     current_app.logger.info("Service requesting file url %s", ncpath)
-    if isexternal == 0:
-        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
-        if not meeting_file:
-            abort(404, "Bad token provided, no file matching")
-    else:
-        meeting_file = create_external_meeting_file(ncpath, meeting.id)
-
-    if mftoken != get_meeting_file_hash(mfid, isexternal):
+    if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")
 
     # TODO: clean the temporary directory
@@ -501,15 +506,18 @@ def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
     uniqfile = str(uuid.uuid4())
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
+    if (client := create_webdav_client(user)) is None:
+        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
+
     try:
-        client = create_webdav_client(meeting.user)
         mimetype = client.info(ncpath).get("content_type")
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        meeting.user.disable_nextcloud()
+        user.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
+    title = ncpath.split("/")[-1]
     return send_from_directory(
-        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title, mimetype=mimetype
+        TMP_DOWNLOAD_DIR, uniqfile, download_name=title, mimetype=mimetype
     )
