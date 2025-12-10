@@ -193,3 +193,38 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
 
     disable_mock.assert_called_once()
     assert response.json["status"] == 500
+
+
+def test_owner_can_delete_file(
+    client_app, authenticated_user_2, meeting_with_file, jpg_file_content, mocker
+):
+    """Test meeting owner can delete meeting file."""
+    response = client_app.post(
+        "/meeting/files/delete",
+        json.dumps({"id": meeting_with_file.id}),
+        content_type="application/json",
+        status=200,
+    )
+    assert response.json == {
+        "status": 200,
+        "newDefaultId": None,
+        "id": meeting_with_file.id,
+        "msg": "Fichier supprimé avec succès",
+    }
+
+
+def test_other_user_cannot_delete_file(
+    client_app, authenticated_user, meeting_with_file, jpg_file_content, mocker
+):
+    """Test user who is not owner cannot delete meeting file."""
+    response = client_app.post(
+        "/meeting/files/delete",
+        json.dumps({"id": meeting_with_file.id}),
+        content_type="application/json",
+        status=200,
+    )
+    assert response.json == {
+        "status": 500,
+        "id": meeting_with_file.id,
+        "msg": "Vous ne pouvez pas supprimer cet élément",
+    }

@@ -439,8 +439,8 @@ def meeting_1_user_2(client_app, user, user_2):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        voiceBridge="222222223",
-        visio_code="922222223",
+        voiceBridge="222222222",
+        visio_code="922222222",
     )
     meeting.save()
 
@@ -450,6 +450,36 @@ def meeting_1_user_2(client_app, user, user_2):
         level=AccessLevel.DELEGATE,
     )
     access.save()
+
+    yield meeting
+
+
+@pytest.fixture
+def meeting_with_file(client_app, user_2):
+    from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingFiles
+
+    meeting = Meeting(
+        owner=user_2,
+        name="meeting_with_file",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="222222223",
+        visio_code="922222223",
+        last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
+    )
+    meeting.save()
+
+    meeting_file = MeetingFiles(
+        title="original_file.pdf",
+        nc_path="original_file.pdf",
+        meeting_id=meeting.id,
+        is_default=True,
+        is_downloadable=False,
+    )
+    meeting_file.save()
 
     yield meeting
 
