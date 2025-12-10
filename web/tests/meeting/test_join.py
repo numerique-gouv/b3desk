@@ -205,6 +205,22 @@ def test_join_meeting_as_role__not_attendee_or_moderator(
     client_app.get(f"/meeting/join/{meeting.id}/journalist", status=404)
 
 
+def test_join_meeting_as_role_ad_user_has_not_user_session(
+    client_app, authenticated_user, meeting, bbb_response, mocker
+):
+    """Test that joining meeting with no user session."""
+    mocker.patch("b3desk.session.has_user_session", return_value=None)
+    client_app.get(f"/meeting/join/{meeting.id}/invite", status=403)
+
+
+def test_join_meeting_as_role_with_no_current_user(
+    client_app, authenticated_user, meeting, bbb_response, mocker
+):
+    """Test that joining meeting with no current user."""
+    mocker.patch("b3desk.session.get_current_user", return_value=None)
+    client_app.get(f"/meeting/join/{meeting.id}/invite", status=403)
+
+
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting):
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
