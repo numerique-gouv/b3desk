@@ -95,7 +95,7 @@ def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     """
     user.given_name = "JOHN"
     user.family_name = "LENNON"
-    user.email = "john@lennon.com"
+    user.email = "john@lennon.test"
     with client_app.session_transaction() as session:
         session["current_provider"] = "attendee"
         session["last_authenticated"] = "true"
@@ -291,7 +291,7 @@ def test_join_meeting_with_sip_connect_wrong_token(client_app):
 def test_join_meeting_with_sip_connect_token_with_wrong_iss_value(client_app):
     """Test that SIP connect with wrong issuer returns 401."""
     header = {"alg": "RS256", "typ": "JWT"}
-    claims = {"iss": "http://wrong-domain.org"}
+    claims = {"iss": "http://wrong-domain.test"}
     private_key_from_settings = RSAKey.import_key(client_app.app.config["PRIVATE_KEY"])
     token = jwt.encode(header, claims, private_key_from_settings)
 

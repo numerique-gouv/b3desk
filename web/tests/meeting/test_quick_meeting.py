@@ -21,7 +21,7 @@ def test_unauthenticated_quick_meeting_unauthorized_email(
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
-    res.forms[1]["mail"] = "email@example.org"
+    res.forms[1]["mail"] = "email@example.test"
     res = res.forms[1].submit()
     assert (
         "error_login",
