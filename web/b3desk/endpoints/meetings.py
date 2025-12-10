@@ -146,6 +146,7 @@ def new_meeting():
     """Display the form to create a new meeting."""
     user = get_current_user()
     if not user.can_create_meetings:
+        flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
     form = MeetingWithRecordForm() if current_app.config["RECORDING"] else MeetingForm()
@@ -191,6 +192,7 @@ def save_meeting():
 
     is_new_meeting = not form.data["id"]
     if not user.can_create_meetings and is_new_meeting:
+        flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
     if not form.validate():
@@ -275,6 +277,8 @@ def end_meeting():
             f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
             "success",
         )
+    else:
+        flash(_("Vous ne pouvez pas terminer cette réunion"), "error")
     return redirect(url_for("public.welcome"))
 
 

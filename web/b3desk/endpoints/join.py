@@ -156,6 +156,8 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
             url_for("join.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
     elif not role:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
+
         return redirect(url_for("public.index"))
 
     return render_template(
@@ -202,11 +204,13 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
     """
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, creator.id)
     if meeting is None:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
     current_user_id = get_current_user().id if has_user_session() else None
     role = meeting.get_role(h, current_user_id)
     if not role:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", SECONDS_BEFORE_REFRESH
@@ -235,6 +239,7 @@ def join_meeting():
     """
     form = JoinMeetingForm(request.form)
     if not form.validate():
+        flash(_("Lien invalide"), "error")
         return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
@@ -256,6 +261,7 @@ def join_meeting():
         quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id)
     if meeting is None:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
     current_user_id = get_current_user().id if has_user_session() else None
@@ -264,6 +270,7 @@ def join_meeting():
     if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()
     elif not role:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
     if role == Role.moderator:

@@ -449,6 +449,7 @@ def file_picker(meeting: Meeting, owner: User):
     """
     if meeting.is_running():
         return render_template("meeting/file_picker.html", meeting=meeting)
+    flash(_("La réunion n'est pas en cours"), "error")
     return redirect(url_for("public.welcome"))
 
 
