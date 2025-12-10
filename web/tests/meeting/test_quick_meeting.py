@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import pyquery
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.roles import Role
 
 
 def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
@@ -123,3 +124,19 @@ def test_quick_meeting_rasing_time_before_refresh_in_waiting_meeting(
     assert url_role == ["15.0"]
     url_role = parse_qs(url.query)["quick_meeting"]
     assert url_role
+
+
+def test_quick_meeting_signin_links_are_accessible(client_app, user):
+    """Test that moderator and attendee signin links generated for quick meetings are accessible."""
+    meeting = get_quick_meeting_from_user_and_random_string(user)
+
+    moderator_url = meeting.get_signin_url(Role.moderator)
+    attendee_url = meeting.get_signin_url(Role.attendee)
+
+    response = client_app.get(moderator_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)
+
+    response = client_app.get(attendee_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)

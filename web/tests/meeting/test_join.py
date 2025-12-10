@@ -8,6 +8,20 @@ from joserfc import jwt
 from joserfc.jwk import RSAKey
 
 
+def test_meeting_signin_links_are_accessible(client_app, meeting):
+    """Test that moderator and attendee signin links generated for meetings are accessible."""
+    moderator_url = meeting.get_signin_url(Role.moderator)
+    attendee_url = meeting.get_signin_url(Role.attendee)
+
+    response = client_app.get(moderator_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)
+
+    response = client_app.get(attendee_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)
+
+
 def test_signin_meeting(client_app, meeting, user, bbb_response):
     """Test that attendee can sign in to meeting."""
     meeting_hash = meeting.get_hash(Role.attendee)
