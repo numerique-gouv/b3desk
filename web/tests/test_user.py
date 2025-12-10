@@ -8,6 +8,7 @@ from b3desk.models.users import get_or_create_user
 from b3desk.nextcloud import NoUserFound
 from b3desk.nextcloud import TooManyUsers
 from b3desk.nextcloud import get_secondary_identity_provider_id_from_email
+from b3desk.nextcloud import get_user_nc_credentials
 from b3desk.nextcloud import make_nextcloud_credentials_request
 from time_machine import travel
 
@@ -193,3 +194,19 @@ def test_get_secondary_identity_provider_id_from_email_no_user(
     )
     with pytest.raises(NoUserFound):
         get_secondary_identity_provider_id_from_email("blaireau.riviere@rock.org")
+
+
+def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(
+    client_app, user, mocker, caplog
+):
+    ncresponse = {
+        "error": "test_nc_error_connection",
+    }
+    mocker.patch(
+        "b3desk.nextcloud.make_nextcloud_credentials_request", return_value=ncresponse
+    )
+    response = get_user_nc_credentials(user)
+    assert response == {"nctoken": None, "nclocator": None, "nclogin": None}
+    assert (
+        f"Cannot contact NC {client_app.app.config['NC_LOGIN_API_URL']}, returning error {ncresponse['error']}"
+    ) in caplog.text
