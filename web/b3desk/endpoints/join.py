@@ -115,8 +115,11 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
+    created = meeting.create_bbb()
     return redirect(
-        meeting.get_join_url(Role.moderator, fullname, create=True, quick_meeting=True)
+        meeting.get_join_url(
+            Role.moderator, fullname, quick_meeting=True, waiting_room=not created
+        )
     )
 
 
@@ -263,14 +266,20 @@ def join_meeting():
     elif not role:
         return redirect(url_for("public.index"))
 
+    if role == Role.moderator:
+        created = meeting.create_bbb()
+        waiting_room = not created
+    else:
+        waiting_room = True
+
     return redirect(
         meeting.get_join_url(
             role,
             fullname,
             fullname_suffix=fullname_suffix,
-            create=True,
             seconds_before_refresh=seconds_before_refresh,
             quick_meeting=quick_meeting,
+            waiting_room=waiting_room,
         )
     )
 
@@ -303,7 +312,18 @@ def join_meeting_as_authenticated(meeting_id):
 @meeting_owner_needed
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     """Join a meeting as the owner with a specific role."""
-    return redirect(meeting.get_join_url(role, owner.fullname, create=True))
+    if role == Role.moderator:
+        created = meeting.create_bbb()
+        waiting_room = not created
+    else:
+        waiting_room = True
+    return redirect(
+        meeting.get_join_url(
+            role,
+            owner.fullname,
+            waiting_room=waiting_room,
+        )
+    )
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])

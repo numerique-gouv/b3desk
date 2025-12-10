@@ -181,8 +181,12 @@ class Meeting(db.Model):
         data = self.bbb.is_meeting_running()
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
-    def create_bbb(self):
+    def create_bbb(self) -> bool:
         """Create the BBB meeting room and return the result."""
+        if self.is_running():
+            return False
+
+        current_app.logger.info("Request BBB room creation %s %s", self.name, self.id)
         self.voiceBridge = (
             pin_generation() if not self.voiceBridge else self.voiceBridge
         )
@@ -205,7 +209,7 @@ class Meeting(db.Model):
                 "BBB room has not been properly created: %s", result
             )
 
-        return result if result else {}
+        return result.get("returncode", "") == "SUCCESS"
 
     def save(self):
         """Save the meeting to the database."""
@@ -241,42 +245,29 @@ class Meeting(db.Model):
         meeting_role: Role,
         fullname,
         fullname_suffix="",
-        create=False,
         quick_meeting=False,
         seconds_before_refresh=None,
+        waiting_room=True,
     ):
         """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
-        is_meeting_available = self.is_running()
-        should_create_room = (
-            not is_meeting_available and (meeting_role == Role.moderator) and create
-        )
-        if should_create_room:
-            current_app.logger.info(
-                "Request BBB room creation %s %s", self.name, self.id
+        if waiting_room and not self.is_running():
+            return url_for(
+                "join.waiting_meeting",
+                meeting_fake_id=self.fake_id,
+                creator=self.user,
+                h=self.get_hash(meeting_role),
+                fullname=fullname,
+                fullname_suffix=fullname_suffix,
+                seconds_before_refresh=seconds_before_refresh,
+                quick_meeting=quick_meeting,
             )
-            data = self.create_bbb()
-            if data.get("returncode", "") == "SUCCESS":
-                is_meeting_available = True
-                if not quick_meeting:
-                    self.last_connection_utc_datetime = datetime.now()
-                    self.save()
 
-        if is_meeting_available:
-            nickname = (
-                f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
-            )
-            return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
+        if self.id:
+            self.last_connection_utc_datetime = datetime.now()
+            self.save()
 
-        return url_for(
-            "join.waiting_meeting",
-            meeting_fake_id=self.fake_id,
-            creator=self.user,
-            h=self.get_hash(meeting_role),
-            fullname=fullname,
-            fullname_suffix=fullname_suffix,
-            seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
-        )
+        nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
+        return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
 
     def get_signin_url(self, meeting_role: Role):
         """Generate the sign-in URL for a specific role."""

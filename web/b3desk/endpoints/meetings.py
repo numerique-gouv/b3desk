@@ -91,9 +91,10 @@ def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     user = get_current_user()
     meeting = get_quick_meeting_from_user_and_random_string(user)
+    created = meeting.create_bbb()
     return redirect(
         meeting.get_join_url(
-            Role.moderator, user.fullname, create=True, quick_meeting=True
+            Role.moderator, user.fullname, quick_meeting=True, waiting_room=not created
         )
     )
 
