@@ -53,6 +53,10 @@ def caching_exclusion(func, caller, prepped, *args, **kwargs):
 class BBB:
     """Interface to BBB API."""
 
+    @classmethod
+    def success(cls, payload):
+        return payload and payload.get("returncode") == "SUCCESS"
+
     def __init__(self, meeting):
         """Initialize BBB API interface with a meeting instance."""
         self.meeting = meeting

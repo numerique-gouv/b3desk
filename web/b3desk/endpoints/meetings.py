@@ -27,6 +27,7 @@ from b3desk.forms import RecordingForm
 from b3desk.join import get_join_url
 from b3desk.join import get_signin_url
 from b3desk.models import db
+from b3desk.models.bbb import BBB
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
@@ -126,15 +127,16 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
         abort(403)
 
     result = meeting.update_recording_name(recording_id, form.data["name"])
-    return_code = result.get("returncode")
-    if return_code == "SUCCESS":
+    if BBB.success(result):
         flash(_("Enregistrement renommé"), "success")
     else:
-        message = result.get("message", "")
         flash(
             _(
                 "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
-            ).format(code=return_code, message=message),
+            ).format(
+                code=result.get("returncode", ""),
+                message=result.get("message", ""),
+            ),
             "error",
         )
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
@@ -308,15 +310,13 @@ def delete_meeting():
                 db.session.delete(meeting_file)
 
             data = meeting.delete_all_recordings()
-            return_code = data.get("returncode", "SUCCESS")
-            if return_code != "SUCCESS":
-                message = data.get("message", "")
+            if data and not BBB.success(data):
                 flash(
                     _(
                         "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
                     ).format(
                         meeting_label=current_app.config["WORDINGS"]["meeting_label"],
-                        message=message,
+                        message=data.get("message", ""),
                     ),
                     "error",
                 )
@@ -344,8 +344,7 @@ def delete_video_meeting():
     if meeting.user_id == g.user.id:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)
-        return_code = data.get("returncode")
-        if return_code == "SUCCESS":
+        if BBB.success(data):
             flash(_("Vidéo supprimée"), "success")
             current_app.logger.info(
                 "Meeting %s %s record %s was deleted by %s",
@@ -355,12 +354,11 @@ def delete_video_meeting():
                 g.user.email,
             )
         else:
-            message = data.get("message", "")
             flash(
                 _(
                     "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
-                    code=return_code,
-                    message=message,
+                    code=data.get("returncode", ""),
+                    message=data.get("message", ""),
                 ),
                 "error",
             )

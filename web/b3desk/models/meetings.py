@@ -174,7 +174,7 @@ class Meeting(db.Model):
     def is_running(self):
         """Check if the BBB meeting is currently running."""
         data = self.bbb.is_meeting_running()
-        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
+        return self.bbb.success(data) and data["running"] == "true"
 
     def create_bbb(self, user=None) -> bool:
         """Create the BBB meeting room and return the result."""
@@ -186,7 +186,7 @@ class Meeting(db.Model):
             pin_generation() if not self.voiceBridge else self.voiceBridge
         )
         result = self.bbb.create(user)
-        if result and result.get("returncode", "") == "SUCCESS":
+        if self.bbb.success(result):
             if self.files:
                 self.bbb.send_meeting_files(self.files)
 
@@ -207,7 +207,7 @@ class Meeting(db.Model):
                 "BBB room has not been properly created: %s", result
             )
 
-        return result.get("returncode", "") == "SUCCESS"
+        return self.bbb.success(result)
 
     def save(self):
         """Save the meeting to the database."""
@@ -241,7 +241,7 @@ class Meeting(db.Model):
     def end_bbb(self):
         """End the BBB meeting."""
         data = self.bbb.end()
-        return data and data["returncode"] == "SUCCESS"
+        return self.bbb.success(data)
 
 
 class PreviousVoiceBridge(db.Model):
