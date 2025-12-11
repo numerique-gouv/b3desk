@@ -68,8 +68,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, h):
 
     return render_template(
         "meeting/signinmail.html",
-        meeting=meeting,
-        meeting_fake_id=meeting.fake_id,
+        meeting_fake_id=meeting_fake_id,
         expiration=expiration,
         h=h,
         role=Role.moderator,
@@ -164,7 +163,6 @@ def signin_meeting(
 
     return render_template(
         "meeting/join.html",
-        meeting=meeting,
         meeting_fake_id=meeting_fake_id,
         h=h,
         role=role,
@@ -237,7 +235,6 @@ def waiting_meeting(
 
     return render_template(
         "meeting/wait.html",
-        meeting=meeting,
         meeting_fake_id=meeting_fake_id,
         h=h,
         role=role,
