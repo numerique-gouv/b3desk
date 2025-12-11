@@ -334,15 +334,21 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
 def join_waiting_meeting_from_sip(visio_code):
     """Join a meeting using visio code from SIP phone connection."""
     token = request.headers.get("Authorization")
-    if not check_token_errors(token):
-        meeting = get_meeting_by_visio_code(visio_code)
-        if not meeting:
-            current_app.logger.error(
-                "SQLAlchemy cannot find a meeting with this visio-code"
-            )
-            abort(404)
-        return join_waiting_meeting_with_visio_code(meeting)
-    abort(401)
+    if check_token_errors(token):
+        abort(401)
+
+    meeting = get_meeting_by_visio_code(visio_code)
+    if not meeting:
+        current_app.logger.error(
+            "SQLAlchemy cannot find a meeting with this visio-code"
+        )
+        abort(404)
+
+    creator = db.session.get(User, meeting.user_id)
+    h = meeting.get_hash(role=Role.moderator)
+    return signin_meeting(
+        meeting_fake_id=str(meeting.id), creator=creator, h=h, role=Role.moderator
+    )
 
 
 @bp.route("/meeting/visio_code", methods=["POST"])
@@ -369,7 +375,11 @@ def visio_code_connection():
         return redirect(url_for("public.home"))
 
     visio_code_attempt_counter_reset()
-    return join_waiting_meeting_with_visio_code(meeting)
+    creator = db.session.get(User, meeting.user_id)
+    h = meeting.get_hash(role=Role.moderator)
+    return signin_meeting(
+        meeting_fake_id=str(meeting.id), creator=creator, h=h, role=Role.moderator
+    )
 
 
 @bp.route("/meeting/visio_code_form", methods=["POST"])
@@ -396,14 +406,3 @@ def visio_code_form_validation():
         result["captchaCode"] = captcha_validation(captcha_uuid, captcha_code)
 
     return result
-
-
-def join_waiting_meeting_with_visio_code(meeting):
-    """Redirect to the meeting signin page after successful visio code validation."""
-    meeting_fake_id = str(meeting.id)
-    creator = db.session.get(User, meeting.user_id)
-    role = Role.moderator
-    h = meeting.get_hash(role=role)
-    return signin_meeting(
-        meeting_fake_id=meeting_fake_id, creator=creator, h=h, role=role
-    )
