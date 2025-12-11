@@ -92,7 +92,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
     meeting_hash = shadow_meeting.get_hash(Role.moderator)
     previous_connection = shadow_meeting.last_connection_utc_datetime
 
-    url = f"/meeting/signin/{shadow_meeting.id}/creator/{shadow_meeting.user.id}/hash/{meeting_hash}"
+    url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
         url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
     )
@@ -121,7 +121,7 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
 
     meeting_hash = shadow_meeting.get_hash(Role.attendee)
 
-    url = f"/meeting/signin/{shadow_meeting.id}/creator/{shadow_meeting.user.id}/hash/{meeting_hash}"
+    url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
         url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=200
     )
