@@ -220,13 +220,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
     meeting_fake_id = meeting.fake_id
-    h = meeting.get_hash(Role.attendee)
+    hash_ = meeting.get_hash(Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
         meeting_fake_id=meeting_fake_id,
-        h=h,
+        hash_=hash_,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
     )
@@ -238,13 +238,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     """Test that empty fullname suffix is handled correctly."""
     meeting_fake_id = meeting.fake_id
-    h = meeting.get_hash(Role.attendee)
+    hash_ = meeting.get_hash(Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
         meeting_fake_id=meeting_fake_id,
-        h=h,
+        hash_=hash_,
         fullname=fullname,
         fullname_suffix="",
     )

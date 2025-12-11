@@ -255,7 +255,7 @@ class Meeting(db.Model):
             return url_for(
                 "join.waiting_meeting",
                 meeting_fake_id=self.fake_id,
-                h=self.get_hash(meeting_role),
+                hash_=self.get_hash(meeting_role),
                 fullname=fullname,
                 fullname_suffix=fullname_suffix,
                 seconds_before_refresh=seconds_before_refresh,
@@ -274,7 +274,7 @@ class Meeting(db.Model):
         return url_for(
             "join.signin_meeting",
             meeting_fake_id=self.fake_id,
-            h=self.get_hash(meeting_role),
+            hash_=self.get_hash(meeting_role),
             role=meeting_role,
             _external=True,
             _scheme=current_app.config["PREFERRED_URL_SCHEME"],
@@ -297,7 +297,7 @@ class Meeting(db.Model):
             "join.signin_mail_meeting",
             meeting_fake_id=self.fake_id,
             expiration=expiration,
-            h=hash_param,
+            hash_=hash_param,
             _external=True,
         )
 

@@ -6,7 +6,7 @@
     {% include 'meeting/csrf.html' %}
     <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
     <input type="hidden" id="expiration" name="expiration" value="{{ expiration }}" />
-    <input type="hidden" id="h" name="h" value="{{ h }}" />
+    <input type="hidden" id="hash_" name="hash_" value="{{ hash_ }}" />
     {% if not g.user %}
       <p>
         {% trans %}Votre {{ meeting_label }} n'a pas encore été activée par un modérateur{% endtrans %}
