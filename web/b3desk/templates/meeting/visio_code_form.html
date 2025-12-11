@@ -1,7 +1,7 @@
 <div>
-    {% if user %}
+    {% if g.user %}
         <h4>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h4>
-    {% elif config.get("ENABLE_LASUITENUMERIQUE") and not user %}
+    {% elif config.get("ENABLE_LASUITENUMERIQUE") and not g.user %}
         <h2>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h2>
     {% else %}
         <h6>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h6>

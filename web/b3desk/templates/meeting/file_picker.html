@@ -5,9 +5,9 @@
 </div>
 
 <script>
-    const nc_locator = "{{ user.nc_locator }}";
-    const nc_login = "{{ user.nc_login }}";
-    const nc_token = "{{ user.nc_token }}";
+    const nc_locator = "{{ g.user.nc_locator }}";
+    const nc_login = "{{ g.user.nc_login }}";
+    const nc_token = "{{ g.user.nc_token }}";
     const insert_documents_url = "{{ url_for("meeting_files.file_picker_callback", meeting=meeting) }}";
 </script>
 <script src="{{ url_for('static', filename='js/file_picker.js')}}"></script>

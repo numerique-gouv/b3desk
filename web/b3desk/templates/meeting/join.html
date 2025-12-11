@@ -14,7 +14,7 @@
                 <div class="fr-col">
                     <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
                     {% if role != Role.authenticated %}<p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>{% endif %}
-                    <input type="text" required class="fr-input" id="fullname" name="fullname" {% if fullname %}value="{{ fullname }}"{% endif %} {% if fullname and not user %}readonly="readonly"{% endif %} />
+                    <input type="text" required class="fr-input" id="fullname" name="fullname" {% if g.user %}value="{{ g.user.fullname }}" readonly="readonly"{% endif %} />
                 </div>
             </div>
 
@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            {% if role != Role.authenticated and not user %}
+            {% if role != Role.authenticated and not g.user %}
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col">
                         {% trans %}Vous êtes propriétaire de cette salle ?{% endtrans %}

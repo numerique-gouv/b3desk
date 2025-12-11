@@ -10,6 +10,7 @@ from flask import Blueprint
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import g
 from flask import jsonify
 from flask import make_response
 from flask import redirect
@@ -36,7 +37,6 @@ from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
-from ..session import get_current_user
 from ..session import meeting_owner_needed
 
 bp = Blueprint("meeting_files", __name__)
@@ -178,11 +178,10 @@ def remove_dropzone_file(absolutePath):
 # called when a file has been uploaded : send it to nextcloud
 def add_meeting_file_dropzone(title, meeting_id, is_default):
     """Upload a dropzone file to Nextcloud and associate it with a meeting."""
-    user = get_current_user()
     # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzone_path = os.path.join(DROPZONE_DIR, f"{user.id}-{meeting_id}-{title}")
+    dropzone_path = os.path.join(DROPZONE_DIR, f"{g.user.id}-{meeting_id}-{title}")
     metadata = os.stat(dropzone_path)
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
@@ -194,7 +193,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
 
     try:
-        client = create_webdav_client(user)
+        client = create_webdav_client(g.user)
         client.mkdir("visio-agents")  # does not fail if dir already exists
         nc_path = os.path.join("/visio-agents/" + title)
         client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
@@ -207,7 +206,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
 
     except WebDavException as exception:
-        user.disable_nextcloud()
+        g.user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
         return jsonify(
             status=500,
@@ -296,14 +295,12 @@ def add_meeting_file_URL(url, meeting_id, is_default):
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
     """Add a meeting file from a Nextcloud path."""
-    user = get_current_user()
-
     try:
-        client = create_webdav_client(user)
+        client = create_webdav_client(g.user)
         metadata = client.info(path)
 
     except WebDavException:
-        user.disable_nextcloud()
+        g.user.disable_nextcloud()
         return jsonify(
             status=500,
             isfrom="nextcloud",
@@ -408,13 +405,12 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     """Delete a meeting file and reassign default if necessary."""
-    user = get_current_user()
     data = request.get_json()
     meeting_file_id = data["id"]
     meeting_file = MeetingFiles.query.get(meeting_file_id)
     cur_meeting = Meeting.query.get(meeting_file.meeting_id)
 
-    if cur_meeting.user_id != user.id:
+    if cur_meeting.user_id != g.user.id:
         return jsonify(
             status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )

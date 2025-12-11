@@ -12,6 +12,7 @@ from flask import Blueprint
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import g
 from flask import jsonify
 from flask import redirect
 from flask import render_template
@@ -33,7 +34,6 @@ from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
-from ..session import get_current_user
 from ..session import meeting_owner_needed
 from ..utils import is_accepted_email
 from ..utils import is_valid_email
@@ -89,12 +89,14 @@ def quick_mail_meeting():
 @auth.oidc_auth("default")
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
-    user = get_current_user()
-    meeting = get_quick_meeting_from_user_and_fake_id(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(g.user)
     created = meeting.create_bbb()
     return redirect(
         meeting.get_join_url(
-            Role.moderator, user.fullname, quick_meeting=True, waiting_room=not created
+            Role.moderator,
+            g.user.fullname,
+            quick_meeting=True,
+            waiting_room=not created,
         )
     )
 
@@ -144,8 +146,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
 @auth.oidc_auth("default")
 def new_meeting():
     """Display the form to create a new meeting."""
-    user = get_current_user()
-    if not user.can_create_meetings:
+    if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
@@ -183,7 +184,6 @@ def edit_meeting(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 def save_meeting():
     """Save a new or updated meeting from the meeting form submission."""
-    user = get_current_user()
     form = (
         MeetingWithRecordForm(request.form)
         if current_app.config["RECORDING"]
@@ -191,7 +191,7 @@ def save_meeting():
     )
 
     is_new_meeting = not form.data["id"]
-    if not user.can_create_meetings and is_new_meeting:
+    if not g.user.can_create_meetings and is_new_meeting:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
@@ -206,7 +206,7 @@ def save_meeting():
 
     if is_new_meeting:
         meeting = Meeting()
-        meeting.user = user
+        meeting.user = g.user
     else:
         meeting_id = form.data["id"]
         meeting = db.session.get(Meeting, meeting_id)
@@ -231,14 +231,14 @@ def save_meeting():
             "Meeting %s %s was created by %s",
             meeting.name,
             meeting.id,
-            user.email,
+            g.user.email,
         )
     else:
         current_app.logger.info(
             "Meeting %s %s was updated by %s. Updated fields : %s",
             meeting.name,
             meeting.id,
-            user.email,
+            g.user.email,
             updated_data,
         )
     flash(
@@ -265,13 +265,12 @@ def end_meeting():
 
     Called from EndMeetingForm.
     """
-    user = get_current_user()
     form = EndMeetingForm(request.form)
 
     meeting_id = form.data["meeting_id"]
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
-    if user == meeting.user:
+    if g.user == meeting.user:
         meeting.end_bbb()
         flash(
             f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
@@ -302,11 +301,10 @@ def create_meeting(meeting: Meeting, owner: User):
 def delete_meeting():
     """Delete a meeting and all its associated files and recordings."""
     if request.method == "POST":
-        user = get_current_user()
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
-        if meeting.user_id == user.id:
+        if meeting.user_id == g.user.id:
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
 
@@ -330,7 +328,7 @@ def delete_meeting():
                     "Meeting %s %s was deleted by %s",
                     meeting.name,
                     meeting.id,
-                    user.email,
+                    g.user.email,
                 )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
@@ -342,10 +340,9 @@ def delete_meeting():
 @auth.oidc_auth("default")
 def delete_video_meeting():
     """Delete a specific recording from a meeting."""
-    user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-    if meeting.user_id == user.id:
+    if meeting.user_id == g.user.id:
         recordID = request.form["recordID"]
         data = meeting.delete_recordings(recordID)
         return_code = data.get("returncode")
@@ -356,7 +353,7 @@ def delete_video_meeting():
                 meeting.name,
                 meeting.id,
                 recordID,
-                user.email,
+                g.user.email,
             )
         else:
             message = data.get("message", "")
@@ -380,11 +377,10 @@ def delete_video_meeting():
 @auth.oidc_auth("default")
 def meeting_favorite():
     """Toggle the favorite status of a meeting."""
-    user = get_current_user()
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
 
-    if meeting.user_id != user.id:
+    if meeting.user_id != g.user.id:
         abort(403)
 
     meeting.is_favorite = not meeting.is_favorite

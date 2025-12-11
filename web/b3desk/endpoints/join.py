@@ -5,6 +5,7 @@ from flask import Blueprint
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -28,8 +29,6 @@ from b3desk.utils import check_token_errors
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
-from ..session import get_current_user
-from ..session import has_user_session
 from ..session import meeting_owner_needed
 from ..session import should_display_captcha
 
@@ -148,8 +147,7 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
         )
         return redirect(url_for("public.index"))
 
-    current_user = get_current_user() if has_user_session() else None
-    role = meeting.get_role(h, current_user)
+    role = meeting.get_role(h, g.user)
 
     if role == Role.authenticated:
         return redirect(
@@ -207,8 +205,7 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    current_user = get_current_user() if has_user_session() else None
-    role = meeting.get_role(h, current_user)
+    role = meeting.get_role(h, g.user)
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
@@ -264,8 +261,7 @@ def join_meeting():
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    current_user = get_current_user() if has_user_session() else None
-    role = meeting.get_role(h, current_user)
+    role = meeting.get_role(h, g.user)
     fullname_suffix = form["fullname_suffix"].data
     if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()

@@ -24,7 +24,7 @@
     <body>
         <div id="js-modal-page">
             {% block header %}
-                {% if config.get("ENABLE_LASUITENUMERIQUE") and not user %}
+                {% if config.get("ENABLE_LASUITENUMERIQUE") and not g.user %}
                     {% include 'header-lasuite.html' %}
                 {% else %}
                     {% include 'header.html' %}

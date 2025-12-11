@@ -1,6 +1,7 @@
 import requests
 from flask import Blueprint
 from flask import current_app
+from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -8,7 +9,6 @@ from flask import url_for
 
 from .. import auth
 from .. import cache
-from ..session import get_current_user
 from ..session import has_user_session
 from ..session import should_display_captcha
 from ..templates.content import FAQ_CONTENT
@@ -78,7 +78,6 @@ def home():
 @check_private_key()
 def welcome():
     """Render the authenticated user's welcome page with their meetings."""
-    user = get_current_user()
     stats = get_meetings_stats()
 
     order_key = request.args.get("order-key", "created_at")
@@ -92,11 +91,11 @@ def welcome():
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
 
-    meetings = [meeting for meeting in user.meetings if not meeting.is_shadow]
+    meetings = [meeting for meeting in g.user.meetings if not meeting.is_shadow]
     favorite_meetings = []
     if favorite_filter:
         favorite_meetings = [
-            meeting for meeting in user.meetings if meeting.is_favorite
+            meeting for meeting in g.user.meetings if meeting.is_favorite
         ]
         if favorite_meetings:
             meetings = favorite_meetings
@@ -116,7 +115,7 @@ def welcome():
         "welcome.html",
         stats=stats,
         max_participants=current_app.config["MAX_PARTICIPANTS"],
-        can_create_meetings=user.can_create_meetings,
+        can_create_meetings=g.user.can_create_meetings,
         max_meetings_per_user=current_app.config["MAX_MEETINGS_PER_USER"],
         meeting_mailto_params=meeting_mailto_params,
         mailto=current_app.config["MAILTO_LINKS"],
