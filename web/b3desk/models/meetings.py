@@ -361,17 +361,17 @@ def delete_old_voiceBridges():
     ).delete()
 
 
-def get_quick_meeting_from_user_and_random_string(user, random_string=None):
+def get_quick_meeting_from_user_and_fake_id(user, meeting_fake_id=None):
     """Create a quick meeting instance for a user with default settings."""
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
+    if meeting_fake_id is None:
+        meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         user=user,
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{user.hash}-{random_string}",
-        attendeePW=f"{random_string}-{random_string}",
+        moderatorPW=f"{user.hash}-{meeting_fake_id}",
+        attendeePW=f"{meeting_fake_id}-{meeting_fake_id}",
         moderatorOnlyMessage=current_app.config[
             "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
         ],
@@ -380,7 +380,7 @@ def get_quick_meeting_from_user_and_random_string(user, random_string=None):
             or url_for("public.index", _external=True)
         ),
     )
-    meeting.fake_id = random_string
+    meeting.fake_id = meeting_fake_id
     return meeting
 
 
@@ -392,16 +392,16 @@ def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
         except:
             try:
                 user = db.session.get(User, user_id)
-                meeting = get_quick_meeting_from_user_and_random_string(
-                    user, random_string=meeting_fake_id
+                meeting = get_quick_meeting_from_user_and_fake_id(
+                    user, meeting_fake_id=meeting_fake_id
                 )
             except:
                 meeting = None
     else:
         try:
             user = db.session.get(User, user_id)
-            meeting = get_quick_meeting_from_user_and_random_string(
-                user, random_string=meeting_fake_id
+            meeting = get_quick_meeting_from_user_and_fake_id(
+                user, meeting_fake_id=meeting_fake_id
             )
         except:
             meeting = None
@@ -409,23 +409,23 @@ def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
     return meeting
 
 
-def get_mail_meeting(random_string=None):
+def get_mail_meeting(meeting_fake_id=None):
     """Create a mail-based meeting instance without a user account."""
     # only used for mail meeting
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
+    if meeting_fake_id is None:
+        meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{random_string}-{random_string}",  # it is only usefull for bbb
+        moderatorPW=f"{meeting_fake_id}-{meeting_fake_id}",  # it is only usefull for bbb
         moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
         logoutUrl=(
             current_app.config["QUICK_MEETING_LOGOUT_URL"]
             or url_for("public.index", _external=True)
         ),
     )
-    meeting.fake_id = random_string
+    meeting.fake_id = meeting_fake_id
     return meeting
 
 

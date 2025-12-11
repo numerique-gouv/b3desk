@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 
 import pyquery
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.meetings import get_quick_meeting_from_user_and_fake_id
 from b3desk.models.roles import Role
 
 
@@ -78,7 +78,7 @@ def test_join_mail_meeting_with_logged_user(client_app, user, mocker):
 
     mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
 
-    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(user)
     moderator_mail_signin_url = meeting.get_mail_signin_url()
 
     response = client_app.get(moderator_mail_signin_url, status=200)
@@ -128,7 +128,7 @@ def test_quick_meeting_rasing_time_before_refresh_in_waiting_meeting(
 
 def test_quick_meeting_signin_links_are_accessible(client_app, user):
     """Test that moderator and attendee signin links generated for quick meetings are accessible."""
-    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(user)
 
     moderator_url = meeting.get_signin_url(Role.moderator)
     attendee_url = meeting.get_signin_url(Role.attendee)

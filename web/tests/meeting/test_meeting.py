@@ -616,12 +616,12 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     """Test that quick meeting is created with correct default parameters."""
-    from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
+    from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_fake_id
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
     monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
-    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(user)
     meeting.bbb.create()
 
     assert bbb_response.called

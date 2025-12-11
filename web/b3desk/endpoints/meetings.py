@@ -25,7 +25,7 @@ from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.meetings import get_quick_meeting_from_user_and_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
@@ -78,7 +78,7 @@ def quick_mail_meeting():
     user = User(
         id=email
     )  # this user can probably be removed if we created adock function
-    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(user)
     send_quick_meeting_mail(meeting, email)
     flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
     return redirect(url_for("public.index"))
@@ -90,7 +90,7 @@ def quick_mail_meeting():
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     user = get_current_user()
-    meeting = get_quick_meeting_from_user_and_random_string(user)
+    meeting = get_quick_meeting_from_user_and_fake_id(user)
     created = meeting.create_bbb()
     return redirect(
         meeting.get_join_url(
