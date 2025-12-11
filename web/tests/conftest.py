@@ -301,6 +301,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "ENABLE_SIP": True,
         "FQDN_SIP_SERVER": "sip.test",
         "PRIVATE_KEY": private_key,
+        "PISTE_OAUTH_API_URI": "https://piste.test",
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
