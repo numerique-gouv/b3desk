@@ -6,7 +6,6 @@
     <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
         {% include 'meeting/csrf.html' %}
         <input type="hidden" id="meetingID" name="meeting_fake_id" value="{{ meeting_fake_id }}" />
-        <input type="hidden" id="user_id" name="user_id" value="{{ creator.id }}" />
         <input type="hidden" id="h" name="h" value="{{ h }}" />
 
         <div class="fr-input-group">
@@ -39,7 +38,7 @@
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col">
                         {% trans %}Vous êtes propriétaire de cette salle ?{% endtrans %}
-                        <a href="{{ url_for("join.authenticate_then_signin_meeting", meeting_fake_id=meeting_fake_id, creator=creator, h=h ) }}">
+                        <a href="{{ url_for("join.authenticate_then_signin_meeting", meeting_fake_id=meeting_fake_id, h=h ) }}">
                             {% trans %}S’identifier{% endtrans %}
                         </a>
                     </div>

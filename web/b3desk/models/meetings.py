@@ -25,7 +25,7 @@ from b3desk.utils import secret_key
 
 from . import db
 from .roles import Role
-from .users import User
+from .users import User  # noqa: F401
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
@@ -182,7 +182,7 @@ class Meeting(db.Model):
         data = self.bbb.is_meeting_running()
         return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
 
-    def create_bbb(self) -> bool:
+    def create_bbb(self, user=None) -> bool:
         """Create the BBB meeting room and return the result."""
         if self.is_running():
             return False
@@ -191,7 +191,7 @@ class Meeting(db.Model):
         self.voiceBridge = (
             pin_generation() if not self.voiceBridge else self.voiceBridge
         )
-        result = self.bbb.create()
+        result = self.bbb.create(user)
         if result and result.get("returncode", "") == "SUCCESS":
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
@@ -255,7 +255,6 @@ class Meeting(db.Model):
             return url_for(
                 "join.waiting_meeting",
                 meeting_fake_id=self.fake_id,
-                creator=self.user,
                 h=self.get_hash(meeting_role),
                 fullname=fullname,
                 fullname_suffix=fullname_suffix,
@@ -275,7 +274,6 @@ class Meeting(db.Model):
         return url_for(
             "join.signin_meeting",
             meeting_fake_id=self.fake_id,
-            creator=self.user,
             h=self.get_hash(meeting_role),
             role=meeting_role,
             _external=True,
@@ -368,14 +366,13 @@ def get_deterministic_password(meeting_fake_id, role):
     return signer.sign(f"{meeting_fake_id}-{role}").decode().split(".")[-1][:16]
 
 
-def get_quick_meeting_from_user_and_fake_id(user, meeting_fake_id=None):
+def get_quick_meeting_from_fake_id(meeting_fake_id=None):
     """Create a quick meeting instance for a user with default settings."""
     if meeting_fake_id is None:
         meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
         moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
         attendeePW=get_deterministic_password(meeting_fake_id, "attendee"),
@@ -391,25 +388,21 @@ def get_quick_meeting_from_user_and_fake_id(user, meeting_fake_id=None):
     return meeting
 
 
-def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
+def get_meeting_from_meeting_id(meeting_fake_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
     if meeting_fake_id.isdigit():
         try:
             meeting = db.session.get(Meeting, meeting_fake_id)
         except:
             try:
-                user = db.session.get(User, user_id)
-                meeting = get_quick_meeting_from_user_and_fake_id(
-                    user, meeting_fake_id=meeting_fake_id
+                meeting = get_quick_meeting_from_fake_id(
+                    meeting_fake_id=meeting_fake_id
                 )
             except:
                 meeting = None
     else:
         try:
-            user = db.session.get(User, user_id)
-            meeting = get_quick_meeting_from_user_and_fake_id(
-                user, meeting_fake_id=meeting_fake_id
-            )
+            meeting = get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
         except:
             meeting = None
 

@@ -309,7 +309,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.bbb.create()
+    meeting.bbb.create(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -332,7 +332,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -408,7 +408,7 @@ def test_create_with_only_a_default_file(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create()
+    meeting.bbb.create(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -431,7 +431,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -506,7 +506,7 @@ def test_create_with_files(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create()
+    meeting.bbb.create(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -530,7 +530,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -599,7 +599,7 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    meeting.bbb.create()
+    meeting.bbb.create(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -616,13 +616,13 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
 def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
     """Test that quick meeting is created with correct default parameters."""
-    from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_fake_id
+    from b3desk.endpoints.meetings import get_quick_meeting_from_fake_id
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
     monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
-    meeting = get_quick_meeting_from_user_and_fake_id(user)
-    meeting.bbb.create()
+    meeting = get_quick_meeting_from_fake_id()
+    meeting.bbb.create(user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -642,7 +642,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
-        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
     }

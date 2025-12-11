@@ -26,7 +26,7 @@ from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_quick_meeting_from_user_and_fake_id
+from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
@@ -75,10 +75,7 @@ def quick_mail_meeting():
             "error_login",
         )
         return redirect(url_for("public.index"))
-    user = User(
-        id=email
-    )  # this user can probably be removed if we created adock function
-    meeting = get_quick_meeting_from_user_and_fake_id(user)
+    meeting = get_quick_meeting_from_fake_id()
     send_quick_meeting_mail(meeting, email)
     flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
     return redirect(url_for("public.index"))
@@ -89,8 +86,8 @@ def quick_mail_meeting():
 @auth.oidc_auth("default")
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
-    meeting = get_quick_meeting_from_user_and_fake_id(g.user)
-    created = meeting.create_bbb()
+    meeting = get_quick_meeting_from_fake_id()
+    created = meeting.create_bbb(g.user)
     return redirect(
         meeting.get_join_url(
             Role.moderator,
@@ -287,7 +284,7 @@ def end_meeting():
 @meeting_owner_needed
 def create_meeting(meeting: Meeting, owner: User):
     """Create the meeting on BBB server."""
-    meeting.create_bbb()
+    meeting.create_bbb(g.user)
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )

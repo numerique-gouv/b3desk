@@ -195,11 +195,11 @@ def test_create(meeting, mocker):
 
     assert send.call_count == 0
 
-    data = meeting.bbb.create()
+    data = meeting.bbb.create(meeting.user)
     assert data["returncode"] == "SUCCESS"
     assert send.call_count == 1
 
-    data = meeting.bbb.create()
+    data = meeting.bbb.create(meeting.user)
     assert data["returncode"] == "SUCCESS"
     assert send.call_count == 2
 
