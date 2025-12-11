@@ -303,9 +303,9 @@ class Meeting(db.Model):
             _external=True,
         )
 
-    def get_role(self, hashed_role, user_id=None) -> Role | None:
+    def get_role(self, hashed_role, user=None) -> Role | None:
         """Determine the meeting role based on hash and user ID."""
-        if user_id and self.user.id == user_id:
+        if self.user and self.user == user:
             return Role.moderator
         elif hashed_role in [
             self.get_hash(Role.attendee),

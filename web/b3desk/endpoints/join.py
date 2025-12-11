@@ -148,8 +148,8 @@ def signin_meeting(meeting_fake_id, creator: User, h, role: Role | None = None):
         )
         return redirect(url_for("public.index"))
 
-    current_user_id = get_current_user().id if has_user_session() else None
-    role = meeting.get_role(h, current_user_id)
+    current_user = get_current_user() if has_user_session() else None
+    role = meeting.get_role(h, current_user)
 
     if role == Role.authenticated:
         return redirect(
@@ -207,8 +207,8 @@ def waiting_meeting(meeting_fake_id, creator: User, h, fullname="", fullname_suf
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    current_user_id = get_current_user().id if has_user_session() else None
-    role = meeting.get_role(h, current_user_id)
+    current_user = get_current_user() if has_user_session() else None
+    role = meeting.get_role(h, current_user)
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
@@ -264,8 +264,8 @@ def join_meeting():
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    current_user_id = get_current_user().id if has_user_session() else None
-    role = meeting.get_role(h, current_user_id)
+    current_user = get_current_user() if has_user_session() else None
+    role = meeting.get_role(h, current_user)
     fullname_suffix = form["fullname_suffix"].data
     if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()
