@@ -6,7 +6,7 @@
             {% if mailto %}
                 <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.moderator) }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
             {% endif %}
-            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_url }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
         </div>
         <div class="fr-col-4">
             <span class="ri-group-line"></span>
@@ -14,7 +14,7 @@
             {% if mailto %}
                 <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.attendee) }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
             {% endif %}
-            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_url }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
         </div>
         <div class="fr-col">
             <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-fi-edit-line"></span></a>

@@ -24,6 +24,8 @@ from b3desk.forms import EndMeetingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
+from b3desk.join import get_join_url
+from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
@@ -44,14 +46,13 @@ bp = Blueprint("meetings", __name__)
 
 def meeting_mailto_params(meeting: Meeting, role: Role):
     """Generate mailto URL parameters for sharing meeting invitation links."""
-    if role == Role.moderator:
-        return render_template(
-            "meeting/mailto/mail_href.txt", meeting=meeting, role=role
-        ).replace("\n", "%0D%0A")
-    elif role == Role.attendee:
-        return render_template(
-            "meeting/mailto/mail_href.txt", meeting=meeting, role=role
-        ).replace("\n", "%0D%0A")
+    signin_url = get_signin_url(meeting, role)
+    return render_template(
+        "meeting/mailto/mail_href.txt",
+        meeting=meeting,
+        role=role,
+        signin_url=signin_url,
+    ).replace("\n", "%0D%0A")
 
 
 @bp.route("/meeting/mail", methods=["POST"])
@@ -89,7 +90,8 @@ def quick_meeting():
     meeting = get_quick_meeting_from_fake_id()
     created = meeting.create_bbb(g.user)
     return redirect(
-        meeting.get_join_url(
+        get_join_url(
+            meeting,
             Role.moderator,
             g.user.fullname,
             quick_meeting=True,

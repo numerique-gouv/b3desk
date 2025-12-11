@@ -1,5 +1,6 @@
 import datetime
 
+from b3desk.join import get_hash
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import delete_all_old_shadow_meetings
@@ -89,7 +90,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
         content = CREATE_RESPONSE
         text = ""
 
-    meeting_hash = shadow_meeting.get_hash(Role.moderator)
+    meeting_hash = get_hash(shadow_meeting, Role.moderator)
     previous_connection = shadow_meeting.last_connection_utc_datetime
 
     url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
@@ -119,7 +120,7 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
         content = CREATE_RESPONSE
         text = ""
 
-    meeting_hash = shadow_meeting.get_hash(Role.attendee)
+    meeting_hash = get_hash(shadow_meeting, Role.attendee)
 
     url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
     response = client_app.get(

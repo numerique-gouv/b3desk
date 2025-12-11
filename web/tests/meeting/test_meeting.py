@@ -7,6 +7,8 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.join import get_hash
+from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
@@ -332,7 +334,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -431,7 +433,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -530,7 +532,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -642,7 +644,7 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
-        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
     }
@@ -697,29 +699,29 @@ def test_meeting_link_retrocompatibility(meeting):
     old_hashed_moderator_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_moderator_meeting) == Role.moderator
+    assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_moderator_meeting) == Role.moderator
+    assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_attendee_meeting) == Role.attendee
+    assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_attendee_meeting) == Role.attendee
+    assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_authenticated_meeting) == Role.authenticated
+    assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
+    assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
 
 
 def test_meeting_order_default(

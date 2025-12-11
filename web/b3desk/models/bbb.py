@@ -25,6 +25,8 @@ from b3desk.tasks import background_upload
 
 from .. import BigBlueButtonUnavailable
 from .. import cache
+from ..join import get_mail_signin_url
+from ..join import get_signin_url
 from .roles import Role
 
 BBB_REQUEST_TIMEOUT = 2
@@ -194,7 +196,7 @@ class BBB:
             params["moderatorOnlyMessage"] = render_template(
                 "meeting/signin_mail_link.html",
                 main_message=self.meeting.moderatorOnlyMessage,
-                link=self.meeting.get_mail_signin_url(),
+                link=get_mail_signin_url(self.meeting),
             )
         else:
             quick_meeting_moderator_link_introduction = current_app.config[
@@ -207,9 +209,9 @@ class BBB:
                 "meeting/signin_links.html",
                 moderator_message=self.meeting.moderatorOnlyMessage,
                 moderator_link_introduction=quick_meeting_moderator_link_introduction,
-                moderator_signin_url=self.meeting.get_signin_url(Role.moderator),
+                moderator_signin_url=get_signin_url(self.meeting, Role.moderator),
                 attendee_link_introduction=quick_meeting_attendee_link_introduction,
-                attendee_signin_url=self.meeting.get_signin_url(Role.attendee),
+                attendee_signin_url=get_signin_url(self.meeting, Role.attendee),
             )
         params["guestPolicy"] = (
             "ASK_MODERATOR" if self.meeting.guestPolicy else "ALWAYS_ACCEPT"

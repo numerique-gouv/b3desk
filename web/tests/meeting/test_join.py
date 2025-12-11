@@ -2,6 +2,9 @@ import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+from b3desk.join import get_hash
+from b3desk.join import get_mail_signin_hash
+from b3desk.join import get_signin_url
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -10,8 +13,8 @@ from joserfc.jwk import RSAKey
 
 def test_meeting_signin_links_are_accessible(client_app, meeting):
     """Test that moderator and attendee signin links generated for meetings are accessible."""
-    moderator_url = meeting.get_signin_url(Role.moderator)
-    attendee_url = meeting.get_signin_url(Role.attendee)
+    moderator_url = get_signin_url(meeting, Role.moderator)
+    attendee_url = get_signin_url(meeting, Role.attendee)
 
     response = client_app.get(moderator_url, status=200)
     assert response.template == "meeting/join.html"
@@ -24,7 +27,7 @@ def test_meeting_signin_links_are_accessible(client_app, meeting):
 
 def test_signin_meeting(client_app, meeting, user, bbb_response):
     """Test that attendee can sign in to meeting."""
-    meeting_hash = meeting.get_hash(Role.attendee)
+    meeting_hash = get_hash(meeting, Role.attendee)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -48,7 +51,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
     bbb_response,
 ):
     """If the meeting owner are authenticated, they must be automatically promoted moderator in the meeting when clicking on an attendee link."""
-    meeting_hash = meeting.get_hash(Role.attendee)
+    meeting_hash = get_hash(meeting, Role.attendee)
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
 
     response = client_app.get(
@@ -62,7 +65,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
 
 def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
     """Test that authenticated attendee is redirected to join endpoint."""
-    meeting_hash = meeting.get_hash(Role.authenticated)
+    meeting_hash = get_hash(meeting, Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -78,7 +81,7 @@ def test_auth_attendee_disabled(client_app, meeting):
     https://github.com/numerique-gouv/b3desk/issues/9
     """
     client_app.app.config["OIDC_ATTENDEE_ENABLED"] = False
-    meeting_hash = meeting.get_hash(Role.authenticated)
+    meeting_hash = get_hash(meeting, Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -162,7 +165,7 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 def test_join_meeting(client_app, meeting, bbb_response):
     """Test that guest can join meeting with custom fullname."""
-    meeting_hash = meeting.get_hash(Role.attendee)
+    meeting_hash = get_hash(meeting, Role.attendee)
     response = client_app.get(f"/meeting/signin/{meeting.id}/hash/{meeting_hash}")
     response.form["fullname"] = "Bob"
     response = response.form.submit()
@@ -177,7 +180,7 @@ def test_join_meeting(client_app, meeting, bbb_response):
 def test_join_mail_meeting(client_app, meeting, bbb_response):
     """Test that user can join meeting via email link."""
     expiration = int(time.time()) + 1000
-    meeting_hash = meeting.get_mail_signin_hash(meeting.id, expiration)
+    meeting_hash = get_mail_signin_hash(meeting.id, expiration)
     response = client_app.get(
         f"/meeting/signinmail/{meeting.id}/expiration/{expiration}/hash/{meeting_hash}"
     )
@@ -220,7 +223,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
     meeting_fake_id = meeting.fake_id
-    hash_ = meeting.get_hash(Role.attendee)
+    hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
@@ -238,7 +241,7 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     """Test that empty fullname suffix is handled correctly."""
     meeting_fake_id = meeting.fake_id
-    hash_ = meeting.get_hash(Role.attendee)
+    hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(

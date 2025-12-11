@@ -14,6 +14,10 @@ from flask_babel import lazy_gettext as _
 from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
+from b3desk.join import get_hash
+from b3desk.join import get_join_url
+from b3desk.join import get_mail_signin_hash
+from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_mail_meeting
@@ -56,7 +60,7 @@ def signin_mail_meeting(meeting_fake_id, expiration, hash_):
         )
         return redirect(url_for("public.index"))
 
-    hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == hash_
+    hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
     if not hash_matches:
         flash(_("Lien invalide"), "error")
         return redirect(url_for("public.index"))
@@ -101,7 +105,7 @@ def join_mail_meeting():
         )
         return redirect(url_for("public.index"))
 
-    hash_matches = meeting.get_mail_signin_hash(meeting_fake_id, expiration) == hash_
+    hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
     if not hash_matches:
         flash(_("Lien invalide"), "error")
         return redirect(url_for("public.index"))
@@ -113,8 +117,12 @@ def join_mail_meeting():
 
     created = meeting.create_bbb(g.user)
     return redirect(
-        meeting.get_join_url(
-            Role.moderator, fullname, quick_meeting=True, waiting_room=not created
+        get_join_url(
+            meeting,
+            Role.moderator,
+            fullname,
+            quick_meeting=True,
+            waiting_room=not created,
         )
     )
 
@@ -150,7 +158,7 @@ def signin_meeting(
         )
         return redirect(url_for("public.index"))
 
-    role = meeting.get_role(hash_, g.user)
+    role = get_role(meeting, hash_, g.user)
 
     if role == Role.authenticated:
         return redirect(
@@ -226,10 +234,11 @@ def waiting_meeting(
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    role = meeting.get_role(hash_, g.user)
+    role = get_role(meeting, hash_, g.user)
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
+
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", SECONDS_BEFORE_REFRESH
     )
@@ -279,7 +288,7 @@ def join_meeting():
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    role = meeting.get_role(hash_, g.user)
+    role = get_role(meeting, hash_, g.user)
     fullname_suffix = form["fullname_suffix"].data
     if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()
@@ -294,7 +303,8 @@ def join_meeting():
         waiting_room = True
 
     return redirect(
-        meeting.get_join_url(
+        get_join_url(
+            meeting,
             role,
             fullname,
             fullname_suffix=fullname_suffix,
@@ -320,7 +330,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "join.waiting_meeting",
             meeting_fake_id=meeting_id,
-            hash_=meeting.get_hash(role),
+            hash_=get_hash(meeting, role),
             fullname=fullname,
         )
     )
@@ -338,7 +348,8 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     else:
         waiting_room = True
     return redirect(
-        meeting.get_join_url(
+        get_join_url(
+            meeting,
             role,
             owner.fullname,
             waiting_room=waiting_room,
@@ -361,7 +372,7 @@ def join_waiting_meeting_from_sip(visio_code):
         )
         abort(404)
 
-    hash_ = meeting.get_hash(role=Role.moderator)
+    hash_ = get_hash(meeting, role=Role.moderator)
     return signin_meeting(
         meeting_fake_id=str(meeting.id), hash_=hash_, role=Role.moderator
     )
@@ -391,7 +402,7 @@ def visio_code_connection():
         return redirect(url_for("public.home"))
 
     visio_code_attempt_counter_reset()
-    hash_ = meeting.get_hash(role=Role.moderator)
+    hash_ = get_hash(meeting, role=Role.moderator)
     return signin_meeting(
         meeting_fake_id=str(meeting.id), hash_=hash_, role=Role.moderator
     )
