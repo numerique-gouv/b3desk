@@ -571,7 +571,7 @@ def authenticated_attendee(client_app, user, mocker):
 @pytest.fixture
 def bbb_response(mocker):
     class Response:
-        content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
+        content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge></response>"""
         status_code = 200
         text = ""
 

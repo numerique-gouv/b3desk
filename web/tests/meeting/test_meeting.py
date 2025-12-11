@@ -362,7 +362,13 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
 
 
 def test_create_with_only_a_default_file(
-    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    jpg_file_content,
+    tmp_path,
+    mock_meeting_is_not_running,
 ):
     """Tests the BBB meeting creation request.
 
@@ -410,7 +416,7 @@ def test_create_with_only_a_default_file(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create(meeting.user)
+    meeting.create_bbb(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -461,7 +467,13 @@ def test_create_with_only_a_default_file(
 
 
 def test_create_with_files(
-    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    jpg_file_content,
+    tmp_path,
+    mock_meeting_is_not_running,
 ):
     """Tests the BBB meeting creation request.
 
@@ -508,7 +520,7 @@ def test_create_with_files(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create(meeting.user)
+    meeting.create_bbb(meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url

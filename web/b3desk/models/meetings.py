@@ -187,6 +187,9 @@ class Meeting(db.Model):
         )
         result = self.bbb.create(user)
         if result and result.get("returncode", "") == "SUCCESS":
+            if self.files:
+                self.bbb.send_meeting_files(self.files)
+
             if self.id is None:
                 self.attendeePW = result["attendeePW"]
                 self.moderatorPW = result["moderatorPW"]

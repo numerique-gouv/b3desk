@@ -33,7 +33,6 @@ from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import nextcloud_healthcheck
-from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -462,12 +461,7 @@ def file_picker_callback(meeting: Meeting):
     meeting_files = [
         create_external_meeting_file(filename, meeting.id) for filename in filenames
     ]
-    payload = meeting.bbb.meeting_files_payload(meeting_files)
-    bbb_request = meeting.bbb.bbb_request(
-        "insertDocument", params={"meetingID": meeting.bbb.meeting.meetingID}
-    )
-
-    background_upload.delay(bbb_request.url, payload)
+    meeting.bbb.send_meeting_files(meeting_files)
 
     return jsonify(status=200, msg="SUCCESS")
 

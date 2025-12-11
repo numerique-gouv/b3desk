@@ -222,30 +222,8 @@ class BBB:
             data = self.bbb_response(request)
             return data
 
-        # default file is sent right away since it is need as the background
-        # image for the meeting
-        # payload = (
-        #     self.meeting_files_payload([self.meeting.default_file])
-        #     if self.meeting.default_file
-        #     else None
-        # )
-        # TODO: xml as data is not sent anymore at BBB meeting creation to avoid delay
         request = self.bbb_request("create", "POST", params=params)
-        data = self.bbb_response(request)
-        # non default files are sent later
-        if (
-            self.meeting.files
-            and "returncode" in data
-            and data["returncode"] == "SUCCESS"
-        ):
-            payload = self.meeting_files_payload(self.meeting.files)
-            # TODO: send all files and not only the non default ones
-            request = self.bbb_request(
-                "insertDocument", params={"meetingID": self.meeting.meetingID}
-            )
-            background_upload.delay(request.url, payload)
-
-        return data
+        return self.bbb_response(request)
 
     def delete_recordings(self, recording_ids):
         """Delete recordings.
@@ -379,7 +357,7 @@ class BBB:
         request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
         return self.bbb_response(request)
 
-    def meeting_files_payload(self, meeting_files):
+    def send_meeting_files(self, meeting_files):
         """Generate XML for adding files to a BBB meeting."""
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
@@ -411,4 +389,9 @@ class BBB:
                     xml_mid += (
                         f"<document url='{url}' filename='{meeting_file.title}' />"
                     )
-        return xml_beg + xml_mid + xml_end
+        payload = xml_beg + xml_mid + xml_end
+
+        request = self.bbb_request(
+            "insertDocument", params={"meetingID": self.meeting.meetingID}
+        )
+        background_upload.delay(request.url, payload)
