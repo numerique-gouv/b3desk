@@ -391,9 +391,8 @@ class BBB:
             else:  # file is not URL nor NC hence it was uploaded
                 filehash = get_meeting_file_hash(meeting_file.id, isexternal)
                 current_app.logger.info(
-                    "Add document on BigBlueButton room %s %s creation for file %s",
-                    self.meeting.name,
-                    self.meeting.id,
+                    "Add document on BigBlueButton room %s creation for file %s",
+                    self.meeting.meetingID,
                     meeting_file.title,
                 )
                 url = url_for(
