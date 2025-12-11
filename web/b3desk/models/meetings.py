@@ -16,6 +16,7 @@ from datetime import timedelta
 from flask import current_app
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from itsdangerous import Signer
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -361,6 +362,12 @@ def delete_old_voiceBridges():
     ).delete()
 
 
+def get_deterministic_password(meeting_fake_id, role):
+    """Generate a deterministic password based on meeting ID and role."""
+    signer = Signer(current_app.config["SECRET_KEY"])
+    return signer.sign(f"{meeting_fake_id}-{role}").decode().split(".")[-1][:16]
+
+
 def get_quick_meeting_from_user_and_fake_id(user, meeting_fake_id=None):
     """Create a quick meeting instance for a user with default settings."""
     if meeting_fake_id is None:
@@ -370,8 +377,8 @@ def get_quick_meeting_from_user_and_fake_id(user, meeting_fake_id=None):
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         user=user,
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{user.hash}-{meeting_fake_id}",
-        attendeePW=f"{meeting_fake_id}-{meeting_fake_id}",
+        moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
+        attendeePW=get_deterministic_password(meeting_fake_id, "attendee"),
         moderatorOnlyMessage=current_app.config[
             "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
         ],
@@ -418,7 +425,7 @@ def get_mail_meeting(meeting_fake_id=None):
     meeting = Meeting(
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{meeting_fake_id}-{meeting_fake_id}",  # it is only usefull for bbb
+        moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
         moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
         logoutUrl=(
             current_app.config["QUICK_MEETING_LOGOUT_URL"]
