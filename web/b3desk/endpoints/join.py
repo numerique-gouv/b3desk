@@ -48,19 +48,6 @@ MAXIMUM_REFRESH_TIME = 60
 )
 def signin_mail_meeting(meeting_fake_id, expiration, hash_):
     """Display the join form for quick meetings accessed via email link."""
-    meeting = get_mail_meeting(meeting_fake_id)
-    wordings = current_app.config["WORDINGS"]
-
-    if meeting is None:
-        flash(
-            _(
-                "Aucune %(meeting_label)s ne correspond à ces paramètres",
-                meeting_label=wordings["meeting_label"],
-            ),
-            "success",
-        )
-        return redirect(url_for("public.index"))
-
     hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
     if not hash_matches:
         flash(_("Lien invalide"), "error")
@@ -93,19 +80,6 @@ def join_mail_meeting():
     expiration = form["expiration"].data
     hash_ = form["hash_"].data
 
-    meeting = get_mail_meeting(meeting_fake_id)
-    if meeting is None:
-        flash(
-            _(
-                "%(meeting_label)s inexistante",
-                meeting_label=current_app.config["WORDINGS"][
-                    "meeting_label"
-                ].capitalize(),
-            ),
-            "error",
-        )
-        return redirect(url_for("public.index"))
-
     hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
     if not hash_matches:
         flash(_("Lien invalide"), "error")
@@ -116,6 +90,7 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
+    meeting = get_mail_meeting(meeting_fake_id)
     created = create_bbb_room(meeting, g.user)
     return redirect(
         get_join_url(
