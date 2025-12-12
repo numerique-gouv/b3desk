@@ -142,7 +142,8 @@ def toggledownload(meeting: Meeting, owner: User):
         abort(404)
 
     meeting_file.is_downloadable = data["value"]
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     return jsonify(status=200, id=data["id"])
 
@@ -158,13 +159,12 @@ def set_meeting_default_file(meeting: Meeting, owner: User):
     actual_default_file = meeting.default_file
     if actual_default_file:
         actual_default_file.is_default = False
+        db.session.add(actual_default_file)
 
     meeting_file = MeetingFiles.query.get(data["id"])
     meeting_file.is_default = True
-
-    if actual_default_file:
-        actual_default_file.save()
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     return jsonify(status=200, id=data["id"])
 
@@ -217,7 +217,8 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         # test for is_default-file absence at the latest time possible
         meeting = db.session.get(Meeting, meeting_id)
         meeting_file.is_default = len(meeting.files) == 0 and not meeting.default_file
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
 
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
         remove_dropzone_file(dropzone_path)
@@ -273,7 +274,8 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     requests.get(url)
 
     try:
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
         return jsonify(
             status=200,
             isfrom="url",
@@ -324,7 +326,8 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     )
 
     try:
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
@@ -422,7 +425,7 @@ def delete_meeting_file():
         if len(cur_meeting.files) > 0:
             cur_meeting.files[0].is_default = True
             new_default_id = cur_meeting.files[0].id
-            cur_meeting.save()
+            db.session.commit()
 
     return jsonify(
         status=200,

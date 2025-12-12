@@ -5,6 +5,7 @@ from datetime import timedelta
 from flask import current_app
 from flask import url_for
 
+from b3desk.models import db
 from b3desk.models.roles import Role
 from b3desk.utils import secret_key
 
@@ -66,7 +67,8 @@ def get_join_url(
 
     if meeting.id:
         meeting.last_connection_utc_datetime = datetime.now()
-        meeting.save()
+        db.session.add(meeting)
+        db.session.commit()
 
     nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
     return meeting.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url

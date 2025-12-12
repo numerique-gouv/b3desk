@@ -228,7 +228,8 @@ def save_meeting():
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
     if is_new_meeting:
         current_app.logger.info(
             "Meeting %s %s was created by %s",
@@ -295,7 +296,8 @@ def create_meeting(meeting: Meeting, owner: User):
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
     return redirect(url_for("public.welcome"))
 
 
@@ -385,7 +387,6 @@ def meeting_favorite():
 
     meeting.is_favorite = not meeting.is_favorite
     db.session.commit()
-    meeting.save()
 
     return redirect(url_for("public.welcome", **request.args))
 

@@ -358,7 +358,8 @@ def meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -379,7 +380,8 @@ def meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -398,7 +400,8 @@ def meeting_3(client_app, user):
         voiceBridge="111111113",
         visio_code="911111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -417,7 +420,8 @@ def shadow_meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -436,7 +440,8 @@ def shadow_meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -455,7 +460,8 @@ def shadow_meeting_3(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -470,7 +476,8 @@ def user(client_app, iam_user):
         family_name=iam_user.family_name,
         preferred_username=iam_user.preferred_username,
     )
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     yield user
 
@@ -484,7 +491,8 @@ def user_2(client_app, iam_user_2):
         given_name=iam_user_2.given_name,
         family_name=iam_user_2.family_name,
     )
-    user_2.save()
+    db.session.add(user_2)
+    db.session.commit()
 
     yield user_2
 
@@ -494,7 +502,8 @@ def previous_voiceBridge(client_app):
     from b3desk.models.meetings import PreviousVoiceBridge
 
     previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
+    db.session.commit()
 
     yield previous_voiceBridge
 

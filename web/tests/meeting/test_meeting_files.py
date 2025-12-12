@@ -3,6 +3,7 @@ import os
 from datetime import date
 
 import pytest
+from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from flask import url_for
@@ -172,11 +173,13 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
         created_at=date.today(),
         meeting_id=meeting.id,
     )
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     meeting.user.nc_locator = "alice"
     meeting.user.nc_token = "nctoken"
-    meeting.user.save()
+    db.session.add(meeting.user)
+    db.session.commit()
 
     mocker.patch(
         "b3desk.nextcloud.webdavClient",

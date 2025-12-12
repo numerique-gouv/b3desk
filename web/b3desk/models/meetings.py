@@ -66,15 +66,6 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
             else f"{self.title[:30]}...{self.title[-30:]}"
         )
 
-    def update(self):
-        """Commit changes to the database."""
-        db.session.commit()
-
-    def save(self):
-        """Save the meeting file to the database."""
-        db.session.add(self)
-        db.session.commit()
-
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -275,21 +266,11 @@ class Meeting(db.Model):
 
         return True
 
-    def save(self):
-        """Save the meeting to the database."""
-        db.session.add(self)
-        db.session.commit()
-
 
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-
-    def save(self):
-        """Save the archived voice bridge to the database."""
-        db.session.add(self)
-        db.session.commit()
 
 
 def get_all_previous_voiceBridges():
@@ -449,7 +430,8 @@ def create_and_save_shadow_meeting(user):
         voiceBridge=pin_generation(),
         visio_code=unique_visio_code_generation(),
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
     return meeting
 
 
@@ -478,7 +460,7 @@ def save_voiceBridge_and_delete_meeting(meeting):
     """Archive a meeting's voice bridge and delete the meeting from the database."""
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
 
