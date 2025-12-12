@@ -186,28 +186,29 @@ class Meeting(db.Model):
             pin_generation() if not self.voiceBridge else self.voiceBridge
         )
         result = self.bbb.create(user)
-        if self.bbb.success(result):
-            if self.files:
-                self.bbb.send_meeting_files(self.files)
-
-            if self.id is None:
-                self.attendeePW = result["attendeePW"]
-                self.moderatorPW = result["moderatorPW"]
-            if (
-                current_app.config["ENABLE_PIN_MANAGEMENT"]
-                and self.voiceBridge != result["voiceBridge"]
-            ):
-                current_app.logger.error(
-                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
-                    self.voiceBridge,
-                    result["voiceBridge"],
-                )
-        else:
+        if not self.bbb.success(result):
             current_app.logger.warning(
                 "BBB room has not been properly created: %s", result
             )
+            return False
 
-        return self.bbb.success(result)
+        if self.files:
+            self.bbb.send_meeting_files(self.files)
+
+        if self.id is None:
+            self.attendeePW = result["attendeePW"]
+            self.moderatorPW = result["moderatorPW"]
+        if (
+            current_app.config["ENABLE_PIN_MANAGEMENT"]
+            and self.voiceBridge != result["voiceBridge"]
+        ):
+            current_app.logger.error(
+                "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
+                self.voiceBridge,
+                result["voiceBridge"],
+            )
+
+        return True
 
     def save(self):
         """Save the meeting to the database."""
