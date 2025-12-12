@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-11 18:04+0100\n"
+"POT-Creation-Date: 2025-12-12 14:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:150 web/b3desk/models/meetings.py:394
+#: web/b3desk/forms.py:150 web/b3desk/models/meetings.py:294
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -296,160 +296,155 @@ msgid ""
 " ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:56 web/b3desk/endpoints/join.py:154
+#: web/b3desk/endpoints/join.py:53 web/b3desk/endpoints/join.py:75
+#: web/b3desk/endpoints/join.py:85 web/b3desk/endpoints/join.py:243
+msgid "Lien invalide"
+msgstr ""
+
+#: web/b3desk/endpoints/join.py:58 web/b3desk/endpoints/join.py:90
+msgid "Lien expiré"
+msgstr ""
+
+#: web/b3desk/endpoints/join.py:130
 #, python-format
 msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:65 web/b3desk/endpoints/join.py:87
-#: web/b3desk/endpoints/join.py:110 web/b3desk/endpoints/join.py:267
-msgid "Lien invalide"
-msgstr ""
-
-#: web/b3desk/endpoints/join.py:70 web/b3desk/endpoints/join.py:115
-msgid "Lien expiré"
-msgstr ""
-
-#: web/b3desk/endpoints/join.py:99
-#, python-format
-msgid "%(meeting_label)s inexistante"
-msgstr ""
-
-#: web/b3desk/endpoints/join.py:168 web/b3desk/endpoints/join.py:234
-#: web/b3desk/endpoints/join.py:239 web/b3desk/endpoints/join.py:288
-#: web/b3desk/endpoints/join.py:296
+#: web/b3desk/endpoints/join.py:144 web/b3desk/endpoints/join.py:210
+#: web/b3desk/endpoints/join.py:215 web/b3desk/endpoints/join.py:264
+#: web/b3desk/endpoints/join.py:272
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:395
+#: web/b3desk/endpoints/join.py:371
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:400
+#: web/b3desk/endpoints/join.py:376
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:53
+#: web/b3desk/endpoints/meeting_files.py:54
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:129
+#: web/b3desk/endpoints/meeting_files.py:130
 msgid "Le fichier ne semble pas accessible"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:189
-#: web/b3desk/endpoints/meeting_files.py:261
+#: web/b3desk/endpoints/meeting_files.py:190
+#: web/b3desk/endpoints/meeting_files.py:263
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:213
+#: web/b3desk/endpoints/meeting_files.py:214
 msgid "La connexion avec Nextcloud est rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:238
-#: web/b3desk/endpoints/meeting_files.py:291
-#: web/b3desk/endpoints/meeting_files.py:331
-#: web/b3desk/endpoints/meeting_files.py:376
+#: web/b3desk/endpoints/meeting_files.py:240
+#: web/b3desk/endpoints/meeting_files.py:294
+#: web/b3desk/endpoints/meeting_files.py:335
+#: web/b3desk/endpoints/meeting_files.py:380
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:253
+#: web/b3desk/endpoints/meeting_files.py:255
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:306
-#: web/b3desk/endpoints/meeting_files.py:502
+#: web/b3desk/endpoints/meeting_files.py:309
+#: web/b3desk/endpoints/meeting_files.py:506
 msgid "La connexion avec Nextcloud semble rompue"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:313
+#: web/b3desk/endpoints/meeting_files.py:316
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:385
+#: web/b3desk/endpoints/meeting_files.py:389
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:414
-#: web/b3desk/endpoints/meetings.py:333
+#: web/b3desk/endpoints/meeting_files.py:418
+#: web/b3desk/endpoints/meetings.py:339
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:431
+#: web/b3desk/endpoints/meeting_files.py:435
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:447
+#: web/b3desk/endpoints/meeting_files.py:451
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:66
+#: web/b3desk/endpoints/meetings.py:68
 msgid ""
 "Courriel invalide. Avez vous bien tapé votre email ? Vous pouvez "
 "réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:74
+#: web/b3desk/endpoints/meetings.py:76
 msgid ""
 "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez "
 "à un service de l'État mais votre courriel n'est pas reconnu par "
 "Webinaire, contactez-nous pour que nous le rajoutions !"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:81
+#: web/b3desk/endpoints/meetings.py:83
 msgid "Vous avez reçu un courriel pour vous connecter"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:131
+#: web/b3desk/endpoints/meetings.py:134
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:136
+#: web/b3desk/endpoints/meetings.py:138
 #, python-brace-format
 msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:149 web/b3desk/endpoints/meetings.py:194
+#: web/b3desk/endpoints/meetings.py:154 web/b3desk/endpoints/meetings.py:199
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:198
+#: web/b3desk/endpoints/meetings.py:203
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:244
+#: web/b3desk/endpoints/meetings.py:250
 #, python-brace-format
 msgid "{meeting_name} modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:279
+#: web/b3desk/endpoints/meetings.py:286
 msgid "Vous ne pouvez pas terminer cette réunion"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:316
+#: web/b3desk/endpoints/meetings.py:322
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:325
+#: web/b3desk/endpoints/meetings.py:331
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:349
+#: web/b3desk/endpoints/meetings.py:354
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:361
+#: web/b3desk/endpoints/meetings.py:365
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:369
+#: web/b3desk/endpoints/meetings.py:373
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
