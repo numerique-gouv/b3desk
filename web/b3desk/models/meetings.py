@@ -215,22 +215,10 @@ def get_quick_meeting_from_fake_id(meeting_fake_id=None):
 def get_meeting_from_meeting_id(meeting_fake_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
     if meeting_fake_id.isdigit():
-        try:
-            meeting = db.session.get(Meeting, meeting_fake_id)
-        except:
-            try:
-                meeting = get_quick_meeting_from_fake_id(
-                    meeting_fake_id=meeting_fake_id
-                )
-            except:
-                meeting = None
-    else:
-        try:
-            meeting = get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
-        except:
-            meeting = None
-
-    return meeting
+        meeting = db.session.get(Meeting, meeting_fake_id)
+        if meeting:
+            return meeting
+    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
 
 
 def get_mail_meeting(meeting_fake_id=None):
