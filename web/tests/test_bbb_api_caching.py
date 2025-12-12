@@ -19,6 +19,7 @@ IS_MEETING_RUNNING_SUCCESS_RESPONSE = """
 
 def test_is_running(meeting, mocker):
     """Tests that the requests to the ismeetingrunning endpoint of the BBB API are cached."""
+    from b3desk.models.bbb import BBB
 
     class Response:
         content = IS_MEETING_RUNNING_SUCCESS_RESPONSE
@@ -28,10 +29,11 @@ def test_is_running(meeting, mocker):
 
     assert send.call_count == 0
 
-    assert meeting.bbb.is_running()
+    bbb = BBB(meeting.meetingID)
+    assert bbb.is_running()
     assert send.call_count == 1
 
-    assert meeting.bbb.is_running()
+    assert bbb.is_running()
     assert send.call_count == 1
 
 
@@ -140,6 +142,7 @@ GET_RECORDINGS_RESPONSE = """
 
 def test_get_recordings(meeting, mocker):
     """Tests that the requests to the getrecordings endpoint of the BBB API are cached."""
+    from b3desk.models.bbb import BBB
 
     class Response:
         content = GET_RECORDINGS_RESPONSE
@@ -153,11 +156,12 @@ def test_get_recordings(meeting, mocker):
 
     assert send.call_count == 0
 
-    recordings = meeting.bbb.get_recordings()
+    bbb = BBB(meeting.meetingID)
+    recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
 
-    recordings = meeting.bbb.get_recordings()
+    recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
 

@@ -121,12 +121,13 @@ def bbb_getRecordings_response(mocker):
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     """Test that recordings are retrieved and parsed correctly from BBB."""
+    from b3desk.models.bbb import BBB
 
     class DirectLinkRecording:
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = meeting.bbb.get_recordings()
+    recordings = BBB(meeting.meetingID).get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
@@ -184,11 +185,13 @@ def test_update_recording_name(client_app, authenticated_user, meeting, bbb_resp
 def test_delete_recordings(
     mocker, client_app, authenticated_user, meeting, bbb_getRecordings_response, caplog
 ):
+    from b3desk.models.bbb import BBB
+
     class DirectLinkRecording:
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = meeting.bbb.get_recordings()
+    recordings = BBB(meeting.meetingID).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -216,6 +219,7 @@ def test_open_recordings_page(
     bbb_getRecordings_response,
 ):
     """Test that recordings are retrieved and parsed correctly from BBB."""
+    from b3desk.models.bbb import BBB
 
     class DirectLinkRecording:
         status_code = 200
@@ -232,4 +236,4 @@ def test_open_recordings_page(
         )
         == 2
     )
-    assert len(meeting.bbb.get_recordings()) == 2
+    assert len(BBB(meeting.meetingID).get_recordings()) == 2

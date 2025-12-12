@@ -26,6 +26,7 @@ from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
+from b3desk.models.bbb import BBB
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -445,7 +446,7 @@ def file_picker(meeting: Meeting, owner: User):
     This endpoint is used by BBB during the meetings.
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
-    if meeting.bbb.is_running():
+    if BBB(meeting.meetingID).is_running():
         return render_template("meeting/file_picker.html", meeting=meeting)
     flash(_("La réunion n'est pas en cours"), "error")
     return redirect(url_for("public.welcome"))
@@ -464,7 +465,7 @@ def file_picker_callback(meeting: Meeting):
     meeting_files = [
         create_external_meeting_file(filename, meeting.id) for filename in filenames
     ]
-    meeting.bbb.send_meeting_files(meeting_files, meeting=meeting)
+    BBB(meeting.meetingID).send_meeting_files(meeting_files, meeting=meeting)
 
     return jsonify(status=200, msg="SUCCESS")
 

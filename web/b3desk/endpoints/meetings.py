@@ -127,7 +127,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     if not form.validate():
         abort(403)
 
-    result = meeting.bbb.update_recordings(
+    result = BBB(meeting.meetingID).update_recordings(
         recording_ids=[recording_id], metadata={"name": form.data["name"]}
     )
     if BBB.success(result):
@@ -253,7 +253,7 @@ def save_meeting():
         "success",
     )
 
-    if meeting.bbb.is_running():
+    if BBB(meeting.meetingID).is_running():
         return render_template(
             "meeting/end.html",
             meeting=meeting,
@@ -276,7 +276,7 @@ def end_meeting():
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
     if g.user == meeting.user:
-        data = meeting.bbb.end()
+        data = BBB(meeting.meetingID).end()
         if BBB.success(data):
             flash(
                 f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
@@ -315,7 +315,7 @@ def delete_meeting():
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
 
-            data = meeting.bbb.delete_all_recordings()
+            data = BBB(meeting.meetingID).delete_all_recordings()
             if data and not BBB.success(data):
                 flash(
                     _(
@@ -349,7 +349,7 @@ def delete_video_meeting():
     meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == g.user.id:
         recordID = request.form["recordID"]
-        data = meeting.bbb.delete_recordings(recordID)
+        data = BBB(meeting.meetingID).delete_recordings(recordID)
         if BBB.success(data):
             flash(_("Vidéo supprimée"), "success")
             current_app.logger.info(

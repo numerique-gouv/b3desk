@@ -54,7 +54,9 @@ def get_join_url(
     waiting_room=True,
 ):
     """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
-    if waiting_room and not meeting.bbb.is_running():
+    from b3desk.models.bbb import BBB
+
+    if waiting_room and not BBB(meeting.meetingID).is_running():
         return url_for(
             "join.waiting_meeting",
             meeting_fake_id=meeting.fake_id,
@@ -71,7 +73,9 @@ def get_join_url(
         db.session.commit()
 
     nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
-    return meeting.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
+    return (
+        BBB(meeting.meetingID).prepare_request_to_join_bbb(meeting_role, nickname).url
+    )
 
 
 def get_signin_url(meeting, meeting_role: Role):
