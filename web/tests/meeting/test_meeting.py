@@ -287,6 +287,8 @@ def test_create_no_file(
     As there is no file attached to the meeting, no background upload
     task should be called.
     """
+    from b3desk.models.bbb import create_bbb_room
+
     client_app.app.config["FILE_SHARING"] = True
 
     mocked_background_upload = mocker.patch(
@@ -313,7 +315,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.create_bbb(meeting.user)
+    create_bbb_room(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -378,6 +380,8 @@ def test_create_with_only_a_default_file(
     to the meeting, should always be sent asynchronously, background
     upload task should be called.
     """
+    from b3desk.models.bbb import create_bbb_room
+
     client_app.app.config["FILE_SHARING"] = True
 
     file_path = os.path.join(tmp_path, "foobar.jpg")
@@ -418,7 +422,7 @@ def test_create_with_only_a_default_file(
     )
     meeting.files = [meeting_file]
 
-    meeting.create_bbb(meeting.user)
+    create_bbb_room(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -482,6 +486,8 @@ def test_create_with_files(
     As there is a non default file attached to the meeting, the
     background upload task should be called.
     """
+    from b3desk.models.bbb import create_bbb_room
+
     client_app.app.config["FILE_SHARING"] = True
 
     file_path = os.path.join(tmp_path, "foobar.jpg")
@@ -522,7 +528,7 @@ def test_create_with_files(
     )
     meeting.files = [meeting_file]
 
-    meeting.create_bbb(meeting.user)
+    create_bbb_room(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -610,6 +616,8 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     mock_meeting_is_not_running,
 ):
     """Test that empty logout URL gets replaced with default."""
+    from b3desk.models.bbb import create_bbb_room
+
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
@@ -620,7 +628,7 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    meeting.create_bbb(meeting.user)
+    create_bbb_room(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -640,6 +648,7 @@ def test_create_quick_meeting(
 ):
     """Test that quick meeting is created with correct default parameters."""
     from b3desk.endpoints.meetings import get_quick_meeting_from_fake_id
+    from b3desk.models.bbb import create_bbb_room
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
@@ -650,7 +659,7 @@ def test_create_quick_meeting(
     expected_moderator_pw = meeting.moderatorPW
     expected_moderator_hash = get_hash(meeting, Role.moderator)
     expected_attendee_hash = get_hash(meeting, Role.attendee)
-    meeting.create_bbb(user)
+    create_bbb_room(meeting, user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url

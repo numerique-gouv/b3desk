@@ -185,6 +185,7 @@ CREATE_RESPONSE = """
 
 def test_create(meeting, mocker):
     """Tests that the requests to the create endpoint of the BBB API are NOT cached."""
+    from b3desk.models.bbb import create_bbb_room
 
     class Response:
         content = CREATE_RESPONSE
@@ -196,11 +197,11 @@ def test_create(meeting, mocker):
 
     assert send.call_count == 0
 
-    created = meeting.create_bbb(meeting.user)
+    created = create_bbb_room(meeting, meeting.user)
     assert created
     assert send.call_count == 1
 
-    created = meeting.create_bbb(meeting.user)
+    created = create_bbb_room(meeting, meeting.user)
     assert created
     assert send.call_count == 2
 

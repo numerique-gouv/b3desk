@@ -400,3 +400,108 @@ class BBB:
             "insertDocument", params={"meetingID": self.meeting_id}
         )
         background_upload.delay(request.url, payload)
+
+
+def create_bbb_room(meeting, user=None) -> bool:
+    """Create a BBB room for the given meeting."""
+    from flask import render_template
+
+    from b3desk.join import get_mail_signin_url
+    from b3desk.join import get_signin_url
+
+    from .meetings import pin_generation
+
+    bbb = BBB(meeting.meetingID)
+    if bbb.is_running():
+        return False
+
+    current_app.logger.info("Request BBB room creation %s %s", meeting.name, meeting.id)
+    meeting.voiceBridge = (
+        pin_generation() if not meeting.voiceBridge else meeting.voiceBridge
+    )
+
+    presentation_upload_external_url = None
+    presentation_upload_external_description = None
+    if meeting.id:
+        presentation_upload_external_url = url_for(
+            "meeting_files.file_picker", meeting=meeting, _external=True
+        )
+        presentation_upload_external_description = current_app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
+        ]
+
+    if meeting.attendeePW is None:
+        moderator_only_message = render_template(
+            "meeting/signin_mail_link.html",
+            main_message=meeting.moderatorOnlyMessage,
+            link=get_mail_signin_url(meeting),
+        )
+    else:
+        moderator_only_message = render_template(
+            "meeting/signin_links.html",
+            moderator_message=meeting.moderatorOnlyMessage,
+            moderator_link_introduction=current_app.config[
+                "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
+            ],
+            moderator_signin_url=get_signin_url(meeting, Role.moderator),
+            attendee_link_introduction=current_app.config[
+                "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
+            ],
+            attendee_signin_url=get_signin_url(meeting, Role.attendee),
+        )
+
+    meta_academy = user.mail_domain if user and user.mail_domain else None
+
+    result = bbb.create(
+        name=meeting.name,
+        record=meeting.record,
+        auto_start_recording=meeting.autoStartRecording,
+        allow_start_stop_recording=meeting.allowStartStopRecording,
+        webcams_only_for_moderator=meeting.webcamsOnlyForModerator,
+        mute_on_start=meeting.muteOnStart,
+        lock_settings_disable_cam=meeting.lockSettingsDisableCam,
+        lock_settings_disable_mic=meeting.lockSettingsDisableMic,
+        allow_mods_to_unmute_users=meeting.allowModsToUnmuteUsers,
+        lock_settings_disable_private_chat=meeting.lockSettingsDisablePrivateChat,
+        lock_settings_disable_public_chat=meeting.lockSettingsDisablePublicChat,
+        lock_settings_disable_note=meeting.lockSettingsDisableNote,
+        attendee_pw=meeting.attendeePW,
+        moderator_pw=meeting.moderatorPW,
+        welcome=meeting.welcome,
+        max_participants=meeting.maxParticipants,
+        logout_url=meeting.logoutUrl
+        or current_app.config.get("MEETING_LOGOUT_URL", ""),
+        duration=meeting.duration,
+        voice_bridge=meeting.voiceBridge
+        if current_app.config["ENABLE_PIN_MANAGEMENT"]
+        else None,
+        guest_policy=meeting.guestPolicy,
+        presentation_upload_external_url=presentation_upload_external_url,
+        presentation_upload_external_description=presentation_upload_external_description,
+        moderator_only_message=moderator_only_message,
+        meta_academy=meta_academy,
+        analytics_callback_url=current_app.config[
+            "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
+        ],
+    )
+    if not BBB.success(result):
+        current_app.logger.warning("BBB room has not been properly created: %s", result)
+        return False
+
+    if meeting.files:
+        bbb.send_meeting_files(meeting.files, meeting=meeting)
+
+    if meeting.id is None:
+        meeting.attendeePW = result["attendeePW"]
+        meeting.moderatorPW = result["moderatorPW"]
+    if (
+        current_app.config["ENABLE_PIN_MANAGEMENT"]
+        and meeting.voiceBridge != result["voiceBridge"]
+    ):
+        current_app.logger.error(
+            "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
+            meeting.voiceBridge,
+            result["voiceBridge"],
+        )
+
+    return True

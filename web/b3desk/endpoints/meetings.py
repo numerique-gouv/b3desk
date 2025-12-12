@@ -28,6 +28,7 @@ from b3desk.join import get_join_url
 from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.bbb import BBB
+from b3desk.models.bbb import create_bbb_room
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
@@ -89,7 +90,7 @@ def quick_mail_meeting():
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     meeting = get_quick_meeting_from_fake_id()
-    created = meeting.create_bbb(g.user)
+    created = create_bbb_room(meeting, g.user)
     return redirect(
         get_join_url(
             meeting,
@@ -292,7 +293,7 @@ def end_meeting():
 @meeting_owner_needed
 def create_meeting(meeting: Meeting, owner: User):
     """Create the meeting on BBB server."""
-    meeting.create_bbb(g.user)
+    create_bbb_room(meeting, g.user)
     meeting.visio_code = (
         meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
     )
