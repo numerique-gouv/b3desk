@@ -14,14 +14,14 @@ from flask_babel import lazy_gettext as _
 from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
+from b3desk.join import create_bbb_meeting
+from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_hash
 from b3desk.join import get_join_url
 from b3desk.join import get_mail_signin_hash
 from b3desk.join import get_role
 from b3desk.models import db
-from b3desk.models.bbb import create_bbb_room
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_mail_meeting
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id
 from b3desk.models.roles import Role
@@ -90,8 +90,9 @@ def join_mail_meeting():
         flash(_("Lien expiré"), "error")
         return redirect(url_for("public.index"))
 
-    meeting = get_mail_meeting(meeting_fake_id)
-    created = create_bbb_room(meeting, g.user)
+    meeting = Meeting()
+    meeting.fake_id = meeting_fake_id
+    created = create_bbb_quick_meeting(meeting_fake_id, g.user, is_mail_meeting=True)
     return redirect(
         get_join_url(
             meeting,
@@ -273,7 +274,10 @@ def join_meeting():
         return redirect(url_for("public.index"))
 
     if role == Role.moderator:
-        created = create_bbb_room(meeting, g.user)
+        if meeting.id is None:
+            created = create_bbb_quick_meeting(meeting.fake_id, g.user)
+        else:
+            created = create_bbb_meeting(meeting, g.user)
         waiting_room = not created
     else:
         waiting_room = True
@@ -319,7 +323,7 @@ def join_meeting_as_authenticated(meeting_id):
 def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
     """Join a meeting as the owner with a specific role."""
     if role == Role.moderator:
-        created = create_bbb_room(meeting, g.user)
+        created = create_bbb_meeting(meeting, g.user)
         waiting_room = not created
     else:
         waiting_room = True

@@ -14,7 +14,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import current_app
-from flask import url_for
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
 from sqlalchemy_utils import StringEncryptedType
@@ -191,22 +190,12 @@ def get_deterministic_password(meeting_fake_id, role):
 
 
 def get_quick_meeting_from_fake_id(meeting_fake_id=None):
-    """Create a quick meeting instance for a user with default settings."""
+    """Create a quick meeting instance for URL generation."""
     if meeting_fake_id is None:
         meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
-        attendeePW=get_deterministic_password(meeting_fake_id, "attendee"),
-        moderatorOnlyMessage=current_app.config[
-            "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-        ],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
+        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
     )
     meeting.fake_id = meeting_fake_id
     return meeting
@@ -217,26 +206,6 @@ def get_meeting_from_meeting_id(meeting_fake_id):
     if meeting_fake_id.isdigit():
         return db.session.get(Meeting, meeting_fake_id)
     return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
-
-
-def get_mail_meeting(meeting_fake_id=None):
-    """Create a mail-based meeting instance without a user account."""
-    # only used for mail meeting
-    if meeting_fake_id is None:
-        meeting_fake_id = get_random_alphanumeric_string(8)
-
-    meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
-        moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
-    )
-    meeting.fake_id = meeting_fake_id
-    return meeting
 
 
 def pin_generation(forbidden_pins=None, clean_db=True):
