@@ -17,7 +17,7 @@ IS_MEETING_RUNNING_SUCCESS_RESPONSE = """
 """
 
 
-def test_is_meeting_running(meeting, mocker):
+def test_is_running(meeting, mocker):
     """Tests that the requests to the ismeetingrunning endpoint of the BBB API are cached."""
 
     class Response:
@@ -28,10 +28,10 @@ def test_is_meeting_running(meeting, mocker):
 
     assert send.call_count == 0
 
-    assert meeting.bbb.is_meeting_running()
+    assert meeting.bbb.is_running()
     assert send.call_count == 1
 
-    assert meeting.bbb.is_meeting_running()
+    assert meeting.bbb.is_running()
     assert send.call_count == 1
 
 
@@ -192,15 +192,16 @@ def test_create(meeting, mocker):
 
     send = mocker.patch("requests.Session.send", return_value=Response)
     mocker.patch("requests.post")
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     assert send.call_count == 0
 
-    data = meeting.bbb.create(meeting.user)
-    assert data["returncode"] == "SUCCESS"
+    created = meeting.create_bbb(meeting.user)
+    assert created
     assert send.call_count == 1
 
-    data = meeting.bbb.create(meeting.user)
-    assert data["returncode"] == "SUCCESS"
+    created = meeting.create_bbb(meeting.user)
+    assert created
     assert send.call_count == 2
 
 
@@ -218,7 +219,7 @@ def test_timeout_bbb_get_recordings_request(
     mocker.patch(
         "requests.Session.send", side_effect=requests.Timeout("timeout message")
     )
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
     client_app.get("/meeting/recordings/1")
     assert "BBB API timeout error timeout message" in caplog.text

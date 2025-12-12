@@ -221,7 +221,7 @@ def test_open_recordings_page(
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
     print(response.body)
@@ -232,4 +232,4 @@ def test_open_recordings_page(
         )
         == 2
     )
-    assert len(meeting.get_recordings()) == 2
+    assert len(meeting.bbb.get_recordings()) == 2

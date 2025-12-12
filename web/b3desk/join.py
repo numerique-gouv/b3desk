@@ -53,7 +53,7 @@ def get_join_url(
     waiting_room=True,
 ):
     """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
-    if waiting_room and not meeting.is_running():
+    if waiting_room and not meeting.bbb.is_running():
         return url_for(
             "join.waiting_meeting",
             meeting_fake_id=meeting.fake_id,

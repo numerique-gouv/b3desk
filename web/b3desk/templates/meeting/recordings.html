@@ -9,7 +9,7 @@
         <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
     </div>
     <div class="recording-list">
-        {% if meeting.is_running() %}
+        {% if meeting.bbb.is_running() %}
             <p>
                 {% trans this_meeting=this_meeting.capitalize %}{{ this_meeting }} est toujours en cours{% endtrans %}.
                 {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
@@ -18,7 +18,7 @@
         <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
         <p>{% trans %}Si aucun modérateur ne met fin {{ of_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
         <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
-        {% for recording in meeting.get_recordings() %}
+        {% for recording in meeting.bbb.get_recordings() %}
             {% set recording_name = recording.name or recording.start_date.strftime("%Y-%m-%d %H:%M:%S") %}
             <h3 class="fr-h3">
                 {{ recording_name }}

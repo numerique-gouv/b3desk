@@ -126,7 +126,9 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     if not form.validate():
         abort(403)
 
-    result = meeting.update_recording_name(recording_id, form.data["name"])
+    result = meeting.bbb.update_recordings(
+        recording_ids=[recording_id], metadata={"name": form.data["name"]}
+    )
     if BBB.success(result):
         flash(_("Enregistrement renommé"), "success")
     else:
@@ -249,7 +251,7 @@ def save_meeting():
         "success",
     )
 
-    if meeting.is_running():
+    if meeting.bbb.is_running():
         return render_template(
             "meeting/end.html",
             meeting=meeting,
@@ -272,11 +274,12 @@ def end_meeting():
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
     if g.user == meeting.user:
-        meeting.end_bbb()
-        flash(
-            f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
-            "success",
-        )
+        data = meeting.bbb.end()
+        if BBB.success(data):
+            flash(
+                f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
+                "success",
+            )
     else:
         flash(_("Vous ne pouvez pas terminer cette réunion"), "error")
     return redirect(url_for("public.welcome"))
@@ -309,7 +312,7 @@ def delete_meeting():
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
 
-            data = meeting.delete_all_recordings()
+            data = meeting.bbb.delete_all_recordings()
             if data and not BBB.success(data):
                 flash(
                     _(
@@ -343,7 +346,7 @@ def delete_video_meeting():
     meeting = db.session.get(Meeting, meeting_id)
     if meeting.user_id == g.user.id:
         recordID = request.form["recordID"]
-        data = meeting.delete_recordings(recordID)
+        data = meeting.bbb.delete_recordings(recordID)
         if BBB.success(data):
             flash(_("Vidéo supprimée"), "success")
             current_app.logger.info(

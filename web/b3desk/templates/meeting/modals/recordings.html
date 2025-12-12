@@ -1,12 +1,12 @@
 <!-- Enregistrements -->
 <div class="modal-template" id="recordings-{{ meeting.id }}">
     <div class="modal-body modal-body--center">
-        {% if meeting.is_running() %}
+        {% if meeting.bbb.is_running() %}
             <p>{% trans the_meeting=the_meeting.capitalize %}{{ the_meeting }} est toujours en cours. Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}.{% endtrans %}</p>
         {% endif %}
         <p>{% trans %}Après la fin d'{{ a_meeting }}, l'encodage de l'enregistrement peut prendre autant de temps que la durée {{ of_the_meeting }}.{% endtrans %}</p>
         <p>{% trans %}Si aucun modérateur ne met fin {{ to_the_meeting }}, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
-        {% for records in meeting.get_recordings() %}
+        {% for records in meeting.bbb.get_recordings() %}
             <h3>{{ records.name }} - {{ records.participants }}</h3>
             <div class="fr-table fr-table--bordered fr-table--layout-fixed">
                 <table>

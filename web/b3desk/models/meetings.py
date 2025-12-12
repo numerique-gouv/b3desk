@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import current_app
+from flask import render_template
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
@@ -123,7 +124,7 @@ class Meeting(db.Model):
         from .bbb import BBB
 
         if not self._bbb:
-            self._bbb = BBB(self)
+            self._bbb = BBB(self.meetingID)
         return self._bbb
 
     @property
@@ -171,21 +172,85 @@ class Meeting(db.Model):
         """Delete the temporary fake ID."""
         del self._fake_id
 
-    def is_running(self):
-        """Check if the BBB meeting is currently running."""
-        data = self.bbb.is_meeting_running()
-        return self.bbb.success(data) and data["running"] == "true"
-
     def create_bbb(self, user=None) -> bool:
         """Create the BBB meeting room and return the result."""
-        if self.is_running():
+        from b3desk.join import get_mail_signin_url
+        from b3desk.join import get_signin_url
+
+        from .roles import Role
+
+        if self.bbb.is_running():
             return False
 
         current_app.logger.info("Request BBB room creation %s %s", self.name, self.id)
         self.voiceBridge = (
             pin_generation() if not self.voiceBridge else self.voiceBridge
         )
-        result = self.bbb.create(user)
+
+        presentation_upload_external_url = None
+        presentation_upload_external_description = None
+        if self.id:
+            presentation_upload_external_url = url_for(
+                "meeting_files.file_picker", meeting=self, _external=True
+            )
+            presentation_upload_external_description = current_app.config[
+                "EXTERNAL_UPLOAD_DESCRIPTION"
+            ]
+
+        if self.attendeePW is None:
+            moderator_only_message = render_template(
+                "meeting/signin_mail_link.html",
+                main_message=self.moderatorOnlyMessage,
+                link=get_mail_signin_url(self),
+            )
+        else:
+            moderator_only_message = render_template(
+                "meeting/signin_links.html",
+                moderator_message=self.moderatorOnlyMessage,
+                moderator_link_introduction=current_app.config[
+                    "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
+                ],
+                moderator_signin_url=get_signin_url(self, Role.moderator),
+                attendee_link_introduction=current_app.config[
+                    "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
+                ],
+                attendee_signin_url=get_signin_url(self, Role.attendee),
+            )
+
+        meta_academy = user.mail_domain if user and user.mail_domain else None
+
+        result = self.bbb.create(
+            name=self.name,
+            record=self.record,
+            auto_start_recording=self.autoStartRecording,
+            allow_start_stop_recording=self.allowStartStopRecording,
+            webcams_only_for_moderator=self.webcamsOnlyForModerator,
+            mute_on_start=self.muteOnStart,
+            lock_settings_disable_cam=self.lockSettingsDisableCam,
+            lock_settings_disable_mic=self.lockSettingsDisableMic,
+            allow_mods_to_unmute_users=self.allowModsToUnmuteUsers,
+            lock_settings_disable_private_chat=self.lockSettingsDisablePrivateChat,
+            lock_settings_disable_public_chat=self.lockSettingsDisablePublicChat,
+            lock_settings_disable_note=self.lockSettingsDisableNote,
+            attendee_pw=self.attendeePW,
+            moderator_pw=self.moderatorPW,
+            welcome=self.welcome,
+            max_participants=self.maxParticipants,
+            logout_url=self.logoutUrl
+            or current_app.config.get("MEETING_LOGOUT_URL", ""),
+            duration=self.duration,
+            voice_bridge=self.voiceBridge
+            if current_app.config["ENABLE_PIN_MANAGEMENT"]
+            else None,
+            guest_policy=self.guestPolicy,
+            presentation_upload_external_url=presentation_upload_external_url,
+            presentation_upload_external_description=presentation_upload_external_description,
+            moderator_only_message=moderator_only_message,
+            meta_academy=meta_academy,
+            analytics_callback_url=current_app.config[
+                "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
+            ],
+        )
         if not self.bbb.success(result):
             current_app.logger.warning(
                 "BBB room has not been properly created: %s", result
@@ -193,7 +258,7 @@ class Meeting(db.Model):
             return False
 
         if self.files:
-            self.bbb.send_meeting_files(self.files)
+            self.bbb.send_meeting_files(self.files, meeting=self)
 
         if self.id is None:
             self.attendeePW = result["attendeePW"]
@@ -214,35 +279,6 @@ class Meeting(db.Model):
         """Save the meeting to the database."""
         db.session.add(self)
         db.session.commit()
-
-    def delete_recordings(self, recording_ids):
-        """Delete the specified recordings from BBB."""
-        return self.bbb.delete_recordings(recording_ids)
-
-    def delete_all_recordings(self):
-        """Delete all recordings for this meeting."""
-        recordings = self.get_recordings()
-        if not recordings:
-            return {}
-        recording_ids = ",".join(
-            [recording.get("recordID", "") for recording in recordings]
-        )
-        return self.delete_recordings(recording_ids)
-
-    def get_recordings(self):
-        """Retrieve all recordings for this meeting from BBB."""
-        return self.bbb.get_recordings()
-
-    def update_recording_name(self, recording_id, name):
-        """Update the name of a recording in BBB."""
-        return self.bbb.update_recordings(
-            recording_ids=[recording_id], metadata={"name": name}
-        )
-
-    def end_bbb(self):
-        """End the BBB meeting."""
-        data = self.bbb.end()
-        return self.bbb.success(data)
 
 
 class PreviousVoiceBridge(db.Model):
