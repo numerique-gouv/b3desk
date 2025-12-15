@@ -8,14 +8,13 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
 
 from flask import current_app
-from flask import url_for
 from flask_babel import lazy_gettext as _
+from itsdangerous import Signer
 from itsdangerous import URLSafeSerializer
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
@@ -24,8 +23,7 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
-from .roles import Role
-from .users import User
+from .users import User  # noqa: F401
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
@@ -66,15 +64,6 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
             if len(self.title) < 70
             else f"{self.title[:30]}...{self.title[-30:]}"
         )
-
-    def update(self):
-        """Commit changes to the database."""
-        db.session.commit()
-
-    def save(self):
-        """Save the meeting file to the database."""
-        db.session.add(self)
-        db.session.commit()
 
 
 class Meeting(db.Model):
@@ -125,7 +114,7 @@ class Meeting(db.Model):
         from .bbb import BBB
 
         if not self._bbb:
-            self._bbb = BBB(self)
+            self._bbb = BBB(self.meetingID)
         return self._bbb
 
     @property
@@ -173,188 +162,11 @@ class Meeting(db.Model):
         """Delete the temporary fake ID."""
         del self._fake_id
 
-    def get_hash(self, role: Role, hash_from_string=False):
-        """Generate a hash for meeting access verification based on role."""
-        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role.name if hash_from_string else role}"
-        return hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-    def is_running(self):
-        """Check if the BBB meeting is currently running."""
-        data = self.bbb.is_meeting_running()
-        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
-
-    def create_bbb(self):
-        """Create the BBB meeting room and return the result."""
-        self.voiceBridge = (
-            pin_generation() if not self.voiceBridge else self.voiceBridge
-        )
-        result = self.bbb.create()
-        if result and result.get("returncode", "") == "SUCCESS":
-            if self.id is None:
-                self.attendeePW = result["attendeePW"]
-                self.moderatorPW = result["moderatorPW"]
-            if (
-                current_app.config["ENABLE_PIN_MANAGEMENT"]
-                and self.voiceBridge != result["voiceBridge"]
-            ):
-                current_app.logger.error(
-                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
-                    self.voiceBridge,
-                    result["voiceBridge"],
-                )
-        else:
-            current_app.logger.warning(
-                "BBB room has not been properly created: %s", result
-            )
-
-        return result if result else {}
-
-    def save(self):
-        """Save the meeting to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_recordings(self, recording_ids):
-        """Delete the specified recordings from BBB."""
-        return self.bbb.delete_recordings(recording_ids)
-
-    def delete_all_recordings(self):
-        """Delete all recordings for this meeting."""
-        recordings = self.get_recordings()
-        if not recordings:
-            return {}
-        recording_ids = ",".join(
-            [recording.get("recordID", "") for recording in recordings]
-        )
-        return self.delete_recordings(recording_ids)
-
-    def get_recordings(self):
-        """Retrieve all recordings for this meeting from BBB."""
-        return self.bbb.get_recordings()
-
-    def update_recording_name(self, recording_id, name):
-        """Update the name of a recording in BBB."""
-        return self.bbb.update_recordings(
-            recording_ids=[recording_id], metadata={"name": name}
-        )
-
-    def get_join_url(
-        self,
-        meeting_role: Role,
-        fullname,
-        fullname_suffix="",
-        create=False,
-        quick_meeting=False,
-        seconds_before_refresh=None,
-    ):
-        """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
-        is_meeting_available = self.is_running()
-        should_create_room = (
-            not is_meeting_available and (meeting_role == Role.moderator) and create
-        )
-        if should_create_room:
-            current_app.logger.info(
-                "Request BBB room creation %s %s", self.name, self.id
-            )
-            data = self.create_bbb()
-            if data.get("returncode", "") == "SUCCESS":
-                is_meeting_available = True
-                if not quick_meeting:
-                    self.last_connection_utc_datetime = datetime.now()
-                    self.save()
-
-        if is_meeting_available:
-            nickname = (
-                f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
-            )
-            return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
-
-        return url_for(
-            "join.waiting_meeting",
-            meeting_fake_id=self.fake_id,
-            creator=self.user,
-            h=self.get_hash(meeting_role),
-            fullname=fullname,
-            fullname_suffix=fullname_suffix,
-            seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
-        )
-
-    def get_signin_url(self, meeting_role: Role):
-        """Generate the sign-in URL for a specific role."""
-        return url_for(
-            "join.signin_meeting",
-            meeting_fake_id=self.fake_id,
-            creator=self.user,
-            h=self.get_hash(meeting_role),
-            role=meeting_role,
-            _external=True,
-            _scheme=current_app.config["PREFERRED_URL_SCHEME"],
-        )
-
-    def get_mail_signin_hash(self, meeting_id, expiration_epoch):
-        """Generate a hash for mail-based sign-in with expiration."""
-        s = f"{meeting_id}-{expiration_epoch}"
-        return hashlib.sha256(
-            s.encode("utf-8") + secret_key().encode("utf-8")
-        ).hexdigest()
-
-    def get_mail_signin_url(self):
-        """Generate a time-limited sign-in URL for mail invitations."""
-        expiration = str((datetime.now() + timedelta(weeks=1)).timestamp()).split(".")[
-            0
-        ]  # remove milliseconds
-        hash_param = self.get_mail_signin_hash(self.fake_id, expiration)
-        return url_for(
-            "join.signin_mail_meeting",
-            meeting_fake_id=self.fake_id,
-            expiration=expiration,
-            h=hash_param,
-            _external=True,
-        )
-
-    def get_role(self, hashed_role, user_id=None) -> Role | None:
-        """Determine the meeting role based on hash and user ID."""
-        if user_id and self.user.id == user_id:
-            return Role.moderator
-        elif hashed_role in [
-            self.get_hash(Role.attendee),
-            self.get_hash(Role.attendee, hash_from_string=True),
-        ]:
-            role = Role.attendee
-        elif hashed_role in [
-            self.get_hash(Role.moderator),
-            self.get_hash(Role.moderator, hash_from_string=True),
-        ]:
-            role = Role.moderator
-        elif hashed_role in [
-            self.get_hash(Role.authenticated),
-            self.get_hash(Role.authenticated, hash_from_string=True),
-        ]:
-            role = (
-                Role.authenticated
-                if current_app.config["OIDC_ATTENDEE_ENABLED"]
-                else Role.attendee
-            )
-        else:
-            role = None
-        return role
-
-    def end_bbb(self):
-        """End the BBB meeting."""
-        data = self.bbb.end()
-        return data and data["returncode"] == "SUCCESS"
-
 
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-
-    def save(self):
-        """Save the archived voice bridge to the database."""
-        db.session.add(self)
-        db.session.commit()
 
 
 def get_all_previous_voiceBridges():
@@ -372,72 +184,29 @@ def delete_old_voiceBridges():
     ).delete()
 
 
-def get_quick_meeting_from_user_and_random_string(user, random_string=None):
-    """Create a quick meeting instance for a user with default settings."""
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
+def get_deterministic_password(meeting_fake_id, role):
+    """Generate a deterministic password based on meeting ID and role."""
+    signer = Signer(current_app.config["SECRET_KEY"])
+    return signer.sign(f"{meeting_fake_id}-{role}").decode().split(".")[-1][:16]
+
+
+def get_quick_meeting_from_fake_id(meeting_fake_id=None):
+    """Create a quick meeting instance for URL generation."""
+    if meeting_fake_id is None:
+        meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{user.hash}-{random_string}",
-        attendeePW=f"{random_string}-{random_string}",
-        moderatorOnlyMessage=current_app.config[
-            "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-        ],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
+        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
     )
-    meeting.fake_id = random_string
+    meeting.fake_id = meeting_fake_id
     return meeting
 
 
-def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
+def get_meeting_from_meeting_id(meeting_fake_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
     if meeting_fake_id.isdigit():
-        try:
-            meeting = db.session.get(Meeting, meeting_fake_id)
-        except:
-            try:
-                user = db.session.get(User, user_id)
-                meeting = get_quick_meeting_from_user_and_random_string(
-                    user, random_string=meeting_fake_id
-                )
-            except:
-                meeting = None
-    else:
-        try:
-            user = db.session.get(User, user_id)
-            meeting = get_quick_meeting_from_user_and_random_string(
-                user, random_string=meeting_fake_id
-            )
-        except:
-            meeting = None
-
-    return meeting
-
-
-def get_mail_meeting(random_string=None):
-    """Create a mail-based meeting instance without a user account."""
-    # only used for mail meeting
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
-
-    meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{random_string}-{random_string}",  # it is only usefull for bbb
-        moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
-    )
-    meeting.fake_id = random_string
-    return meeting
+        return db.session.get(Meeting, meeting_fake_id)
+    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
 
 
 def pin_generation(forbidden_pins=None, clean_db=True):
@@ -513,7 +282,8 @@ def create_and_save_shadow_meeting(user):
         voiceBridge=pin_generation(),
         visio_code=unique_visio_code_generation(),
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
     return meeting
 
 
@@ -542,7 +312,7 @@ def save_voiceBridge_and_delete_meeting(meeting):
     """Archive a meeting's voice bridge and delete the meeting from the database."""
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
 

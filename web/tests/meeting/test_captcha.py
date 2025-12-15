@@ -6,6 +6,7 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.endpoints.captcha import captchetat_service_status
 from b3desk.endpoints.captcha import get_captchetat_token
 from b3desk.session import should_display_captcha
+from flask import session
 
 
 class Access_token_response:
@@ -273,8 +274,6 @@ def test_join_with_visio_code_with_wrong_visio_code_and_wrong_captcha(
         sess["visio_code_attempt_counter"] = 2
 
     with client_app.app.test_request_context("/"):
-        from flask import session
-
         session.update(sess)
         response = client_app.post(
             "/meeting/visio_code",
@@ -315,8 +314,6 @@ def test_join_with_visio_code_with_wrong_visio_code_and_valid_captcha(
         sess["visio_code_attempt_counter"] = 2
 
     with client_app.app.test_request_context("/"):
-        from flask import session
-
         session.update(sess)
         response = client_app.post(
             "/meeting/visio_code",
@@ -353,8 +350,6 @@ def test_join_with_visio_code_with_valid_visio_code_and_wrong_captcha(
         sess["visio_code_attempt_counter"] = 2
 
     with client_app.app.test_request_context("/"):
-        from flask import session
-
         session.update(sess)
 
         response = client_app.post(
@@ -395,8 +390,6 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
         sess["visio_code_attempt_counter"] = 2
 
     with client_app.app.test_request_context("/"):
-        from flask import session
-
         session.update(sess)
 
         response = client_app.post(
@@ -444,8 +437,6 @@ def test_should_display_captcha_with_no_token(client_app, caplog):
         sess["visio_code_attempt_counter"] = 2
 
     with client_app.app.test_request_context("/"):
-        from flask import session
-
         session.update(sess)
 
         result = should_display_captcha()

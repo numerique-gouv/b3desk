@@ -17,8 +17,7 @@ from b3desk.models.meetings import pin_is_unique_validator
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
     meeting_fake_id = StringField()
-    user_id = IntegerField()
-    h = StringField()
+    hash_ = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
     quick_meeting = BooleanField()

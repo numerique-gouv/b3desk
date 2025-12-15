@@ -74,6 +74,8 @@ def get_random_alphanumeric_string(length):
 
 def send_quick_meeting_mail(meeting, to_email):
     """Send quick meeting invitation email with meeting access link."""
+    from b3desk.join import get_mail_signin_url
+
     smtp_from = current_app.config["SMTP_FROM"]
     smtp_host = current_app.config["SMTP_HOST"]
     smtp_port = current_app.config["SMTP_PORT"]
@@ -86,7 +88,7 @@ def send_quick_meeting_mail(meeting, to_email):
     content = render_template(
         "meeting/mailto/mail_quick_meeting_body.txt",
         role=Role.moderator,
-        moderator_mail_signin_url=meeting.get_mail_signin_url(),
+        moderator_mail_signin_url=get_mail_signin_url(meeting),
         welcome_url=url_for("public.welcome", _external=True),
         meeting=meeting,
     )

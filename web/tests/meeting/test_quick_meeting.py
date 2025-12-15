@@ -2,8 +2,11 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pyquery
+from b3desk.join import get_mail_signin_url
+from b3desk.join import get_signin_url
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import get_quick_meeting_from_user_and_random_string
+from b3desk.models.meetings import get_quick_meeting_from_fake_id
+from b3desk.models.roles import Role
 
 
 def test_no_unauthenticated_quick_meeting(client_app, bbb_response):
@@ -21,7 +24,7 @@ def test_unauthenticated_quick_meeting_unauthorized_email(
     client_app.app.config["ENABLE_LASUITENUMERIQUE"] = False
     client_app.app.config["MAIL_MEETING"] = True
     res = client_app.get("/home")
-    res.forms[1]["mail"] = "email@example.org"
+    res.forms[1]["mail"] = "email@example.test"
     res = res.forms[1].submit()
     assert (
         "error_login",
@@ -77,8 +80,8 @@ def test_join_mail_meeting_with_logged_user(client_app, user, mocker):
 
     mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
 
-    meeting = get_quick_meeting_from_user_and_random_string(user)
-    moderator_mail_signin_url = meeting.get_mail_signin_url()
+    meeting = get_quick_meeting_from_fake_id()
+    moderator_mail_signin_url = get_mail_signin_url(meeting)
 
     response = client_app.get(moderator_mail_signin_url, status=200)
     response.mustcontain("Rejoindre le séminaire")
@@ -123,3 +126,19 @@ def test_quick_meeting_rasing_time_before_refresh_in_waiting_meeting(
     assert url_role == ["15.0"]
     url_role = parse_qs(url.query)["quick_meeting"]
     assert url_role
+
+
+def test_quick_meeting_signin_links_are_accessible(client_app, user):
+    """Test that moderator and attendee signin links generated for quick meetings are accessible."""
+    meeting = get_quick_meeting_from_fake_id()
+
+    moderator_url = get_signin_url(meeting, Role.moderator)
+    attendee_url = get_signin_url(meeting, Role.attendee)
+
+    response = client_app.get(moderator_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)
+
+    response = client_app.get(attendee_url, status=200)
+    assert response.template == "meeting/join.html"
+    assert not any(cat == "error" for cat, _ in response.flashes)

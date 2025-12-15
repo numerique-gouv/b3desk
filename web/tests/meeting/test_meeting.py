@@ -7,6 +7,8 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.join import get_hash
+from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
@@ -25,14 +27,14 @@ from flask import url_for
 
 @pytest.fixture()
 def mock_meeting_is_running(mocker):
-    """Mock meeting.is_running() to return True."""
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+    """Mock meeting.bbb.is_running() to return True."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
 @pytest.fixture()
 def mock_meeting_is_not_running(mocker):
-    """Mock meeting.is_running() to return False."""
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
@@ -195,7 +197,7 @@ def test_save_existing_meeting_running(
     mocker, client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
     """Test that existing meeting can be updated and ended when running."""
-    mocker.patch("b3desk.models.meetings.Meeting.end_bbb", return_value=True)
+    mocker.patch("b3desk.models.bbb.BBB.end", return_value={"returncode": "SUCCESS"})
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
@@ -279,12 +281,16 @@ def test_save_meeting_in_no_recording_environment(
     assert meeting.record is False
 
 
-def test_create_no_file(client_app, meeting, mocker, bbb_response):
+def test_create_no_file(
+    client_app, meeting, mocker, bbb_response, mock_meeting_is_not_running
+):
     """Tests the BBB meeting creation request.
 
     As there is no file attached to the meeting, no background upload
     task should be called.
     """
+    from b3desk.join import create_bbb_meeting
+
     client_app.app.config["FILE_SHARING"] = True
 
     mocked_background_upload = mocker.patch(
@@ -311,7 +317,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.bbb.create()
+    create_bbb_meeting(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -325,7 +331,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -334,7 +340,7 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -366,7 +372,13 @@ def test_create_no_file(client_app, meeting, mocker, bbb_response):
 
 
 def test_create_with_only_a_default_file(
-    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    jpg_file_content,
+    tmp_path,
+    mock_meeting_is_not_running,
 ):
     """Tests the BBB meeting creation request.
 
@@ -374,6 +386,8 @@ def test_create_with_only_a_default_file(
     to the meeting, should always be sent asynchronously, background
     upload task should be called.
     """
+    from b3desk.join import create_bbb_meeting
+
     client_app.app.config["FILE_SHARING"] = True
 
     file_path = os.path.join(tmp_path, "foobar.jpg")
@@ -414,7 +428,7 @@ def test_create_with_only_a_default_file(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create()
+    create_bbb_meeting(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -428,7 +442,7 @@ def test_create_with_only_a_default_file(
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -437,7 +451,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -469,13 +483,21 @@ def test_create_with_only_a_default_file(
 
 
 def test_create_with_files(
-    client_app, meeting, mocker, bbb_response, jpg_file_content, tmp_path
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    jpg_file_content,
+    tmp_path,
+    mock_meeting_is_not_running,
 ):
     """Tests the BBB meeting creation request.
 
     As there is a non default file attached to the meeting, the
     background upload task should be called.
     """
+    from b3desk.join import create_bbb_meeting
+
     client_app.app.config["FILE_SHARING"] = True
 
     file_path = os.path.join(tmp_path, "foobar.jpg")
@@ -516,7 +538,7 @@ def test_create_with_files(
     )
     meeting.files = [meeting_file]
 
-    meeting.bbb.create()
+    create_bbb_meeting(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -531,7 +553,7 @@ def test_create_with_files(
         "meetingID": meeting.meetingID,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -540,7 +562,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -597,9 +619,16 @@ def test_create_without_logout_url_gets_default(
 
 
 def test_save_existing_meeting_gets_default_logoutUrl(
-    client_app, authenticated_user, meeting, mocker, bbb_response
+    client_app,
+    authenticated_user,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
 ):
     """Test that empty logout URL gets replaced with default."""
+    from b3desk.join import create_bbb_meeting
+
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
@@ -610,7 +639,7 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    meeting.bbb.create()
+    create_bbb_meeting(meeting, meeting.user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -625,15 +654,24 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     )
 
 
-def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_response):
+def test_create_quick_meeting(
+    client_app, monkeypatch, user, mocker, bbb_response, mock_meeting_is_not_running
+):
     """Test that quick meeting is created with correct default parameters."""
-    from b3desk.endpoints.meetings import get_quick_meeting_from_user_and_random_string
+    from b3desk.endpoints.meetings import get_quick_meeting_from_fake_id
+    from b3desk.join import create_bbb_quick_meeting
+    from b3desk.models.meetings import get_deterministic_password
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
     monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
-    meeting = get_quick_meeting_from_user_and_random_string(user)
-    meeting.bbb.create()
+    meeting = get_quick_meeting_from_fake_id()
+
+    expected_attendee_pw = get_deterministic_password(meeting.fake_id, "attendee")
+    expected_moderator_pw = get_deterministic_password(meeting.fake_id, "moderator")
+    expected_moderator_hash = get_hash(meeting, Role.moderator)
+    expected_attendee_hash = get_hash(meeting, Role.attendee)
+    create_bbb_quick_meeting(meeting.fake_id, user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -646,16 +684,19 @@ def test_create_quick_meeting(client_app, monkeypatch, user, mocker, bbb_respons
     assert bbb_params == {
         "meetingID": meeting.meetingID,
         "name": "Séminaire improvisé",
-        "attendeePW": meeting.attendeePW,
-        "moderatorPW": meeting.moderatorPW,
-        "logoutURL": "http://education.gouv.fr/",
+        "attendeePW": expected_attendee_pw,
+        "moderatorPW": expected_moderator_pw,
+        "logoutURL": "http://quick-meeting-logout.test/",
         "duration": "280",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
-        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/creator/1/hash/{meeting.get_hash(Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur  \u00a0: <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{expected_moderator_hash}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{expected_moderator_hash}</a><br />\n\n Lien Participant  \u00a0: <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{expected_attendee_hash}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{expected_attendee_hash}</a>',
+        "voiceBridge": mock.ANY,
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
+        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
+        "presentationUploadExternalUrl": mock.ANY,
     }
 
 
@@ -708,29 +749,29 @@ def test_meeting_link_retrocompatibility(meeting):
     old_hashed_moderator_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_moderator_meeting) == Role.moderator
+    assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_moderator_meeting) == Role.moderator
+    assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_attendee_meeting) == Role.attendee
+    assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_attendee_meeting) == Role.attendee
+    assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
-    assert meeting.get_role(old_hashed_authenticated_meeting) == Role.authenticated
+    assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
         f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
-    assert meeting.get_role(new_hashed_authenticated_meeting) == Role.authenticated
+    assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
 
 
 def test_meeting_order_default(

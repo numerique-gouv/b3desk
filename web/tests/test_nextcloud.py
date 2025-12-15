@@ -1,3 +1,4 @@
+from b3desk.models import db
 from b3desk.nextcloud import nextcloud_healthcheck
 from webdav3.exceptions import WebDavException
 
@@ -7,7 +8,8 @@ def test_healthcheck_success_first_try(client_app, user, mocker):
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list")
 
@@ -22,7 +24,8 @@ def test_healthcheck_success_after_retry(client_app, user, mocker):
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     call_count = 0
 
@@ -46,7 +49,8 @@ def test_healthcheck_fails_disables_nextcloud(client_app, user, mocker):
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list", side_effect=WebDavException)
 
@@ -63,7 +67,8 @@ def test_healthcheck_missing_login(client_app, user, mocker):
     user.nc_login = None
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list")
     mocker.patch(
@@ -81,7 +86,8 @@ def test_healthcheck_missing_locator(client_app, user, mocker):
     user.nc_login = "alice"
     user.nc_locator = None
     user.nc_token = "token123"
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list")
     mocker.patch(
@@ -99,7 +105,8 @@ def test_healthcheck_missing_token(client_app, user, mocker):
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = None
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list")
     mocker.patch(
@@ -117,7 +124,8 @@ def test_healthcheck_missing_credentials_renewed(client_app, user, mocker):
     user.nc_login = None
     user.nc_locator = None
     user.nc_token = None
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     mocker.patch("webdav3.client.Client.list")
 

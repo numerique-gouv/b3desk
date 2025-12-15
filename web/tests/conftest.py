@@ -280,11 +280,11 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "UPLOAD_DIR": str(tmp_path),
         "TMP_DOWNLOAD_DIR": str(tmp_path),
         "RECORDING": True,
-        "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics.test/v1/post_events",
         "MEETING_KEY_WORDING": "seminaire",
-        "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+        "QUICK_MEETING_LOGOUT_URL": "http://quick-meeting-logout.test/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
-        "NC_LOGIN_API_URL": "http://tokenmock.localhost:9000/",
+        "NC_LOGIN_API_URL": "http://tokenmock.test:9000/",
         "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
@@ -293,14 +293,15 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
-        "MEETING_LOGOUT_URL": "https://example.org/logout",
+        "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
         "MAIL_MEETING": True,
-        "SMTP_FROM": "from@example.org",
+        "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,
         "ENABLE_SIP": True,
-        "FQDN_SIP_SERVER": "example.serveur.com",
+        "FQDN_SIP_SERVER": "sip.test",
         "PRIVATE_KEY": private_key,
+        "PISTE_OAUTH_API_URI": "https://piste.test",
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
@@ -357,7 +358,8 @@ def meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -378,7 +380,8 @@ def meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -397,7 +400,8 @@ def meeting_3(client_app, user):
         voiceBridge="111111113",
         visio_code="911111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -416,7 +420,8 @@ def shadow_meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -435,7 +440,8 @@ def shadow_meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -454,7 +460,8 @@ def shadow_meeting_3(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -469,7 +476,8 @@ def user(client_app, iam_user):
         family_name=iam_user.family_name,
         preferred_username=iam_user.preferred_username,
     )
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     yield user
 
@@ -483,7 +491,8 @@ def user_2(client_app, iam_user_2):
         given_name=iam_user_2.given_name,
         family_name=iam_user_2.family_name,
     )
-    user_2.save()
+    db.session.add(user_2)
+    db.session.commit()
 
     yield user_2
 
@@ -493,7 +502,8 @@ def previous_voiceBridge(client_app):
     from b3desk.models.meetings import PreviousVoiceBridge
 
     previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
+    db.session.commit()
 
     yield previous_voiceBridge
 
@@ -570,7 +580,7 @@ def authenticated_attendee(client_app, user, mocker):
 @pytest.fixture
 def bbb_response(mocker):
     class Response:
-        content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
+        content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge><attendeePW>attendee</attendeePW><moderatorPW>moderator</moderatorPW></response>"""
         status_code = 200
         text = ""
 

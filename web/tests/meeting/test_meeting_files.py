@@ -99,7 +99,7 @@ def test_add_dropzone_file(
 
 @pytest.fixture()
 def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
 def test_file_picker_called_by_bbb(
@@ -142,7 +142,8 @@ def test_ncdownload(
     meeting.user.nc_login = nextcloud_credentials["nclogin"]
     meeting.user.nc_locator = nextcloud_credentials["nclocator"]
     meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    meeting.user.save()
+    db.session.add(meeting.user)
+    db.session.commit()
 
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
     mocked_send = mocker.patch(
@@ -183,12 +184,14 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
         created_at=date.today(),
         meeting_id=meeting.id,
     )
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     meeting.user.nc_login = nextcloud_credentials["nclogin"]
     meeting.user.nc_locator = nextcloud_credentials["nclocator"]
     meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    meeting.user.save()
+    db.session.add(meeting.user)
+    db.session.commit()
 
     assert meeting.user.nc_locator is not None
     assert meeting.user.nc_token is not None

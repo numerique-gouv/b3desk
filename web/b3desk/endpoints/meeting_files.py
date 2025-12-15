@@ -10,6 +10,7 @@ from flask import Blueprint
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import g
 from flask import jsonify
 from flask import make_response
 from flask import redirect
@@ -33,11 +34,9 @@ from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import nextcloud_healthcheck
-from b3desk.tasks import background_upload
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
-from ..session import get_current_user
 from ..session import meeting_owner_needed
 from ..session import user_needed
 
@@ -149,7 +148,8 @@ def toggledownload(meeting: Meeting, owner: User):
         abort(404)
 
     meeting_file.is_downloadable = data["value"]
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     return jsonify(status=200, id=data["id"])
 
@@ -165,13 +165,12 @@ def set_meeting_default_file(meeting: Meeting, owner: User):
     actual_default_file = meeting.default_file
     if actual_default_file:
         actual_default_file.is_default = False
+        db.session.add(actual_default_file)
 
     meeting_file = MeetingFiles.query.get(data["id"])
     meeting_file.is_default = True
-
-    if actual_default_file:
-        actual_default_file.save()
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     return jsonify(status=200, id=data["id"])
 
@@ -184,11 +183,10 @@ def remove_dropzone_file(absolutePath):
 # called when a file has been uploaded : send it to nextcloud
 def add_meeting_file_dropzone(title, meeting_id, is_default):
     """Upload a dropzone file to Nextcloud and associate it with a meeting."""
-    user = get_current_user()
     # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
     DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
     Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzone_path = os.path.join(DROPZONE_DIR, f"{user.id}-{meeting_id}-{title}")
+    dropzone_path = os.path.join(DROPZONE_DIR, f"{g.user.id}-{meeting_id}-{title}")
     metadata = os.stat(dropzone_path)
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
@@ -199,8 +197,10 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
             ),
         )
 
-    if (client := create_webdav_client(user)) is None:
-        current_app.logger.warning("WebDAV error: User %s has no credentials", user.id)
+    if (client := create_webdav_client(g.user)) is None:
+        current_app.logger.warning(
+            "WebDAV error: User %s has no credentials", g.user.id
+        )
         return jsonify(
             status=500,
             isfrom="dropzone",
@@ -220,7 +220,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
 
     except WebDavException as exception:
-        user.disable_nextcloud()
+        g.user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
         return jsonify(
             status=500,
@@ -232,7 +232,8 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         # test for is_default-file absence at the latest time possible
         meeting = db.session.get(Meeting, meeting_id)
         meeting_file.is_default = len(meeting.files) == 0 and not meeting.default_file
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
 
         # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
         remove_dropzone_file(dropzone_path)
@@ -288,7 +289,8 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     requests.get(url)
 
     try:
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
         return jsonify(
             status=200,
             isfrom="url",
@@ -309,9 +311,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
     """Add a meeting file from a Nextcloud path."""
-    user = get_current_user()
-
-    if (client := create_webdav_client(user)) is None:
+    if (client := create_webdav_client(g.user)) is None:
         return jsonify(
             status=500,
             isfrom="nextcloud",
@@ -322,7 +322,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         metadata = client.info(path)
 
     except WebDavException:
-        user.disable_nextcloud()
+        g.user.disable_nextcloud()
         return jsonify(
             status=500,
             isfrom="nextcloud",
@@ -347,7 +347,8 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     )
 
     try:
-        meeting_file.save()
+        db.session.add(meeting_file)
+        db.session.commit()
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(
@@ -427,13 +428,12 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     """Delete a meeting file and reassign default if necessary."""
-    user = get_current_user()
     data = request.get_json()
     meeting_file_id = data["id"]
     meeting_file = MeetingFiles.query.get(meeting_file_id)
     cur_meeting = Meeting.query.get(meeting_file.meeting_id)
 
-    if cur_meeting.user_id != user.id:
+    if cur_meeting.user_id != g.user.id:
         return jsonify(
             status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )
@@ -446,7 +446,7 @@ def delete_meeting_file():
         if len(cur_meeting.files) > 0:
             cur_meeting.files[0].is_default = True
             new_default_id = cur_meeting.files[0].id
-            cur_meeting.save()
+            db.session.commit()
 
     return jsonify(
         status=200,
@@ -466,7 +466,12 @@ def file_picker(user: User, bbb_meeting_id: str):
     This endpoint is used by BBB during the meetings.
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
-    return render_template("meeting/file_picker.html", bbb_meeting_id=bbb_meeting_id)
+    if BBB(bbb_meeting_id).is_running():
+        return render_template(
+            "meeting/file_picker.html", bbb_meeting_id=bbb_meeting_id
+        )
+    flash(_("La réunion n'est pas en cours"), "error")
+    return redirect(url_for("public.welcome"))
 
 
 @bp.route(
@@ -483,12 +488,7 @@ def file_picker_callback(user: User, bbb_meeting_id: str):
     """
     filenames = request.get_json()
     meeting_files = [create_external_meeting_file(filename) for filename in filenames]
-    payload = BBB.meeting_files_payload(meeting_files, user)
-    bbb_request = BBB.bbb_request(
-        "insertDocument", params={"meetingID": bbb_meeting_id}
-    )
-
-    background_upload.delay(bbb_request.url, payload)
+    BBB(bbb_meeting_id).send_meeting_files(meeting_files, g.user)
 
     return jsonify(status=200, msg="SUCCESS")
 

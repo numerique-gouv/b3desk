@@ -203,26 +203,12 @@ def setup_database(app):
 def setup_jinja(app):
     """Configure Jinja2 template engine with global context variables."""
     from b3desk.models.roles import Role
-    from b3desk.session import get_current_user
-    from b3desk.session import has_user_session
 
     if app.debug or app.testing:
         app.jinja_env.undefined = StrictUndefined
 
     @app.context_processor
     def global_processor():
-        if has_user_session():
-            user = get_current_user()
-            session_dict = {
-                "user": user,
-                "fullname": user.fullname,
-            }
-        else:
-            session_dict = {
-                "user": None,
-                "fullname": "",
-            }
-
         return {
             "debug": app.debug,
             "config": app.config,
@@ -234,7 +220,6 @@ def setup_jinja(app):
             "LANGUAGES": LANGUAGES,
             "Role": Role,
             **app.config["WORDINGS"],
-            **session_dict,
         }
 
 
@@ -297,6 +282,29 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+
+
+def setup_user_session(app):
+    """Initialize g.user on each request based on authentication status."""
+    from flask import g
+    from flask import session
+    from flask_pyoidc.user_session import UserSession
+
+    from b3desk.models.users import get_or_create_user
+    from b3desk.session import has_user_session
+
+    @app.before_request
+    def load_user():
+        g.user = None
+        if not has_user_session():
+            return
+
+        try:
+            user_session = UserSession(session)
+            info = user_session.userinfo
+            g.user = get_or_create_user(info)
+        except (KeyError, TypeError):
+            return
 
 
 def setup_oidc(app):
@@ -367,6 +375,7 @@ def create_app(test_config=None):
         setup_error_pages(app)
         setup_endpoints(app)
         setup_oidc(app)
+        setup_user_session(app)
     except Exception as exc:  # pragma: no cover
         if sentry_sdk:
             sentry_sdk.capture_exception(exc)
