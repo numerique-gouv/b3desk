@@ -31,21 +31,6 @@ def make_nextcloud_credentials_request(url, payload, headers):
     try:
         response = requests.post(url, json=payload, headers=headers)
         data = response.json()
-        if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
-            valid_nclocator = (
-                f"//{data['nclocator']}"
-                if not (
-                    data["nclocator"].startswith("//")
-                    or data["nclocator"].startswith("http://")
-                    or data["nclocator"].startswith("https://")
-                )
-                else data["nclocator"]
-            )
-            parsed_url = urlparse(valid_nclocator)
-            if parsed_url.scheme != "https":
-                data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
-        return data
-
     except requests.exceptions.RequestException as e:
         current_app.logger.error(
             "Unable to contact %s with payload %s and header %s, %s",
@@ -55,6 +40,22 @@ def make_nextcloud_credentials_request(url, payload, headers):
             e,
         )
         return None
+
+    if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
+        valid_nclocator = (
+            f"//{data['nclocator']}"
+            if not (
+                data["nclocator"].startswith("//")
+                or data["nclocator"].startswith("http://")
+                or data["nclocator"].startswith("https://")
+            )
+            else data["nclocator"]
+        )
+        parsed_url = urlparse(valid_nclocator)
+        if parsed_url.scheme != "https":
+            data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
+
+    return data
 
 
 class MissingToken(Exception):
