@@ -174,9 +174,9 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
-        if request.args.get("lang"):
+        if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
-        return session.get("lang", "fr")
+        return session.get("lang") if session.get("lang") in LANGUAGES else "fr"
 
     babel.init_app(app, locale_selector=locale_selector)
 
