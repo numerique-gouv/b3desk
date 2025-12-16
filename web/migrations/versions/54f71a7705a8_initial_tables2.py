@@ -5,31 +5,23 @@ Revises:
 Create Date: 2023-01-03 18:01:03.770238
 """
 
-import os
-import sys
-
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy import inspect
 from sqlalchemy.dialects import postgresql
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
-import alembic_helpers  # noqa: E402
-
-# alembic_helpers = imp.load_source('alembic_helpers', (
-#    os.getcwd() + '/' + op.get_context().script.dir + '/alembic_helpers.py'))
-
-# revision identifiers, used by Alembic.
 revision = "54f71a7705a8"
 down_revision = None
 branch_labels = None
 depends_on = None
 
 
+def table_does_not_exist(table):
+    return table not in inspect(op.get_bind()).get_table_names()
+
+
 def upgrade():
-    if alembic_helpers.table_does_not_exist("user"):
+    if table_does_not_exist("user"):
         op.create_table(
             "user",
             sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
@@ -46,7 +38,7 @@ def upgrade():
             sa.UniqueConstraint("email", name="user_email_key"),
         )
 
-    if alembic_helpers.table_does_not_exist("meeting"):
+    if table_does_not_exist("meeting"):
         op.create_table(
             "meeting",
             sa.Column(
@@ -156,5 +148,5 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("user")
     op.drop_table("meeting")
+    op.drop_table("user")
