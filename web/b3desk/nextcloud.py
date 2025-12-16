@@ -5,8 +5,19 @@ from urllib.parse import urlunparse
 
 import requests
 from flask import current_app
+from flask import g
 from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
+
+
+def get_nextcloud_available():
+    """Lazy evaluation of Nextcloud availability, cached in flask.g."""
+    if not hasattr(g, "nextcloud_available"):
+        if g.user and g.user.has_nc_credentials:
+            g.nextcloud_available = nextcloud_healthcheck(g.user)
+        else:
+            g.nextcloud_available = False
+    return g.nextcloud_available
 
 
 def create_webdav_client(user) -> webdavClient | None:
@@ -59,12 +70,7 @@ def make_nextcloud_credentials_request(url, payload, headers):
 
 
 class MissingToken(Exception):
-    """Exception raised if unable to get token.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if unable to get token."""
 
     def __init__(self, message="No token given for the B3Desk instance"):
         self.message = message
@@ -72,12 +78,7 @@ class MissingToken(Exception):
 
 
 class TooManyUsers(Exception):
-    """Exception raised if email returns more than one user.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if email returns more than one user."""
 
     def __init__(self, message="More than one user is using this email"):
         self.message = message
@@ -85,12 +86,7 @@ class TooManyUsers(Exception):
 
 
 class NoUserFound(Exception):
-    """Exception raised if email returns no user.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if email returns no user."""
 
     def __init__(self, message="No user with this email was found"):
         self.message = message
@@ -99,6 +95,7 @@ class NoUserFound(Exception):
 
 def get_secondary_identity_provider_token():
     """Retrieve OAuth access token from secondary identity provider using client credentials."""
+    # TODO: replace this with authlib
     return requests.post(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/protocol/openid-connect/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -313,8 +310,4 @@ def nextcloud_healthcheck(user):
     if _healthcheck():
         return True
 
-    current_app.logger.error(
-        f"Too many WedDAV errors. Disabling nextcloud credentials for user {user.id} and Nextcloud login {user.nc_login}"
-    )
-    user.disable_nextcloud()
     return False

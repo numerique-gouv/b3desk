@@ -174,10 +174,10 @@ def test_ncdownload_with_bad_token_abort_404(
     )
 
 
-def test_ncdownload_webdav_exception_disables_nextcloud(
+def test_ncdownload_webdav_exception(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
-    """Test that WebDAV exception disables Nextcloud for non-external MeetingFiles."""
+    """Test that WebDAV exception returns a 500 error but preserves credentials."""
     meeting_file = MeetingFiles(
         nc_path="/folder/test.pdf",
         title="test.pdf",
@@ -192,9 +192,6 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
     meeting.user.nc_token = nextcloud_credentials["nctoken"]
     db.session.add(meeting.user)
     db.session.commit()
-
-    assert meeting.user.nc_locator is not None
-    assert meeting.user.nc_token is not None
 
     class FakeClient:
         def info(self, ncpath):
@@ -211,5 +208,5 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
 
     assert response.json["status"] == 500
     db.session.refresh(meeting.user)
-    assert meeting.user.nc_locator is None
-    assert meeting.user.nc_token is None
+    assert meeting.user.nc_locator is not None
+    assert meeting.user.nc_token is not None

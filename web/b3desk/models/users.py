@@ -114,12 +114,3 @@ class User(db.Model):
     def mail_domain(self):
         """Extract and return the domain part of the user's email address."""
         return self.email.split("@")[1] if self.email and "@" in self.email else None
-
-    def disable_nextcloud(self):
-        """Clear all Nextcloud credentials and save to database."""
-        self.nc_login = None
-        self.nc_locator = None
-        self.nc_token = None
-        self.nc_last_auto_enroll = None
-        db.session.add(self)
-        db.session.commit()

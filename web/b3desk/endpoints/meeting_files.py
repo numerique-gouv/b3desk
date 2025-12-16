@@ -33,7 +33,6 @@ from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
-from b3desk.nextcloud import nextcloud_healthcheck
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -54,9 +53,6 @@ def edit_meeting_files(meeting: Meeting, owner: User):
     if not current_app.config["FILE_SHARING"]:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
-
-    if owner.has_nc_credentials:
-        nextcloud_healthcheck(owner)
 
     return render_template(
         "meeting/filesform.html",
@@ -128,7 +124,6 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     except WebDavException as exception:
-        owner.disable_nextcloud()
         current_app.logger.warning(
             "webdav call encountered following exception : %s", exception
         )
@@ -220,7 +215,6 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
 
     except WebDavException as exception:
-        g.user.disable_nextcloud()
         current_app.logger.warning("WebDAV error: %s", exception)
         return jsonify(
             status=500,
@@ -322,7 +316,6 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         metadata = client.info(path)
 
     except WebDavException:
-        g.user.disable_nextcloud()
         return jsonify(
             status=500,
             isfrom="nextcloud",
@@ -514,7 +507,6 @@ def ncdownload(token, user, ncpath):
         client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     except WebDavException:
-        user.disable_nextcloud()
         return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
 
     title = ncpath.split("/")[-1]

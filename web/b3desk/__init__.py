@@ -209,6 +209,8 @@ def setup_jinja(app):
 
     @app.context_processor
     def global_processor():
+        from b3desk.nextcloud import get_nextcloud_available
+
         return {
             "debug": app.debug,
             "config": app.config,
@@ -216,6 +218,7 @@ def setup_jinja(app):
             "development_version": __version__ == "0.0.0" or "dev" in __version__,
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
+            "nextcloud_available": get_nextcloud_available,
             "version": __version__,
             "LANGUAGES": LANGUAGES,
             "Role": Role,

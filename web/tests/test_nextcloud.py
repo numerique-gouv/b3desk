@@ -44,8 +44,8 @@ def test_healthcheck_success_after_retry(client_app, user, mocker):
     assert user.nc_login is not None
 
 
-def test_healthcheck_fails_disables_nextcloud(client_app, user, mocker):
-    """Healthcheck fails twice and disables Nextcloud for user."""
+def test_healthcheck_fails_preserves_credentials(client_app, user, mocker):
+    """Healthcheck fails twice but preserves user credentials."""
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
@@ -57,9 +57,9 @@ def test_healthcheck_fails_disables_nextcloud(client_app, user, mocker):
     result = nextcloud_healthcheck(user)
 
     assert result is False
-    assert user.nc_login is None
-    assert user.nc_locator is None
-    assert user.nc_token is None
+    assert user.nc_login is not None
+    assert user.nc_locator is not None
+    assert user.nc_token is not None
 
 
 def test_healthcheck_missing_login(client_app, user, mocker):
