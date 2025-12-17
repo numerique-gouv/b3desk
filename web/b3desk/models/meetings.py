@@ -202,10 +202,10 @@ class Meeting(db.Model):
                     self.voiceBridge,
                     result["voiceBridge"],
                 )
-        else:
-            current_app.logger.warning(
-                "BBB room has not been properly created: %s", result
-            )
+
+        current_app.logger.info(
+            "BBB room %s creation result: %s", self.meetingID, result
+        )
 
         return result if result else {}
 
