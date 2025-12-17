@@ -178,8 +178,12 @@ def create_bbb_meeting(meeting, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
     )
+
+    current_app.logger.info(
+        "BBB room %s creation result: %s", meeting.meetingID, result
+    )
+
     if not BBB.success(result):
-        current_app.logger.warning("BBB room has not been properly created: %s", result)
         return False
 
     if meeting.files:
@@ -296,8 +300,10 @@ def create_bbb_quick_meeting(
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
     )
+
+    current_app.logger.info("BBB room %s creation result: %s", meeting_id, result)
+
     if not BBB.success(result):
-        current_app.logger.warning("BBB room has not been properly created: %s", result)
         return False
 
     return True
