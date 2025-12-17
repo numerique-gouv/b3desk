@@ -74,10 +74,10 @@ def get_or_create_user(user_info):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.Unicode(150), unique=True)
+    email = db.Column(db.Unicode(255), unique=True)
     given_name = db.Column(db.Unicode(50))
     family_name = db.Column(db.Unicode(50))
-    preferred_username = db.Column(db.Unicode(50), nullable=True)
+    preferred_username = db.Column(db.Unicode(255), nullable=True)
     nc_locator = db.Column(db.Unicode(255))
     nc_login = db.Column(db.Unicode(255))
     nc_token = db.Column(db.Unicode(255))
