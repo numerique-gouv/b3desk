@@ -4,7 +4,7 @@ Le `docker-compose.override.yml` permet de reproduire des conditions proches de 
 
 Il reste cependant difficile de partager des fichiers depuis un nextcloud local vers une instance BigBlueButton.
 
-En effet, les différents services communiquent localement entre eux grâce au réseau mis en place par Docker. l'application B3Desk est accessible localement sur b3desk.localhost:5000 et grâce à la configuration du `etc/host` la machine locale peut accéder avec un navigateur au keycloak sur `keycloak:8080` et au nextcloud sur `nextcloud:80`.
+En effet, les différents services communiquent localement entre eux grâce au réseau mis en place par Docker. l'application B3Desk est accessible localement sur b3desk.localhost:5000 et grâce à la configuration du `etc/host` la machine locale peut accéder avec un navigateur au keycloak sur `keycloak:8080` et au nextcloud sur `nextcloud:8000`.
 
 La problématique que l'on rencontre sur le partage de fichier depuis Nextcloud par exemple pour le partage d'un second fichier qui va nécessairement passer par le worker Celery, est que l'url partagée par B3Desk pointe sur `b3desk.localhost:5000` qui est son domaine local. Or, lorsque le worker Celery communique cette url à une instance BigBlueButton, ce domaine ne va rien signifier pour lui, et le fichier ne sera pas téléchargé dans la visio.
 
