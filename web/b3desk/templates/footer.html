@@ -63,6 +63,11 @@
                     <li class="fr-footer__bottom-item">
                         <a class="fr-footer__bottom-link" href="{{ url_for("public.cgu") }}">{% trans %}Conditions générales d’utilisation{% endtrans %}</a>
                     </li>
+                    {% if config.get("CONTACT_LINK") %}
+                        <li class="fr-footer__bottom-item">
+                            <a class="fr-footer__bottom-link" href="{{ config.get("CONTACT_LINK") }}" target="_blank">{% trans %}Contact{% endtrans %}</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
