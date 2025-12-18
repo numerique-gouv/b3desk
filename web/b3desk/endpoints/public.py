@@ -69,7 +69,6 @@ def home():
     return render_template(
         "index.html",
         stats=stats,
-        mail_meeting=current_app.config["MAIL_MEETING"],
         max_participants=current_app.config["MAX_PARTICIPANTS"],
         should_display_captcha=should_display_captcha(),
     )

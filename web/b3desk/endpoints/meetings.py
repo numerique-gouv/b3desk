@@ -40,9 +40,6 @@ from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import meeting_owner_needed
-from ..utils import is_accepted_email
-from ..utils import is_valid_email
-from ..utils import send_quick_meeting_mail
 
 bp = Blueprint("meetings", __name__)
 
@@ -56,33 +53,6 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
         role=role,
         signin_url=signin_url,
     ).replace("\n", "%0D%0A")
-
-
-@bp.route("/meeting/mail", methods=["POST"])
-def quick_mail_meeting():
-    """Send a quick meeting invitation link to the provided email address."""
-    #### Almost the same as quick meeting but we do not redirect to join
-    email = request.form.get("mail")
-    if not is_valid_email(email):
-        flash(
-            _(
-                "Courriel invalide. Avez vous bien tapé votre email ? Vous pouvez réessayer."
-            ),
-            "error_login",
-        )
-        return redirect(url_for("public.index"))
-    if not is_accepted_email(email):
-        flash(
-            _(
-                "Ce courriel ne correspond pas à un service de l'État. Si vous appartenez à un service de l'État mais votre courriel n'est pas reconnu par Webinaire, contactez-nous pour que nous le rajoutions !"
-            ),
-            "error_login",
-        )
-        return redirect(url_for("public.index"))
-    meeting = get_quick_meeting_from_fake_id()
-    send_quick_meeting_mail(meeting, email)
-    flash(_("Vous avez reçu un courriel pour vous connecter"), "success_login")
-    return redirect(url_for("public.index"))
 
 
 @bp.route("/meeting/quick")

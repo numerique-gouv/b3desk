@@ -294,7 +294,6 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
         "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
-        "MAIL_MEETING": True,
         "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,

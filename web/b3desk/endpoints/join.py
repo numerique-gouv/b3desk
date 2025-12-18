@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import Blueprint
 from flask import abort
 from flask import current_app
@@ -12,13 +10,11 @@ from flask import url_for
 from flask_babel import lazy_gettext as _
 
 from b3desk.endpoints.captcha import captcha_validation
-from b3desk.forms import JoinMailMeetingForm
 from b3desk.forms import JoinMeetingForm
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_hash
 from b3desk.join import get_join_url
-from b3desk.join import get_mail_signin_hash
 from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
@@ -41,67 +37,6 @@ bp = Blueprint("join", __name__)
 SECONDS_BEFORE_REFRESH = 10
 INCREASE_REFRESH_TIME = 1.5
 MAXIMUM_REFRESH_TIME = 60
-
-
-@bp.route(
-    "/meeting/signinmail/<meeting_fake_id>/expiration/<expiration>/hash/<hash_>",
-)
-def signin_mail_meeting(meeting_fake_id, expiration, hash_):
-    """Display the join form for quick meetings accessed via email link."""
-    hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
-    if not hash_matches:
-        flash(_("Lien invalide"), "error")
-        return redirect(url_for("public.index"))
-
-    is_expired = datetime.fromtimestamp(float(expiration)) < datetime.now()
-    if is_expired:
-        flash(_("Lien expiré"), "error")
-        return redirect(url_for("public.index"))
-
-    return render_template(
-        "meeting/signinmail.html",
-        meeting_fake_id=meeting_fake_id,
-        expiration=expiration,
-        hash_=hash_,
-        role=Role.moderator,
-    )
-
-
-@bp.route("/meeting/joinmail", methods=["POST"])
-def join_mail_meeting():
-    """Process the join form submission for email-accessed quick meetings."""
-    form = JoinMailMeetingForm(request.form)
-    if not form.validate():
-        flash(_("Lien invalide"), "error")
-        return redirect(url_for("public.index"))
-
-    fullname = form["fullname"].data
-    meeting_fake_id = form["meeting_fake_id"].data
-    expiration = form["expiration"].data
-    hash_ = form["hash_"].data
-
-    hash_matches = get_mail_signin_hash(meeting_fake_id, expiration) == hash_
-    if not hash_matches:
-        flash(_("Lien invalide"), "error")
-        return redirect(url_for("public.index"))
-
-    is_expired = datetime.fromtimestamp(expiration) < datetime.now()
-    if is_expired:
-        flash(_("Lien expiré"), "error")
-        return redirect(url_for("public.index"))
-
-    meeting = Meeting()
-    meeting.fake_id = meeting_fake_id
-    created = create_bbb_quick_meeting(meeting_fake_id, g.user, is_mail_meeting=True)
-    return redirect(
-        get_join_url(
-            meeting,
-            Role.moderator,
-            fullname,
-            quick_meeting=True,
-            waiting_room=not created,
-        )
-    )
 
 
 # The role needs to appear in the URL, even if it is unused, so user won't

@@ -1,17 +1,11 @@
 import random
-import re
-import smtplib
 import string
-from email.message import EmailMessage
-from email.mime.text import MIMEText
 from functools import wraps
 
 from flask import abort
 from flask import current_app
 from flask import flash
-from flask import render_template
 from flask import request
-from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from joserfc.errors import BadSignatureError
@@ -26,7 +20,6 @@ from slugify import slugify
 from werkzeug.routing import BaseConverter
 
 from b3desk.models import db
-from b3desk.models.roles import Role
 
 
 def secret_key():
@@ -46,64 +39,11 @@ def is_rie():
     )
 
 
-def is_accepted_email(email):
-    """Check if email matches any regex pattern in the configured whitelist."""
-    for regex in current_app.config["EMAIL_WHITELIST"]:
-        if re.search(regex, email):
-            return True
-    return False
-
-
-def is_valid_email(email):
-    """Validate email address format using regex pattern."""
-    if not email or not re.search(
-        r"^([a-zA-Z0-9_\-\.']+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email
-    ):
-        return False
-    return True
-
-
 def get_random_alphanumeric_string(length):
     """Generate a random alphanumeric string of specified length."""
     letters_and_digits = string.ascii_letters + string.digits
     result_str = "".join(random.choice(letters_and_digits) for i in range(length))
     return result_str
-
-
-def send_quick_meeting_mail(meeting, to_email):
-    """Send quick meeting invitation email with meeting access link."""
-    from b3desk.join import get_mail_signin_url
-
-    smtp_from = current_app.config["SMTP_FROM"]
-    smtp_host = current_app.config["SMTP_HOST"]
-    smtp_port = current_app.config["SMTP_PORT"]
-    smtp_ssl = current_app.config["SMTP_SSL"]
-    smtp_starttls = current_app.config["SMTP_STARTTLS"]
-    smtp_username = current_app.config["SMTP_USERNAME"]
-    smtp_password = current_app.config["SMTP_PASSWORD"]
-    wordings = current_app.config["WORDINGS"]
-    msg = EmailMessage()
-    content = render_template(
-        "meeting/mailto/mail_quick_meeting_body.txt",
-        role=Role.moderator,
-        moderator_mail_signin_url=get_mail_signin_url(meeting),
-        welcome_url=url_for("public.welcome", _external=True),
-        meeting=meeting,
-    )
-    msg["Subject"] = str(wordings["meeting_mail_subject"])
-    msg["From"] = smtp_from
-    msg["To"] = to_email
-    html = MIMEText(content, "html")
-    msg.make_mixed()  # This converts the message to multipart/mixed
-    msg.attach(html)
-
-    connection_func = smtplib.SMTP_SSL if smtp_ssl else smtplib.SMTP
-    with connection_func(smtp_host, smtp_port) as smtp:
-        if smtp_starttls:
-            smtp.starttls()
-        if smtp_username:
-            smtp.login(smtp_username, smtp_password)
-        smtp.send_message(msg)
 
 
 def model_converter(model):
