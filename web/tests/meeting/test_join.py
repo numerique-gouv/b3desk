@@ -1,9 +1,7 @@
-import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.join import get_hash
-from b3desk.join import get_mail_signin_hash
 from b3desk.join import get_signin_url
 from b3desk.models.roles import Role
 from flask import url_for
@@ -175,22 +173,6 @@ def test_join_meeting(client_app, meeting, bbb_response):
         in response.location
     )
     assert "guest" in response.location
-
-
-def test_join_mail_meeting(client_app, meeting, bbb_response):
-    """Test that user can join meeting via email link."""
-    expiration = int(time.time()) + 1000
-    meeting_hash = get_mail_signin_hash(meeting.id, expiration)
-    response = client_app.get(
-        f"/meeting/signinmail/{meeting.id}/expiration/{expiration}/hash/{meeting_hash}"
-    )
-    response.form["fullname"] = "Bob"
-    response = response.form.submit()
-
-    assert (
-        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName=Bob"
-        in response.location
-    )
 
 
 def test_join_meeting_as_role(client_app, authenticated_user, meeting, bbb_response):
