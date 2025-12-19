@@ -1,6 +1,5 @@
 import hashlib
 from datetime import datetime
-from datetime import timedelta
 
 from flask import current_app
 from flask import render_template
@@ -8,7 +7,6 @@ from flask import url_for
 
 from b3desk.models import db
 from b3desk.models.roles import Role
-from b3desk.utils import secret_key
 
 
 def get_hash(meeting, role: Role, hash_from_string=False):
@@ -92,27 +90,6 @@ def get_signin_url(meeting, meeting_role: Role):
     )
 
 
-def get_mail_signin_hash(meeting_id, expiration_epoch):
-    """Generate a hash for mail-based sign-in with expiration."""
-    s = f"{meeting_id}-{expiration_epoch}"
-    return hashlib.sha256(s.encode("utf-8") + secret_key().encode("utf-8")).hexdigest()
-
-
-def get_mail_signin_url(meeting):
-    """Generate a time-limited sign-in URL for mail invitations."""
-    expiration = str((datetime.now() + timedelta(weeks=1)).timestamp()).split(".")[
-        0
-    ]  # remove milliseconds
-    hash_param = get_mail_signin_hash(meeting.fake_id, expiration)
-    return url_for(
-        "join.signin_mail_meeting",
-        meeting_fake_id=meeting.fake_id,
-        expiration=expiration,
-        hash_=hash_param,
-        _external=True,
-    )
-
-
 def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
@@ -180,8 +157,12 @@ def create_bbb_meeting(meeting, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
     )
+
+    current_app.logger.info(
+        "BBB room %s creation result: %s", meeting.meetingID, result
+    )
+
     if not BBB.success(result):
-        current_app.logger.warning("BBB room has not been properly created: %s", result)
         return False
 
     if meeting.files:
@@ -200,11 +181,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     return True
 
 
-def create_bbb_quick_meeting(
-    fake_id: str,
-    user=None,
-    is_mail_meeting: bool = False,
-) -> bool:
+def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     """Create a BBB room for a quick meeting."""
     from b3desk.models.bbb import BBB
     from b3desk.models.meetings import get_deterministic_password
@@ -213,9 +190,7 @@ def create_bbb_quick_meeting(
     meeting_id = f"meeting-vanish-{fake_id}--"
     name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
     moderator_pw = get_deterministic_password(fake_id, "moderator")
-    attendee_pw = (
-        None if is_mail_meeting else get_deterministic_password(fake_id, "attendee")
-    )
+    attendee_pw = get_deterministic_password(fake_id, "attendee")
     meta_academy = user.mail_domain if user and user.mail_domain else None
 
     bbb = BBB(meeting_id)
@@ -228,58 +203,38 @@ def create_bbb_quick_meeting(
         pin_generation() if current_app.config["ENABLE_PIN_MANAGEMENT"] else None
     )
 
-    if is_mail_meeting:
-        expiration = str((datetime.now() + timedelta(weeks=1)).timestamp()).split(".")[
-            0
-        ]
-        mail_signin_url = url_for(
-            "join.signin_mail_meeting",
-            meeting_fake_id=fake_id,
-            expiration=expiration,
-            hash_=get_mail_signin_hash(fake_id, expiration),
-            _external=True,
-        )
-        moderator_only_message = render_template(
-            "meeting/signin_mail_link.html",
-            main_message=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
-            link=mail_signin_url,
-        )
-    else:
+    def compute_hash(role: Role) -> str:
+        s = f"{meeting_id}|{attendee_pw}|{name}|{role}"
+        return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
-        def compute_hash(role: Role) -> str:
-            s = f"{meeting_id}|{attendee_pw}|{name}|{role}"
-            return hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-        moderator_signin_url = url_for(
-            "join.signin_meeting",
-            meeting_fake_id=fake_id,
-            hash_=compute_hash(Role.moderator),
-            role=Role.moderator,
-            _external=True,
-            _scheme=current_app.config["PREFERRED_URL_SCHEME"],
-        )
-        attendee_signin_url = url_for(
-            "join.signin_meeting",
-            meeting_fake_id=fake_id,
-            hash_=compute_hash(Role.attendee),
-            role=Role.attendee,
-            _external=True,
-            _scheme=current_app.config["PREFERRED_URL_SCHEME"],
-        )
-        moderator_only_message = render_template(
-            "meeting/signin_links.html",
-            moderator_message=current_app.config[
-                "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-            ],
-            moderator_link_introduction=current_app.config[
-                "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
-            ],
-            moderator_signin_url=moderator_signin_url,
-            attendee_link_introduction=current_app.config[
-                "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
-            ],
-            attendee_signin_url=attendee_signin_url,
-        )
+    moderator_signin_url = url_for(
+        "join.signin_meeting",
+        meeting_fake_id=fake_id,
+        hash_=compute_hash(Role.moderator),
+        role=Role.moderator,
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+    attendee_signin_url = url_for(
+        "join.signin_meeting",
+        meeting_fake_id=fake_id,
+        hash_=compute_hash(Role.attendee),
+        role=Role.attendee,
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+    moderator_only_message = render_template(
+        "meeting/signin_links.html",
+        moderator_message=current_app.config["QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"],
+        moderator_link_introduction=current_app.config[
+            "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
+        ],
+        moderator_signin_url=moderator_signin_url,
+        attendee_link_introduction=current_app.config[
+            "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
+        ],
+        attendee_signin_url=attendee_signin_url,
+    )
 
     logout_url = current_app.config["QUICK_MEETING_LOGOUT_URL"] or url_for(
         "public.index", _external=True
@@ -304,8 +259,10 @@ def create_bbb_quick_meeting(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
     )
+
+    current_app.logger.info("BBB room %s creation result: %s", meeting_id, result)
+
     if not BBB.success(result):
-        current_app.logger.warning("BBB room has not been properly created: %s", result)
         return False
 
     return True

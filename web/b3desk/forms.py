@@ -23,10 +23,6 @@ class JoinMeetingForm(FlaskForm):
     quick_meeting = BooleanField()
 
 
-class JoinMailMeetingForm(JoinMeetingForm):
-    expiration = IntegerField()
-
-
 class ShowMeetingForm(Form):
     meeting_id = IntegerField()
 

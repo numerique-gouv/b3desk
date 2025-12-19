@@ -95,7 +95,7 @@
     </div>
 {% else %}
     <!-- Contenu de la homepage non connecté sans la suite -->
-    <div class="highlight-background {% if mail_meeting %}primary-section{% endif %}{% if not mail_meeting %}secondary-section{% endif %}">
+    <div class="highlight-background secondary-section">
         <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="fr-col-md-6">
@@ -126,54 +126,6 @@
                     </p>
                 {% endif %}
             </div>
-        </div>
-    </div>
-
-    {% if mail_meeting %}
-        <div class="fr-container fr-my-4w">
-            <div class="fr-grid-row">
-                <div class="fr-col-md-9">
-                    <h1 class="fr-text--lead fr-text--bold">{% trans %}Démarrer {{ a_meeting }} en ligne immédiatement{% endtrans %}</h1>
-                    {% with messages = get_flashed_messages(with_categories=true, category_filter=["error_login","success_login", "warning"]) %}
-                        {% if messages %}
-                            {% for category,message in messages %}
-                                <div class="fr-alert fr-alert--sm fr-alert--{{ 'error' if category == 'error_login' else 'info' }}">
-                                    <p>{{ message }}</p>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    <p class="fr-text">{% trans %}Recevez par courriel un lien organisateur {{ of_the_meeting }}, actif une semaine, à envoyer aux participants.{% endtrans %}</p>
-                    <form action="{{ url_for("meetings.quick_mail_meeting") }}" method="POST">
-                        {% include 'meeting/csrf.html' %}
-                        <div class="fr-input-group fr-grid-row fr-grid-row--gutters">
-                            <div class="fr-col-12 fr-col-md-6">
-                                <label for="mail" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre courriel professionnel{% endtrans %}</label>
-                                <input type="mail" class="fr-input" id="mail" name="mail"/>
-                            </div>
-                            <div class="fr-col-12 fr-col-md-6 mail-create-button-container">
-                                <button type="submit" class="fr-btn {% if mail_meeting %} fr-btn--secondary {% endif %}" >{% trans %}Créer {{ my_meeting }}{% endtrans %}</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="fr-col-md-3">
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    <div class="highlight-background secondary-section">
-        <div class="fr-container fr-mt-4w">
-            {% if mail_meeting %}
-
-                <div class="fr-grid-row">
-                    <div class="fr-col-md-6">
-                        <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous essayez de rejoindre {{ a_meeting }}{% endtrans %}</h1>
-                        <p class="fr-text">{% trans %}Pour rejoindre {{ a_meeting_to_which }} vous êtes invité, cliquez sur le lien que vous a transmis l'organisateur/modérateur.{% endtrans %}</p>
-                        <p></p>
-                    </div>
-                </div>
-            {% endif %}
         </div>
     </div>
 {% endif %}

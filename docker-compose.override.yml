@@ -65,7 +65,7 @@ services:
       - ./nextcloud/html:/var/www/html
       - ./nextcloud/conf:/var/www/conf  # to share Nextcloud Sessiontoken generated key file
     ports:
-      - 80:80
+      - 8000:80
     healthcheck:
       test: ["CMD", "curl", "-f", "http://nextcloud.localhost:80/login"]
       start_period: 60s
@@ -82,7 +82,7 @@ services:
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}  # to get shared NC_LOGIN_API_KEY
     environment:
-      - NC_HOST=http://nextcloud.localhost  # nextcloud service in docker network
+      - NC_HOST=http://nextcloud.localhost:8000  # nextcloud service in docker network
     volumes:
       - ./nextcloud/conf:/opt/app/conf  # to get shared Nextcloud Sessiontoken generated key
     ports:

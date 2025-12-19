@@ -93,11 +93,24 @@ def test_change_language(app):
     res = client_app.get("/faq?lang=fr", status=200)
     assert res.session["lang"] == "fr"
 
-    res = client_app.get("/faq?lang=uk", status=200)
-    assert res.session["lang"] == "uk"
+    res = client_app.get("/faq?lang=en", status=200)
+    assert res.session["lang"] == "en"
 
     res = client_app.get("/faq", status=200)
-    assert res.session["lang"] == "uk"
+    assert res.session["lang"] == "en"
+
+
+def test_change_language_rejects_invalid_locales(app):
+    """Test that invalid language values are rejected to prevent injection."""
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert res.session["lang"] == "fr"
+
+    res = client_app.get("/faq?lang=invalid", status=200)
+    assert res.session["lang"] == "fr"
+
+    res = client_app.get("/faq?lang='\"efx", status=200)
+    assert res.session["lang"] == "fr"
 
 
 def test_faq__anonymous_user(client_app):
