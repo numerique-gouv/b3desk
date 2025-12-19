@@ -7,23 +7,87 @@ import requests
 from flask import current_app
 from flask import g
 from webdav3.client import Client as webdavClient
+from webdav3.exceptions import ConnectionException
+from webdav3.exceptions import NoConnection
+from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
 
+from b3desk import cache
+from b3desk.models import db
 
-def get_nextcloud_available():
-    """Lazy evaluation of Nextcloud availability, cached in flask.g."""
-    if not hasattr(g, "nextcloud_available"):
-        if g.user and g.user.has_nc_credentials:
-            g.nextcloud_available = nextcloud_healthcheck(g.user)
-        else:
-            g.nextcloud_available = False
-    return g.nextcloud_available
+NEXTCLOUD_BACKOFF_INITIAL = 5
+NEXTCLOUD_BACKOFF_MULTIPLIER = 2
+NEXTCLOUD_BACKOFF_MAX = 300
+
+
+def is_nextcloud_available():
+    """Check if Nextcloud is available for the current user.
+
+    Returns True optimistically unless Nextcloud is marked as unavailable in cache.
+    No network request is made here; failures are detected during actual operations.
+    """
+    if hasattr(g, "is_nextcloud_available"):
+        return g.is_nextcloud_available
+
+    if not g.user or not g.user.has_nc_credentials:
+        g.is_nextcloud_available = False
+        return False
+
+    nc_locator = g.user.nc_locator
+    if not nc_locator:
+        g.is_nextcloud_available = False
+        return False
+
+    unavailable_key = f"nc_unavailable:{nc_locator}"
+    g.is_nextcloud_available = not cache.get(unavailable_key)
+    return g.is_nextcloud_available
+
+
+def mark_nextcloud_unavailable(nc_locator):
+    """Mark a Nextcloud instance as unavailable with exponential backoff."""
+    unavailable_key = f"nc_unavailable:{nc_locator}"
+    backoff_key = f"nc_backoff:{nc_locator}"
+
+    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
+    cache.set(unavailable_key, True, timeout=current_backoff)
+
+    next_backoff = min(
+        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
+    )
+    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
+
+    current_app.logger.info(
+        "Nextcloud %s marked unavailable, next retry in %ds",
+        nc_locator,
+        current_backoff,
+    )
+
+
+def mark_nextcloud_available(nc_locator):
+    """Reset Nextcloud availability state after a successful operation."""
+    cache.delete(f"nc_backoff:{nc_locator}")
+
+
+def is_nextcloud_unavailable_error(error):
+    """Check if a WebDAV error indicates Nextcloud is unavailable."""
+    if isinstance(error, (NoConnection, ConnectionException)):
+        return True
+
+    if isinstance(error, ResponseErrorCode) and error.code >= 500:
+        return True
+
+    return False
 
 
 def create_webdav_client(user) -> webdavClient | None:
-    """Create a WebDAV client configured for a user's Nextcloud account."""
+    """Create a WebDAV client configured for a user's Nextcloud account.
+
+    Also stores nc_locator in g for error handler access.
+    """
     if not user.nc_login or not user.nc_locator or not user.nc_token:
         return None
+
+    g.nc_locator = user.nc_locator
 
     options = {
         "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
@@ -285,29 +349,32 @@ def update_user_nc_credentials(user, force_renew=False):
     return True
 
 
-def nextcloud_healthcheck(user):
-    """Perform a simple WebDAV operation to check the server connection.
+def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
+    """Test WebDAV connection and update availability status accordingly.
 
-    On errors, attempt to renew the credentials and perform one single retry.
+    If retry_on_wrong_credentials is True and connection fails,
+    credentials are refreshed and connection is retried once.
     """
 
-    def _healthcheck():
-        try:
-            if (client := create_webdav_client(user)) is None:
-                return False
+    def handle_error():
+        if retry_on_wrong_credentials and update_user_nc_credentials(
+            user, force_renew=True
+        ):
+            db.session.commit()
+            return check_nextcloud_connection(user, retry_on_wrong_credentials=False)
+        return False
 
-            client.list()
-        except WebDavException as exception:
-            current_app.logger.warning("WebDAV error: %s", exception)
-            return False
-        return True
+    if (client := create_webdav_client(user)) is None:
+        return handle_error()
 
-    if _healthcheck():
-        return True
+    try:
+        client.list()
+    except WebDavException as exception:
+        current_app.logger.warning("WebDAV error: %s", exception)
 
-    update_user_nc_credentials(user, force_renew=True)
+        if is_nextcloud_unavailable_error(exception):
+            mark_nextcloud_unavailable(user.nc_locator)
 
-    if _healthcheck():
-        return True
+        return handle_error()
 
-    return False
+    return True

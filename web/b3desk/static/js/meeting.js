@@ -272,9 +272,11 @@ function printout_message(msg){
     }, 3000)
 }
 
-function close_dialog(id){
-    let dialogToClose = document.getElementById(id);
-    dsfr(dialogToClose).modal.conceal();
+function close_open_modal() {
+    const openModal = document.querySelector('.fr-modal--opened');
+    if (openModal) {
+        dsfr(openModal).modal.conceal();
+    }
 }
 
 // post data as :
@@ -311,9 +313,7 @@ function link_file_to_meeting(value, from) {
         if (data.status == 200) {
             append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
             printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
-            if (data.isfrom !== 'nextcloud') {
-                close_dialog(data.isfrom);
-            }
+            close_open_modal();
         } else {
             throw data
         }
@@ -321,9 +321,7 @@ function link_file_to_meeting(value, from) {
     .catch(data => {
         console.log(data)
         printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
-        if (data.isfrom !== 'nextcloud') {
-            close_dialog(data.isfrom);
-        }
+        close_open_modal();
     })
 }
 

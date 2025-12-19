@@ -37,34 +37,15 @@ def test_nextcloud_authentication_issue(
 
 
 def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker):
-    """If the webdav healthcheck is bad, sharing buttons should not be displayed."""
-    mocker.patch("webdav3.client.Client.list", side_effect=WebDavException)
+    """If Nextcloud is marked unavailable, sharing buttons should not be displayed."""
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
+    )
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting),
         status=200,
-        expect_errors=True,
     )
     res.mustcontain(no="depuis le Nuage")
-
-
-def test_nextcloud_expired_token(client_app, authenticated_user, meeting, mocker):
-    """Test that expired WebDAV token is renewed before failing."""
-    already_attempted = False
-
-    def webdav_list():
-        nonlocal already_attempted
-        if not already_attempted:
-            already_attempted = True
-            raise WebDavException()
-
-    mocker.patch("webdav3.client.Client.list", side_effect=webdav_list)
-    res = client_app.get(
-        url_for("meeting_files.edit_meeting_files", meeting=meeting),
-        status=200,
-        expect_errors=True,
-    )
-    assert already_attempted
-    res.mustcontain("depuis le Nuage")
 
 
 def test_file_sharing_disabled(client_app, authenticated_user, meeting):

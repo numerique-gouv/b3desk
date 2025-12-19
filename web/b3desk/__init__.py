@@ -209,8 +209,6 @@ def setup_jinja(app):
 
     @app.context_processor
     def global_processor():
-        from b3desk.nextcloud import get_nextcloud_available
-
         return {
             "debug": app.debug,
             "config": app.config,
@@ -218,7 +216,6 @@ def setup_jinja(app):
             "development_version": __version__ == "0.0.0" or "dev" in __version__,
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
-            "nextcloud_available": get_nextcloud_available,
             "version": __version__,
             "LANGUAGES": LANGUAGES,
             "Role": Role,
@@ -245,6 +242,15 @@ def setup_flask(app):
 
 def setup_error_pages(app):
     """Register HTTP error handlers for common error codes."""
+    from flask import flash
+    from flask import g
+    from flask import jsonify
+    from flask import redirect
+    from flask_babel import lazy_gettext as _
+    from webdav3.exceptions import WebDavException
+
+    from b3desk.nextcloud import is_nextcloud_unavailable_error
+    from b3desk.nextcloud import mark_nextcloud_unavailable
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -265,6 +271,24 @@ def setup_error_pages(app):
     @app.errorhandler(BigBlueButtonUnavailable)
     def bigbluebutton_unavailable_error(error):
         return render_template("errors/big-blue-button-error.html", error=error)
+
+    @app.errorhandler(WebDavException)
+    def webdav_error(error):
+        app.logger.warning("WebDAV error: %s", error)
+
+        if is_nextcloud_unavailable_error(error):
+            mark_nextcloud_unavailable(g.nc_locator)
+
+        wants_html = (
+            request.accept_mimetypes.best_match(["application/json", "text/html"])
+            == "text/html"
+        )
+
+        if wants_html:
+            flash(_("La connexion avec Nextcloud est rompue"), "error")
+            return redirect(url_for("public.welcome"))
+
+        return jsonify(status=500, msg=_("La connexion avec Nextcloud est rompue"))
 
 
 def setup_endpoints(app):

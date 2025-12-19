@@ -21,7 +21,6 @@ from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from sqlalchemy import exc
-from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
@@ -32,6 +31,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
+from b3desk.nextcloud import check_nextcloud_connection
 from b3desk.nextcloud import create_webdav_client
 from b3desk.utils import check_oidc_connection
 
@@ -53,6 +53,10 @@ def edit_meeting_files(meeting: Meeting, owner: User):
     if not current_app.config["FILE_SHARING"]:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
+
+    g.is_nextcloud_available = check_nextcloud_connection(
+        owner, retry_on_wrong_credentials=True
+    )
 
     return render_template(
         "meeting/filesform.html",
@@ -119,16 +123,8 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         flash(_("Le fichier ne semble pas accessible"), "error")
         return redirect(url_for("public.welcome"))
 
-    try:
-        client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
-        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
-
-    except WebDavException as exception:
-        current_app.logger.warning(
-            "webdav call encountered following exception : %s", exception
-        )
-        flash(_("Le fichier ne semble pas accessible"), "error")
-        return redirect(url_for("public.welcome"))
+    client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
+    return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
@@ -186,7 +182,6 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
-            isfrom="dropzone",
             msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
                 title=title
             ),
@@ -198,29 +193,19 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
         return jsonify(
             status=500,
-            isfrom="dropzone",
-            msg=_("La connexion avec Nextcloud est rompue"),
+            msg=_("Missing or invalid Nextcloud credentials"),
         )
 
-    try:
-        client.mkdir("visio-agents")  # does not fail if dir already exists
-        nc_path = os.path.join("/visio-agents/" + title)
-        client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
+    client.mkdir("visio-agents")  # does not fail if dir already exists
+    nc_path = os.path.join("/visio-agents/" + title)
+    client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
 
-        meeting_file = MeetingFiles(
-            nc_path=nc_path,
-            title=title,
-            created_at=date.today(),
-            meeting_id=meeting_id,
-        )
-
-    except WebDavException as exception:
-        current_app.logger.warning("WebDAV error: %s", exception)
-        return jsonify(
-            status=500,
-            isfrom="dropzone",
-            msg=_("La connexion avec Nextcloud est rompue"),
-        )
+    meeting_file = MeetingFiles(
+        nc_path=nc_path,
+        title=title,
+        created_at=date.today(),
+        meeting_id=meeting_id,
+    )
 
     try:
         # test for is_default-file absence at the latest time possible
@@ -233,7 +218,6 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         remove_dropzone_file(dropzone_path)
         return jsonify(
             status=200,
-            isfrom="dropzone",
             isDefault=is_default,
             title=meeting_file.short_title,
             id=meeting_file.id,
@@ -244,9 +228,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="dropzone", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
@@ -258,7 +240,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     if not metadata.ok:
         return jsonify(
             status=404,
-            isfrom="url",
             msg=_(
                 "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
             ).format(title=title),
@@ -267,7 +248,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
-            isfrom="url",
             msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
                 title=title
             ),
@@ -287,7 +267,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         db.session.commit()
         return jsonify(
             status=200,
-            isfrom="url",
             isDefault=is_default,
             title=meeting_file.short_title,
             id=meeting_file.id,
@@ -298,9 +277,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="url", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
 
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
@@ -308,24 +285,14 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     if (client := create_webdav_client(g.user)) is None:
         return jsonify(
             status=500,
-            isfrom="nextcloud",
-            msg=_("La connexion avec Nextcloud semble rompue"),
+            msg=_("Missing or invalid Nextcloud credentials"),
         )
 
-    try:
-        metadata = client.info(path)
-
-    except WebDavException:
-        return jsonify(
-            status=500,
-            isfrom="nextcloud",
-            msg=_("La connexion avec Nextcloud semble rompue"),
-        )
+    metadata = client.info(path)
 
     if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
-            isfrom="nextcloud",
             msg=_("Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
                 path=path
             ),
@@ -344,13 +311,10 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         db.session.commit()
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="nextcloud", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
 
     return jsonify(
         status=200,
-        isfrom="nextcloud",
         isDefault=is_default,
         title=meeting_file.short_title,
         id=meeting_file.id,
@@ -500,14 +464,10 @@ def ncdownload(token, user, ncpath):
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
     if (client := create_webdav_client(user)) is None:
-        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
+        return jsonify(status=500, msg=_("Missing or invalid Nextcloud credentials"))
 
-    try:
-        mimetype = client.info(ncpath).get("content_type")
-        client.download_sync(remote_path=ncpath, local_path=tmp_name)
-
-    except WebDavException:
-        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
+    mimetype = client.info(ncpath).get("content_type")
+    client.download_sync(remote_path=ncpath, local_path=tmp_name)
 
     title = ncpath.split("/")[-1]
     return send_from_directory(
