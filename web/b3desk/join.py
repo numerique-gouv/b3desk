@@ -144,7 +144,9 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         else None,
         guest_policy=meeting.guestPolicy,
         presentation_upload_external_url=url_for(
-            "meeting_files.file_picker", meeting=meeting, _external=True
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
         ),
         presentation_upload_external_description=current_app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -164,7 +166,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         return False
 
     if meeting.files:
-        bbb.send_meeting_files(meeting.files, meeting=meeting)
+        bbb.send_meeting_files(meeting.files, user, meeting=meeting)
 
     if (
         current_app.config["ENABLE_PIN_MANAGEMENT"]
@@ -249,6 +251,12 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
         meta_academy=meta_academy,
         analytics_callback_url=current_app.config[
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
+        ],
+        presentation_upload_external_url=url_for(
+            "meeting_files.file_picker", bbb_meeting_id=meeting_id, _external=True
+        ),
+        presentation_upload_external_description=current_app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
     )
 

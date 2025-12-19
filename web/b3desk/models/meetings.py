@@ -8,7 +8,6 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
@@ -16,6 +15,7 @@ from datetime import timedelta
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
+from itsdangerous import URLSafeSerializer
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -28,10 +28,11 @@ from .users import User  # noqa: F401
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 
 
-def get_meeting_file_hash(meeting_file_id, isexternal):
-    return hashlib.sha1(
-        f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file_id}-{current_app.config['SECRET_KEY']}".encode()
-    ).hexdigest()
+def get_meeting_file_hash(*args):
+    serializer = URLSafeSerializer(
+        current_app.config["SECRET_KEY"], salt="meeting-file"
+    )
+    return serializer.dumps(args)
 
 
 class BaseMeetingFiles:

@@ -104,7 +104,7 @@
             <li>
                 <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">{% trans %}depuis une URL{% endtrans %}</button>
             </li>
-            {% if g.user.has_nc_credentials %}
+            {% if nextcloud_available() %}
                 <li>
                     <button onClick=openNCFilePicker(event) class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
                 </li>
@@ -138,7 +138,7 @@
                         </thead>
                         <tbody id="fileslist">
                             {% for file in meeting.files %}
-                                {% if g.user.has_nc_credentials or file.url %}
+                                {% if g.nextcloud_available or file.url %}
                             <!-- Supprimer MeetingFile -->
                                     <dialog id="delete-file-{{ file.id }}" class="fr-modal" role="dialog" aria-labelledby="delete-file-{{ file.id }}-title">
                                         <div class="fr-container fr-container--fluid fr-container-md">
