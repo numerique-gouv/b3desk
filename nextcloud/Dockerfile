@@ -1,5 +1,8 @@
 FROM nextcloud:28.0.6
 
+ARG WEBAPPPASSWORD_VERSION=24.4.0
+ENV WEBAPPPASSWORD_VERSION=${WEBAPPPASSWORD_VERSION}
+
 # cf https://github.com/nextcloud/docker/blob/master/24/apache/Dockerfile
 
 # Install.
