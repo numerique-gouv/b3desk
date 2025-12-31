@@ -18,6 +18,7 @@ from b3desk.models import db
 NEXTCLOUD_BACKOFF_INITIAL = 5
 NEXTCLOUD_BACKOFF_MULTIPLIER = 2
 NEXTCLOUD_BACKOFF_MAX = 300
+NEXTCLOUD_REQUEST_TIMEOUT = 10
 
 
 def is_nextcloud_available():
@@ -122,6 +123,37 @@ def clear_user_auth_backoff(user):
     cache.delete(f"nc_auth_backoff:{user.id}")
 
 
+def is_credentials_fetch_blocked(user):
+    """Check if user is in backoff due to credentials fetch failures."""
+    return cache.get(f"nc_credentials_failed:{user.id}") is not None
+
+
+def mark_credentials_fetch_failed(user):
+    """Mark user in backoff after credentials fetch failure with exponential backoff."""
+    key = f"nc_credentials_failed:{user.id}"
+    backoff_key = f"nc_credentials_backoff:{user.id}"
+
+    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
+    cache.set(key, True, timeout=current_backoff)
+
+    next_backoff = min(
+        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
+    )
+    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
+
+    current_app.logger.info(
+        "User %s credentials fetch failed, next retry in %ds",
+        user.id,
+        current_backoff,
+    )
+
+
+def clear_credentials_fetch_backoff(user):
+    """Reset credentials fetch backoff after successful fetch."""
+    cache.delete(f"nc_credentials_failed:{user.id}")
+    cache.delete(f"nc_credentials_backoff:{user.id}")
+
+
 def is_auth_error(error):
     """Check if a WebDAV error indicates authentication failure."""
     return isinstance(error, ResponseErrorCode) and error.code in (401, 403)
@@ -152,7 +184,9 @@ def make_nextcloud_credentials_request(url, payload, headers):
     Handles URL validation and HTTPS enforcement based on configuration.
     """
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(
+            url, json=payload, headers=headers, timeout=NEXTCLOUD_REQUEST_TIMEOUT
+        )
         data = response.json()
     except requests.exceptions.RequestException as e:
         current_app.logger.error(
@@ -216,6 +250,7 @@ def get_secondary_identity_provider_token():
             "client_id": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_ID']}",
             "client_secret": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET']}",
         },
+        timeout=NEXTCLOUD_REQUEST_TIMEOUT,
     )
 
 
@@ -228,6 +263,7 @@ def get_secondary_identity_provider_users_from_email(email, access_token):
             "cache-control": "no-cache",
         },
         params={"email": email},
+        timeout=NEXTCLOUD_REQUEST_TIMEOUT,
     )
 
 
@@ -374,6 +410,12 @@ def update_user_nc_credentials(user, force_renew=False):
         )
         return False
 
+    if is_credentials_fetch_blocked(user):
+        current_app.logger.debug(
+            "Credentials fetch blocked for user %s, skipping", user.id
+        )
+        return False
+
     data = get_user_nc_credentials(user)
     if (
         not data
@@ -383,35 +425,35 @@ def update_user_nc_credentials(user, force_renew=False):
         or data["nctoken"] is None
     ):
         current_app.logger.info(
-            "No new Nextcloud enroll needed for user %s with those data %s", user, data
+            "Could not retrieve Nextcloud credentials for user %s: %s", user, data
         )
-        nc_last_auto_enroll = None
-    else:
-        current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
-        nc_last_auto_enroll = datetime.now()
+        mark_credentials_fetch_failed(user)
+        return False
 
-    user.nc_locator = data.get("nclocator")
-    user.nc_token = data.get("nctoken")
-    user.nc_login = data.get("nclogin")
-    user.nc_last_auto_enroll = nc_last_auto_enroll
+    clear_credentials_fetch_backoff(user)
+    current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
+    user.nc_locator = data["nclocator"]
+    user.nc_token = data["nctoken"]
+    user.nc_login = data["nclogin"]
+    user.nc_last_auto_enroll = datetime.now()
     return True
 
 
-def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
+def check_nextcloud_connection(user, retry_on_auth_error=False):
     """Test WebDAV connection and update availability status accordingly.
 
-    If retry_on_wrong_credentials is True and connection fails,
-    credentials are refreshed and connection is retried once.
+    If retry_on_auth_error is True and connection fails due to missing credentials
+    or authentication error (401/403), credentials are refreshed and connection
+    is retried once. Unavailability errors (connection failures, 500+) do not
+    trigger a retry.
     """
     if is_user_auth_blocked(user):
         return False
 
-    def handle_error(auth_error=False):
-        if retry_on_wrong_credentials and update_user_nc_credentials(
-            user, force_renew=True
-        ):
+    def handle_error(should_retry=False, auth_error=False):
+        if should_retry and update_user_nc_credentials(user, force_renew=True):
             db.session.commit()
-            return check_nextcloud_connection(user, retry_on_wrong_credentials=False)
+            return check_nextcloud_connection(user, retry_on_auth_error=False)
 
         if auth_error:
             mark_user_auth_failed(user)
@@ -419,7 +461,7 @@ def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
         return False
 
     if (client := create_webdav_client(user)) is None:
-        return handle_error()
+        return handle_error(should_retry=retry_on_auth_error)
 
     try:
         client.list()
@@ -429,7 +471,11 @@ def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
         if is_nextcloud_unavailable_error(exception):
             mark_nextcloud_unavailable(user.nc_locator)
 
-        return handle_error(auth_error=is_auth_error(exception))
+        auth_error = is_auth_error(exception)
+        return handle_error(
+            should_retry=retry_on_auth_error and auth_error,
+            auth_error=auth_error,
+        )
 
     clear_user_auth_backoff(user)
     return True

@@ -55,7 +55,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         return redirect(url_for("public.welcome"))
 
     g.is_nextcloud_available = check_nextcloud_connection(
-        owner, retry_on_wrong_credentials=True
+        owner, retry_on_auth_error=True
     )
 
     return render_template(

@@ -1,10 +1,14 @@
 from b3desk import cache
 from b3desk.models import db
 from b3desk.nextcloud import check_nextcloud_connection
+from b3desk.nextcloud import clear_credentials_fetch_backoff
 from b3desk.nextcloud import clear_user_auth_backoff
 from b3desk.nextcloud import is_auth_error
+from b3desk.nextcloud import is_credentials_fetch_blocked
 from b3desk.nextcloud import is_user_auth_blocked
+from b3desk.nextcloud import mark_credentials_fetch_failed
 from b3desk.nextcloud import mark_user_auth_failed
+from b3desk.nextcloud import update_user_nc_credentials
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
@@ -75,7 +79,7 @@ def test_check_connection_marks_unavailable_on_connection_error(
 
 
 def test_check_connection_retry_refreshes_credentials(client_app, user, mocker):
-    """Connection check with retry_on_wrong_credentials refreshes credentials on failure."""
+    """Connection check with retry_on_auth_error refreshes credentials on failure."""
     user.nc_login = None
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
@@ -93,7 +97,7 @@ def test_check_connection_retry_refreshes_credentials(client_app, user, mocker):
 
     update_mock.side_effect = set_credentials
 
-    result = check_nextcloud_connection(user, retry_on_wrong_credentials=True)
+    result = check_nextcloud_connection(user, retry_on_auth_error=True)
 
     assert result is True
     update_mock.assert_called_once_with(user, force_renew=True)
@@ -108,6 +112,25 @@ def test_check_connection_no_retry_by_default(client_app, user, mocker):
     update_mock = mocker.patch("b3desk.nextcloud.update_user_nc_credentials")
 
     result = check_nextcloud_connection(user)
+
+    assert result is False
+    update_mock.assert_not_called()
+
+
+def test_check_connection_no_retry_on_unavailable_error(client_app, user, mocker):
+    """Connection check does not retry credentials on unavailability errors."""
+    user.nc_login = "alice"
+    user.nc_locator = "http://nextcloud.test"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    mocker.patch(
+        "webdav3.client.Client.list", side_effect=NoConnection("nextcloud.test")
+    )
+    update_mock = mocker.patch("b3desk.nextcloud.update_user_nc_credentials")
+
+    result = check_nextcloud_connection(user, retry_on_auth_error=True)
 
     assert result is False
     update_mock.assert_not_called()
@@ -185,7 +208,7 @@ def test_check_connection_marks_user_on_auth_error_after_retry(
     )
     mocker.patch("b3desk.nextcloud.update_user_nc_credentials", return_value=True)
 
-    result = check_nextcloud_connection(user, retry_on_wrong_credentials=True)
+    result = check_nextcloud_connection(user, retry_on_auth_error=True)
 
     assert result is False
     with app.app_context():
@@ -212,3 +235,68 @@ def test_check_connection_clears_backoff_on_success(app, client_app, user, mocke
     assert result is True
     with app.app_context():
         assert cache.get(f"nc_auth_failed:{user.id}") is None
+
+
+def test_update_credentials_marks_blocked_on_failure(app, client_app, user, mocker):
+    """Credentials fetch failure marks user in backoff."""
+    user.nc_login = None
+    user.nc_locator = None
+    user.nc_token = None
+    user.nc_last_auto_enroll = None
+    db.session.add(user)
+    db.session.commit()
+
+    mocker.patch(
+        "b3desk.nextcloud.get_user_nc_credentials",
+        return_value={"error": "connection failed", "nclogin": "test"},
+    )
+
+    result = update_user_nc_credentials(user)
+
+    assert result is False
+    assert is_credentials_fetch_blocked(user) is True
+
+
+def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
+    """Credentials fetch is skipped when user is in backoff."""
+    user.nc_login = None
+    user.nc_locator = None
+    user.nc_token = None
+    user.nc_last_auto_enroll = None
+    db.session.add(user)
+    db.session.commit()
+
+    mark_credentials_fetch_failed(user)
+    get_creds_mock = mocker.patch("b3desk.nextcloud.get_user_nc_credentials")
+
+    result = update_user_nc_credentials(user)
+
+    assert result is False
+    get_creds_mock.assert_not_called()
+
+
+def test_update_credentials_clears_backoff_on_success(app, client_app, user, mocker):
+    """Successful credentials fetch clears backoff."""
+    user.nc_login = None
+    user.nc_locator = None
+    user.nc_token = None
+    user.nc_last_auto_enroll = None
+    db.session.add(user)
+    db.session.commit()
+
+    mark_credentials_fetch_failed(user)
+    clear_credentials_fetch_backoff(user)
+
+    mocker.patch(
+        "b3desk.nextcloud.get_user_nc_credentials",
+        return_value={
+            "nclogin": "alice",
+            "nclocator": "http://nextcloud.test",
+            "nctoken": "token123",
+        },
+    )
+
+    result = update_user_nc_credentials(user)
+
+    assert result is True
+    assert is_credentials_fetch_blocked(user) is False
