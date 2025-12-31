@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-31 11:23+0100\n"
+"POT-Creation-Date: 2025-12-31 12:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,65 +17,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: web/b3desk/forms.py:50
+#: web/b3desk/forms.py:59
 #, python-format
 msgid "Nom %(of_the_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:54
+#: web/b3desk/forms.py:63
 msgid ""
 "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est"
 " visible des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:58
+#: web/b3desk/forms.py:67
 #, python-format
 msgid "%(my_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:64
+#: web/b3desk/forms.py:73
 msgid "Texte de bienvenue"
 msgstr ""
 
-#: web/b3desk/forms.py:66
+#: web/b3desk/forms.py:75
 msgid ""
 "Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
 "caractères max."
 msgstr ""
 
-#: web/b3desk/forms.py:69
+#: web/b3desk/forms.py:78
 #, python-format
 msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
 msgstr ""
 
-#: web/b3desk/forms.py:74
+#: web/b3desk/forms.py:86
 msgid "Le texte est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:77
+#: web/b3desk/forms.py:91
 msgid "Nombre maximal de participants"
 msgstr ""
 
-#: web/b3desk/forms.py:78
+#: web/b3desk/forms.py:92
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:82
+#: web/b3desk/forms.py:96
 msgid "Durée maximale (minutes)"
 msgstr ""
 
-#: web/b3desk/forms.py:84
+#: web/b3desk/forms.py:98
 #, python-format
 msgid ""
 "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60,"
 " 2h = 120, 3h = 180, 4h = 240."
 msgstr ""
 
-#: web/b3desk/forms.py:91
+#: web/b3desk/forms.py:105
 msgid "Salle d'attente"
 msgstr ""
 
-#: web/b3desk/forms.py:93
+#: web/b3desk/forms.py:107
 #, python-format
 msgid ""
 "Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
@@ -83,126 +83,126 @@ msgid ""
 "individuellement."
 msgstr ""
 
-#: web/b3desk/forms.py:99
+#: web/b3desk/forms.py:113
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
-#: web/b3desk/forms.py:101
+#: web/b3desk/forms.py:115
 msgid ""
 "Seuls vous et les modérateurs pouvez voir les caméras des autres "
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:106
+#: web/b3desk/forms.py:120
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
-#: web/b3desk/forms.py:108
+#: web/b3desk/forms.py:122
 msgid ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
-#: web/b3desk/forms.py:113
+#: web/b3desk/forms.py:127
 msgid "Caméras des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:115
+#: web/b3desk/forms.py:129
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture de la caméra des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:121
+#: web/b3desk/forms.py:135
 msgid "Micros des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:123
+#: web/b3desk/forms.py:137
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture du microphone des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:129
+#: web/b3desk/forms.py:143
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:134
+#: web/b3desk/forms.py:148
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:139
+#: web/b3desk/forms.py:153
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:144
+#: web/b3desk/forms.py:158
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:145
+#: web/b3desk/forms.py:159
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:146 web/b3desk/models/meetings.py:263
+#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:274
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:147
+#: web/b3desk/forms.py:164
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:152
+#: web/b3desk/forms.py:171
 #, python-format
 msgid "Url de redirection après %(the_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:159
+#: web/b3desk/forms.py:178
 msgid "Renouveler le lien modérateur"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/forms.py:170
+#: web/b3desk/forms.py:180 web/b3desk/forms.py:189
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
 msgstr ""
 
-#: web/b3desk/forms.py:168
+#: web/b3desk/forms.py:187
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:177
+#: web/b3desk/forms.py:196
 msgid "PIN"
 msgstr ""
 
-#: web/b3desk/forms.py:179
+#: web/b3desk/forms.py:198
 #, python-format
 msgid "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)"
 msgstr ""
 
-#: web/b3desk/forms.py:197
+#: web/b3desk/forms.py:218
 msgid "Code de connexion"
 msgstr ""
 
-#: web/b3desk/forms.py:199
+#: web/b3desk/forms.py:220
 #, python-format
 msgid "Code de connexion pour rejoindre %(the_meeting)s %(sip)s"
 msgstr ""
 
-#: web/b3desk/forms.py:201
+#: web/b3desk/forms.py:222
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:215
+#: web/b3desk/forms.py:236
 msgid "Enregistrement manuel"
 msgstr ""
 
-#: web/b3desk/forms.py:217
+#: web/b3desk/forms.py:238
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:222
+#: web/b3desk/forms.py:243
 msgid "Enregistrement automatique"
 msgstr ""
 
-#: web/b3desk/forms.py:224
+#: web/b3desk/forms.py:245
 msgid ""
 "L'enregistrement démarre automatiquement à l'ouverture de la salle et "
 "s'arrête à sa fermeture."

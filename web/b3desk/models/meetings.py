@@ -26,6 +26,14 @@ from . import db
 from .users import User  # noqa: F401
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
+DEFAULT_MAX_PARTICIPANTS = 350
+PIN_LENGTH = 9
+MIN_PIN = 100000000
+MAX_PIN = 999999999
+TITLE_TRUNCATE_THRESHOLD = 70
+TITLE_TRUNCATE_LENGTH = 30
+DATA_RETENTION_DAYS = 365
+PASSWORD_HASH_LENGTH = 16
 
 
 def get_meeting_file_hash(meeting_file_id, isexternal):
@@ -57,11 +65,11 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 
     @property
     def short_title(self):
-        """Return a truncated version of the title if it exceeds 70 characters."""
+        """Return a truncated version of the title if it exceeds the threshold."""
         return (
             self.title
-            if len(self.title) < 70
-            else f"{self.title[:30]}...{self.title[-30:]}"
+            if len(self.title) < TITLE_TRUNCATE_THRESHOLD
+            else f"{self.title[:TITLE_TRUNCATE_LENGTH]}...{self.title[-TITLE_TRUNCATE_LENGTH:]}"
         )
 
 
@@ -179,14 +187,19 @@ def get_all_previous_voiceBridges():
 def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
     db.session.query(PreviousVoiceBridge).filter(
-        PreviousVoiceBridge.archived_at < datetime.now() - timedelta(days=365)
+        PreviousVoiceBridge.archived_at
+        < datetime.now() - timedelta(days=DATA_RETENTION_DAYS)
     ).delete()
 
 
 def get_deterministic_password(meeting_fake_id, role):
     """Generate a deterministic password based on meeting ID and role."""
     signer = Signer(current_app.config["SECRET_KEY"])
-    return signer.sign(f"{meeting_fake_id}-{role}").decode().split(".")[-1][:16]
+    return (
+        signer.sign(f"{meeting_fake_id}-{role}")
+        .decode()
+        .split(".")[-1][:PASSWORD_HASH_LENGTH]
+    )
 
 
 def get_quick_meeting_from_fake_id(meeting_fake_id=None):
@@ -234,8 +247,6 @@ def get_forbidden_pins(edited_meeting_id=None):
 
 def create_unique_pin(forbidden_pins, pin=None):
     """Create a unique 9-digit PIN that is not in the forbidden list."""
-    MIN_PIN = 100000000
-    MAX_PIN = 999999999
     pin = random.randint(MIN_PIN, MAX_PIN) if not pin else pin
     if str(pin) in forbidden_pins:
         pin += 1
@@ -258,7 +269,7 @@ def create_and_save_shadow_meeting(user):
         name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        maxParticipants=350,
+        maxParticipants=DEFAULT_MAX_PARTICIPANTS,
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
@@ -321,7 +332,8 @@ def delete_all_old_shadow_meetings():
     old_shadow_meetings = [
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
+            Meeting.last_connection_utc_datetime
+            < datetime.now() - timedelta(days=DATA_RETENTION_DAYS),
             Meeting.is_shadow,
         )
     ]

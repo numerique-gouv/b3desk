@@ -8,6 +8,7 @@ from b3desk.session import visio_code_attempt_counter_reset
 
 bp = Blueprint("captcha", __name__)
 CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
+DEFAULT_TOKEN_EXPIRY_SECONDS = 3600
 
 
 def get_captchetat_token():
@@ -31,7 +32,7 @@ def get_captchetat_token():
 
     response = response.json()
     token = response["access_token"]
-    timeout = response.get("expires_in", 3600)
+    timeout = response.get("expires_in", DEFAULT_TOKEN_EXPIRY_SECONDS)
     cache.set(CACHE_KEY_CAPTCHETAT_CREDENTIALS, token, timeout=timeout)
     return token
 
