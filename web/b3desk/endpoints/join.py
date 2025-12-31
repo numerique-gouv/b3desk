@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Blueprint
 from flask import abort
 from flask import current_app
@@ -34,9 +36,9 @@ from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
 
-SECONDS_BEFORE_REFRESH = 10
+INITIAL_REFRESH_DELAY = timedelta(seconds=10)
 INCREASE_REFRESH_TIME = 1.5
-MAXIMUM_REFRESH_TIME = 60
+MAXIMUM_REFRESH_DELAY = timedelta(seconds=60)
 
 
 # The role needs to appear in the URL, even if it is unused, so user won't
@@ -152,7 +154,7 @@ def waiting_meeting(
         return redirect(url_for("public.index"))
 
     seconds_before_refresh = request.args.get(
-        "seconds_before_refresh", SECONDS_BEFORE_REFRESH
+        "seconds_before_refresh", int(INITIAL_REFRESH_DELAY.total_seconds())
     )
     quick_meeting = request.args.get("quick_meeting", False)
 
@@ -189,7 +191,7 @@ def join_meeting():
     ):
         seconds_before_refresh = min(
             form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME,
-            MAXIMUM_REFRESH_TIME,
+            int(MAXIMUM_REFRESH_DELAY.total_seconds()),
         )
 
     quick_meeting = None

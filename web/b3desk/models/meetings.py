@@ -32,7 +32,7 @@ MIN_PIN = 100000000
 MAX_PIN = 999999999
 TITLE_TRUNCATE_THRESHOLD = 70
 TITLE_TRUNCATE_LENGTH = 30
-DATA_RETENTION_DAYS = 365
+DATA_RETENTION = timedelta(days=365)
 PASSWORD_HASH_LENGTH = 16
 
 
@@ -187,8 +187,7 @@ def get_all_previous_voiceBridges():
 def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
     db.session.query(PreviousVoiceBridge).filter(
-        PreviousVoiceBridge.archived_at
-        < datetime.now() - timedelta(days=DATA_RETENTION_DAYS)
+        PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
     ).delete()
 
 
@@ -332,8 +331,7 @@ def delete_all_old_shadow_meetings():
     old_shadow_meetings = [
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.last_connection_utc_datetime
-            < datetime.now() - timedelta(days=DATA_RETENTION_DAYS),
+            Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
             Meeting.is_shadow,
         )
     ]

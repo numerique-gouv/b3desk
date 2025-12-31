@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
 from urllib.parse import urlparse
 from xml.etree import ElementTree
@@ -24,7 +25,7 @@ from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
 
-BBB_REQUEST_TIMEOUT = 2
+BBB_REQUEST_TIMEOUT = timedelta(seconds=2)
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
@@ -92,7 +93,9 @@ class BBB:
             request.body,
         )
         try:
-            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+            response = session.send(
+                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+            )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
@@ -263,7 +266,9 @@ class BBB:
             session = requests.Session()
             if current_app.debug:  # pragma: no cover
                 session.verify = False
-            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+            response = session.send(
+                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+            )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
