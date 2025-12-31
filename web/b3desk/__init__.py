@@ -250,7 +250,7 @@ def setup_error_pages(app):
     from webdav3.exceptions import WebDavException
 
     from b3desk.nextcloud import is_nextcloud_unavailable_error
-    from b3desk.nextcloud import mark_nextcloud_unavailable
+    from b3desk.nextcloud import nextcloud_breaker
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -277,7 +277,7 @@ def setup_error_pages(app):
         app.logger.warning("WebDAV error: %s", error)
 
         if is_nextcloud_unavailable_error(error):
-            mark_nextcloud_unavailable(g.nc_locator)
+            nextcloud_breaker.mark_failed(g.nc_locator)
 
         wants_html = (
             request.accept_mimetypes.best_match(["application/json", "text/html"])

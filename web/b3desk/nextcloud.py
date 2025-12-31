@@ -21,6 +21,49 @@ NEXTCLOUD_BACKOFF_MAX = 300
 NEXTCLOUD_REQUEST_TIMEOUT = 10
 
 
+class CircuitBreaker:
+    """Circuit breaker with exponential backoff."""
+
+    def __init__(self, key_prefix, log_message):
+        self.key_prefix = key_prefix
+        self.log_message = log_message
+
+    def is_blocked(self, identifier):
+        return cache.get(f"{self.key_prefix}:{identifier}") is not None
+
+    def mark_failed(self, identifier):
+        key = f"{self.key_prefix}:{identifier}"
+        backoff_key = f"{self.key_prefix}_backoff:{identifier}"
+
+        current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
+        cache.set(key, True, timeout=current_backoff)
+
+        next_backoff = min(
+            current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
+        )
+        cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
+
+        current_app.logger.info(self.log_message, identifier, current_backoff)
+
+    def clear(self, identifier):
+        cache.delete(f"{self.key_prefix}:{identifier}")
+        cache.delete(f"{self.key_prefix}_backoff:{identifier}")
+
+
+nextcloud_breaker = CircuitBreaker(
+    "nc_unavailable",
+    "Nextcloud %s marked unavailable, next retry in %ds",
+)
+user_auth_breaker = CircuitBreaker(
+    "nc_auth_failed",
+    "User %s marked as auth failed for Nextcloud, next retry in %ds",
+)
+credentials_breaker = CircuitBreaker(
+    "nc_credentials_failed",
+    "User %s credentials fetch failed, next retry in %ds",
+)
+
+
 def is_nextcloud_available():
     """Check if Nextcloud is available for the current user.
 
@@ -44,37 +87,6 @@ def is_nextcloud_available():
     return g.is_nextcloud_available
 
 
-def mark_nextcloud_unavailable(nc_locator):
-    """Mark a Nextcloud instance as unavailable with exponential backoff."""
-    unavailable_key = f"nc_unavailable:{nc_locator}"
-    backoff_key = f"nc_backoff:{nc_locator}"
-
-    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-    cache.set(unavailable_key, True, timeout=current_backoff)
-
-    next_backoff = min(
-        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
-    )
-    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
-
-    current_app.logger.info(
-        "Nextcloud %s marked unavailable, next retry in %ds",
-        nc_locator,
-        current_backoff,
-    )
-    current_app.logger.debug(
-        "Nextcloud %s backoff: current=%ds, next=%ds",
-        nc_locator,
-        current_backoff,
-        next_backoff,
-    )
-
-
-def mark_nextcloud_available(nc_locator):
-    """Reset Nextcloud availability state after a successful operation."""
-    cache.delete(f"nc_backoff:{nc_locator}")
-
-
 def is_nextcloud_unavailable_error(error):
     """Check if a WebDAV error indicates Nextcloud is unavailable."""
     if isinstance(error, (NoConnection, ConnectionException)):
@@ -84,74 +96,6 @@ def is_nextcloud_unavailable_error(error):
         return True
 
     return False
-
-
-def is_user_auth_blocked(user):
-    """Check if user is in backoff due to authentication failures."""
-    return cache.get(f"nc_auth_failed:{user.id}") is not None
-
-
-def mark_user_auth_failed(user):
-    """Mark user in backoff after authentication failure with exponential backoff."""
-    key = f"nc_auth_failed:{user.id}"
-    backoff_key = f"nc_auth_backoff:{user.id}"
-
-    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-    cache.set(key, True, timeout=current_backoff)
-
-    next_backoff = min(
-        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
-    )
-    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
-
-    current_app.logger.info(
-        "User %s marked as auth failed for Nextcloud, next retry in %ds",
-        user.id,
-        current_backoff,
-    )
-    current_app.logger.debug(
-        "User %s auth backoff: current=%ds, next=%ds",
-        user.id,
-        current_backoff,
-        next_backoff,
-    )
-
-
-def clear_user_auth_backoff(user):
-    """Reset user auth backoff after successful connection."""
-    cache.delete(f"nc_auth_failed:{user.id}")
-    cache.delete(f"nc_auth_backoff:{user.id}")
-
-
-def is_credentials_fetch_blocked(user):
-    """Check if user is in backoff due to credentials fetch failures."""
-    return cache.get(f"nc_credentials_failed:{user.id}") is not None
-
-
-def mark_credentials_fetch_failed(user):
-    """Mark user in backoff after credentials fetch failure with exponential backoff."""
-    key = f"nc_credentials_failed:{user.id}"
-    backoff_key = f"nc_credentials_backoff:{user.id}"
-
-    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-    cache.set(key, True, timeout=current_backoff)
-
-    next_backoff = min(
-        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
-    )
-    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
-
-    current_app.logger.info(
-        "User %s credentials fetch failed, next retry in %ds",
-        user.id,
-        current_backoff,
-    )
-
-
-def clear_credentials_fetch_backoff(user):
-    """Reset credentials fetch backoff after successful fetch."""
-    cache.delete(f"nc_credentials_failed:{user.id}")
-    cache.delete(f"nc_credentials_backoff:{user.id}")
 
 
 def is_auth_error(error):
@@ -410,7 +354,7 @@ def update_user_nc_credentials(user, force_renew=False):
         )
         return False
 
-    if is_credentials_fetch_blocked(user):
+    if credentials_breaker.is_blocked(user.id):
         current_app.logger.debug(
             "Credentials fetch blocked for user %s, skipping", user.id
         )
@@ -427,10 +371,10 @@ def update_user_nc_credentials(user, force_renew=False):
         current_app.logger.info(
             "Could not retrieve Nextcloud credentials for user %s: %s", user, data
         )
-        mark_credentials_fetch_failed(user)
+        credentials_breaker.mark_failed(user.id)
         return False
 
-    clear_credentials_fetch_backoff(user)
+    credentials_breaker.clear(user.id)
     current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
     user.nc_locator = data["nclocator"]
     user.nc_token = data["nctoken"]
@@ -447,7 +391,7 @@ def check_nextcloud_connection(user, retry_on_auth_error=False):
     is retried once. Unavailability errors (connection failures, 500+) do not
     trigger a retry.
     """
-    if is_user_auth_blocked(user):
+    if user_auth_breaker.is_blocked(user.id):
         return False
 
     def handle_error(should_retry=False, auth_error=False):
@@ -456,7 +400,7 @@ def check_nextcloud_connection(user, retry_on_auth_error=False):
             return check_nextcloud_connection(user, retry_on_auth_error=False)
 
         if auth_error:
-            mark_user_auth_failed(user)
+            user_auth_breaker.mark_failed(user.id)
 
         return False
 
@@ -469,7 +413,7 @@ def check_nextcloud_connection(user, retry_on_auth_error=False):
         current_app.logger.warning("WebDAV error: %s", exception)
 
         if is_nextcloud_unavailable_error(exception):
-            mark_nextcloud_unavailable(user.nc_locator)
+            nextcloud_breaker.mark_failed(user.nc_locator)
 
         auth_error = is_auth_error(exception)
         return handle_error(
@@ -477,5 +421,5 @@ def check_nextcloud_connection(user, retry_on_auth_error=False):
             auth_error=auth_error,
         )
 
-    clear_user_auth_backoff(user)
+    user_auth_breaker.clear(user.id)
     return True

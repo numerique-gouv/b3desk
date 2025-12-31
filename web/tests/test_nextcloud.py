@@ -1,14 +1,10 @@
 from b3desk import cache
 from b3desk.models import db
 from b3desk.nextcloud import check_nextcloud_connection
-from b3desk.nextcloud import clear_credentials_fetch_backoff
-from b3desk.nextcloud import clear_user_auth_backoff
+from b3desk.nextcloud import credentials_breaker
 from b3desk.nextcloud import is_auth_error
-from b3desk.nextcloud import is_credentials_fetch_blocked
-from b3desk.nextcloud import is_user_auth_blocked
-from b3desk.nextcloud import mark_credentials_fetch_failed
-from b3desk.nextcloud import mark_user_auth_failed
 from b3desk.nextcloud import update_user_nc_credentials
+from b3desk.nextcloud import user_auth_breaker
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
@@ -165,13 +161,13 @@ def test_user_auth_backoff_cycle(app, client_app, user):
     db.session.add(user)
     db.session.commit()
 
-    assert is_user_auth_blocked(user) is False
+    assert user_auth_breaker.is_blocked(user.id) is False
 
-    mark_user_auth_failed(user)
-    assert is_user_auth_blocked(user) is True
+    user_auth_breaker.mark_failed(user.id)
+    assert user_auth_breaker.is_blocked(user.id) is True
 
-    clear_user_auth_backoff(user)
-    assert is_user_auth_blocked(user) is False
+    user_auth_breaker.clear(user.id)
+    assert user_auth_breaker.is_blocked(user.id) is False
 
 
 def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker):
@@ -182,7 +178,7 @@ def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker)
     db.session.add(user)
     db.session.commit()
 
-    mark_user_auth_failed(user)
+    user_auth_breaker.mark_failed(user.id)
 
     list_mock = mocker.patch("webdav3.client.Client.list")
 
@@ -223,12 +219,12 @@ def test_check_connection_clears_backoff_on_success(app, client_app, user, mocke
     db.session.add(user)
     db.session.commit()
 
-    mark_user_auth_failed(user)
-    assert is_user_auth_blocked(user) is True
+    user_auth_breaker.mark_failed(user.id)
+    assert user_auth_breaker.is_blocked(user.id) is True
 
     mocker.patch("webdav3.client.Client.list")
 
-    clear_user_auth_backoff(user)
+    user_auth_breaker.clear(user.id)
 
     result = check_nextcloud_connection(user)
 
@@ -254,7 +250,7 @@ def test_update_credentials_marks_blocked_on_failure(app, client_app, user, mock
     result = update_user_nc_credentials(user)
 
     assert result is False
-    assert is_credentials_fetch_blocked(user) is True
+    assert credentials_breaker.is_blocked(user.id) is True
 
 
 def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
@@ -266,7 +262,7 @@ def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
     db.session.add(user)
     db.session.commit()
 
-    mark_credentials_fetch_failed(user)
+    credentials_breaker.mark_failed(user.id)
     get_creds_mock = mocker.patch("b3desk.nextcloud.get_user_nc_credentials")
 
     result = update_user_nc_credentials(user)
@@ -284,8 +280,8 @@ def test_update_credentials_clears_backoff_on_success(app, client_app, user, moc
     db.session.add(user)
     db.session.commit()
 
-    mark_credentials_fetch_failed(user)
-    clear_credentials_fetch_backoff(user)
+    credentials_breaker.mark_failed(user.id)
+    credentials_breaker.clear(user.id)
 
     mocker.patch(
         "b3desk.nextcloud.get_user_nc_credentials",
@@ -299,4 +295,4 @@ def test_update_credentials_clears_backoff_on_success(app, client_app, user, moc
     result = update_user_nc_credentials(user)
 
     assert result is True
-    assert is_credentials_fetch_blocked(user) is False
+    assert credentials_breaker.is_blocked(user.id) is False
