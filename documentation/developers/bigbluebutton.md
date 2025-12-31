@@ -42,7 +42,7 @@ Vous pouvez vérifier si ces services sont effectivement connectés avec un curl
 
 ### Autoriser les requêtes http avec BBB
 
-BBB doit explicitement autoriser les requêtes http vers b3desk :
+BBB doit explicitement autoriser les requêtes http vers b3desk, sans quoi les fichiers de présentation n'apparaîtront pas dans le salon :
 
 ```bash
 docker exec bbb30 sed -i '$ a insertDocumentSupportedProtocols=https,http' /etc/bigbluebutton/bbb-web.properties
