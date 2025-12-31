@@ -71,7 +71,7 @@ def test_check_connection_marks_unavailable_on_connection_error(
 
     assert result is False
     with app.app_context():
-        assert cache.get(f"nc_unavailable:{user.nc_locator}") is True
+        assert cache.get(f"nc_unavailable:{user.nc_locator}") is not None
 
 
 def test_check_connection_retry_refreshes_credentials(client_app, user, mocker):
@@ -208,7 +208,7 @@ def test_check_connection_marks_user_on_auth_error_after_retry(
 
     assert result is False
     with app.app_context():
-        assert cache.get(f"nc_auth_failed:{user.id}") is True
+        assert cache.get(f"nc_auth_failed:{user.id}") is not None
 
 
 def test_check_connection_clears_backoff_on_success(app, client_app, user, mocker):

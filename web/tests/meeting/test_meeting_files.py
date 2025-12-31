@@ -21,7 +21,7 @@ def test_nextcloud_enabled(client_app, authenticated_user, meeting):
 def test_nextcloud_authentication_issue(
     client_app, authenticated_user, meeting, mocker
 ):
-    """Test that Nextcloud UI is hidden when authentication fails."""
+    """Test that Nextcloud buttons are disabled when authentication fails."""
     response = {
         "nctoken": None,
         "nclocator": None,
@@ -33,11 +33,12 @@ def test_nextcloud_authentication_issue(
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting), status=200
     )
-    res.mustcontain(no="depuis le Nuage")
+    res.mustcontain("disabled")
+    res.mustcontain(no="onClick=openNCFilePicker")
 
 
 def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker):
-    """If Nextcloud is marked unavailable, sharing buttons should not be displayed."""
+    """If Nextcloud is marked unavailable, sharing buttons should be disabled."""
     mocker.patch(
         "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
     )
@@ -45,7 +46,8 @@ def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker)
         url_for("meeting_files.edit_meeting_files", meeting=meeting),
         status=200,
     )
-    res.mustcontain(no="depuis le Nuage")
+    res.mustcontain("disabled")
+    res.mustcontain(no="onClick=openNCFilePicker")
 
 
 def test_file_sharing_disabled(client_app, authenticated_user, meeting):

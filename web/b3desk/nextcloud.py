@@ -29,14 +29,23 @@ class CircuitBreaker:
         self.log_message = log_message
 
     def is_blocked(self, identifier):
-        return cache.get(f"{self.key_prefix}:{identifier}") is not None
+        expires_at = cache.get(f"{self.key_prefix}:{identifier}")
+        if expires_at is None:
+            return False
+
+        remaining = (expires_at - datetime.now()).total_seconds()
+        current_app.logger.debug(
+            "%s: %s blocked, retry in %.0fs", self.key_prefix, identifier, remaining
+        )
+        return True
 
     def mark_failed(self, identifier):
         key = f"{self.key_prefix}:{identifier}"
         backoff_key = f"{self.key_prefix}_backoff:{identifier}"
 
         current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-        cache.set(key, True, timeout=current_backoff)
+        expires_at = datetime.now() + timedelta(seconds=current_backoff)
+        cache.set(key, expires_at, timeout=current_backoff)
 
         next_backoff = min(
             current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
@@ -355,9 +364,6 @@ def update_user_nc_credentials(user, force_renew=False):
         return False
 
     if credentials_breaker.is_blocked(user.id):
-        current_app.logger.debug(
-            "Credentials fetch blocked for user %s, skipping", user.id
-        )
         return False
 
     data = get_user_nc_credentials(user)

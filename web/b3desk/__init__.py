@@ -284,11 +284,16 @@ def setup_error_pages(app):
             == "text/html"
         )
 
+        error_msg = _(
+            "Le service de fichiers est temporairement indisponible. "
+            "Veuillez réessayer dans quelques minutes."
+        )
+
         if wants_html:
-            flash(_("La connexion avec Nextcloud est rompue"), "error")
+            flash(error_msg, "error")
             return redirect(url_for("public.welcome"))
 
-        return jsonify(status=500, msg=_("La connexion avec Nextcloud est rompue"))
+        return jsonify(status=500, msg=error_msg)
 
 
 def setup_endpoints(app):

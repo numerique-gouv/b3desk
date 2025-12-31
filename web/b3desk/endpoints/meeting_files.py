@@ -33,6 +33,7 @@ from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import check_nextcloud_connection
 from b3desk.nextcloud import create_webdav_client
+from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -120,7 +121,13 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     # get file from nextcloud WEBDAV and send it
     if (client := create_webdav_client(owner)) is None:
         current_app.logger.warning("User %s has no Webdav credentials", owner.id)
-        flash(_("Le fichier ne semble pas accessible"), "error")
+        flash(
+            _(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            ),
+            "error",
+        )
         return redirect(url_for("public.welcome"))
 
     client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
@@ -193,7 +200,10 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
         return jsonify(
             status=500,
-            msg=_("Missing or invalid Nextcloud credentials"),
+            msg=_(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            ),
         )
 
     client.mkdir("visio-agents")  # does not fail if dir already exists
@@ -285,7 +295,10 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     if (client := create_webdav_client(g.user)) is None:
         return jsonify(
             status=500,
-            msg=_("Missing or invalid Nextcloud credentials"),
+            msg=_(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            ),
         )
 
     metadata = client.info(path)
@@ -424,8 +437,11 @@ def file_picker(user: User, bbb_meeting_id: str):
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
     if BBB(bbb_meeting_id).is_running():
+        nc_available = is_nextcloud_available() and check_nextcloud_connection(user)
         return render_template(
-            "meeting/file_picker.html", bbb_meeting_id=bbb_meeting_id
+            "meeting/file_picker.html",
+            bbb_meeting_id=bbb_meeting_id,
+            is_nextcloud_available=nc_available,
         )
     flash(_("La réunion n'est pas en cours"), "error")
     return redirect(url_for("public.welcome"))
@@ -464,7 +480,13 @@ def ncdownload(token, user, ncpath):
     tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
 
     if (client := create_webdav_client(user)) is None:
-        return jsonify(status=500, msg=_("Missing or invalid Nextcloud credentials"))
+        return jsonify(
+            status=500,
+            msg=_(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            ),
+        )
 
     mimetype = client.info(ncpath).get("content_type")
     client.download_sync(remote_path=ncpath, local_path=tmp_name)
