@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-31 11:23+0100\n"
+"POT-Creation-Date: 2025-12-31 11:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+#: web/b3desk/__init__.py:288 web/b3desk/__init__.py:291
+msgid "La connexion avec Nextcloud est rompue"
+msgstr ""
 
 #: web/b3desk/forms.py:50
 #, python-format
@@ -143,7 +147,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:146 web/b3desk/models/meetings.py:263
+#: web/b3desk/forms.py:146 web/b3desk/models/meetings.py:264
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -316,56 +320,53 @@ msgstr ""
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:130
+#: web/b3desk/endpoints/meeting_files.py:123
 msgid "Le fichier ne semble pas accessible"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:190
-#: web/b3desk/endpoints/meeting_files.py:263
+#: web/b3desk/endpoints/meeting_files.py:185
+#: web/b3desk/endpoints/meeting_files.py:251
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:214
-msgid "La connexion avec Nextcloud est rompue"
+#: web/b3desk/endpoints/meeting_files.py:196
+#: web/b3desk/endpoints/meeting_files.py:288
+#: web/b3desk/endpoints/meeting_files.py:467
+msgid "Missing or invalid Nextcloud credentials"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:240
-#: web/b3desk/endpoints/meeting_files.py:294
-#: web/b3desk/endpoints/meeting_files.py:335
-#: web/b3desk/endpoints/meeting_files.py:380
+#: web/b3desk/endpoints/meeting_files.py:231
+#: web/b3desk/endpoints/meeting_files.py:280
+#: web/b3desk/endpoints/meeting_files.py:314
+#: web/b3desk/endpoints/meeting_files.py:357
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:255
+#: web/b3desk/endpoints/meeting_files.py:244
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:309
-#: web/b3desk/endpoints/meeting_files.py:506
-msgid "La connexion avec Nextcloud semble rompue"
-msgstr ""
-
-#: web/b3desk/endpoints/meeting_files.py:316
+#: web/b3desk/endpoints/meeting_files.py:296
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:389
+#: web/b3desk/endpoints/meeting_files.py:366
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:418
+#: web/b3desk/endpoints/meeting_files.py:395
 #: web/b3desk/endpoints/meetings.py:310
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:435
+#: web/b3desk/endpoints/meeting_files.py:412
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:451
+#: web/b3desk/endpoints/meeting_files.py:430
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -2626,7 +2627,7 @@ msgstr ""
 msgid "Suppression d'enregistrement"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:123
+#: web/b3desk/utils/__init__.py:142
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
