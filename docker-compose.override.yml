@@ -65,9 +65,9 @@ services:
       - ./nextcloud/html:/var/www/html
       - ./nextcloud/conf:/var/www/conf  # to share Nextcloud Sessiontoken generated key file
     ports:
-      - 8000:80
+      - 8000:8000
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://nextcloud.localhost:80/login"]
+      test: ["CMD", "curl", "-f", "http://nextcloud.localhost:8000/login"]
       start_period: 60s
 
   tokenmock:
