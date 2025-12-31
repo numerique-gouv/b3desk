@@ -61,6 +61,12 @@ def mark_nextcloud_unavailable(nc_locator):
         nc_locator,
         current_backoff,
     )
+    current_app.logger.debug(
+        "Nextcloud %s backoff: current=%ds, next=%ds",
+        nc_locator,
+        current_backoff,
+        next_backoff,
+    )
 
 
 def mark_nextcloud_available(nc_locator):
@@ -77,6 +83,48 @@ def is_nextcloud_unavailable_error(error):
         return True
 
     return False
+
+
+def is_user_auth_blocked(user):
+    """Check if user is in backoff due to authentication failures."""
+    return cache.get(f"nc_auth_failed:{user.id}") is not None
+
+
+def mark_user_auth_failed(user):
+    """Mark user in backoff after authentication failure with exponential backoff."""
+    key = f"nc_auth_failed:{user.id}"
+    backoff_key = f"nc_auth_backoff:{user.id}"
+
+    current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
+    cache.set(key, True, timeout=current_backoff)
+
+    next_backoff = min(
+        current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
+    )
+    cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
+
+    current_app.logger.info(
+        "User %s marked as auth failed for Nextcloud, next retry in %ds",
+        user.id,
+        current_backoff,
+    )
+    current_app.logger.debug(
+        "User %s auth backoff: current=%ds, next=%ds",
+        user.id,
+        current_backoff,
+        next_backoff,
+    )
+
+
+def clear_user_auth_backoff(user):
+    """Reset user auth backoff after successful connection."""
+    cache.delete(f"nc_auth_failed:{user.id}")
+    cache.delete(f"nc_auth_backoff:{user.id}")
+
+
+def is_auth_error(error):
+    """Check if a WebDAV error indicates authentication failure."""
+    return isinstance(error, ResponseErrorCode) and error.code in (401, 403)
 
 
 def create_webdav_client(user) -> webdavClient | None:
@@ -355,13 +403,19 @@ def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
     If retry_on_wrong_credentials is True and connection fails,
     credentials are refreshed and connection is retried once.
     """
+    if is_user_auth_blocked(user):
+        return False
 
-    def handle_error():
+    def handle_error(auth_error=False):
         if retry_on_wrong_credentials and update_user_nc_credentials(
             user, force_renew=True
         ):
             db.session.commit()
             return check_nextcloud_connection(user, retry_on_wrong_credentials=False)
+
+        if auth_error:
+            mark_user_auth_failed(user)
+
         return False
 
     if (client := create_webdav_client(user)) is None:
@@ -375,6 +429,7 @@ def check_nextcloud_connection(user, retry_on_wrong_credentials=False):
         if is_nextcloud_unavailable_error(exception):
             mark_nextcloud_unavailable(user.nc_locator)
 
-        return handle_error()
+        return handle_error(auth_error=is_auth_error(exception))
 
+    clear_user_auth_backoff(user)
     return True

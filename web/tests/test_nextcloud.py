@@ -1,6 +1,12 @@
+from b3desk import cache
 from b3desk.models import db
 from b3desk.nextcloud import check_nextcloud_connection
+from b3desk.nextcloud import clear_user_auth_backoff
+from b3desk.nextcloud import is_auth_error
+from b3desk.nextcloud import is_user_auth_blocked
+from b3desk.nextcloud import mark_user_auth_failed
 from webdav3.exceptions import NoConnection
+from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
 
 
@@ -51,8 +57,6 @@ def test_check_connection_marks_unavailable_on_connection_error(
     app, client_app, user, mocker
 ):
     """Connection check marks Nextcloud unavailable on connection error."""
-    from b3desk import cache
-
     user.nc_login = "alice"
     user.nc_locator = "http://nextcloud.test"
     user.nc_token = "token123"
@@ -107,3 +111,104 @@ def test_check_connection_no_retry_by_default(client_app, user, mocker):
 
     assert result is False
     update_mock.assert_not_called()
+
+
+def test_is_auth_error_detects_401(client_app):
+    """is_auth_error returns True for 401 errors."""
+    error = ResponseErrorCode("http://test", 401, "Unauthorized")
+    assert is_auth_error(error) is True
+
+
+def test_is_auth_error_detects_403(client_app):
+    """is_auth_error returns True for 403 errors."""
+    error = ResponseErrorCode("http://test", 403, "Forbidden")
+    assert is_auth_error(error) is True
+
+
+def test_is_auth_error_rejects_500(client_app):
+    """is_auth_error returns False for 500 errors."""
+    error = ResponseErrorCode("http://test", 500, "Server Error")
+    assert is_auth_error(error) is False
+
+
+def test_is_auth_error_rejects_other_exceptions(client_app):
+    """is_auth_error returns False for non-ResponseErrorCode exceptions."""
+    error = NoConnection("test")
+    assert is_auth_error(error) is False
+
+
+def test_user_auth_backoff_cycle(app, client_app, user):
+    """User auth backoff marks user as blocked then clears."""
+    db.session.add(user)
+    db.session.commit()
+
+    assert is_user_auth_blocked(user) is False
+
+    mark_user_auth_failed(user)
+    assert is_user_auth_blocked(user) is True
+
+    clear_user_auth_backoff(user)
+    assert is_user_auth_blocked(user) is False
+
+
+def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker):
+    """Connection check returns False immediately when user is blocked."""
+    user.nc_login = "alice"
+    user.nc_locator = "http://nextcloud.test"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    mark_user_auth_failed(user)
+
+    list_mock = mocker.patch("webdav3.client.Client.list")
+
+    result = check_nextcloud_connection(user)
+
+    assert result is False
+    list_mock.assert_not_called()
+
+
+def test_check_connection_marks_user_on_auth_error_after_retry(
+    app, client_app, user, mocker
+):
+    """Connection check marks user as auth failed after retry fails with 401."""
+    user.nc_login = "alice"
+    user.nc_locator = "http://nextcloud.test"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    mocker.patch(
+        "webdav3.client.Client.list",
+        side_effect=ResponseErrorCode("http://test", 401, "Unauthorized"),
+    )
+    mocker.patch("b3desk.nextcloud.update_user_nc_credentials", return_value=True)
+
+    result = check_nextcloud_connection(user, retry_on_wrong_credentials=True)
+
+    assert result is False
+    with app.app_context():
+        assert cache.get(f"nc_auth_failed:{user.id}") is True
+
+
+def test_check_connection_clears_backoff_on_success(app, client_app, user, mocker):
+    """Connection check clears user auth backoff on success."""
+    user.nc_login = "alice"
+    user.nc_locator = "http://nextcloud.test"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    mark_user_auth_failed(user)
+    assert is_user_auth_blocked(user) is True
+
+    mocker.patch("webdav3.client.Client.list")
+
+    clear_user_auth_backoff(user)
+
+    result = check_nextcloud_connection(user)
+
+    assert result is True
+    with app.app_context():
+        assert cache.get(f"nc_auth_failed:{user.id}") is None
