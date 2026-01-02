@@ -5,9 +5,10 @@ Revises: 44cab47dbc9b
 Create Date: 2025-03-25 08:23:29.169319
 """
 
+import random
+
 import sqlalchemy as sa
 from alembic import op
-from b3desk.models.meetings import pin_generation
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
@@ -25,12 +26,13 @@ def upgrade():
     meeting = sa.table(
         "meeting", sa.column("id", sa.Integer), sa.column("voiceBridge", sa.String)
     )
-    generated_pins = []
+    count = session.execute(select(sa.func.count()).select_from(meeting)).scalar()
+    pins = iter(str(p) for p in random.sample(range(100000000, 1000000000), count))
     for (meeting_id,) in session.execute(select(meeting.c.id)):
-        pin = pin_generation(forbidden_pins=generated_pins, clean_db=False)
-        generated_pins.append(pin)
         session.execute(
-            update(meeting).where(meeting.c.id == meeting_id).values(voiceBridge=pin)
+            update(meeting)
+            .where(meeting.c.id == meeting_id)
+            .values(voiceBridge=next(pins))
         )
     session.commit()
     with op.batch_alter_table("meeting", schema=None) as batch_op:
