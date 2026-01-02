@@ -6,7 +6,7 @@
             {% if mailto %}
                 <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.moderator) }}" title="{% trans %}Envoyer un courriel aux modérateurs{% endtrans %}"><span class="ri-mail-line"></span></a>
             {% endif %}
-            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_url }}" title="{% trans %}Copier le lien Modérateur dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
         </div>
         <div class="fr-col-4">
             <span class="ri-group-line"></span>
@@ -14,7 +14,7 @@
             {% if mailto %}
                 <a class="fr-tag" target="_blank" href="mailto:_@_?{{ meeting_mailto_params(meeting, Role.attendee) }}" title="{% trans %}Envoyer un courriel aux participants{% endtrans %}"><span class="ri-mail-line"></span></a>
             {% endif %}
-            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.get_signin_url(Role.moderator) }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
+            <a href="#" class="fr-tag" data-clipboard-text="{{ meeting.moderator_url }}" title="{% trans %}Copier le lien Participant dans le presse-papiers{% endtrans %}"><span class="ri-clipboard-line"></span></a>
         </div>
         <div class="fr-col">
             <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-fi-edit-line"></span></a>
@@ -36,12 +36,12 @@
             <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
                 {% trans %}Inviter{% endtrans %}
             </button>
-            {% if meeting in user.get_all_delegated_meetings %}
+            {% if meeting in g.user.get_all_delegated_meetings %}
                 <i class="fr-icon-team-line" aria-hidden="true" title="{% trans meeting_name=meeting.name %}Vous êtes délégataire de {{ meeting_name }}{% endtrans %}"></i>
             {% endif %}
         </div>
         <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
-            {% if meeting in user.meetings %}
+            {% if meeting in g.user.meetings %}
                 <a href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
                     {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
                 </a>
@@ -55,7 +55,7 @@
             {% if config.get("FILE_SHARING") %}
                 <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}</a>
             {% endif %}
-            {% if meeting in user.meetings %}
+            {% if meeting in g.user.meetings %}
                 <button class="fr-btn fr-btn--secondary fr-fi-delete-line"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
                     {% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}
                 </button>

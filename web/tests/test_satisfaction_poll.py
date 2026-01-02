@@ -6,7 +6,7 @@ def test_no_satisfaction_poll(client_app, authenticated_user, bbb_response):
 
 def test_satisfaction_poll_url(client_app, authenticated_user, meeting, bbb_response):
     """Test that satisfaction poll iframe is displayed with configured URL."""
-    client_app.app.config["SATISFACTION_POLL_URL"] = "https://poll.example.org"
+    client_app.app.config["SATISFACTION_POLL_URL"] = "https://poll.test"
     res = client_app.get("/welcome")
     res.mustcontain("iframe")
-    res.mustcontain("https://poll.example.org")
+    res.mustcontain("https://poll.test")

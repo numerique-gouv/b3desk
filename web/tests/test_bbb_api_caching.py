@@ -17,8 +17,9 @@ IS_MEETING_RUNNING_SUCCESS_RESPONSE = """
 """
 
 
-def test_is_meeting_running(meeting, mocker):
+def test_is_running(meeting, mocker):
     """Tests that the requests to the ismeetingrunning endpoint of the BBB API are cached."""
+    from b3desk.models.bbb import BBB
 
     class Response:
         content = IS_MEETING_RUNNING_SUCCESS_RESPONSE
@@ -28,10 +29,11 @@ def test_is_meeting_running(meeting, mocker):
 
     assert send.call_count == 0
 
-    assert meeting.bbb.is_meeting_running()
+    bbb = BBB(meeting.meetingID)
+    assert bbb.is_running()
     assert send.call_count == 1
 
-    assert meeting.bbb.is_meeting_running()
+    assert bbb.is_running()
     assert send.call_count == 1
 
 
@@ -52,7 +54,7 @@ GET_RECORDINGS_RESPONSE = """
       <participants>3</participants>
       <rawSize>951067</rawSize>
       <metadata>
-        <analytics-callback-url>https://bbb-analytics.url</analytics-callback-url>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
         <isBreakout>false</isBreakout>
         <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
         <meetingName>Fred's Room</meetingName>
@@ -66,21 +68,21 @@ GET_RECORDINGS_RESPONSE = """
       <playback>
         <format>
           <type>presentation</type>
-          <url>https://demo.bigbluebutton.org/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</url>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</url>
           <processingTime>7177</processingTime>
           <length>0</length>
           <size>1104836</size>
           <preview>
             <images>
-              <image alt="Welcome to" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png</image>
-              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-2.png</image>
-              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-3.png</image>
+              <image alt="Welcome to" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-2.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-3.png</image>
             </images>
           </preview>
         </format>
         <format>
           <type>video</type>
-          <url>https://demo.bigbluebutton.org/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4</url>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4</url>
           <processingTime>0</processingTime>
           <length>0</length>
           <size>1104836</size>
@@ -103,7 +105,7 @@ GET_RECORDINGS_RESPONSE = """
         <name>Recording title hand written</name>
         <meetingName>Fred's Room</meetingName>
         <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
-        <analytics-callback-url>https://bbb-analytics.url</analytics-callback-url>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
         <isBreakout>false</isBreakout>
       </metadata>
       <breakout>
@@ -114,20 +116,20 @@ GET_RECORDINGS_RESPONSE = """
       <playback>
         <format>
           <type>podcast</type>
-          <url>https://demo.bigbluebutton.org/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/audio.ogg</url>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/audio.ogg</url>
           <processingTime>0</processingTime>
           <length>33</length>
         </format>
         <format>
           <type>presentation</type>
-          <url>https://demo.bigbluebutton.org/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</url>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</url>
           <processingTime>139458</processingTime>
           <length>33</length>
           <preview>
             <images>
-              <image width="176" height="136" alt="Welcome to">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-1.png</image>
-              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-2.png</image>
-              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
+              <image width="176" height="136" alt="Welcome to">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-1.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-2.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
             </images>
           </preview>
         </format>
@@ -140,6 +142,7 @@ GET_RECORDINGS_RESPONSE = """
 
 def test_get_recordings(meeting, mocker):
     """Tests that the requests to the getrecordings endpoint of the BBB API are cached."""
+    from b3desk.models.bbb import BBB
 
     class Response:
         content = GET_RECORDINGS_RESPONSE
@@ -153,11 +156,12 @@ def test_get_recordings(meeting, mocker):
 
     assert send.call_count == 0
 
-    recordings = meeting.bbb.get_recordings()
+    bbb = BBB(meeting.meetingID)
+    recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
 
-    recordings = meeting.bbb.get_recordings()
+    recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
 
@@ -185,6 +189,7 @@ CREATE_RESPONSE = """
 
 def test_create(meeting, mocker):
     """Tests that the requests to the create endpoint of the BBB API are NOT cached."""
+    from b3desk.join import create_bbb_meeting
 
     class Response:
         content = CREATE_RESPONSE
@@ -192,15 +197,16 @@ def test_create(meeting, mocker):
 
     send = mocker.patch("requests.Session.send", return_value=Response)
     mocker.patch("requests.post")
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     assert send.call_count == 0
 
-    data = meeting.bbb.create()
-    assert data["returncode"] == "SUCCESS"
+    created = create_bbb_meeting(meeting, meeting.owner)
+    assert created
     assert send.call_count == 1
 
-    data = meeting.bbb.create()
-    assert data["returncode"] == "SUCCESS"
+    created = create_bbb_meeting(meeting, meeting.owner)
+    assert created
     assert send.call_count == 2
 
 
@@ -218,7 +224,7 @@ def test_timeout_bbb_get_recordings_request(
     mocker.patch(
         "requests.Session.send", side_effect=requests.Timeout("timeout message")
     )
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
     client_app.get("/meeting/recordings/1")
     assert "BBB API timeout error timeout message" in caplog.text

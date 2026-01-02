@@ -42,7 +42,8 @@ def get_or_create_user(user_info):
             last_connection_utc_datetime=datetime.now(timezone.utc),
         )
         update_user_nc_credentials(user)
-        user.save()
+        db.session.add(user)
+        db.session.commit()
 
     else:
         user_has_changed = update_user_nc_credentials(user)
@@ -67,17 +68,18 @@ def get_or_create_user(user_info):
             user_has_changed = True
 
         if user_has_changed:
-            user.save()
+            db.session.add(user)
+            db.session.commit()
 
     return user
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.Unicode(150), unique=True)
+    email = db.Column(db.Unicode(255), unique=True)
     given_name = db.Column(db.Unicode(50))
     family_name = db.Column(db.Unicode(50))
-    preferred_username = db.Column(db.Unicode(50), nullable=True)
+    preferred_username = db.Column(db.Unicode(255), nullable=True)
     nc_locator = db.Column(db.Unicode(255))
     nc_login = db.Column(db.Unicode(255))
     nc_token = db.Column(db.Unicode(255))
@@ -116,18 +118,14 @@ class User(db.Model):
         """Extract and return the domain part of the user's email address."""
         return self.email.split("@")[1] if self.email and "@" in self.email else None
 
-    def save(self):
-        """Add user to database session and commit changes."""
-        db.session.add(self)
-        db.session.commit()
-
     def disable_nextcloud(self):
         """Clear all Nextcloud credentials and save to database."""
         self.nc_login = None
         self.nc_locator = None
         self.nc_token = None
         self.nc_last_auto_enroll = None
-        self.save()
+        db.session.add(self)
+        db.session.commit()
 
     @property
     def get_all_delegated_meetings(self):

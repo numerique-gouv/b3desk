@@ -1,5 +1,4 @@
 import random
-import re
 import smtplib
 import string
 from email.message import EmailMessage
@@ -26,7 +25,6 @@ from slugify import slugify
 from werkzeug.routing import BaseConverter
 
 from b3desk.models import db
-from b3desk.models.roles import Role
 
 
 def secret_key():
@@ -46,23 +44,6 @@ def is_rie():
     )
 
 
-def is_accepted_email(email):
-    """Check if email matches any regex pattern in the configured whitelist."""
-    for regex in current_app.config["EMAIL_WHITELIST"]:
-        if re.search(regex, email):
-            return True
-    return False
-
-
-def is_valid_email(email):
-    """Validate email address format using regex pattern."""
-    if not email or not re.search(
-        r"^([a-zA-Z0-9_\-\.']+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email
-    ):
-        return False
-    return True
-
-
 def get_random_alphanumeric_string(length):
     """Generate a random alphanumeric string of specified length."""
     letters_and_digits = string.ascii_letters + string.digits
@@ -80,25 +61,6 @@ def make_smtp():
         "username": current_app.config["SMTP_USERNAME"],
         "password": current_app.config["SMTP_PASSWORD"],
     }
-
-
-def send_quick_meeting_mail(meeting, to_email):
-    """Send quick meeting invitation email with meeting access link."""
-    smtp = make_smtp()
-    wordings = current_app.config["WORDINGS"]
-    msg = EmailMessage()
-    content = render_template(
-        "meeting/mailto/mail_quick_meeting_body.txt",
-        role=Role.moderator,
-        moderator_mail_signin_url=meeting.get_mail_signin_url(),
-        welcome_url=url_for("public.welcome", _external=True),
-        meeting=meeting,
-    )
-    msg["Subject"] = str(wordings["meeting_mail_subject"])
-    msg["From"] = smtp["from_email"]
-    msg["To"] = to_email
-
-    send_email(msg, content, smtp)
 
 
 def send_delegation_mail(meeting, delegate, new_delegation: bool):
@@ -150,10 +112,12 @@ def model_converter(model):
             super().__init__(self, *args, **kwargs)
 
         def to_url(self, instance):
-            return str(instance.id)
+            return str(instance.id) if instance.id else None
 
         def to_python(self, identifier):
-            instance = db.session.get(model, identifier)
+            instance = (
+                db.session.query(model).filter(model.id == identifier).one_or_none()
+            )
             if self.required and not instance:
                 abort(404)
 

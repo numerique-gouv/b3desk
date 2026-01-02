@@ -1,5 +1,11 @@
 <footer id="footer" role="contentinfo">
-    {% include 'rie.html' %}
+    {% if is_rie %}
+        <div class="fr-highlight info fr-mt-2w fr-mb-2w" role="alert">
+            {% trans %}Service accessible suivant les politiques de sécurité de votre ministère.{% endtrans %}
+            {% trans %}Si l'audio ou la vidéo ne fonctionne pas, veuillez ré-essayer en vous déconnectant de votre réseau internet professionnel RIE.{% endtrans %}
+            <br><small><a href="{{ url_for("public.faq") }}">{% trans %}en savoir plus{% endtrans %}</a></small>
+        </div>
+    {% endif %}
     <div class="fr-footer">
         <div class="fr-container">
             <div class="fr-footer__body">

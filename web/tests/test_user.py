@@ -132,7 +132,7 @@ def test_get_secondary_identity_provider_id_from_email_token_error(
         return_value=TokenErrorAnswer,
     )
     with pytest.raises(requests.exceptions.HTTPError):
-        get_secondary_identity_provider_id_from_email("jean.espece@rock.org")
+        get_secondary_identity_provider_id_from_email("jean.espece@rock.test")
     assert "Get token request error:" in caplog.text
 
 
@@ -152,7 +152,7 @@ def test_get_secondary_identity_provider_id_from_email_request_error(
         return_value=RequestErrorAnswer,
     )
     with pytest.raises(requests.exceptions.HTTPError):
-        get_secondary_identity_provider_id_from_email("michel.vendeur@rock.org")
+        get_secondary_identity_provider_id_from_email("michel.vendeur@rock.test")
     assert "Get user from email request error:" in caplog.text
 
 
@@ -173,7 +173,7 @@ def test_get_secondary_identity_provider_id_from_email_many_users(
         return_value=ManyUsersAnswer,
     )
     with pytest.raises(TooManyUsers):
-        get_secondary_identity_provider_id_from_email("frederick.mercure@rock.org")
+        get_secondary_identity_provider_id_from_email("frederick.mercure@rock.test")
 
 
 def test_get_secondary_identity_provider_id_from_email_no_user(
@@ -193,7 +193,7 @@ def test_get_secondary_identity_provider_id_from_email_no_user(
         return_value=NoUsersAnswer,
     )
     with pytest.raises(NoUserFound):
-        get_secondary_identity_provider_id_from_email("blaireau.riviere@rock.org")
+        get_secondary_identity_provider_id_from_email("blaireau.riviere@rock.test")
 
 
 def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(

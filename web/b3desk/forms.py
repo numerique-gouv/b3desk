@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
@@ -11,22 +13,24 @@ from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import validators
 
+from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
+from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
+from b3desk.models.meetings import PIN_LENGTH
 from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
+
+MAX_URL_LENGTH = 255
+DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
+MAX_MEETING_DURATION = timedelta(minutes=999)
 
 
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
     meeting_fake_id = StringField()
-    user_id = IntegerField()
-    h = StringField()
+    hash_ = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
     quick_meeting = BooleanField()
-
-
-class JoinMailMeetingForm(JoinMeetingForm):
-    expiration = IntegerField()
 
 
 class ShowMeetingForm(Form):
@@ -38,7 +42,9 @@ class MeetingFilesForm(FlaskForm):
         label="Lien web du fichier à ajouter",
         description="Le lien web à entrer doit permettre de télécharger un fichier",
         render_kw={"rows": 1, "placeholder": "https://exemple.com/image.jpg"},
-        validators=[validators.length(max=255, message="Le texte est trop long")],
+        validators=[
+            validators.length(max=MAX_URL_LENGTH, message="Le texte est trop long")
+        ],
     )
     guestPolicy = BooleanField(
         label="Salle d'attente",
@@ -77,12 +83,17 @@ class MeetingForm(FlaskForm):
             meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
-        validators=[validators.length(max=150, message=_("Le texte est trop long"))],
+        validators=[
+            validators.length(
+                max=MODERATOR_ONLY_MESSAGE_MAXLENGTH,
+                message=_("Le texte est trop long"),
+            )
+        ],
     )
     maxParticipants = IntegerField(
         label=_("Nombre maximal de participants"),
         description=_("Limitez vos salons à 350 personnes pour plus de confort."),
-        default=350,
+        default=DEFAULT_MAX_PARTICIPANTS,
     )
     duration = IntegerField(
         label=_("Durée maximale (minutes)"),
@@ -90,8 +101,12 @@ class MeetingForm(FlaskForm):
             "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
-        default=280,
-        validators=[validators.NumberRange(min=1, max=999)],
+        default=int(DEFAULT_MEETING_DURATION.total_seconds() // 60),
+        validators=[
+            validators.NumberRange(
+                min=1, max=int(MAX_MEETING_DURATION.total_seconds() // 60)
+            )
+        ],
     )
     guestPolicy = BooleanField(
         label=_("Salle d'attente"),
@@ -150,7 +165,12 @@ class MeetingForm(FlaskForm):
         label=_("Message à l'attention des modérateurs"),
         description=_("150 caractères max"),
         default=_("Bienvenue aux modérateurs"),
-        validators=[validators.length(max=150, message=_("Le message est trop long"))],
+        validators=[
+            validators.length(
+                max=MODERATOR_ONLY_MESSAGE_MAXLENGTH,
+                message=_("Le message est trop long"),
+            )
+        ],
         render_kw={"rows": 3},
     )
     logoutUrl = StringField(
@@ -188,9 +208,11 @@ class MeetingForm(FlaskForm):
         default=lambda: pin_generation(),
         validators=[
             validators.DataRequired(),
-            validators.length(min=9, max=9, message="Entez un PIN de 9 chiffres"),
+            validators.length(
+                min=PIN_LENGTH, max=PIN_LENGTH, message="Entez un PIN de 9 chiffres"
+            ),
             validators.Regexp(
-                regex="[0-9]{9}",
+                regex=f"[0-9]{{{PIN_LENGTH}}}",
                 message="Le code PIN est composé de chiffres uniquement",
             ),
             validators.Regexp(

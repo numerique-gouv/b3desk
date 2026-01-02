@@ -13,8 +13,6 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
-from b3desk.constants import DEFAULT_EMAIL_WHITELIST
-
 
 def split_comma_separated_strings(value):
     """Convert a comma-separated string into a list of stripped strings."""
@@ -1037,25 +1035,8 @@ class MainSettings(BaseSettings):
     """Lien vers lequel sont redirigés les participants à la fin d’une réunion
     improvisée.
 
-    Par défaut, c’est la page d’accueil du service B3Desk.
+    Par défaut, c'est la page d'accueil du service B3Desk.
     """
-
-    MAIL_MODERATOR_WELCOME_MESSAGE: Any = None
-    """Formulation du message d’accueil aux modérateurs dans BBB, dont le lien
-    à été envoyé par mail.
-
-    Par défaut s’adapte à ``WORDING_THIS_MEETING``.
-    """
-
-    @field_validator("MAIL_MODERATOR_WELCOME_MESSAGE")
-    def get_moderator_welcome_message(
-        cls, moderator_welcome_message: str | None, info: ValidationInfo
-    ) -> Any:
-        """Return moderator welcome message for email-invited meetings with appropriate wording."""
-        return moderator_welcome_message or _(
-            "Bienvenue. Pour inviter quelqu'un à %(this_meeting)s, envoyez-lui l'un de ces liens :",
-            this_meeting=info.data["WORDING_THIS_MEETING"],
-        )
 
     MAILTO_LINKS: bool = False
     """Affiche des liens vers les adresses email des modérateurs et
@@ -1077,10 +1058,7 @@ class MainSettings(BaseSettings):
     """
 
     BETA: bool = False
-    """Active l’encart « Bêta » dans l’entête du service B3Desk."""
-
-    MAIL_MEETING: bool = False
-    """Active l’organisation de réunion par envoi de liens par email."""
+    """Active l'encart « Bêta » dans l'entête du service B3Desk."""
 
     SMTP_FROM: str | None = None
     """Adresse email d’expéditeur pour les mails d’invitation."""
@@ -1102,19 +1080,6 @@ class MainSettings(BaseSettings):
 
     SMTP_STARTTLS: bool | None = False
     """Connexion StartTLS au serveur SMTP."""
-
-    EMAIL_WHITELIST: Any = None
-
-    @field_validator("EMAIL_WHITELIST")
-    def get_email_whitelist(
-        cls, email_whitelist: list[str], info: ValidationInfo
-    ) -> str:
-        """Return DEFAULT_EMAIL_WHITELIST and normalize to list format."""
-        if not email_whitelist:
-            return DEFAULT_EMAIL_WHITELIST
-        return (
-            [email_whitelist] if isinstance(email_whitelist, str) else email_whitelist
-        )
 
     DEFAULT_MEETING_DURATION: int = 280
     """Durée maximum en minutes des réunion passée à l'API BBB.

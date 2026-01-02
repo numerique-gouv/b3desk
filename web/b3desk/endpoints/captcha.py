@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import requests
 from flask import Blueprint
 from flask import current_app
@@ -8,6 +10,7 @@ from b3desk.session import visio_code_attempt_counter_reset
 
 bp = Blueprint("captcha", __name__)
 CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
+DEFAULT_TOKEN_EXPIRY = timedelta(hours=1)
 
 
 def get_captchetat_token():
@@ -31,7 +34,7 @@ def get_captchetat_token():
 
     response = response.json()
     token = response["access_token"]
-    timeout = response.get("expires_in", 3600)
+    timeout = response.get("expires_in", int(DEFAULT_TOKEN_EXPIRY.total_seconds()))
     cache.set(CACHE_KEY_CAPTCHETAT_CREDENTIALS, token, timeout=timeout)
     return token
 

@@ -270,7 +270,13 @@ def update_user_nc_credentials(user, force_renew=False):
         return False
 
     data = get_user_nc_credentials(user)
-    if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
+    if (
+        not data
+        or data.get("error")
+        or data["nclogin"] is None
+        or data["nclocator"] is None
+        or data["nctoken"] is None
+    ):
         current_app.logger.info(
             "No new Nextcloud enroll needed for user %s with those data %s", user, data
         )
@@ -279,9 +285,9 @@ def update_user_nc_credentials(user, force_renew=False):
         current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
         nc_last_auto_enroll = datetime.now()
 
-    user.nc_locator = data["nclocator"]
-    user.nc_token = data["nctoken"]
-    user.nc_login = data["nclogin"]
+    user.nc_locator = data.get("nclocator")
+    user.nc_token = data.get("nctoken")
+    user.nc_login = data.get("nclogin")
     user.nc_last_auto_enroll = nc_last_auto_enroll
     return True
 

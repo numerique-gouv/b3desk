@@ -3,6 +3,7 @@ import os
 from datetime import date
 
 import pytest
+from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from flask import url_for
@@ -98,22 +99,22 @@ def test_add_dropzone_file(
 
 @pytest.fixture()
 def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=True)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
-def test_external_upload_called_by_bbb(
+def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
-    response = client_app.get("/meeting/1/externalUpload")
-    assert "meeting/external_upload.html" in vars(response)["contexts"]
+    response = client_app.get("/meeting/1/file-picker")
+    assert "meeting/file_picker.html" in vars(response)["contexts"]
 
 
-def test_insertDocuments(client_app, authenticated_user, meeting, mocker):
+def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
     post_data = ["/folder/file1.pdf", "file2.jpg"]
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     client_app.post(
-        f"/meeting/files/{meeting.id}/insertDocuments",
+        f"/meeting/files/{meeting.id}/file-picker-callback",
         params=json.dumps(post_data),
         headers={"Accept": "application/json", "Content-Type": "application/json"},
         status=200,
@@ -172,11 +173,13 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
         created_at=date.today(),
         meeting_id=meeting.id,
     )
-    meeting_file.save()
+    db.session.add(meeting_file)
+    db.session.commit()
 
     meeting.owner.nc_locator = "alice"
     meeting.owner.nc_token = "nctoken"
-    meeting.owner.save()
+    db.session.add(meeting.owner)
+    db.session.commit()
 
     mocker.patch(
         "b3desk.nextcloud.webdavClient",

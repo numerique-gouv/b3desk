@@ -30,7 +30,7 @@ def bbb_getRecordings_response(mocker):
       <participants>3</participants>
       <rawSize>951067</rawSize>
       <metadata>
-        <analytics-callback-url>https://bbb-analytics.url</analytics-callback-url>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
         <isBreakout>false</isBreakout>
         <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
         <meetingName>Fred's Room</meetingName>
@@ -44,21 +44,21 @@ def bbb_getRecordings_response(mocker):
       <playback>
         <format>
           <type>presentation</type>
-          <url>https://demo.bigbluebutton.org/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</url>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</url>
           <processingTime>7177</processingTime>
           <length>0</length>
           <size>1104836</size>
           <preview>
             <images>
-              <image alt="Welcome to" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png</image>
-              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-2.png</image>
-              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-3.png</image>
+              <image alt="Welcome to" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-2.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-3.png</image>
             </images>
           </preview>
         </format>
         <format>
           <type>video</type>
-          <url>https://demo.bigbluebutton.org/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4</url>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4</url>
           <processingTime>0</processingTime>
           <length>0</length>
           <size>1104836</size>
@@ -81,7 +81,7 @@ def bbb_getRecordings_response(mocker):
         <name>Recording title hand written</name>
         <meetingName>Fred's Room</meetingName>
         <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
-        <analytics-callback-url>https://bbb-analytics.url</analytics-callback-url>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
         <isBreakout>false</isBreakout>
       </metadata>
       <breakout>
@@ -92,20 +92,20 @@ def bbb_getRecordings_response(mocker):
       <playback>
         <format>
           <type>podcast</type>
-          <url>https://demo.bigbluebutton.org/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/audio.ogg</url>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/audio.ogg</url>
           <processingTime>0</processingTime>
           <length>33</length>
         </format>
         <format>
           <type>presentation</type>
-          <url>https://demo.bigbluebutton.org/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</url>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</url>
           <processingTime>139458</processingTime>
           <length>33</length>
           <preview>
             <images>
-              <image width="176" height="136" alt="Welcome to">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-1.png</image>
-              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-2.png</image>
-              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
+              <image width="176" height="136" alt="Welcome to">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-1.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-2.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
             </images>
           </preview>
         </format>
@@ -121,12 +121,13 @@ def bbb_getRecordings_response(mocker):
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     """Test that recordings are retrieved and parsed correctly from BBB."""
+    from b3desk.models.bbb import BBB
 
     class DirectLinkRecording:
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = meeting.bbb.get_recordings()
+    recordings = BBB(meeting.meetingID).get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
@@ -135,11 +136,11 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     assert len(playbacks) == 2
     assert (
         playbacks["presentation"]["url"]
-        == "https://demo.bigbluebutton.org/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
+        == "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
     )
     assert (
         playbacks["video"]["url"]
-        == "https://demo.bigbluebutton.org/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4"
+        == "https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4"
     )
 
     assert playbacks["video"]["images"] == []
@@ -147,7 +148,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     assert len(images) == 3
     assert (
         images[0]["url"]
-        == "https://demo.bigbluebutton.org/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png"
+        == "https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png"
     )
     assert first_recording["start_date"] == datetime(
         2018, 7, 4, 15, 38, 41, tzinfo=timezone.utc
@@ -184,11 +185,13 @@ def test_update_recording_name(client_app, authenticated_user, meeting, bbb_resp
 def test_delete_recordings(
     mocker, client_app, authenticated_user, meeting, bbb_getRecordings_response, caplog
 ):
+    from b3desk.models.bbb import BBB
+
     class DirectLinkRecording:
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = meeting.bbb.get_recordings()
+    recordings = BBB(meeting.meetingID).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -247,12 +250,13 @@ def test_open_recordings_page(
     bbb_getRecordings_response,
 ):
     """Test that recordings are retrieved and parsed correctly from BBB."""
+    from b3desk.models.bbb import BBB
 
     class DirectLinkRecording:
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    mocker.patch("b3desk.models.meetings.Meeting.is_running", return_value=False)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
     print(response.body)
@@ -263,4 +267,4 @@ def test_open_recordings_page(
         )
         == 2
     )
-    assert len(meeting.get_recordings()) == 2
+    assert len(BBB(meeting.meetingID).get_recordings()) == 2

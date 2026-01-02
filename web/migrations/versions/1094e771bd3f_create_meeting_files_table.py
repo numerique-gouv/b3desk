@@ -5,27 +5,22 @@ Revises: 8fe077ecfb10
 Create Date: 2023-02-28 14:30:43.642893
 """
 
-import os
-import sys
-
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy import inspect
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
-import alembic_helpers  # noqa: E402
-
-# revision identifiers, used by Alembic.
 revision = "1094e771bd3f"
 down_revision = "8fe077ecfb10"
 branch_labels = None
 depends_on = None
 
 
+def table_does_not_exist(table):
+    return table not in inspect(op.get_bind()).get_table_names()
+
+
 def upgrade():
-    if alembic_helpers.table_does_not_exist("meeting_files"):
+    if table_does_not_exist("meeting_files"):
         op.create_table(
             "meeting_files",
             sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
@@ -50,7 +45,7 @@ def upgrade():
             sa.PrimaryKeyConstraint("id", name="meeting_files_pkey"),
         )
 
-    if alembic_helpers.table_does_not_exist("meeting_files_external"):
+    if table_does_not_exist("meeting_files_external"):
         op.create_table(
             "meeting_files_external",
             sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
@@ -71,7 +66,7 @@ def upgrade():
 
 
 def downgrade():
-    if not alembic_helpers.table_does_not_exist("meeting_files"):
+    if not table_does_not_exist("meeting_files"):
         op.drop_table("meeting_files")
-    if not alembic_helpers.table_does_not_exist("meeting_files_external"):
+    if not table_does_not_exist("meeting_files_external"):
         op.drop_table("meeting_files_external")

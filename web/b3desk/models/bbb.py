@@ -10,24 +10,22 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
 from urllib.parse import urlparse
 from xml.etree import ElementTree
 
 import requests
 from flask import current_app
-from flask import render_template
 from flask import url_for
 
-from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.tasks import background_upload
 
 from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
 
-BBB_REQUEST_TIMEOUT = 2
+BBB_REQUEST_TIMEOUT = timedelta(seconds=2)
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
@@ -51,9 +49,12 @@ def caching_exclusion(func, caller, prepped, *args, **kwargs):
 class BBB:
     """Interface to BBB API."""
 
-    def __init__(self, meeting):
-        """Initialize BBB API interface with a meeting instance."""
-        self.meeting = meeting
+    @classmethod
+    def success(cls, payload):
+        return payload and payload.get("returncode") == "SUCCESS"
+
+    def __init__(self, meeting_id):
+        self.meeting_id = meeting_id
 
     def bbb_request(self, action, method="GET", **kwargs):
         """Prepare a BBB API request with authentication checksum."""
@@ -92,7 +93,9 @@ class BBB:
             request.body,
         )
         try:
-            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+            response = session.send(
+                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+            )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
@@ -104,145 +107,118 @@ class BBB:
 
     bbb_response.make_cache_key = cache_key
 
-    def is_meeting_running(self):
+    def is_running(self):
         """Check if the meeting is running.
 
         https://docs.bigbluebutton.org/development/api/#ismeetingrunning
         """
         request = self.bbb_request(
-            "isMeetingRunning", params={"meetingID": self.meeting.meetingID}
+            "isMeetingRunning", params={"meetingID": self.meeting_id}
         )
-        return self.bbb_response(request)
+        data = self.bbb_response(request)
+        return self.success(data) and data["running"] == "true"
 
-    def create(self):
+    def create(
+        self,
+        *,
+        name,
+        record=None,
+        auto_start_recording=None,
+        allow_start_stop_recording=None,
+        webcams_only_for_moderator=None,
+        mute_on_start=None,
+        lock_settings_disable_cam=None,
+        lock_settings_disable_mic=None,
+        allow_mods_to_unmute_users=None,
+        lock_settings_disable_private_chat=None,
+        lock_settings_disable_public_chat=None,
+        lock_settings_disable_note=None,
+        attendee_pw=None,
+        moderator_pw=None,
+        welcome=None,
+        max_participants=None,
+        logout_url=None,
+        duration=None,
+        voice_bridge=None,
+        guest_policy=None,
+        presentation_upload_external_url=None,
+        presentation_upload_external_description=None,
+        moderator_only_message=None,
+        meta_academy=None,
+        analytics_callback_url=None,
+    ):
         """Create a new meeting.
 
         https://docs.bigbluebutton.org/development/api/#create.
         """
         params = {
-            "meetingID": self.meeting.meetingID,
-            "name": self.meeting.name,
-            "presentationUploadExternalUrl": url_for(
-                "meetings.external_upload", meeting=self.meeting, _external=True
-            ),
-            "presentationUploadExternalDescription": current_app.config[
-                "EXTERNAL_UPLOAD_DESCRIPTION"
-            ],
+            "meetingID": self.meeting_id,
+            "name": name,
         }
-        if (param := self.meeting.record) is not None:
-            params["record"] = str(param).lower()
-        if (param := self.meeting.autoStartRecording) is not None:
-            params["autoStartRecording"] = str(param).lower()
-        if (param := self.meeting.allowStartStopRecording) is not None:
-            params["allowStartStopRecording"] = str(param).lower()
-        if (param := self.meeting.webcamsOnlyForModerator) is not None:
-            params["webcamsOnlyForModerator"] = str(param).lower()
-        if (param := self.meeting.muteOnStart) is not None:
-            params["muteOnStart"] = str(param).lower()
-        if (param := self.meeting.lockSettingsDisableCam) is not None:
-            params["lockSettingsDisableCam"] = str(param).lower()
-        if (param := self.meeting.lockSettingsDisableMic) is not None:
-            params["lockSettingsDisableMic"] = str(param).lower()
-        if (param := self.meeting.allowModsToUnmuteUsers) is not None:
-            params["allowModsToUnmuteUsers"] = str(param).lower()
-        if (param := self.meeting.lockSettingsDisablePrivateChat) is not None:
-            params["lockSettingsDisablePrivateChat"] = str(param).lower()
-        if (param := self.meeting.lockSettingsDisablePublicChat) is not None:
-            params["lockSettingsDisablePublicChat"] = str(param).lower()
-        if (param := self.meeting.lockSettingsDisableNote) is not None:
-            params["lockSettingsDisableNote"] = str(param).lower()
-        if param := self.meeting.attendeePW:
-            params["attendeePW"] = param
-        if param := self.meeting.moderatorPW:
-            params["moderatorPW"] = param
-        if param := self.meeting.welcome:
-            params["welcome"] = param
-        if param := self.meeting.maxParticipants:
-            params["maxParticipants"] = str(param)
-        if param := self.meeting.logoutUrl or current_app.config.get(
-            "MEETING_LOGOUT_URL", ""
-        ):
-            params["logoutURL"] = str(param)
-        if param := self.meeting.duration:
-            params["duration"] = str(param)
-        if current_app.config["ENABLE_PIN_MANAGEMENT"] and (
-            param := self.meeting.voiceBridge
-        ):
-            params["voiceBridge"] = str(param)
-
-        # Pass the academy for statisticts purpose
-        # https://github.com/numerique-gouv/b3desk/issues/80
-        if self.meeting.owner and self.meeting.owner.mail_domain:
-            params["meta_academy"] = self.meeting.owner.mail_domain
-
-        bigbluebutton_analytics_callback_url = current_app.config[
-            "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
-        ]
-        if bigbluebutton_analytics_callback_url:
-            # bbb will call this endpoint when meeting ends
+        if presentation_upload_external_url:
+            params["presentationUploadExternalUrl"] = presentation_upload_external_url
+            params["presentationUploadExternalDescription"] = (
+                presentation_upload_external_description
+            )
+        if record is not None:
+            params["record"] = str(record).lower()
+        if auto_start_recording is not None:
+            params["autoStartRecording"] = str(auto_start_recording).lower()
+        if allow_start_stop_recording is not None:
+            params["allowStartStopRecording"] = str(allow_start_stop_recording).lower()
+        if webcams_only_for_moderator is not None:
+            params["webcamsOnlyForModerator"] = str(webcams_only_for_moderator).lower()
+        if mute_on_start is not None:
+            params["muteOnStart"] = str(mute_on_start).lower()
+        if lock_settings_disable_cam is not None:
+            params["lockSettingsDisableCam"] = str(lock_settings_disable_cam).lower()
+        if lock_settings_disable_mic is not None:
+            params["lockSettingsDisableMic"] = str(lock_settings_disable_mic).lower()
+        if allow_mods_to_unmute_users is not None:
+            params["allowModsToUnmuteUsers"] = str(allow_mods_to_unmute_users).lower()
+        if lock_settings_disable_private_chat is not None:
+            params["lockSettingsDisablePrivateChat"] = str(
+                lock_settings_disable_private_chat
+            ).lower()
+        if lock_settings_disable_public_chat is not None:
+            params["lockSettingsDisablePublicChat"] = str(
+                lock_settings_disable_public_chat
+            ).lower()
+        if lock_settings_disable_note is not None:
+            params["lockSettingsDisableNote"] = str(lock_settings_disable_note).lower()
+        if attendee_pw:
+            params["attendeePW"] = attendee_pw
+        if moderator_pw:
+            params["moderatorPW"] = moderator_pw
+        if welcome:
+            params["welcome"] = welcome
+        if max_participants:
+            params["maxParticipants"] = str(max_participants)
+        if logout_url:
+            params["logoutURL"] = str(logout_url)
+        if duration:
+            params["duration"] = str(duration)
+        if voice_bridge:
+            params["voiceBridge"] = str(voice_bridge)
+        if meta_academy:
+            params["meta_academy"] = meta_academy
+        if analytics_callback_url:
             params.update(
                 {
                     "meetingKeepEvents": "true",
-                    "meta_analytics-callback-url": str(
-                        bigbluebutton_analytics_callback_url
-                    ),
+                    "meta_analytics-callback-url": str(analytics_callback_url),
                 }
             )
-        if self.meeting.attendeePW is None:
-            # if no attendeePW it a meeting create with a mail (not logged in)
-            params["moderatorOnlyMessage"] = render_template(
-                "meeting/signin_mail_link.html",
-                main_message=self.meeting.moderatorOnlyMessage,
-                link=self.meeting.get_mail_signin_url(),
-            )
-        else:
-            quick_meeting_moderator_link_introduction = current_app.config[
-                "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
-            ]
-            quick_meeting_attendee_link_introduction = current_app.config[
-                "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
-            ]
-            params["moderatorOnlyMessage"] = render_template(
-                "meeting/signin_links.html",
-                moderator_message=self.meeting.moderatorOnlyMessage,
-                moderator_link_introduction=quick_meeting_moderator_link_introduction,
-                moderator_signin_url=self.meeting.get_signin_url(Role.moderator),
-                attendee_link_introduction=quick_meeting_attendee_link_introduction,
-                attendee_signin_url=self.meeting.get_signin_url(Role.attendee),
-            )
-        params["guestPolicy"] = (
-            "ASK_MODERATOR" if self.meeting.guestPolicy else "ALWAYS_ACCEPT"
-        )
+        if moderator_only_message:
+            params["moderatorOnlyMessage"] = moderator_only_message
+        params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
 
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
-            data = self.bbb_response(request)
-            return data
+            return self.bbb_response(request)
 
-        # default file is sent right away since it is need as the background
-        # image for the meeting
-        # xml = (
-        #     self.meeting_file_addition_xml([self.meeting.default_file])
-        #     if self.meeting.default_file
-        #     else None
-        # )
-        # TODO: xml as data is not sent anymore at BBB meeting creation to avoid delay
         request = self.bbb_request("create", "POST", params=params)
-        data = self.bbb_response(request)
-        # non default files are sent later
-        if (
-            self.meeting.files
-            and "returncode" in data
-            and data["returncode"] == "SUCCESS"
-        ):
-            xml = self.meeting_file_addition_xml(self.meeting.files)
-            # TODO: send all files and not only the non default ones
-            request = self.bbb_request(
-                "insertDocument", params={"meetingID": self.meeting.meetingID}
-            )
-            background_upload.delay(request.url, xml)
-
-        return data
+        return self.bbb_response(request)
 
     def delete_recordings(self, recording_ids):
         """Delete recordings.
@@ -254,13 +230,23 @@ class BBB:
         )
         return self.bbb_response(request)
 
+    def delete_all_recordings(self):
+        """Delete all recordings for this meeting."""
+        recordings = self.get_recordings()
+        if not recordings:
+            return {}
+        recording_ids = ",".join(
+            [recording.get("recordID", "") for recording in recordings]
+        )
+        return self.delete_recordings(recording_ids)
+
     def get_meeting_info(self):
         """Retrieve metadata about a meeting.
 
         https://docs.bigbluebutton.org/development/api/#getmeetinginfo
         """
         request = self.bbb_request(
-            "getMeetingInfo", params={"meetingID": self.meeting.meetingID}
+            "getMeetingInfo", params={"meetingID": self.meeting_id}
         )
         return self.bbb_response(request)
 
@@ -271,7 +257,7 @@ class BBB:
         https://docs.bigbluebutton.org/development/api/#getrecordings
         """
         request = self.bbb_request(
-            "getRecordings", params={"meetingID": self.meeting.meetingID}
+            "getRecordings", params={"meetingID": self.meeting_id}
         )
         current_app.logger.debug(
             "BBB API request method:%s url:%s", request.method, request.url
@@ -280,7 +266,9 @@ class BBB:
             session = requests.Session()
             if current_app.debug:  # pragma: no cover
                 session.verify = False
-            response = session.send(request, timeout=BBB_REQUEST_TIMEOUT)
+            response = session.send(
+                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+            )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
@@ -355,7 +343,7 @@ class BBB:
         """
         params = {
             "fullName": fullname,
-            "meetingID": self.meeting.meetingID,
+            "meetingID": self.meeting_id,
             "redirect": "true",
         }
         if meeting_role == Role.attendee:
@@ -373,11 +361,14 @@ class BBB:
 
         https://docs.bigbluebutton.org/development/api/#end
         """
-        request = self.bbb_request("end", params={"meetingID": self.meeting.meetingID})
+        request = self.bbb_request("end", params={"meetingID": self.meeting_id})
         return self.bbb_response(request)
 
-    def meeting_file_addition_xml(self, meeting_files):
-        """Generate XML for adding files to a BBB meeting."""
+    def send_meeting_files(self, meeting_files, meeting):
+        """Send files to a BBB meeting."""
+        from .meetings import MeetingFiles
+        from .meetings import get_meeting_file_hash
+
         xml_beg = "<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> "
         xml_end = " </module></modules>"
         xml_mid = ""
@@ -388,9 +379,8 @@ class BBB:
             else:  # file is not URL nor NC hence it was uploaded
                 filehash = get_meeting_file_hash(meeting_file.id, isexternal)
                 current_app.logger.info(
-                    "Add document on BigBlueButton room %s %s creation for file %s",
-                    self.meeting.name,
-                    self.meeting.id,
+                    "Add document on BigBlueButton room %s creation for file %s",
+                    self.meeting_id,
                     meeting_file.title,
                 )
                 url = url_for(
@@ -398,7 +388,7 @@ class BBB:
                     isexternal=1 if isexternal else 0,
                     mfid=meeting_file.id,
                     mftoken=filehash,
-                    meetingid=meeting_file.meeting_id,
+                    meeting=meeting,
                     ncpath=meeting_file.nc_path,
                     _external=True,
                     _scheme=current_app.config["PREFERRED_URL_SCHEME"],
@@ -409,4 +399,9 @@ class BBB:
                     xml_mid += (
                         f"<document url='{url}' filename='{meeting_file.title}' />"
                     )
-        return xml_beg + xml_mid + xml_end
+        payload = xml_beg + xml_mid + xml_end
+
+        request = self.bbb_request(
+            "insertDocument", params={"meetingID": self.meeting_id}
+        )
+        background_upload.delay(request.url, payload)

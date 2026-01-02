@@ -11,7 +11,7 @@ if [ -z "$NEXTCLOUD_SESSIONTOKEN_KEY" ]; then
     exit 1
 fi
 
-response=$(curl -X POST localhost/apps/sessiontoken/token --silent -d "apikey=$NEXTCLOUD_SESSIONTOKEN_KEY&user=bbb-visio-user&name=app" --write-out "\n%{http_code}")
+response=$(curl -X POST localhost:8000/apps/sessiontoken/token --silent -d "apikey=$NEXTCLOUD_SESSIONTOKEN_KEY&user=bbb-visio-user&name=app" --write-out "\n%{http_code}")
 status_code=$(echo "$response" | tail -1)
 body=$(echo "$response" | head -n -1)
 

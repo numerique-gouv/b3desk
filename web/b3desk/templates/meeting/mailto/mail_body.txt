@@ -12,11 +12,7 @@ Vous êtes invité en tant que :
 ---
 {% trans %}Le lien pour s'y inscrire est le suivant :{% endtrans %}
 
-{% if role == Role.moderator %}
-{{ meeting.get_signin_url(Role.moderator) }}
-{% else %}
-{{ meeting.get_signin_url(Role.attendee) }}
-{% endif %}
+{{ signin_url }}
 ---
 {% trans %}Le mot de passe de {{ this_meeting }} est :{% endtrans %}
 

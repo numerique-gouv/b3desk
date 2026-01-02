@@ -6,20 +6,6 @@ from flask import g
 from flask import session
 from flask_pyoidc.user_session import UserSession
 
-from b3desk.models.users import get_or_create_user
-
-
-def get_current_user():
-    """Retrieve or create the current authenticated user from session."""
-    if "user" not in g:
-        user_session = UserSession(session)
-        info = user_session.userinfo
-        g.user = get_or_create_user(info)
-        current_app.logger.debug(
-            f"User authenticated with token: {user_session.access_token}"
-        )
-    return g.user
-
 
 def has_user_session():
     """Check if user has an active authenticated session."""
@@ -46,25 +32,22 @@ def meeting_access_required(level=None):
     def wrapper(view_function):
         @wraps(view_function)
         def decorator(*args, meeting, **kwargs):
-            if not has_user_session():
-                abort(403)
-            user = get_current_user()
-            if not user:
+            if not g.user:
                 abort(403)
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            is_owner = meeting.owner == user
+            is_owner = meeting.owner == g.user
             is_delegate = (
                 level is not None
                 and level >= AccessLevel.DELEGATE
-                and meeting in user.get_all_delegated_meetings
+                and meeting in g.user.get_all_delegated_meetings
             )
 
             if not is_owner and not is_delegate:
                 abort(403)
 
-            return view_function(*args, user=user, meeting=meeting, **kwargs)
+            return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
         return decorator
 
