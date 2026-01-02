@@ -88,8 +88,7 @@ def test_save_new_meeting(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        res.form["voiceBridge"] = "123456789"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert (
@@ -119,8 +118,7 @@ def test_save_new_meeting(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        assert meeting.voiceBridge == "123456789"
+    assert meeting.voiceBridge == "123456789"
     assert len(meeting.visio_code) == 9
     assert meeting.visio_code.isdigit()
     assert (
@@ -154,8 +152,7 @@ def test_save_existing_meeting_not_running(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        res.form["voiceBridge"] = "123456789"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -183,8 +180,7 @@ def test_save_existing_meeting_not_running(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        assert meeting.voiceBridge == "123456789"
+    assert meeting.voiceBridge == "123456789"
     assert (
         "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
         in caplog.text
@@ -355,10 +351,8 @@ def test_create_no_file(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
 
@@ -462,10 +456,8 @@ def test_create_with_only_a_default_file(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
 
@@ -569,10 +561,8 @@ def test_create_with_files(
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
         "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
     assert mocked_background_upload.called
