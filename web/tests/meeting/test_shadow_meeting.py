@@ -10,6 +10,7 @@ from b3desk.models.roles import Role
 
 
 def test_delete_all_old_shadow_meetings(
+    time_machine,
     meeting,
     meeting_2,
     meeting_3,
@@ -19,6 +20,7 @@ def test_delete_all_old_shadow_meetings(
     user,
 ):
     """Test that old shadow meetings are deleted except the most recent one."""
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
     delete_all_old_shadow_meetings()
     voiceBridges = get_all_previous_voiceBridges()
     assert voiceBridges == ["555555552", "555555553"]
