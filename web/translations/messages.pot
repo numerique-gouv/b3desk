@@ -143,7 +143,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:273
+#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:300
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:418
-#: web/b3desk/endpoints/meetings.py:310
+#: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -369,20 +369,20 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:105
+#: web/b3desk/endpoints/meetings.py:106
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:109
+#: web/b3desk/endpoints/meetings.py:110
 #, python-brace-format
 msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:125 web/b3desk/endpoints/meetings.py:170
+#: web/b3desk/endpoints/meetings.py:126 web/b3desk/endpoints/meetings.py:171
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:174
+#: web/b3desk/endpoints/meetings.py:175
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -395,28 +395,32 @@ msgstr ""
 msgid "Vous ne pouvez pas terminer cette réunion"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:293
+#: web/b3desk/endpoints/meetings.py:289
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:302
+#: web/b3desk/endpoints/meetings.py:298
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:325
+#: web/b3desk/endpoints/meetings.py:321
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:336
+#: web/b3desk/endpoints/meetings.py:332
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:344
+#: web/b3desk/endpoints/meetings.py:340
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
+msgstr ""
+
+#: web/b3desk/models/meetings.py:281 web/b3desk/models/meetings.py:288
+msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:5
