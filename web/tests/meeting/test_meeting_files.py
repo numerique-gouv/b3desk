@@ -129,8 +129,8 @@ def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
         def download_sync(self, remote_path, local_path):
             pass
 
-    meeting.user.nc_locator = "alice"
-    meeting.user.nc_token = "nctoken"
+    meeting.owner.nc_locator = "alice"
+    meeting.owner.nc_token = "nctoken"
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
     mocked_send = mocker.patch(
         "b3desk.endpoints.meeting_files.send_from_directory",
@@ -176,9 +176,9 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
     db.session.add(meeting_file)
     db.session.commit()
 
-    meeting.user.nc_locator = "alice"
-    meeting.user.nc_token = "nctoken"
-    db.session.add(meeting.user)
+    meeting.owner.nc_locator = "alice"
+    meeting.owner.nc_token = "nctoken"
+    db.session.add(meeting.owner)
     db.session.commit()
 
     mocker.patch(
@@ -186,7 +186,7 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
         side_effect=WebDavException,
     )
 
-    disable_mock = mocker.patch.object(meeting.user, "disable_nextcloud")
+    disable_mock = mocker.patch.object(meeting.owner, "disable_nextcloud")
 
     token = get_meeting_file_hash(meeting_file.id, 0)
     response = client_app.get(
@@ -196,3 +196,38 @@ def test_ncdownload_webdav_exception_disables_nextcloud(
 
     disable_mock.assert_called_once()
     assert response.json["status"] == 500
+
+
+def test_owner_can_delete_file(
+    client_app, authenticated_user_2, meeting_with_file, jpg_file_content, mocker
+):
+    """Test meeting owner can delete meeting file."""
+    response = client_app.post(
+        "/meeting/files/delete",
+        json.dumps({"id": meeting_with_file.id}),
+        content_type="application/json",
+        status=200,
+    )
+    assert response.json == {
+        "status": 200,
+        "newDefaultId": None,
+        "id": meeting_with_file.id,
+        "msg": "Fichier supprimé avec succès",
+    }
+
+
+def test_other_user_cannot_delete_file(
+    client_app, authenticated_user, meeting_with_file, jpg_file_content, mocker
+):
+    """Test user who is not owner cannot delete meeting file."""
+    response = client_app.post(
+        "/meeting/files/delete",
+        json.dumps({"id": meeting_with_file.id}),
+        content_type="application/json",
+        status=200,
+    )
+    assert response.json == {
+        "status": 500,
+        "id": meeting_with_file.id,
+        "msg": "Vous ne pouvez pas supprimer cet élément",
+    }
