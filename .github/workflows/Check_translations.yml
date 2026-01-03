@@ -41,7 +41,7 @@ jobs:
           grep -v '^#,' > /tmp/messages.pot.before
 
       - name: Extract translation strings
-        run: make translation-extract
+        run: just translation-extract
 
       - name: Save new catalog (filtered)
         run: |
@@ -62,8 +62,8 @@ jobs:
             echo "New translatable strings were found or existing ones were modified."
             echo "Please run the following commands and commit the changes:"
             echo ""
-            echo "  make translation-extract"
-            echo "  make translation-update"
+            echo "  just translation-extract"
+            echo "  just translation-update"
             echo "  git add web/translations/"
             echo ""
             exit 1
