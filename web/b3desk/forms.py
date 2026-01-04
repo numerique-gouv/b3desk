@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
@@ -17,8 +19,8 @@ from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
 
 MAX_URL_LENGTH = 255
-DEFAULT_MEETING_DURATION_MINUTES = 280
-MAX_MEETING_DURATION_MINUTES = 999
+DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
+MAX_MEETING_DURATION = timedelta(minutes=999)
 
 
 class JoinMeetingForm(FlaskForm):
@@ -98,8 +100,12 @@ class MeetingForm(FlaskForm):
             "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
-        default=DEFAULT_MEETING_DURATION_MINUTES,
-        validators=[validators.NumberRange(min=1, max=MAX_MEETING_DURATION_MINUTES)],
+        default=int(DEFAULT_MEETING_DURATION.total_seconds() // 60),
+        validators=[
+            validators.NumberRange(
+                min=1, max=int(MAX_MEETING_DURATION.total_seconds() // 60)
+            )
+        ],
     )
     guestPolicy = BooleanField(
         label=_("Salle d'attente"),

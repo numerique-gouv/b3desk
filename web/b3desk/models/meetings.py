@@ -16,6 +16,8 @@ from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
 from itsdangerous import URLSafeSerializer
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -30,9 +32,10 @@ DEFAULT_MAX_PARTICIPANTS = 350
 PIN_LENGTH = 9
 MIN_PIN = 100000000
 MAX_PIN = 999999999
+MAX_GENERATION_ATTEMPTS = 20
 TITLE_TRUNCATE_THRESHOLD = 70
 TITLE_TRUNCATE_LENGTH = 30
-DATA_RETENTION_DAYS = 365
+DATA_RETENTION = timedelta(days=365)
 PASSWORD_HASH_LENGTH = 16
 
 
@@ -188,8 +191,7 @@ def get_all_previous_voiceBridges():
 def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
     db.session.query(PreviousVoiceBridge).filter(
-        PreviousVoiceBridge.archived_at
-        < datetime.now() - timedelta(days=DATA_RETENTION_DAYS)
+        PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
     ).delete()
 
 
@@ -222,12 +224,33 @@ def get_meeting_from_meeting_id(meeting_fake_id):
     return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
 
 
-def pin_generation(forbidden_pins=None, clean_db=True):
-    """Generate a unique PIN for voice bridge, avoiding forbidden pins."""
-    if clean_db:
-        delete_old_voiceBridges()
-    forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
-    return create_unique_pin(forbidden_pins=forbidden_pins)
+def generate_random_pin():
+    """Generate a random 9-digit PIN."""
+    return str(random.randint(MIN_PIN, MAX_PIN))
+
+
+def pin_exists(pin):
+    """Check if a PIN already exists in meetings or archived voice bridges."""
+    return db.session.query(
+        or_(
+            db.session.query(Meeting).filter(Meeting.voiceBridge == pin).exists(),
+            db.session.query(PreviousVoiceBridge)
+            .filter(PreviousVoiceBridge.voiceBridge == pin)
+            .exists(),
+        )
+    ).scalar()
+
+
+def pin_generation():
+    """Generate a unique PIN for voice bridge."""
+    delete_old_voiceBridges()
+    for _attempt in range(MAX_GENERATION_ATTEMPTS):
+        pin = generate_random_pin()
+        if not pin_exists(pin):
+            return pin
+    raise RuntimeError(
+        "Could not generate unique PIN after maximum attempts"
+    )  # pragma: no cover
 
 
 def get_forbidden_pins(edited_meeting_id=None):
@@ -246,21 +269,24 @@ def get_forbidden_pins(edited_meeting_id=None):
     ] + previous_pins
 
 
-def create_unique_pin(forbidden_pins, pin=None):
-    """Create a unique 9-digit PIN that is not in the forbidden list."""
-    pin = random.randint(MIN_PIN, MAX_PIN) if not pin else pin
-    if str(pin) in forbidden_pins:
-        pin += 1
-        pin = MIN_PIN if pin > MAX_PIN else pin
-        return create_unique_pin(forbidden_pins, pin)
-    else:
-        return str(pin)
-
-
 def pin_is_unique_validator(form, field):
     """Validate that a PIN is unique and not already in use."""
-    if field.data in get_forbidden_pins(form.id.data):
-        raise ValidationError("Ce code PIN est déjà utilisé")
+    pin = field.data
+    # Check if PIN exists in archived voice bridges
+    archived_exists = db.session.query(
+        db.session.query(PreviousVoiceBridge)
+        .filter(PreviousVoiceBridge.voiceBridge == pin)
+        .exists()
+    ).scalar()
+    if archived_exists:
+        raise ValidationError(_("Ce code PIN est déjà utilisé"))
+
+    # Check if PIN exists in other meetings (excluding current meeting if editing)
+    query = db.session.query(Meeting).filter(Meeting.voiceBridge == pin)
+    if form.id.data:
+        query = query.filter(Meeting.id != form.id.data)
+    if db.session.query(query.exists()).scalar():
+        raise ValidationError(_("Ce code PIN est déjà utilisé"))
 
 
 def create_and_save_shadow_meeting(user):
@@ -290,10 +316,9 @@ def create_and_save_shadow_meeting(user):
         user=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
-        voiceBridge=pin_generation(),
-        visio_code=unique_visio_code_generation(),
     )
     db.session.add(meeting)
+    assign_unique_codes(meeting)
     db.session.commit()
     return meeting
 
@@ -333,8 +358,7 @@ def delete_all_old_shadow_meetings():
     old_shadow_meetings = [
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.last_connection_utc_datetime
-            < datetime.now() - timedelta(days=DATA_RETENTION_DAYS),
+            Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
             Meeting.is_shadow,
         )
     ]
@@ -343,21 +367,66 @@ def delete_all_old_shadow_meetings():
         save_voiceBridge_and_delete_meeting(shadow_meeting)
 
 
-def unique_visio_code_generation(forbidden_visio_code=None):
-    """Generate a unique visio code not already in use."""
-    forbidden_visio_code = (
-        get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
-    )
-    new_visio_code = create_unique_pin(forbidden_visio_code)
-    if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
-        return new_visio_code.upper()
-    return unique_visio_code_generation(forbidden_visio_code=forbidden_visio_code)
+def visio_code_exists(code):
+    """Check if a visio code already exists."""
+    return db.session.query(
+        db.session.query(Meeting).filter(Meeting.visio_code == code).exists()
+    ).scalar()
 
 
-def get_all_visio_codes():
-    """Retrieve all existing visio codes from the database."""
-    existing_visio_code = db.session.query(Meeting.visio_code)
-    return [visio_code[0] for visio_code in existing_visio_code]
+def unique_visio_code_generation():
+    """Generate a unique visio code not already in use (LBYL for endpoint)."""
+    for _attempt in range(MAX_GENERATION_ATTEMPTS):
+        code = generate_random_pin()
+        if not visio_code_exists(code):
+            return code
+    raise RuntimeError(
+        "Could not generate unique visio code after maximum attempts"
+    )  # pragma: no cover
+
+
+def assign_unique_visio_code(meeting):
+    """Assign a unique visio code to a meeting (EAFP with retry on collision)."""
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.visio_code = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
+
+
+def assign_unique_voice_bridge(meeting):
+    """Assign a unique voice bridge PIN to a meeting (EAFP with retry on collision)."""
+    with db.session.no_autoflush:
+        delete_old_voiceBridges()
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.voiceBridge = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
+
+
+def assign_unique_codes(meeting):
+    """Assign unique visio_code and voiceBridge to a new meeting (both before flush)."""
+    with db.session.no_autoflush:
+        delete_old_voiceBridges()
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.visio_code = generate_random_pin()
+        meeting.voiceBridge = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
 
 
 def get_meeting_by_visio_code(visio_code):

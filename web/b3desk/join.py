@@ -93,16 +93,12 @@ def get_signin_url(meeting, meeting_role: Role):
 def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
-    from b3desk.models.meetings import pin_generation
 
     bbb = BBB(meeting.meetingID)
     if bbb.is_running():
         return False
 
     current_app.logger.info("Request BBB room creation %s %s", meeting.name, meeting.id)
-    meeting.voiceBridge = (
-        pin_generation() if not meeting.voiceBridge else meeting.voiceBridge
-    )
 
     moderator_only_message = render_template(
         "meeting/signin_links.html",

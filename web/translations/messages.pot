@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-31 15:58+0100\n"
+"POT-Creation-Date: 2026-01-04 09:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,65 +26,65 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/forms.py:59
+#: web/b3desk/forms.py:61
 #, python-format
 msgid "Nom %(of_the_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:63
+#: web/b3desk/forms.py:65
 msgid ""
 "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est"
 " visible des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:67
+#: web/b3desk/forms.py:69
 #, python-format
 msgid "%(my_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:73
+#: web/b3desk/forms.py:75
 msgid "Texte de bienvenue"
 msgstr ""
 
-#: web/b3desk/forms.py:75
+#: web/b3desk/forms.py:77
 msgid ""
 "Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
 "caractères max."
 msgstr ""
 
-#: web/b3desk/forms.py:78
+#: web/b3desk/forms.py:80
 #, python-format
 msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
 msgstr ""
 
-#: web/b3desk/forms.py:86
+#: web/b3desk/forms.py:88
 msgid "Le texte est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:91
+#: web/b3desk/forms.py:93
 msgid "Nombre maximal de participants"
 msgstr ""
 
-#: web/b3desk/forms.py:92
+#: web/b3desk/forms.py:94
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:96
+#: web/b3desk/forms.py:98
 msgid "Durée maximale (minutes)"
 msgstr ""
 
-#: web/b3desk/forms.py:98
+#: web/b3desk/forms.py:100
 #, python-format
 msgid ""
 "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60,"
 " 2h = 120, 3h = 180, 4h = 240."
 msgstr ""
 
-#: web/b3desk/forms.py:105
+#: web/b3desk/forms.py:111
 msgid "Salle d'attente"
 msgstr ""
 
-#: web/b3desk/forms.py:107
+#: web/b3desk/forms.py:113
 #, python-format
 msgid ""
 "Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
@@ -92,126 +92,126 @@ msgid ""
 "individuellement."
 msgstr ""
 
-#: web/b3desk/forms.py:113
+#: web/b3desk/forms.py:119
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
-#: web/b3desk/forms.py:115
+#: web/b3desk/forms.py:121
 msgid ""
 "Seuls vous et les modérateurs pouvez voir les caméras des autres "
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:120
+#: web/b3desk/forms.py:126
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
-#: web/b3desk/forms.py:122
+#: web/b3desk/forms.py:128
 msgid ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
-#: web/b3desk/forms.py:127
+#: web/b3desk/forms.py:133
 msgid "Caméras des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:129
+#: web/b3desk/forms.py:135
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture de la caméra des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:135
+#: web/b3desk/forms.py:141
 msgid "Micros des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:137
+#: web/b3desk/forms.py:143
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture du microphone des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:143
+#: web/b3desk/forms.py:149
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:148
+#: web/b3desk/forms.py:154
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:153
+#: web/b3desk/forms.py:159
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:158
+#: web/b3desk/forms.py:164
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:159
+#: web/b3desk/forms.py:165
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:275
+#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:301
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:164
+#: web/b3desk/forms.py:170
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:171
+#: web/b3desk/forms.py:177
 #, python-format
 msgid "Url de redirection après %(the_meeting)s"
 msgstr ""
 
-#: web/b3desk/forms.py:178
+#: web/b3desk/forms.py:184
 msgid "Renouveler le lien modérateur"
 msgstr ""
 
-#: web/b3desk/forms.py:180 web/b3desk/forms.py:189
+#: web/b3desk/forms.py:186 web/b3desk/forms.py:195
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
 msgstr ""
 
-#: web/b3desk/forms.py:187
+#: web/b3desk/forms.py:193
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:196
+#: web/b3desk/forms.py:202
 msgid "PIN"
 msgstr ""
 
-#: web/b3desk/forms.py:198
+#: web/b3desk/forms.py:204
 #, python-format
 msgid "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)"
 msgstr ""
 
-#: web/b3desk/forms.py:218
+#: web/b3desk/forms.py:224
 msgid "Code de connexion"
 msgstr ""
 
-#: web/b3desk/forms.py:220
+#: web/b3desk/forms.py:226
 #, python-format
 msgid "Code de connexion pour rejoindre %(the_meeting)s %(sip)s"
 msgstr ""
 
-#: web/b3desk/forms.py:222
+#: web/b3desk/forms.py:228
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:236
+#: web/b3desk/forms.py:242
 msgid "Enregistrement manuel"
 msgstr ""
 
-#: web/b3desk/forms.py:238
+#: web/b3desk/forms.py:244
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:243
+#: web/b3desk/forms.py:249
 msgid "Enregistrement automatique"
 msgstr ""
 
-#: web/b3desk/forms.py:245
+#: web/b3desk/forms.py:251
 msgid ""
 "L'enregistrement démarre automatiquement à l'ouverture de la salle et "
 "s'arrête à sa fermeture."
@@ -298,26 +298,26 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:66
+#: web/b3desk/endpoints/join.py:68
 #, python-format
 msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:80 web/b3desk/endpoints/join.py:146
-#: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:200
-#: web/b3desk/endpoints/join.py:208
+#: web/b3desk/endpoints/join.py:82 web/b3desk/endpoints/join.py:148
+#: web/b3desk/endpoints/join.py:153 web/b3desk/endpoints/join.py:202
+#: web/b3desk/endpoints/join.py:210
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:179
+#: web/b3desk/endpoints/join.py:181
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:310
+#: web/b3desk/endpoints/join.py:312
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:315
+#: web/b3desk/endpoints/join.py:317
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:408
-#: web/b3desk/endpoints/meetings.py:310
+#: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -365,20 +365,20 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:105
+#: web/b3desk/endpoints/meetings.py:106
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:109
+#: web/b3desk/endpoints/meetings.py:110
 #, python-brace-format
 msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:125 web/b3desk/endpoints/meetings.py:170
+#: web/b3desk/endpoints/meetings.py:126 web/b3desk/endpoints/meetings.py:171
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:174
+#: web/b3desk/endpoints/meetings.py:175
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -391,28 +391,32 @@ msgstr ""
 msgid "Vous ne pouvez pas terminer cette réunion"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:293
+#: web/b3desk/endpoints/meetings.py:289
 #, python-brace-format
 msgid ""
 "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
 "{message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:302
+#: web/b3desk/endpoints/meetings.py:298
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:325
+#: web/b3desk/endpoints/meetings.py:321
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:336
+#: web/b3desk/endpoints/meetings.py:332
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:344
+#: web/b3desk/endpoints/meetings.py:340
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
+msgstr ""
+
+#: web/b3desk/models/meetings.py:282 web/b3desk/models/meetings.py:289
+msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:5
