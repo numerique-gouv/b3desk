@@ -377,7 +377,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
         # 400 and 500s will tell dropzone that an error occurred and show an error
-        return make_response((_("Le fichier a déjà été mis en ligne"), 500))
+        return make_response((str(_("Le fichier a déjà été mis en ligne")), 500))
 
     try:
         with open(save_path, "ab") as f:
@@ -386,7 +386,7 @@ def add_dropzone_files(meeting: Meeting, owner: User):
 
     except OSError:
         return make_response(
-            (_("Erreur lors de l'écriture du fichier sur le disque"), 500)
+            (str(_("Erreur lors de l'écriture du fichier sur le disque")), 500)
         )
 
     total_chunks = int(request.form["dztotalchunkcount"])
