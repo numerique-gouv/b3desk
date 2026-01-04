@@ -288,6 +288,7 @@ def setup_user_session(app):
     from flask_pyoidc.user_session import UserSession
 
     from b3desk.models.users import get_or_create_user
+    from b3desk.session import extract_userinfo
     from b3desk.session import has_user_session
 
     @app.before_request
@@ -297,9 +298,8 @@ def setup_user_session(app):
             return
 
         try:
-            user_session = UserSession(session)
-            info = user_session.userinfo
-            g.user = get_or_create_user(info)
+            userinfo = extract_userinfo(UserSession(session).userinfo)
+            g.user = get_or_create_user(userinfo)
         except (KeyError, TypeError):
             return
 

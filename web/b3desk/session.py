@@ -13,10 +13,22 @@ def has_user_session():
     return user_session.is_authenticated()
 
 
+def extract_userinfo(userinfo):
+    """Extract the actual user info claims from an IdP raw response payload.
+
+    This methods brings compatibility with the CAS identity provider which follow an out-of-spec
+    behavior and stores the real userinfo in an 'attributes' claim.
+    See https://github.com/numerique-gouv/b3desk/pull/228 for details.
+    """
+    if "attributes" in userinfo:
+        userinfo = userinfo["attributes"]
+
+    return userinfo
+
+
 def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
-    attendee_session = UserSession(session)
-    attendee_info = attendee_session.userinfo
+    attendee_info = extract_userinfo(UserSession(session).userinfo)
     given_name = attendee_info.get("given_name", "").title()
     family_name = attendee_info.get("family_name", "").title()
     fullname = f"{given_name} {family_name}".strip()

@@ -22,10 +22,13 @@ from . import db
 
 
 def get_or_create_user(user_info):
-    """Get existing user by email or create a new user from user_info dictionary.
+    """Get existing user by email or create a new user from an OIDC userinfo dict.
 
     Updates user information if any fields have changed and saves to database.
     """
+    if "attributes" in user_info:
+        user_info = user_info["attributes"]
+
     given_name = user_info["given_name"]
     family_name = user_info["family_name"]
     preferred_username = user_info.get("preferred_username")
