@@ -14,8 +14,10 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import current_app
-from flask import url_for
 from flask_babel import lazy_gettext as _
+from itsdangerous import Signer
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -23,13 +25,36 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
-from .roles import Role
-from .users import User
+from .users import User  # noqa: F401
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
+DEFAULT_MAX_PARTICIPANTS = 350
+PIN_LENGTH = 9
+MIN_PIN = 100000000
+MAX_PIN = 999999999
+MAX_GENERATION_ATTEMPTS = 20
+TITLE_TRUNCATE_THRESHOLD = 70
+TITLE_TRUNCATE_LENGTH = 30
+DATA_RETENTION = timedelta(days=365)
+PASSWORD_HASH_LENGTH = 16
 
 
-class MeetingFiles(db.Model):
+def get_meeting_file_hash(meeting_file_id, isexternal):
+    return hashlib.sha1(
+        f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file_id}-{current_app.config['SECRET_KEY']}".encode()
+    ).hexdigest()
+
+
+class BaseMeetingFiles:
+    def __init__(self, id=None, title=None, nc_path=None, meeting_id=None, **kwargs):
+        self.id = id
+        self.title = title
+        self.nc_path = nc_path
+        self.meeting_id = meeting_id
+        super().__init__(**kwargs)
+
+
+class MeetingFiles(BaseMeetingFiles, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Unicode(4096))
     url = db.Column(db.Unicode(4096))
@@ -43,52 +68,25 @@ class MeetingFiles(db.Model):
 
     @property
     def short_title(self):
-        """Return a truncated version of the title if it exceeds 70 characters."""
+        """Return a truncated version of the title if it exceeds the threshold."""
         return (
             self.title
-            if len(self.title) < 70
-            else f"{self.title[:30]}...{self.title[-30:]}"
+            if len(self.title) < TITLE_TRUNCATE_THRESHOLD
+            else f"{self.title[:TITLE_TRUNCATE_LENGTH]}...{self.title[-TITLE_TRUNCATE_LENGTH:]}"
         )
-
-    def update(self):
-        """Commit changes to the database."""
-        db.session.commit()
-
-    def save(self):
-        """Save the meeting file to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-
-class MeetingFilesExternal(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(4096))
-    nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-
-    meeting = db.relationship("Meeting", back_populates="externalFiles")
-
-    def update(self):
-        """Commit changes to the database."""
-        db.session.commit()
-
-    def save(self):
-        """Save the external meeting file to the database."""
-        db.session.add(self)
-        db.session.commit()
 
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User")
+
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
     is_favorite = db.Column(db.Boolean, unique=False, default=False)
-    user = db.relationship("User", back_populates="meetings")
     files = db.relationship("MeetingFiles", back_populates="meeting")
-    externalFiles = db.relationship("MeetingFilesExternal", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -117,9 +115,6 @@ class Meeting(db.Model):
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    user = db.relationship("User")
 
     _bbb = None
 
@@ -129,7 +124,7 @@ class Meeting(db.Model):
         from .bbb import BBB
 
         if not self._bbb:
-            self._bbb = BBB(self)
+            self._bbb = BBB(self.meetingID)
         return self._bbb
 
     @property
@@ -177,188 +172,11 @@ class Meeting(db.Model):
         """Delete the temporary fake ID."""
         del self._fake_id
 
-    def get_hash(self, role: Role, hash_from_string=False):
-        """Generate a hash for meeting access verification based on role."""
-        s = f"{self.meetingID}|{self.attendeePW}|{self.name}|{role.name if hash_from_string else role}"
-        return hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-    def is_running(self):
-        """Check if the BBB meeting is currently running."""
-        data = self.bbb.is_meeting_running()
-        return data and data["returncode"] == "SUCCESS" and data["running"] == "true"
-
-    def create_bbb(self):
-        """Create the BBB meeting room and return the result."""
-        self.voiceBridge = (
-            pin_generation() if not self.voiceBridge else self.voiceBridge
-        )
-        result = self.bbb.create()
-        if result and result.get("returncode", "") == "SUCCESS":
-            if self.id is None:
-                self.attendeePW = result["attendeePW"]
-                self.moderatorPW = result["moderatorPW"]
-            if (
-                current_app.config["ENABLE_PIN_MANAGEMENT"]
-                and self.voiceBridge != result["voiceBridge"]
-            ):
-                current_app.logger.error(
-                    "Voice bridge seems managed by Scalelite or BBB, B3Desk database has different values: voice bridge sent '%s' received '%s'",
-                    self.voiceBridge,
-                    result["voiceBridge"],
-                )
-        else:
-            current_app.logger.warning(
-                "BBB room has not been properly created: %s", result
-            )
-
-        return result if result else {}
-
-    def save(self):
-        """Save the meeting to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_recordings(self, recording_ids):
-        """Delete the specified recordings from BBB."""
-        return self.bbb.delete_recordings(recording_ids)
-
-    def delete_all_recordings(self):
-        """Delete all recordings for this meeting."""
-        recordings = self.get_recordings()
-        if not recordings:
-            return {}
-        recording_ids = ",".join(
-            [recording.get("recordID", "") for recording in recordings]
-        )
-        return self.delete_recordings(recording_ids)
-
-    def get_recordings(self):
-        """Retrieve all recordings for this meeting from BBB."""
-        return self.bbb.get_recordings()
-
-    def update_recording_name(self, recording_id, name):
-        """Update the name of a recording in BBB."""
-        return self.bbb.update_recordings(
-            recording_ids=[recording_id], metadata={"name": name}
-        )
-
-    def get_join_url(
-        self,
-        meeting_role: Role,
-        fullname,
-        fullname_suffix="",
-        create=False,
-        quick_meeting=False,
-        seconds_before_refresh=None,
-    ):
-        """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
-        is_meeting_available = self.is_running()
-        should_create_room = (
-            not is_meeting_available and (meeting_role == Role.moderator) and create
-        )
-        if should_create_room:
-            current_app.logger.info(
-                "Request BBB room creation %s %s", self.name, self.id
-            )
-            data = self.create_bbb()
-            if data.get("returncode", "") == "SUCCESS":
-                is_meeting_available = True
-                if not quick_meeting:
-                    self.last_connection_utc_datetime = datetime.now()
-                    self.save()
-
-        if is_meeting_available:
-            nickname = (
-                f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
-            )
-            return self.bbb.prepare_request_to_join_bbb(meeting_role, nickname).url
-
-        return url_for(
-            "join.waiting_meeting",
-            meeting_fake_id=self.fake_id,
-            creator=self.user,
-            h=self.get_hash(meeting_role),
-            fullname=fullname,
-            fullname_suffix=fullname_suffix,
-            seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
-        )
-
-    def get_signin_url(self, meeting_role: Role):
-        """Generate the sign-in URL for a specific role."""
-        return url_for(
-            "join.signin_meeting",
-            meeting_fake_id=self.fake_id,
-            creator=self.user,
-            h=self.get_hash(meeting_role),
-            role=meeting_role,
-            _external=True,
-            _scheme=current_app.config["PREFERRED_URL_SCHEME"],
-        )
-
-    def get_mail_signin_hash(self, meeting_id, expiration_epoch):
-        """Generate a hash for mail-based sign-in with expiration."""
-        s = f"{meeting_id}-{expiration_epoch}"
-        return hashlib.sha256(
-            s.encode("utf-8") + secret_key().encode("utf-8")
-        ).hexdigest()
-
-    def get_mail_signin_url(self):
-        """Generate a time-limited sign-in URL for mail invitations."""
-        expiration = str((datetime.now() + timedelta(weeks=1)).timestamp()).split(".")[
-            0
-        ]  # remove milliseconds
-        hash_param = self.get_mail_signin_hash(self.fake_id, expiration)
-        return url_for(
-            "join.signin_mail_meeting",
-            meeting_fake_id=self.fake_id,
-            expiration=expiration,
-            h=hash_param,
-            _external=True,
-        )
-
-    def get_role(self, hashed_role, user_id=None) -> Role | None:
-        """Determine the meeting role based on hash and user ID."""
-        if user_id and self.user.id == user_id:
-            return Role.moderator
-        elif hashed_role in [
-            self.get_hash(Role.attendee),
-            self.get_hash(Role.attendee, hash_from_string=True),
-        ]:
-            role = Role.attendee
-        elif hashed_role in [
-            self.get_hash(Role.moderator),
-            self.get_hash(Role.moderator, hash_from_string=True),
-        ]:
-            role = Role.moderator
-        elif hashed_role in [
-            self.get_hash(Role.authenticated),
-            self.get_hash(Role.authenticated, hash_from_string=True),
-        ]:
-            role = (
-                Role.authenticated
-                if current_app.config["OIDC_ATTENDEE_ENABLED"]
-                else Role.attendee
-            )
-        else:
-            role = None
-        return role
-
-    def end_bbb(self):
-        """End the BBB meeting."""
-        data = self.bbb.end()
-        return data and data["returncode"] == "SUCCESS"
-
 
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
     archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-
-    def save(self):
-        """Save the archived voice bridge to the database."""
-        db.session.add(self)
-        db.session.commit()
 
 
 def get_all_previous_voiceBridges():
@@ -372,84 +190,66 @@ def get_all_previous_voiceBridges():
 def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
     db.session.query(PreviousVoiceBridge).filter(
-        PreviousVoiceBridge.archived_at < datetime.now() - timedelta(days=365)
+        PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
     ).delete()
 
 
-def get_quick_meeting_from_user_and_random_string(user, random_string=None):
-    """Create a quick meeting instance for a user with default settings."""
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
+def get_deterministic_password(meeting_fake_id, role):
+    """Generate a deterministic password based on meeting ID and role."""
+    signer = Signer(current_app.config["SECRET_KEY"])
+    return (
+        signer.sign(f"{meeting_fake_id}-{role}")
+        .decode()
+        .split(".")[-1][:PASSWORD_HASH_LENGTH]
+    )
+
+
+def get_quick_meeting_from_fake_id(meeting_fake_id=None):
+    """Create a quick meeting instance for URL generation."""
+    if meeting_fake_id is None:
+        meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        user=user,
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{user.hash}-{random_string}",
-        attendeePW=f"{random_string}-{random_string}",
-        moderatorOnlyMessage=current_app.config[
-            "QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"
-        ],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
+        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
     )
-    meeting.fake_id = random_string
+    meeting.fake_id = meeting_fake_id
     return meeting
 
 
-def get_meeting_from_meeting_id_and_user_id(meeting_fake_id, user_id):
+def get_meeting_from_meeting_id(meeting_fake_id):
     """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
     if meeting_fake_id.isdigit():
-        try:
-            meeting = db.session.get(Meeting, meeting_fake_id)
-        except:
-            try:
-                user = db.session.get(User, user_id)
-                meeting = get_quick_meeting_from_user_and_random_string(
-                    user, random_string=meeting_fake_id
-                )
-            except:
-                meeting = None
-    else:
-        try:
-            user = db.session.get(User, user_id)
-            meeting = get_quick_meeting_from_user_and_random_string(
-                user, random_string=meeting_fake_id
-            )
-        except:
-            meeting = None
-
-    return meeting
+        return db.session.get(Meeting, meeting_fake_id)
+    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
 
 
-def get_mail_meeting(random_string=None):
-    """Create a mail-based meeting instance without a user account."""
-    # only used for mail meeting
-    if random_string is None:
-        random_string = get_random_alphanumeric_string(8)
-
-    meeting = Meeting(
-        duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        name=current_app.config["QUICK_MEETING_DEFAULT_NAME"],
-        moderatorPW=f"{random_string}-{random_string}",  # it is only usefull for bbb
-        moderatorOnlyMessage=current_app.config["MAIL_MODERATOR_WELCOME_MESSAGE"],
-        logoutUrl=(
-            current_app.config["QUICK_MEETING_LOGOUT_URL"]
-            or url_for("public.index", _external=True)
-        ),
-    )
-    meeting.fake_id = random_string
-    return meeting
+def generate_random_pin():
+    """Generate a random 9-digit PIN."""
+    return str(random.randint(MIN_PIN, MAX_PIN))
 
 
-def pin_generation(forbidden_pins=None, clean_db=True):
-    """Generate a unique PIN for voice bridge, avoiding forbidden pins."""
-    if clean_db:
-        delete_old_voiceBridges()
-    forbidden_pins = get_forbidden_pins() if forbidden_pins is None else forbidden_pins
-    return create_unique_pin(forbidden_pins=forbidden_pins)
+def pin_exists(pin):
+    """Check if a PIN already exists in meetings or archived voice bridges."""
+    return db.session.query(
+        or_(
+            db.session.query(Meeting).filter(Meeting.voiceBridge == pin).exists(),
+            db.session.query(PreviousVoiceBridge)
+            .filter(PreviousVoiceBridge.voiceBridge == pin)
+            .exists(),
+        )
+    ).scalar()
+
+
+def pin_generation():
+    """Generate a unique PIN for voice bridge."""
+    delete_old_voiceBridges()
+    for _attempt in range(MAX_GENERATION_ATTEMPTS):
+        pin = generate_random_pin()
+        if not pin_exists(pin):
+            return pin
+    raise RuntimeError(
+        "Could not generate unique PIN after maximum attempts"
+    )  # pragma: no cover
 
 
 def get_forbidden_pins(edited_meeting_id=None):
@@ -468,21 +268,24 @@ def get_forbidden_pins(edited_meeting_id=None):
     ] + previous_pins
 
 
-def create_unique_pin(forbidden_pins, pin=None):
-    """Create a unique 9-digit PIN that is not in the forbidden list."""
-    pin = random.randint(100000000, 999999999) if not pin else pin
-    if str(pin) in forbidden_pins:
-        pin += 1
-        pin = 100000000 if pin > 999999999 else pin
-        return create_unique_pin(forbidden_pins, pin)
-    else:
-        return str(pin)
-
-
 def pin_is_unique_validator(form, field):
     """Validate that a PIN is unique and not already in use."""
-    if field.data in get_forbidden_pins(form.id.data):
-        raise ValidationError("Ce code PIN est déjà utilisé")
+    pin = field.data
+    # Check if PIN exists in archived voice bridges
+    archived_exists = db.session.query(
+        db.session.query(PreviousVoiceBridge)
+        .filter(PreviousVoiceBridge.voiceBridge == pin)
+        .exists()
+    ).scalar()
+    if archived_exists:
+        raise ValidationError(_("Ce code PIN est déjà utilisé"))
+
+    # Check if PIN exists in other meetings (excluding current meeting if editing)
+    query = db.session.query(Meeting).filter(Meeting.voiceBridge == pin)
+    if form.id.data:
+        query = query.filter(Meeting.id != form.id.data)
+    if db.session.query(query.exists()).scalar():
+        raise ValidationError(_("Ce code PIN est déjà utilisé"))
 
 
 def create_and_save_shadow_meeting(user):
@@ -492,7 +295,7 @@ def create_and_save_shadow_meeting(user):
         name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
-        maxParticipants=350,
+        maxParticipants=DEFAULT_MAX_PARTICIPANTS,
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
@@ -512,10 +315,10 @@ def create_and_save_shadow_meeting(user):
         user=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
-        voiceBridge=pin_generation(),
-        visio_code=unique_visio_code_generation(),
     )
-    meeting.save()
+    db.session.add(meeting)
+    assign_unique_codes(meeting)
+    db.session.commit()
     return meeting
 
 
@@ -544,7 +347,7 @@ def save_voiceBridge_and_delete_meeting(meeting):
     """Archive a meeting's voice bridge and delete the meeting from the database."""
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
 
@@ -554,7 +357,7 @@ def delete_all_old_shadow_meetings():
     old_shadow_meetings = [
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.last_connection_utc_datetime < datetime.now() - timedelta(days=365),
+            Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
             Meeting.is_shadow,
         )
     ]
@@ -563,21 +366,66 @@ def delete_all_old_shadow_meetings():
         save_voiceBridge_and_delete_meeting(shadow_meeting)
 
 
-def unique_visio_code_generation(forbidden_visio_code=None):
-    """Generate a unique visio code not already in use."""
-    forbidden_visio_code = (
-        get_all_visio_codes() if forbidden_visio_code is None else forbidden_visio_code
-    )
-    new_visio_code = create_unique_pin(forbidden_visio_code)
-    if new_visio_code not in forbidden_visio_code and new_visio_code.isdigit():
-        return new_visio_code.upper()
-    return unique_visio_code_generation(forbidden_visio_code=forbidden_visio_code)
+def visio_code_exists(code):
+    """Check if a visio code already exists."""
+    return db.session.query(
+        db.session.query(Meeting).filter(Meeting.visio_code == code).exists()
+    ).scalar()
 
 
-def get_all_visio_codes():
-    """Retrieve all existing visio codes from the database."""
-    existing_visio_code = db.session.query(Meeting.visio_code)
-    return [visio_code[0] for visio_code in existing_visio_code]
+def unique_visio_code_generation():
+    """Generate a unique visio code not already in use (LBYL for endpoint)."""
+    for _attempt in range(MAX_GENERATION_ATTEMPTS):
+        code = generate_random_pin()
+        if not visio_code_exists(code):
+            return code
+    raise RuntimeError(
+        "Could not generate unique visio code after maximum attempts"
+    )  # pragma: no cover
+
+
+def assign_unique_visio_code(meeting):
+    """Assign a unique visio code to a meeting (EAFP with retry on collision)."""
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.visio_code = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
+
+
+def assign_unique_voice_bridge(meeting):
+    """Assign a unique voice bridge PIN to a meeting (EAFP with retry on collision)."""
+    with db.session.no_autoflush:
+        delete_old_voiceBridges()
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.voiceBridge = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
+
+
+def assign_unique_codes(meeting):
+    """Assign unique visio_code and voiceBridge to a new meeting (both before flush)."""
+    with db.session.no_autoflush:
+        delete_old_voiceBridges()
+    for attempt in range(MAX_GENERATION_ATTEMPTS):
+        meeting.visio_code = generate_random_pin()
+        meeting.voiceBridge = generate_random_pin()
+        try:
+            with db.session.begin_nested():
+                db.session.flush()
+            return
+        except IntegrityError:  # pragma: no cover
+            if attempt == MAX_GENERATION_ATTEMPTS - 1:
+                raise
 
 
 def get_meeting_by_visio_code(visio_code):

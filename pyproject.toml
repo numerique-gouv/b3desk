@@ -4,13 +4,13 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.4.2dev"
+version = "1.5.5dev"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 dependencies = [
     "celery>=5.2.7,<6.0.0",
     "filetype>=1.2.0,<2.0.0",
@@ -29,12 +29,12 @@ dependencies = [
     "pydantic>=2.12.0,<3.0.0",
     "pydantic-settings>=2.10.0,<3.0.0",
     "python-slugify>=8.0.4,<9.0.0",
-    "redis>=5.0.1,<6.0.0",
+    "redis>=7.0.0,<8.0.0",
     "requests>=2.32.4,<3.0.0",
     "sentry-sdk>=2.3.1,<3.0.0",
     "sqlalchemy>=1.4.31,<2.0.0",
     "sqlalchemy-json>=0.7.0,<0.8.0",
-    "sqlalchemy-utils>=0.41.1,<0.42.0",
+    "sqlalchemy-utils>=0.41.1,<0.50.0",
     "webdavclient3==3.14.6",
 ]
 
@@ -49,19 +49,23 @@ dev = [
     "coverage>=7.2.2,<8.0.0",
     "flake8>=7.0.0,<8.0.0",
     "Flask-WebTest>=0.1.6,<0.2.0",
-    "prek>=0.1.3,<0.2.0",
+    "prek>=0.2.0,<1.0.0",
     "pyquery>=2.0.0,<3.0.0",
-    "pytest>=8.0.0,<9.0.0",
+    "pytest>=9.0.0,<10.0.0",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
     "pytest-iam>=0.2.4",
+    "pytest-lazy-fixtures>=1.0.0,<2.0.0",
     "pytest-mock>=3.11.1,<4.0.0",
+    "pytest-postgresql>=7.0.0,<8.0.0",
     "pytest-smtpd>=0.1.0,<0.2.0",
-    "time-machine>=2.19.0,<3.0.0",
+    "time-machine>=3.0.0,<4.0.0",
     "wsgidav>=4.3.1,<5.0.0",
     # This is used to allow flask-webtest > webtest > webob to be compatible with py3.13+
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
     "tox-uv>=1.28.0",
+    "diff-cover>=9.7.2",
+    "pytest-xdist>=3.8.0",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",
@@ -72,7 +76,7 @@ doc = [
 ]
 worker = [
     "celery>=5.2.7,<6.0.0",
-    "redis>=5.0.1,<6.0.0",
+    "redis>=7.0.0,<8.0.0",
     "requests>=2.32.4,<3.0.0",
 ]
 
@@ -120,32 +124,27 @@ docstring-code-format = true
 
 [tool.tox]
 requires = ["tox>=4.19"]
-env_list = ["style", "py310", "py311", "py312", "py313", "coverage", "doc"]
+env_list = ["style", "py310", "py311", "py312", "py313", "py314", "coverage", "doc"]
 
 [tool.tox.env_run_base]
+uv_seed = true
 dependency_groups = ["dev"]
-commands = [
-    ["pytest", "{posargs:web}"]
-]
+commands = [["pytest", "--db=sqlite", "--db=postgresql", "{posargs:web}"]]
 
 [tool.tox.env.style]
 dependency_groups = ["dev"]
-commands = [
-    ["prek", "run", "--all-files"]
-]
+commands = [["prek", "run", "--all-files"]]
 
 [tool.tox.env.coverage]
 dependency_groups = ["dev"]
 commands = [
-    ["pytest", "--cov", "--cov-report", "term:skip-covered", "{posargs:web}"],
-    ["coverage", "html"]
+    ["pytest", "--cov", "--cov-report", "term:skip-covered", "--db=sqlite", "--db=postgresql", "{posargs:web}"],
+    ["coverage", "html"],
 ]
 
 [tool.tox.env.doc]
 dependency_groups = ["doc"]
-commands = [
-    ["sphinx-build", "-W", "--keep-going", "documentation", "build/sphinx/html"]
-]
+commands = [["sphinx-build", "-W", "--keep-going", "documentation", "build/sphinx/html"]]
 
 [tool.coverage.run]
 branch = true

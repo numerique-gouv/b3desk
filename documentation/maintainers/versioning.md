@@ -2,6 +2,8 @@
 
 Pour publier une nouvelle version :
 
+## S'assurer que `main` est à jour
+
 ## Être sur la branche `production`
 
 La branche de référence pour les releases est `production`. C'est ici qu'on retrouve les différentes versions installées sur les instances. À ces releases correspondent des tags git.
@@ -26,6 +28,12 @@ git merge main
 ## Résoudre ces conflits
 
 Résoudre les conflit en mettant à jour le numéro de version dans `pyproject.toml` et dans `web/b3desk/__init__.py` simplement en enlevant `dev` de la version.
+
+## Lancer les tests avec `tox`
+```bash
+tox -p
+```
+Résoudre les erreurs éventuelles avant de recommencer la procédure.
 
 ## Nommer ce commit
 

@@ -7,7 +7,7 @@ Voici les étapes à suivre pour avoir un conteneur BBB local correctement confi
 ## Étapes d'installation
 
 Il existe un [script officiel](https://github.com/bigbluebutton/docker-dev) pour construire l'image Docker de BBB.
-Il a été copié dans `bigbluebutton/create_bbb.sh`.
+Il est disponible `bigbluebutton/create_bbb.sh` après avoir lancé la commande `git submodule update --init`.
 
 ### Créer le conteneur BBB
 
@@ -42,7 +42,7 @@ Vous pouvez vérifier si ces services sont effectivement connectés avec un curl
 
 ### Autoriser les requêtes http avec BBB
 
-BBB doit explicitement autoriser les requêtes http vers b3desk :
+BBB doit explicitement autoriser les requêtes http vers b3desk, sans quoi les fichiers de présentation n'apparaîtront pas dans le salon :
 
 ```bash
 docker exec bbb30 sed -i '$ a insertDocumentSupportedProtocols=https,http' /etc/bigbluebutton/bbb-web.properties

@@ -38,11 +38,11 @@ Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via
 
 #### Installation locale
 Installer localement le projet vous permettra de lancer ruff, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
-L'installation locale peut être réalisé avec le Makefile situé à la racine du projet :
+L'installation locale peut être réalisé avec le justfile situé à la racine du projet :
 ```bash
-make install-dev
+just install-dev
 ```
-Utilisez ce Makefile comme référence pour vos commandes shell.
+Utilisez ce justfile comme référence pour vos commandes shell.
 
 #### uv
 L'environnement de développement est géré avec [uv](https://docs.astral.sh/uv/).
@@ -55,10 +55,6 @@ uv sync [--with GROUPE]
 Si vous souhaitez ajouter des dépendances, utilisez également uv :
 ```bash
 uv add [--group GROUPE] PAQUET
-```
-vous devez ensuite impérativement mettre à jour les requirements de l'environnement modifié qui seront utilisées pour les conteneurs Docker de la production et de l'intégration continue :
-```bash
-make export-XXX-dependencies
 ```
 
 ## Soumettre des modifications
@@ -105,7 +101,7 @@ Ainsi, lorsque vous ferez un commit, ruff sera automatiquement lancé et formate
 
 GitHub Actions est utilisé afin de s'assurer que le code reste propre et fonctionnel et que les conteneurs peuvent communiquer entre eux pour s'assurer que l'embarquement de nouveaux développeur·euses sur de nouvelles machines est possible.
 
-Cette intégration continue fait tourner des conteneurs Docker, les fichiers de requirements doivent donc être maintenus à jour.
+Cette intégration continue fait tourner des conteneurs Docker.
 
 La CI GitHub est utilisée pour :
 - lancer les tests dans un environnement local (sans conteneur docker) : pour permettre aux développeurs d'être indépendant de docker sur leurs machines
@@ -113,6 +109,12 @@ La CI GitHub est utilisée pour :
 - lancer tous les conteneurs et faire un healthcheck sur chacun : pour valider que la configuration locale est fonctionnelle, et notamment qu'un token bien généré permet à B3Desk de communiquer avec une instance Nextcloud
 - valider que la couverture de test est au moins égale à la couverture précédente : pour inciter à ajouter des tests
 - valider que le code a bien été formaté : un `ruff check .` est lancé
+
+#### Vérification de la couverture
+Vous pouvez anticiper anticiper la validation de couverture effectuée par la CI de GitHub avec :
+```bash
+uv run pytest --cov --cov-report=xml && diff-cover coverage.xml --compare-branch=main --html-report diff-coverage.html && xdg-open diff-coverage.html
+```
 
 ### Pull requests
 

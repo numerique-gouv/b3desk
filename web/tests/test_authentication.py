@@ -1,5 +1,7 @@
+import pytest
 from b3desk.models import db
 from b3desk.models.users import User
+from b3desk.session import extract_userinfo
 
 
 def test_user_authentication(
@@ -82,3 +84,21 @@ def test_lasuite_user_authentication(
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
+
+
+@pytest.mark.parametrize(
+    "userinfo,expected_email",
+    [
+        # Standard OIDC format (flat)
+        ({"email": "alice@example.com", "given_name": "Alice"}, "alice@example.com"),
+        # CAS format (nested in "attributes")
+        (
+            {"attributes": {"email": "bob@example.com", "given_name": "Bob"}},
+            "bob@example.com",
+        ),
+    ],
+    ids=["oidc_standard", "cas_nested"],
+)
+def test_extract_userinfo(userinfo, expected_email):
+    result = extract_userinfo(userinfo)
+    assert result["email"] == expected_email

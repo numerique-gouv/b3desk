@@ -9,6 +9,17 @@ from webdav3.client import Client as webdavClient
 from webdav3.exceptions import WebDavException
 
 
+def create_webdav_client(user):
+    """Create a WebDAV client configured for a user's Nextcloud account."""
+    options = {
+        "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
+        "webdav_hostname": user.nc_locator,
+        "webdav_verbose": True,
+        "webdav_token": user.nc_token,
+    }
+    return webdavClient(options)
+
+
 def make_nextcloud_credentials_request(url, payload, headers):
     """Make a POST request to Nextcloud API to retrieve credentials.
 
@@ -251,7 +262,13 @@ def update_user_nc_credentials(user, force_renew=False):
         return False
 
     data = get_user_nc_credentials(user)
-    if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
+    if (
+        not data
+        or data.get("error")
+        or data["nclogin"] is None
+        or data["nclocator"] is None
+        or data["nctoken"] is None
+    ):
         current_app.logger.info(
             "No new Nextcloud enroll needed for user %s with those data %s", user, data
         )
@@ -260,9 +277,9 @@ def update_user_nc_credentials(user, force_renew=False):
         current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
         nc_last_auto_enroll = datetime.now()
 
-    user.nc_locator = data["nclocator"]
-    user.nc_token = data["nctoken"]
-    user.nc_login = data["nclogin"]
+    user.nc_locator = data.get("nclocator")
+    user.nc_token = data.get("nctoken")
+    user.nc_login = data.get("nclogin")
     user.nc_last_auto_enroll = nc_last_auto_enroll
     return True
 
@@ -273,16 +290,9 @@ def nextcloud_healthcheck(user):
     On errors, attempt to renew the credentials and perform one single retry.
     """
 
-    # we test webdav connection here, with a simple 'list' command
     def _healthcheck():
-        options = {
-            "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-            "webdav_hostname": user.nc_locator,
-            "webdav_verbose": True,
-            "webdav_token": user.nc_token,
-        }
         try:
-            client = webdavClient(options)
+            client = create_webdav_client(user)
             client.list()
         except WebDavException as exception:
             current_app.logger.warning("WebDAV error: %s", exception)

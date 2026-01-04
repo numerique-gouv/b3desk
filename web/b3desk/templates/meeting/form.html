@@ -168,5 +168,12 @@
       </div>
     </div>
   </div>
-  {% include 'meeting/submit.html' %}
+  <div class="fr-mt-4w">
+    {% if meeting is not none %}
+      <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Enregistrer{% endtrans %}</button>
+    {% else %}
+      <button type="submit" class="fr-btn">{% trans %}Créer la salle{% endtrans %}</button>
+    {% endif %}
+    <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
+  </div>
 </form>

@@ -8,6 +8,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+      additional_contexts:
+        root: .
     # env_file:
     #   - web.env
     environment:
@@ -29,6 +31,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile-celery
+      additional_contexts:
+        root: .
     # env_file:
     #   - web.env  # to get shared REDIS_URL
     # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env

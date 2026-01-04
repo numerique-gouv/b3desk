@@ -2,9 +2,11 @@ from flask import Blueprint
 from flask import current_app
 from flask import request
 
+from b3desk.join import get_signin_url
 from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
+from b3desk.session import extract_userinfo
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
@@ -19,7 +21,7 @@ def api_meetings():
     """Return all non-shadow meetings for the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
-    userinfo = client.userinfo_request(access_token).to_dict()
+    userinfo = extract_userinfo(client.userinfo_request(access_token).to_dict())
     user = get_or_create_user(userinfo)
 
     return {
@@ -27,8 +29,8 @@ def api_meetings():
             {
                 **{
                     "name": meeting.name,
-                    "moderator_url": meeting.get_signin_url(Role.moderator),
-                    "attendee_url": meeting.get_signin_url(Role.attendee),
+                    "moderator_url": get_signin_url(meeting, Role.moderator),
+                    "attendee_url": get_signin_url(meeting, Role.attendee),
                     "visio_code": meeting.visio_code,
                 },
                 **(
@@ -62,7 +64,7 @@ def shadow_meeting():
     """Get or create the shadow meeting for the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
-    userinfo = client.userinfo_request(access_token).to_dict()
+    userinfo = extract_userinfo(client.userinfo_request(access_token).to_dict())
     user = get_or_create_user(userinfo)
 
     meeting = get_or_create_shadow_meeting(user)
@@ -72,8 +74,8 @@ def shadow_meeting():
             {
                 **{
                     "name": meeting.name,
-                    "moderator_url": meeting.get_signin_url(Role.moderator),
-                    "attendee_url": meeting.get_signin_url(Role.attendee),
+                    "moderator_url": get_signin_url(meeting, Role.moderator),
+                    "attendee_url": get_signin_url(meeting, Role.attendee),
                     "visio_code": meeting.visio_code,
                 },
                 **(

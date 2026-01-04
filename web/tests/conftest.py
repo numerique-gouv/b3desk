@@ -1,4 +1,6 @@
 import datetime
+import shutil
+import tempfile
 import threading
 import time
 import uuid
@@ -7,17 +9,184 @@ from pathlib import Path
 
 import b3desk.utils
 import portpicker
+import psycopg
 import pytest
 from b3desk import create_app
 from b3desk.models import db
+from flask import Flask
 from flask_migrate import Migrate
 from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
 from joserfc.jwk import RSAKey
+from pytest_lazy_fixtures import lf
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
+
+
+def pytest_addoption(parser):
+    """Add --db command-line option to pytest."""
+    parser.addoption(
+        "--db",
+        action="append",
+        default=[],
+        help="database to test (sqlite, postgresql)",
+    )
+
+
+def pytest_generate_tests(metafunc):
+    """Parametrize tests with db fixture based on --db option."""
+    dbs = metafunc.config.getoption("db") or ["sqlite", "postgresql"]
+
+    if "db" in metafunc.fixturenames:
+        fixture_names = [f"{db}_db" for db in dbs]
+        metafunc.parametrize("db", [lf(name) for name in fixture_names], ids=dbs)
+
+
+@pytest.fixture(scope="session")
+def sqlite_template_db(tmp_path_factory):
+    """Create a SQLite template database with schema."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as f:
+        template_db_path = f.name
+
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{template_db_path}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.init_app(app)
+
+    with app.app_context():
+        Migrate(app, db, compare_type=True)
+        db.create_all()
+
+    yield Path(template_db_path)
+
+    Path(template_db_path).unlink(missing_ok=True)
+
+
+@pytest.fixture
+def sqlite_db(sqlite_template_db):
+    """Create a fresh SQLite database by copying the template."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as f:
+        test_db_path = f.name
+
+    shutil.copy2(sqlite_template_db, test_db_path)
+
+    yield f"sqlite:///{test_db_path}"
+
+    Path(test_db_path).unlink(missing_ok=True)
+
+
+@pytest.fixture(scope="session")
+def postgresql_template_db(postgresql_proc):
+    """Create a PostgreSQL template database with schema."""
+    pytest.importorskip("pytest_postgresql")
+
+    proc_info = postgresql_proc
+    template_dbname = "b3desk_template"
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(f'DROP DATABASE IF EXISTS "{template_dbname}"')
+    cursor.execute(f'CREATE DATABASE "{template_dbname}"')
+    cursor.close()
+    conn.close()
+
+    uri = f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{template_dbname}"
+
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = uri
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.init_app(app)
+
+    with app.app_context():
+        Migrate(app, db, compare_type=True)
+        db.create_all()
+        db.session.remove()
+        db.engine.dispose()
+
+    yield template_dbname
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{template_dbname}'
+        AND pid <> pg_backend_pid()
+        """
+    )
+    cursor.execute(f'DROP DATABASE IF EXISTS "{template_dbname}"')
+    cursor.close()
+    conn.close()
+
+
+@pytest.fixture
+def postgresql_db(postgresql_proc, postgresql_template_db):
+    """Create a fresh PostgreSQL database by cloning the template."""
+    pytest.importorskip("pytest_postgresql")
+
+    proc_info = postgresql_proc
+    test_dbname = f"b3desk_test_{uuid.uuid4().hex[:8]}"
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f'CREATE DATABASE "{test_dbname}" TEMPLATE "{postgresql_template_db}"'
+    )
+    cursor.close()
+    conn.close()
+
+    uri = (
+        f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{test_dbname}"
+    )
+
+    yield uri
+
+    conn = psycopg.connect(
+        host=proc_info.host,
+        port=proc_info.port,
+        user=proc_info.user,
+        dbname="postgres",
+    )
+    conn.autocommit = True
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{test_dbname}'
+        AND pid <> pg_backend_pid()
+        """
+    )
+    cursor.execute(f'DROP DATABASE IF EXISTS "{test_dbname}"')
+    cursor.close()
+    conn.close()
 
 
 @pytest.fixture
@@ -82,16 +251,21 @@ def iam_token(iam_server, iam_client, iam_user):
     iam_server.backend.delete(iam_token)
 
 
-@pytest.fixture
-def configuration(tmp_path, iam_server, iam_client, request):
-    private_key = RSAKey.generate_key(2048, parameters={"alg": "RS256", "use": "sig"})
+@pytest.fixture(scope="session")
+def private_key():
+    private_key = RSAKey.generate_key(1024, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
+    return private_pem_str
+
+
+@pytest.fixture
+def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
     configuration = {
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
         "PREFERRED_URL_SCHEME": "http",
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SQLALCHEMY_DATABASE_URI": db,
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
@@ -106,11 +280,11 @@ def configuration(tmp_path, iam_server, iam_client, request):
         "UPLOAD_DIR": str(tmp_path),
         "TMP_DOWNLOAD_DIR": str(tmp_path),
         "RECORDING": True,
-        "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics-staging.osc-fr1.scalingo.io/v1/post_events",
+        "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics.test/v1/post_events",
         "MEETING_KEY_WORDING": "seminaire",
-        "QUICK_MEETING_LOGOUT_URL": "http://education.gouv.fr/",
+        "QUICK_MEETING_LOGOUT_URL": "http://quick-meeting-logout.test/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
-        "NC_LOGIN_API_URL": "http://tokenmock.localhost:9000/",
+        "NC_LOGIN_API_URL": "http://tokenmock.test:9000/",
         "NC_LOGIN_API_KEY": "MY-TOTALLY-COOL-API-KEY",
         "FILE_SHARING": True,
         # Overwrite the web.env values for tests running in docker
@@ -119,14 +293,14 @@ def configuration(tmp_path, iam_server, iam_client, request):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
-        "MEETING_LOGOUT_URL": "https://example.org/logout",
-        "MAIL_MEETING": True,
-        "SMTP_FROM": "from@example.org",
+        "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
+        "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
         "ENABLE_PIN_MANAGEMENT": True,
         "ENABLE_SIP": True,
-        "FQDN_SIP_SERVER": "example.serveur.com",
-        "PRIVATE_KEY": private_pem_str,
+        "FQDN_SIP_SERVER": "sip.test",
+        "PRIVATE_KEY": private_key,
+        "PISTE_OAUTH_API_URI": "https://piste.test",
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
     }
@@ -183,7 +357,8 @@ def meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -204,7 +379,8 @@ def meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -223,7 +399,8 @@ def meeting_3(client_app, user):
         voiceBridge="111111113",
         visio_code="911111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -242,7 +419,8 @@ def shadow_meeting(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -261,7 +439,8 @@ def shadow_meeting_2(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -280,7 +459,8 @@ def shadow_meeting_3(client_app, user):
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
     )
-    meeting.save()
+    db.session.add(meeting)
+    db.session.commit()
 
     yield meeting
 
@@ -295,7 +475,8 @@ def user(client_app, iam_user):
         family_name=iam_user.family_name,
         preferred_username=iam_user.preferred_username,
     )
-    user.save()
+    db.session.add(user)
+    db.session.commit()
 
     yield user
 
@@ -309,7 +490,8 @@ def user_2(client_app, iam_user_2):
         given_name=iam_user_2.given_name,
         family_name=iam_user_2.family_name,
     )
-    user_2.save()
+    db.session.add(user_2)
+    db.session.commit()
 
     yield user_2
 
@@ -319,7 +501,8 @@ def previous_voiceBridge(client_app):
     from b3desk.models.meetings import PreviousVoiceBridge
 
     previous_voiceBridge = PreviousVoiceBridge(voiceBridge="487604786")
-    previous_voiceBridge.save()
+    db.session.add(previous_voiceBridge)
+    db.session.commit()
 
     yield previous_voiceBridge
 
@@ -396,7 +579,7 @@ def authenticated_attendee(client_app, user, mocker):
 @pytest.fixture
 def bbb_response(mocker):
     class Response:
-        content = """<response><returncode>SUCCESS</returncode><running>true</running></response>"""
+        content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge><attendeePW>attendee</attendeePW><moderatorPW>moderator</moderatorPW></response>"""
         status_code = 200
         text = ""
 
