@@ -1,5 +1,6 @@
 import pytest
 import requests
+from b3desk import BigBlueButtonUnavailable
 
 
 @pytest.fixture
@@ -228,3 +229,35 @@ def test_timeout_bbb_get_recordings_request(
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
     client_app.get("/meeting/recordings/1")
     assert "BBB API timeout error timeout message" in caplog.text
+
+
+def test_invalid_xml_response(meeting, mocker, caplog):
+    """Tests that invalid XML responses raise BigBlueButtonUnavailable."""
+    from b3desk.models.bbb import BBB
+
+    class Response:
+        content = b"<invalid xml"
+        text = "<invalid xml"
+
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    bbb = BBB(meeting.meetingID)
+    with pytest.raises(BigBlueButtonUnavailable):
+        bbb.is_running()
+    assert "BBB API XML parse error" in caplog.text
+
+
+def test_missing_returncode_response(meeting, mocker, caplog):
+    """Tests that responses without returncode raise BigBlueButtonUnavailable."""
+    from b3desk.models.bbb import BBB
+
+    class Response:
+        content = b"<response><something>else</something></response>"
+        text = ""
+
+    mocker.patch("requests.Session.send", return_value=Response)
+
+    bbb = BBB(meeting.meetingID)
+    with pytest.raises(BigBlueButtonUnavailable):
+        bbb.is_running()
+    assert "BBB API response missing returncode" in caplog.text

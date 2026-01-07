@@ -13,5 +13,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY misc/run_celery.sh /opt/
 RUN chmod u+x /opt/run_celery.sh
 
+RUN groupadd --gid 1000 celery \
+    && useradd --uid 1000 --gid celery --shell /bin/bash celery
+
 WORKDIR /usr/src/app/
+
+USER celery
+
 ENTRYPOINT ["/opt/run_celery.sh"]

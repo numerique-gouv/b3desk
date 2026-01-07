@@ -3,7 +3,7 @@ install-dev:
     uv run prek install
 
 translation-extract:
-    uv run pybabel extract --mapping-file web/translations/babel.cfg --output-file web/translations/messages.pot --keywords lazy_gettext web
+    uv run pybabel extract --omit-header --mapping-file pyproject.toml --output-file web/translations/messages.pot --keywords lazy_gettext web
 
 translation-update:
     uv run pybabel update --input-file web/translations/messages.pot --output-dir web/translations

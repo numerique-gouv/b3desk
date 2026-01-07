@@ -43,6 +43,8 @@ migrate = Migrate()
 
 
 class BigBlueButtonUnavailable(Exception):
+    """BBB server is unreachable (network error, timeout, invalid response)."""
+
     pass
 
 

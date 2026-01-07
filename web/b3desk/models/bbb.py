@@ -56,8 +56,48 @@ class BBB:
     def __init__(self, meeting_id):
         self.meeting_id = meeting_id
 
-    @classmethod
-    def bbb_request(cls, action, method="GET", **kwargs):
+    def _send_request(self, request):
+        """Send an HTTP request and parse the XML response.
+
+        Raises BigBlueButtonUnavailable on network/parsing errors.
+        """
+        session = requests.Session()
+        if current_app.debug:  # pragma: no cover
+            session.verify = False
+
+        current_app.logger.debug(
+            "BBB API request method:%s url:%s data:%s",
+            request.method,
+            request.url,
+            request.body,
+        )
+        try:
+            response = session.send(
+                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+            )
+        except requests.Timeout as err:
+            current_app.logger.warning("BBB API timeout error %s", err)
+            raise BigBlueButtonUnavailable() from err
+        except requests.exceptions.ConnectionError as err:
+            current_app.logger.warning("BBB API connection error %s", err)
+            raise BigBlueButtonUnavailable() from err
+
+        current_app.logger.debug("BBB API response %s", response.text)
+
+        try:
+            root = ElementTree.fromstring(response.content)
+        except ElementTree.ParseError as err:
+            current_app.logger.warning("BBB API XML parse error %s", err)
+            raise BigBlueButtonUnavailable() from err
+
+        returncode_elem = root.find("returncode")
+        if returncode_elem is None:
+            current_app.logger.warning("BBB API response missing returncode")
+            raise BigBlueButtonUnavailable()
+
+        return root
+
+    def bbb_request(self, action, method="GET", **kwargs):
         """Prepare a BBB API request with authentication checksum."""
         request = requests.Request(
             method=method,
@@ -82,29 +122,8 @@ class BBB:
     )
     def bbb_response(self, request):
         """Send the BBB API request and parse the XML response."""
-        session = requests.Session()
-        if current_app.debug:  # pragma: no cover
-            # In local development environment, BBB is not served as https
-            session.verify = False
-
-        current_app.logger.debug(
-            "BBB API request method:%s url:%s data:%s",
-            request.method,
-            request.url,
-            request.body,
-        )
-        try:
-            response = session.send(
-                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
-            )
-        except requests.Timeout as err:
-            current_app.logger.warning("BBB API timeout error %s", err)
-            raise BigBlueButtonUnavailable() from err
-        except requests.exceptions.ConnectionError as err:
-            current_app.logger.warning("BBB API error %s", err)
-            raise BigBlueButtonUnavailable() from err
-        current_app.logger.debug("BBB API response %s", response.text)
-        return {c.tag: c.text for c in ElementTree.fromstring(response.content)}
+        root = self._send_request(request)
+        return {c.tag: c.text for c in root}
 
     bbb_response.make_cache_key = cache_key
 
@@ -260,70 +279,56 @@ class BBB:
         request = self.bbb_request(
             "getRecordings", params={"meetingID": self.meeting_id}
         )
-        current_app.logger.debug(
-            "BBB API request method:%s url:%s", request.method, request.url
-        )
-        try:
-            session = requests.Session()
-            if current_app.debug:  # pragma: no cover
-                session.verify = False
-            response = session.send(
-                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
-            )
-        except requests.Timeout as err:
-            current_app.logger.warning("BBB API timeout error %s", err)
-            raise BigBlueButtonUnavailable() from err
-        except requests.exceptions.ConnectionError as err:
-            current_app.logger.warning("BBB API error %s", err)
-            raise BigBlueButtonUnavailable() from err
+        root = self._send_request(request)
+        data = {c.tag: c.text for c in root}
+        if not self.success(data):
+            return []
 
-        root = ElementTree.fromstring(response.content)
-        return_code = root.find("returncode").text
         recordings = root.find("recordings")
+        if recordings is None:
+            return []
+
         result = []
-        if return_code != "FAILED" and recordings is not None:
-            try:
-                for recording in recordings.iter("recording"):
-                    data = {}
-                    data["recordID"] = recording.find("recordID").text
-                    name = recording.find("metadata").find("name")
-                    data["name"] = name.text if name is not None else None
-                    data["participants"] = int(recording.find("participants").text)
-                    data["start_date"] = datetime.fromtimestamp(
-                        int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
-                    ).replace(microsecond=0)
-                    data["end_date"] = datetime.fromtimestamp(
-                        int(recording.find("endTime").text) / 1000.0, tz=timezone.utc
-                    ).replace(microsecond=0)
+        try:
+            for recording in recordings.iter("recording"):
+                data = {}
+                data["recordID"] = recording.find("recordID").text
+                name = recording.find("metadata").find("name")
+                data["name"] = name.text if name is not None else None
+                data["participants"] = int(recording.find("participants").text)
+                data["start_date"] = datetime.fromtimestamp(
+                    int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
+                ).replace(microsecond=0)
+                data["end_date"] = datetime.fromtimestamp(
+                    int(recording.find("endTime").text) / 1000.0, tz=timezone.utc
+                ).replace(microsecond=0)
 
-                    data["playbacks"] = {}
-                    playback = recording.find("playback")
-                    if playback is None:
-                        continue
+                data["playbacks"] = {}
+                playback = recording.find("playback")
+                if playback is None:
+                    continue
 
-                    for format in playback.iter("format"):
-                        images = []
-                        preview = format.find("preview")
-                        if preview is not None:
-                            for i in (
-                                format.find("preview").find("images").iter("image")
-                            ):
-                                image = {k: v for k, v in i.attrib.items()}
-                                image["url"] = i.text
-                                images.append(image)
-                        type = format.find("type").text
-                        if type in ("presentation", "video"):
-                            data["playbacks"][type] = {
-                                "url": (media_url := format.find("url").text),
-                                "images": images,
-                            }
-                            if type == "video":
-                                data["playbacks"][type]["direct_link"] = (
-                                    media_url + "video-0.m4v"
-                                )
-                    result.append(data)
-            except Exception as exception:
-                current_app.logger.error(exception)
+                for format in playback.iter("format"):
+                    images = []
+                    preview = format.find("preview")
+                    if preview is not None:
+                        for i in format.find("preview").find("images").iter("image"):
+                            image = {k: v for k, v in i.attrib.items()}
+                            image["url"] = i.text
+                            images.append(image)
+                    type = format.find("type").text
+                    if type in ("presentation", "video"):
+                        data["playbacks"][type] = {
+                            "url": (media_url := format.find("url").text),
+                            "images": images,
+                        }
+                        if type == "video":
+                            data["playbacks"][type]["direct_link"] = (
+                                media_url + "video-0.m4v"
+                            )
+                result.append(data)
+        except Exception as exception:
+            current_app.logger.error(exception)
         return result
 
     def update_recordings(self, recording_ids, metadata):

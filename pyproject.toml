@@ -160,3 +160,15 @@ partial_branches = [
     "if app.debug",
     "if app.testing",
 ]
+
+[[tool.babel.mappings]]
+method = "python"
+pattern = "**.py"
+
+[[tool.babel.mappings]]
+method = "jinja2"
+pattern = "**/templates/**.html"
+
+[[tool.babel.mappings]]
+method = "jinja2"
+pattern = "**/templates/**.txt"
