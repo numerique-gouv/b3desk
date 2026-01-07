@@ -36,7 +36,7 @@ repos:
     hooks:
       - id: translation-extract
         name: Extract translation messages
-        entry: bash -c 'uv run pybabel extract --mapping-file web/translations/babel.cfg --output-file web/translations/messages.pot --keywords lazy_gettext web && git add web/translations/messages.pot'
+        entry: bash -c 'uv run pybabel extract --omit-header --mapping-file pyproject.toml --output-file web/translations/messages.pot --keywords lazy_gettext web && git add web/translations/messages.pot'
         language: system
         files: ^web/.*\.(py|html)$
         pass_filenames: false
