@@ -381,6 +381,7 @@ def test_webdav_error_handler_html_branch(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
+        owner=meeting.user,
     )
     db.session.add(meeting_file)
 

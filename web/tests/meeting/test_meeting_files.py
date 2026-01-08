@@ -186,6 +186,7 @@ def test_ncdownload_webdav_exception(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
+        owner=meeting.user,
     )
     db.session.add(meeting_file)
     db.session.commit()
@@ -224,6 +225,7 @@ def test_download_meeting_file_from_nextcloud(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
+        owner=meeting.user,
     )
     db.session.add(meeting_file)
 
@@ -260,6 +262,7 @@ def test_download_meeting_file_without_webdav_credentials(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
+        owner=meeting.user,
     )
     db.session.add(meeting_file)
     db.session.commit()

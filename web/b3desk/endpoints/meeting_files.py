@@ -215,6 +215,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         title=title,
         created_at=date.today(),
         meeting_id=meeting_id,
+        owner=g.user,
     )
 
     try:
@@ -267,6 +268,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         meeting_id=meeting_id,
         url=url,
         is_default=is_default,
+        owner=g.user,
     )
     requests.get(url)
 
@@ -314,6 +316,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         meeting_id=meeting_id,
         nc_path=path,
         is_default=is_default,
+        owner=g.user,
     )
 
     try:
@@ -333,13 +336,14 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     )
 
 
-def create_external_meeting_file(path, meeting_id=None):
+def create_external_meeting_file(path, owner, meeting_id=None):
     """Create an external meeting file record for a Nextcloud document."""
     externalMeetingFile = BaseMeetingFiles(
         title=path.split("/")[-1],
         meeting_id=meeting_id,
         nc_path=path,
         id=uuid.uuid4(),
+        owner=owner,
     )
     return externalMeetingFile
 
@@ -458,8 +462,10 @@ def file_picker_callback(user: User, bbb_meeting_id: str):
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
     filenames = request.get_json()
-    meeting_files = [create_external_meeting_file(filename) for filename in filenames]
-    BBB(bbb_meeting_id).send_meeting_files(meeting_files, g.user)
+    meeting_files = [
+        create_external_meeting_file(filename, g.user) for filename in filenames
+    ]
+    BBB(bbb_meeting_id).send_meeting_files(meeting_files)
 
     return jsonify(status=200, msg="SUCCESS")
 

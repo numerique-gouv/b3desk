@@ -163,7 +163,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         return False
 
     if meeting.files:
-        bbb.send_meeting_files(meeting.files, user, meeting=meeting)
+        bbb.send_meeting_files(meeting.files)
 
     if (
         current_app.config["ENABLE_PIN_MANAGEMENT"]

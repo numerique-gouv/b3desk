@@ -47,11 +47,14 @@ def get_meeting_file_hash(*args):
 
 
 class BaseMeetingFiles:
-    def __init__(self, id=None, title=None, nc_path=None, meeting_id=None, **kwargs):
+    def __init__(
+        self, id=None, title=None, nc_path=None, meeting_id=None, owner=None, **kwargs
+    ):
         self.id = id
         self.title = title
         self.nc_path = nc_path
         self.meeting_id = meeting_id
+        self.owner = owner
         super().__init__(**kwargs)
 
 
@@ -61,11 +64,13 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     url = db.Column(db.Unicode(4096))
     nc_path = db.Column(db.Unicode(4096))
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_default = db.Column(db.Boolean, default=False)
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
 
     meeting = db.relationship("Meeting", back_populates="files")
+    owner = db.relationship("User", foreign_keys=[owner_id])
 
     @property
     def short_title(self):

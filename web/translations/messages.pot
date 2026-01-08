@@ -1,7 +1,7 @@
 #: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:126
 #: web/b3desk/endpoints/meeting_files.py:204
-#: web/b3desk/endpoints/meeting_files.py:296
-#: web/b3desk/endpoints/meeting_files.py:484
+#: web/b3desk/endpoints/meeting_files.py:298
+#: web/b3desk/endpoints/meeting_files.py:490
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -133,7 +133,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:301
+#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:306
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -307,42 +307,42 @@ msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:192
-#: web/b3desk/endpoints/meeting_files.py:259
+#: web/b3desk/endpoints/meeting_files.py:260
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:229
-#: web/b3desk/endpoints/meeting_files.py:279
-#: web/b3desk/endpoints/meeting_files.py:325
-#: web/b3desk/endpoints/meeting_files.py:368
+#: web/b3desk/endpoints/meeting_files.py:230
+#: web/b3desk/endpoints/meeting_files.py:281
+#: web/b3desk/endpoints/meeting_files.py:328
+#: web/b3desk/endpoints/meeting_files.py:372
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:252
+#: web/b3desk/endpoints/meeting_files.py:253
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:306
+#: web/b3desk/endpoints/meeting_files.py:308
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:377
+#: web/b3desk/endpoints/meeting_files.py:381
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:406
+#: web/b3desk/endpoints/meeting_files.py:410
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:423
+#: web/b3desk/endpoints/meeting_files.py:427
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:444
+#: web/b3desk/endpoints/meeting_files.py:448
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -396,7 +396,7 @@ msgstr ""
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:282 web/b3desk/models/meetings.py:289
+#: web/b3desk/models/meetings.py:287 web/b3desk/models/meetings.py:294
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 

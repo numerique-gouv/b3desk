@@ -421,6 +421,7 @@ def test_create_with_only_a_default_file(
         meeting_id=meeting.id,
         is_default=True,
     )
+    meeting_file.owner = meeting.user
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.user)
@@ -529,6 +530,7 @@ def test_create_with_files(
         meeting_id=meeting.id,
         is_default=False,
     )
+    meeting_file.owner = meeting.user
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.user)
