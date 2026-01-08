@@ -224,21 +224,19 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         db.session.add(meeting_file)
         db.session.commit()
 
-        # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-        remove_dropzone_file(dropzone_path)
-        return jsonify(
-            status=200,
-            isDefault=is_default,
-            title=meeting_file.short_title,
-            id=meeting_file.id,
-            created_at=meeting_file.created_at.strftime(
-                current_app.config["TIME_FORMAT"]
-            ),
-        )
-
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
+
+    # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
+    remove_dropzone_file(dropzone_path)
+    return jsonify(
+        status=200,
+        isDefault=is_default,
+        title=meeting_file.short_title,
+        id=meeting_file.id,
+        created_at=meeting_file.created_at.strftime(current_app.config["TIME_FORMAT"]),
+    )
 
 
 def add_meeting_file_URL(url, meeting_id, is_default):
@@ -275,19 +273,18 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     try:
         db.session.add(meeting_file)
         db.session.commit()
-        return jsonify(
-            status=200,
-            isDefault=is_default,
-            title=meeting_file.short_title,
-            id=meeting_file.id,
-            created_at=meeting_file.created_at.strftime(
-                current_app.config["TIME_FORMAT"]
-            ),
-        )
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
+
+    return jsonify(
+        status=200,
+        isDefault=is_default,
+        title=meeting_file.short_title,
+        id=meeting_file.id,
+        created_at=meeting_file.created_at.strftime(current_app.config["TIME_FORMAT"]),
+    )
 
 
 def add_meeting_file_nextcloud(path, meeting_id, is_default):
@@ -322,6 +319,7 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
     try:
         db.session.add(meeting_file)
         db.session.commit()
+
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))

@@ -1,10 +1,17 @@
+from datetime import date
+
 from b3desk import cache
 from b3desk.models import db
+from b3desk.models.meetings import MeetingFiles
 from b3desk.nextcloud import check_nextcloud_connection
 from b3desk.nextcloud import credentials_breaker
 from b3desk.nextcloud import is_auth_error
+from b3desk.nextcloud import is_nextcloud_available
+from b3desk.nextcloud import is_nextcloud_unavailable_error
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.nextcloud import user_auth_breaker
+from flask import g
+from flask import url_for
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
@@ -296,3 +303,106 @@ def test_update_credentials_clears_backoff_on_success(app, client_app, user, moc
 
     assert result is True
     assert credentials_breaker.is_blocked(user.id) is False
+
+
+def test_is_nextcloud_available_cached_in_g(client_app, user):
+    """is_nextcloud_available returns cached value from g if present."""
+    g.user = user
+    g.is_nextcloud_available = True
+
+    assert is_nextcloud_available() is True
+
+    g.is_nextcloud_available = False
+    assert is_nextcloud_available() is False
+
+
+def test_is_nextcloud_available_no_credentials(client_app, user):
+    """is_nextcloud_available returns False when user has no NC credentials."""
+    user.nc_login = None
+    user.nc_locator = None
+    user.nc_token = None
+    db.session.add(user)
+    db.session.commit()
+
+    g.user = user
+
+    result = is_nextcloud_available()
+
+    assert result is False
+    assert g.is_nextcloud_available is False
+
+
+def test_is_nextcloud_available_no_locator(client_app, user):
+    """is_nextcloud_available returns False when user has no nc_locator."""
+    user.nc_login = "alice"
+    user.nc_locator = None
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    g.user = user
+
+    result = is_nextcloud_available()
+
+    assert result is False
+    assert g.is_nextcloud_available is False
+
+
+def test_is_nextcloud_unavailable_error_server_error(client_app):
+    """is_nextcloud_unavailable_error returns True for 5xx errors."""
+    error = ResponseErrorCode("http://test", 500, "Internal Server Error")
+    assert is_nextcloud_unavailable_error(error) is True
+
+    error = ResponseErrorCode("http://test", 503, "Service Unavailable")
+    assert is_nextcloud_unavailable_error(error) is True
+
+
+def test_is_nextcloud_unavailable_error_client_error(client_app):
+    """is_nextcloud_unavailable_error returns False for 4xx errors."""
+    error = ResponseErrorCode("http://test", 404, "Not Found")
+    assert is_nextcloud_unavailable_error(error) is False
+
+
+def test_missing_token_exception(client_app):
+    """MissingToken exception can be raised with custom message."""
+    from b3desk.nextcloud import MissingToken
+
+    exc = MissingToken("Custom error message")
+    assert str(exc) == "Custom error message"
+    assert exc.message == "Custom error message"
+
+
+def test_webdav_error_handler_html_branch(
+    client_app, authenticated_user, mocker, nextcloud_credentials, meeting
+):
+    """WebDAV error handler returns flash + redirect for HTML requests on unavailability."""
+    meeting_file = MeetingFiles(
+        nc_path="/visio-agents/test.pdf",
+        title="test.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+    )
+    db.session.add(meeting_file)
+
+    meeting.user.nc_login = nextcloud_credentials["nclogin"]
+    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.user.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.user)
+    db.session.commit()
+
+    class FakeClient:
+        def download_sync(self, remote_path, local_path):
+            raise NoConnection("nextcloud.test")
+
+    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+
+    url = url_for(
+        "meeting_files.download_meeting_files",
+        meeting=meeting,
+        file_id=meeting_file.id,
+    )
+    response = client_app.get(url, headers={"Accept": "text/html"}, status=302)
+
+    assert any(
+        cat == "error" and "indisponible" in msg for cat, msg in response.flashes
+    )

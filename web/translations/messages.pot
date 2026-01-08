@@ -1,7 +1,7 @@
 #: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:126
 #: web/b3desk/endpoints/meeting_files.py:204
-#: web/b3desk/endpoints/meeting_files.py:299
-#: web/b3desk/endpoints/meeting_files.py:486
+#: web/b3desk/endpoints/meeting_files.py:296
+#: web/b3desk/endpoints/meeting_files.py:484
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -307,42 +307,42 @@ msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:192
-#: web/b3desk/endpoints/meeting_files.py:261
+#: web/b3desk/endpoints/meeting_files.py:259
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:241
-#: web/b3desk/endpoints/meeting_files.py:290
-#: web/b3desk/endpoints/meeting_files.py:327
-#: web/b3desk/endpoints/meeting_files.py:370
+#: web/b3desk/endpoints/meeting_files.py:229
+#: web/b3desk/endpoints/meeting_files.py:279
+#: web/b3desk/endpoints/meeting_files.py:325
+#: web/b3desk/endpoints/meeting_files.py:368
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:254
+#: web/b3desk/endpoints/meeting_files.py:252
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:309
+#: web/b3desk/endpoints/meeting_files.py:306
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:379
+#: web/b3desk/endpoints/meeting_files.py:377
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:408
+#: web/b3desk/endpoints/meeting_files.py:406
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:425
+#: web/b3desk/endpoints/meeting_files.py:423
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:446
+#: web/b3desk/endpoints/meeting_files.py:444
 msgid "La réunion n'est pas en cours"
 msgstr ""
 

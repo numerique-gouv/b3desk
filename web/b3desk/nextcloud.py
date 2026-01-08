@@ -86,12 +86,7 @@ def is_nextcloud_available():
         g.is_nextcloud_available = False
         return False
 
-    nc_locator = g.user.nc_locator
-    if not nc_locator:
-        g.is_nextcloud_available = False
-        return False
-
-    unavailable_key = f"nc_unavailable:{nc_locator}"
+    unavailable_key = f"nc_unavailable:{g.user.nc_locator}"
     g.is_nextcloud_available = not cache.get(unavailable_key)
     return g.is_nextcloud_available
 
@@ -141,7 +136,7 @@ def make_nextcloud_credentials_request(url, payload, headers):
             url, json=payload, headers=headers, timeout=NEXTCLOUD_REQUEST_TIMEOUT
         )
         data = response.json()
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException as e:  # pragma: no cover
         current_app.logger.error(
             "Unable to contact %s with payload %s and header %s, %s",
             url,
