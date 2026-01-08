@@ -103,6 +103,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     moderator_only_message = render_template(
         "meeting/signin_links.html",
         moderator_message=meeting.moderatorOnlyMessage,
+        visio_code=meeting.visio_code,
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
         ],
@@ -219,6 +220,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     )
     moderator_only_message = render_template(
         "meeting/signin_links.html",
+        visio_code=None,
         moderator_message=current_app.config["QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"],
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
