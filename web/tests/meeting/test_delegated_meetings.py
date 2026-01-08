@@ -308,3 +308,36 @@ def test_delegate_cannot_access_delegation_page(
 ):
     """Test that delegate cannot access to the delegation page of a delegated meeting."""
     client_app.get("/meeting/manage-delegation/1", status=403)
+
+
+def test_smtp_error_when_sending_delegation_mail(
+    client_app,
+    authenticated_user,
+    user_2,
+    meeting,
+    bbb_response,
+    caplog,
+    smtpd,
+):
+    """Test there is a log when cannot connect to smtp to send delegation mail."""
+    client_app.app.config["SMTP_HOST"] = None
+    assert len(smtpd.messages) == 0
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "berenice@domain.tld"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.get_all_delegates
+    assert (
+        f"{user_2.email} became delegate of meeting {meeting.id} {meeting.name}"
+        in caplog.text
+    )
+    assert (
+        f"Could not connect to SMTP host {client_app.app.config['SMTP_HOST']}"
+        in caplog.text
+    )
+
+    assert len(smtpd.messages) == 0

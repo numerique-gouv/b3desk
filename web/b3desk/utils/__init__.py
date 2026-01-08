@@ -95,12 +95,17 @@ def send_email(msg, content, smtp):
     msg.attach(html)
 
     connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
-    with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
-        if smtp["starttls"]:
-            smtp_connect.starttls()
-        if smtp["username"]:
-            smtp_connect.login(smtp["username"], smtp["password"])
-        smtp_connect.send_message(msg)
+    try:
+        with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+            if smtp["starttls"]:
+                smtp_connect.starttls()
+            if smtp["username"]:
+                smtp_connect.login(smtp["username"], smtp["password"])
+            smtp_connect.send_message(msg)
+    except Exception as e:
+        current_app.logger.warning(
+            "Could not connect to SMTP host %s : %s", smtp["host"], e
+        )
 
 
 def model_converter(model):

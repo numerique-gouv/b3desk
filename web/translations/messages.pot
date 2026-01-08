@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-02 10:07+0100\n"
+"POT-Creation-Date: 2026-01-08 14:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,7 +209,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/forms.py:270
-msgid "Recherche d'utilisateur"
+msgid "Ajout d'utilisateur"
 msgstr ""
 
 #: web/b3desk/settings.py:68
@@ -1978,12 +1978,25 @@ msgstr ""
 msgid " Délégation du %(meeting_label)s %(meeting_name)s "
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:5
+#: web/b3desk/templates/meeting/delegation-management.html:8
+#: web/b3desk/templates/meeting/files.html:42
+#: web/b3desk/templates/meeting/files.html:229
+#: web/b3desk/templates/meeting/recordings.html:9
+#: web/b3desk/templates/meeting/recordings.html:205
+#, python-format
+msgid "Retour à mes %(meeting_label)ss"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation-management.html:11
 msgid " Ajouter des délégataires "
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:10
-msgid "Rechercher"
+#: web/b3desk/templates/meeting/delegation-management.html:16
+msgid "Ajouter l'utilisateur comme délégataire"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation-management.html:36
+msgid "Supprimer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:5
@@ -2011,14 +2024,6 @@ msgstr ""
 msgid ""
 "Gestion des %(meeting_presentation)ss associées à "
 "<em>%(meeting_name)s</em>"
-msgstr ""
-
-#: web/b3desk/templates/meeting/files.html:42
-#: web/b3desk/templates/meeting/files.html:229
-#: web/b3desk/templates/meeting/recordings.html:9
-#: web/b3desk/templates/meeting/recordings.html:205
-#, python-format
-msgid "Retour à mes %(meeting_label)ss"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:47
@@ -2075,6 +2080,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:162
 #: web/b3desk/templates/meeting/files.html:205
 #: web/b3desk/templates/meeting/recordings.html:103
+#: web/b3desk/templates/meeting/row.html:59
 msgid "Supprimer"
 msgstr ""
 
@@ -2706,7 +2712,7 @@ msgstr ""
 msgid "Suppression d'enregistrement"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:180
+#: web/b3desk/utils/__init__.py:185
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
