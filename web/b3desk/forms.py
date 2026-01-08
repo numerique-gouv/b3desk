@@ -267,7 +267,7 @@ class EndMeetingForm(FlaskForm):
 
 class DelegationSearchForm(FlaskForm):
     search = EmailField(
-        label=_("Recherche d'utilisateur"),
-        render_kw={"placeholder": "Rechercher parmi les utilisateurs disponibles"},
+        label=_("Ajout d'utilisateur"),
+        render_kw={"placeholder": "Saisir l'e-mail du délégataire (ex: nom@exemple.fr)"},
         validators=[validators.DataRequired()],
     )

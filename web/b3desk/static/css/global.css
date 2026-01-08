@@ -167,6 +167,10 @@ form.delete {
   bottom: calc(2rem/2);
 }
 
+#delegationSearchForm .fr-btn::before {
+  mask-image: url("../dsfr-v1.14.0/icons/user/user-add-fill.svg");
+}
+
 @keyframes modal-overlay{
 	0% {
 	  opacity: 0

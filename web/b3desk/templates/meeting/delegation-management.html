@@ -1,13 +1,19 @@
 <div class="fr-container">
-    <h1 class="fr-h2 fr-icon-user-setting-line fr-icon--lg">
+    <h1 class="fr-h2">
         {% trans meeting_name=meeting.name %} Délégation du {{ meeting_label }} {{ meeting_name }} {% endtrans %}
     </h1>
+    <div class="fr-my-4v">
+        <a href="{{ url_for("public.welcome") }}">
+            <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+            {% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}
+        </a>
+    </div>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
     <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Rechercher{% endtrans %}" type="submit" class="fr-btn"></button>
+        <button title="{% trans %}Ajouter l'utilisateur comme délégataire{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -27,7 +33,7 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
