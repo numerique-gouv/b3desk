@@ -572,3 +572,30 @@ def test_file_picker_meeting_not_running(
     assert any(
         cat == "error" and "pas en cours" in msg for cat, msg in response.flashes
     )
+
+
+def test_add_dropzone_file_already_added(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path
+):
+    """Test uploading a file via dropzone chunked upload."""
+
+    def dropzone_post(status):
+        return client_app.post(
+            "/meeting/files/1/dropzone",
+            {
+                "dzchunkindex": 0,
+                "dzchunkbyteoffset": 0,
+                "dztotalchunkcount": 1,
+                "dztotalfilesize": 134,
+            },
+            upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+            status=status,
+        )
+
+    res = dropzone_post(status=200)
+    assert res.text == "Chunk upload successful"
+    with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
+        assert jpg_file_content == fd.read()
+
+    res = dropzone_post(status=500)
+    assert "Le fichier a déjà été mis en ligne" in res
