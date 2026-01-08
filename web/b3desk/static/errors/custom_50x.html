@@ -126,6 +126,11 @@
             <li class="fr-footer__bottom-item">
               <a class="fr-footer__bottom-link" href="/cgu">Conditions générales d’utilisation</a>
             </li>
+            {% if config.get("CONTACT_LINK") %}
+              <li class="fr-footer__bottom-item">
+                <a class="fr-footer__bottom-link" href="{{ config.get("CONTACT_LINK") }}" target="_blank">Contact</a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
