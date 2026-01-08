@@ -350,7 +350,7 @@ def update_user_nc_credentials(user, force_renew=False):
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
-        current_app.logger.info(
+        current_app.logger.debug(
             "Nextcloud login for user %s not to be refreshed for %s",
             user,
             timedelta(days=current_app.config["NC_LOGIN_TIMEDELTA_DAYS"])
