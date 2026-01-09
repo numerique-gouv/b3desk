@@ -71,7 +71,9 @@ class BBB:
         try:
             response = session.send(
                 request,
-                timeout=current_app.config["BBB_REQUEST_TIMEOUT"].total_seconds(),
+                timeout=current_app.config[
+                    "BIGBLUEBUTTON_REQUEST_TIMEOUT"
+                ].total_seconds(),
             )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)

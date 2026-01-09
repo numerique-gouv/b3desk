@@ -691,6 +691,11 @@ msgstr ""
 msgid "Conditions générales d’utilisation"
 msgstr ""
 
+#: web/b3desk/templates/footer.html:68 web/b3desk/templates/footer/cgu.html:62
+#: web/b3desk/templates/footer/cgu.html:63
+msgid "Contact"
+msgstr ""
+
 #: web/b3desk/templates/header-lasuite.html:13
 #: web/b3desk/templates/header-lasuite.html:14
 #, python-format
@@ -1257,11 +1262,6 @@ msgid ""
 "stipulations des CGU est susceptible d’être signalée à son administration"
 " et d'entraîner des poursuites judiciaires et des sanctions à son "
 "encontre."
-msgstr ""
-
-#: web/b3desk/templates/footer/cgu.html:62
-#: web/b3desk/templates/footer/cgu.html:63
-msgid "Contact"
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:64
