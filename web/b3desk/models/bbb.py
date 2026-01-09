@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 from datetime import datetime
-from datetime import timedelta
 from datetime import timezone
 from urllib.parse import urlparse
 from xml.etree import ElementTree
@@ -24,8 +23,6 @@ from b3desk.tasks import background_upload
 from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
-
-BBB_REQUEST_TIMEOUT = timedelta(seconds=2)
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
@@ -73,7 +70,8 @@ class BBB:
         )
         try:
             response = session.send(
-                request, timeout=BBB_REQUEST_TIMEOUT.total_seconds()
+                request,
+                timeout=current_app.config["BBB_REQUEST_TIMEOUT"].total_seconds(),
             )
         except requests.Timeout as err:
             current_app.logger.warning("BBB API timeout error %s", err)

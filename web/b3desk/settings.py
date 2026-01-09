@@ -1269,3 +1269,9 @@ class MainSettings(BaseSettings):
 
     Number of attempts to enter the visio-code before submitting a captcha
     """
+
+    BBB_REQUEST_TIMEOUT: datetime.timedelta = datetime.timedelta(seconds=2)
+    """  BBB request timeout
+
+    Timeout for BBB request expressed in seconds in logs
+    """
