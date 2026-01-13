@@ -138,8 +138,8 @@ def test_ncdownload(client_app, authenticated_user, meeting, mocker, caplog):
     )
 
     response = client_app.get(
-        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/666acf548b967aaa49c24efe1d9da24ce0d22d98/1//folder/file1.pdf"
-    ).follow()
+        "/ncdownload/1/7dfacbaf-8b48-4ec6-8712-951b206b0fd4/666acf548b967aaa49c24efe1d9da24ce0d22d98/1/folder/file1.pdf"
+    )
 
     assert "Service requesting file url folder/file1.pdf" in caplog.text
     args, kwargs = mocked_send.call_args
