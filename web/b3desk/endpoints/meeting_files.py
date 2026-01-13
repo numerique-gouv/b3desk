@@ -375,7 +375,11 @@ def upload_file_chunks(meeting: Meeting, owner: User):
     if current_chunk + 1 == total_chunks:
         # This was the last chunk, the file should be complete and the size we expect
         mimetype = filetype.guess(save_path)
-        if mimetype.mime not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]:
+        if (
+            mimetype
+            and mimetype.mime
+            not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]
+        ):
             return {"msg": _("Type de fichier non autorisé")}, 400
         if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
             return {"msg": _("Erreur de taille du fichier")}, 400
