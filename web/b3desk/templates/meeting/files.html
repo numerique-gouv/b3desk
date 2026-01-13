@@ -33,8 +33,8 @@
 {% endmacro %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='js/dropzone.css') }}"/>
-
 <script src="{{ url_for('static', filename='js/dropzone-min.js') }}"></script>
+<script>Dropzone.autoDiscover = false;</script>
 
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des {{ meeting_presentation }}s associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 

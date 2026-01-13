@@ -1,5 +1,7 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
+Dropzone.autoDiscover = false;
+
 function changeDefaultFile(newId){
     let tbody=document.getElementById('fileslist');
     let actualDefaultFile = tbody.querySelector('[disabled]');
@@ -359,13 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
         printout_message({ type: 'error', title: 'Nextcloud connexion', data: "La connexion avec votre Nextcloud n'est pas fonctionnelle, les options associées sont désactivées"});
     }
 
-    Dropzone.autoDiscover = false;
     var dropzone_conf = {
         paramName: 'dropzoneFiles',
         //autoProcessQueue: false,
         //uploadMultiple: true,
-        //chunking: false,
-        //forceChunking: false,
         chunking: true,
         forceChunking: true,
         maxFilesize: 20, // megabytes
