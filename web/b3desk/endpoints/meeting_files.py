@@ -12,7 +12,6 @@ from flask import current_app
 from flask import flash
 from flask import g
 from flask import jsonify
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -362,8 +361,7 @@ def upload_file_chunks(meeting: Meeting, owner: User):
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
-        # 400 and 500s will tell the client that an error occurred
-        return make_response((str(_("Le fichier a déjà été mis en ligne")), 500))
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 500
 
     try:
         with open(save_path, "ab") as f:
@@ -371,9 +369,7 @@ def upload_file_chunks(meeting: Meeting, owner: User):
             f.write(file.stream.read())
 
     except OSError:
-        return make_response(
-            (str(_("Erreur lors de l'écriture du fichier sur le disque")), 500)
-        )
+        return {"msg": _("Erreur lors de l'écriture du fichier sur le disque")}, 500
 
     total_chunks = int(request.form["dztotalchunkcount"])
 
@@ -381,12 +377,12 @@ def upload_file_chunks(meeting: Meeting, owner: User):
         # This was the last chunk, the file should be complete and the size we expect
         mimetype = filetype.guess(save_path)
         if mimetype.mime not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]:
-            return make_response(("Filetype not allowed", 500))
+            return {"msg": _("Type de fichier non autorisé")}, 400
         if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
-            return make_response(("Size mismatch", 500))
+            return {"msg": _("Erreur de taille du fichier")}, 400
 
     current_app.logger.debug(f"Wrote a chunk at {save_path}")
-    return make_response(("Chunk upload successful", 200))
+    return {"msg": "ok"}, 200
 
 
 @bp.route("/meeting/files/delete", methods=["POST"])

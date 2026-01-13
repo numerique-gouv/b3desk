@@ -384,7 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             this.on('error', (file, message) => {
                 dsfr(document.getElementById('upload-modal')).modal.conceal();
-                printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
+                const errorMsg = typeof message === 'string' ? message : message.msg;
+                printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: errorMsg});
                 this.removeFile(file);
             });
         }
