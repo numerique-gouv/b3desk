@@ -207,7 +207,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         )
 
     client.mkdir("visio-agents")  # does not fail if dir already exists
-    nc_path = os.path.join("/visio-agents" + title)
+    nc_path = os.path.join("visio-agents" + title)
     client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
 
     meeting_file = MeetingFiles(
