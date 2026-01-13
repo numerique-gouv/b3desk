@@ -266,7 +266,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         is_default=is_default,
         owner=g.user,
     )
-    requests.get(url)
 
     try:
         db.session.add(meeting_file)
