@@ -284,7 +284,7 @@ function close_open_modal() {
 // post data as :
 // [
     // { 'from' : 'URL', 'value': 'https://lol.com/image.jpg' },
-    // { 'from' : 'dropzone', 'value': 'tancarville.jpeg' },
+    // { 'from' : 'upload', 'value': 'tancarville.jpeg' },
     // ]
 
 function link_file_to_meeting(value, from) {
@@ -379,17 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('removed file from dropzone');
             });
             this.on('success', file => {
-                setTimeout(() => {link_file_to_meeting(file.name, 'dropzone')}, this.getUploadingFiles().length * 1000);
+                setTimeout(() => {link_file_to_meeting(file.name, 'upload')}, this.getUploadingFiles().length * 1000);
                 setTimeout(() => {this.removeFile(file)}, 1000);
             });
             this.on('error', (file, message) => {
-                dsfr(document.getElementById('dropzone')).modal.conceal();
+                dsfr(document.getElementById('upload-modal')).modal.conceal();
                 printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
                 this.removeFile(file);
             });
         }
     }
-    var dropper = new Dropzone("form#dropper", dropzone_conf);
+    var uploader = new Dropzone("form#upload-form", dropzone_conf);
 
     var form_files = document.getElementById('meeting-form');
 

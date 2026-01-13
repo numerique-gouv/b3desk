@@ -69,7 +69,7 @@ def test_add_dropzone_file(
 ):
     """Test uploading a file via dropzone chunked upload."""
     res = client_app.post(
-        "/meeting/files/1/dropzone",
+        "/meeting/files/1/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -81,7 +81,7 @@ def test_add_dropzone_file(
 
     assert res.text == "Chunk upload successful"
 
-    with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
+    with open(os.path.join(tmp_path, "chunks", "1-1-file.jpg"), "rb") as fd:
         assert jpg_file_content == fd.read()
 
 
@@ -288,7 +288,7 @@ def test_add_dropzone_file_without_webdav_credentials(
 ):
     """Add dropzone file returns error when user has no WebDAV credentials."""
     client_app.post(
-        f"/meeting/files/{meeting.id}/dropzone",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -304,7 +304,7 @@ def test_add_dropzone_file_without_webdav_credentials(
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
-        params=json.dumps({"from": "dropzone", "value": "file.jpg"}),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
         headers={"Content-Type": "application/json"},
     )
 
@@ -352,7 +352,7 @@ def test_add_dropzone_file_upload_to_nextcloud(
 ):
     """Test nominal path: upload dropzone file to Nextcloud."""
     client_app.post(
-        f"/meeting/files/{meeting.id}/dropzone",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -373,7 +373,7 @@ def test_add_dropzone_file_upload_to_nextcloud(
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
-        params=json.dumps({"from": "dropzone", "value": "file.jpg"}),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
         headers={"Content-Type": "application/json"},
     )
 
@@ -386,7 +386,7 @@ def test_add_dropzone_file_sqlalchemy_error(
 ):
     """SQLAlchemy error during dropzone upload returns appropriate error message."""
     client_app.post(
-        f"/meeting/files/{meeting.id}/dropzone",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -412,7 +412,7 @@ def test_add_dropzone_file_sqlalchemy_error(
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
-        params=json.dumps({"from": "dropzone", "value": "file.jpg"}),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
         headers={"Content-Type": "application/json"},
     )
 
@@ -584,7 +584,7 @@ def test_add_dropzone_file_already_added(
 
     def dropzone_post(status):
         return client_app.post(
-            "/meeting/files/1/dropzone",
+            "/meeting/files/1/upload",
             {
                 "dzchunkindex": 0,
                 "dzchunkbyteoffset": 0,
@@ -597,7 +597,7 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=200)
     assert res.text == "Chunk upload successful"
-    with open(os.path.join(tmp_path, "dropzone", "1-1-file.jpg"), "rb") as fd:
+    with open(os.path.join(tmp_path, "chunks", "1-1-file.jpg"), "rb") as fd:
         assert jpg_file_content == fd.read()
 
     res = dropzone_post(status=500)

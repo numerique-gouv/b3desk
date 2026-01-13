@@ -71,7 +71,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_meeting_files(meeting: Meeting, owner: User):
-    """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
+    """Add a file to a meeting from Nextcloud, URL, or file upload."""
     data = request.get_json()
     is_default = False
     if len(meeting.files) == 0:
@@ -83,10 +83,9 @@ def add_meeting_files(meeting: Meeting, owner: User):
     if data["from"] == "URL":
         return add_meeting_file_URL(data["value"], meeting.id, is_default)
 
-    # This is called by the JS after uploading a file on the 'add_dropzone_files'
-    # TODO: do everything in one single request?
-    if data["from"] == "dropzone":
-        return add_meeting_file_dropzone(
+    # This is called by the JS after uploading a file via 'upload_file_chunks'
+    if data["from"] == "upload":
+        return add_meeting_file_from_upload(
             secure_filename(data["value"]), meeting.id, is_default
         )
 
@@ -173,19 +172,17 @@ def set_meeting_default_file(meeting: Meeting, owner: User):
     return jsonify(status=200, id=data["id"])
 
 
-def remove_dropzone_file(absolutePath):
-    """Remove a file from the dropzone temporary directory."""
-    os.remove(absolutePath)
+def remove_uploaded_file(absolute_path):
+    """Remove a file from the upload temporary directory."""
+    os.remove(absolute_path)
 
 
-# called when a file has been uploaded : send it to nextcloud
-def add_meeting_file_dropzone(title, meeting_id, is_default):
-    """Upload a dropzone file to Nextcloud and associate it with a meeting."""
-    # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
-    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
-    Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzone_path = os.path.join(DROPZONE_DIR, f"{g.user.id}-{meeting_id}-{title}")
-    metadata = os.stat(dropzone_path)
+def add_meeting_file_from_upload(title, meeting_id, is_default):
+    """Upload a file to Nextcloud and associate it with a meeting."""
+    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
+    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
+    upload_path = os.path.join(upload_chunk_dir, f"{g.user.id}-{meeting_id}-{title}")
+    metadata = os.stat(upload_path)
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return jsonify(
             status=500,
@@ -208,7 +205,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
 
     client.mkdir("visio-agents")  # does not fail if dir already exists
     nc_path = os.path.join("visio-agents" + title)
-    client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
+    client.upload_sync(remote_path=nc_path, local_path=upload_path)
 
     meeting_file = MeetingFiles(
         nc_path=nc_path,
@@ -230,7 +227,7 @@ def add_meeting_file_dropzone(title, meeting_id, is_default):
         return jsonify(status=500, msg=_("Le fichier a déjà été mis en ligne"))
 
     # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-    remove_dropzone_file(dropzone_path)
+    remove_uploaded_file(upload_path)
     return jsonify(
         status=200,
         isDefault=is_default,
@@ -348,27 +345,24 @@ def create_external_meeting_file(path, owner, meeting_id=None):
     return externalMeetingFile
 
 
-# for dropzone multiple files uploading at once
-@bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/upload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def add_dropzone_files(meeting: Meeting, owner: User):
-    """Handle chunked file uploads from dropzone."""
+def upload_file_chunks(meeting: Meeting, owner: User):
+    """Handle chunked file uploads."""
     file = request.files["dropzoneFiles"]
-    # for dropzone chunk file by file validation
-    # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
-    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
-    Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
+    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
+    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
+        upload_chunk_dir, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
-        # 400 and 500s will tell dropzone that an error occurred and show an error
+        # 400 and 500s will tell the client that an error occurred
         return make_response((str(_("Le fichier a déjà été mis en ligne")), 500))
 
     try:

@@ -48,16 +48,16 @@
     {% endif %}
 </div>
 
-<dialog id="dropzone" class="fr-modal" role="dialog" aria-labelledby="dropzone">
+<dialog id="upload-modal" class="fr-modal" role="dialog" aria-labelledby="upload-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="dropzone" title="{% trans %}Fermer{% endtrans %}"></button>
+                        <button class="fr-btn--close fr-btn" aria-controls="upload-modal" title="{% trans %}Fermer{% endtrans %}"></button>
                     </div>
                     <div class="fr-modal__content">
-                        <form method="POST" action="{{ url_for("meeting_files.add_dropzone_files", meeting=meeting) }}" class="dropzone dz-clickable" id="dropper" enctype="multipart/form-data">
+                        <form method="POST" action="{{ url_for("meeting_files.upload_file_chunks", meeting=meeting) }}" class="dropzone dz-clickable" id="upload-form" enctype="multipart/form-data">
                             {% include 'meeting/csrf.html' %}
                             {% include 'meeting/id.html' %}
                             <div>
@@ -114,7 +114,7 @@
                 <button {% if g.is_nextcloud_available %}onClick=openNCFilePicker(event){% else %}disabled{% endif %} class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
             </li>
             <li>
-                <button {% if g.is_nextcloud_available %}data-fr-opened="false" aria-controls="dropzone"{% else %}disabled{% endif %} class="fr-btn" title="{% trans %}dropzone{% endtrans %}">{% trans %}par Téléversement{% endtrans %}</button>
+                <button {% if g.is_nextcloud_available %}data-fr-opened="false" aria-controls="upload-modal"{% else %}disabled{% endif %} class="fr-btn" title="{% trans %}téléversement{% endtrans %}">{% trans %}par Téléversement{% endtrans %}</button>
             </li>
         </ul>
 

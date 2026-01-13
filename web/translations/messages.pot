@@ -1,7 +1,7 @@
-#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:126
-#: web/b3desk/endpoints/meeting_files.py:204
-#: web/b3desk/endpoints/meeting_files.py:298
-#: web/b3desk/endpoints/meeting_files.py:490
+#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:125
+#: web/b3desk/endpoints/meeting_files.py:201
+#: web/b3desk/endpoints/meeting_files.py:295
+#: web/b3desk/endpoints/meeting_files.py:484
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -306,47 +306,47 @@ msgstr ""
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:192
-#: web/b3desk/endpoints/meeting_files.py:260
+#: web/b3desk/endpoints/meeting_files.py:189
+#: web/b3desk/endpoints/meeting_files.py:257
 #, python-brace-format
 msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:230
-#: web/b3desk/endpoints/meeting_files.py:281
-#: web/b3desk/endpoints/meeting_files.py:328
-#: web/b3desk/endpoints/meeting_files.py:372
+#: web/b3desk/endpoints/meeting_files.py:227
+#: web/b3desk/endpoints/meeting_files.py:278
+#: web/b3desk/endpoints/meeting_files.py:325
+#: web/b3desk/endpoints/meeting_files.py:366
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:253
+#: web/b3desk/endpoints/meeting_files.py:250
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:308
+#: web/b3desk/endpoints/meeting_files.py:305
 #, python-brace-format
 msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:381
+#: web/b3desk/endpoints/meeting_files.py:375
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:407
+#: web/b3desk/endpoints/meeting_files.py:401
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:411
+#: web/b3desk/endpoints/meeting_files.py:405
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:427
+#: web/b3desk/endpoints/meeting_files.py:421
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:448
+#: web/b3desk/endpoints/meeting_files.py:442
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -2011,7 +2011,7 @@ msgid "depuis le Nuage"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:117
-msgid "dropzone"
+msgid "téléversement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:117
