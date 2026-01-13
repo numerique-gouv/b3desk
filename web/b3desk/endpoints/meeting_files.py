@@ -403,9 +403,10 @@ def delete_meeting_file():
     data = request.get_json()
     meeting_file_id = data["id"]
     meeting_file = MeetingFiles.query.get(meeting_file_id)
-    cur_meeting = Meeting.query.get(meeting_file.meeting_id)
+    if meeting_file is None:
+        return jsonify(status=404, id=data["id"], msg=_("Fichier introuvable"))
 
-    if cur_meeting.user_id != g.user.id:
+    if meeting_file.meeting.user_id != g.user.id:
         return jsonify(
             status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
         )
@@ -414,10 +415,9 @@ def delete_meeting_file():
     db.session.commit()
     new_default_id = None
     if meeting_file.is_default:
-        cur_meeting = Meeting.query.get(meeting_file.meeting_id)
-        if len(cur_meeting.files) > 0:
-            cur_meeting.files[0].is_default = True
-            new_default_id = cur_meeting.files[0].id
+        if len(meeting_file.meeting.files) > 0:
+            meeting_file.meeting.files[0].is_default = True
+            new_default_id = meeting_file.meeting.files[0].id
             db.session.commit()
 
     return jsonify(

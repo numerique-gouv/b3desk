@@ -73,7 +73,7 @@ function deleteFile(e){
     })
     .then(res => res.json())
     .then(res => {
-        close_dialog('delete-file-'+res.id);
+        dsfr(document.getElementById('delete-file-'+res.id)).modal.conceal();
         remove_file_from_fileslist(res.id);
         printout_message({ type: 'success', title: 'Document supprimé', data: res.msg});
         if (res.newDefaultId) {
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {this.removeFile(file)}, 1000);
             });
             this.on('error', (file, message) => {
-                close_dialog('dropzone');
+                dsfr(document.getElementById('dropzone')).modal.conceal();
                 printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
                 this.removeFile(file);
             });

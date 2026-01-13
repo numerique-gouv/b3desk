@@ -333,7 +333,11 @@ msgstr ""
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:410
+#: web/b3desk/endpoints/meeting_files.py:407
+msgid "Fichier introuvable"
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:411
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
