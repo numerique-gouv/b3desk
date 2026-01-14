@@ -207,10 +207,11 @@ def test_ncdownload_webdav_exception(
     token = get_meeting_file_hash(meeting.user.id, nc_path)
     response = client_app.get(
         f"/ncdownload/{token}/{meeting.user.id}/{nc_path}",
-        status=200,
     )
 
-    assert response.json["status"] == 500
+    # WebDavException is handled by global error handler, returns HTTP 200 with error in JSON
+    assert response.status_int == 200
+    assert "indisponible" in response.json["msg"]
     db.session.refresh(meeting.user)
     assert meeting.user.nc_locator is not None
     assert meeting.user.nc_token is not None
@@ -306,9 +307,10 @@ def test_add_dropzone_file_without_webdav_credentials(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "upload", "value": "file.jpg"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 503
     assert "indisponible" in response.json["msg"]
 
 
@@ -324,9 +326,10 @@ def test_add_nextcloud_file_without_webdav_credentials(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "nextcloud", "value": "/folder/doc.pdf"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 503
     assert "indisponible" in response.json["msg"]
 
 
@@ -340,10 +343,10 @@ def test_download_file_for_bbb_without_webdav_credentials(client_app, meeting, m
     token = get_meeting_file_hash(meeting.user.id, nc_path)
     response = client_app.get(
         f"/ncdownload/{token}/{meeting.user.id}/{nc_path}",
-        status=200,
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 503
     assert "indisponible" in response.json["msg"]
 
 
@@ -377,7 +380,7 @@ def test_add_dropzone_file_upload_to_nextcloud(
         headers={"Content-Type": "application/json"},
     )
 
-    assert response.json["status"] == 200
+    assert response.status_int == 200
     assert response.json["title"] == "file.jpg"
 
 
@@ -414,9 +417,10 @@ def test_add_dropzone_file_sqlalchemy_error(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "upload", "value": "file.jpg"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 409
     assert "déjà été mis en ligne" in response.json["msg"]
 
 
@@ -442,7 +446,7 @@ def test_add_nextcloud_file_upload(
         headers={"Content-Type": "application/json"},
     )
 
-    assert response.json["status"] == 200
+    assert response.status_int == 200
     assert response.json["title"] == "doc.pdf"
 
 
@@ -480,9 +484,10 @@ def test_add_nextcloud_file_sqlalchemy_error(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "nextcloud", "value": "/folder/doc.pdf"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 409
     assert "déjà été mis en ligne" in response.json["msg"]
 
 
@@ -500,7 +505,7 @@ def test_add_url_file(client_app, authenticated_user, meeting, mocker):
         headers={"Content-Type": "application/json"},
     )
 
-    assert response.json["status"] == 200
+    assert response.status_int == 200
     assert response.json["title"] == "doc.pdf"
 
 
@@ -531,9 +536,10 @@ def test_add_url_file_sqlalchemy_error(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "URL", "value": "https://example.com/doc.pdf"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 409
     assert "déjà été mis en ligne" in response.json["msg"]
 
 
@@ -557,9 +563,10 @@ def test_add_nextcloud_file_too_large(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
         params=json.dumps({"from": "nextcloud", "value": "/folder/huge.pdf"}),
         headers={"Content-Type": "application/json"},
+        expect_errors=True,
     )
 
-    assert response.json["status"] == 500
+    assert response.status_int == 413
     assert "TROP VOLUMINEUX" in response.json["msg"]
 
 

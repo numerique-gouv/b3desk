@@ -304,24 +304,18 @@ function link_file_to_meeting(value, from) {
         body: JSON.stringify(post_data)
     })
     .then(res => {
-        if (res.status == 200) {
-            return (res.json())
-        } else {
-            throw res
+        if (res.ok) {
+            return res.json();
         }
-
+        return res.json().then(data => { throw data; });
     })
     .then(data => {
-        if (data.status == 200) {
-            append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
-            printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
-            close_open_modal();
-        } else {
-            throw data
-        }
+        append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
+        printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
+        close_open_modal();
     })
     .catch(data => {
-        console.log(data)
+        console.log(data);
         printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
         close_open_modal();
     })
