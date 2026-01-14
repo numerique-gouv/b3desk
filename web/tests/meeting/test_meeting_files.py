@@ -383,7 +383,53 @@ def test_add_dropzone_file_upload_to_nextcloud(
 def test_add_dropzone_file_sqlalchemy_error(
     client_app, authenticated_user, meeting, jpg_file_content, tmp_path, mocker
 ):
-    """SQLAlchemy error during dropzone upload returns appropriate error message."""
+    """SQLAlchemy error during dropzone upload cleans up Nextcloud file."""
+    client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": len(jpg_file_content),
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    clean_called_with = []
+
+    class FakeClient:
+        def mkdir(self, path):
+            pass
+
+        def upload_sync(self, remote_path, local_path):
+            pass
+
+        def clean(self, path):
+            clean_called_with.append(path)
+
+    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.db.session.commit",
+        side_effect=exc.IntegrityError("statement", "params", "orig"),
+    )
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 409
+    assert "déjà été mis en ligne" in response.json["msg"]
+    assert clean_called_with == ["visio-agents/file.jpg"]
+
+
+def test_add_dropzone_file_sqlalchemy_error_cleanup_fails(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path, mocker, caplog
+):
+    """SQLAlchemy error with failed Nextcloud cleanup logs warning but returns original error."""
     client_app.post(
         f"/meeting/files/{meeting.id}/upload",
         {
@@ -402,6 +448,9 @@ def test_add_dropzone_file_sqlalchemy_error(
         def upload_sync(self, remote_path, local_path):
             pass
 
+        def clean(self, path):
+            raise WebDavException("Nextcloud unavailable")
+
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
 
     mocker.patch(
@@ -418,6 +467,7 @@ def test_add_dropzone_file_sqlalchemy_error(
 
     assert response.status_int == 409
     assert "déjà été mis en ligne" in response.json["msg"]
+    assert "Failed to cleanup Nextcloud file" in caplog.text
 
 
 def test_add_nextcloud_file_upload(
@@ -563,7 +613,7 @@ def test_add_nextcloud_file_too_large(
     )
 
     assert response.status_int == 413
-    assert "TROP VOLUMINEUX" in response.json["msg"]
+    assert "trop volumineux" in response.json["msg"]
 
 
 def test_file_picker_meeting_not_running(
@@ -640,7 +690,7 @@ def test_add_dropzone_file_too_large(
     )
 
     assert response.status_int == 413
-    assert "TROP VOLUMINEUX" in response.json["msg"]
+    assert "trop volumineux" in response.json["msg"]
 
 
 def test_upload_file_chunks_disk_write_error(
@@ -833,7 +883,7 @@ def test_add_url_file_not_available(client_app, authenticated_user, meeting, moc
     )
 
     assert response.status_int == 400
-    assert "NON DISPONIBLE" in response.json["msg"]
+    assert "non disponible" in response.json["msg"]
 
 
 def test_add_url_file_network_error(client_app, authenticated_user, meeting, mocker):
@@ -852,7 +902,7 @@ def test_add_url_file_network_error(client_app, authenticated_user, meeting, moc
     )
 
     assert response.status_int == 400
-    assert "NON DISPONIBLE" in response.json["msg"]
+    assert "non disponible" in response.json["msg"]
 
 
 def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker):
@@ -870,7 +920,7 @@ def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker)
     )
 
     assert response.status_int == 413
-    assert "TROP VOLUMINEUX" in response.json["msg"]
+    assert "trop volumineux" in response.json["msg"]
 
 
 def test_add_url_file_no_content_length(

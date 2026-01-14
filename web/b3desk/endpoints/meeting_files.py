@@ -20,6 +20,7 @@ from flask import send_from_directory
 from flask import url_for
 from flask_babel import lazy_gettext as _
 from sqlalchemy import exc
+from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
 from b3desk.forms import MeetingFilesForm
@@ -186,6 +187,7 @@ def add_meeting_file_from_upload(title, meeting_id):
     client.mkdir("visio-agents")  # does not fail if dir already exists
     nc_path = os.path.join("visio-agents", title)
     client.upload_sync(remote_path=nc_path, local_path=upload_path)
+    remove_uploaded_file(upload_path)
 
     meeting_file = MeetingFiles(
         nc_path=nc_path,
@@ -201,9 +203,14 @@ def add_meeting_file_from_upload(title, meeting_id):
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
+        try:
+            client.clean(nc_path)
+        except WebDavException as cleanup_error:
+            current_app.logger.warning(
+                "Failed to cleanup Nextcloud file %s: %s", nc_path, cleanup_error
+            )
         return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
-    remove_uploaded_file(upload_path)
     return {
         "title": meeting_file.short_title,
         "id": meeting_file.id,
@@ -219,8 +226,10 @@ def add_meeting_file_URL(url, meeting_id):
 
     try:
         metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
-    except requests.exceptions.RequestException as exc:
-        current_app.logger.warning("URL file request failed for %s: %s", url, exc)
+    except requests.exceptions.RequestException as request_error:
+        current_app.logger.warning(
+            "URL file request failed for %s: %s", url, request_error
+        )
         return {
             "msg": _(
                 "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
