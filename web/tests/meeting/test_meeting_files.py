@@ -139,6 +139,9 @@ def test_ncdownload(
     client_app, authenticated_user, meeting, mocker, caplog, nextcloud_credentials
 ):
     class FakeClient:
+        def list(self):
+            return []
+
         def info(self, ncpath):
             return {"content_type": "application/pdf"}
 
@@ -194,6 +197,9 @@ def test_ncdownload_webdav_exception(
     db.session.commit()
 
     class FakeClient:
+        def list(self):
+            return []
+
         def info(self, ncpath):
             raise WebDavException()
 
@@ -333,9 +339,9 @@ def test_add_nextcloud_file_without_webdav_credentials(
 
 
 def test_download_file_for_bbb_without_webdav_credentials(client_app, meeting, mocker):
-    """download_file returns error when user has no WebDAV credentials."""
+    """download_file returns error when Nextcloud connection fails."""
     mocker.patch(
-        "b3desk.endpoints.meeting_files.create_webdav_client", return_value=None
+        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
     )
 
     nc_path = "folder/file.pdf"

@@ -467,13 +467,15 @@ def ncdownload(token, user, ncpath):
     uniqfile = str(uuid.uuid4())
     tmp_name = os.path.join(tmp_download_dir, uniqfile)
 
-    if (client := create_webdav_client(user)) is None:
+    if not check_nextcloud_connection(user, retry_on_auth_error=True):
         return {
             "msg": _(
                 "Le service de fichiers est temporairement indisponible. "
                 "Veuillez réessayer dans quelques minutes."
             )
         }, 503
+
+    client = create_webdav_client(user)
 
     @after_this_request
     def cleanup(response):
