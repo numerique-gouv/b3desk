@@ -8,6 +8,8 @@ from flask import flash
 from flask import request
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
+from itsdangerous import BadSignature
+from itsdangerous.url_safe import URLSafeSerializer
 from joserfc.errors import BadSignatureError
 from joserfc.errors import DecodeError
 from joserfc.errors import InvalidClaimError
@@ -87,6 +89,23 @@ def enum_converter(enum):
             abort(404)
 
     return EnumConverter
+
+
+class SignedConverter(BaseConverter):
+    """Flask URL converter that signs/unsigns values with itsdangerous."""
+
+    salt = "signed"
+
+    def to_url(self, value):
+        serializer = URLSafeSerializer(secret_key(), salt=self.salt)
+        return serializer.dumps(value)
+
+    def to_python(self, signed_value):
+        serializer = URLSafeSerializer(secret_key(), salt=self.salt)
+        try:
+            return serializer.loads(signed_value)
+        except BadSignature:
+            abort(404)
 
 
 def check_oidc_connection(auth):

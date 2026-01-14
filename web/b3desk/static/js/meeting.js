@@ -1,54 +1,24 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
-function changeDefaultFile(newId){
-    let tbody=document.getElementById('fileslist');
-    let actualDefaultFile = tbody.querySelector('[disabled]');
-    if (actualDefaultFile) {
-        actualDefaultFile.checked=false;
-        actualDefaultFile.disabled=false;
-    }
-    let newDefault = document.getElementById('isDefault-'+newId);
-    newDefault.checked=true;
-    newDefault.disabled=true;
-
-}
+Dropzone.autoDiscover = false;
 
 function toggleIsDownloadable(e){
     let idFileSelected = e.target.id.split('-')[1];
     let newValue = e.target.checked;
     let csrf_token = document.getElementsByName("csrf_token")[0].value;
 
-    fetch(toggle_download_url, {
+    fetch(toggle_download_url_base + idFileSelected + "/toggledownload", {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-CSRFToken':csrf_token
         },
-        body: JSON.stringify({'id': idFileSelected, 'value': newValue})
+        body: JSON.stringify({'value': newValue})
     })
     .then(res => res.json())
     .then(res => {
         //printout_message({ type: 'success', title: 'Modification prise en compte' });
-    })
-}
-
-function submitDefaultFile(e){
-    let csrf_token = document.getElementsByName("csrf_token")[0].value;
-    let idFileSelected = e.target.id.split('-').slice(-1);
-
-    fetch(set_default_file_url, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRFToken':csrf_token
-        },
-        body: JSON.stringify({'id': idFileSelected})
-    })
-    .then(res => res.json())
-    .then(res => {
-        changeDefaultFile(res.id);
     })
 }
 
@@ -73,12 +43,9 @@ function deleteFile(e){
     })
     .then(res => res.json())
     .then(res => {
-        close_dialog('delete-file-'+res.id);
+        dsfr(document.getElementById('delete-file-'+res.id)).modal.conceal();
         remove_file_from_fileslist(res.id);
         printout_message({ type: 'success', title: 'Document supprimé', data: res.msg});
-        if (res.newDefaultId) {
-            changeDefaultFile(res.newDefaultId);
-        }
     })
 }
 
@@ -97,26 +64,20 @@ function add_URL_file(name, from) {
 
 }
 
-function append_file_to_fileslist(title, id, date, isDefault) {
+function append_file_to_fileslist(title, id, date) {
     var nofileavailable = document.getElementById('nofileavailable');
     if (nofileavailable) {
         nofileavailable.parentNode.removeChild(nofileavailable);
     }
-    var csrf_token = document.getElementsByName("csrf_token")[0].value;
     var tbody = document.getElementById("fileslist");
 
     // create TR-TD element
     let tr = document.createElement('tr');
-    let tdDefault = document.createElement('td');
-    let inputDefault = document.createElement('input');
-    let labelDefault = document.createElement('label');
-    let divDefault = document.createElement('div');
     let tdTitle = document.createElement('td');
     let tdDate = document.createElement('td');
     let tdDel = document.createElement('td');
     let tdDownload = document.createElement('td');
     let tdIsDownloadable = document.createElement('td');
-    let divLink = document.createElement('div');
     let divIsDl = document.createElement('div');
     let inputIsDl = document.createElement('input');
     let labelIsDl = document.createElement('label');
@@ -150,26 +111,6 @@ function append_file_to_fileslist(title, id, date, isDefault) {
     tdTitle.innerHTML=title;
     tdDate.innerHTML=date;
 
-    /*
-    inputDefault.classList.add('fr-toggle__input');
-    inputDefault.setAttribute('id', 'isDefault-'+id);
-    inputDefault.setAttribute('type', 'checkbox');
-    inputDefault.addEventListener('click', submitDefaultFile);
-    if (isDefault) {
-        inputDefault.setAttribute('checked', true);
-        inputDefault.disabled=true;
-    }
-    labelDefault.classList.add('fr-toggle__label');
-    labelDefault.setAttribute('data-fr-checked-label', 'Oui');
-    labelDefault.setAttribute('data-fr-unchecked-label', 'Non');
-    labelDefault.setAttribute('for', 'isDefault-'+id);
-    divDefault.classList.add('fr-toggle');
-    divDefault.appendChild(inputDefault);
-    divDefault.appendChild(labelDefault);
-    tdDefault.appendChild(divDefault);
-
-    tr.appendChild(tdDefault);
-    */
     tr.appendChild(tdIsDownloadable);
     tr.appendChild(tdTitle);
     tr.appendChild(tdDate);
@@ -272,15 +213,17 @@ function printout_message(msg){
     }, 3000)
 }
 
-function close_dialog(id){
-    let dialogToClose = document.getElementById(id);
-    dsfr(dialogToClose).modal.conceal();
+function close_open_modal() {
+    const openModal = document.querySelector('.fr-modal--opened');
+    if (openModal) {
+        dsfr(openModal).modal.conceal();
+    }
 }
 
 // post data as :
 // [
     // { 'from' : 'URL', 'value': 'https://lol.com/image.jpg' },
-    // { 'from' : 'dropzone', 'value': 'tancarville.jpeg' },
+    // { 'from' : 'upload', 'value': 'tancarville.jpeg' },
     // ]
 
 function link_file_to_meeting(value, from) {
@@ -300,30 +243,20 @@ function link_file_to_meeting(value, from) {
         body: JSON.stringify(post_data)
     })
     .then(res => {
-        if (res.status == 200) {
-            return (res.json())
-        } else {
-            throw res
+        if (res.ok) {
+            return res.json();
         }
-
+        return res.json().then(data => { throw data; });
     })
     .then(data => {
-        if (data.status == 200) {
-            append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
-            printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
-            if (data.isfrom !== 'nextcloud') {
-                close_dialog(data.isfrom);
-            }
-        } else {
-            throw data
-        }
+        append_file_to_fileslist(data.title, data.id, data.created_at);
+        printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
+        close_open_modal();
     })
     .catch(data => {
-        console.log(data)
+        console.log(data);
         printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
-        if (data.isfrom !== 'nextcloud') {
-            close_dialog(data.isfrom);
-        }
+        close_open_modal();
     })
 }
 
@@ -361,13 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
         printout_message({ type: 'error', title: 'Nextcloud connexion', data: "La connexion avec votre Nextcloud n'est pas fonctionnelle, les options associées sont désactivées"});
     }
 
-    Dropzone.autoDiscover = false;
     var dropzone_conf = {
         paramName: 'dropzoneFiles',
         //autoProcessQueue: false,
         //uploadMultiple: true,
-        //chunking: false,
-        //forceChunking: false,
         chunking: true,
         forceChunking: true,
         maxFilesize: 20, // megabytes
@@ -382,17 +312,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('removed file from dropzone');
             });
             this.on('success', file => {
-                setTimeout(() => {link_file_to_meeting(file.name, 'dropzone')}, this.getUploadingFiles().length * 1000);
+                setTimeout(() => {link_file_to_meeting(file.name, 'upload')}, this.getUploadingFiles().length * 1000);
                 setTimeout(() => {this.removeFile(file)}, 1000);
             });
             this.on('error', (file, message) => {
-                close_dialog('dropzone');
-                printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: message});
+                dsfr(document.getElementById('upload-modal')).modal.conceal();
+                const errorMsg = typeof message === 'string' ? message : message.msg;
+                printout_message({ type: 'error', title: 'Le téléversement du fichier « '+file.name+' » a échoué.', data: errorMsg});
                 this.removeFile(file);
             });
         }
     }
-    var dropper = new Dropzone("form#dropper", dropzone_conf);
+    var uploader = new Dropzone("form#upload-form", dropzone_conf);
 
     var form_files = document.getElementById('meeting-form');
 
