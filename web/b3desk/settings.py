@@ -223,6 +223,38 @@ class MainSettings(BaseSettings):
         level = "INFO"
         handlers = ["wsgi"]
 
+    .. code-block:: toml
+        :caption:
+            Exemple de configuration avec les logs BBB dans un fichier dédié,
+            avec DEBUG sur le module BBB uniquement.
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.bbb]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/bbb.log"
+        formatter = "default"
+
+        [loggers.bbb]
+        level = "DEBUG"
+        handlers = ["bbb"]
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
     """
 
     REDIS_URL: str | None = None

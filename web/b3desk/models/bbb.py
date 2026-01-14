@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
+import logging
 from datetime import datetime
 from datetime import timezone
 from urllib.parse import urlparse
@@ -23,6 +24,8 @@ from b3desk.tasks import background_upload
 from .. import BigBlueButtonUnavailable
 from .. import cache
 from .roles import Role
+
+logger = logging.getLogger("bbb")
 
 
 def cache_key(func, caller, prepped, *args, **kwargs):
@@ -62,7 +65,7 @@ class BBB:
         if current_app.debug:  # pragma: no cover
             session.verify = False
 
-        current_app.logger.debug(
+        logger.debug(
             "BBB API request method:%s url:%s data:%s",
             request.method,
             request.url,
@@ -76,23 +79,23 @@ class BBB:
                 ].total_seconds(),
             )
         except requests.Timeout as err:
-            current_app.logger.warning("BBB API timeout error %s", err)
+            logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
         except requests.exceptions.ConnectionError as err:
-            current_app.logger.warning("BBB API connection error %s", err)
+            logger.warning("BBB API connection error %s", err)
             raise BigBlueButtonUnavailable() from err
 
-        current_app.logger.debug("BBB API response %s", response.text)
+        logger.debug("BBB API response %s", response.text)
 
         try:
             root = ElementTree.fromstring(response.content)
         except ElementTree.ParseError as err:
-            current_app.logger.warning("BBB API XML parse error %s", err)
+            logger.warning("BBB API XML parse error %s", err)
             raise BigBlueButtonUnavailable() from err
 
         returncode_elem = root.find("returncode")
         if returncode_elem is None:
-            current_app.logger.warning("BBB API response missing returncode")
+            logger.warning("BBB API response missing returncode")
             raise BigBlueButtonUnavailable()
 
         return root
@@ -328,7 +331,7 @@ class BBB:
                             )
                 result.append(data)
         except Exception as exception:
-            current_app.logger.error(exception)
+            logger.error(exception)
         return result
 
     def update_recordings(self, recording_ids, metadata):
@@ -386,7 +389,7 @@ class BBB:
                 token = get_meeting_file_hash(
                     meeting_file.owner.id, meeting_file.nc_path
                 )
-                current_app.logger.info(
+                logger.info(
                     "Add document on BigBlueButton room %s creation for file %s",
                     self.meeting_id,
                     meeting_file.title,
