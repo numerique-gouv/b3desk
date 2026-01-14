@@ -8,6 +8,7 @@ import filetype
 import requests
 from flask import Blueprint
 from flask import abort
+from flask import after_this_request
 from flask import current_app
 from flask import flash
 from flask import g
@@ -110,9 +111,16 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     if not file_to_send:
         return {"msg": "file not found"}, 404
 
+    @after_this_request
+    def cleanup(response):
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        return response
+
     if current_file.url:
         response = requests.get(current_file.url)
-        open(tmp_name, "wb").write(response.content)
+        with open(tmp_name, "wb") as f:
+            f.write(response.content)
         return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
 
     # get file from nextcloud WEBDAV and send it
@@ -375,8 +383,11 @@ def upload_file_chunks(meeting: Meeting, owner: User):
             and mimetype.mime
             not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]
         ):
+            os.remove(save_path)
             return {"msg": _("Type de fichier non autorisé")}, 400
+
         if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
+            os.remove(save_path)
             return {"msg": _("Erreur de taille du fichier")}, 400
 
     current_app.logger.debug(f"Wrote a chunk at {save_path}")
@@ -465,7 +476,6 @@ def ncdownload(token, user, ncpath):
     if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")
 
-    # TODO: clean the temporary directory
     tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
     uniqfile = str(uuid.uuid4())
@@ -478,6 +488,12 @@ def ncdownload(token, user, ncpath):
                 "Veuillez réessayer dans quelques minutes."
             )
         }, 503
+
+    @after_this_request
+    def cleanup(response):
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        return response
 
     mimetype = client.info(ncpath).get("content_type")
     client.download_sync(remote_path=ncpath, local_path=tmp_name)
