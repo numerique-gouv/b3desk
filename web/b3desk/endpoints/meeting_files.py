@@ -94,7 +94,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     """Download a meeting file from URL or Nextcloud."""
     tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
-    tmp_name = f"{tmp_download_dir}{secrets.token_urlsafe(32)}"
+    tmp_name = os.path.join(tmp_download_dir, secrets.token_urlsafe(32))
     file_to_send = None
 
     for current_file in meeting.files:
@@ -111,11 +111,11 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
             os.remove(tmp_name)
         return response
 
-    if current_file.url:
-        response = requests.get(current_file.url)
+    if file_to_send.url:
+        response = requests.get(file_to_send.url)
         with open(tmp_name, "wb") as f:
             f.write(response.content)
-        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
+        return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
     # get file from nextcloud WEBDAV and send it
     if (client := create_webdav_client(owner)) is None:
@@ -129,8 +129,8 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         )
         return redirect(url_for("public.welcome"))
 
-    client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
-    return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
+    client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
+    return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
@@ -164,8 +164,11 @@ def add_meeting_file_from_upload(title, meeting_id):
     metadata = os.stat(upload_path)
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
-            "msg": _("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                title=title
+            "msg": _(
+                "Fichier {title} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+            ).format(
+                title=title,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
             )
         }, 413
 
@@ -224,8 +227,11 @@ def add_meeting_file_URL(url, meeting_id):
 
     if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
-            "msg": _("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                title=title
+            "msg": _(
+                "Fichier {title} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+            ).format(
+                title=title,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
             )
         }, 413
 
@@ -268,8 +274,11 @@ def add_meeting_file_nextcloud(path, meeting_id):
 
     if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
-            "msg": _("Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                path=path
+            "msg": _(
+                "Fichier {path} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+            ).format(
+                path=path,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
             )
         }, 413
 
@@ -326,7 +335,7 @@ def upload_file_chunks(meeting: Meeting, owner: User):
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
-        return {"msg": _("Le fichier a déjà été mis en ligne")}, 500
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
     try:
         with open(save_path, "ab") as f:
@@ -364,7 +373,7 @@ def delete_meeting_file():
     """Delete a meeting file."""
     data = request.get_json()
     meeting_file_id = data["id"]
-    meeting_file = MeetingFiles.query.get(meeting_file_id)
+    meeting_file = db.session.get(MeetingFiles, meeting_file_id)
     if meeting_file is None:
         return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
 

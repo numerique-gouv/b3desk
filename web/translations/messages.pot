@@ -1,7 +1,7 @@
 #: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:125
-#: web/b3desk/endpoints/meeting_files.py:178
-#: web/b3desk/endpoints/meeting_files.py:262
-#: web/b3desk/endpoints/meeting_files.py:443
+#: web/b3desk/endpoints/meeting_files.py:181
+#: web/b3desk/endpoints/meeting_files.py:268
+#: web/b3desk/endpoints/meeting_files.py:452
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -306,55 +306,55 @@ msgstr ""
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:167
-#: web/b3desk/endpoints/meeting_files.py:227
+#: web/b3desk/endpoints/meeting_files.py:168
+#: web/b3desk/endpoints/meeting_files.py:231
 #, python-brace-format
-msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
+msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:201
-#: web/b3desk/endpoints/meeting_files.py:246
-#: web/b3desk/endpoints/meeting_files.py:290
-#: web/b3desk/endpoints/meeting_files.py:329
+#: web/b3desk/endpoints/meeting_files.py:204
+#: web/b3desk/endpoints/meeting_files.py:252
+#: web/b3desk/endpoints/meeting_files.py:299
+#: web/b3desk/endpoints/meeting_files.py:338
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:221
+#: web/b3desk/endpoints/meeting_files.py:224
 #, python-brace-format
 msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:271
+#: web/b3desk/endpoints/meeting_files.py:278
 #, python-brace-format
-msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
+msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:337
+#: web/b3desk/endpoints/meeting_files.py:346
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:350
+#: web/b3desk/endpoints/meeting_files.py:359
 msgid "Type de fichier non autorisé"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:354
+#: web/b3desk/endpoints/meeting_files.py:363
 msgid "Erreur de taille du fichier"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:369
+#: web/b3desk/endpoints/meeting_files.py:378
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:374
+#: web/b3desk/endpoints/meeting_files.py:383
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:382
+#: web/b3desk/endpoints/meeting_files.py:391
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:403
+#: web/b3desk/endpoints/meeting_files.py:412
 msgid "La réunion n'est pas en cours"
 msgstr ""
 

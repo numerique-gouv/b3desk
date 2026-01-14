@@ -607,5 +607,5 @@ def test_add_dropzone_file_already_added(
     with open(os.path.join(tmp_path, "chunks", "1-1-file.jpg"), "rb") as fd:
         assert jpg_file_content == fd.read()
 
-    res = dropzone_post(status=500)
+    res = dropzone_post(status=409)
     assert "Le fichier a déjà été mis en ligne" in res.json["msg"]
