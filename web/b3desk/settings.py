@@ -223,6 +223,30 @@ class MainSettings(BaseSettings):
         level = "INFO"
         handlers = ["wsgi"]
 
+    .. code-block:: toml
+        :caption: Exemple de configuration avec DEBUG sur le module BBB uniquement
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.StreamHandler"
+        formatter = "default"
+
+        [loggers.bbb]
+        level = "DEBUG"
+        handlers = ["wsgi"]
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
     """
 
     REDIS_URL: str | None = None
