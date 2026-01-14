@@ -7,8 +7,11 @@ from datetime import timezone
 import pytest
 import requests
 from b3desk.models import db
+from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import assign_unique_codes
 from b3desk.models.meetings import get_meeting_file_hash
+from b3desk.models.users import User
 from b3desk.session import user_needed
 from flask import url_for
 from sqlalchemy import exc
@@ -140,7 +143,8 @@ def test_ncdownload(
             return {"content_type": "application/pdf"}
 
         def download_sync(self, remote_path, local_path):
-            pass
+            with open(local_path, "wb") as f:
+                f.write(b"fake pdf content")
 
     meeting.user.nc_login = nextcloud_credentials["nclogin"]
     meeting.user.nc_locator = nextcloud_credentials["nclocator"]
@@ -149,22 +153,14 @@ def test_ncdownload(
     db.session.commit()
 
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
-    mocked_send = mocker.patch(
-        "b3desk.endpoints.meeting_files.send_from_directory",
-        return_value="fake_response",
-    )
 
     nc_path = "folder/file1.pdf"
     token = get_meeting_file_hash(meeting.user.id, nc_path)
     response = client_app.get(f"/ncdownload/{token}/{meeting.user.id}/{nc_path}")
 
     assert "Service requesting file url folder/file1.pdf" in caplog.text
-    args, kwargs = mocked_send.call_args
-    assert kwargs["download_name"] == "file1.pdf"
-    assert kwargs["mimetype"] == "application/pdf"
-    assert response.body == b"fake_response"
-    args[0].startswith("/tmp/")
-    args[0].endswith("/test_ncdownload0")
+    assert response.status_int == 200
+    assert response.content_type == "application/pdf"
 
 
 def test_ncdownload_with_bad_token_abort_404(
@@ -609,3 +605,389 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=409)
     assert "Le fichier a déjà été mis en ligne" in res.json["msg"]
+
+
+def test_add_dropzone_file_too_large(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path, mocker
+):
+    """Test that uploading a file larger than MAX_SIZE_UPLOAD returns 413."""
+    client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": len(jpg_file_content),
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    class FakeClient:
+        def mkdir(self, path):
+            pass  # pragma: no cover
+
+        def upload_sync(self, remote_path, local_path):
+            pass  # pragma: no cover
+
+    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    client_app.app.config["MAX_SIZE_UPLOAD"] = 10
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 413
+    assert "TROP VOLUMINEUX" in response.json["msg"]
+
+
+def test_upload_file_chunks_disk_write_error(
+    client_app, authenticated_user, meeting, jpg_file_content, mocker
+):
+    """Test that OSError during disk write returns 500."""
+    mocker.patch(
+        "b3desk.endpoints.meeting_files.open", side_effect=OSError("Disk full")
+    )
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": len(jpg_file_content),
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 500
+    assert "Erreur lors de l'écriture" in response.json["msg"]
+
+
+def test_upload_file_chunks_forbidden_mime_type(
+    client_app, authenticated_user, meeting, tmp_path
+):
+    """Test that uploading a file with forbidden MIME type returns 400."""
+    # Create a minimal valid ZIP file (forbidden MIME type)
+    zip_content = (
+        b"PK\x03\x04\x14\x00\x00\x00\x00\x00\x00\x00!\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00test.txtPK"
+        b"\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00\x00\x00!\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00test.txtPK\x05\x06\x00\x00"
+        b"\x00\x00\x01\x00\x01\x006\x00\x00\x00$\x00\x00\x00\x00\x00"
+    )
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": len(zip_content),
+        },
+        upload_files=[("dropzoneFiles", "archive.zip", zip_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+    assert "Type de fichier non autorisé" in response.json["msg"]
+
+
+def test_upload_file_chunks_size_mismatch(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path
+):
+    """Test that size mismatch between declared and actual file returns 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": len(jpg_file_content) + 100,  # Wrong size
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+    assert "Erreur de taille du fichier" in response.json["msg"]
+
+
+def test_upload_file_chunks_not_last_chunk(
+    client_app, authenticated_user, meeting, jpg_file_content, tmp_path
+):
+    """Test uploading intermediate chunks (not the last one)."""
+    chunk1 = jpg_file_content[:50]
+    chunk2 = jpg_file_content[50:]
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 2,
+            "dztotalfilesize": len(jpg_file_content),
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", chunk1)],
+    )
+
+    assert response.status_int == 200
+    assert response.json["msg"] == "ok"
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 1,
+            "dzchunkbyteoffset": 50,
+            "dztotalchunkcount": 2,
+            "dztotalfilesize": len(jpg_file_content),
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", chunk2)],
+    )
+
+    assert response.status_int == 200
+
+
+def test_add_meeting_files_invalid_from(client_app, authenticated_user, meeting):
+    """Test add_meeting_files with invalid 'from' value returns 400."""
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "invalid", "value": "test"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+    assert "no file provided" in response.json["msg"]
+
+
+def test_download_meeting_file_not_found(client_app, authenticated_user, meeting):
+    """Test download when file_id doesn't match any file in meeting."""
+    response = client_app.get(
+        url_for(
+            "meeting_files.download_meeting_files",
+            meeting=meeting,
+            file_id=99999,
+        ),
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+    assert "file not found" in response.json["msg"]
+
+
+def test_download_meeting_file_from_url(
+    client_app, authenticated_user, meeting, mocker
+):
+    """Test downloading a file that has a URL (not from Nextcloud)."""
+    # Add a first file that won't match (to cover the loop continue branch)
+    other_file = MeetingFiles(
+        url="https://example.com/other.pdf",
+        title="other.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.user,
+    )
+    db.session.add(other_file)
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    mock_response = mocker.Mock()
+    mock_response.content = b"fake pdf content"
+    mocker.patch.object(requests, "get", return_value=mock_response)
+
+    response = client_app.get(
+        url_for(
+            "meeting_files.download_meeting_files",
+            meeting=meeting,
+            file_id=meeting_file.id,
+        ),
+    )
+
+    assert response.status_int == 200
+
+
+def test_add_url_file_not_available(client_app, authenticated_user, meeting, mocker):
+    """Test adding a URL file when the URL is not available."""
+    mock_head = mocker.Mock()
+    mock_head.ok = False
+    mocker.patch.object(requests, "head", return_value=mock_head)
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "URL", "value": "https://example.com/notfound.pdf"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+    assert "NON DISPONIBLE" in response.json["msg"]
+
+
+def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker):
+    """Test adding a URL file when the file is too large."""
+    mock_head = mocker.Mock()
+    mock_head.ok = True
+    mock_head.headers = {"content-length": "999999999"}
+    mocker.patch.object(requests, "head", return_value=mock_head)
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "URL", "value": "https://example.com/huge.pdf"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 413
+    assert "TROP VOLUMINEUX" in response.json["msg"]
+
+
+def test_toggledownload_success(client_app, authenticated_user, meeting):
+    """Test successful toggle of downloadable status."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.user,
+        is_downloadable=False,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_int == 200
+    assert response.json["id"] == meeting_file.id
+    db.session.refresh(meeting_file)
+    assert meeting_file.is_downloadable is True
+
+
+def test_toggledownload_not_found(client_app, authenticated_user):
+    """Test toggle on non-existent file returns 404."""
+    response = client_app.post(
+        "/meeting/files/99999/toggledownload",
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+
+
+def test_toggledownload_not_owner(client_app, authenticated_user, meeting):
+    """Test toggle by non-owner returns 403."""
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", user=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=other_meeting.id,
+        owner=other_user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 403
+
+
+def test_delete_meeting_file_success(client_app, authenticated_user, meeting):
+    """Test successful deletion of a meeting file."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    file_id = meeting_file.id
+
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": file_id}),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_int == 200
+    assert response.json["id"] == file_id
+    assert "supprimé avec succès" in response.json["msg"]
+    assert db.session.get(MeetingFiles, file_id) is None
+
+
+def test_delete_meeting_file_not_found(client_app, authenticated_user):
+    """Test deletion of non-existent file returns 404."""
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": 99999}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+    assert "introuvable" in response.json["msg"]
+
+
+def test_delete_meeting_file_not_owner(client_app, authenticated_user, meeting):
+    """Test deletion by non-owner returns 403."""
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", user=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=other_meeting.id,
+        owner=other_user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    file_id = meeting_file.id
+
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": file_id}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 403
+    assert "ne pouvez pas supprimer" in response.json["msg"]

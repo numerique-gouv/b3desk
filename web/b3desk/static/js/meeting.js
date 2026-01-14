@@ -7,14 +7,14 @@ function toggleIsDownloadable(e){
     let newValue = e.target.checked;
     let csrf_token = document.getElementsByName("csrf_token")[0].value;
 
-    fetch(toggle_download_url, {
+    fetch(toggle_download_url_base + idFileSelected + "/toggledownload", {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-CSRFToken':csrf_token
         },
-        body: JSON.stringify({'id': idFileSelected, 'value': newValue})
+        body: JSON.stringify({'value': newValue})
     })
     .then(res => res.json())
     .then(res => {

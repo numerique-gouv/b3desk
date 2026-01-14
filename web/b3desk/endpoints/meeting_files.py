@@ -133,22 +133,21 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
 
-@bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
+@bp.route("/meeting/files/<meetingfiles:meeting_file>/toggledownload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def toggledownload(meeting: Meeting, owner: User):
+@user_needed
+def toggledownload(meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
-    data = request.get_json()
-    meeting_file = db.session.get(MeetingFiles, data["id"])
-    if not meeting_file:
-        abort(404)
+    if meeting_file.meeting.user_id != user.id:
+        abort(403)
 
+    data = request.get_json()
     meeting_file.is_downloadable = data["value"]
     db.session.add(meeting_file)
     db.session.commit()
 
-    return {"id": data["id"]}
+    return {"id": meeting_file.id}
 
 
 def remove_uploaded_file(absolute_path):
@@ -444,7 +443,7 @@ def ncdownload(token, user, ncpath):
     tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
     uniqfile = str(uuid.uuid4())
-    tmp_name = f"{tmp_download_dir}{uniqfile}"
+    tmp_name = os.path.join(tmp_download_dir, uniqfile)
 
     if (client := create_webdav_client(user)) is None:
         return {
