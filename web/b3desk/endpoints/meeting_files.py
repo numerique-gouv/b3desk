@@ -39,6 +39,7 @@ from .. import auth
 from ..session import meeting_owner_needed
 from ..session import user_needed
 
+REQUEST_TIMEOUT = 10
 bp = Blueprint("meeting_files", __name__)
 
 
@@ -164,7 +165,7 @@ def add_meeting_file_from_upload(title, meeting_id):
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
             "msg": _(
-                "Fichier {title} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+                "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
             ).format(
                 title=title,
                 max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
@@ -216,18 +217,28 @@ def add_meeting_file_URL(url, meeting_id):
     """Add a meeting file from an external URL."""
     title = url.rsplit("/", 1)[-1]
 
-    metadata = requests.head(url)
+    try:
+        metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
+    except requests.exceptions.RequestException as exc:
+        current_app.logger.warning("URL file request failed for %s: %s", url, exc)
+        return {
+            "msg": _(
+                "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
+            ).format(title=title)
+        }, 400
+
     if not metadata.ok:
         return {
             "msg": _(
-                "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
+                "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
             ).format(title=title)
-        }, 404
+        }, 400
 
-    if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
+    content_length = metadata.headers.get("content-length")
+    if content_length and int(content_length) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
             "msg": _(
-                "Fichier {title} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+                "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
             ).format(
                 title=title,
                 max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
@@ -274,7 +285,7 @@ def add_meeting_file_nextcloud(path, meeting_id):
     if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
             "msg": _(
-                "Fichier {path} TROP VOLUMINEUX, ne pas dépasser {max_size}Mo"
+                "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
             ).format(
                 path=path,
                 max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,

@@ -832,7 +832,26 @@ def test_add_url_file_not_available(client_app, authenticated_user, meeting, moc
         expect_errors=True,
     )
 
-    assert response.status_int == 404
+    assert response.status_int == 400
+    assert "NON DISPONIBLE" in response.json["msg"]
+
+
+def test_add_url_file_network_error(client_app, authenticated_user, meeting, mocker):
+    """Test adding a URL file when a network error occurs."""
+    mocker.patch.object(
+        requests,
+        "head",
+        side_effect=requests.exceptions.Timeout("Connection timed out"),
+    )
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "URL", "value": "https://example.com/timeout.pdf"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
     assert "NON DISPONIBLE" in response.json["msg"]
 
 
@@ -852,6 +871,25 @@ def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker)
 
     assert response.status_int == 413
     assert "TROP VOLUMINEUX" in response.json["msg"]
+
+
+def test_add_url_file_no_content_length(
+    client_app, authenticated_user, meeting, mocker
+):
+    """Test adding a URL file when content-length header is missing."""
+    mock_head = mocker.Mock()
+    mock_head.ok = True
+    mock_head.headers = {}
+    mocker.patch.object(requests, "head", return_value=mock_head)
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "URL", "value": "https://example.com/nosize.pdf"}),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_int == 200
+    assert response.json["title"] == "nosize.pdf"
 
 
 def test_toggledownload_success(client_app, authenticated_user, meeting):
