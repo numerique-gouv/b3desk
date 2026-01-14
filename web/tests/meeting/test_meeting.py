@@ -419,7 +419,6 @@ def test_create_with_only_a_default_file(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=True,
     )
     meeting_file.owner = meeting.user
     meeting.files = [meeting_file]
@@ -528,7 +527,6 @@ def test_create_with_files(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=False,
     )
     meeting_file.owner = meeting.user
     meeting.files = [meeting_file]

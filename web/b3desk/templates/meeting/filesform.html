@@ -11,7 +11,6 @@
         const nc_token = "{{ g.user.nc_token }}";
         const meeting_id = "{{ meeting.id }}";
         const toggle_download_url = "{{ url_for("meeting_files.toggledownload", meeting=meeting) }}";
-        const set_default_file_url = "{{ url_for("meeting_files.set_meeting_default_file", meeting=meeting) }}";
         const download_meeting_file_url = "{{ url_for("meeting_files.download_meeting_files", meeting=meeting, _external=True) }}";
         const add_meeting_files_url = "{{ url_for("meeting_files.add_meeting_files", meeting=meeting) }}";
         const delete_meeting_file_url = "{{ url_for("meeting_files.delete_meeting_file") }}";

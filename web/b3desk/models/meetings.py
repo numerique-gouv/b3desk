@@ -65,7 +65,6 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     nc_path = db.Column(db.Unicode(4096))
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    is_default = db.Column(db.Boolean, default=False)
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
 
@@ -132,21 +131,6 @@ class Meeting(db.Model):
         if not self._bbb:
             self._bbb = BBB(self.meetingID)
         return self._bbb
-
-    @property
-    def default_file(self):
-        """Return the default file for this meeting, if any."""
-        for mfile in self.files:
-            if mfile.is_default:
-                return mfile
-        return None
-
-    @property
-    def non_default_files(self):
-        """Return all non-default files for this meeting."""
-        return [
-            meeting_file for meeting_file in self.files if not meeting_file.is_default
-        ]
 
     @property
     def meetingID(self):

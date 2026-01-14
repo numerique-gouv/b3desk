@@ -2,19 +2,6 @@
 
 Dropzone.autoDiscover = false;
 
-function changeDefaultFile(newId){
-    let tbody=document.getElementById('fileslist');
-    let actualDefaultFile = tbody.querySelector('[disabled]');
-    if (actualDefaultFile) {
-        actualDefaultFile.checked=false;
-        actualDefaultFile.disabled=false;
-    }
-    let newDefault = document.getElementById('isDefault-'+newId);
-    newDefault.checked=true;
-    newDefault.disabled=true;
-
-}
-
 function toggleIsDownloadable(e){
     let idFileSelected = e.target.id.split('-')[1];
     let newValue = e.target.checked;
@@ -32,25 +19,6 @@ function toggleIsDownloadable(e){
     .then(res => res.json())
     .then(res => {
         //printout_message({ type: 'success', title: 'Modification prise en compte' });
-    })
-}
-
-function submitDefaultFile(e){
-    let csrf_token = document.getElementsByName("csrf_token")[0].value;
-    let idFileSelected = e.target.id.split('-').slice(-1);
-
-    fetch(set_default_file_url, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRFToken':csrf_token
-        },
-        body: JSON.stringify({'id': idFileSelected})
-    })
-    .then(res => res.json())
-    .then(res => {
-        changeDefaultFile(res.id);
     })
 }
 
@@ -78,9 +46,6 @@ function deleteFile(e){
         dsfr(document.getElementById('delete-file-'+res.id)).modal.conceal();
         remove_file_from_fileslist(res.id);
         printout_message({ type: 'success', title: 'Document supprimé', data: res.msg});
-        if (res.newDefaultId) {
-            changeDefaultFile(res.newDefaultId);
-        }
     })
 }
 
@@ -99,26 +64,20 @@ function add_URL_file(name, from) {
 
 }
 
-function append_file_to_fileslist(title, id, date, isDefault) {
+function append_file_to_fileslist(title, id, date) {
     var nofileavailable = document.getElementById('nofileavailable');
     if (nofileavailable) {
         nofileavailable.parentNode.removeChild(nofileavailable);
     }
-    var csrf_token = document.getElementsByName("csrf_token")[0].value;
     var tbody = document.getElementById("fileslist");
 
     // create TR-TD element
     let tr = document.createElement('tr');
-    let tdDefault = document.createElement('td');
-    let inputDefault = document.createElement('input');
-    let labelDefault = document.createElement('label');
-    let divDefault = document.createElement('div');
     let tdTitle = document.createElement('td');
     let tdDate = document.createElement('td');
     let tdDel = document.createElement('td');
     let tdDownload = document.createElement('td');
     let tdIsDownloadable = document.createElement('td');
-    let divLink = document.createElement('div');
     let divIsDl = document.createElement('div');
     let inputIsDl = document.createElement('input');
     let labelIsDl = document.createElement('label');
@@ -152,26 +111,6 @@ function append_file_to_fileslist(title, id, date, isDefault) {
     tdTitle.innerHTML=title;
     tdDate.innerHTML=date;
 
-    /*
-    inputDefault.classList.add('fr-toggle__input');
-    inputDefault.setAttribute('id', 'isDefault-'+id);
-    inputDefault.setAttribute('type', 'checkbox');
-    inputDefault.addEventListener('click', submitDefaultFile);
-    if (isDefault) {
-        inputDefault.setAttribute('checked', true);
-        inputDefault.disabled=true;
-    }
-    labelDefault.classList.add('fr-toggle__label');
-    labelDefault.setAttribute('data-fr-checked-label', 'Oui');
-    labelDefault.setAttribute('data-fr-unchecked-label', 'Non');
-    labelDefault.setAttribute('for', 'isDefault-'+id);
-    divDefault.classList.add('fr-toggle');
-    divDefault.appendChild(inputDefault);
-    divDefault.appendChild(labelDefault);
-    tdDefault.appendChild(divDefault);
-
-    tr.appendChild(tdDefault);
-    */
     tr.appendChild(tdIsDownloadable);
     tr.appendChild(tdTitle);
     tr.appendChild(tdDate);
@@ -310,7 +249,7 @@ function link_file_to_meeting(value, from) {
         return res.json().then(data => { throw data; });
     })
     .then(data => {
-        append_file_to_fileslist(data.title, data.id, data.created_at, data.isDefault);
+        append_file_to_fileslist(data.title, data.id, data.created_at);
         printout_message({ type: 'success', title: 'Document ajouté', data: 'Le document '+data.title+' a bien été ajouté'});
         close_open_modal();
     })

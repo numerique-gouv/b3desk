@@ -72,21 +72,15 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 def add_meeting_files(meeting: Meeting, owner: User):
     """Add a file to a meeting from Nextcloud, URL, or file upload."""
     data = request.get_json()
-    is_default = False
-    if len(meeting.files) == 0:
-        is_default = True
 
     if data["from"] == "nextcloud":
-        return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
+        return add_meeting_file_nextcloud(data["value"], meeting.id)
 
     if data["from"] == "URL":
-        return add_meeting_file_URL(data["value"], meeting.id, is_default)
+        return add_meeting_file_URL(data["value"], meeting.id)
 
-    # This is called by the JS after uploading a file via 'upload_file_chunks'
     if data["from"] == "upload":
-        return add_meeting_file_from_upload(
-            secure_filename(data["value"]), meeting.id, is_default
-        )
+        return add_meeting_file_from_upload(secure_filename(data["value"]), meeting.id)
 
     return {"msg": "no file provided"}, 400
 
@@ -157,33 +151,12 @@ def toggledownload(meeting: Meeting, owner: User):
     return {"id": data["id"]}
 
 
-@bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def set_meeting_default_file(meeting: Meeting, owner: User):
-    """Set a file as the default file for a meeting."""
-    data = request.get_json()
-
-    actual_default_file = meeting.default_file
-    if actual_default_file:
-        actual_default_file.is_default = False
-        db.session.add(actual_default_file)
-
-    meeting_file = MeetingFiles.query.get(data["id"])
-    meeting_file.is_default = True
-    db.session.add(meeting_file)
-    db.session.commit()
-
-    return {"id": data["id"]}
-
-
 def remove_uploaded_file(absolute_path):
     """Remove a file from the upload temporary directory."""
     os.remove(absolute_path)
 
 
-def add_meeting_file_from_upload(title, meeting_id, is_default):
+def add_meeting_file_from_upload(title, meeting_id):
     """Upload a file to Nextcloud and associate it with a meeting."""
     upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
     Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
@@ -220,9 +193,6 @@ def add_meeting_file_from_upload(title, meeting_id, is_default):
     )
 
     try:
-        # test for is_default-file absence at the latest time possible
-        meeting = db.session.get(Meeting, meeting_id)
-        meeting_file.is_default = len(meeting.files) == 0 and not meeting.default_file
         db.session.add(meeting_file)
         db.session.commit()
 
@@ -230,10 +200,8 @@ def add_meeting_file_from_upload(title, meeting_id, is_default):
         current_app.logger.error("SQLAlchemy error: %s", exception)
         return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
-    # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
     remove_uploaded_file(upload_path)
     return {
-        "isDefault": is_default,
         "title": meeting_file.short_title,
         "id": meeting_file.id,
         "created_at": meeting_file.created_at.strftime(
@@ -242,11 +210,10 @@ def add_meeting_file_from_upload(title, meeting_id, is_default):
     }
 
 
-def add_meeting_file_URL(url, meeting_id, is_default):
+def add_meeting_file_URL(url, meeting_id):
     """Add a meeting file from an external URL."""
     title = url.rsplit("/", 1)[-1]
 
-    # test MAX_SIZE_UPLOAD for 20Mo
     metadata = requests.head(url)
     if not metadata.ok:
         return {
@@ -267,7 +234,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         created_at=date.today(),
         meeting_id=meeting_id,
         url=url,
-        is_default=is_default,
         owner=g.user,
     )
 
@@ -280,7 +246,6 @@ def add_meeting_file_URL(url, meeting_id, is_default):
         return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
     return {
-        "isDefault": is_default,
         "title": meeting_file.short_title,
         "id": meeting_file.id,
         "created_at": meeting_file.created_at.strftime(
@@ -289,7 +254,7 @@ def add_meeting_file_URL(url, meeting_id, is_default):
     }
 
 
-def add_meeting_file_nextcloud(path, meeting_id, is_default):
+def add_meeting_file_nextcloud(path, meeting_id):
     """Add a meeting file from a Nextcloud path."""
     if (client := create_webdav_client(g.user)) is None:
         return {
@@ -313,7 +278,6 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         created_at=date.today(),
         meeting_id=meeting_id,
         nc_path=path,
-        is_default=is_default,
         owner=g.user,
     )
 
@@ -326,7 +290,6 @@ def add_meeting_file_nextcloud(path, meeting_id, is_default):
         return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
     return {
-        "isDefault": is_default,
         "title": meeting_file.short_title,
         "id": meeting_file.id,
         "created_at": meeting_file.created_at.strftime(
@@ -398,7 +361,7 @@ def upload_file_chunks(meeting: Meeting, owner: User):
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting_file():
-    """Delete a meeting file and reassign default if necessary."""
+    """Delete a meeting file."""
     data = request.get_json()
     meeting_file_id = data["id"]
     meeting_file = MeetingFiles.query.get(meeting_file_id)
@@ -413,15 +376,8 @@ def delete_meeting_file():
 
     db.session.delete(meeting_file)
     db.session.commit()
-    new_default_id = None
-    if meeting_file.is_default:
-        if len(meeting_file.meeting.files) > 0:
-            meeting_file.meeting.files[0].is_default = True
-            new_default_id = meeting_file.meeting.files[0].id
-            db.session.commit()
 
     return {
-        "newDefaultId": new_default_id,
         "id": data["id"],
         "msg": _("Fichier supprimé avec succès"),
     }
