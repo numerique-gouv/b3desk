@@ -392,6 +392,9 @@ def test_webdav_error_handler_html_branch(
     db.session.commit()
 
     class FakeClient:
+        def list(self):
+            return []
+
         def download_sync(self, remote_path, local_path):
             raise NoConnection("nextcloud.test")
 

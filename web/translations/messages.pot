@@ -1,7 +1,7 @@
-#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:127
+#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:126
 #: web/b3desk/endpoints/meeting_files.py:182
 #: web/b3desk/endpoints/meeting_files.py:287
-#: web/b3desk/endpoints/meeting_files.py:471
+#: web/b3desk/endpoints/meeting_files.py:473
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -355,7 +355,7 @@ msgstr ""
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:431
+#: web/b3desk/endpoints/meeting_files.py:433
 msgid "La réunion n'est pas en cours"
 msgstr ""
 

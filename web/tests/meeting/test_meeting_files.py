@@ -233,6 +233,9 @@ def test_download_meeting_file_from_nextcloud(
     db.session.commit()
 
     class FakeClient:
+        def list(self):
+            return []
+
         def download_sync(self, remote_path, local_path):
             with open(local_path, "wb") as f:
                 f.write(b"fake content")
@@ -253,7 +256,7 @@ def test_download_meeting_file_from_nextcloud(
 def test_download_meeting_file_without_webdav_credentials(
     client_app, authenticated_user, meeting, mocker
 ):
-    """Download file redirects when user has no WebDAV credentials."""
+    """Download file redirects when Nextcloud connection fails."""
     meeting_file = MeetingFiles(
         nc_path="/visio-agents/test.pdf",
         title="test.pdf",
@@ -265,7 +268,7 @@ def test_download_meeting_file_without_webdav_credentials(
     db.session.commit()
 
     mocker.patch(
-        "b3desk.endpoints.meeting_files.create_webdav_client", return_value=None
+        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
     )
 
     url = url_for(

@@ -120,8 +120,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
     # get file from nextcloud WEBDAV and send it
-    if (client := create_webdav_client(owner)) is None:
-        current_app.logger.warning("User %s has no Webdav credentials", owner.id)
+    if not check_nextcloud_connection(owner, retry_on_auth_error=True):
         flash(
             _(
                 "Le service de fichiers est temporairement indisponible. "
@@ -131,6 +130,7 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         )
         return redirect(url_for("public.welcome"))
 
+    client = create_webdav_client(owner)
     client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
     return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
@@ -422,7 +422,9 @@ def file_picker(user: User, bbb_meeting_id: str):
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
     if BBB(bbb_meeting_id).is_running():
-        nc_available = is_nextcloud_available() and check_nextcloud_connection(user)
+        nc_available = is_nextcloud_available() and check_nextcloud_connection(
+            user, retry_on_auth_error=True
+        )
         return render_template(
             "meeting/file_picker.html",
             bbb_meeting_id=bbb_meeting_id,
