@@ -7,6 +7,7 @@ from b3desk.nextcloud import credentials_breaker
 from b3desk.nextcloud import is_auth_error
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.nextcloud import is_nextcloud_unavailable_error
+from b3desk.nextcloud import nextcloud_breaker
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.nextcloud import user_auth_breaker
 from flask import url_for
@@ -398,3 +399,18 @@ def test_webdav_error_handler_html_branch(
     assert any(
         cat == "error" and "indisponible" in msg for cat, msg in response.flashes
     )
+
+
+def test_is_nextcloud_available_when_nextcloud_breaker_blocked(client_app, user):
+    """is_nextcloud_available returns False when nextcloud breaker is blocked."""
+    user.nc_login = "alice"
+    user.nc_locator = "http://nextcloud.test"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
+
+    nextcloud_breaker.mark_failed(user.nc_locator)
+
+    assert is_nextcloud_available(user) is False
+
+    nextcloud_breaker.clear(user.nc_locator)

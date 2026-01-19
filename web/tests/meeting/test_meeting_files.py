@@ -139,9 +139,6 @@ def test_ncdownload(
     client_app, authenticated_user, meeting, mocker, caplog, nextcloud_credentials
 ):
     class FakeClient:
-        def list(self):
-            return []
-
         def info(self, ncpath):
             return {"content_type": "application/pdf"}
 
@@ -197,9 +194,6 @@ def test_ncdownload_webdav_exception(
     db.session.commit()
 
     class FakeClient:
-        def list(self):
-            return []
-
         def info(self, ncpath):
             raise WebDavException()
 

@@ -79,9 +79,6 @@ def is_nextcloud_available(user, verify=False, retry_on_auth_error=False):
     If verify=True, performs a WebDAV connection test.
     If retry_on_auth_error=True and verify=True, renews credentials on 401/403.
     """
-    if not user:
-        return False
-
     if user.nc_locator and nextcloud_breaker.is_blocked(user.nc_locator):
         return False
 
