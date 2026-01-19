@@ -199,6 +199,7 @@ def test_create(meeting, mocker):
     send = mocker.patch("requests.Session.send", return_value=Response)
     mocker.patch("requests.post")
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+    mocker.patch("b3desk.join.is_nextcloud_available", return_value=True)
 
     assert send.call_count == 0
 
