@@ -108,7 +108,7 @@ class User(db.Model):
     @property
     def has_nc_credentials(self):
         """Check if user has valid Nextcloud credentials (login, token, and locator)."""
-        return self.nc_login and self.nc_token and self.nc_locator
+        return bool(self.nc_login and self.nc_token and self.nc_locator)
 
     @property
     def mail_domain(self):

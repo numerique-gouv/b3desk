@@ -13,7 +13,6 @@ from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
 
 from b3desk import cache
-from b3desk.models import db
 
 NEXTCLOUD_BACKOFF_INITIAL = 5
 NEXTCLOUD_BACKOFF_MULTIPLIER = 2
@@ -73,21 +72,52 @@ credentials_breaker = CircuitBreaker(
 )
 
 
-def is_nextcloud_available(user):
+def is_nextcloud_available(user, verify=False, retry_on_auth_error=False):
     """Check if Nextcloud is available for a user.
 
-    Returns True optimistically unless blocked by circuit breakers.
-    No network request is made here; failures are detected during actual operations.
+    If verify=False (default), only checks credentials and circuit breakers.
+    If verify=True, performs a WebDAV connection test.
+    If retry_on_auth_error=True and verify=True, renews credentials on 401/403.
     """
-    if not user or not user.has_nc_credentials:
+    if not user:
         return False
 
-    if nextcloud_breaker.is_blocked(user.nc_locator):
+    if user.nc_locator and nextcloud_breaker.is_blocked(user.nc_locator):
         return False
 
     if user_auth_breaker.is_blocked(user.id):
         return False
 
+    if not verify:
+        return user.has_nc_credentials
+
+    def handle_error(should_retry=False, auth_error=False):
+        if should_retry and update_user_nc_credentials(user, force_renew=True):
+            return is_nextcloud_available(user, verify=True, retry_on_auth_error=False)
+
+        if auth_error:
+            user_auth_breaker.mark_failed(user.id)
+
+        return False
+
+    if (client := create_webdav_client(user)) is None:
+        return handle_error(should_retry=retry_on_auth_error)
+
+    try:
+        client.list()
+    except WebDavException as exception:
+        current_app.logger.warning("WebDAV error: %s", exception)
+
+        if is_nextcloud_unavailable_error(exception):
+            nextcloud_breaker.mark_failed(user.nc_locator)
+
+        auth_error = is_auth_error(exception)
+        return handle_error(
+            should_retry=retry_on_auth_error and auth_error,
+            auth_error=auth_error,
+        )
+
+    user_auth_breaker.clear(user.id)
     return True
 
 
@@ -381,46 +411,4 @@ def update_user_nc_credentials(user, force_renew=False):
     user.nc_token = data["nctoken"]
     user.nc_login = data["nclogin"]
     user.nc_last_auto_enroll = datetime.now()
-    return True
-
-
-def check_nextcloud_connection(user, retry_on_auth_error=False):
-    """Test WebDAV connection and update availability status accordingly.
-
-    If retry_on_auth_error is True and connection fails due to missing credentials
-    or authentication error (401/403), credentials are refreshed and connection
-    is retried once. Unavailability errors (connection failures, 500+) do not
-    trigger a retry.
-    """
-    if user_auth_breaker.is_blocked(user.id):
-        return False
-
-    def handle_error(should_retry=False, auth_error=False):
-        if should_retry and update_user_nc_credentials(user, force_renew=True):
-            db.session.commit()
-            return check_nextcloud_connection(user, retry_on_auth_error=False)
-
-        if auth_error:
-            user_auth_breaker.mark_failed(user.id)
-
-        return False
-
-    if (client := create_webdav_client(user)) is None:
-        return handle_error(should_retry=retry_on_auth_error)
-
-    try:
-        client.list()
-    except WebDavException as exception:
-        current_app.logger.warning("WebDAV error: %s", exception)
-
-        if is_nextcloud_unavailable_error(exception):
-            nextcloud_breaker.mark_failed(user.nc_locator)
-
-        auth_error = is_auth_error(exception)
-        return handle_error(
-            should_retry=retry_on_auth_error and auth_error,
-            auth_error=auth_error,
-        )
-
-    user_auth_breaker.clear(user.id)
     return True

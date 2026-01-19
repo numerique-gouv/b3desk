@@ -7,7 +7,7 @@ from flask import url_for
 
 from b3desk.models import db
 from b3desk.models.roles import Role
-from b3desk.nextcloud import check_nextcloud_connection
+from b3desk.nextcloud import is_nextcloud_available
 
 
 def get_hash(meeting, role: Role, hash_from_string=False):
@@ -99,8 +99,8 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     if bbb.is_running():
         return False
 
-    if user and user.has_nc_credentials:
-        check_nextcloud_connection(user, retry_on_auth_error=True)
+    if user:
+        is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
         db.session.commit()
 
     current_app.logger.info("Request BBB room creation %s %s", meeting.name, meeting.id)

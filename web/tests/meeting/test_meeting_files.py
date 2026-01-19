@@ -48,7 +48,7 @@ def test_nextcloud_authentication_issue(
 def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker):
     """If Nextcloud is marked unavailable, sharing buttons should be disabled."""
     mocker.patch(
-        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
+        "b3desk.endpoints.meeting_files.is_nextcloud_available", return_value=False
     )
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting),
@@ -274,7 +274,7 @@ def test_download_meeting_file_without_webdav_credentials(
     db.session.commit()
 
     mocker.patch(
-        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
+        "b3desk.endpoints.meeting_files.is_nextcloud_available", return_value=False
     )
 
     url = url_for(
@@ -341,7 +341,7 @@ def test_add_nextcloud_file_without_webdav_credentials(
 def test_download_file_for_bbb_without_webdav_credentials(client_app, meeting, mocker):
     """download_file returns error when Nextcloud connection fails."""
     mocker.patch(
-        "b3desk.endpoints.meeting_files.check_nextcloud_connection", return_value=False
+        "b3desk.endpoints.meeting_files.is_nextcloud_available", return_value=False
     )
 
     nc_path = "folder/file.pdf"

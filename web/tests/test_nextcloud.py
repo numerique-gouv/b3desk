@@ -3,7 +3,6 @@ from datetime import date
 from b3desk import cache
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
-from b3desk.nextcloud import check_nextcloud_connection
 from b3desk.nextcloud import credentials_breaker
 from b3desk.nextcloud import is_auth_error
 from b3desk.nextcloud import is_nextcloud_available
@@ -26,7 +25,7 @@ def test_check_connection_success(client_app, user, mocker):
 
     mocker.patch("webdav3.client.Client.list")
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is True
 
@@ -39,7 +38,7 @@ def test_check_connection_missing_credentials(client_app, user, mocker):
     db.session.add(user)
     db.session.commit()
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is False
 
@@ -54,7 +53,7 @@ def test_check_connection_webdav_error(client_app, user, mocker):
 
     mocker.patch("webdav3.client.Client.list", side_effect=WebDavException)
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is False
 
@@ -73,7 +72,7 @@ def test_check_connection_marks_unavailable_on_connection_error(
         "webdav3.client.Client.list", side_effect=NoConnection("nextcloud.test")
     )
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is False
     with app.app_context():
@@ -99,7 +98,7 @@ def test_check_connection_retry_refreshes_credentials(client_app, user, mocker):
 
     update_mock.side_effect = set_credentials
 
-    result = check_nextcloud_connection(user, retry_on_auth_error=True)
+    result = is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
 
     assert result is True
     update_mock.assert_called_once_with(user, force_renew=True)
@@ -113,7 +112,7 @@ def test_check_connection_no_retry_by_default(client_app, user, mocker):
 
     update_mock = mocker.patch("b3desk.nextcloud.update_user_nc_credentials")
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is False
     update_mock.assert_not_called()
@@ -132,7 +131,7 @@ def test_check_connection_no_retry_on_unavailable_error(client_app, user, mocker
     )
     update_mock = mocker.patch("b3desk.nextcloud.update_user_nc_credentials")
 
-    result = check_nextcloud_connection(user, retry_on_auth_error=True)
+    result = is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
 
     assert result is False
     update_mock.assert_not_called()
@@ -188,7 +187,7 @@ def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker)
 
     list_mock = mocker.patch("webdav3.client.Client.list")
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is False
     list_mock.assert_not_called()
@@ -210,7 +209,7 @@ def test_check_connection_marks_user_on_auth_error_after_retry(
     )
     mocker.patch("b3desk.nextcloud.update_user_nc_credentials", return_value=True)
 
-    result = check_nextcloud_connection(user, retry_on_auth_error=True)
+    result = is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
 
     assert result is False
     with app.app_context():
@@ -232,7 +231,7 @@ def test_check_connection_clears_backoff_on_success(app, client_app, user, mocke
 
     user_auth_breaker.clear(user.id)
 
-    result = check_nextcloud_connection(user)
+    result = is_nextcloud_available(user, verify=True)
 
     assert result is True
     with app.app_context():

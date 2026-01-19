@@ -31,7 +31,6 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
-from b3desk.nextcloud import check_nextcloud_connection
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
@@ -56,9 +55,10 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    g.is_nextcloud_available = check_nextcloud_connection(
-        owner, retry_on_auth_error=True
+    g.is_nextcloud_available = is_nextcloud_available(
+        owner, verify=True, retry_on_auth_error=True
     )
+    db.session.commit()
 
     return render_template(
         "meeting/filesform.html",
@@ -120,7 +120,9 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
     # get file from nextcloud WEBDAV and send it
-    if not check_nextcloud_connection(owner, retry_on_auth_error=True):
+    nc_available = is_nextcloud_available(owner, verify=True, retry_on_auth_error=True)
+    db.session.commit()
+    if not nc_available:
         flash(
             _(
                 "Le service de fichiers est temporairement indisponible. "
@@ -422,9 +424,10 @@ def file_picker(user: User, bbb_meeting_id: str):
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
     if BBB(bbb_meeting_id).is_running():
-        nc_available = is_nextcloud_available(user) and check_nextcloud_connection(
-            user, retry_on_auth_error=True
+        nc_available = is_nextcloud_available(
+            user, verify=True, retry_on_auth_error=True
         )
+        db.session.commit()
         return render_template(
             "meeting/file_picker.html",
             bbb_meeting_id=bbb_meeting_id,
