@@ -422,7 +422,7 @@ def file_picker(user: User, bbb_meeting_id: str):
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
     if BBB(bbb_meeting_id).is_running():
-        nc_available = is_nextcloud_available() and check_nextcloud_connection(
+        nc_available = is_nextcloud_available(user) and check_nextcloud_connection(
             user, retry_on_auth_error=True
         )
         return render_template(
@@ -467,7 +467,7 @@ def ncdownload(token, user, ncpath):
     uniqfile = str(uuid.uuid4())
     tmp_name = os.path.join(tmp_download_dir, uniqfile)
 
-    if not check_nextcloud_connection(user, retry_on_auth_error=True):
+    if not is_nextcloud_available(user):
         return {
             "msg": _(
                 "Le service de fichiers est temporairement indisponible. "

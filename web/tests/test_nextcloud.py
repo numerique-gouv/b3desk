@@ -10,7 +10,6 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.nextcloud import is_nextcloud_unavailable_error
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.nextcloud import user_auth_breaker
-from flask import g
 from flask import url_for
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
@@ -305,15 +304,15 @@ def test_update_credentials_clears_backoff_on_success(app, client_app, user, moc
     assert credentials_breaker.is_blocked(user.id) is False
 
 
-def test_is_nextcloud_available_cached_in_g(client_app, user):
-    """is_nextcloud_available returns cached value from g if present."""
-    g.user = user
-    g.is_nextcloud_available = True
+def test_is_nextcloud_available_with_credentials(client_app, user):
+    """is_nextcloud_available returns True when user has valid NC credentials."""
+    user.nc_login = "alice"
+    user.nc_locator = "https://nextcloud.example.com"
+    user.nc_token = "token123"
+    db.session.add(user)
+    db.session.commit()
 
-    assert is_nextcloud_available() is True
-
-    g.is_nextcloud_available = False
-    assert is_nextcloud_available() is False
+    assert is_nextcloud_available(user) is True
 
 
 def test_is_nextcloud_available_no_credentials(client_app, user):
@@ -324,12 +323,7 @@ def test_is_nextcloud_available_no_credentials(client_app, user):
     db.session.add(user)
     db.session.commit()
 
-    g.user = user
-
-    result = is_nextcloud_available()
-
-    assert result is False
-    assert g.is_nextcloud_available is False
+    assert is_nextcloud_available(user) is False
 
 
 def test_is_nextcloud_available_no_locator(client_app, user):
@@ -340,12 +334,7 @@ def test_is_nextcloud_available_no_locator(client_app, user):
     db.session.add(user)
     db.session.commit()
 
-    g.user = user
-
-    result = is_nextcloud_available()
-
-    assert result is False
-    assert g.is_nextcloud_available is False
+    assert is_nextcloud_available(user) is False
 
 
 def test_is_nextcloud_unavailable_error_server_error(client_app):

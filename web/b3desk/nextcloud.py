@@ -73,22 +73,22 @@ credentials_breaker = CircuitBreaker(
 )
 
 
-def is_nextcloud_available():
-    """Check if Nextcloud is available for the current user.
+def is_nextcloud_available(user):
+    """Check if Nextcloud is available for a user.
 
-    Returns True optimistically unless Nextcloud is marked as unavailable in cache.
+    Returns True optimistically unless blocked by circuit breakers.
     No network request is made here; failures are detected during actual operations.
     """
-    if hasattr(g, "is_nextcloud_available"):
-        return g.is_nextcloud_available
-
-    if not g.user or not g.user.has_nc_credentials:
-        g.is_nextcloud_available = False
+    if not user or not user.has_nc_credentials:
         return False
 
-    unavailable_key = f"nc_unavailable:{g.user.nc_locator}"
-    g.is_nextcloud_available = not cache.get(unavailable_key)
-    return g.is_nextcloud_available
+    if nextcloud_breaker.is_blocked(user.nc_locator):
+        return False
+
+    if user_auth_breaker.is_blocked(user.id):
+        return False
+
+    return True
 
 
 def is_nextcloud_unavailable_error(error):
