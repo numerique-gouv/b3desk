@@ -14,14 +14,16 @@ def test_delegated_meetings_visibility_on_welcome_page(
     html = response.body.decode("utf-8")
     assert (
         html.count('class="fr-btn fr-btn--secondary fr-icon-user-setting-line"') == 3
-    )  # nom de boutons "gérer les délégations"
+    )  # nombre de boutons "gérer les délégations"
     assert (
         html.count('class="fr-btn fr-btn--secondary fr-fi-delete-line"') == 3
     )  # nombre de boutons "supprimer"
     assert (
         html.count('class="fr-btn fr-btn--secondary fr-icon-edit-line"') == 4
     )  # nombre de boutons "modifier"
-    assert html.count('class="fr-icon-team-line"') == 1  # nombre d'icône "délégataire"
+    assert (
+        html.count('<i class="fr-icon-user-setting-line"') == 1
+    )  # nombre d'icône "délégataire"
 
 
 def test_add_and_remove_favorite_delegated_meeting(

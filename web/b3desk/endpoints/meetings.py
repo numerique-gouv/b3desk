@@ -34,6 +34,7 @@ from b3desk.models.bbb import BBB
 from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingAccess
+from b3desk.models.meetings import assign_unique_visio_code
 from b3desk.models.meetings import get_meeting_access
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
@@ -202,10 +203,9 @@ def save_meeting():
         if hasattr(meeting, key) and getattr(meeting, key) != form.data[key]
     }
     form.populate_obj(meeting)
-    meeting.visio_code = (
-        meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
-    )
     db.session.add(meeting)
+    if not meeting.visio_code:
+        assign_unique_visio_code(meeting)
     db.session.commit()
     if is_new_meeting:
         current_app.logger.info(
@@ -270,10 +270,6 @@ def end_meeting():
 def create_meeting(meeting: Meeting, user: User):
     """Create the meeting on BBB server."""
     create_bbb_meeting(meeting, g.user)
-    meeting.visio_code = (
-        meeting.visio_code if meeting.visio_code else unique_visio_code_generation()
-    )
-    db.session.add(meeting)
     db.session.commit()
     return redirect(url_for("public.welcome"))
 

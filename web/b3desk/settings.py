@@ -223,6 +223,38 @@ class MainSettings(BaseSettings):
         level = "INFO"
         handlers = ["wsgi"]
 
+    .. code-block:: toml
+        :caption:
+            Exemple de configuration avec les logs BBB dans un fichier dédié,
+            avec DEBUG sur le module BBB uniquement.
+
+        version = 1
+
+        [formatters.default]
+        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+
+        [handlers.wsgi]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/wsgi.log"
+        formatter = "default"
+
+        [handlers.bbb]
+        class = "logging.handlers.WatchedFileHandler"
+        filename = "/var/log/bbb.log"
+        formatter = "default"
+
+        [loggers.bbb]
+        level = "DEBUG"
+        handlers = ["bbb"]
+
+        [loggers.b3desk]
+        level = "INFO"
+        handlers = ["wsgi"]
+
+        [root]
+        level = "INFO"
+        handlers = ["wsgi"]
+
     """
 
     REDIS_URL: str | None = None
@@ -1136,15 +1168,21 @@ class MainSettings(BaseSettings):
     https://docs.bigbluebutton.org/development/api/#create
     """
 
+    BIGBLUEBUTTON_API_CACHE_DURATION: int = 5
+    """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
+    l'API BBB."""
+
+    BIGBLUEBUTTON_REQUEST_TIMEOUT: datetime.timedelta = datetime.timedelta(seconds=2)
+    """BBB request timeout
+
+    Timeout for BBB request expressed in seconds in logs
+    """
+
     MATOMO_URL: str | None = None
     """URL de l’instance de Matomo vers laquelle envoyer des statistiques."""
 
     MATOMO_SITE_ID: str | None = None
     """ID de l’instance B3Desk dans Matomo."""
-
-    BIGBLUEBUTTON_API_CACHE_DURATION: int = 5
-    """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
-    l'API BBB."""
 
     SENTRY_DSN: str | None = None
     """Sentry DSN to catch exceptions."""
@@ -1265,7 +1303,7 @@ class MainSettings(BaseSettings):
     """
 
     CAPTCHA_NUMBER_ATTEMPTS: PositiveInt | None = 5
-    """ Captcha number attemps
+    """Captcha number attemps
 
     Number of attempts to enter the visio-code before submitting a captcha
     """
@@ -1274,4 +1312,10 @@ class MainSettings(BaseSettings):
     """ Maximum meeting delegates
 
     Maximum number of delegates for one meeting
+    """
+
+    CONTACT_LINK: str | None = None
+    """Contact link
+
+    If entered, a 'contact' button wil appear in footer
     """

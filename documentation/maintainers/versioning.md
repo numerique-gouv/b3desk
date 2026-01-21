@@ -65,7 +65,7 @@ git push upstream production --follow-tags
 
 Se rendre sur [la page github de publication de version](https://github.com/numerique-gouv/b3desk/releases/new).
 
-Choisir le tag récemment ajouté, préciser les ticket fermés par la release, indiquer s'il y a de nouvelles migrations, de la configuration à ajouter, publier la version.
+Choisir le tag récemment ajouté, préciser les ticket fermés par la release, indiquer s'il y a de nouvelles migrations (avec le revision ID délivré par alembic), de la configuration à ajouter, publier la version.
 
 ## Mettre `main` à jour
 

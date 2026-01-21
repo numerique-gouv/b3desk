@@ -39,11 +39,11 @@ Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via
 
 #### Installation locale
 Installer localement le projet vous permettra de lancer ruff, ou bien les tests, sans avoir à utiliser de conteneur (Il est dans, tous les cas, **nécessaire** de faire tourner les conteneurs pour s'assurer que le tout reste fonctionnel).
-L'installation locale peut être réalisé avec le Makefile situé à la racine du projet :
+L'installation locale peut être réalisé avec le justfile situé à la racine du projet :
 ```bash
-make install-dev
+just install-dev
 ```
-Utilisez ce Makefile comme référence pour vos commandes shell.
+Utilisez ce justfile comme référence pour vos commandes shell.
 
 #### uv
 L'environnement de développement est géré avec [uv](https://docs.astral.sh/uv/).

@@ -13,14 +13,17 @@ from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import create_unique_pin
+from b3desk.models.meetings import assign_unique_voice_bridge
 from b3desk.models.meetings import delete_old_voiceBridges
+from b3desk.models.meetings import generate_random_pin
 from b3desk.models.meetings import get_all_previous_voiceBridges
-from b3desk.models.meetings import get_all_visio_codes
 from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.meetings import get_meeting_by_visio_code
+from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.meetings import unique_visio_code_generation
+from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
+from flask import url_for
 
 
 @pytest.fixture()
@@ -88,8 +91,7 @@ def test_save_new_meeting(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        res.form["voiceBridge"] = "123456789"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert (
@@ -119,8 +121,7 @@ def test_save_new_meeting(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        assert meeting.voiceBridge == "123456789"
+    assert meeting.voiceBridge == "123456789"
     assert len(meeting.visio_code) == 9
     assert meeting.visio_code.isdigit()
     assert (
@@ -154,8 +155,7 @@ def test_save_existing_meeting_not_running(
     res.form["attendeePW"] = "Motdepasse2"
     res.form["autoStartRecording"] = "on"
     res.form["allowStartStopRecording"] = "on"
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        res.form["voiceBridge"] = "123456789"
+    res.form["voiceBridge"] = "123456789"
 
     res = res.form.submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -183,8 +183,7 @@ def test_save_existing_meeting_not_running(
     assert meeting.record is True
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        assert meeting.voiceBridge == "123456789"
+    assert meeting.voiceBridge == "123456789"
     assert (
         "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
         in caplog.text
@@ -338,7 +337,7 @@ def test_create_no_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -354,11 +353,13 @@ def test_create_no_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
 
@@ -418,8 +419,8 @@ def test_create_with_only_a_default_file(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=True,
     )
+    meeting_file.owner = meeting.owner
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.owner)
@@ -445,7 +446,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -461,11 +462,13 @@ def test_create_with_only_a_default_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
 
@@ -524,8 +527,8 @@ def test_create_with_files(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=False,
     )
+    meeting_file.owner = meeting.owner
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.owner)
@@ -552,7 +555,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -568,11 +571,13 @@ def test_create_with_files(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
+        "voiceBridge": "111111111",
     }
-
-    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        body["voiceBridge"] = "111111111"
 
     assert bbb_params == body
     assert mocked_background_upload.called
@@ -580,14 +585,11 @@ def test_create_with_files(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
     )
 
-    secret_key = client_app.app.config["SECRET_KEY"]
-    filehash = hashlib.sha1(
-        f"{secret_key}-0-{meeting_file.id}-{secret_key}".encode()
-    ).hexdigest()
+    filehash = get_meeting_file_hash(meeting.owner.id, meeting_file.nc_path)
 
     xml_content = mocked_background_upload.call_args.args[1]
     assert xml_content.startswith(
-        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/1//"
+        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/{filehash}/{meeting.owner.id}/"
     )
     assert xml_content.endswith(
         f"{tmp_path.name}/foobar.jpg' filename='file_title' /> </module></modules>"
@@ -684,6 +686,8 @@ def test_create_quick_meeting(
         "voiceBridge": mock.ANY,
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
+        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
+        "presentationUploadExternalUrl": mock.ANY,
     }
 
 
@@ -982,20 +986,17 @@ def test_generate_existing_pin(
     mock_meeting_is_not_running,
     mocker,
 ):
-    """Test that PIN generation increments when suggested PIN already exists."""
+    """Test that PIN generation retries when suggested PIN already exists."""
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
-    mocker.patch("b3desk.models.meetings.random.randint", return_value=111111111)
+    # Mock returns existing PINs first, then a free one
+    # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (shadow)
+    mocker.patch(
+        "b3desk.models.meetings.random.randint",
+        side_effect=[111111111, 111111112, 111111113, 222222222],
+    )
     res = client_app.get("/meeting/new")
-    res.mustcontain("111111114")
-
-    res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "999999999"
-    res = res.form.submit()
-
-    mocker.patch("b3desk.models.meetings.random.randint", return_value=999999999)
-    res = client_app.get("/meeting/new")
-    res.mustcontain("100000000")
+    res.mustcontain("222222222")
 
 
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
@@ -1102,13 +1103,12 @@ def test_get_forbidden_pins(
     )
 
 
-def test_create_unique_pin():
-    """Test that unique PIN generation creates valid 9-digit codes."""
-    assert create_unique_pin([]).isdigit()
-    assert len(create_unique_pin([])) == 9
-    assert 100000000 <= int(create_unique_pin([])) <= 999999999
-    assert create_unique_pin(["499999999"], pin=499999999) == "500000000"
-    assert create_unique_pin(["999999998", "999999999"], pin=999999998) == "100000000"
+def test_generate_random_pin():
+    """Test that random PIN generation creates valid 9-digit codes."""
+    pin = generate_random_pin()
+    assert pin.isdigit()
+    assert len(pin) == 9
+    assert 100000000 <= int(pin) <= 999999999
 
 
 def test_unique_visio_code_generation(
@@ -1123,18 +1123,43 @@ def test_unique_visio_code_generation(
         assert visio_code.isdigit()
 
 
-def test_get_all_visio_codes(
+def test_unique_visio_code_generation_with_collision(client_app, mocker):
+    """Test that visio code generation retries on collision."""
+    mocker.patch(
+        "b3desk.models.meetings.visio_code_exists",
+        side_effect=[True, True, False],
+    )
+    code = unique_visio_code_generation()
+    assert len(code) == 9
+    assert code.isdigit()
+
+
+def test_visio_code_exists(
     meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
 ):
-    """Test that all visio codes are retrieved correctly."""
-    assert set(get_all_visio_codes()) == {
-        "911111111",
-        "911111112",
-        "911111113",
-        "511111111",
-        "511111112",
-        "511111113",
-    }
+    """Test that visio_code_exists correctly checks existing codes."""
+    assert visio_code_exists("911111111")
+    assert visio_code_exists("911111112")
+    assert visio_code_exists("511111111")
+    assert not visio_code_exists("000000000")
+
+
+def test_assign_unique_voice_bridge(client_app, user):
+    """Test that assign_unique_voice_bridge assigns a valid unique voice bridge."""
+    meeting = Meeting(
+        owner=user,
+        name="test meeting",
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        visio_code="999999999",
+    )
+    db.session.add(meeting)
+    assign_unique_voice_bridge(meeting)
+    db.session.commit()
+
+    assert meeting.voiceBridge is not None
+    assert len(meeting.voiceBridge) == 9
+    assert meeting.voiceBridge.isdigit()
 
 
 def test_get_meeting_by_visio_code(meeting):
@@ -1146,8 +1171,9 @@ def test_get_meeting_by_visio_code(meeting):
 def test_get_available_visio_code(client_app, authenticated_user):
     """Test that available visio code endpoint returns unique code."""
     response = client_app.get("/meeting/available-visio-code")
-    assert response.json.get("available_visio_code")
-    assert response.json.get("available_visio_code") not in get_all_visio_codes()
+    available_code = response.json.get("available_visio_code")
+    assert available_code
+    assert not visio_code_exists(available_code)
 
 
 def test_get_available_visio_code_no_user(client_app):

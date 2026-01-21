@@ -19,6 +19,7 @@
         {% if config.get("ENABLE_LASUITENUMERIQUE") %}
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lasuite/homepage-gaufre.css') }}">
         {% endif %}
+        {% block css %}{% endblock %}
     </head>
 
     <body>

@@ -15,7 +15,7 @@ Son usage réside dans le fait que toute cette configuration est enregistrée et
 
 ## Documentation
 
-La documentation pour les mainteneurs et les développeurs est déployée sur [b3desk.readthedocs.io](https://b3desk.readthedocs.io), et peut être construite localement avec `make doc`.
+La documentation pour les mainteneurs et les développeurs est déployée sur [b3desk.readthedocs.io](https://b3desk.readthedocs.io), et peut être construite localement avec `just doc`.
 
 
 ## Développement et contributions

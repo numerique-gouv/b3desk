@@ -223,6 +223,7 @@ inputs.forEach((input) => {
                 focusAtEnd(pastedInput);
             }
         })
+        updateSumbitButtonStatus(event, input);
     });
 })
 

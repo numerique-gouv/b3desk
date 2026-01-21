@@ -7,6 +7,7 @@ from flask import url_for
 
 from b3desk.models import db
 from b3desk.models.roles import Role
+from b3desk.nextcloud import is_nextcloud_available
 
 
 def get_hash(meeting, role: Role, hash_from_string=False):
@@ -93,20 +94,21 @@ def get_signin_url(meeting, meeting_role: Role):
 def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
-    from b3desk.models.meetings import pin_generation
 
     bbb = BBB(meeting.meetingID)
     if bbb.is_running():
         return False
 
+    if user:
+        is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
+        db.session.commit()
+
     current_app.logger.info("Request BBB room creation %s %s", meeting.name, meeting.id)
-    meeting.voiceBridge = (
-        pin_generation() if not meeting.voiceBridge else meeting.voiceBridge
-    )
 
     moderator_only_message = render_template(
         "meeting/signin_links.html",
         moderator_message=meeting.moderatorOnlyMessage,
+        visio_code=meeting.visio_code,
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
         ],
@@ -144,7 +146,9 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         else None,
         guest_policy=meeting.guestPolicy,
         presentation_upload_external_url=url_for(
-            "meeting_files.file_picker", meeting=meeting, _external=True
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
         ),
         presentation_upload_external_description=current_app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -164,7 +168,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         return False
 
     if meeting.files:
-        bbb.send_meeting_files(meeting.files, meeting=meeting)
+        bbb.send_meeting_files(meeting.files)
 
     if (
         current_app.config["ENABLE_PIN_MANAGEMENT"]
@@ -223,6 +227,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     )
     moderator_only_message = render_template(
         "meeting/signin_links.html",
+        visio_code=None,
         moderator_message=current_app.config["QUICK_MEETING_MODERATOR_WELCOME_MESSAGE"],
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
@@ -249,6 +254,12 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
         meta_academy=meta_academy,
         analytics_callback_url=current_app.config[
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
+        ],
+        presentation_upload_external_url=url_for(
+            "meeting_files.file_picker", bbb_meeting_id=meeting_id, _external=True
+        ),
+        presentation_upload_external_description=current_app.config[
+            "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
     )
 

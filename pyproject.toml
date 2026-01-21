@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.5.5dev"
+version = "1.5.6dev"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }
@@ -160,3 +160,15 @@ partial_branches = [
     "if app.debug",
     "if app.testing",
 ]
+
+[[tool.babel.mappings]]
+method = "python"
+pattern = "**.py"
+
+[[tool.babel.mappings]]
+method = "jinja2"
+pattern = "**/templates/**.html"
+
+[[tool.babel.mappings]]
+method = "jinja2"
+pattern = "**/templates/**.txt"

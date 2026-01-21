@@ -11,7 +11,7 @@
     <div class="recording-list">
         {% if meeting.bbb.is_running() %}
             <p>
-                {% trans this_meeting=this_meeting.capitalize %}{{ this_meeting }} est toujours en cours{% endtrans %}.
+                {% trans this_meeting=this_meeting|capitalize %}{{ this_meeting }} est toujours en cours{% endtrans %}.
                 {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin {{ of_the_meeting }}{% endtrans %}.
             </p>
         {% endif %}

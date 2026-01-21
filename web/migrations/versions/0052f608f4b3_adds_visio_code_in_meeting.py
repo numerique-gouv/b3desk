@@ -5,9 +5,10 @@ Revises: 2e95af7b75cf
 Create Date: 2025-06-10 12:41:24.218186
 """
 
+import random
+
 import sqlalchemy as sa
 from alembic import op
-from b3desk.models.meetings import unique_visio_code_generation
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 from sqlalchemy.sql import update
@@ -27,16 +28,13 @@ def upgrade():
     meeting = sa.table(
         "meeting", sa.column("id", sa.Integer), sa.column("visio_code", sa.String)
     )
-    generated_visio_code = []
+    count = session.execute(select(sa.func.count()).select_from(meeting)).scalar()
+    codes = iter(str(c) for c in random.sample(range(100000000, 1000000000), count))
     for (meeting_id,) in session.execute(select(meeting.c.id)):
-        visio_code = unique_visio_code_generation(
-            forbidden_visio_code=generated_visio_code
-        )
-        generated_visio_code.append(visio_code)
         session.execute(
             update(meeting)
             .where(meeting.c.id == meeting_id)
-            .values(visio_code=visio_code)
+            .values(visio_code=next(codes))
         )
     session.commit()
     with op.batch_alter_table("meeting", schema=None) as batch_op:
