@@ -264,15 +264,15 @@ msgstr ""
 msgid "un nouveau séminaire"
 msgstr ""
 
-#: web/b3desk/settings.py:1010
+#: web/b3desk/settings.py:1034
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:1013
+#: web/b3desk/settings.py:1037
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:1030
+#: web/b3desk/settings.py:1054
 #, python-format
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, "
