@@ -13,12 +13,12 @@ lazy_gettext("Texte à traduire")
 
 Vous devez ensuite extraire ces messages à traduire pour qu'ils soient ajoutés au fichier `web/translations/messages.pot` avec :
 ```shell
-make translation-extract
+just translation-extract
 ```
 
 Vous pouvez ensuite mettre à jour les "catalogues" des différentes langues avec :
 ```shell
-make translation-update
+just translation-update
 ```
 Cette commande va mettre à jour les catalogues existants avec de nouveaux messages (sans écraser ceux qui ont déjà été traduits) que vous pouvez alors traduire dans la langue voulue.
 
@@ -35,7 +35,7 @@ msgstr "Invite someone to this meeting."
 
 Une fois les traductions réalisées, vous devez compiler le catalogue pour qu'elle soient visible pour l'utilisateur avec :
 ```shell
-make translation-compile
+just translation-compile
 ```
 Il faut ensuite reconstruire le conteneur web, par exemple avec :
 ```shell

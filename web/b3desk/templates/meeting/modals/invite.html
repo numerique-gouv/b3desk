@@ -37,11 +37,11 @@
                                     <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-moderator">{% trans %}Le lien modérateur{% endtrans %}</button>
                                 </h3>
                                 <div class="fr-collapse" id="accordion-{{meeting.id}}-moderator">
-                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.moderator) }}</code>
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.moderator_url }}</code>
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-copy', '{{ meeting.get_signin_url(Role.moderator) }}');" title="{% trans %}Copier le lien modérateur dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-copy', '{{ meeting.moderator_url }}');" title="{% trans %}Copier le lien modérateur dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -74,11 +74,11 @@
                                     <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-attendee">{% trans %}Le lien participant{% endtrans %}</button>
                                 </h3>
                                 <div class="fr-collapse" id="accordion-{{meeting.id}}-attendee">
-                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.attendee) }}</code>
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.attendee_url }}</code>
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-attendee-copy', '{{ meeting.get_signin_url(Role.attendee) }}');" title="{% trans %}Copier le lien participant dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-attendee-copy', '{{ meeting.attendee_url }}');" title="{% trans %}Copier le lien participant dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -90,11 +90,11 @@
                                     <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-authenticated">{% trans %}Le lien authentifié{% endtrans %} {% if config.OIDC_ATTENDEE_SERVICE_NAME %}{% trans service_name=config.OIDC_ATTENDEE_SERVICE_NAME %}via {{ service_name }}{% endtrans %}{% endif %}</button>
                                 </h3>
                                 <div class="fr-collapse" id="accordion-{{meeting.id}}-authenticated">
-                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.get_signin_url(Role.authenticated) }}</code>
+                                    <code id="meeting-{{ meeting.id }}-moderator-url">{{ meeting.authenticated_url }}</code>
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-authenticated-attendee-copy', '{{ meeting.get_signin_url(Role.authenticated) }}');" title="{% trans %}Copier le lien participant authentifié dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-authenticated-attendee-copy', '{{ meeting.authenticated_url }}');" title="{% trans %}Copier le lien participant authentifié dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>

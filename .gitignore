@@ -1,6 +1,6 @@
 *.pyc
 __pycache__/
-
+prof
 
 postgres/data/*
 !postgres/data/.keep
@@ -17,6 +17,8 @@ web/instance/.env
 .pytest_cache/
 .coverage
 htmlcov/
+coverage.xml
+diff-coverage.html
 
 dist/
 build/

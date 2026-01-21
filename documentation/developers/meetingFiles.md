@@ -83,7 +83,7 @@ Il se déroule alors la chose suivante :
 Une fois le salon lancé et le cours en cours ( eh ouais ), il est encore possible d'associer des fichiers depuis nextcloud.
 Les infos pour cela sont passées lors de la création du salon, via les paramètres `presentationUploadExternalUrl` et `presentationUploadExternalDescription`
 ([doc de référence](https://docs.bigbluebutton.org/development/api#upload-slides-from-external-application-to-a-live-bigbluebutton-session)).
-L'URL fournie en l'occurence pour B3desk est `/meeting/files/<meeting_id>/insertDocuments`.
+L'URL fournie en l'occurence pour B3desk est `/meeting/files/<meeting_id>/file-picker-callback`.
 La description fournie est modifiable via la var d'env `EXTERNAL_UPLOAD_DESCRIPTION` dans le fichier `web.env`.
 
 **N.B.** ces fichiers ne seront pas enregistrés dans B3desk.

@@ -1,0 +1,32 @@
+{% if is_nextcloud_available %}
+    <div>
+        <div id="ncfilepicker" class="hidden">
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    </div>
+
+    <script>
+        const nc_locator = "{{ g.user.nc_locator }}";
+        const nc_login = "{{ g.user.nc_login }}";
+        const nc_token = "{{ g.user.nc_token }}";
+        const insert_documents_url = "{{ url_for("meeting_files.file_picker_callback", bbb_meeting_id=bbb_meeting_id) }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/file_picker.js')}}"></script>
+{% else %}
+    <!doctype html>
+    <html lang="fr">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.min.css') }}">
+        </head>
+        <body>
+            <div class="fr-container fr-mt-4w">
+                <div class="fr-alert fr-alert--error">
+                    <h3 class="fr-alert__title">{% trans %}Service temporairement indisponible{% endtrans %}</h3>
+                    <p>{% trans %}Un problème technique empêche l'accès au service de fichiers. Veuillez réessayer dans quelques minutes.{% endtrans %}</p>
+                </div>
+            </div>
+        </body>
+    </html>
+{% endif %}

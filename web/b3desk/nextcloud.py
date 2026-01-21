@@ -5,8 +5,152 @@ from urllib.parse import urlunparse
 
 import requests
 from flask import current_app
+from flask import g
 from webdav3.client import Client as webdavClient
+from webdav3.exceptions import ConnectionException
+from webdav3.exceptions import NoConnection
+from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
+
+from b3desk import cache
+
+NEXTCLOUD_BACKOFF_INITIAL = 5
+NEXTCLOUD_BACKOFF_MULTIPLIER = 2
+NEXTCLOUD_BACKOFF_MAX = 300
+NEXTCLOUD_REQUEST_TIMEOUT = 10
+
+
+class CircuitBreaker:
+    """Circuit breaker with exponential backoff."""
+
+    def __init__(self, key_prefix, log_message):
+        self.key_prefix = key_prefix
+        self.log_message = log_message
+
+    def is_blocked(self, identifier):
+        expires_at = cache.get(f"{self.key_prefix}:{identifier}")
+        if expires_at is None:
+            return False
+
+        remaining = (expires_at - datetime.now()).total_seconds()
+        current_app.logger.debug(
+            "%s: %s blocked, retry in %.0fs", self.key_prefix, identifier, remaining
+        )
+        return True
+
+    def mark_failed(self, identifier):
+        key = f"{self.key_prefix}:{identifier}"
+        backoff_key = f"{self.key_prefix}_backoff:{identifier}"
+
+        current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
+        expires_at = datetime.now() + timedelta(seconds=current_backoff)
+        cache.set(key, expires_at, timeout=current_backoff)
+
+        next_backoff = min(
+            current_backoff * NEXTCLOUD_BACKOFF_MULTIPLIER, NEXTCLOUD_BACKOFF_MAX
+        )
+        cache.set(backoff_key, next_backoff, timeout=NEXTCLOUD_BACKOFF_MAX * 2)
+
+        current_app.logger.info(self.log_message, identifier, current_backoff)
+
+    def clear(self, identifier):
+        cache.delete(f"{self.key_prefix}:{identifier}")
+        cache.delete(f"{self.key_prefix}_backoff:{identifier}")
+
+
+nextcloud_breaker = CircuitBreaker(
+    "nc_unavailable",
+    "Nextcloud %s marked unavailable, next retry in %ds",
+)
+user_auth_breaker = CircuitBreaker(
+    "nc_auth_failed",
+    "User %s marked as auth failed for Nextcloud, next retry in %ds",
+)
+credentials_breaker = CircuitBreaker(
+    "nc_credentials_failed",
+    "User %s credentials fetch failed, next retry in %ds",
+)
+
+
+def is_nextcloud_available(user, verify=False, retry_on_auth_error=False):
+    """Check if Nextcloud is available for a user.
+
+    If verify=False (default), only checks credentials and circuit breakers.
+    If verify=True, performs a WebDAV connection test.
+    If retry_on_auth_error=True and verify=True, renews credentials on 401/403.
+    """
+    if user.nc_locator and nextcloud_breaker.is_blocked(user.nc_locator):
+        return False
+
+    if user_auth_breaker.is_blocked(user.id):
+        return False
+
+    if not verify:
+        return user.has_nc_credentials
+
+    def handle_error(should_retry=False, auth_error=False):
+        if should_retry and update_user_nc_credentials(user, force_renew=True):
+            return is_nextcloud_available(user, verify=True, retry_on_auth_error=False)
+
+        if auth_error:
+            user_auth_breaker.mark_failed(user.id)
+
+        return False
+
+    if (client := create_webdav_client(user)) is None:
+        return handle_error(should_retry=retry_on_auth_error)
+
+    try:
+        client.list()
+    except WebDavException as exception:
+        current_app.logger.warning("WebDAV error: %s", exception)
+
+        if is_nextcloud_unavailable_error(exception):
+            nextcloud_breaker.mark_failed(user.nc_locator)
+
+        auth_error = is_auth_error(exception)
+        return handle_error(
+            should_retry=retry_on_auth_error and auth_error,
+            auth_error=auth_error,
+        )
+
+    user_auth_breaker.clear(user.id)
+    return True
+
+
+def is_nextcloud_unavailable_error(error):
+    """Check if a WebDAV error indicates Nextcloud is unavailable."""
+    if isinstance(error, (NoConnection, ConnectionException)):
+        return True
+
+    if isinstance(error, ResponseErrorCode) and error.code >= 500:
+        return True
+
+    return False
+
+
+def is_auth_error(error):
+    """Check if a WebDAV error indicates authentication failure."""
+    return isinstance(error, ResponseErrorCode) and error.code in (401, 403)
+
+
+def create_webdav_client(user) -> webdavClient | None:
+    """Create a WebDAV client configured for a user's Nextcloud account.
+
+    Also stores nc_locator in g for error handler access.
+    """
+    if not user.nc_login or not user.nc_locator or not user.nc_token:
+        return None
+
+    g.nc_locator = user.nc_locator
+
+    options = {
+        "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
+        "webdav_hostname": user.nc_locator,
+        "webdav_verbose": True,
+        "webdav_token": user.nc_token,
+    }
+    return webdavClient(options)
 
 
 def make_nextcloud_credentials_request(url, payload, headers):
@@ -15,24 +159,11 @@ def make_nextcloud_credentials_request(url, payload, headers):
     Handles URL validation and HTTPS enforcement based on configuration.
     """
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(
+            url, json=payload, headers=headers, timeout=NEXTCLOUD_REQUEST_TIMEOUT
+        )
         data = response.json()
-        if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
-            valid_nclocator = (
-                f"//{data['nclocator']}"
-                if not (
-                    data["nclocator"].startswith("//")
-                    or data["nclocator"].startswith("http://")
-                    or data["nclocator"].startswith("https://")
-                )
-                else data["nclocator"]
-            )
-            parsed_url = urlparse(valid_nclocator)
-            if parsed_url.scheme != "https":
-                data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
-        return data
-
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException as e:  # pragma: no cover
         current_app.logger.error(
             "Unable to contact %s with payload %s and header %s, %s",
             url,
@@ -42,14 +173,25 @@ def make_nextcloud_credentials_request(url, payload, headers):
         )
         return None
 
+    if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
+        valid_nclocator = (
+            f"//{data['nclocator']}"
+            if not (
+                data["nclocator"].startswith("//")
+                or data["nclocator"].startswith("http://")
+                or data["nclocator"].startswith("https://")
+            )
+            else data["nclocator"]
+        )
+        parsed_url = urlparse(valid_nclocator)
+        if parsed_url.scheme != "https":
+            data["nclocator"] = urlunparse(parsed_url._replace(scheme="https"))
+
+    return data
+
 
 class MissingToken(Exception):
-    """Exception raised if unable to get token.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if unable to get token."""
 
     def __init__(self, message="No token given for the B3Desk instance"):
         self.message = message
@@ -57,12 +199,7 @@ class MissingToken(Exception):
 
 
 class TooManyUsers(Exception):
-    """Exception raised if email returns more than one user.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if email returns more than one user."""
 
     def __init__(self, message="More than one user is using this email"):
         self.message = message
@@ -70,12 +207,7 @@ class TooManyUsers(Exception):
 
 
 class NoUserFound(Exception):
-    """Exception raised if email returns no user.
-
-    Attributes:
-        message -- explanation of the error
-
-    """
+    """Exception raised if email returns no user."""
 
     def __init__(self, message="No user with this email was found"):
         self.message = message
@@ -84,6 +216,7 @@ class NoUserFound(Exception):
 
 def get_secondary_identity_provider_token():
     """Retrieve OAuth access token from secondary identity provider using client credentials."""
+    # TODO: replace this with authlib
     return requests.post(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/protocol/openid-connect/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -92,6 +225,7 @@ def get_secondary_identity_provider_token():
             "client_id": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_ID']}",
             "client_secret": f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET']}",
         },
+        timeout=NEXTCLOUD_REQUEST_TIMEOUT,
     )
 
 
@@ -104,6 +238,7 @@ def get_secondary_identity_provider_users_from_email(email, access_token):
             "cache-control": "no-cache",
         },
         params={"email": email},
+        timeout=NEXTCLOUD_REQUEST_TIMEOUT,
     )
 
 
@@ -242,7 +377,7 @@ def update_user_nc_credentials(user, force_renew=False):
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
-        current_app.logger.info(
+        current_app.logger.debug(
             "Nextcloud login for user %s not to be refreshed for %s",
             user,
             timedelta(days=current_app.config["NC_LOGIN_TIMEDELTA_DAYS"])
@@ -250,55 +385,27 @@ def update_user_nc_credentials(user, force_renew=False):
         )
         return False
 
-    data = get_user_nc_credentials(user)
-    if data["nclogin"] is None or data["nclocator"] is None or data["nctoken"] is None:
-        current_app.logger.info(
-            "No new Nextcloud enroll needed for user %s with those data %s", user, data
-        )
-        nc_last_auto_enroll = None
-    else:
-        current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
-        nc_last_auto_enroll = datetime.now()
+    if credentials_breaker.is_blocked(user.id):
+        return False
 
+    data = get_user_nc_credentials(user)
+    if (
+        not data
+        or data.get("error")
+        or data["nclogin"] is None
+        or data["nclocator"] is None
+        or data["nctoken"] is None
+    ):
+        current_app.logger.info(
+            "Could not retrieve Nextcloud credentials for user %s: %s", user, data
+        )
+        credentials_breaker.mark_failed(user.id)
+        return False
+
+    credentials_breaker.clear(user.id)
+    current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
     user.nc_locator = data["nclocator"]
     user.nc_token = data["nctoken"]
     user.nc_login = data["nclogin"]
-    user.nc_last_auto_enroll = nc_last_auto_enroll
+    user.nc_last_auto_enroll = datetime.now()
     return True
-
-
-def nextcloud_healthcheck(user):
-    """Perform a simple WebDAV operation to check the server connection.
-
-    On errors, attempt to renew the credentials and perform one single retry.
-    """
-
-    # we test webdav connection here, with a simple 'list' command
-    def _healthcheck():
-        options = {
-            "webdav_root": f"/remote.php/dav/files/{user.nc_login}/",
-            "webdav_hostname": user.nc_locator,
-            "webdav_verbose": True,
-            "webdav_token": user.nc_token,
-        }
-        try:
-            client = webdavClient(options)
-            client.list()
-        except WebDavException as exception:
-            current_app.logger.warning("WebDAV error: %s", exception)
-            return False
-        return True
-
-    if _healthcheck():
-        return True
-
-    update_user_nc_credentials(user, force_renew=True)
-
-    if _healthcheck():
-        return True
-
-    current_app.logger.error(
-        f"Too many WedDAV errors. Disabling nextcloud credentials for user {user.id} and Nextcloud login {user.nc_login}"
-    )
-    user.disable_nextcloud()
-    return False

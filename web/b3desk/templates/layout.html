@@ -19,12 +19,13 @@
         {% if config.get("ENABLE_LASUITENUMERIQUE") %}
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lasuite/homepage-gaufre.css') }}">
         {% endif %}
+        {% block css %}{% endblock %}
     </head>
 
     <body>
         <div id="js-modal-page">
             {% block header %}
-                {% if config.get("ENABLE_LASUITENUMERIQUE") and not user %}
+                {% if config.get("ENABLE_LASUITENUMERIQUE") and not g.user %}
                     {% include 'header-lasuite.html' %}
                 {% else %}
                     {% include 'header.html' %}

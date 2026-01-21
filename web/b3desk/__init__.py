@@ -27,10 +27,11 @@ from jinja2 import StrictUndefined
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 
+from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.5.4"
+__version__ = "1.5.5"
 
 LANGUAGES = ["en", "fr"]
 
@@ -42,6 +43,8 @@ migrate = Migrate()
 
 
 class BigBlueButtonUnavailable(Exception):
+    """BBB server is unreachable (network error, timeout, invalid response)."""
+
     pass
 
 
@@ -174,9 +177,9 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
-        if request.args.get("lang"):
+        if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
-        return session.get("lang", "fr")
+        return session.get("lang") if session.get("lang") in LANGUAGES else "fr"
 
     babel.init_app(app, locale_selector=locale_selector)
 
@@ -202,26 +205,12 @@ def setup_database(app):
 def setup_jinja(app):
     """Configure Jinja2 template engine with global context variables."""
     from b3desk.models.roles import Role
-    from b3desk.session import get_current_user
-    from b3desk.session import has_user_session
 
     if app.debug or app.testing:
         app.jinja_env.undefined = StrictUndefined
 
     @app.context_processor
     def global_processor():
-        if has_user_session():
-            user = get_current_user()
-            session_dict = {
-                "user": user,
-                "fullname": user.fullname,
-            }
-        else:
-            session_dict = {
-                "user": None,
-                "fullname": "",
-            }
-
         return {
             "debug": app.debug,
             "config": app.config,
@@ -233,7 +222,6 @@ def setup_jinja(app):
             "LANGUAGES": LANGUAGES,
             "Role": Role,
             **app.config["WORDINGS"],
-            **session_dict,
         }
 
 
@@ -241,18 +229,30 @@ def setup_flask(app):
     """Register custom URL converters for models and enums."""
     with app.app_context():
         from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import MeetingFiles
         from b3desk.models.roles import Role
         from b3desk.models.users import User
 
-        for model in (Meeting, User):
+        for model in (Meeting, User, MeetingFiles):
             app.url_map.converters[model.__name__.lower()] = model_converter(model)
 
         for enum in (Role,):
             app.url_map.converters[enum.__name__.lower()] = enum_converter(enum)
 
+        app.url_map.converters["signed"] = SignedConverter
+
 
 def setup_error_pages(app):
     """Register HTTP error handlers for common error codes."""
+    from flask import flash
+    from flask import g
+    from flask import jsonify
+    from flask import redirect
+    from flask_babel import lazy_gettext as _
+    from webdav3.exceptions import WebDavException
+
+    from b3desk.nextcloud import is_nextcloud_unavailable_error
+    from b3desk.nextcloud import nextcloud_breaker
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -274,6 +274,29 @@ def setup_error_pages(app):
     def bigbluebutton_unavailable_error(error):
         return render_template("errors/big-blue-button-error.html", error=error)
 
+    @app.errorhandler(WebDavException)
+    def webdav_error(error):
+        app.logger.warning("WebDAV error: %s", error)
+
+        if is_nextcloud_unavailable_error(error):
+            nextcloud_breaker.mark_failed(g.nc_locator)
+
+        wants_html = (
+            request.accept_mimetypes.best_match(["application/json", "text/html"])
+            == "text/html"
+        )
+
+        error_msg = _(
+            "Le service de fichiers est temporairement indisponible. "
+            "Veuillez réessayer dans quelques minutes."
+        )
+
+        if wants_html:
+            flash(error_msg, "error")
+            return redirect(url_for("public.welcome"))
+
+        return jsonify(status=500, msg=error_msg)
+
 
 def setup_endpoints(app):
     """Import and register all application blueprints."""
@@ -293,6 +316,29 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+
+
+def setup_user_session(app):
+    """Initialize g.user on each request based on authentication status."""
+    from flask import g
+    from flask import session
+    from flask_pyoidc.user_session import UserSession
+
+    from b3desk.models.users import get_or_create_user
+    from b3desk.session import has_user_session
+
+    @app.before_request
+    def load_user():
+        g.user = None
+        if not has_user_session():
+            return
+
+        try:
+            user_session = UserSession(session)
+            info = user_session.userinfo
+            g.user = get_or_create_user(info)
+        except (KeyError, TypeError):
+            return
 
 
 def setup_oidc(app):
@@ -363,6 +409,7 @@ def create_app(test_config=None):
         setup_error_pages(app)
         setup_endpoints(app)
         setup_oidc(app)
+        setup_user_session(app)
     except Exception as exc:  # pragma: no cover
         if sentry_sdk:
             sentry_sdk.capture_exception(exc)

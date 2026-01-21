@@ -1,5 +1,7 @@
 {{ moderator_message }}<br />
-
+{% if visio_code %}
+    Code de connexion : {{ visio_code }}<br />
+{% endif %}
 {{ moderator_link_introduction }} : <a href="{{ moderator_signin_url }}" target="_blank">{{ moderator_signin_url }}</a><br />
 
 {{ attendee_link_introduction }} : <a href="{{ attendee_signin_url }}" target="_blank">{{ attendee_signin_url }}</a>
