@@ -8,7 +8,6 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import hashlib
 import random
 from datetime import datetime
 from datetime import timedelta
@@ -16,6 +15,7 @@ from datetime import timedelta
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
+from itsdangerous import URLSafeSerializer
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import StringEncryptedType
@@ -39,18 +39,22 @@ DATA_RETENTION = timedelta(days=365)
 PASSWORD_HASH_LENGTH = 16
 
 
-def get_meeting_file_hash(meeting_file_id, isexternal):
-    return hashlib.sha1(
-        f"{current_app.config['SECRET_KEY']}-{1 if isexternal else 0}-{meeting_file_id}-{current_app.config['SECRET_KEY']}".encode()
-    ).hexdigest()
+def get_meeting_file_hash(*args):
+    serializer = URLSafeSerializer(
+        current_app.config["SECRET_KEY"], salt="meeting-file"
+    )
+    return serializer.dumps(args)
 
 
 class BaseMeetingFiles:
-    def __init__(self, id=None, title=None, nc_path=None, meeting_id=None, **kwargs):
+    def __init__(
+        self, id=None, title=None, nc_path=None, meeting_id=None, owner=None, **kwargs
+    ):
         self.id = id
         self.title = title
         self.nc_path = nc_path
         self.meeting_id = meeting_id
+        self.owner = owner
         super().__init__(**kwargs)
 
 
@@ -60,11 +64,12 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     url = db.Column(db.Unicode(4096))
     nc_path = db.Column(db.Unicode(4096))
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-    is_default = db.Column(db.Boolean, default=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
 
     meeting = db.relationship("Meeting", back_populates="files")
+    owner = db.relationship("User", foreign_keys=[owner_id])
 
     @property
     def short_title(self):
@@ -126,21 +131,6 @@ class Meeting(db.Model):
         if not self._bbb:
             self._bbb = BBB(self.meetingID)
         return self._bbb
-
-    @property
-    def default_file(self):
-        """Return the default file for this meeting, if any."""
-        for mfile in self.files:
-            if mfile.is_default:
-                return mfile
-        return None
-
-    @property
-    def non_default_files(self):
-        """Return all non-default files for this meeting."""
-        return [
-            meeting_file for meeting_file in self.files if not meeting_file.is_default
-        ]
 
     @property
     def meetingID(self):

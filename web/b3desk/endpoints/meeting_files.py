@@ -8,11 +8,10 @@ import filetype
 import requests
 from flask import Blueprint
 from flask import abort
+from flask import after_this_request
 from flask import current_app
 from flask import flash
 from flask import g
-from flask import jsonify
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -33,12 +32,14 @@ from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
-from b3desk.nextcloud import nextcloud_healthcheck
+from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
 from ..session import meeting_owner_needed
+from ..session import user_needed
 
+REQUEST_TIMEOUT = 10
 bp = Blueprint("meeting_files", __name__)
 
 
@@ -54,8 +55,10 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    if owner.has_nc_credentials:
-        nextcloud_healthcheck(owner)
+    g.is_nextcloud_available = is_nextcloud_available(
+        owner, verify=True, retry_on_auth_error=True
+    )
+    db.session.commit()
 
     return render_template(
         "meeting/filesform.html",
@@ -69,26 +72,19 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @auth.oidc_auth("default")
 @meeting_owner_needed
 def add_meeting_files(meeting: Meeting, owner: User):
-    """Add a file to a meeting from Nextcloud, URL, or dropzone upload."""
+    """Add a file to a meeting from Nextcloud, URL, or file upload."""
     data = request.get_json()
-    is_default = False
-    if len(meeting.files) == 0:
-        is_default = True
 
     if data["from"] == "nextcloud":
-        return add_meeting_file_nextcloud(data["value"], meeting.id, is_default)
+        return add_meeting_file_nextcloud(data["value"], meeting.id)
 
     if data["from"] == "URL":
-        return add_meeting_file_URL(data["value"], meeting.id, is_default)
+        return add_meeting_file_URL(data["value"], meeting.id)
 
-    # This is called by the JS after uploading a file on the 'add_dropzone_files'
-    # TODO: do everything in one single request?
-    if data["from"] == "dropzone":
-        return add_meeting_file_dropzone(
-            secure_filename(data["value"]), meeting.id, is_default
-        )
+    if data["from"] == "upload":
+        return add_meeting_file_from_upload(secure_filename(data["value"]), meeting.id)
 
-    return jsonify("no file provided")
+    return {"msg": "no file provided"}, 400
 
 
 @bp.route("/meeting/files/<meeting:meeting>/")
@@ -98,9 +94,9 @@ def add_meeting_files(meeting: Meeting, owner: User):
 @meeting_owner_needed
 def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
     """Download a meeting file from URL or Nextcloud."""
-    TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
-    Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
-    tmp_name = f"{current_app.config['TMP_DOWNLOAD_DIR']}{secrets.token_urlsafe(32)}"
+    tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
+    Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
+    tmp_name = os.path.join(tmp_download_dir, secrets.token_urlsafe(32))
     file_to_send = None
 
     for current_file in meeting.files:
@@ -109,275 +105,258 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
             break
 
     if not file_to_send:
-        return jsonify(status=404, msg="file not found")
+        return {"msg": "file not found"}, 404
 
-    if current_file.url:
-        response = requests.get(current_file.url)
-        open(tmp_name, "wb").write(response.content)
-        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
+    @after_this_request
+    def cleanup(response):
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        return response
+
+    if file_to_send.url:
+        response = requests.get(file_to_send.url)
+        with open(tmp_name, "wb") as f:
+            f.write(response.content)
+        return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
     # get file from nextcloud WEBDAV and send it
-    try:
-        client = create_webdav_client(owner)
-        client.download_sync(remote_path=current_file.nc_path, local_path=tmp_name)
-        return send_file(tmp_name, as_attachment=True, download_name=current_file.title)
-
-    except WebDavException as exception:
-        owner.disable_nextcloud()
-        current_app.logger.warning(
-            "webdav call encountered following exception : %s", exception
+    nc_available = is_nextcloud_available(owner, verify=True, retry_on_auth_error=True)
+    db.session.commit()
+    if not nc_available:
+        flash(
+            _(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            ),
+            "error",
         )
-        flash(_("Le fichier ne semble pas accessible"), "error")
         return redirect(url_for("public.welcome"))
 
+    client = create_webdav_client(owner)
+    client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
+    return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
-@bp.route("/meeting/files/<meeting:meeting>/toggledownload", methods=["POST"])
+
+@bp.route("/meeting/files/<meetingfiles:meeting_file>/toggledownload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def toggledownload(meeting: Meeting, owner: User):
+@user_needed
+def toggledownload(meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
-    data = request.get_json()
-    meeting_file = db.session.get(MeetingFiles, data["id"])
-    if not meeting_file:
-        abort(404)
+    if meeting_file.meeting.user_id != user.id:
+        abort(403)
 
+    data = request.get_json()
     meeting_file.is_downloadable = data["value"]
     db.session.add(meeting_file)
     db.session.commit()
 
-    return jsonify(status=200, id=data["id"])
+    return {"id": meeting_file.id}
 
 
-@bp.route("/meeting/files/<meeting:meeting>/default", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def set_meeting_default_file(meeting: Meeting, owner: User):
-    """Set a file as the default file for a meeting."""
-    data = request.get_json()
-
-    actual_default_file = meeting.default_file
-    if actual_default_file:
-        actual_default_file.is_default = False
-        db.session.add(actual_default_file)
-
-    meeting_file = MeetingFiles.query.get(data["id"])
-    meeting_file.is_default = True
-    db.session.add(meeting_file)
-    db.session.commit()
-
-    return jsonify(status=200, id=data["id"])
+def remove_uploaded_file(absolute_path):
+    """Remove a file from the upload temporary directory."""
+    os.remove(absolute_path)
 
 
-def remove_dropzone_file(absolutePath):
-    """Remove a file from the dropzone temporary directory."""
-    os.remove(absolutePath)
-
-
-# called when a file has been uploaded : send it to nextcloud
-def add_meeting_file_dropzone(title, meeting_id, is_default):
-    """Upload a dropzone file to Nextcloud and associate it with a meeting."""
-    # should be in /tmp/visioagent/dropzone/USER_ID-TITLE
-    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
-    Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
-    dropzone_path = os.path.join(DROPZONE_DIR, f"{g.user.id}-{meeting_id}-{title}")
-    metadata = os.stat(dropzone_path)
+def add_meeting_file_from_upload(title, meeting_id):
+    """Upload a file to Nextcloud and associate it with a meeting."""
+    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
+    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
+    upload_path = os.path.join(upload_chunk_dir, f"{g.user.id}-{meeting_id}-{title}")
+    metadata = os.stat(upload_path)
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
-        return jsonify(
-            status=500,
-            isfrom="dropzone",
-            msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                title=title
-            ),
+        return {
+            "msg": _(
+                "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
+            ).format(
+                title=title,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
+            )
+        }, 413
+
+    if (client := create_webdav_client(g.user)) is None:
+        current_app.logger.warning(
+            "WebDAV error: User %s has no credentials", g.user.id
         )
+        return {
+            "msg": _(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            )
+        }, 503
+
+    client.mkdir("visio-agents")  # does not fail if dir already exists
+    nc_path = os.path.join("visio-agents", title)
+    client.upload_sync(remote_path=nc_path, local_path=upload_path)
+    remove_uploaded_file(upload_path)
+
+    meeting_file = MeetingFiles(
+        nc_path=nc_path,
+        title=title,
+        created_at=date.today(),
+        meeting_id=meeting_id,
+        owner=g.user,
+    )
 
     try:
-        client = create_webdav_client(g.user)
-        client.mkdir("visio-agents")  # does not fail if dir already exists
-        nc_path = os.path.join("visio-agents", title)
-        client.upload_sync(remote_path=nc_path, local_path=dropzone_path)
-
-        meeting_file = MeetingFiles(
-            nc_path=nc_path,
-            title=title,
-            created_at=date.today(),
-            meeting_id=meeting_id,
-        )
-
-    except WebDavException as exception:
-        g.user.disable_nextcloud()
-        current_app.logger.warning("WebDAV error: %s", exception)
-        return jsonify(
-            status=500,
-            isfrom="dropzone",
-            msg=_("La connexion avec Nextcloud est rompue"),
-        )
-
-    try:
-        # test for is_default-file absence at the latest time possible
-        meeting = db.session.get(Meeting, meeting_id)
-        meeting_file.is_default = len(meeting.files) == 0 and not meeting.default_file
         db.session.add(meeting_file)
         db.session.commit()
 
-        # file has been associated AND uploaded to nextcloud, we can safely remove it from visio-agent tmp directory
-        remove_dropzone_file(dropzone_path)
-        return jsonify(
-            status=200,
-            isfrom="dropzone",
-            isDefault=is_default,
-            title=meeting_file.short_title,
-            id=meeting_file.id,
-            created_at=meeting_file.created_at.strftime(
-                current_app.config["TIME_FORMAT"]
-            ),
-        )
-
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="dropzone", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        try:
+            client.clean(nc_path)
+        except WebDavException as cleanup_error:
+            current_app.logger.warning(
+                "Failed to cleanup Nextcloud file %s: %s", nc_path, cleanup_error
+            )
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
+
+    return {
+        "title": meeting_file.short_title,
+        "id": meeting_file.id,
+        "created_at": meeting_file.created_at.strftime(
+            current_app.config["TIME_FORMAT"]
+        ),
+    }
 
 
-def add_meeting_file_URL(url, meeting_id, is_default):
+def add_meeting_file_URL(url, meeting_id):
     """Add a meeting file from an external URL."""
     title = url.rsplit("/", 1)[-1]
 
-    # test MAX_SIZE_UPLOAD for 20Mo
-    metadata = requests.head(url)
-    if not metadata.ok:
-        return jsonify(
-            status=404,
-            isfrom="url",
-            msg=_(
-                "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
-            ).format(title=title),
+    try:
+        metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
+    except requests.exceptions.RequestException as request_error:
+        current_app.logger.warning(
+            "URL file request failed for %s: %s", url, request_error
         )
+        return {
+            "msg": _(
+                "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
+            ).format(title=title)
+        }, 400
 
-    if int(metadata.headers["content-length"]) > current_app.config["MAX_SIZE_UPLOAD"]:
-        return jsonify(
-            status=500,
-            isfrom="url",
-            msg=_("Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                title=title
-            ),
-        )
+    if not metadata.ok:
+        return {
+            "msg": _(
+                "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
+            ).format(title=title)
+        }, 400
+
+    content_length = metadata.headers.get("content-length")
+    if content_length and int(content_length) > current_app.config["MAX_SIZE_UPLOAD"]:
+        return {
+            "msg": _(
+                "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
+            ).format(
+                title=title,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
+            )
+        }, 413
 
     meeting_file = MeetingFiles(
         title=title,
         created_at=date.today(),
         meeting_id=meeting_id,
         url=url,
-        is_default=is_default,
+        owner=g.user,
     )
-    requests.get(url)
 
     try:
         db.session.add(meeting_file)
         db.session.commit()
-        return jsonify(
-            status=200,
-            isfrom="url",
-            isDefault=is_default,
-            title=meeting_file.short_title,
-            id=meeting_file.id,
-            created_at=meeting_file.created_at.strftime(
-                current_app.config["TIME_FORMAT"]
-            ),
-        )
 
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="url", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
+
+    return {
+        "title": meeting_file.short_title,
+        "id": meeting_file.id,
+        "created_at": meeting_file.created_at.strftime(
+            current_app.config["TIME_FORMAT"]
+        ),
+    }
 
 
-def add_meeting_file_nextcloud(path, meeting_id, is_default):
+def add_meeting_file_nextcloud(path, meeting_id):
     """Add a meeting file from a Nextcloud path."""
-    try:
-        client = create_webdav_client(g.user)
-        metadata = client.info(path)
+    if (client := create_webdav_client(g.user)) is None:
+        return {
+            "msg": _(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            )
+        }, 503
 
-    except WebDavException:
-        g.user.disable_nextcloud()
-        return jsonify(
-            status=500,
-            isfrom="nextcloud",
-            msg=_("La connexion avec Nextcloud semble rompue"),
-        )
+    metadata = client.info(path)
 
     if int(metadata["size"]) > current_app.config["MAX_SIZE_UPLOAD"]:
-        return jsonify(
-            status=500,
-            isfrom="nextcloud",
-            msg=_("Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo").format(
-                path=path
-            ),
-        )
+        return {
+            "msg": _(
+                "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
+            ).format(
+                path=path,
+                max_size=current_app.config["MAX_SIZE_UPLOAD"] // 1_000_000,
+            )
+        }, 413
 
     meeting_file = MeetingFiles(
         title=path.split("/")[-1],
         created_at=date.today(),
         meeting_id=meeting_id,
         nc_path=path,
-        is_default=is_default,
+        owner=g.user,
     )
 
     try:
         db.session.add(meeting_file)
         db.session.commit()
+
     except exc.SQLAlchemyError as exception:
         current_app.logger.error("SQLAlchemy error: %s", exception)
-        return jsonify(
-            status=500, isfrom="nextcloud", msg=_("Le fichier a déjà été mis en ligne")
-        )
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
-    return jsonify(
-        status=200,
-        isfrom="nextcloud",
-        isDefault=is_default,
-        title=meeting_file.short_title,
-        id=meeting_file.id,
-        created_at=meeting_file.created_at.strftime(current_app.config["TIME_FORMAT"]),
-    )
+    return {
+        "title": meeting_file.short_title,
+        "id": meeting_file.id,
+        "created_at": meeting_file.created_at.strftime(
+            current_app.config["TIME_FORMAT"]
+        ),
+    }
 
 
-def create_external_meeting_file(path, meeting_id):
+def create_external_meeting_file(path, owner, meeting_id=None):
     """Create an external meeting file record for a Nextcloud document."""
-    externalMeetingFile = BaseMeetingFiles(
+    return BaseMeetingFiles(
         title=path.split("/")[-1],
         meeting_id=meeting_id,
         nc_path=path,
         id=uuid.uuid4(),
+        owner=owner,
     )
-    return externalMeetingFile
 
 
-# for dropzone multiple files uploading at once
-@bp.route("/meeting/files/<meeting:meeting>/dropzone", methods=["POST"])
+@bp.route("/meeting/files/<meeting:meeting>/upload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_owner_needed
-def add_dropzone_files(meeting: Meeting, owner: User):
-    """Handle chunked file uploads from dropzone."""
+def upload_file_chunks(meeting: Meeting, owner: User):
+    """Handle chunked file uploads."""
     file = request.files["dropzoneFiles"]
-    # for dropzone chunk file by file validation
-    # shamelessly taken from https://stackoverflow.com/questions/44727052/handling-large-file-uploads-with-flask
-    DROPZONE_DIR = os.path.join(current_app.config["UPLOAD_DIR"], "dropzone")
-    Path(DROPZONE_DIR).mkdir(parents=True, exist_ok=True)
+    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
+    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        DROPZONE_DIR, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
+        upload_chunk_dir, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
     if os.path.exists(save_path) and current_chunk == 0:
-        # 400 and 500s will tell dropzone that an error occurred and show an error
-        return make_response((str(_("Le fichier a déjà été mis en ligne")), 500))
+        return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
     try:
         with open(save_path, "ab") as f:
@@ -385,126 +364,132 @@ def add_dropzone_files(meeting: Meeting, owner: User):
             f.write(file.stream.read())
 
     except OSError:
-        return make_response(
-            (str(_("Erreur lors de l'écriture du fichier sur le disque")), 500)
-        )
+        return {"msg": _("Erreur lors de l'écriture du fichier sur le disque")}, 500
 
     total_chunks = int(request.form["dztotalchunkcount"])
 
     if current_chunk + 1 == total_chunks:
         # This was the last chunk, the file should be complete and the size we expect
         mimetype = filetype.guess(save_path)
-        if mimetype.mime not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]:
-            return make_response(("Filetype not allowed", 500))
+        if (
+            mimetype
+            and mimetype.mime
+            not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]
+        ):
+            os.remove(save_path)
+            return {"msg": _("Type de fichier non autorisé")}, 400
+
         if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
-            return make_response(("Size mismatch", 500))
+            os.remove(save_path)
+            return {"msg": _("Erreur de taille du fichier")}, 400
 
     current_app.logger.debug(f"Wrote a chunk at {save_path}")
-    return make_response(("Chunk upload successful", 200))
+    return {"msg": "ok"}, 200
 
 
 @bp.route("/meeting/files/delete", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def delete_meeting_file():
-    """Delete a meeting file and reassign default if necessary."""
+    """Delete a meeting file."""
     data = request.get_json()
     meeting_file_id = data["id"]
-    meeting_file = MeetingFiles.query.get(meeting_file_id)
-    cur_meeting = Meeting.query.get(meeting_file.meeting_id)
+    meeting_file = db.session.get(MeetingFiles, meeting_file_id)
+    if meeting_file is None:
+        return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
 
-    if cur_meeting.user_id != g.user.id:
-        return jsonify(
-            status=500, id=data["id"], msg=_("Vous ne pouvez pas supprimer cet élément")
-        )
+    if meeting_file.meeting.user_id != g.user.id:
+        return {
+            "id": data["id"],
+            "msg": _("Vous ne pouvez pas supprimer cet élément"),
+        }, 403
 
     db.session.delete(meeting_file)
     db.session.commit()
-    new_default_id = None
-    if meeting_file.is_default:
-        cur_meeting = Meeting.query.get(meeting_file.meeting_id)
-        if len(cur_meeting.files) > 0:
-            cur_meeting.files[0].is_default = True
-            new_default_id = cur_meeting.files[0].id
-            db.session.commit()
 
-    return jsonify(
-        status=200,
-        newDefaultId=new_default_id,
-        id=data["id"],
-        msg=_("Fichier supprimé avec succès"),
-    )
+    return {
+        "id": data["id"],
+        "msg": _("Fichier supprimé avec succès"),
+    }
 
 
-@bp.route("/meeting/<meeting:meeting>/file-picker")
+@bp.route("/meeting/<signed:bbb_meeting_id>/file-picker")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def file_picker(meeting: Meeting, owner: User):
+@user_needed
+def file_picker(user: User, bbb_meeting_id: str):
     """Display the nextcloud file selector.
 
     This endpoint is used by BBB during the meetings.
     It is configurated by the 'presentationUploadExternalUrl' parameter on the creation request.
     """
-    if BBB(meeting.meetingID).is_running():
-        return render_template("meeting/file_picker.html", meeting=meeting)
+    if BBB(bbb_meeting_id).is_running():
+        nc_available = is_nextcloud_available(
+            user, verify=True, retry_on_auth_error=True
+        )
+        db.session.commit()
+        return render_template(
+            "meeting/file_picker.html",
+            bbb_meeting_id=bbb_meeting_id,
+            is_nextcloud_available=nc_available,
+        )
     flash(_("La réunion n'est pas en cours"), "error")
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/files/<meeting:meeting>/file-picker-callback", methods=["POST"])
+@bp.route(
+    "/meeting/files/<signed:bbb_meeting_id>/file-picker-callback", methods=["POST"]
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def file_picker_callback(meeting: Meeting):
+@user_needed
+def file_picker_callback(user: User, bbb_meeting_id: str):
     """Insert documents from Nextcloud into a running BBB meeting.
 
-    This is called by the Nextcloud filePicker when users select a document.
+    This is called by the Nextcloud file picker when users select a document.
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
     filenames = request.get_json()
     meeting_files = [
-        create_external_meeting_file(filename, meeting.id) for filename in filenames
+        create_external_meeting_file(filename, g.user) for filename in filenames
     ]
-    BBB(meeting.meetingID).send_meeting_files(meeting_files, meeting=meeting)
+    BBB(bbb_meeting_id).send_meeting_files(meeting_files)
 
-    return jsonify(status=200, msg="SUCCESS")
+    return {"msg": "SUCCESS"}
 
 
-@bp.route(
-    "/ncdownload/<int:isexternal>/<mfid>/<mftoken>/<meeting:meeting>/<path:ncpath>"
-)
-def ncdownload(isexternal, mfid, mftoken, meeting, ncpath):
-    """Download a file from Nextcloud for BBB using a secure token.
-
-    When isexternal is true, the file comes from the embedded nextcloud file picker.
-    When isexternal is false, the file comes from the b3desk interface.
-    """
+@bp.route("/ncdownload/<token>/<user:user>/<path:ncpath>")
+def ncdownload(token, user, ncpath):
+    """Download a file from Nextcloud for BBB using a secure token."""
     current_app.logger.info("Service requesting file url %s", ncpath)
-    if isexternal == 0:
-        meeting_file = MeetingFiles.query.filter_by(id=mfid).one_or_none()
-        if not meeting_file:
-            abort(404, "Bad token provided, no file matching")
-    else:
-        meeting_file = create_external_meeting_file(ncpath, meeting.id)
-
-    if mftoken != get_meeting_file_hash(mfid, isexternal):
+    if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")
 
-    # TODO: clean the temporary directory
-    TMP_DOWNLOAD_DIR = current_app.config["TMP_DOWNLOAD_DIR"]
-    Path(TMP_DOWNLOAD_DIR).mkdir(parents=True, exist_ok=True)
+    tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
+    Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
     uniqfile = str(uuid.uuid4())
-    tmp_name = f"{TMP_DOWNLOAD_DIR}{uniqfile}"
+    tmp_name = os.path.join(tmp_download_dir, uniqfile)
 
-    try:
-        client = create_webdav_client(meeting.user)
-        mimetype = client.info(ncpath).get("content_type")
-        client.download_sync(remote_path=ncpath, local_path=tmp_name)
+    if not is_nextcloud_available(user):
+        return {
+            "msg": _(
+                "Le service de fichiers est temporairement indisponible. "
+                "Veuillez réessayer dans quelques minutes."
+            )
+        }, 503
 
-    except WebDavException:
-        meeting.user.disable_nextcloud()
-        return jsonify(status=500, msg=_("La connexion avec Nextcloud semble rompue"))
+    client = create_webdav_client(user)
 
+    @after_this_request
+    def cleanup(response):
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        return response
+
+    mimetype = client.info(ncpath).get("content_type")
+    client.download_sync(remote_path=ncpath, local_path=tmp_name)
+
+    title = ncpath.split("/")[-1]
     return send_from_directory(
-        TMP_DOWNLOAD_DIR, uniqfile, download_name=meeting_file.title, mimetype=mimetype
+        tmp_download_dir, uniqfile, download_name=title, mimetype=mimetype
     )

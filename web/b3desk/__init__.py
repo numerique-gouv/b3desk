@@ -27,6 +27,7 @@ from jinja2 import StrictUndefined
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 
+from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
@@ -238,9 +239,20 @@ def setup_flask(app):
         for enum in (Role,):
             app.url_map.converters[enum.__name__.lower()] = enum_converter(enum)
 
+        app.url_map.converters["signed"] = SignedConverter
+
 
 def setup_error_pages(app):
     """Register HTTP error handlers for common error codes."""
+    from flask import flash
+    from flask import g
+    from flask import jsonify
+    from flask import redirect
+    from flask_babel import lazy_gettext as _
+    from webdav3.exceptions import WebDavException
+
+    from b3desk.nextcloud import is_nextcloud_unavailable_error
+    from b3desk.nextcloud import nextcloud_breaker
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -261,6 +273,29 @@ def setup_error_pages(app):
     @app.errorhandler(BigBlueButtonUnavailable)
     def bigbluebutton_unavailable_error(error):
         return render_template("errors/big-blue-button-error.html", error=error)
+
+    @app.errorhandler(WebDavException)
+    def webdav_error(error):
+        app.logger.warning("WebDAV error: %s", error)
+
+        if is_nextcloud_unavailable_error(error):
+            nextcloud_breaker.mark_failed(g.nc_locator)
+
+        wants_html = (
+            request.accept_mimetypes.best_match(["application/json", "text/html"])
+            == "text/html"
+        )
+
+        error_msg = _(
+            "Le service de fichiers est temporairement indisponible. "
+            "Veuillez réessayer dans quelques minutes."
+        )
+
+        if wants_html:
+            flash(error_msg, "error")
+            return redirect(url_for("public.welcome"))
+
+        return jsonify(status=500, msg=error_msg)
 
 
 def setup_endpoints(app):

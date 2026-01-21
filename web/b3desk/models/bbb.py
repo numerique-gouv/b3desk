@@ -370,7 +370,7 @@ class BBB:
         request = self.bbb_request("end", params={"meetingID": self.meeting_id})
         return self.bbb_response(request)
 
-    def send_meeting_files(self, meeting_files, meeting):
+    def send_meeting_files(self, meeting_files):
         """Send files to a BBB meeting."""
         from .meetings import MeetingFiles
         from .meetings import get_meeting_file_hash
@@ -383,7 +383,9 @@ class BBB:
             if not isexternal and meeting_file.url:
                 xml_mid += f"<document downloadable='{'true' if meeting_file.is_downloadable else 'false'}' url='{meeting_file.url}' filename='{meeting_file.title}' />"
             else:  # file is not URL nor NC hence it was uploaded
-                filehash = get_meeting_file_hash(meeting_file.id, isexternal)
+                token = get_meeting_file_hash(
+                    meeting_file.owner.id, meeting_file.nc_path
+                )
                 current_app.logger.info(
                     "Add document on BigBlueButton room %s creation for file %s",
                     self.meeting_id,
@@ -391,10 +393,8 @@ class BBB:
                 )
                 url = url_for(
                     "meeting_files.ncdownload",
-                    isexternal=1 if isexternal else 0,
-                    mfid=meeting_file.id,
-                    mftoken=filehash,
-                    meeting=meeting,
+                    token=token,
+                    user=meeting_file.owner,
                     ncpath=meeting_file.nc_path,
                     _external=True,
                     _scheme=current_app.config["PREFERRED_URL_SCHEME"],

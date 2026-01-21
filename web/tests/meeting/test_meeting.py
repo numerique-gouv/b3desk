@@ -19,9 +19,11 @@ from b3desk.models.meetings import generate_random_pin
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.meetings import get_meeting_by_visio_code
+from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
+from flask import url_for
 
 
 @pytest.fixture()
@@ -351,7 +353,11 @@ def test_create_no_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
         "voiceBridge": "111111111",
     }
 
@@ -413,8 +419,8 @@ def test_create_with_only_a_default_file(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=True,
     )
+    meeting_file.owner = meeting.user
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.user)
@@ -456,7 +462,11 @@ def test_create_with_only_a_default_file(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
         "voiceBridge": "111111111",
     }
 
@@ -517,8 +527,8 @@ def test_create_with_files(
         title="file_title",
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
-        is_default=False,
     )
+    meeting_file.owner = meeting.user
     meeting.files = [meeting_file]
 
     create_bbb_meeting(meeting, meeting.user)
@@ -561,7 +571,11 @@ def test_create_with_files(
         "presentationUploadExternalDescription": client_app.app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
         ],
-        "presentationUploadExternalUrl": f"http://b3desk.test/meeting/{str(meeting.id)}/file-picker",
+        "presentationUploadExternalUrl": url_for(
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.meetingID,
+            _external=True,
+        ),
         "voiceBridge": "111111111",
     }
 
@@ -571,14 +585,11 @@ def test_create_with_files(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
     )
 
-    secret_key = client_app.app.config["SECRET_KEY"]
-    filehash = hashlib.sha1(
-        f"{secret_key}-0-{meeting_file.id}-{secret_key}".encode()
-    ).hexdigest()
+    filehash = get_meeting_file_hash(meeting.user.id, meeting_file.nc_path)
 
     xml_content = mocked_background_upload.call_args.args[1]
     assert xml_content.startswith(
-        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/0/1/{filehash}/1//"
+        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/{filehash}/{meeting.user.id}/"
     )
     assert xml_content.endswith(
         f"{tmp_path.name}/foobar.jpg' filename='file_title' /> </module></modules>"
@@ -675,6 +686,8 @@ def test_create_quick_meeting(
         "voiceBridge": mock.ANY,
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
+        "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
+        "presentationUploadExternalUrl": mock.ANY,
     }
 
 

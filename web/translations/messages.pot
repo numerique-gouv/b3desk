@@ -1,3 +1,12 @@
+#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:128
+#: web/b3desk/endpoints/meeting_files.py:184
+#: web/b3desk/endpoints/meeting_files.py:289
+#: web/b3desk/endpoints/meeting_files.py:476
+msgid ""
+"Le service de fichiers est temporairement indisponible. Veuillez "
+"réessayer dans quelques minutes."
+msgstr ""
+
 #: web/b3desk/forms.py:61
 #, python-format
 msgid "Nom %(of_the_meeting)s"
@@ -124,7 +133,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:300
+#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:290
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -293,60 +302,60 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:54
+#: web/b3desk/endpoints/meeting_files.py:55
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:130
-msgid "Le fichier ne semble pas accessible"
-msgstr ""
-
-#: web/b3desk/endpoints/meeting_files.py:190
-#: web/b3desk/endpoints/meeting_files.py:263
+#: web/b3desk/endpoints/meeting_files.py:171
+#: web/b3desk/endpoints/meeting_files.py:252
 #, python-brace-format
-msgid "Fichier {title} TROP VOLUMINEUX, ne pas dépasser 20Mo"
+msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:214
-msgid "La connexion avec Nextcloud est rompue"
-msgstr ""
-
-#: web/b3desk/endpoints/meeting_files.py:240
-#: web/b3desk/endpoints/meeting_files.py:294
-#: web/b3desk/endpoints/meeting_files.py:335
-#: web/b3desk/endpoints/meeting_files.py:380
+#: web/b3desk/endpoints/meeting_files.py:273
+#: web/b3desk/endpoints/meeting_files.py:320
+#: web/b3desk/endpoints/meeting_files.py:359
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:255
+#: web/b3desk/endpoints/meeting_files.py:237
+#: web/b3desk/endpoints/meeting_files.py:244
 #, python-brace-format
-msgid "Fichier {title} NON DISPONIBLE, veuillez vérifier l'URL proposée"
+msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:309
-#: web/b3desk/endpoints/meeting_files.py:506
-msgid "La connexion avec Nextcloud semble rompue"
-msgstr ""
-
-#: web/b3desk/endpoints/meeting_files.py:316
+#: web/b3desk/endpoints/meeting_files.py:299
 #, python-brace-format
-msgid "Fichier {path} TROP VOLUMINEUX, ne pas dépasser 20Mo"
+msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:389
+#: web/b3desk/endpoints/meeting_files.py:367
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:418
+#: web/b3desk/endpoints/meeting_files.py:380
+msgid "Type de fichier non autorisé"
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:384
+msgid "Erreur de taille du fichier"
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:399
+msgid "Fichier introuvable"
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:404
 #: web/b3desk/endpoints/meetings.py:306
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:435
+#: web/b3desk/endpoints/meeting_files.py:412
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:451
+#: web/b3desk/endpoints/meeting_files.py:436
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -400,7 +409,7 @@ msgstr ""
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:281 web/b3desk/models/meetings.py:288
+#: web/b3desk/models/meetings.py:271 web/b3desk/models/meetings.py:278
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
@@ -705,7 +714,7 @@ msgstr ""
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:57
 #: web/b3desk/templates/meeting/files.html:79
-#: web/b3desk/templates/meeting/files.html:149
+#: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
@@ -1949,6 +1958,16 @@ msgstr ""
 msgid "Patienter jusqu'à la fin %(of_the_meeting)s"
 msgstr ""
 
+#: web/b3desk/templates/meeting/file_picker.html:26
+msgid "Service temporairement indisponible"
+msgstr ""
+
+#: web/b3desk/templates/meeting/file_picker.html:27
+msgid ""
+"Un problème technique empêche l'accès au service de fichiers. Veuillez "
+"réessayer dans quelques minutes."
+msgstr ""
+
 #: web/b3desk/templates/meeting/files.html:39
 #, python-format
 msgid ""
@@ -1957,7 +1976,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:42
-#: web/b3desk/templates/meeting/files.html:229
+#: web/b3desk/templates/meeting/files.html:220
 #: web/b3desk/templates/meeting/recordings.html:9
 #: web/b3desk/templates/meeting/recordings.html:205
 #, python-format
@@ -1977,61 +1996,72 @@ msgstr ""
 msgid "Vous pouvez ajouter un fichier :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:105
+#: web/b3desk/templates/meeting/files.html:103
+msgid "Nuage temporairement indisponible"
+msgstr ""
+
+#: web/b3desk/templates/meeting/files.html:104
+msgid ""
+"Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités"
+" sont momentanément désactivées. Veuillez réessayer dans quelques "
+"minutes."
+msgstr ""
+
+#: web/b3desk/templates/meeting/files.html:111
 msgid "depuis une URL"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:109
+#: web/b3desk/templates/meeting/files.html:114
 msgid "nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:109
+#: web/b3desk/templates/meeting/files.html:114
 msgid "depuis le Nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:112
-msgid "dropzone"
+#: web/b3desk/templates/meeting/files.html:117
+msgid "téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:112
+#: web/b3desk/templates/meeting/files.html:117
 msgid "par Téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:128
+#: web/b3desk/templates/meeting/files.html:132
 msgid "Vos fichiers associés sont :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:132
+#: web/b3desk/templates/meeting/files.html:136
 msgid "Téléchargeable"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:133
+#: web/b3desk/templates/meeting/files.html:137
 msgid "Titre"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:134
+#: web/b3desk/templates/meeting/files.html:138
 msgid "Ajouté le"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:135
-#: web/b3desk/templates/meeting/files.html:153
-#: web/b3desk/templates/meeting/files.html:162
-#: web/b3desk/templates/meeting/files.html:205
+#: web/b3desk/templates/meeting/files.html:139
+#: web/b3desk/templates/meeting/files.html:157
+#: web/b3desk/templates/meeting/files.html:166
+#: web/b3desk/templates/meeting/files.html:196
 #: web/b3desk/templates/meeting/recordings.html:103
 msgid "Supprimer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:136
-#: web/b3desk/templates/meeting/files.html:209
+#: web/b3desk/templates/meeting/files.html:140
+#: web/b3desk/templates/meeting/files.html:200
 msgid "Télécharger"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:155
+#: web/b3desk/templates/meeting/files.html:159
 #, python-format
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:165
+#: web/b3desk/templates/meeting/files.html:169
 #: web/b3desk/templates/meeting/form.html:177
 #: web/b3desk/templates/meeting/modals/delete.html:36
 #: web/b3desk/templates/meeting/recordings.html:106
@@ -2039,17 +2069,17 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:195
-#: web/b3desk/templates/meeting/files.html:198
+#: web/b3desk/templates/meeting/files.html:186
+#: web/b3desk/templates/meeting/files.html:189
 msgid "Oui"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:195
-#: web/b3desk/templates/meeting/files.html:198
+#: web/b3desk/templates/meeting/files.html:186
+#: web/b3desk/templates/meeting/files.html:189
 msgid "Non"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:221
+#: web/b3desk/templates/meeting/files.html:212
 msgid "Aucun document de présentation n'est prévu pour cette réunion actuellement"
 msgstr ""
 
@@ -2611,7 +2641,7 @@ msgstr ""
 msgid "Suppression d'enregistrement"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:123
+#: web/b3desk/utils/__init__.py:142
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
