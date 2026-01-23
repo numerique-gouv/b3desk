@@ -37,7 +37,7 @@
                 {% trans %}Inviter{% endtrans %}
             </button>
             {% if meeting in g.user.get_all_delegated_meetings %}
-                <i class="fr-icon-user-setting-line" aria-hidden="true" title="{% trans meeting_name=meeting.name %}Vous êtes délégataire de {{ meeting_name }}{% endtrans %}"></i>
+                <i class="fr-icon-user-setting-fill delegated-icon" aria-hidden="true" title="{% trans meeting_name=meeting.name %}Vous êtes délégataire de {{ meeting_name }}{% endtrans %}"></i>
             {% endif %}
         </div>
         <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
