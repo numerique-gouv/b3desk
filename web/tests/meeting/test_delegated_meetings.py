@@ -22,7 +22,7 @@ def test_delegated_meetings_visibility_on_welcome_page(
         html.count('class="fr-btn fr-btn--secondary fr-icon-edit-line"') == 4
     )  # nombre de boutons "modifier"
     assert (
-        html.count('<i class="fr-icon-user-setting-line"') == 1
+        html.count('<i class="fr-icon-parent-fill delegated-icon"') == 1
     )  # nombre d'icône "délégataire"
 
 
