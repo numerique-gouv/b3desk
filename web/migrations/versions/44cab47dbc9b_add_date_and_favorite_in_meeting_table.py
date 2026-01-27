@@ -21,11 +21,14 @@ def upgrade():
         batch_op.add_column(sa.Column("created_at", sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column("updated_at", sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column("is_favorite", sa.Boolean, nullable=True))
-    op.execute("UPDATE meeting SET created_at = NOW()")
-    op.execute("UPDATE meeting SET updated_at = NOW()")
+
+    op.execute("UPDATE meeting SET created_at = CURRENT_TIMESTAMP")
+    op.execute("UPDATE meeting SET updated_at = CURRENT_TIMESTAMP")
     op.execute("UPDATE meeting SET is_favorite = 'FALSE'")
-    op.execute("ALTER TABLE meeting ALTER COLUMN created_at SET NOT NULL")
-    op.execute("ALTER TABLE meeting ALTER COLUMN updated_at SET NOT NULL")
+
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.alter_column("created_at", nullable=False)
+        batch_op.alter_column("updated_at", nullable=False)
     # ### end Alembic commands ###
 
 

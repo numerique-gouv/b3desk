@@ -8,7 +8,6 @@ Create Date: 2023-01-03 18:01:03.770238
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy import inspect
-from sqlalchemy.dialects import postgresql
 
 revision = "54f71a7705a8"
 down_revision = None
@@ -44,7 +43,6 @@ def upgrade():
             sa.Column(
                 "id",
                 sa.INTEGER(),
-                server_default=sa.text("nextval('meeting_id_seq'::regclass)"),
                 autoincrement=True,
                 nullable=False,
             ),
@@ -52,10 +50,10 @@ def upgrade():
                 "name", sa.VARCHAR(length=150), autoincrement=False, nullable=True
             ),
             sa.Column(
-                "attendeePW", postgresql.BYTEA(), autoincrement=False, nullable=True
+                "attendeePW", sa.LargeBinary(), autoincrement=False, nullable=True
             ),
             sa.Column(
-                "moderatorPW", postgresql.BYTEA(), autoincrement=False, nullable=True
+                "moderatorPW", sa.LargeBinary(), autoincrement=False, nullable=True
             ),
             sa.Column("welcome", sa.TEXT(), autoincrement=False, nullable=True),
             sa.Column(
