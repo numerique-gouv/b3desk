@@ -14,3 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    let needConfirm = document.getElementsByClassName("need-confirm");
+    let modal = document.querySelector("#delegate-confirmation");
+    console.log(needConfirm);
+    console.log(modal);
+    needConfirm[0].addEventListener("click", (event) => {
+        event.preventDefault();
+        window.dsfr(modal).modal.disclose();
+    });
+});

@@ -744,6 +744,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:57
 #: web/b3desk/templates/meeting/files.html:79
 #: web/b3desk/templates/meeting/files.html:153
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:9
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
@@ -2111,6 +2113,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:169
 #: web/b3desk/templates/meeting/form.html:177
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:35
 #: web/b3desk/templates/meeting/modals/delete.html:36
 #: web/b3desk/templates/meeting/recordings.html:106
 #: web/b3desk/templates/meeting/recordings.html:148
@@ -2595,6 +2598,26 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
 msgid "Invitation"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:15
+#, python-format
+msgid "Vous n'êtes pas priopriétaire de \"%(the_meeting)s\""
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:17
+#, python-format
+msgid ""
+"Voulez-vous vraiment effectuer ces modifications en tant que délégataire "
+"de \"%(the_meeting)s\" ?"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:21
+msgid "La confirmation est définitive."
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:31
+msgid "Confirmer"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:15
