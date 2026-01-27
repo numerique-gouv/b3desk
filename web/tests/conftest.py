@@ -671,3 +671,8 @@ def valid_secondary_identity_token(mocker):
         "b3desk.nextcloud.get_secondary_identity_provider_token",
         return_value=ValidToken,
     )
+
+
+@pytest.fixture
+def cli_runner(app):
+    return app.test_cli_runner(catch_exceptions=False)
