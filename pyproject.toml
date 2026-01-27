@@ -39,10 +39,13 @@ dependencies = [
 ]
 
 [tool.uv]
-package = false
+package = true
 
 [tool.uv.build-backend]
 module-root = "web"
+
+[project.scripts]
+b3desk = "b3desk.cli:main"
 
 [dependency-groups]
 dev = [
