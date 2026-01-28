@@ -96,6 +96,10 @@ def test_delegate_can_edit_delegated_meeting(
     """Test that meeting edit form displays as owner."""
     response = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}", status=200)
     assert response.template == "meeting/wizard.html"
+    assert "need-confirm" in str(response.html)
+    response.forms[0]["voiceBridge"] = "123456789"
+    response = response.forms[0].submit()
+    assert "Vous n'êtes pas priopriétaire" in response
 
 
 def test_delegate_can_see_delegated_meeting_files(
