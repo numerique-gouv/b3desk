@@ -251,7 +251,7 @@ def end_meeting():
     meeting_id = form.data["meeting_id"]
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
 
-    if g.user == meeting.owner:
+    if g.user == meeting.owner or meeting in g.user.get_all_delegated_meetings:
         data = BBB(meeting.meetingID).end()
         if BBB.success(data):
             flash(

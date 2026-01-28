@@ -5,7 +5,9 @@
         {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est actuellement en cours avec les anciens paramètres.<br>
             Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.{% endtrans %}
     </p>
-
+    {% if meeting in g.user.get_all_delegated_meetings %}
+        <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas priopriétaire de "{{ the_meeting }}"{% endtrans %}</i></p>
+    {% endif %}
     <form action="{{ url_for("meetings.end_meeting") }}" method="POST">
         {{ form.hidden_tag() }}
         <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin {{ to_the_meeting }} en cours{% endtrans %}</button>

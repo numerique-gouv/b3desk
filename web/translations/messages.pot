@@ -2005,12 +2005,18 @@ msgid ""
 " déconnectés."
 msgstr ""
 
-#: web/b3desk/templates/meeting/end.html:11
+#: web/b3desk/templates/meeting/end.html:9
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:15
+#, python-format
+msgid "Vous n'êtes pas priopriétaire de \"%(the_meeting)s\""
+msgstr ""
+
+#: web/b3desk/templates/meeting/end.html:13
 #, python-format
 msgid "Mettre fin %(to_the_meeting)s en cours"
 msgstr ""
 
-#: web/b3desk/templates/meeting/end.html:12
+#: web/b3desk/templates/meeting/end.html:14
 #, python-format
 msgid "Patienter jusqu'à la fin %(of_the_meeting)s"
 msgstr ""
@@ -2598,11 +2604,6 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
 msgid "Invitation"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:15
-#, python-format
-msgid "Vous n'êtes pas priopriétaire de \"%(the_meeting)s\""
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:17

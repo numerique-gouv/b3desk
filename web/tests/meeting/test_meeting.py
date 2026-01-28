@@ -73,27 +73,27 @@ def test_save_new_meeting(
 ):
     """Test that new meeting can be created with all settings."""
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["guestPolicy"] = "on"
-    res.form["webcamsOnlyForModerator"] = "on"
-    res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = False
-    res.form["lockSettingsDisableMic"] = False
-    res.form["lockSettingsDisablePrivateChat"] = False
-    res.form["lockSettingsDisablePublicChat"] = False
-    res.form["lockSettingsDisableNote"] = False
-    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
-    res.form["logoutUrl"] = "https://log.out"
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
-    res.form["autoStartRecording"] = "on"
-    res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
+    res.forms[0]["voiceBridge"] = "123456789"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
         "Mon meeting de test modifications prises en compte",
@@ -137,27 +137,27 @@ def test_save_existing_meeting_not_running(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["name"] = "Mon meeting de test"
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["guestPolicy"] = "on"
-    res.form["webcamsOnlyForModerator"] = "on"
-    res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = False
-    res.form["lockSettingsDisableMic"] = False
-    res.form["lockSettingsDisablePrivateChat"] = False
-    res.form["lockSettingsDisablePublicChat"] = False
-    res.form["lockSettingsDisableNote"] = False
-    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
-    res.form["logoutUrl"] = "https://log.out"
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
-    res.form["autoStartRecording"] = "on"
-    res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
+    res.forms[0]["voiceBridge"] = "123456789"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
@@ -198,9 +198,9 @@ def test_save_existing_meeting_running(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert res.template == "meeting/end.html"
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
@@ -208,7 +208,7 @@ def test_save_existing_meeting_running(
     meeting = db.session.get(Meeting, 1)
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
 
 
@@ -218,8 +218,8 @@ def test_save_moderatorOnlyMessage_too_long(
     """Test that validation fails when moderator message is too long."""
     res = client_app.get("/meeting/new")
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
-    res.form["moderatorOnlyMessage"] = moderator_only_message
-    res = res.form.submit()
+    res.forms[0]["moderatorOnlyMessage"] = moderator_only_message
+    res = res.forms[0].submit()
 
     res.mustcontain("Le formulaire contient des erreurs")
     res.mustcontain(moderator_only_message)
@@ -232,13 +232,13 @@ def test_save_no_recording_by_default(
 ):
     """Test that recording is disabled by default."""
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
         "Mon meeting de test modifications prises en compte",
@@ -258,16 +258,16 @@ def test_save_meeting_in_no_recording_environment(
     client_app.app.config["RECORDING"] = False
 
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
 
-    assert "allowStartStopRecording" not in res.form.fields
-    assert "autoStartRecording" not in res.form.fields
+    assert "allowStartStopRecording" not in res.forms[0].fields
+    assert "autoStartRecording" not in res.forms[0].fields
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
         "Mon meeting de test modifications prises en compte",
@@ -601,7 +601,7 @@ def test_create_without_logout_url_gets_default(
 ):
     """Test that default logout URL is used when none specified."""
     res = client_app.get("/meeting/new")
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
 
     meeting = db.session.get(Meeting, 1)
@@ -623,8 +623,8 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["logoutUrl"] = ""
-    res = res.form.submit()
+    res.forms[0]["logoutUrl"] = ""
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
@@ -944,24 +944,24 @@ def test_create_meeting_with_wrong_PIN(
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["voiceBridge"] = "1234567890"
-    res = res.form.submit()
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["voiceBridge"] = "1234567890"
+    res = res.forms[0].submit()
     res.mustcontain("Entez un PIN de 9 chiffres")
-    res.form["voiceBridge"] = "12345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "12345678"
+    res = res.forms[0].submit()
     res.mustcontain("Entez un PIN de 9 chiffres")
-    res.form["voiceBridge"] = "a12345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "a12345678"
+    res = res.forms[0].submit()
     res.mustcontain("Le code PIN est composé de chiffres uniquement")
-    res.form["voiceBridge"] = "12azer;:!"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "12azer;:!"
+    res = res.forms[0].submit()
     res.mustcontain("Le code PIN est composé de chiffres uniquement")
-    res.form["voiceBridge"] = "012345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "012345678"
+    res = res.forms[0].submit()
     res.mustcontain("Le premier chiffre doit être différent de 0")
-    res.form["voiceBridge"] = "111111111"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "111111111"
+    res = res.forms[0].submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
     res = client_app.post("/meeting/delete", {"id": meeting.id})
@@ -971,8 +971,8 @@ def test_create_meeting_with_wrong_PIN(
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "111111111"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "111111111"
+    res = res.forms[0].submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
 
@@ -1002,7 +1002,7 @@ def test_generate_existing_pin(
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
     """Test that meeting can be saved without making any changes."""
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
@@ -1023,8 +1023,8 @@ def test_delete_old_voiceBridges_with_form(
     one_year_after = today + datetime.timedelta(days=366)
 
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "999999999"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "999999999"
+    res = res.forms[0].submit()
     assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
 
     res = client_app.get("/").follow()
@@ -1056,8 +1056,8 @@ def test_delete_old_voiceBridges_with_form(
     iam_server.consent(iam_user)
 
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "999999999"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "999999999"
+    res = res.forms[0].submit()
     res.mustcontain(no="Ce code PIN est déjà utilisé")
     assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
@@ -1192,28 +1192,28 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["name"] = "Mon meeting de test"
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["guestPolicy"] = "on"
-    res.form["webcamsOnlyForModerator"] = "on"
-    res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = False
-    res.form["lockSettingsDisableMic"] = False
-    res.form["lockSettingsDisablePrivateChat"] = False
-    res.form["lockSettingsDisablePublicChat"] = False
-    res.form["lockSettingsDisableNote"] = False
-    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
-    res.form["logoutUrl"] = "https://log.out"
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
-    res.form["autoStartRecording"] = "on"
-    res.form["allowStartStopRecording"] = "on"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
-        res.form["voiceBridge"] = "123456789"
+        res.forms[0]["voiceBridge"] = "123456789"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
         "delegated meeting modifications prises en compte",
