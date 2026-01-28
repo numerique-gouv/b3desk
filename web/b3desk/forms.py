@@ -4,6 +4,7 @@ from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
 from wtforms import BooleanField
+from wtforms import EmailField
 from wtforms import FloatField
 from wtforms import Form
 from wtforms import HiddenField
@@ -262,3 +263,13 @@ class RecordingForm(FlaskForm):
 
 class EndMeetingForm(FlaskForm):
     meeting_id = HiddenField()
+
+
+class DelegationSearchForm(FlaskForm):
+    search = EmailField(
+        label=_("Ajout d'utilisateur"),
+        render_kw={
+            "placeholder": "Saisir l'e-mail du délégataire (ex: nom@exemple.fr)"
+        },
+        validators=[validators.DataRequired()],
+    )

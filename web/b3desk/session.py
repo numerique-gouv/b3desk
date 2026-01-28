@@ -24,7 +24,7 @@ def get_authenticated_attendee_fullname():
 
 
 def user_needed(view_function):
-    """Require that the authenticated user owns the meeting."""
+    """Require that an authenticated user is present."""
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
@@ -36,17 +36,35 @@ def user_needed(view_function):
     return decorator
 
 
-def meeting_owner_needed(view_function):
-    """Require that the authenticated user owns the meeting."""
+def meeting_access_required(level=None):
+    """Require that the authenticated user owns the meeting or has the required access level."""
+    from b3desk.models import db
+    from b3desk.models.meetings import AccessLevel
+    from b3desk.models.meetings import Meeting
 
-    @wraps(view_function)
-    def decorator(*args, **kwargs):
-        if not g.user or kwargs["meeting"].user != g.user:
-            abort(403)
+    def wrapper(view_function):
+        @wraps(view_function)
+        def decorator(*args, meeting, **kwargs):
+            if not g.user:
+                abort(403)
 
-        return view_function(*args, owner=g.user, **kwargs)
+            meeting = db.session.get(Meeting, meeting.id)
 
-    return decorator
+            is_owner = meeting.owner == g.user
+            is_delegate = (
+                level is not None
+                and level >= AccessLevel.DELEGATE
+                and meeting in g.user.get_all_delegated_meetings
+            )
+
+            if not is_owner and not is_delegate:
+                abort(403)
+
+            return view_function(*args, user=g.user, meeting=meeting, **kwargs)
+
+        return decorator
+
+    return wrapper
 
 
 def visio_code_attempt_counter_increment():

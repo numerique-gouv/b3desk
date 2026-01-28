@@ -157,6 +157,9 @@
                                                                 {% trans %}Supprimer{% endtrans %}
                                                             </h1>
                                                             <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
+                                                            {% if meeting in g.user.get_all_delegated_meetings %}
+                                                                <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas priopriétaire de "{{ the_meeting }}"{% endtrans %}</i></p>
+                                                            {% endif %}
                                                         </div>
                                                         <div class="fr-modal__footer">
                                                             <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">

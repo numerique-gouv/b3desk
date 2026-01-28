@@ -87,7 +87,10 @@ class User(db.Model):
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
-    meetings = db.relationship("Meeting", back_populates="user")
+    meetings = db.relationship("Meeting", back_populates="owner")
+    favorites = db.relationship(
+        "Meeting", secondary="favorite", back_populates="favorite_of"
+    )
 
     @property
     def fullname(self):
@@ -114,3 +117,19 @@ class User(db.Model):
     def mail_domain(self):
         """Extract and return the domain part of the user's email address."""
         return self.email.split("@")[1] if self.email and "@" in self.email else None
+
+    @property
+    def get_all_delegated_meetings(self):
+        from b3desk.models.meetings import AccessLevel
+        from b3desk.models.meetings import Meeting
+        from b3desk.models.meetings import MeetingAccess
+
+        user_accesses = MeetingAccess.query.filter_by(
+            user_id=self.id, level=AccessLevel.DELEGATE
+        ).all()
+        delegated_meetings = []
+        for access in user_accesses:
+            meeting = db.session.get(Meeting, access.meeting_id)
+            delegated_meetings.append(meeting)
+
+        return delegated_meetings
