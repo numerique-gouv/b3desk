@@ -119,6 +119,38 @@ def bbb_getRecordings_response(mocker):
     yield mocker.patch("requests.Session.send", return_value=Response)
 
 
+@pytest.fixture
+def bbb_getRecordings_missing_recordID(mocker):
+    """Fixture with missing recordID to trigger AttributeError."""
+
+    class Response:
+        content = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <recordings>
+    <recording>
+      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
+      <startTime>1530718721124</startTime>
+      <endTime>1530718810456</endTime>
+      <participants>3</participants>
+      <metadata>
+        <name>Fred's Room</name>
+      </metadata>
+      <playback>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html</url>
+        </format>
+      </playback>
+    </recording>
+  </recordings>
+</response>
+"""
+        text = ""
+
+    yield mocker.patch("requests.Session.send", return_value=Response)
+
+
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     """Test that recordings are retrieved and parsed correctly from BBB."""
     from b3desk.models.bbb import BBB
@@ -159,6 +191,19 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
         second_recording["recordID"].split("-")[0]
         == first_recording["recordID"].split("-")[0]
     )
+
+
+def test_get_recordings_with_missing_recordID(
+    mocker, meeting, bbb_getRecordings_missing_recordID, caplog
+):
+    """Test that exception is caught when recordID is missing."""
+    from b3desk.models.bbb import BBB
+
+    recordings = BBB(meeting.meetingID).get_recordings()
+
+    assert isinstance(recordings, list)
+    assert len(recordings) == 0
+    assert "'NoneType' object has no attribute 'text'" in caplog.text
 
 
 def test_update_recording_name(client_app, authenticated_user, meeting, bbb_response):
