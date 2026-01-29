@@ -218,6 +218,8 @@ def test_delegate_can_delete_recordings(
     bbb_getRecordings_response,
     caplog,
 ):
+    """Test delegate can delete a recording."""
+
     class DirectLinkRecording:
         status_code = 200
 

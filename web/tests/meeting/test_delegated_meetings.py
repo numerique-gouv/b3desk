@@ -1,3 +1,11 @@
+import json
+from datetime import date
+
+from b3desk.models import db
+from b3desk.models.meetings import MeetingFiles
+from flask import url_for
+
+
 def test_delegated_meetings_visibility_on_welcome_page(
     client_app,
     authenticated_user,
@@ -347,3 +355,33 @@ def test_smtp_error_when_sending_delegation_mail(
     )
 
     assert len(smtpd.messages) == 0
+
+
+def test_delegate_can_delete_meeting_file(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test delegate can delete a meeting file as owner."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_1_user_2.id,
+        owner=meeting_1_user_2.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    file_id = meeting_file.id
+
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": file_id}),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_int == 200
+    assert response.json["id"] == file_id
+    assert "supprimé avec succès" in response.json["msg"]
+    assert db.session.get(MeetingFiles, file_id) is None

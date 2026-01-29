@@ -744,8 +744,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:57
 #: web/b3desk/templates/meeting/files.html:79
 #: web/b3desk/templates/meeting/files.html:153
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:9
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
@@ -2007,7 +2007,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:161
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:15
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
 #: web/b3desk/templates/meeting/recordings.html:98
 #: web/b3desk/templates/meeting/recordings.html:146
 #, python-format
@@ -2122,7 +2122,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:172
 #: web/b3desk/templates/meeting/form.html:177
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:35
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:34
 #: web/b3desk/templates/meeting/modals/delete.html:36
 #: web/b3desk/templates/meeting/recordings.html:109
 #: web/b3desk/templates/meeting/recordings.html:154
@@ -2609,18 +2609,18 @@ msgstr ""
 msgid "Invitation"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:17
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:16
 #, python-format
 msgid ""
 "Voulez-vous vraiment effectuer ces modifications en tant que délégataire "
 "de \"%(meeting_name)s\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:21
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:20
 msgid "La confirmation est définitive."
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:31
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:30
 msgid "Confirmer"
 msgstr ""
 
