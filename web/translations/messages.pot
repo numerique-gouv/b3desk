@@ -2011,7 +2011,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:98
 #: web/b3desk/templates/meeting/recordings.html:146
 #, python-format
-msgid "Vous n'êtes pas priopriétaire de \"%(the_meeting)s\""
+msgid "Vous n'êtes pas priopriétaire de \"%(meeting_name)s\""
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:13
@@ -2613,7 +2613,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Voulez-vous vraiment effectuer ces modifications en tant que délégataire "
-"de \"%(the_meeting)s\" ?"
+"de \"%(meeting_name)s\" ?"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:21

@@ -158,7 +158,7 @@
                                                             </h1>
                                                             <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
                                                             {% if meeting in g.user.get_all_delegated_meetings %}
-                                                                <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas priopriétaire de "{{ the_meeting }}"{% endtrans %}</i></p>
+                                                                <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas priopriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
                                                             {% endif %}
                                                         </div>
                                                         <div class="fr-modal__footer">
