@@ -399,7 +399,10 @@ def delete_meeting_file():
     if meeting_file is None:
         return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
 
-    if meeting_file.meeting.owner_id != g.user.id:
+    if (
+        meeting_file.meeting.owner_id != g.user.id
+        and meeting_file.meeting not in g.user.get_all_delegated_meetings
+    ):
         return {
             "id": data["id"],
             "msg": _("Vous ne pouvez pas supprimer cet élément"),
