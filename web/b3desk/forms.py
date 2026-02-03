@@ -19,6 +19,8 @@ from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
 
 MAX_URL_LENGTH = 255
+MAX_LOGOUTURL_LENGTH = 250
+MAX_MEETING_NAME_LENGTH = 150
 DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
 MAX_MEETING_DURATION = timedelta(minutes=999)
 
@@ -69,7 +71,13 @@ class MeetingForm(FlaskForm):
             "%(my_meeting)s",
             my_meeting=current_app.config["WORDING_MY_MEETING"].title(),
         ),
-        validators=[validators.DataRequired()],
+        validators=[
+            validators.DataRequired(),
+            validators.length(
+                max=MAX_MEETING_NAME_LENGTH,
+                message=_("Le texte est trop long"),
+            ),
+        ],
     )
     welcome = TextAreaField(
         label=_("Texte de bienvenue"),
@@ -178,6 +186,12 @@ class MeetingForm(FlaskForm):
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
+        validators=[
+            validators.length(
+                max=MAX_LOGOUTURL_LENGTH,
+                message=_("Le texte est trop long"),
+            )
+        ],
         render_kw={"placeholder": current_app.config["MEETING_LOGOUT_URL"]},
     )
     moderatorPW = StringField(
