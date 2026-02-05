@@ -380,12 +380,12 @@ def meeting(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        favorite_of=[user],
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
     )
     db.session.add(meeting)
+    meeting.favorite_of.append(user)
     db.session.commit()
 
     yield meeting
@@ -402,12 +402,12 @@ def meeting_2(client_app, user):
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        favorite_of=[user],
         voiceBridge="111111112",
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
     )
     db.session.add(meeting)
+    meeting.favorite_of.append(user)
     db.session.commit()
 
     yield meeting

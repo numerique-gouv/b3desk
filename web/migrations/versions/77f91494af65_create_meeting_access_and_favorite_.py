@@ -67,12 +67,9 @@ def upgrade():
         sa.column("is_favorite", sa.Boolean),
     )
 
-    favorite_meetings = select(meetings).where(meetings.c.is_favorite)
-
-    for (
-        meeting_id,
-        user_id,
-    ) in session.execute(select(favorite_meetings.c.id, favorite_meetings.c.user_id)):
+    for meeting_id, user_id in session.execute(
+        select(meetings.c.id, meetings.c.user_id).where(meetings.c.is_favorite)
+    ):
         session.execute(
             insert(favorites).values(user_id=user_id, meeting_id=meeting_id)
         )
