@@ -42,10 +42,6 @@ class MeetingAccess(db.Model):
     user = db.relationship("User", backref="user_meeting_access")
     meeting = db.relationship("Meeting", backref="meeting_access")
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
 
 def get_meeting_access(user_id, meeting_id):
     return MeetingAccess.query.filter_by(

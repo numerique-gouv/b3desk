@@ -426,7 +426,8 @@ def manage_delegation(meeting: Meeting, user: User):
             user_id=new_delegate.id,
             level=AccessLevel.DELEGATE,
         )
-        access.save()
+        db.session.add(access)
+        db.session.commit()
         send_delegation_mail(meeting, new_delegate, new_delegation=True)
         flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
         current_app.logger.info(

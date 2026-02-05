@@ -457,7 +457,8 @@ def meeting_1_user_2(client_app, user, user_2):
         meeting_id=meeting.id,
         level=AccessLevel.DELEGATE,
     )
-    access.save()
+    db.session.add(access)
+    db.session.commit()
 
     yield meeting
 

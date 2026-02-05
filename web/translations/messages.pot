@@ -133,7 +133,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:337
+#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:333
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -418,19 +418,19 @@ msgstr ""
 msgid "%(meeting_label)s ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:431
+#: web/b3desk/endpoints/meetings.py:432
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:452
+#: web/b3desk/endpoints/meetings.py:453
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:457
+#: web/b3desk/endpoints/meetings.py:458
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:318 web/b3desk/models/meetings.py:325
+#: web/b3desk/models/meetings.py:314 web/b3desk/models/meetings.py:321
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
