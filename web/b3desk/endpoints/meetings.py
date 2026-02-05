@@ -169,9 +169,7 @@ def new_meeting():
         g.user.email,
     )
     flash(
-        _("{meeting_name} modifications prises en compte").format(
-            meeting_name=meeting.name
-        ),
+        _("{meeting_name} a bien été créé(e)").format(meeting_name=meeting.name),
         "success",
     )
     return redirect(url_for("public.welcome"))
