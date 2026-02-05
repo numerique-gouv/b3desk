@@ -202,7 +202,7 @@ def test_save_existing_meeting_running(
 
     res = res.forms[0].submit()
     assert res.template == "meeting/end.html"
-    assert "Vous n'êtes pas priopriétaire" not in res
+    assert "Vous n'êtes pas propriétaire" not in res
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1

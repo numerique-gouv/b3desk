@@ -107,7 +107,7 @@ def test_delegate_can_edit_delegated_meeting(
     assert "need-confirm" in str(response.html)
     response.forms[0]["voiceBridge"] = "123456789"
     response = response.forms[0].submit()
-    assert "Vous n'êtes pas priopriétaire" in response
+    assert "Vous n'êtes pas propriétaire" in response
 
 
 def test_delegate_can_see_delegated_meeting_files(
