@@ -121,77 +121,97 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
-@bp.route("/meeting/new")
+@bp.route("/meeting/new", methods=["GET", "POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def new_meeting():
-    """Display the form to create a new meeting."""
+    """Display the form to create a new meeting and handle submission."""
     if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
-    form = MeetingWithRecordForm() if current_app.config["RECORDING"] else MeetingForm()
-
-    return render_template(
-        "meeting/wizard.html",
-        meeting=None,
-        form=form,
-        recording=current_app.config["RECORDING"],
-    )
-
-
-@bp.route("/meeting/edit/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_access_required(AccessLevel.DELEGATE)
-def edit_meeting(meeting: Meeting, user: User):
-    """Display the form to edit an existing meeting."""
     form = (
-        MeetingWithRecordForm(obj=meeting)
+        MeetingWithRecordForm(request.form if request.method == "POST" else None)
         if current_app.config["RECORDING"]
-        else MeetingForm(obj=meeting)
-    )
-    return render_template(
-        "meeting/wizard.html",
-        meeting=meeting,
-        form=form,
-        recording=current_app.config["RECORDING"],
+        else MeetingForm(request.form if request.method == "POST" else None)
     )
 
-
-@bp.route("/meeting/save", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-def save_meeting():
-    """Save a new or updated meeting from the meeting form submission."""
-    form = (
-        MeetingWithRecordForm(request.form)
-        if current_app.config["RECORDING"]
-        else MeetingForm(request.form)
-    )
-
-    is_new_meeting = not form.data["id"]
-    if not g.user.can_create_meetings and is_new_meeting:
-        flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
-        return redirect(url_for("public.welcome"))
+    if request.method == "GET":
+        return render_template(
+            "meeting/wizard.html",
+            meeting=None,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
 
     if not form.validate():
         flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
             "meeting/wizard.html",
-            meeting=None if is_new_meeting else db.session.get(Meeting, form.id.data),
+            meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
         )
 
-    if is_new_meeting:
-        meeting = Meeting()
-        meeting.owner = g.user
-    else:
-        meeting_id = form.data["id"]
-        meeting = db.session.get(Meeting, meeting_id)
-        del form.id
-        del form.name
+    meeting = Meeting()
+    meeting.owner = g.user
+    meeting.record = bool(
+        form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
+    )
+    form.populate_obj(meeting)
+    db.session.add(meeting)
+    assign_unique_visio_code(meeting)
+    db.session.commit()
+    current_app.logger.info(
+        "Meeting %s %s was created by %s",
+        meeting.name,
+        meeting.id,
+        g.user.email,
+    )
+    flash(
+        _("{meeting_name} modifications prises en compte").format(
+            meeting_name=meeting.name
+        ),
+        "success",
+    )
+    return redirect(url_for("public.welcome"))
+
+
+@bp.route("/meeting/edit/<meeting:meeting>", methods=["GET", "POST"])
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required(AccessLevel.DELEGATE)
+def edit_meeting(meeting: Meeting, user: User):
+    """Display the form to edit an existing meeting and handle submission."""
+    form = (
+        MeetingWithRecordForm(
+            request.form if request.method == "POST" else None, obj=meeting
+        )
+        if current_app.config["RECORDING"]
+        else MeetingForm(
+            request.form if request.method == "POST" else None, obj=meeting
+        )
+    )
+
+    if request.method == "GET":
+        return render_template(
+            "meeting/wizard.html",
+            meeting=meeting,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
+
+    if not form.validate():
+        flash(_("Le formulaire contient des erreurs"), "error")
+        return render_template(
+            "meeting/wizard.html",
+            meeting=meeting,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
+
+    del form.id
+    del form.name
 
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
@@ -206,21 +226,13 @@ def save_meeting():
     if not meeting.visio_code:
         assign_unique_visio_code(meeting)
     db.session.commit()
-    if is_new_meeting:
-        current_app.logger.info(
-            "Meeting %s %s was created by %s",
-            meeting.name,
-            meeting.id,
-            g.user.email,
-        )
-    else:
-        current_app.logger.info(
-            "Meeting %s %s was updated by %s. Updated fields : %s",
-            meeting.name,
-            meeting.id,
-            g.user.email,
-            updated_data,
-        )
+    current_app.logger.info(
+        "Meeting %s %s was updated by %s. Updated fields : %s",
+        meeting.name,
+        meeting.id,
+        user.email,
+        updated_data,
+    )
     flash(
         _("{meeting_name} modifications prises en compte").format(
             meeting_name=meeting.name
