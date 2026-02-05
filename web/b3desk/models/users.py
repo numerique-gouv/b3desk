@@ -124,12 +124,11 @@ class User(db.Model):
         from b3desk.models.meetings import Meeting
         from b3desk.models.meetings import MeetingAccess
 
-        user_accesses = MeetingAccess.query.filter_by(
-            user_id=self.id, level=AccessLevel.DELEGATE
-        ).all()
-        delegated_meetings = []
-        for access in user_accesses:
-            meeting = db.session.get(Meeting, access.meeting_id)
-            delegated_meetings.append(meeting)
-
-        return delegated_meetings
+        return (
+            Meeting.query.join(MeetingAccess)
+            .filter(
+                MeetingAccess.user_id == self.id,
+                MeetingAccess.level == AccessLevel.DELEGATE,
+            )
+            .all()
+        )

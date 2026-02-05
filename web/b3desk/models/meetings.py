@@ -195,15 +195,14 @@ class Meeting(db.Model):
 
     @property
     def get_all_delegates(self):
-        meeting_accesses = MeetingAccess.query.filter_by(
-            meeting_id=self.id, level=AccessLevel.DELEGATE
-        ).all()
-        delegates = []
-        for access in meeting_accesses:
-            user = db.session.get(User, access.user_id)
-            delegates.append(user)
-
-        return delegates
+        return (
+            User.query.join(MeetingAccess)
+            .filter(
+                MeetingAccess.meeting_id == self.id,
+                MeetingAccess.level == AccessLevel.DELEGATE,
+            )
+            .all()
+        )
 
 
 class PreviousVoiceBridge(db.Model):
