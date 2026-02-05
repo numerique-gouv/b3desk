@@ -104,7 +104,7 @@ def send_email(msg, content, smtp):
             if smtp["username"]:
                 smtp_connect.login(smtp["username"], smtp["password"])
             smtp_connect.send_message(msg)
-    except Exception as e:
+    except (smtplib.SMTPException, OSError) as e:
         current_app.logger.warning(
             "Could not connect to SMTP host %s : %s", smtp["host"], e
         )
