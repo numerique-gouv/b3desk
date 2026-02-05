@@ -14,7 +14,7 @@ def test_migrations(app):
 
 
 def test_create_favorite_table(app, user, meeting):
-    """Test migrations, downgrade to a1b2c3d4e5f6, then upgrade again for creating favorite_meetings table with values."""
+    """Test migrations, downgrade to 8d09c9e358f2, then upgrade again for creating favorite_meetings table with values."""
     with app.app_context():
-        downgrade(directory=MIGRATIONS_DIR, revision="a1b2c3d4e5f6")
+        downgrade(directory=MIGRATIONS_DIR, revision="8d09c9e358f2")
         upgrade(directory=MIGRATIONS_DIR)

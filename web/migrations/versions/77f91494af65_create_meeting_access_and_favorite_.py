@@ -1,7 +1,7 @@
 """create meeting_access and favorite intermediate tables.
 
 Revision ID: 77f91494af65
-Revises: 9a4ffc3a0f0d
+Revises: 8d09c9e358f2
 Create Date: 2025-11-25 14:42:01.974634
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.sql import update
 
 # revision identifiers, used by Alembic.
 revision = "77f91494af65"
-down_revision = "a1b2c3d4e5f6"
+down_revision = "8d09c9e358f2"
 branch_labels = None
 depends_on = None
 

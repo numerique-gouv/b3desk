@@ -1,6 +1,6 @@
 """Rename Meeting.user_id to owner_id.
 
-Revision ID: b2c3d4e5f6g7
+Revision ID: 9dd2b54b4b11
 Revises: 77f91494af65
 Create Date: 2025-12-02 10:00:00.000000
 
@@ -9,7 +9,7 @@ Create Date: 2025-12-02 10:00:00.000000
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "b2c3d4e5f6g7"
+revision = "9dd2b54b4b11"
 down_revision = "77f91494af65"
 branch_labels = None
 depends_on = None
