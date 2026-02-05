@@ -8,8 +8,8 @@
     {% if meeting in g.user.get_all_delegated_meetings %}
         <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
     {% endif %}
-    <form action="{{ url_for("meetings.end_meeting") }}" method="POST">
-        {{ form.hidden_tag() }}
+    <form action="{{ url_for("meetings.end_meeting", meeting=meeting) }}" method="POST">
+        {% include 'meeting/csrf.html' %}
         <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin {{ to_the_meeting }} en cours{% endtrans %}</button>
         <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">{% trans %}Patienter jusqu'à la fin {{ of_the_meeting }}{% endtrans %}</a>
     </form>

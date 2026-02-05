@@ -197,11 +197,8 @@ def test_delete_recordings(
     first_recording_id = recordings[0]["recordID"]
 
     response = client_app.post(
-        "/meeting/video/delete",
-        {
-            "id": meeting.id,
-            "recordID": first_recording_id,
-        },
+        f"/meeting/{meeting.id}/video/delete",
+        {"recordID": first_recording_id},
     )
 
     assert (
@@ -230,11 +227,8 @@ def test_delegate_can_delete_recordings(
     first_recording_id = recordings[0]["recordID"]
 
     response = client_app.post(
-        "/meeting/video/delete",
-        {
-            "id": meeting_1_user_2.id,
-            "recordID": first_recording_id,
-        },
+        f"/meeting/{meeting_1_user_2.id}/video/delete",
+        {"recordID": first_recording_id},
     )
 
     assert (

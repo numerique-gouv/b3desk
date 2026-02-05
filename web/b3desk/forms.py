@@ -7,7 +7,6 @@ from wtforms import BooleanField
 from wtforms import EmailField
 from wtforms import FloatField
 from wtforms import Form
-from wtforms import HiddenField
 from wtforms import IntegerField
 from wtforms import StringField
 from wtforms import TextAreaField
@@ -259,10 +258,6 @@ class RecordingForm(FlaskForm):
     name = StringField(
         validators=[validators.DataRequired()], label="Nom de l'enregistrement"
     )
-
-
-class EndMeetingForm(FlaskForm):
-    meeting_id = HiddenField()
 
 
 class DelegationSearchForm(FlaskForm):

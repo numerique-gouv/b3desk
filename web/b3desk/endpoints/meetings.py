@@ -21,7 +21,6 @@ from flask import url_for
 from flask_babel import lazy_gettext as _
 
 from b3desk.forms import DelegationSearchForm
-from b3desk.forms import EndMeetingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
@@ -233,33 +232,22 @@ def save_meeting():
         return render_template(
             "meeting/end.html",
             meeting=meeting,
-            form=EndMeetingForm(data={"meeting_id": meeting_id}),
         )
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/end", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/end", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def end_meeting():
-    """End the meeting on BBB.
-
-    Called from EndMeetingForm.
-    """
-    form = EndMeetingForm(request.form)
-
-    meeting_id = form.data["meeting_id"]
-    meeting = db.session.get(Meeting, meeting_id) or abort(404)
-
-    if g.user == meeting.owner or meeting in g.user.get_all_delegated_meetings:
-        data = BBB(meeting.meetingID).end()
-        if BBB.success(data):
-            flash(
-                f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
-                "success",
-            )
-    else:
-        flash(_("Vous ne pouvez pas terminer cette réunion"), "error")
+@meeting_access_required(AccessLevel.DELEGATE)
+def end_meeting(meeting: Meeting, user: User):
+    """End the meeting on BBB."""
+    data = BBB(meeting.meetingID).end()
+    if BBB.success(data):
+        flash(
+            f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
+            "success",
+        )
     return redirect(url_for("public.welcome"))
 
 
@@ -327,37 +315,30 @@ def delete_meeting():
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/video/delete", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def delete_video_meeting():
+@meeting_access_required(AccessLevel.DELEGATE)
+def delete_video_meeting(meeting: Meeting, user: User):
     """Delete a specific recording from a meeting."""
-    meeting_id = request.form["id"]
-    meeting = db.session.get(Meeting, meeting_id)
-    if meeting.owner_id == g.user.id or g.user in meeting.get_all_delegates:
-        recordID = request.form["recordID"]
-        data = BBB(meeting.meetingID).delete_recordings(recordID)
-        if BBB.success(data):
-            flash(_("Vidéo supprimée"), "success")
-            current_app.logger.info(
-                "Meeting %s %s record %s was deleted by %s",
-                meeting.name,
-                meeting.id,
-                recordID,
-                g.user.email,
-            )
-        else:
-            flash(
-                _(
-                    "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
-                    code=data.get("returncode", ""),
-                    message=data.get("message", ""),
-                ),
-                "error",
-            )
+    recordID = request.form["recordID"]
+    data = BBB(meeting.meetingID).delete_recordings(recordID)
+    if BBB.success(data):
+        flash(_("Vidéo supprimée"), "success")
+        current_app.logger.info(
+            "Meeting %s %s record %s was deleted by %s",
+            meeting.name,
+            meeting.id,
+            recordID,
+            user.email,
+        )
     else:
         flash(
-            _("Vous ne pouvez pas supprimer cette enregistrement"),
+            _(
+                "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
+                code=data.get("returncode", ""),
+                message=data.get("message", ""),
+            ),
             "error",
         )
     return redirect(url_for("public.welcome"))
