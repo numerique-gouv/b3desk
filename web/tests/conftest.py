@@ -463,38 +463,6 @@ def meeting_1_user_2(client_app, user, user_2):
 
 
 @pytest.fixture
-def meeting_with_file(client_app, user_2):
-    from b3desk.models.meetings import Meeting
-    from b3desk.models.meetings import MeetingFiles
-
-    meeting = Meeting(
-        owner=user_2,
-        name="meeting_with_file",
-        maxParticipants=99,
-        duration=999,
-        moderatorPW="moderator",
-        attendeePW="attendee",
-        voiceBridge="222222223",
-        visio_code="922222223",
-        last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
-    )
-    db.session.add(meeting)
-    db.session.commit()
-
-    meeting_file = MeetingFiles(
-        title="original_file.pdf",
-        nc_path="original_file.pdf",
-        meeting_id=meeting.id,
-        is_default=True,
-        is_downloadable=False,
-    )
-    db.session.add(meeting_file)
-    db.session.commit()
-
-    yield meeting
-
-
-@pytest.fixture
 def shadow_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
