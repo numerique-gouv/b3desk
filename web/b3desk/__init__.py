@@ -55,7 +55,7 @@ def setup_configuration(app, config=None):
     if config:
         app.config.from_mapping(config)
 
-    config_obj = MainSettings.model_validate(config or {})
+    config_obj = MainSettings(**config) if config else MainSettings()
     app.config.from_object(config_obj)
 
     # Flask reads the FLASK_DEBUG environment var

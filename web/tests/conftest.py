@@ -15,6 +15,7 @@ from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
 from flask_migrate import Migrate
+from flask_migrate import upgrade
 from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
 from joserfc.jwk import RSAKey
@@ -23,6 +24,7 @@ from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
+MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
 
 
 def pytest_addoption(parser):
@@ -52,8 +54,8 @@ def sqlite_template_db(tmp_path_factory):
 
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{template_db_path}"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+    app.config["SQLALCHEMY_TRACTESTINGK_MODIFICATIONS"] = False
+    app.config["TESTING"] = True
     db.init_app(app)
 
     with app.app_context():
@@ -61,7 +63,7 @@ def sqlite_template_db(tmp_path_factory):
         import b3desk.models.users  # noqa: F401
 
         Migrate(app, db, compare_type=True)
-        db.create_all()
+        upgrade(directory=MIGRATIONS_DIR)
 
     yield Path(template_db_path)
 
@@ -108,6 +110,7 @@ def postgresql_template_db(postgresql_proc):
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["TESTING"] = True
 
     db.init_app(app)
 
@@ -116,7 +119,8 @@ def postgresql_template_db(postgresql_proc):
         import b3desk.models.users  # noqa: F401
 
         Migrate(app, db, compare_type=True)
-        db.create_all()
+        upgrade(directory=MIGRATIONS_DIR)
+
         db.session.remove()
         db.engine.dispose()
 
