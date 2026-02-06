@@ -146,7 +146,10 @@ def download_meeting_files(meeting: Meeting, user: User, file_id=None):
 @user_needed
 def toggledownload(meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
-    if meeting_file.meeting.owner_id != user.id:
+    if (
+        meeting_file.meeting.owner_id != user.id
+        and meeting_file.meeting not in user.get_all_delegated_meetings
+    ):
         abort(403)
 
     data = request.get_json()
