@@ -110,9 +110,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
         flash(_("Enregistrement renommé"), "success")
     else:
         flash(
-            _(
-                "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
-            ).format(
+            _("Impossible de modifier cet enregistrement : {code}, {message}").format(
                 code=result.get("returncode", ""),
                 message=result.get("message", ""),
             ),
@@ -289,7 +287,7 @@ def delete_meeting():
             if data and not BBB.success(data):
                 flash(
                     _(
-                        "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
+                        "Impossible de supprimer les vidéos de ce {meeting_label} : {message}"
                     ).format(
                         meeting_label=current_app.config["WORDINGS"]["meeting_label"],
                         message=data.get("message", ""),
@@ -330,7 +328,7 @@ def delete_video_meeting(meeting: Meeting, user: User):
     else:
         flash(
             _(
-                "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
+                "Impossible de supprimer cette vidéo : %(code)s, %(message)s",
                 code=data.get("returncode", ""),
                 message=data.get("message", ""),
             ),
