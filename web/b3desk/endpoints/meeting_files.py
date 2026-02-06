@@ -121,7 +121,9 @@ def download_meeting_files(meeting: Meeting, user: User, file_id=None):
         return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
     # get file from nextcloud WEBDAV and send it
-    nc_available = is_nextcloud_available(user, verify=True, retry_on_auth_error=True)
+    nc_available = is_nextcloud_available(
+        file_to_send.owner, verify=True, retry_on_auth_error=True
+    )
     db.session.commit()
     if not nc_available:
         flash(
@@ -133,7 +135,7 @@ def download_meeting_files(meeting: Meeting, user: User, file_id=None):
         )
         return redirect(url_for("public.welcome"))
 
-    client = create_webdav_client(user)
+    client = create_webdav_client(file_to_send.owner)
     client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
     return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
 
