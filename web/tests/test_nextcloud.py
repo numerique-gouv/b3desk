@@ -1,8 +1,11 @@
+import shutil
 from datetime import date
+from pathlib import Path
 
 from b3desk import cache
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
+from b3desk.nextcloud import WebDAVClient
 from b3desk.nextcloud import credentials_breaker
 from b3desk.nextcloud import is_auth_error
 from b3desk.nextcloud import is_nextcloud_available
@@ -387,7 +390,7 @@ def test_webdav_error_handler_html_branch(
         def download_sync(self, remote_path, local_path):
             raise NoConnection("nextcloud.test")
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     url = url_for(
         "meeting_files.download_meeting_files",
@@ -414,3 +417,25 @@ def test_is_nextcloud_available_when_nextcloud_breaker_blocked(client_app, user)
     assert is_nextcloud_available(user) is False
 
     nextcloud_breaker.clear(user.nc_locator)
+
+
+def test_webdav_client_with_spaces_in_username(client_app, webdav_server):
+    """WebDAV client works when username contains spaces."""
+    root_path = Path(webdav_server.provider_map["/"].root_folder_path)
+    user_dir = root_path / "remote.php" / "dav" / "files" / "user with spaces"
+    user_dir.mkdir(parents=True, exist_ok=True)
+    (user_dir / "test.txt").write_text("hello")
+
+    try:
+        client = WebDAVClient(
+            {
+                "webdav_hostname": f"http://{webdav_server.config['host']}:{webdav_server.config['port']}",
+                "webdav_root": "/remote.php/dav/files/user with spaces/",
+                "webdav_token": "fake",
+            }
+        )
+
+        info = client.info("test.txt")
+        assert info["name"] == "test.txt"
+    finally:
+        shutil.rmtree(user_dir)
