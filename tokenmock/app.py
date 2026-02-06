@@ -71,7 +71,6 @@ def token():
 
     try:
         response = requests.post(nextcloud_endpoint, data=payload, timeout=30)
-        response.raise_for_status()
         nc_data = response.json()
 
     except requests.exceptions.RequestException as exc:
@@ -81,6 +80,14 @@ def token():
     except json.JSONDecodeError as exc:
         current_app.logger.error(f"Invalid response from Nextcloud: {exc}")
         return jsonify({"error": "Invalid response from Nextcloud"}), 500
+
+    if response.status_code != 200:
+        current_app.logger.error(
+            f"Invalid response from Nextcloud: {nc_data.get('message')}"
+        )
+        return jsonify(
+            {"error": "Invalid response from Nextcloud"}
+        ), response.status_code
 
     response_data = {
         "nctoken": nc_data.get("token"),
