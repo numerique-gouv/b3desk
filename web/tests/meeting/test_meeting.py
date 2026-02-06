@@ -73,35 +73,35 @@ def test_save_new_meeting(
 ):
     """Test that new meeting can be created with all settings."""
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["guestPolicy"] = "on"
-    res.form["webcamsOnlyForModerator"] = "on"
-    res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = False
-    res.form["lockSettingsDisableMic"] = False
-    res.form["lockSettingsDisablePrivateChat"] = False
-    res.form["lockSettingsDisablePublicChat"] = False
-    res.form["lockSettingsDisableNote"] = False
-    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
-    res.form["logoutUrl"] = "https://log.out"
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
-    res.form["autoStartRecording"] = "on"
-    res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
+    res.forms[0]["voiceBridge"] = "123456789"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
-        "Mon meeting de test modifications prises en compte",
+        "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "Mon meeting de test"
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -137,33 +137,33 @@ def test_save_existing_meeting_not_running(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["name"] = "Mon meeting de test"
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["guestPolicy"] = "on"
-    res.form["webcamsOnlyForModerator"] = "on"
-    res.form["muteOnStart"] = "on"
-    res.form["lockSettingsDisableCam"] = False
-    res.form["lockSettingsDisableMic"] = False
-    res.form["lockSettingsDisablePrivateChat"] = False
-    res.form["lockSettingsDisablePublicChat"] = False
-    res.form["lockSettingsDisableNote"] = False
-    res.form["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
-    res.form["logoutUrl"] = "https://log.out"
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
-    res.form["autoStartRecording"] = "on"
-    res.form["allowStartStopRecording"] = "on"
-    res.form["voiceBridge"] = "123456789"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
+    res.forms[0]["voiceBridge"] = "123456789"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    assert meeting.user_id == 1
+    assert meeting.owner_id == 1
     assert meeting.name == "meeting"  # Name can not be edited
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
     assert meeting.maxParticipants == 5
@@ -198,18 +198,19 @@ def test_save_existing_meeting_running(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert res.template == "meeting/end.html"
+    assert "Vous n'êtes pas propriétaire" not in res
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
 
-    res = res.form.submit()
-    assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
+    res = res.forms[0].submit()
+    assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
 
 
 def test_save_moderatorOnlyMessage_too_long(
@@ -218,8 +219,8 @@ def test_save_moderatorOnlyMessage_too_long(
     """Test that validation fails when moderator message is too long."""
     res = client_app.get("/meeting/new")
     moderator_only_message = "a" * (MODERATOR_ONLY_MESSAGE_MAXLENGTH + 1)
-    res.form["moderatorOnlyMessage"] = moderator_only_message
-    res = res.form.submit()
+    res.forms[0]["moderatorOnlyMessage"] = moderator_only_message
+    res = res.forms[0].submit()
 
     res.mustcontain("Le formulaire contient des erreurs")
     res.mustcontain(moderator_only_message)
@@ -232,16 +233,16 @@ def test_save_no_recording_by_default(
 ):
     """Test that recording is disabled by default."""
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
-        "Mon meeting de test modifications prises en compte",
+        "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
     meeting = db.session.get(Meeting, 1)
@@ -258,19 +259,19 @@ def test_save_meeting_in_no_recording_environment(
     client_app.app.config["RECORDING"] = False
 
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["maxParticipants"] = 5
-    res.form["duration"] = 60
-    res.form["moderatorPW"] = "Motdepasse1"
-    res.form["attendeePW"] = "Motdepasse2"
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
 
-    assert "allowStartStopRecording" not in res.form.fields
-    assert "autoStartRecording" not in res.form.fields
+    assert "allowStartStopRecording" not in res.forms[0].fields
+    assert "autoStartRecording" not in res.forms[0].fields
 
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert (
         "success",
-        "Mon meeting de test modifications prises en compte",
+        "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
     assert len(Meeting.query.all()) == 1
@@ -314,7 +315,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    create_bbb_meeting(meeting, meeting.user)
+    create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -420,10 +421,10 @@ def test_create_with_only_a_default_file(
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
     )
-    meeting_file.owner = meeting.user
+    meeting_file.owner = meeting.owner
     meeting.files = [meeting_file]
 
-    create_bbb_meeting(meeting, meeting.user)
+    create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -528,10 +529,10 @@ def test_create_with_files(
         created_at=datetime.date(2024, 3, 19),
         meeting_id=meeting.id,
     )
-    meeting_file.owner = meeting.user
+    meeting_file.owner = meeting.owner
     meeting.files = [meeting_file]
 
-    create_bbb_meeting(meeting, meeting.user)
+    create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -585,11 +586,11 @@ def test_create_with_files(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/insertDocument"
     )
 
-    filehash = get_meeting_file_hash(meeting.user.id, meeting_file.nc_path)
+    filehash = get_meeting_file_hash(meeting.owner.id, meeting_file.nc_path)
 
     xml_content = mocked_background_upload.call_args.args[1]
     assert xml_content.startswith(
-        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/{filehash}/{meeting.user.id}/"
+        f"<?xml version='1.0' encoding='UTF-8'?> <modules>  <module name='presentation'> <document downloadable='false' url='http://b3desk.test/ncdownload/{filehash}/{meeting.owner.id}/"
     )
     assert xml_content.endswith(
         f"{tmp_path.name}/foobar.jpg' filename='file_title' /> </module></modules>"
@@ -601,8 +602,8 @@ def test_create_without_logout_url_gets_default(
 ):
     """Test that default logout URL is used when none specified."""
     res = client_app.get("/meeting/new")
-    res = res.form.submit()
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    res = res.forms[0].submit()
+    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
 
     meeting = db.session.get(Meeting, 1)
     assert meeting
@@ -623,14 +624,14 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     assert len(Meeting.query.all()) == 1
 
     res = client_app.get("/meeting/edit/1")
-    res.form["logoutUrl"] = ""
-    res = res.form.submit()
+    res.forms[0]["logoutUrl"] = ""
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
     assert len(Meeting.query.all()) == 1
     meeting = db.session.get(Meeting, 1)
 
-    create_bbb_meeting(meeting, meeting.user)
+    create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -738,29 +739,29 @@ def test_meeting_link_retrocompatibility(meeting):
     https://github.com/numerique-gouv/b3desk/issues/128
     """
     old_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|moderator".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|moderator".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.moderator}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|attendee".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|attendee".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.attendee}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|authenticated".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|authenticated".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.user.hash}|attendee|meeting|{Role.authenticated}".encode()
+        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
 
@@ -921,35 +922,20 @@ def test_add_and_remove_favorite(
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
-    assert not meeting_3.is_favorite
+    assert authenticated_user not in meeting_3.favorite_of
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
-    assert meeting_3.is_favorite
+    assert authenticated_user in meeting_3.favorite_of
 
     response = client_app.post(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_3.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
-    assert not meeting_3.is_favorite
-
-
-def test_add_favorite_by_wrong_user_failed(
-    client_app,
-    bbb_response,
-    authenticated_user_2,
-    meeting,
-    meeting_2,
-    meeting_3,
-    shadow_meeting,
-):
-    """Test that user cannot favorite another user's meeting."""
-    response = client_app.get("/welcome", status=200)
-    response.mustcontain("Berenice Cooler")
-    response = client_app.post("/meeting/favorite", {"id": meeting_3.id}, status=403)
+    assert authenticated_user not in meeting_3.favorite_of
 
 
 def test_create_meeting_with_wrong_PIN(
@@ -959,24 +945,24 @@ def test_create_meeting_with_wrong_PIN(
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     res = client_app.get("/meeting/new")
-    res.form["name"] = "Mon meeting de test"
-    res.form["voiceBridge"] = "1234567890"
-    res = res.form.submit()
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["voiceBridge"] = "1234567890"
+    res = res.forms[0].submit()
     res.mustcontain("Entez un PIN de 9 chiffres")
-    res.form["voiceBridge"] = "12345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "12345678"
+    res = res.forms[0].submit()
     res.mustcontain("Entez un PIN de 9 chiffres")
-    res.form["voiceBridge"] = "a12345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "a12345678"
+    res = res.forms[0].submit()
     res.mustcontain("Le code PIN est composé de chiffres uniquement")
-    res.form["voiceBridge"] = "12azer;:!"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "12azer;:!"
+    res = res.forms[0].submit()
     res.mustcontain("Le code PIN est composé de chiffres uniquement")
-    res.form["voiceBridge"] = "012345678"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "012345678"
+    res = res.forms[0].submit()
     res.mustcontain("Le premier chiffre doit être différent de 0")
-    res.form["voiceBridge"] = "111111111"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "111111111"
+    res = res.forms[0].submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
     res = client_app.post("/meeting/delete", {"id": meeting.id})
@@ -986,8 +972,8 @@ def test_create_meeting_with_wrong_PIN(
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "111111111"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "111111111"
+    res = res.forms[0].submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
 
@@ -1017,7 +1003,7 @@ def test_generate_existing_pin(
 def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
     """Test that meeting can be saved without making any changes."""
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
-    res = res.form.submit()
+    res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
@@ -1038,9 +1024,9 @@ def test_delete_old_voiceBridges_with_form(
     one_year_after = today + datetime.timedelta(days=366)
 
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "999999999"
-    res = res.form.submit()
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    res.forms[0]["voiceBridge"] = "999999999"
+    res = res.forms[0].submit()
+    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
 
     res = client_app.get("/").follow()
     res = client_app.post("/meeting/delete", {"id": "1"})
@@ -1071,10 +1057,10 @@ def test_delete_old_voiceBridges_with_form(
     iam_server.consent(iam_user)
 
     res = client_app.get("/meeting/new")
-    res.form["voiceBridge"] = "999999999"
-    res = res.form.submit()
+    res.forms[0]["voiceBridge"] = "999999999"
+    res = res.forms[0].submit()
     res.mustcontain(no="Ce code PIN est déjà utilisé")
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 0
     assert previous_voiceBridges == []
@@ -1162,7 +1148,7 @@ def test_visio_code_exists(
 def test_assign_unique_voice_bridge(client_app, user):
     """Test that assign_unique_voice_bridge assigns a valid unique voice bridge."""
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="test meeting",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -1194,3 +1180,72 @@ def test_get_available_visio_code(client_app, authenticated_user):
 def test_get_available_visio_code_no_user(client_app):
     """Test that unauthenticated user is redirected from visio code endpoint."""
     client_app.get("/meeting/available-visio-code", status=302)
+
+
+def test_delegate_can_save_existing_delegated_meeting_not_running(
+    client_app,
+    authenticated_user,
+    meeting_1_user_2,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    """Test that existing meeting can be updated when not running."""
+    assert len(Meeting.query.all()) == 1
+
+    res = client_app.get("/meeting/edit/1")
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
+    res.forms[0]["maxParticipants"] = 5
+    res.forms[0]["duration"] = 60
+    res.forms[0]["guestPolicy"] = "on"
+    res.forms[0]["webcamsOnlyForModerator"] = "on"
+    res.forms[0]["muteOnStart"] = "on"
+    res.forms[0]["lockSettingsDisableCam"] = False
+    res.forms[0]["lockSettingsDisableMic"] = False
+    res.forms[0]["lockSettingsDisablePrivateChat"] = False
+    res.forms[0]["lockSettingsDisablePublicChat"] = False
+    res.forms[0]["lockSettingsDisableNote"] = False
+    res.forms[0]["moderatorOnlyMessage"] = "Bienvenue aux modérateurs"
+    res.forms[0]["logoutUrl"] = "https://log.out"
+    res.forms[0]["moderatorPW"] = "Motdepasse1"
+    res.forms[0]["attendeePW"] = "Motdepasse2"
+    res.forms[0]["autoStartRecording"] = "on"
+    res.forms[0]["allowStartStopRecording"] = "on"
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        res.forms[0]["voiceBridge"] = "123456789"
+
+    res = res.forms[0].submit()
+    assert (
+        "success",
+        "delegated meeting modifications prises en compte",
+    ) in res.flashes
+
+    assert len(Meeting.query.all()) == 1
+    meeting = db.session.get(Meeting, 1)
+
+    assert meeting.owner_id == 2
+    assert meeting.name == "delegated meeting"  # Name can not be edited
+    assert meeting.welcome == "Bienvenue dans mon meeting de test"
+    assert meeting.maxParticipants == 5
+    assert meeting.duration == 60
+    assert meeting.guestPolicy is True
+    assert meeting.webcamsOnlyForModerator is True
+    assert meeting.muteOnStart is True
+    assert meeting.lockSettingsDisableCam is True
+    assert meeting.lockSettingsDisableMic is True
+    assert meeting.lockSettingsDisablePrivateChat is True
+    assert meeting.lockSettingsDisablePublicChat is True
+    assert meeting.lockSettingsDisableNote is True
+    assert meeting.moderatorOnlyMessage == "Bienvenue aux modérateurs"
+    assert meeting.logoutUrl == "https://log.out"
+    assert meeting.moderatorPW == "Motdepasse1"
+    assert meeting.attendeePW == "Motdepasse2"
+    assert meeting.record is True
+    assert meeting.autoStartRecording is True
+    assert meeting.allowStartStopRecording is True
+    if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
+        assert meeting.voiceBridge == "123456789"
+    assert (
+        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        in caplog.text
+    )

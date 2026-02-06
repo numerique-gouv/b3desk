@@ -26,6 +26,7 @@ from werkzeug.utils import secure_filename
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
 from b3desk.models.bbb import BBB
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -36,7 +37,7 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
-from ..session import meeting_owner_needed
+from ..session import meeting_access_required
 from ..session import user_needed
 
 REQUEST_TIMEOUT = 10
@@ -46,8 +47,8 @@ bp = Blueprint("meeting_files", __name__)
 @bp.route("/meeting/files/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def edit_meeting_files(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
 
@@ -56,7 +57,7 @@ def edit_meeting_files(meeting: Meeting, owner: User):
         return redirect(url_for("public.welcome"))
 
     g.is_nextcloud_available = is_nextcloud_available(
-        owner, verify=True, retry_on_auth_error=True
+        user, verify=True, retry_on_auth_error=True
     )
     db.session.commit()
 
@@ -70,8 +71,8 @@ def edit_meeting_files(meeting: Meeting, owner: User):
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def add_meeting_files(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or file upload."""
     data = request.get_json()
 
@@ -87,25 +88,18 @@ def add_meeting_files(meeting: Meeting, owner: User):
     return {"msg": "no file provided"}, 400
 
 
-@bp.route("/meeting/files/<meeting:meeting>/")
-@bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
+@bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
+@meeting_access_required(AccessLevel.DELEGATE)
+def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Download a meeting file from URL or Nextcloud."""
+    if meeting_file.meeting_id != meeting.id:
+        abort(404)
+
     tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
     tmp_name = os.path.join(tmp_download_dir, secrets.token_urlsafe(32))
-    file_to_send = None
-
-    for current_file in meeting.files:
-        if current_file.id == file_id:
-            file_to_send = current_file
-            break
-
-    if not file_to_send:
-        return {"msg": "file not found"}, 404
 
     @after_this_request
     def cleanup(response):
@@ -113,14 +107,16 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
             os.remove(tmp_name)
         return response
 
-    if file_to_send.url:
-        response = requests.get(file_to_send.url)
+    if meeting_file.url:
+        response = requests.get(meeting_file.url)
         with open(tmp_name, "wb") as f:
             f.write(response.content)
-        return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
+        return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
     # get file from nextcloud WEBDAV and send it
-    nc_available = is_nextcloud_available(owner, verify=True, retry_on_auth_error=True)
+    nc_available = is_nextcloud_available(
+        meeting_file.owner, verify=True, retry_on_auth_error=True
+    )
     db.session.commit()
     if not nc_available:
         flash(
@@ -132,19 +128,22 @@ def download_meeting_files(meeting: Meeting, owner: User, file_id=None):
         )
         return redirect(url_for("public.welcome"))
 
-    client = create_webdav_client(owner)
-    client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
-    return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
+    client = create_webdav_client(meeting_file.owner)
+    client.download_sync(remote_path=meeting_file.nc_path, local_path=tmp_name)
+    return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
 
-@bp.route("/meeting/files/<meetingfiles:meeting_file>/toggledownload", methods=["POST"])
+@bp.route(
+    "/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/toggledownload",
+    methods=["POST"],
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@user_needed
-def toggledownload(meeting_file: MeetingFiles, user: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
-    if meeting_file.meeting.user_id != user.id:
-        abort(403)
+    if meeting_file.meeting_id != meeting.id:
+        abort(404)
 
     data = request.get_json()
     meeting_file.is_downloadable = data["value"]
@@ -342,14 +341,14 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 @bp.route("/meeting/files/<meeting:meeting>/upload", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def upload_file_chunks(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
     file = request.files["dropzoneFiles"]
     upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
     Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
     save_path = os.path.join(
-        upload_chunk_dir, secure_filename(f"{owner.id}-{meeting.id}-{file.filename}")
+        upload_chunk_dir, secure_filename(f"{user.id}-{meeting.id}-{file.filename}")
     )
     current_chunk = int(request.form["dzchunkindex"])
 
@@ -398,7 +397,10 @@ def delete_meeting_file():
     if meeting_file is None:
         return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
 
-    if meeting_file.meeting.user_id != g.user.id:
+    if (
+        meeting_file.meeting.owner_id != g.user.id
+        and meeting_file.meeting not in g.user.get_all_delegated_meetings
+    ):
         return {
             "id": data["id"],
             "msg": _("Vous ne pouvez pas supprimer cet élément"),

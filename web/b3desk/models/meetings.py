@@ -11,6 +11,7 @@
 import random
 from datetime import datetime
 from datetime import timedelta
+from enum import IntEnum
 
 from flask import current_app
 from flask_babel import lazy_gettext as _
@@ -26,6 +27,27 @@ from b3desk.utils import secret_key
 
 from . import db
 from .users import User  # noqa: F401
+
+
+class AccessLevel(IntEnum):
+    NONE = 0
+    DELEGATE = 1
+
+
+class MeetingAccess(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
+    level = db.Column(db.Integer, nullable=False)
+
+    user = db.relationship("User", backref="user_meeting_access")
+    meeting = db.relationship("Meeting", backref="meeting_access")
+
+
+favorite_table = db.Table(
+    "favorite",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+)
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
 DEFAULT_MAX_PARTICIPANTS = 350
@@ -83,14 +105,13 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    user = db.relationship("User")
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner = db.relationship("User")
 
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    is_favorite = db.Column(db.Boolean, unique=False, default=False)
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
@@ -121,6 +142,10 @@ class Meeting(db.Model):
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
+    favorite_of = db.relationship(
+        "User", secondary=favorite_table, back_populates="favorites"
+    )
+
     _bbb = None
 
     @property
@@ -139,7 +164,7 @@ class Meeting(db.Model):
             fid = f"meeting-persistent-{self.id}"
         else:
             fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.user.hash if self.user else "")
+        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
 
     @property
     def fake_id(self):
@@ -161,6 +186,17 @@ class Meeting(db.Model):
     def fake_id(self):
         """Delete the temporary fake ID."""
         del self._fake_id
+
+    @property
+    def get_all_delegates(self):
+        return (
+            User.query.join(MeetingAccess)
+            .filter(
+                MeetingAccess.meeting_id == self.id,
+                MeetingAccess.level == AccessLevel.DELEGATE,
+            )
+            .all()
+        )
 
 
 class PreviousVoiceBridge(db.Model):
@@ -302,7 +338,7 @@ def create_and_save_shadow_meeting(user):
         guestPolicy=False,
         logo=None,
         is_shadow=True,
-        user=user,
+        owner=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
     )
@@ -318,7 +354,7 @@ def get_or_create_shadow_meeting(user):
         shadow_meeting
         for shadow_meeting in db.session.query(Meeting).filter(
             Meeting.is_shadow,
-            Meeting.user_id == user.id,
+            Meeting.owner_id == user.id,
         )
     ]
     if len(shadow_meetings) > 1:

@@ -58,7 +58,7 @@
   <h1 class="fr-h2">{% trans %}Créer{% endtrans %} {{ a_meeting }}</h1>
 {% endif %}
 
-<form id="meeting-form" action="{{ url_for("meetings.save_meeting") }}" method="POST">
+<form id="meeting-form" action="{{ request.url }}" method="POST">
   {% if form.errors %}
     <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
   {% endif %}
@@ -170,7 +170,7 @@
   </div>
   <div class="fr-mt-4w">
     {% if meeting is not none %}
-      <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Enregistrer{% endtrans %}</button>
+      <button type="submit" class="fr-btn fr-btn--primary {{ 'need-confirm' if meeting in g.user.get_all_delegated_meetings }}">{% trans %}Enregistrer{% endtrans %}</button>
     {% else %}
       <button type="submit" class="fr-btn">{% trans %}Créer la salle{% endtrans %}</button>
     {% endif %}

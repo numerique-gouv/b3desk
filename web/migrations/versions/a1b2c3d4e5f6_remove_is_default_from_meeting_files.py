@@ -6,6 +6,7 @@ Create Date: 2026-01-14
 
 """
 
+import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -21,4 +22,5 @@ def upgrade():
 
 
 def downgrade():
-    pass
+    with op.batch_alter_table("meeting_files", schema=None) as batch_op:
+        batch_op.add_column(sa.Column("is_default", sa.Boolean(), nullable=True))
