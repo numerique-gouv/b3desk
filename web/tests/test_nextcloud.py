@@ -10,7 +10,6 @@ from b3desk.nextcloud import is_nextcloud_unavailable_error
 from b3desk.nextcloud import nextcloud_breaker
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.nextcloud import user_auth_breaker
-from flask import url_for
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
@@ -389,11 +388,7 @@ def test_webdav_error_handler_html_branch(
 
     mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
 
-    url = url_for(
-        "meeting_files.download_meeting_files",
-        meeting=meeting,
-        file_id=meeting_file.id,
-    )
+    url = f"/meeting/files/{meeting.id}/{meeting_file.id}/download"
     response = client_app.get(url, headers={"Accept": "text/html"}, status=302)
 
     assert any(

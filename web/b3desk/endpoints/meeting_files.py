@@ -88,25 +88,18 @@ def add_meeting_files(meeting: Meeting, user: User):
     return {"msg": "no file provided"}, 400
 
 
-@bp.route("/meeting/files/<meeting:meeting>/")
-@bp.route("/meeting/files/<meeting:meeting>/<int:file_id>")
+@bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_access_required(AccessLevel.DELEGATE)
-def download_meeting_files(meeting: Meeting, user: User, file_id=None):
+def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Download a meeting file from URL or Nextcloud."""
+    if meeting_file.meeting_id != meeting.id:
+        abort(404)
+
     tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
     Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
     tmp_name = os.path.join(tmp_download_dir, secrets.token_urlsafe(32))
-    file_to_send = None
-
-    for current_file in meeting.files:
-        if current_file.id == file_id:
-            file_to_send = current_file
-            break
-
-    if not file_to_send:
-        return {"msg": "file not found"}, 404
 
     @after_this_request
     def cleanup(response):
@@ -114,15 +107,15 @@ def download_meeting_files(meeting: Meeting, user: User, file_id=None):
             os.remove(tmp_name)
         return response
 
-    if file_to_send.url:
-        response = requests.get(file_to_send.url)
+    if meeting_file.url:
+        response = requests.get(meeting_file.url)
         with open(tmp_name, "wb") as f:
             f.write(response.content)
-        return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
+        return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
     # get file from nextcloud WEBDAV and send it
     nc_available = is_nextcloud_available(
-        file_to_send.owner, verify=True, retry_on_auth_error=True
+        meeting_file.owner, verify=True, retry_on_auth_error=True
     )
     db.session.commit()
     if not nc_available:
@@ -135,22 +128,22 @@ def download_meeting_files(meeting: Meeting, user: User, file_id=None):
         )
         return redirect(url_for("public.welcome"))
 
-    client = create_webdav_client(file_to_send.owner)
-    client.download_sync(remote_path=file_to_send.nc_path, local_path=tmp_name)
-    return send_file(tmp_name, as_attachment=True, download_name=file_to_send.title)
+    client = create_webdav_client(meeting_file.owner)
+    client.download_sync(remote_path=meeting_file.nc_path, local_path=tmp_name)
+    return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
 
-@bp.route("/meeting/files/<meetingfiles:meeting_file>/toggledownload", methods=["POST"])
+@bp.route(
+    "/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/toggledownload",
+    methods=["POST"],
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@user_needed
-def toggledownload(meeting_file: MeetingFiles, user: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
-    if (
-        meeting_file.meeting.owner_id != user.id
-        and meeting_file.meeting not in user.get_all_delegated_meetings
-    ):
-        abort(403)
+    if meeting_file.meeting_id != meeting.id:
+        abort(404)
 
     data = request.get_json()
     meeting_file.is_downloadable = data["value"]

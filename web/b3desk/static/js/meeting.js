@@ -7,7 +7,7 @@ function toggleIsDownloadable(e){
     let newValue = e.target.checked;
     let csrf_token = document.getElementsByName("csrf_token")[0].value;
 
-    fetch(toggle_download_url_base + idFileSelected + "/toggledownload", {
+    fetch(meeting_files_url_base + idFileSelected + "/toggledownload", {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -92,7 +92,7 @@ function append_file_to_fileslist(title, id, date) {
 
     buttonLink.classList.add('fr-btn','fr-icon-download-fill');
     buttonLink.setAttribute('title', 'Télécharger');
-    aLink.setAttribute('href', download_meeting_file_url + id);
+    aLink.setAttribute('href', meeting_files_url_base + id + '/download');
     aLink.appendChild(buttonLink);
     tdDownload.appendChild(aLink);
     inputIsDl.classList.add('fr-toggle__input');

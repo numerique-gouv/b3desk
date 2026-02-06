@@ -246,7 +246,7 @@ def test_download_meeting_file_from_nextcloud(
     url = url_for(
         "meeting_files.download_meeting_files",
         meeting=meeting,
-        file_id=meeting_file.id,
+        meeting_file=meeting_file,
     )
     response = client_app.get(url)
 
@@ -275,7 +275,7 @@ def test_download_meeting_file_without_webdav_credentials(
     url = url_for(
         "meeting_files.download_meeting_files",
         meeting=meeting,
-        file_id=meeting_file.id,
+        meeting_file=meeting_file,
     )
     response = client_app.get(url, status=302)
 
@@ -822,32 +822,17 @@ def test_add_meeting_files_invalid_from(client_app, authenticated_user, meeting)
 def test_download_meeting_file_not_found(client_app, authenticated_user, meeting):
     """Test download when file_id doesn't match any file in meeting."""
     response = client_app.get(
-        url_for(
-            "meeting_files.download_meeting_files",
-            meeting=meeting,
-            file_id=99999,
-        ),
+        f"/meeting/files/{meeting.id}/99999/download",
         expect_errors=True,
     )
 
     assert response.status_int == 404
-    assert "file not found" in response.json["msg"]
 
 
 def test_download_meeting_file_from_url(
     client_app, authenticated_user, meeting, mocker
 ):
     """Test downloading a file that has a URL (not from Nextcloud)."""
-    # Add a first file that won't match (to cover the loop continue branch)
-    other_file = MeetingFiles(
-        url="https://example.com/other.pdf",
-        title="other.pdf",
-        created_at=date.today(),
-        meeting_id=meeting.id,
-        owner=meeting.owner,
-    )
-    db.session.add(other_file)
-
     meeting_file = MeetingFiles(
         url="https://example.com/doc.pdf",
         title="doc.pdf",
@@ -866,7 +851,7 @@ def test_download_meeting_file_from_url(
         url_for(
             "meeting_files.download_meeting_files",
             meeting=meeting,
-            file_id=meeting_file.id,
+            meeting_file=meeting_file,
         ),
     )
 
@@ -960,7 +945,11 @@ def test_toggledownload_success(client_app, authenticated_user, meeting):
     db.session.commit()
 
     response = client_app.post(
-        f"/meeting/files/{meeting_file.id}/toggledownload",
+        url_for(
+            "meeting_files.toggledownload",
+            meeting=meeting,
+            meeting_file=meeting_file,
+        ),
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
     )
@@ -971,10 +960,10 @@ def test_toggledownload_success(client_app, authenticated_user, meeting):
     assert meeting_file.is_downloadable is True
 
 
-def test_toggledownload_not_found(client_app, authenticated_user):
+def test_toggledownload_not_found(client_app, authenticated_user, meeting):
     """Test toggle on non-existent file returns 404."""
     response = client_app.post(
-        "/meeting/files/99999/toggledownload",
+        f"/meeting/files/{meeting.id}/99999/toggledownload",
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
         expect_errors=True,
@@ -1005,13 +994,63 @@ def test_toggledownload_not_owner(client_app, authenticated_user, meeting):
     db.session.commit()
 
     response = client_app.post(
-        f"/meeting/files/{meeting_file.id}/toggledownload",
+        url_for(
+            "meeting_files.toggledownload",
+            meeting=other_meeting,
+            meeting_file=meeting_file,
+        ),
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
         expect_errors=True,
     )
 
     assert response.status_int == 403
+
+
+def test_toggledownload_file_not_in_meeting(
+    client_app, authenticated_user, meeting, meeting_2
+):
+    """Test toggle returns 404 when file doesn't belong to meeting in URL."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_2.id,
+        owner=meeting_2.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+
+
+def test_download_file_not_in_meeting(
+    client_app, authenticated_user, meeting, meeting_2
+):
+    """Test download returns 404 when file doesn't belong to meeting in URL."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_2.id,
+        owner=meeting_2.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.get(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/download",
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
 
 
 def test_delete_meeting_file_success(client_app, authenticated_user, meeting):
