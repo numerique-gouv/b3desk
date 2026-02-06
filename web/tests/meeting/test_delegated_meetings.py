@@ -57,7 +57,6 @@ def test_add_and_remove_favorite_delegated_meeting(
         "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
         {"id": meeting_1_user_2.id},
     ).follow()
-    print(response.context["meetings"])
     assert response.context["meetings"] == [meeting_1_user_2, meeting_2, meeting]
     assert authenticated_user in meeting_1_user_2.favorite_of
 
