@@ -1172,7 +1172,7 @@ class MainSettings(BaseSettings):
     """Le temps de mise en cache (en secondes) des réponses aux requêtes GET à
     l'API BBB."""
 
-    BIGBLUEBUTTON_REQUEST_TIMEOUT: datetime.timedelta = datetime.timedelta(seconds=2)
+    BIGBLUEBUTTON_REQUEST_TIMEOUT: int = 2
     """BBB request timeout
 
     Timeout for BBB request expressed in seconds in logs
