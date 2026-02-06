@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from urllib.parse import unquote
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -14,10 +15,21 @@ from webdav3.exceptions import WebDavException
 
 from b3desk import cache
 
-NEXTCLOUD_BACKOFF_INITIAL = 5
-NEXTCLOUD_BACKOFF_MULTIPLIER = 2
-NEXTCLOUD_BACKOFF_MAX = 300
+NEXTCLOUD_BACKOFF_INITIAL = 1
+NEXTCLOUD_BACKOFF_MULTIPLIER = 1
+NEXTCLOUD_BACKOFF_MAX = 1
 NEXTCLOUD_REQUEST_TIMEOUT = 10
+
+
+class WebDAVClient(webdavClient):
+    """WebDAV client with fix for spaces in webdav_root.
+
+    Workaround for https://github.com/ezhov-evgeny/webdav-client-python-3/issues/108
+    The fix exists in the `develop` branch but was never merged to `master`/released.
+    """
+
+    def get_full_path(self, urn):
+        return f"{unquote(self.webdav.root or '')}{urn.path()}"
 
 
 class CircuitBreaker:
@@ -134,7 +146,7 @@ def is_auth_error(error):
     return isinstance(error, ResponseErrorCode) and error.code in (401, 403)
 
 
-def create_webdav_client(user) -> webdavClient | None:
+def create_webdav_client(user) -> WebDAVClient | None:
     """Create a WebDAV client configured for a user's Nextcloud account.
 
     Also stores nc_locator in g for error handler access.
@@ -150,7 +162,7 @@ def create_webdav_client(user) -> webdavClient | None:
         "webdav_verbose": True,
         "webdav_token": user.nc_token,
     }
-    return webdavClient(options)
+    return WebDAVClient(options)
 
 
 def make_nextcloud_credentials_request(url, payload, headers):
