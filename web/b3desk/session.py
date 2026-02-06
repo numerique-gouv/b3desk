@@ -37,10 +37,10 @@ def user_needed(view_function):
 
 
 def meeting_access_required(level=None):
-    """Require that the authenticated user owns the meeting or has the required access level."""
+    """Require that the user owns the meeting or has at least the given access level."""
     from b3desk.models import db
-    from b3desk.models.meetings import AccessLevel
     from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingAccess
 
     def wrapper(view_function):
         @wraps(view_function)
@@ -50,17 +50,17 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            is_owner = meeting.owner == g.user
-            is_delegate = (
-                level is not None
-                and level >= AccessLevel.DELEGATE
-                and meeting in g.user.get_all_delegated_meetings
-            )
+            if meeting.owner == g.user:
+                return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
-            if not is_owner and not is_delegate:
-                abort(403)
+            if level is not None:
+                access = MeetingAccess.query.filter_by(
+                    user_id=g.user.id, meeting_id=meeting.id
+                ).one_or_none()
+                if access and access.level >= level:
+                    return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
-            return view_function(*args, user=g.user, meeting=meeting, **kwargs)
+            abort(403)
 
         return decorator
 
