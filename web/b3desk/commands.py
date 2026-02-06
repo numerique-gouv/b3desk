@@ -11,7 +11,7 @@ bp = Blueprint("commands", __name__, cli_group=None)
 @click.argument("email")
 def get_apps_id(email):
     """CLI command to retrieve user ID from secondary identity provider using email."""
-    from b3desk.models.users import get_secondary_identity_provider_id_from_email
+    from b3desk.nextcloud import get_secondary_identity_provider_id_from_email
 
     try:
         secondary_id = get_secondary_identity_provider_id_from_email(email)
