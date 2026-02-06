@@ -73,10 +73,7 @@ class MeetingForm(FlaskForm):
         ),
         validators=[
             validators.DataRequired(),
-            validators.length(
-                max=MAX_MEETING_NAME_LENGTH,
-                message=_("Le texte est trop long"),
-            ),
+            validators.length(max=MAX_MEETING_NAME_LENGTH),
         ],
     )
     welcome = TextAreaField(
@@ -90,12 +87,7 @@ class MeetingForm(FlaskForm):
             meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
-        validators=[
-            validators.length(
-                max=MODERATOR_ONLY_MESSAGE_MAXLENGTH,
-                message=_("Le texte est trop long"),
-            )
-        ],
+        validators=[validators.length(max=MODERATOR_ONLY_MESSAGE_MAXLENGTH)],
     )
     maxParticipants = IntegerField(
         label=_("Nombre maximal de participants"),
@@ -186,12 +178,7 @@ class MeetingForm(FlaskForm):
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
-        validators=[
-            validators.length(
-                max=MAX_LOGOUTURL_LENGTH,
-                message=_("Le texte est trop long"),
-            )
-        ],
+        validators=[validators.length(max=MAX_LOGOUTURL_LENGTH)],
         render_kw={"placeholder": current_app.config["MEETING_LOGOUT_URL"]},
     )
     moderatorPW = StringField(
