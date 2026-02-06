@@ -11,6 +11,7 @@
 import hashlib
 import logging
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
 from urllib.parse import urlparse
 from xml.etree import ElementTree
@@ -74,9 +75,9 @@ class BBB:
         try:
             response = session.send(
                 request,
-                timeout=current_app.config[
-                    "BIGBLUEBUTTON_REQUEST_TIMEOUT"
-                ].total_seconds(),
+                timeout=timedelta(
+                    seconds=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"]
+                ).total_seconds(),
             )
         except requests.Timeout as err:
             logger.warning("BBB API timeout error %s", err)
