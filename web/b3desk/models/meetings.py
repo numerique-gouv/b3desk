@@ -43,12 +43,6 @@ class MeetingAccess(db.Model):
     meeting = db.relationship("Meeting", backref="meeting_access")
 
 
-def get_meeting_access(user_id, meeting_id):
-    return MeetingAccess.query.filter_by(
-        user_id=user_id, meeting_id=meeting_id
-    ).one_or_none()
-
-
 favorite_table = db.Table(
     "favorite",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),

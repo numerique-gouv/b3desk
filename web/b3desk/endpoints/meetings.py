@@ -34,7 +34,6 @@ from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import assign_unique_visio_code
-from b3desk.models.meetings import get_meeting_access
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
@@ -433,7 +432,9 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
-        access = get_meeting_access(delegate.id, meeting.id)
+        access = MeetingAccess.query.filter_by(
+            user_id=delegate.id, meeting_id=meeting.id
+        ).one()
         db.session.delete(access)
         db.session.commit()
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
