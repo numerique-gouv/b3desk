@@ -243,7 +243,7 @@ class MeetingWithRecordForm(MeetingForm):
         description=_(
             "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
         ),
-        default=False,
+        default=True,
     )
     autoStartRecording = BooleanField(
         label=_("Enregistrement automatique"),
