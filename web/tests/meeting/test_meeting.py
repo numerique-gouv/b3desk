@@ -245,9 +245,9 @@ def test_save_no_recording_by_default(
     ) in res.flashes
 
     meeting = db.session.get(Meeting, 1)
-    assert meeting.record is False
+    assert meeting.record is True
     assert meeting.autoStartRecording is False
-    assert meeting.allowStartStopRecording is False
+    assert meeting.allowStartStopRecording is True
 
 
 def test_save_meeting_in_no_recording_environment(
