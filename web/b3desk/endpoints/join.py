@@ -157,7 +157,11 @@ def waiting_meeting(
         "seconds_before_refresh", int(INITIAL_REFRESH_DELAY.total_seconds())
     )
     quick_meeting = request.args.get("quick_meeting", False)
-
+    current_app.logger.info(
+        "%s is not running, new connection attempt in %s seconds",
+        meeting.name,
+        seconds_before_refresh,
+    )
     return render_template(
         "meeting/wait.html",
         meeting_fake_id=meeting_fake_id,
@@ -193,7 +197,11 @@ def join_meeting():
             form["seconds_before_refresh"].data * INCREASE_REFRESH_TIME,
             int(MAXIMUM_REFRESH_DELAY.total_seconds()),
         )
-
+    seconds_before_refresh = (
+        int(INITIAL_REFRESH_DELAY.total_seconds())
+        if seconds_before_refresh == 0
+        else seconds_before_refresh
+    )
     quick_meeting = None
     if "quick_meeting" in form:
         quick_meeting = form["quick_meeting"].data
@@ -249,6 +257,7 @@ def join_meeting_as_authenticated(meeting_id):
             meeting_fake_id=meeting_id,
             hash_=get_hash(meeting, role),
             fullname=fullname,
+            seconds_before_refresh=0,  # Authenticated user must go through the waiting room, but attempts a connection without delay.
         )
     )
 
