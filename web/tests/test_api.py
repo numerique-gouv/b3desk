@@ -137,28 +137,89 @@ def test_api_existing_shadow_meeting(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
-    assert res.json["shadow-meeting"]
-    assert res.json["shadow-meeting"][0]["name"] == "shadow meeting"
-    assert (
-        f"/meeting/signin/moderateur/{shadow_meeting.id}/hash/"
-        in res.json["shadow-meeting"][0]["moderator_url"]
-    )
-    assert (
-        f"/meeting/signin/invite/{shadow_meeting.id}/hash/"
-        in res.json["shadow-meeting"][0]["attendee_url"]
-    )
-    assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
-    assert res.json["shadow-meeting"][0]["SIPMediaGW_url"] == "511111111@sip.test"
     assert len(res.json["shadow-meeting"]) == 1
+    assert res.json["shadow-meeting"][0] == {
+        "PIN": "555555551",
+        "SIPMediaGW_url": "511111111@sip.test",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "name": "shadow meeting",
+        "phone_number": "+33bbbphonenumber",
+        "visio_code": "511111111",
+    }
 
+
+def test_api_existing_shadow_meeting_without_pin(
+    client_app,
+    user,
+    shadow_meeting,
+    shadow_meeting_2,
+    shadow_meeting_3,
+    meeting,
+    iam_token,
+):
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert len(res.json["shadow-meeting"]) == 1
+    assert res.json["shadow-meeting"][0] == {
+        "SIPMediaGW_url": "511111111@sip.test",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "name": "shadow meeting",
+        "visio_code": "511111111",
+    }
+
+
+def test_api_existing_shadow_meeting_without_sip(
+    client_app,
+    user,
+    shadow_meeting,
+    shadow_meeting_2,
+    shadow_meeting_3,
+    meeting,
+    iam_token,
+):
     client_app.app.config["ENABLE_SIP"] = False
     res = client_app.get(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
-    assert res.json["shadow-meeting"][0]["visio_code"] == "511111111"
-    assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
+    assert res.json["shadow-meeting"][0] == {
+        "PIN": "555555551",
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "name": "shadow meeting",
+        "phone_number": "+33bbbphonenumber",
+        "visio_code": "511111111",
+    }
+
+
+def test_api_existing_shadow_meeting_without_pin_and_sip(
+    client_app,
+    user,
+    shadow_meeting,
+    shadow_meeting_2,
+    shadow_meeting_3,
+    meeting,
+    iam_token,
+):
+    client_app.app.config["ENABLE_SIP"] = False
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert len(res.json["shadow-meeting"]) == 1
+    assert res.json["shadow-meeting"][0] == {
+        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "name": "shadow meeting",
+        "visio_code": "511111111",
+    }
 
 
 def test_api_new_shadow_meeting(
@@ -184,15 +245,98 @@ def test_api_new_shadow_meeting(
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
     assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
-    assert "@sip.test" in res.json["shadow-meeting"][0]["SIPMediaGW_url"]
     assert len(res.json["shadow-meeting"]) == 1
+    assert len(res.json["shadow-meeting"][0]["PIN"]) == 9
+    assert res.json["shadow-meeting"][0]["phone_number"]
+    assert "@sip.test" in res.json["shadow-meeting"][0]["SIPMediaGW_url"]
 
-    client_app.app.config["ENABLE_SIP"] = False
+
+def test_api_new_shadow_meeting_without_pin(
+    client_app,
+    user,
+    meeting,
+    iam_token,
+):
+    """Test that API creates and returns new shadow meeting if none exists."""
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
     res = client_app.get(
         "/api/shadow-meeting",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
     )
+    assert res.json["shadow-meeting"]
+    assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    assert (
+        "/meeting/signin/moderateur/2/hash/"
+        in res.json["shadow-meeting"][0]["moderator_url"]
+    )
+    assert (
+        "/meeting/signin/invite/2/hash/"
+        in res.json["shadow-meeting"][0]["attendee_url"]
+    )
     assert res.json["shadow-meeting"][0]["visio_code"]
     assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
-    assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
     assert len(res.json["shadow-meeting"]) == 1
+    assert "pin" not in res.json["shadow-meeting"][0]
+    assert "phone_number" not in res.json["shadow-meeting"][0]
+    assert "@sip.test" in res.json["shadow-meeting"][0]["SIPMediaGW_url"]
+
+
+def test_api_new_shadow_meeting_without_sip(
+    client_app,
+    user,
+    meeting,
+    iam_token,
+):
+    client_app.app.config["ENABLE_SIP"] = False
+    """Test that API creates and returns new shadow meeting if none exists."""
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert res.json["shadow-meeting"]
+    assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    assert (
+        "/meeting/signin/moderateur/2/hash/"
+        in res.json["shadow-meeting"][0]["moderator_url"]
+    )
+    assert (
+        "/meeting/signin/invite/2/hash/"
+        in res.json["shadow-meeting"][0]["attendee_url"]
+    )
+    assert res.json["shadow-meeting"][0]["visio_code"]
+    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
+    assert len(res.json["shadow-meeting"]) == 1
+    assert len(res.json["shadow-meeting"][0]["PIN"]) == 9
+    assert res.json["shadow-meeting"][0]["phone_number"]
+    assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
+
+
+def test_api_new_shadow_meeting_without_pin_and_sip(
+    client_app,
+    user,
+    meeting,
+    iam_token,
+):
+    client_app.app.config["ENABLE_SIP"] = False
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
+    """Test that API creates and returns new shadow meeting if none exists."""
+    res = client_app.get(
+        "/api/shadow-meeting",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+    )
+    assert res.json["shadow-meeting"]
+    assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    assert (
+        "/meeting/signin/moderateur/2/hash/"
+        in res.json["shadow-meeting"][0]["moderator_url"]
+    )
+    assert (
+        "/meeting/signin/invite/2/hash/"
+        in res.json["shadow-meeting"][0]["attendee_url"]
+    )
+    assert res.json["shadow-meeting"][0]["visio_code"]
+    assert len(res.json["shadow-meeting"][0]["visio_code"]) == 9
+    assert len(res.json["shadow-meeting"]) == 1
+    assert "pin" not in res.json["shadow-meeting"][0]
+    assert "phone_number" not in res.json["shadow-meeting"][0]
+    assert "SIPMediaGW_url" not in res.json["shadow-meeting"][0]
