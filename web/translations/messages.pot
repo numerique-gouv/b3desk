@@ -2262,7 +2262,6 @@ msgid ""
 "%(of_the_meeting)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/recordings.html:7
 #: web/b3desk/templates/meeting/recordings.html:18
 #, python-format
 msgid ""
@@ -2308,7 +2307,6 @@ msgstr ""
 msgid "Voir l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/recordings.html:44
 #: web/b3desk/templates/meeting/recordings.html:59
 #: web/b3desk/templates/meeting/recordings.html:189
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
@@ -2322,8 +2320,6 @@ msgstr ""
 msgid "Partager l'enregistrement mp4"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/recordings.html:38
-#: web/b3desk/templates/meeting/modals/recordings.html:39
 #: web/b3desk/templates/meeting/recordings.html:69
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
@@ -2414,7 +2410,6 @@ msgstr ""
 msgid "Supprimer %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/recordings.html:43
 #: web/b3desk/templates/meeting/row.html:31
 msgid "Fermer la fenêtre modale"
 msgstr ""
@@ -2608,33 +2603,6 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:115
 msgid "Copier les informations dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/recordings.html:5
-#, python-format
-msgid ""
-"%(the_meeting)s est toujours en cours. Si un enregistrement est en cours,"
-" il ne sera encodé qu'après la fin %(of_the_meeting)s."
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/recordings.html:8
-#, python-format
-msgid ""
-"Si aucun modérateur ne met fin %(to_the_meeting)s, un délai "
-"supplémentaire de plusieurs minutes s'ajoute après que tous les "
-"utilisateurs l'aient quitté."
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/recordings.html:15
-msgid "Images"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/recordings.html:16
-msgid "Lien"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/recordings.html:41
-msgid "Suppression d'enregistrement"
 msgstr ""
 
 #: web/b3desk/utils/__init__.py:142
