@@ -79,6 +79,14 @@ def shadow_meeting():
                 },
                 **(
                     {
+                        "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
+                        "PIN": meeting.voiceBridge,
+                    }
+                    if current_app.config["ENABLE_PIN_MANAGEMENT"]
+                    else {}
+                ),
+                **(
+                    {
                         "SIPMediaGW_url": meeting.visio_code
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
