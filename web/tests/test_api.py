@@ -158,6 +158,7 @@ def test_api_existing_shadow_meeting_without_pin(
     meeting,
     iam_token,
 ):
+    """Existing shadow meeting response excludes PIN and phone_number when PIN management is disabled."""
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
     res = client_app.get(
         "/api/shadow-meeting",
@@ -182,6 +183,7 @@ def test_api_existing_shadow_meeting_without_sip(
     meeting,
     iam_token,
 ):
+    """Existing shadow meeting response excludes SIPMediaGW_url when SIP is disabled."""
     client_app.app.config["ENABLE_SIP"] = False
     res = client_app.get(
         "/api/shadow-meeting",
@@ -207,6 +209,7 @@ def test_api_existing_shadow_meeting_without_pin_and_sip(
     meeting,
     iam_token,
 ):
+    """Existing shadow meeting response excludes SIP and PIN fields when both are disabled."""
     client_app.app.config["ENABLE_SIP"] = False
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = False
     res = client_app.get(
