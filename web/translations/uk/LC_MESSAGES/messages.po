@@ -2130,7 +2130,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, python-format
+#, no-python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
