@@ -19,6 +19,8 @@ from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
 
 MAX_URL_LENGTH = 255
+MAX_LOGOUTURL_LENGTH = 250
+MAX_MEETING_NAME_LENGTH = 150
 DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
 MAX_MEETING_DURATION = timedelta(minutes=999)
 
@@ -69,7 +71,10 @@ class MeetingForm(FlaskForm):
             "%(my_meeting)s",
             my_meeting=current_app.config["WORDING_MY_MEETING"].title(),
         ),
-        validators=[validators.DataRequired()],
+        validators=[
+            validators.DataRequired(),
+            validators.length(max=MAX_MEETING_NAME_LENGTH),
+        ],
     )
     welcome = TextAreaField(
         label=_("Texte de bienvenue"),
@@ -82,12 +87,7 @@ class MeetingForm(FlaskForm):
             meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
-        validators=[
-            validators.length(
-                max=MODERATOR_ONLY_MESSAGE_MAXLENGTH,
-                message=_("Le texte est trop long"),
-            )
-        ],
+        validators=[validators.length(max=MODERATOR_ONLY_MESSAGE_MAXLENGTH)],
     )
     maxParticipants = IntegerField(
         label=_("Nombre maximal de participants"),
@@ -178,6 +178,7 @@ class MeetingForm(FlaskForm):
             the_meeting=current_app.config["WORDING_THE_MEETING"],
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
+        validators=[validators.length(max=MAX_LOGOUTURL_LENGTH)],
         render_kw={"placeholder": current_app.config["MEETING_LOGOUT_URL"]},
     )
     moderatorPW = StringField(
@@ -243,7 +244,7 @@ class MeetingWithRecordForm(MeetingForm):
         description=_(
             "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
         ),
-        default=False,
+        default=True,
     )
     autoStartRecording = BooleanField(
         label=_("Enregistrement automatique"),

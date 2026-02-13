@@ -152,7 +152,7 @@ def test_ncdownload(
     db.session.add(meeting.owner)
     db.session.commit()
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     nc_path = "folder/file1.pdf"
     token = get_meeting_file_hash(meeting.owner.id, nc_path)
@@ -197,7 +197,7 @@ def test_ncdownload_webdav_exception(
         def info(self, ncpath):
             raise WebDavException()
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     nc_path = "folder/test.pdf"
     token = get_meeting_file_hash(meeting.owner.id, nc_path)
@@ -241,7 +241,7 @@ def test_download_meeting_file_from_nextcloud(
             with open(local_path, "wb") as f:
                 f.write(b"fake content")
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     url = url_for(
         "meeting_files.download_meeting_files",
@@ -372,7 +372,7 @@ def test_add_dropzone_file_upload_to_nextcloud(
         def upload_sync(self, remote_path, local_path):
             pass
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -411,7 +411,7 @@ def test_add_dropzone_file_sqlalchemy_error(
         def clean(self, path):
             clean_called_with.append(path)
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     mocker.patch(
         "b3desk.endpoints.meeting_files.db.session.commit",
@@ -455,7 +455,7 @@ def test_add_dropzone_file_sqlalchemy_error_cleanup_fails(
         def clean(self, path):
             raise WebDavException("Nextcloud unavailable")
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     mocker.patch(
         "b3desk.endpoints.meeting_files.db.session.commit",
@@ -488,7 +488,7 @@ def test_add_nextcloud_file_upload(
         def info(self, path):
             return {"size": 1000}
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -514,7 +514,7 @@ def test_add_nextcloud_file_sqlalchemy_error(
         def info(self, path):
             return {"size": 1000}
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     original_commit = db.session.commit
     call_count = [0]
@@ -607,7 +607,7 @@ def test_add_nextcloud_file_too_large(
         def info(self, path):
             return {"size": 999999999}
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -683,7 +683,7 @@ def test_add_dropzone_file_too_large(
         def upload_sync(self, remote_path, local_path):
             pass  # pragma: no cover
 
-    mocker.patch("b3desk.nextcloud.webdavClient", return_value=FakeClient())
+    mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
     client_app.app.config["MAX_SIZE_UPLOAD"] = 10
 
     response = client_app.post(

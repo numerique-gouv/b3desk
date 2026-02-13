@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.5.6dev"
+version = "1.6.0dev"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }

@@ -12,11 +12,17 @@ Les réponses sont au format json sous la forme suivante :
     {
       "attendee_url": "https://example.tld/meeting/signin/invite/1234/creator/5678/hash/27955e8c3a16ecadbb3cf61df7806a04ce6fd18c",
       "moderator_url": "https://example.tld/meeting/signin/moderateur/1234/creator/5678/hash/3e73643801d5013d389f8fc610e258aba38e597d",
-      "name": "Mon Séminaire"
+      "name": "Mon Séminaire",
+      "visio_code": "111222333",
+      "phone_number": "+33 1 23 45 67 89",
+      "PIN": "123456789",
+      "SIPMediaGW_url": "111222333@@sip.url",
     }
   ]
 }
 ```
+`SIPMediaGW_url` fera partie de la réponse si `ENABLE_SIP` est défini `True` dans les settings.
+`phone_number` et `PIN` feront partie de la réponse si `ENABLE_PIN_MANAGEMENT` est défini `True` dans les settings.
 
 ### Liste des meetings
 `/api/meetings`
