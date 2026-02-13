@@ -20,7 +20,7 @@ from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
-from b3desk.forms import EndMeetingForm
+from b3desk.forms import DelegationSearchForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
@@ -30,7 +30,9 @@ from b3desk.join import get_join_url
 from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.bbb import BBB
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import assign_unique_visio_code
 from b3desk.models.meetings import get_quick_meeting_from_fake_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
@@ -40,7 +42,8 @@ from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
-from ..session import meeting_owner_needed
+from ..session import meeting_access_required
+from ..utils import send_delegation_mail
 
 bp = Blueprint("meetings", __name__)
 
@@ -77,8 +80,8 @@ def quick_meeting():
 @bp.route("/meeting/recordings/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def show_meeting_recording(meeting: Meeting, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
     form = RecordingForm()
     return render_template(
@@ -92,8 +95,8 @@ def show_meeting_recording(meeting: Meeting, owner: User):
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def update_recording_name(meeting: Meeting, recording_id, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
     if not form.validate():
@@ -106,9 +109,7 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
         flash(_("Enregistrement renommé"), "success")
     else:
         flash(
-            _(
-                "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
-            ).format(
+            _("Impossible de modifier cet enregistrement : {code}, {message}").format(
                 code=result.get("returncode", ""),
                 message=result.get("message", ""),
             ),
@@ -117,77 +118,95 @@ def update_recording_name(meeting: Meeting, recording_id, owner: User):
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
-@bp.route("/meeting/new")
+@bp.route("/meeting/new", methods=["GET", "POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 def new_meeting():
-    """Display the form to create a new meeting."""
+    """Display the form to create a new meeting and handle submission."""
     if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
 
-    form = MeetingWithRecordForm() if current_app.config["RECORDING"] else MeetingForm()
-
-    return render_template(
-        "meeting/wizard.html",
-        meeting=None,
-        form=form,
-        recording=current_app.config["RECORDING"],
-    )
-
-
-@bp.route("/meeting/edit/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_owner_needed
-def edit_meeting(meeting: Meeting, owner: User):
-    """Display the form to edit an existing meeting."""
     form = (
-        MeetingWithRecordForm(obj=meeting)
+        MeetingWithRecordForm(request.form if request.method == "POST" else None)
         if current_app.config["RECORDING"]
-        else MeetingForm(obj=meeting)
-    )
-    return render_template(
-        "meeting/wizard.html",
-        meeting=meeting,
-        form=form,
-        recording=current_app.config["RECORDING"],
+        else MeetingForm(request.form if request.method == "POST" else None)
     )
 
-
-@bp.route("/meeting/save", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-def save_meeting():
-    """Save a new or updated meeting from the meeting form submission."""
-    form = (
-        MeetingWithRecordForm(request.form)
-        if current_app.config["RECORDING"]
-        else MeetingForm(request.form)
-    )
-
-    is_new_meeting = not form.data["id"]
-    if not g.user.can_create_meetings and is_new_meeting:
-        flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
-        return redirect(url_for("public.welcome"))
+    if request.method == "GET":
+        return render_template(
+            "meeting/wizard.html",
+            meeting=None,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
 
     if not form.validate():
         flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
             "meeting/wizard.html",
-            meeting=None if is_new_meeting else db.session.get(Meeting, form.id.data),
+            meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
         )
 
-    if is_new_meeting:
-        meeting = Meeting()
-        meeting.user = g.user
-    else:
-        meeting_id = form.data["id"]
-        meeting = db.session.get(Meeting, meeting_id)
-        del form.id
-        del form.name
+    meeting = Meeting()
+    meeting.owner = g.user
+    meeting.record = bool(
+        form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
+    )
+    form.populate_obj(meeting)
+    db.session.add(meeting)
+    assign_unique_visio_code(meeting)
+    db.session.commit()
+    current_app.logger.info(
+        "Meeting %s %s was created by %s",
+        meeting.name,
+        meeting.id,
+        g.user.email,
+    )
+    flash(
+        _("{meeting_name} a bien été créé(e)").format(meeting_name=meeting.name),
+        "success",
+    )
+    return redirect(url_for("public.welcome"))
+
+
+@bp.route("/meeting/edit/<meeting:meeting>", methods=["GET", "POST"])
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required(AccessLevel.DELEGATE)
+def edit_meeting(meeting: Meeting, user: User):
+    """Display the form to edit an existing meeting and handle submission."""
+    form = (
+        MeetingWithRecordForm(
+            request.form if request.method == "POST" else None, obj=meeting
+        )
+        if current_app.config["RECORDING"]
+        else MeetingForm(
+            request.form if request.method == "POST" else None, obj=meeting
+        )
+    )
+
+    if request.method == "GET":
+        return render_template(
+            "meeting/wizard.html",
+            meeting=meeting,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
+
+    if not form.validate():
+        flash(_("Le formulaire contient des erreurs"), "error")
+        return render_template(
+            "meeting/wizard.html",
+            meeting=meeting,
+            form=form,
+            recording=current_app.config["RECORDING"],
+        )
+
+    del form.id
+    del form.name
 
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
@@ -202,21 +221,13 @@ def save_meeting():
     if not meeting.visio_code:
         assign_unique_visio_code(meeting)
     db.session.commit()
-    if is_new_meeting:
-        current_app.logger.info(
-            "Meeting %s %s was created by %s",
-            meeting.name,
-            meeting.id,
-            g.user.email,
-        )
-    else:
-        current_app.logger.info(
-            "Meeting %s %s was updated by %s. Updated fields : %s",
-            meeting.name,
-            meeting.id,
-            g.user.email,
-            updated_data,
-        )
+    current_app.logger.info(
+        "Meeting %s %s was updated by %s. Updated fields : %s",
+        meeting.name,
+        meeting.id,
+        user.email,
+        updated_data,
+    )
     flash(
         _("{meeting_name} modifications prises en compte").format(
             meeting_name=meeting.name
@@ -228,41 +239,30 @@ def save_meeting():
         return render_template(
             "meeting/end.html",
             meeting=meeting,
-            form=EndMeetingForm(data={"meeting_id": meeting_id}),
         )
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/end", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/end", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def end_meeting():
-    """End the meeting on BBB.
-
-    Called from EndMeetingForm.
-    """
-    form = EndMeetingForm(request.form)
-
-    meeting_id = form.data["meeting_id"]
-    meeting = db.session.get(Meeting, meeting_id) or abort(404)
-
-    if g.user == meeting.user:
-        data = BBB(meeting.meetingID).end()
-        if BBB.success(data):
-            flash(
-                f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
-                "success",
-            )
-    else:
-        flash(_("Vous ne pouvez pas terminer cette réunion"), "error")
+@meeting_access_required(AccessLevel.DELEGATE)
+def end_meeting(meeting: Meeting, user: User):
+    """End the meeting on BBB."""
+    data = BBB(meeting.meetingID).end()
+    if BBB.success(data):
+        flash(
+            f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
+            "success",
+        )
     return redirect(url_for("public.welcome"))
 
 
 @bp.route("/meeting/create/<meeting:meeting>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def create_meeting(meeting: Meeting, owner: User):
+@meeting_access_required()
+def create_meeting(meeting: Meeting, user: User):
     """Create the meeting on BBB server."""
     create_bbb_meeting(meeting, g.user)
     db.session.commit()
@@ -278,7 +278,7 @@ def delete_meeting():
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
-        if meeting.user_id == g.user.id:
+        if meeting.owner_id == g.user.id:
             for meeting_file in meeting.files:
                 db.session.delete(meeting_file)
 
@@ -286,7 +286,7 @@ def delete_meeting():
             if data and not BBB.success(data):
                 flash(
                     _(
-                        "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
+                        "Impossible de supprimer les vidéos de ce {meeting_label} : {message}"
                     ).format(
                         meeting_label=current_app.config["WORDINGS"]["meeting_label"],
                         message=data.get("message", ""),
@@ -307,37 +307,30 @@ def delete_meeting():
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/video/delete", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def delete_video_meeting():
+@meeting_access_required(AccessLevel.DELEGATE)
+def delete_video_meeting(meeting: Meeting, user: User):
     """Delete a specific recording from a meeting."""
-    meeting_id = request.form["id"]
-    meeting = db.session.get(Meeting, meeting_id)
-    if meeting.user_id == g.user.id:
-        recordID = request.form["recordID"]
-        data = BBB(meeting.meetingID).delete_recordings(recordID)
-        if BBB.success(data):
-            flash(_("Vidéo supprimée"), "success")
-            current_app.logger.info(
-                "Meeting %s %s record %s was deleted by %s",
-                meeting.name,
-                meeting.id,
-                recordID,
-                g.user.email,
-            )
-        else:
-            flash(
-                _(
-                    "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s",
-                    code=data.get("returncode", ""),
-                    message=data.get("message", ""),
-                ),
-                "error",
-            )
+    recordID = request.form["recordID"]
+    data = BBB(meeting.meetingID).delete_recordings(recordID)
+    if BBB.success(data):
+        flash(_("Vidéo supprimée"), "success")
+        current_app.logger.info(
+            "Meeting %s %s record %s was deleted by %s",
+            meeting.name,
+            meeting.id,
+            recordID,
+            user.email,
+        )
     else:
         flash(
-            _("Vous ne pouvez pas supprimer cette enregistrement"),
+            _(
+                "Impossible de supprimer cette vidéo : %(code)s, %(message)s",
+                code=data.get("returncode", ""),
+                message=data.get("message", ""),
+            ),
             "error",
         )
     return redirect(url_for("public.welcome"))
@@ -349,11 +342,10 @@ def meeting_favorite():
     """Toggle the favorite status of a meeting."""
     meeting_id = request.form["id"]
     meeting = db.session.get(Meeting, meeting_id)
-
-    if meeting.user_id != g.user.id:
-        abort(403)
-
-    meeting.is_favorite = not meeting.is_favorite
+    if g.user in meeting.favorite_of:
+        meeting.favorite_of.remove(g.user)
+    else:
+        meeting.favorite_of.append(g.user)
     db.session.commit()
 
     return redirect(url_for("public.welcome", **request.args))
@@ -364,3 +356,93 @@ def meeting_favorite():
 def get_available_visio_code():
     """Generate and return an available unique visio code."""
     return jsonify(available_visio_code=unique_visio_code_generation())
+
+
+@bp.route("/meeting/manage-delegation/<meeting:meeting>", methods=["GET", "POST"])
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required()
+def manage_delegation(meeting: Meeting, user: User):
+    """Display the page for manage meeting delegation."""
+    form = DelegationSearchForm(request.form)
+    if not request.form or not form.validate():
+        return render_template(
+            "meeting/delegation.html",
+            meeting=meeting,
+            form=form,
+        )
+
+    data = form.search.data
+    new_delegate = (
+        db.session.query(User)
+        .filter(
+            User.email == data,
+            user.email != User.email,
+        )
+        .first()
+    )
+
+    if new_delegate is None:
+        flash(_("L'utilisateur recherché n'existe pas"), "error")
+
+    elif new_delegate in meeting.get_all_delegates:
+        flash(_("L'utilisateur est déjà délégataire"), "warning")
+
+    elif (
+        len(meeting.get_all_delegates)
+        >= current_app.config["MAXIMUM_MEETING_DELEGATES"]
+    ):
+        flash(
+            _(
+                "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
+                meeting_label=current_app.config["WORDINGS"]["this_meeting"],
+            ),
+            "warning",
+        )
+
+    else:
+        access = MeetingAccess(
+            meeting_id=meeting.id,
+            user_id=new_delegate.id,
+            level=AccessLevel.DELEGATE,
+        )
+        db.session.add(access)
+        db.session.commit()
+        send_delegation_mail(meeting, new_delegate, new_delegation=True)
+        flash(_("L'utilisateur a été ajouté aux délégataires"), "success")
+        current_app.logger.info(
+            "%s became delegate of meeting %s %s",
+            new_delegate.email,
+            meeting.id,
+            meeting.name,
+        )
+
+    return render_template(
+        "meeting/delegation.html",
+        meeting=meeting,
+        form=form,
+    )
+
+
+@bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required()
+def remove_delegate(meeting: Meeting, user: User, delegate: User):
+    if delegate not in meeting.get_all_delegates:
+        flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
+    else:
+        access = MeetingAccess.query.filter_by(
+            user_id=delegate.id, meeting_id=meeting.id
+        ).one()
+        db.session.delete(access)
+        db.session.commit()
+        flash(_("L'utilisateur a été retiré des délégataires"), "success")
+        send_delegation_mail(meeting, delegate, new_delegation=False)
+        current_app.logger.info(
+            "%s removed from delegates of meeting %s %s",
+            delegate.email,
+            meeting.id,
+            meeting.name,
+        )
+    return redirect(url_for("meetings.manage_delegation", meeting=meeting))

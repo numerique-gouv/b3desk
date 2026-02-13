@@ -142,66 +142,67 @@
                         </thead>
                         <tbody id="fileslist">
                             {% for file in meeting.files %}
-                                {% if g.is_nextcloud_available or file.url %}
                             <!-- Supprimer MeetingFile -->
-                                    <dialog id="delete-file-{{ file.id }}" class="fr-modal" role="dialog" aria-labelledby="delete-file-{{ file.id }}-title">
-                                        <div class="fr-container fr-container--fluid fr-container-md">
-                                            <div class="fr-grid-row fr-grid-row--center">
-                                                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                                                    <div class="fr-modal__body">
-                                                        <div class="fr-modal__header">
-                                                            <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Fermer{% endtrans %}">{% trans %}Fermer{% endtrans %}</button>
-                                                        </div>
-                                                        <div class="fr-modal__content">
-                                                            <h1 id="delete-file-{{ file.id }}-title" class="fr-modal__title">
-                                                                {% trans %}Supprimer{% endtrans %}
-                                                            </h1>
-                                                            <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
-                                                        </div>
-                                                        <div class="fr-modal__footer">
-                                                            <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
-                                                                <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
-                                                                <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
-                                                                    <li>
-                                                                        <button type="submit" class="fr-btn fr-btn--primary fr-btn--delete" >{% trans %}Supprimer{% endtrans %}</button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
-                                                                    </li>
-                                                                </ul>
-                                                                {% include 'meeting/csrf.html' %}
-                                                            </form>
-                                                        </div>
+                                <dialog id="delete-file-{{ file.id }}" class="fr-modal" role="dialog" aria-labelledby="delete-file-{{ file.id }}-title">
+                                    <div class="fr-container fr-container--fluid fr-container-md">
+                                        <div class="fr-grid-row fr-grid-row--center">
+                                            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                                                <div class="fr-modal__body">
+                                                    <div class="fr-modal__header">
+                                                        <button class="fr-btn--close fr-btn" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Fermer{% endtrans %}">{% trans %}Fermer{% endtrans %}</button>
+                                                    </div>
+                                                    <div class="fr-modal__content">
+                                                        <h1 id="delete-file-{{ file.id }}-title" class="fr-modal__title">
+                                                            {% trans %}Supprimer{% endtrans %}
+                                                        </h1>
+                                                        <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
+                                                        {% if meeting in g.user.get_all_delegated_meetings %}
+                                                            <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="fr-modal__footer">
+                                                        <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
+                                                            <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
+                                                            <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                                                <li>
+                                                                    <button type="submit" class="fr-btn fr-btn--primary fr-btn--delete" >{% trans %}Supprimer{% endtrans %}</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-file-{{ file.id }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
+                                                                </li>
+                                                            </ul>
+                                                            {% include 'meeting/csrf.html' %}
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </dialog>
+                                    </div>
+                                </dialog>
 
-                                    <tr id="{{ file.id }}" >
-                                        <td>
-                                            <div class="fr-toggle">
-                                                {% if file.is_downloadable %}
-                                                    <input onclick=toggleIsDownloadable(event) checked type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
-                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
-                                                {% else %}
-                                                    <input onclick=toggleIsDownloadable(event) type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
-                                                    <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                        <td>{{ file.short_title }}</td>
-                                        <td>{{ file.created_at }}</td>
-                                        <td>
-                                            <button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="{% trans %}Supprimer{% endtrans %}"></button>
-                                        </td>
-                                        <td>
-                                            <a href="{{ url_for("meeting_files.download_meeting_files", meeting=meeting, file_id=file.id) }}">
-                                                <button class="fr-btn fr-icon-download-fill" title="{% trans %}Télécharger{% endtrans %}"></button>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {% endif %}
+                                <tr id="{{ file.id }}" >
+                                    <td>
+                                        <div class="fr-toggle">
+                                            {% if file.is_downloadable %}
+                                                <input onclick=toggleIsDownloadable(event) checked type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
+                                            {% else %}
+                                                <input onclick=toggleIsDownloadable(event) type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ file.short_title }}</td>
+                                    <td>{{ file.created_at }}</td>
+                                    <td>
+                                        <button  data-fr-opened="false" aria-controls="delete-file-{{file.id}}"  class="fr-btn  fr-fi-delete-line" title="{% trans %}Supprimer{% endtrans %}"></button>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for("meeting_files.download_meeting_files", meeting=meeting, meeting_file=file) }}">
+                                            <button class="fr-btn fr-icon-download-fill" title="{% trans %}Télécharger{% endtrans %}"></button>
+                                        </a>
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>

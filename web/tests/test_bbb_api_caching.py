@@ -203,11 +203,11 @@ def test_create(meeting, mocker):
 
     assert send.call_count == 0
 
-    created = create_bbb_meeting(meeting, meeting.user)
+    created = create_bbb_meeting(meeting, meeting.owner)
     assert created
     assert send.call_count == 1
 
-    created = create_bbb_meeting(meeting, meeting.user)
+    created = create_bbb_meeting(meeting, meeting.owner)
     assert created
     assert send.call_count == 2
 

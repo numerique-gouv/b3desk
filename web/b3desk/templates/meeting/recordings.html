@@ -94,9 +94,12 @@
                                         {% trans %}Supprimer "<em>{{ recording_name }}</em>" ?{% endtrans %}
                                     </h1>
                                     <p>{% trans meeting_name=meeting.name %}Voulez-vous vraiment supprimer l'enregistrement <em>{{ recording_name }}</em> de <em>{{ meeting_name }}</em>&nbsp;?{% endtrans %}</p>
+                                    {% if meeting in g.user.get_all_delegated_meetings %}
+                                        <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                    {% endif %}
                                 </div>
                                 <div class="fr-modal__footer">
-                                    <form action="{{ url_for("meetings.delete_video_meeting") }}" method="POST" class="delete">
+                                    <form action="{{ url_for("meetings.delete_video_meeting", meeting=meeting) }}" method="POST" class="delete">
                                         <input class="fr-input" type="hidden" name="recordID" value="{{ recording.recordID }}" />
                                         <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                             <li>
@@ -106,7 +109,6 @@
                                                 <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
                                             </li>
                                         </ul>
-                                        {% include 'meeting/id.html' %}
                                         {% include 'meeting/csrf.html' %}
                                     </form>
                                 </div>
@@ -139,6 +141,9 @@
                                                 {% endfor %}
                                             {% endif %}
                                             {{ form.name(value=recording_name, class_="fr-input") }}
+                                            {% if meeting in g.user.get_all_delegated_meetings %}
+                                                <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                            {% endif %}
                                         </div>
                                         <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                             <li>

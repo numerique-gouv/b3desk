@@ -19,7 +19,7 @@ def get_hash(meeting, role: Role, hash_from_string=False):
 
 def get_role(meeting, hashed_role, user=None) -> Role | None:
     """Determine the meeting role based on hash and user."""
-    if meeting.user and meeting.user == user:
+    if meeting.owner and meeting.owner == user:
         return Role.moderator
     elif hashed_role in [
         get_hash(meeting, Role.attendee),

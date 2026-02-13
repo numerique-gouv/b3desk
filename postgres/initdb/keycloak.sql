@@ -2201,6 +2201,11 @@ a0df89ed-8310-4825-a1e5-be61c64c2697	dfc9aa2a-8ae0-4fd5-b3c6-107985602122
 COPY public.credential (id, salt, type, user_id, created_date, user_label, secret_data, credential_data, priority) FROM stdin;
 47716fcf-fb01-4a96-9975-83e33a15c4ab	\N	password	8b2d671e-a7e0-403b-b39b-375bc549fbb7	1605819923223	\N	{"value":"UxyYT/YS9SHNDDH+P8LXDoVfXGjwwgCT0n/Azjkj1+rJtcV9SNv9sgZelovBepXjJcw4VLpSB8+cfDKo8fKg/g==","salt":"79qU4uyXH7N8NQp2XCe7uA=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
 9b2e1d74-3610-474d-8bc7-e91dbbcf9ffc	\N	password	43f41f0f-25f4-48e9-840a-73497e004fa6	1605820511905	\N	{"value":"eIdGWXSv6qVCUFjjs5cLeFFxJ1hynVNZZRrPi/Dj0TWrQBarm/rukATnkM/hVAzYY4e0K3Z049k0YBWvRQZnHg==","salt":"MY4Q/hmAe1RloI0JqAMJLA=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
+498d29b7-c42c-45e9-8db0-83cb9e3ac625	\N	password	7a38dda5-a790-42f0-8dae-a749eb5a8479	1605820511905	\N	{"value": "L+3fIxxk2BSVJvKd4qPqQ0gkYEfU+S3ZCED1zdgIRhyB2gCvuTR1HJE9B6tnupsrdZws9ZjvWwJT4YAkoRxvmA==", "salt": "xObbbvZt+vsHuQY5QXcs3g=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
+9ea6b7ef-26fe-409e-9b3b-4971ab9d42cb	\N	password	7b38afd3-8742-4e49-a98e-40ae61515bc6	1605820511905	\N	{"value": "aknZupagsgf2RezKyBRQ6yAhg2JcFQ/JFSA8LDbe3K48HE9V7J7Q8+RyKGou1ks4YZWrcf8q+qkBKHmjYMX4tg==", "salt": "iU0pZyvSX6sZGxX94IXFVA=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
+15392abd-71e1-435c-84a6-0e5dfcd8257e	\N	password	dadcebed-3f7b-4e5b-b100-79a3f8a4a58a	1605820511905	\N	{"value": "draWns7St+VvsJtUZaZDf11osixHHh7Fwgv2FmDzgHTjENFlk92oBPourH3XR1mY4LFgHsUoUxSpIPSaBuQsRw==", "salt": "yOcrpDeqvUAuu0IzQSINNg=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
+12dcac2e-6aab-4ab1-a1ce-7922f0c284f9	\N	password	82641254-f707-4fe1-82b5-f1853f477dbc	1605820511905	\N	{"value": "HD+lcjyrJp37Y3rEDEGu5UQFSzzF6K0wpgj6NG3i7DHET0HQuoOdY3ZuIwylPXBcfSndzHpTsHnKaxTjBG2fHA==", "salt": "WTZilprWk2zp8SZ6MnH1Nw=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
+e3a91be6-cf64-4963-b4e6-98132d6c163b	\N	password	05b56a2d-ce4d-41d6-8e8c-0e47319676ee	1605820511905	\N	{"value": "klw5CwGXEkg6+KxHNoccGwFtFAQbG4yuq26R+ZSqTbaD+Zch4XMog6S+gjmqKre0i3FsPlS7rKiRkib6sDZP5Q==", "salt": "4ZuFxMWHr7ONKUXYcjBbng=="}	{"hashIterations":27500,"algorithm":"pbkdf2-sha256"}	10
 \.
 
 
@@ -3258,6 +3263,11 @@ COPY public.user_consent_client_scope (user_consent_id, scope_id) FROM stdin;
 COPY public.user_entity (id, email, email_constraint, email_verified, enabled, federation_link, first_name, last_name, realm_id, username, created_timestamp, service_account_client_link, not_before) FROM stdin;
 8b2d671e-a7e0-403b-b39b-375bc549fbb7	\N	044661bd-03b0-4d8e-9256-ba2247578b3a	f	t	\N	\N	\N	master	admin	1605819923041	\N	0
 43f41f0f-25f4-48e9-840a-73497e004fa6	bbb-visio-user@apps.fr	bbb-visio-user@apps.fr	t	t	\N	BBB	User	apps	bbb-visio-user	1605820441410	\N	0
+7a38dda5-a790-42f0-8dae-a749eb5a8479	bbb-visio-user1@apps.fr	bbb-visio-user1@apps.fr	t	t	\N	BBB	User1	apps	bbb-visio-user1	1605820441410	\N	0
+7b38afd3-8742-4e49-a98e-40ae61515bc6	bbb-visio-user2@apps.fr	bbb-visio-user2@apps.fr	t	t	\N	BBB	User2	apps	bbb-visio-user2	1605820441410	\N	0
+dadcebed-3f7b-4e5b-b100-79a3f8a4a58a	bbb-visio-user3@apps.fr	bbb-visio-user3@apps.fr	t	t	\N	BBB	User3	apps	bbb-visio-user3	1605820441410	\N	0
+82641254-f707-4fe1-82b5-f1853f477dbc	bbb-visio-user4@apps.fr	bbb-visio-user4@apps.fr	t	t	\N	BBB	User4	apps	bbb-visio-user4	1605820441410	\N	0
+05b56a2d-ce4d-41d6-8e8c-0e47319676ee	bbb-visio-user5@apps.fr	bbb-visio-user5@apps.fr	t	t	\N	BBB	User5	apps	bbb-visio-user5	1605820441410	\N	0
 \.
 
 
