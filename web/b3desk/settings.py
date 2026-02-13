@@ -674,6 +674,13 @@ class MainSettings(BaseSettings):
     Peut-être *reunion*, *cours* ou *séminaire*.
     """
 
+    MEETING_LOCALE_VARIANT: str = ""
+    """Variante de locale pour le vocabulaire des réunions.
+
+    Peut être *cours* ou *séminaire*.
+    Si vide : réunion par défaut.
+    """
+
     WORDING_A_MEETING: Any = None
     """Formulation de « une réunion », par exemple *un cours* ou *un
     séminaire*.
