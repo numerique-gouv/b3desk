@@ -218,9 +218,7 @@ def save_meeting():
             updated_data,
         )
     flash(
-        _("{meeting_name} modifications prises en compte").format(
-            meeting_name=meeting.name
-        ),
+        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
         "success",
     )
 
