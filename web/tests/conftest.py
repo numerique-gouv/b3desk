@@ -286,6 +286,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "RECORDING": True,
         "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics.test/v1/post_events",
         "MEETING_LOCALE_VARIANT": "seminaire",
+        "BABEL_TRANSLATION_DIRECTORIES": "../translations",
         "QUICK_MEETING_LOGOUT_URL": "http://quick-meeting-logout.test/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
         "NC_LOGIN_API_URL": "http://tokenmock.test:9000/",
