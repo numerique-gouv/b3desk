@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 11:55+0100\n"
+"POT-Creation-Date: 2026-02-17 13:15+0100\n"
 "PO-Revision-Date: 2022-05-05 16:01+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -43,7 +43,7 @@ msgstr ""
 
 #: web/b3desk/forms.py:75
 msgid "Texte de bienvenue"
-msgstr "Welcome message"
+msgstr ""
 
 #: web/b3desk/forms.py:77
 msgid ""
@@ -52,13 +52,13 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/forms.py:80
-#, fuzzy, python-format
+#, python-format
 msgid "Bienvenue dans cette réunion %(meeting_name)s."
-msgstr "Welcome in this meeting %(meeting_name)s."
+msgstr ""
 
 #: web/b3desk/forms.py:87
 msgid "Nombre maximal de participants"
-msgstr "Maximal number of participants"
+msgstr ""
 
 #: web/b3desk/forms.py:88
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
@@ -76,17 +76,14 @@ msgstr ""
 
 #: web/b3desk/forms.py:104
 msgid "Salle d'attente"
-msgstr "Waiting room"
+msgstr ""
 
 #: web/b3desk/forms.py:106
-#, fuzzy
 msgid ""
 "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la"
 " réunion. L'organisateur ou le modérateur devra les accepter "
 "individuellement."
 msgstr ""
-"Place participants in a waiting room when they join the meeting. The "
-"organiser or moderator will have to accept them individually."
 
 #: web/b3desk/forms.py:111
 msgid "Caméras visibles par les modérateurs uniquement"
@@ -142,28 +139,27 @@ msgstr ""
 
 #: web/b3desk/forms.py:156
 msgid "Message à l'attention des modérateurs"
-msgstr "Message for the attention of the moderators"
+msgstr ""
 
 #: web/b3desk/forms.py:157
 msgid "150 caractères max"
-msgstr "150 characters max"
+msgstr ""
 
 #: web/b3desk/forms.py:158 web/b3desk/models/meetings.py:292
 msgid "Bienvenue aux modérateurs"
-msgstr "Welcome to the moderators"
+msgstr ""
 
 #: web/b3desk/forms.py:162
 msgid "Le message est trop long"
-msgstr "The message is too long"
+msgstr ""
 
 #: web/b3desk/forms.py:169
-#, fuzzy
 msgid "Url de redirection après la réunion"
-msgstr "Redirection url after the meeting"
+msgstr ""
 
 #: web/b3desk/forms.py:176
 msgid "Renouveler le lien modérateur"
-msgstr "Renew the moderator link"
+msgstr ""
 
 #: web/b3desk/forms.py:178 web/b3desk/forms.py:187
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
@@ -171,7 +167,7 @@ msgstr ""
 
 #: web/b3desk/forms.py:185
 msgid "Renouveler le lien participants"
-msgstr "Renewing the link between participants"
+msgstr ""
 
 #: web/b3desk/forms.py:194
 msgid "PIN"
@@ -204,7 +200,7 @@ msgstr ""
 
 #: web/b3desk/forms.py:239
 msgid "Enregistrement automatique"
-msgstr "Automatic recording"
+msgstr ""
 
 #: web/b3desk/forms.py:241
 msgid ""
@@ -213,19 +209,16 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/settings.py:582 web/b3desk/templates/meeting/list.html:4
-#, fuzzy
 msgid "Mes salles de réunion"
-msgstr "You regularly organize meetings"
+msgstr ""
 
 #: web/b3desk/settings.py:586
-#, fuzzy
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
-msgstr "Need to contact the Webinar team?"
+msgstr ""
 
 #: web/b3desk/settings.py:599
-#, fuzzy
 msgid "Réunion improvisée"
-msgstr "Start a temporary meeting"
+msgstr ""
 
 #: web/b3desk/settings.py:602
 msgid " Lien Modérateur  "
@@ -242,9 +235,8 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:67
-#, fuzzy
 msgid "Aucune réunion ne correspond à ces paramètres"
-msgstr "No meeting corresponds to these parameters"
+msgstr ""
 
 #: web/b3desk/endpoints/join.py:80 web/b3desk/endpoints/join.py:146
 #: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:208
@@ -254,7 +246,7 @@ msgstr ""
 
 #: web/b3desk/endpoints/join.py:183
 msgid "Lien invalide"
-msgstr "Invalid link"
+msgstr ""
 
 #: web/b3desk/endpoints/join.py:319
 msgid "Le captcha saisi est erroné"
@@ -266,7 +258,7 @@ msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:55
 msgid "Vous ne pouvez pas modifier cet élément"
-msgstr "You cannot change this item"
+msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:171
 #: web/b3desk/endpoints/meeting_files.py:252
@@ -311,7 +303,7 @@ msgstr ""
 #: web/b3desk/endpoints/meeting_files.py:404
 #: web/b3desk/endpoints/meetings.py:303
 msgid "Vous ne pouvez pas supprimer cet élément"
-msgstr "You cannot delete this item"
+msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:412
 msgid "Fichier supprimé avec succès"
@@ -322,14 +314,13 @@ msgid "La réunion n'est pas en cours"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:106
-#, fuzzy
 msgid "Enregistrement renommé"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:110
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
-msgstr "We were unable to remove this video : %(code)s, %(message)s"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:126 web/b3desk/endpoints/meetings.py:171
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
@@ -340,40 +331,39 @@ msgid "Le formulaire contient des erreurs"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:221
-#, fuzzy, python-brace-format, python-format
+#, python-format
 msgid "%(meeting_name)s modifications prises en compte"
-msgstr "%(meeting_name)s changes taken into account"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:251
 msgid "Réunion terminée"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:255
-#, fuzzy
 msgid "Vous ne pouvez pas terminer cette réunion"
-msgstr "You cannot change this item"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:287
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
-msgstr "We were unable to remove this video : %(code)s, %(message)s"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:295
 msgid "Élément supprimé"
-msgstr "Deleted item"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:318
 msgid "Vidéo supprimée"
-msgstr "Deleted video"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:329
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
-msgstr "We were unable to remove this video : %(code)s, %(message)s"
+msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:337
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
-msgstr "You cannot delete this record"
+msgstr ""
 
 #: web/b3desk/models/meetings.py:271 web/b3desk/models/meetings.py:278
 msgid "Ce code PIN est déjà utilisé"
@@ -385,9 +375,9 @@ msgid "la réunion de %(fullname)s"
 msgstr ""
 
 #: web/b3desk/models/meetings.py:287
-#, fuzzy, python-format
+#, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
-msgstr "Welcome to the meeting of %(fullname)s."
+msgstr ""
 
 #: web/b3desk/templates/brand.html:5
 msgid ""
@@ -432,10 +422,9 @@ msgstr ""
 
 #: web/b3desk/templates/content.py:6
 msgid "Quelles sont les conditions d’accès pour accéder aux services ?"
-msgstr "What are the conditions of access to the services?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:9
-#, fuzzy
 msgid ""
 "Cette plateforme offre une solution complète et puissante, adaptée à de "
 "nombreux types d’événements en ligne, jusqu’à 350 participants "
@@ -471,42 +460,10 @@ msgid ""
 "(IOS 12.2+)\n"
 "- Sur Android, utiliser le navigateur Chrome par défaut (Android 6.0+)\n"
 msgstr ""
-"This platform offers a complete and powerful solution, suitable for a "
-"wide range of many types of online events, up to 350 "
-"participants(Seminar, training, round table, collaborative workshops...)"
-"\n"
-"\n"
-"For who?\n"
-"\n"
-"Access to this service is dedicated to State agents and their "
-"interlocutors (according to the authorised domain name, request on "
-"contact@webinaire.numerique.gouv.fr) from an on-site workstation or "
-"telework or a personal or business mobile device. \n"
-"Access to the State Webinar is not open to local authorities, nor to "
-"universities and educational establishments of the Ministry of Higher "
-"Education.\n"
-"\n"
-"By what means?\n"
-"\n"
-"• On site :\n"
-"From your work computer using recommended browsers: Edge, Chromium, "
-"Chrome, and also Firefox for national education\n"
-"\n"
-"• Teleworking:\n"
-"From your work computer (VPN on or off) the recommended browsers are : "
-"Edge, Chromium, Chrome, and also Firefox for national education or "
-"personal computer (Edge browsers, Chrome, Chromium, Firefox)\n"
-"\n"
-"• From your mobile devices:\n"
-"- Mobile phone or tablet (without application, a participant link "
-"or\"moderator is sufficient).\n"
-"- On IOS, the Safari browser is recommended for iphone and ipad (IOS "
-"12.2+)\n"
-"- On Android, use Chrome or Firefox browser (Android 6.0+)\n"
 
 #: web/b3desk/templates/content.py:32
 msgid "Quel est le matériel nécessaire ?"
-msgstr "What equipment is needed?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:34
 msgid ""
@@ -529,27 +486,10 @@ msgid ""
 "sous Android ou iOS, la caméra et le micro sont activables suivant le "
 "contexte d’intervention."
 msgstr ""
-"To use this Webinar tool, all you need is the following equipment:\n"
-"\n"
-"    • a computer connected to the Internet\n"
-"    • a web browser (no application to download and install). It is "
-"recommended to use the latest version of a modern\"web browser (Firefox, "
-"Edge, Chrome, Chromium...).\n"
-"    • a webcam,\n"
-"    • a microphone and speakers, or preferably a headset with a "
-"microphone\"integrated.\n"
-"    • The webinar also works on mobile devices (without application). "
-"Safari browser is recommended for iphones and ipad (IOS 12.2+). On "
-"Android, use the latest version of a modern web browser (Firefox, "
-"Chrome...). (Android 6.0+)\n"
-"    • To join a webinar, you just have to click on the link sent by the "
-"organiser/moderator from your smartphone or tablet under Android or iOS, "
-"the camera and microphone can be activated depending on the "
-"contextcontext of intervention."
 
 #: web/b3desk/templates/content.py:46
 msgid "Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"
-msgstr "Can I use my smartphone or tablet to connect?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:49
 msgid ""
@@ -558,17 +498,12 @@ msgid ""
 "Sur les iphone et ipad (IOS 12.2+) le navigateur Safari est recommandé. "
 "Sur Android, utiliser le navigateur chrome par défaut (Android 6.0+).\n"
 msgstr ""
-"The Webinar also works on mobile devices by a simple link (no app) on the"
-" portal or in the seminar. On iphone and ipad (IOS 12.2+) the Safari "
-"browser is recommended. On Android, use the latest version of a modern "
-"web browser (Firefox, Chrome...). (Android 6.0+)\n"
 
 #: web/b3desk/templates/content.py:54
 msgid "Comment créer un séminaire ?"
-msgstr "How to create a webinar ?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:56
-#, fuzzy
 msgid ""
 "Si vous êtes un agent de l’état, vous pouvez :\n"
 "- Créer des séminaires immédiatement en renseignant votre courriel "
@@ -583,24 +518,12 @@ msgid ""
 "éligible au service, envoyez un mail à "
 "contact@webinaire.numerique.gouv.fr\n"
 msgstr ""
-"If you are a public official, you can :\n"
-"- Create seminars immediately by entering your professional email address"
-" on .gouv.fr and following the authorized domain names.\n"
-"- Create an account to create and set up seminars that you can find "
-"easily in your space as well as the links of connections, replays of "
-"recordings…\n"
-"- For MENJ staff you must use the ministry \"HUB\" button for "
-"authentication.\n"
-"\n"
-"If your domain name is not recognised, and you think you are eligible for"
-" the service, send an email to contact@webinaire.numerique.gouv.fr\n"
 
 #: web/b3desk/templates/content.py:66
 msgid "Comment créer un compte ?"
-msgstr "How to create an account?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:68
-#, fuzzy
 msgid ""
 "En tant qu’agent de l’État, si vous organisez régulièrement des "
 "séminaires vous pouvez créer un compte pour organiser et conserver "
@@ -612,19 +535,10 @@ msgid ""
 "ronde, Assemblée générale, Ateliers collaboratifs ou d’idéation, Comités "
 "en grand nombre, …etc.)."
 msgstr ""
-"As a government employee, if you regularly conduct seminars you can "
-"create an account to easily organize and store easily your customized "
-"seminars.\n"
-"\n"
-"You have the possibility to create one or more seminar rooms and "
-"configure them according to the type of adapted devices (ex: Seminar, "
-"Training, Virtual Classroom, Interactive Conference, Plenary, Table Round"
-" table, General Assembly, Collaborative or ideation workshops, Committees"
-" in large numbers, ... etc.)."
 
 #: web/b3desk/templates/content.py:74
 msgid "Comment inviter les participants/ modérateurs"
-msgstr "How to invite participants/moderators"
+msgstr ""
 
 #: web/b3desk/templates/content.py:76
 msgid ""
@@ -636,7 +550,7 @@ msgstr ""
 
 #: web/b3desk/templates/content.py:82
 msgid "Rejoindre un Webinaire en appel téléphonique ?"
-msgstr "Join a Webinar on a phone call?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:84
 msgid ""
@@ -652,21 +566,10 @@ msgid ""
 "Une fois dans la conférence, appuyez sur la touche « 0 » de votre "
 "téléphone afin d’activer ou de désactiver votre microphone."
 msgstr ""
-"Once in the seminar, it is possible to also use your landline or cell "
-"phone to follow the seminar.\n"
-"The information is visible in the seminar on public discussion.You can "
-"transmit its information consisting of the call number and the seminar "
-"code:\n"
-"\n"
-"To join this conference by phone, dial:\n"
-"+33 1 XX XX XX XX\n"
-"Then enter the access code XXXXX followed by the # key.\n"
-"Once in the conference, press the \"0\" key on your phone to turn your "
-"microphone on or off."
 
 #: web/b3desk/templates/content.py:94
 msgid "J'ai des perturbations audio ou vidéo ?"
-msgstr "I have audio or video disturbances?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:96
 msgid ""
@@ -688,31 +591,18 @@ msgid ""
 "meilleures conditions, avec beaucoup de participants, nous recommandons "
 "de vous connecter hors VPN.\n"
 msgstr ""
-"For audio, get closer to your wifi terminal, or/and turn off your camera\n"
-"We encourage you to use headphones for better listening and for that "
-"background noise around you not does to disturb other participants.\n"
-"\n"
-"For video, lower your camera resolution when you login to the webinar\n"
-"\n"
-"The screen sharing feature is the most bandwidth consuming bandwidth "
-"consuming feature ahead of video. If you are an organizer and your "
-"bandwidth bandwidth is low, it can degrade the quality of your seminar.\n"
-"\n"
-"To use less bandwidth and enjoy the service in the best conditions, with "
-"many participants, we recommend to connect outside VPN.\n"
 
 #: web/b3desk/templates/content.py:109
 msgid "Besoin de contacter l'équipe du Webinaire de l’Etat ?"
-msgstr "Need to contact the Webinar team?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:110
 msgid "contact@webinaire.numerique.gouv.fr"
 msgstr ""
 
 #: web/b3desk/templates/content.py:114
-#, fuzzy
 msgid "Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"
-msgstr "Need to contact the ministry of Education's team?"
+msgstr ""
 
 #: web/b3desk/templates/content.py:117
 msgid ""
@@ -720,12 +610,10 @@ msgid ""
 "https://www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur "
 "Apps.education.fr"
 msgstr ""
-"Go to your academic support portal https://www.education.gouv.fr/la-"
-"messagerie-professionnelle-3446 or on https://apps.education.fr"
 
 #: web/b3desk/templates/faq.html:4
 msgid "FAQ - Modalités d'accès"
-msgstr "FAQ - How to access"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:4
 msgid "Service accessible suivant les politiques de sécurité de votre ministère."
@@ -746,20 +634,18 @@ msgid ""
 "Service proposé par la Direction interministérielle du numérique et la "
 "Direction du numérique pour l'éducation"
 msgstr ""
-"Service offered by the Direction interministérielle du numérique and the "
-"Direction du numérique pour l'éducation"
 
 #: web/b3desk/templates/footer.html:23
 msgid "Le code source est ouvert et les contributions sont bienvenues."
-msgstr "The source code is open and contributions are welcome."
+msgstr ""
 
 #: web/b3desk/templates/footer.html:24
 msgid "Voir le code source - nouvelle fenêtre"
-msgstr "View source code - new window"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:24
 msgid "Voir le code source"
-msgstr "View source code"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:27
 msgid ""
@@ -769,20 +655,20 @@ msgstr ""
 
 #: web/b3desk/templates/footer.html:55
 msgid "Accessibilité : non conforme"
-msgstr "Accessibility: not compliant"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:58
 #: web/b3desk/templates/footer/mentions_legales.html:5
 msgid "Mentions légales"
-msgstr "Legal Notice"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:61
 msgid "Données personnelles et cookies"
-msgstr "Personal data and cookies"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:64 web/b3desk/templates/footer/cgu.html:5
 msgid "Conditions générales d’utilisation"
-msgstr "Terms and Conditions"
+msgstr ""
 
 #: web/b3desk/templates/footer.html:68 web/b3desk/templates/footer/cgu.html:62
 #: web/b3desk/templates/footer/cgu.html:63
@@ -815,16 +701,16 @@ msgstr ""
 #, python-format
 msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
 msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
-msgstr[0] "Currently, there is <b>%(count)s</b> webinar"
-msgstr[1] "Currently, there is <b>%(count)s</b> webinars"
+msgstr[0] ""
+msgstr[1] ""
 
 #: web/b3desk/templates/jumbotron.html:14
 #: web/b3desk/templates/jumbotron.html:119
 #, python-format
 msgid "et <b>%(count)s</b> participant"
 msgid_plural "et <b>%(count)s</b> participants"
-msgstr[0] "and <b>%(count)s</b> participant"
-msgstr[1] "and <b>%(count)s</b> participants"
+msgstr[0] ""
+msgstr[1] ""
 
 #: web/b3desk/templates/jumbotron.html:19
 #: web/b3desk/templates/jumbotron.html:124
@@ -833,44 +719,35 @@ msgid ""
 " sur une capacité moyenne pour la plateforme de %(max_participants)s "
 "participants."
 msgstr ""
-"on an average capacity for the platform of %(max_participants)s "
-"participants."
 
 #: web/b3desk/templates/jumbotron.html:35
-#, fuzzy
 msgid "Ouvrir une nouvelle réunion temporaire"
-msgstr "Start a temporary meeting"
+msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:37
-#, fuzzy
 msgid "Lancer la réunion - nouvelle fenêtre"
-msgstr "Start the meeting - new window"
+msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:38
-#, fuzzy
 msgid "Ouvrir une réunion temporaire"
-msgstr "Start a temporary meeting"
+msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:68
 #: web/b3desk/templates/jumbotron.html:106
-#, fuzzy
 msgid "Vous organisez régulièrement des réunions"
-msgstr "You regularly organize meetings"
+msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:70
 #: web/b3desk/templates/jumbotron.html:107
-#, fuzzy
 msgid ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver "
 "vos réunions."
 msgstr ""
-"You are a state employee, create an account to organize and keep your "
-"meetings."
 
 #: web/b3desk/templates/jumbotron.html:71
 #: web/b3desk/templates/jumbotron.html:108
 msgid "Se connecter ou créer un compte"
-msgstr "Connect or create an account"
+msgstr ""
 
 #: web/b3desk/templates/tools.html:13
 msgid "Modalités d'accès"
@@ -1364,9 +1241,8 @@ msgid "Pour toute question sur le Service, vous pouvez écrire à l’adresse ma
 msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:65
-#, fuzzy
 msgid "Évolution des conditions d'utilisation"
-msgstr "Terms and Conditions"
+msgstr ""
 
 #: web/b3desk/templates/footer/cgu.html:66
 msgid "Évolution des conditions d’utilisation"
@@ -1420,23 +1296,20 @@ msgid "Présentation des nouveautés de la v2.4"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:14
-#, fuzzy
 msgid "Créer une réunion improvisée"
-msgstr "Start a temporary meeting"
+msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:15
 msgid "Participer à une réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:16
-#, fuzzy
 msgid "Créer et parametrer une salle de réunion"
-msgstr "You regularly organize meetings"
+msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:16
-#, fuzzy
 msgid "Créer et paramétrer une salle de réunion "
-msgstr "You regularly organize meetings"
+msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:17
 msgid "Activer le matériel dans le navigateur"
@@ -1459,18 +1332,16 @@ msgid "Déléguer la création de réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:22
-#, fuzzy
 msgid "Enregistrer une réunion"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:23
 msgid "Créer un sondage"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:24
-#, fuzzy
 msgid "Joindre une réunion par téléphone"
-msgstr "Join a Webinar on a phone call?"
+msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:25
 msgid "Afficher le tableau de bord"
@@ -2182,7 +2053,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, no-python-format, python-format
+#, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -2198,7 +2069,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:130
 msgid "Enregistrement"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:135
 msgid ""
@@ -2346,9 +2217,8 @@ msgid "Les enregistrements sont conservés pour une période de %(duration)s."
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:26
-#, fuzzy
 msgid "Renommer l’enregistrement"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:30
 #, python-format
@@ -2368,9 +2238,8 @@ msgid "Actions"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:58
-#, fuzzy
 msgid "Voir l'enregistrement"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:59
 #: web/b3desk/templates/meeting/recordings.html:189
@@ -2378,14 +2247,12 @@ msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:62
-#, fuzzy
 msgid "Voir l'enregistrement mp4"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:64
-#, fuzzy
 msgid "Partager l'enregistrement mp4"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:69
 #, python-format
@@ -2405,9 +2272,8 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:145
-#, fuzzy
 msgid "Modifier le nom de l'enregistrement"
-msgstr "Recording"
+msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:145
 msgid "Renommer"
@@ -2559,9 +2425,8 @@ msgid "Le lien pour s'y inscrire est le suivant :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:17
-#, fuzzy
 msgid "Le mot de passe de cette réunion est :"
-msgstr "You cannot change this item"
+msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:25
 msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
@@ -4131,5 +3996,2446 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Copier les informations dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le service de fichiers est "
+#~ "temporairement indisponible. Veuillez réessayer "
+#~ "dans quelques minutes."
+#~ msgstr ""
+
+#~ msgid "Nom de la réunion"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous ne pourrez plus changer ce "
+#~ "titre une fois la salle créée. Ce"
+#~ " nom est visible des participants"
+#~ msgstr ""
+
+#~ msgid "Ma réunion"
+#~ msgstr ""
+
+#~ msgid "Texte de bienvenue"
+#~ msgstr "Welcome message"
+
+#~ msgid ""
+#~ "Ce texte apparait comme message de "
+#~ "bienvenue sur le tchat public. 150 "
+#~ "caractères max."
+#~ msgstr ""
+
+#~ msgid "Bienvenue dans cette réunion %(meeting_name)s."
+#~ msgstr "Welcome in this meeting %(meeting_name)s."
+
+#~ msgid "Nombre maximal de participants"
+#~ msgstr "Maximal number of participants"
+
+#~ msgid "Limitez vos salons à 350 personnes pour plus de confort."
+#~ msgstr ""
+
+#~ msgid "Durée maximale (minutes)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A l'issue de cette durée la "
+#~ "réunion stoppe automatiquement. 1h = 60,"
+#~ " 2h = 120, 3h = 180, 4h ="
+#~ " 240."
+#~ msgstr ""
+
+#~ msgid "Salle d'attente"
+#~ msgstr "Waiting room"
+
+#~ msgid ""
+#~ "Placer les participants dans une salle"
+#~ " d'attente lorsqu'ils rejoignent la "
+#~ "réunion. L'organisateur ou le modérateur "
+#~ "devra les accepter individuellement."
+#~ msgstr ""
+#~ "Place participants in a waiting room "
+#~ "when they join the meeting. The "
+#~ "organiser or moderator will have to "
+#~ "accept them individually."
+
+#~ msgid "Caméras visibles par les modérateurs uniquement"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Seuls vous et les modérateurs pouvez "
+#~ "voir les caméras des autres participants"
+#~ " quand cette option est activée."
+#~ msgstr ""
+
+#~ msgid "Participants muets à leur arrivée"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez choisir de faire arriver "
+#~ "les participants dans la salle avec "
+#~ "leur micro fermé, pour un démarrage "
+#~ "de réunion plus calme."
+#~ msgstr ""
+
+#~ msgid "Caméras des participants"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez autoriser ou interdire "
+#~ "l'ouverture de la caméra des "
+#~ "participants."
+#~ msgstr ""
+
+#~ msgid "Micros des participants"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez autoriser ou interdire "
+#~ "l'ouverture du microphone des participants."
+#~ msgstr ""
+
+#~ msgid "Discussions privées"
+#~ msgstr ""
+
+#~ msgid "Discussion publique (tchat)"
+#~ msgstr ""
+
+#~ msgid "Prise de note collaborative"
+#~ msgstr ""
+
+#~ msgid "Message à l'attention des modérateurs"
+#~ msgstr "Message for the attention of the moderators"
+
+#~ msgid "150 caractères max"
+#~ msgstr "150 characters max"
+
+#~ msgid "Bienvenue aux modérateurs"
+#~ msgstr "Welcome to the moderators"
+
+#~ msgid "Le message est trop long"
+#~ msgstr "The message is too long"
+
+#~ msgid "Url de redirection après la réunion"
+#~ msgstr "Redirection url after the meeting"
+
+#~ msgid "Renouveler le lien modérateur"
+#~ msgstr "Renew the moderator link"
+
+#~ msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
+#~ msgstr ""
+
+#~ msgid "Renouveler le lien participants"
+#~ msgstr "Renewing the link between participants"
+
+#~ msgid "PIN"
+#~ msgstr ""
+
+#~ msgid "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)"
+#~ msgstr ""
+
+#~ msgid "Code de connexion"
+#~ msgstr ""
+
+#~ msgid "Code de connexion pour rejoindre la réunion %(sip)s"
+#~ msgstr ""
+
+#~ msgid "(utilisé dans le lien SIP)"
+#~ msgstr ""
+
+#~ msgid "Enregistrement manuel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez lancer ou arrêter à "
+#~ "tout moment l'enregistrement de la "
+#~ "salle."
+#~ msgstr ""
+
+#~ msgid "Enregistrement automatique"
+#~ msgstr "Automatic recording"
+
+#~ msgid ""
+#~ "L'enregistrement démarre automatiquement à "
+#~ "l'ouverture de la salle et s'arrête "
+#~ "à sa fermeture."
+#~ msgstr ""
+
+#~ msgid "Mes salles de réunion"
+#~ msgstr "You regularly organize meetings"
+
+#~ msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
+#~ msgstr "Need to contact the Webinar team?"
+
+#~ msgid "Réunion improvisée"
+#~ msgstr "Start a temporary meeting"
+
+#~ msgid " Lien Modérateur  "
+#~ msgstr ""
+
+#~ msgid " Lien Participant  "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Bienvenue aux modérateurs. Pour inviter "
+#~ "quelqu'un à cette réunion, envoyez-lui"
+#~ " l'un de ces liens :"
+#~ msgstr ""
+
+#~ msgid "Aucune réunion ne correspond à ces paramètres"
+#~ msgstr "No meeting corresponds to these parameters"
+
+#~ msgid "Le lien d'invitation que vous avez utilisé est invalide."
+#~ msgstr ""
+
+#~ msgid "Lien invalide"
+#~ msgstr "Invalid link"
+
+#~ msgid "Le captcha saisi est erroné"
+#~ msgstr ""
+
+#~ msgid "Le code de connexion saisi est erroné"
+#~ msgstr ""
+
+#~ msgid "Vous ne pouvez pas modifier cet élément"
+#~ msgstr "You cannot change this item"
+
+#~ msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
+#~ msgstr ""
+
+#~ msgid "Le fichier a déjà été mis en ligne"
+#~ msgstr ""
+
+#~ msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
+#~ msgstr ""
+
+#~ msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
+#~ msgstr ""
+
+#~ msgid "Erreur lors de l'écriture du fichier sur le disque"
+#~ msgstr ""
+
+#~ msgid "Type de fichier non autorisé"
+#~ msgstr ""
+
+#~ msgid "Erreur de taille du fichier"
+#~ msgstr ""
+
+#~ msgid "Fichier introuvable"
+#~ msgstr ""
+
+#~ msgid "Vous ne pouvez pas supprimer cet élément"
+#~ msgstr "You cannot delete this item"
+
+#~ msgid "Fichier supprimé avec succès"
+#~ msgstr ""
+
+#~ msgid "La réunion n'est pas en cours"
+#~ msgstr ""
+
+#~ msgid "Enregistrement renommé"
+#~ msgstr "Recording"
+
+#~ msgid "Nous n'avons pas pu modifier cet enregistrement : {code}, {message}"
+#~ msgstr "We were unable to remove this video : %(code)s, %(message)s"
+
+#~ msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
+#~ msgstr ""
+
+#~ msgid "Le formulaire contient des erreurs"
+#~ msgstr ""
+
+#~ msgid "%(meeting_name)s modifications prises en compte"
+#~ msgstr "%(meeting_name)s changes taken into account"
+
+#~ msgid "Réunion terminée"
+#~ msgstr ""
+
+#~ msgid "Vous ne pouvez pas terminer cette réunion"
+#~ msgstr "You cannot change this item"
+
+#~ msgid "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
+#~ msgstr "We were unable to remove this video : %(code)s, %(message)s"
+
+#~ msgid "Élément supprimé"
+#~ msgstr "Deleted item"
+
+#~ msgid "Vidéo supprimée"
+#~ msgstr "Deleted video"
+
+#~ msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
+#~ msgstr "We were unable to remove this video : %(code)s, %(message)s"
+
+#~ msgid "Vous ne pouvez pas supprimer cette enregistrement"
+#~ msgstr "You cannot delete this record"
+
+#~ msgid "Ce code PIN est déjà utilisé"
+#~ msgstr ""
+
+#~ msgid "la réunion de %(fullname)s"
+#~ msgstr ""
+
+#~ msgid "Bienvenue dans la réunion de %(fullname)s"
+#~ msgstr "Welcome to the meeting of %(fullname)s."
+
+#~ msgid ""
+#~ "République\n"
+#~ "                    <br>Française"
+#~ msgstr ""
+
+#~ msgid "Menu"
+#~ msgstr ""
+
+#~ msgid "Les services de La Suite numérique"
+#~ msgstr ""
+
+#~ msgid "Accueil - %(service_title)s - République Française"
+#~ msgstr ""
+
+#~ msgid "%(service_title)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L'instance est configurée en mode "
+#~ "déboggage. Ne pas utiliser en production"
+#~ " !"
+#~ msgstr ""
+
+#~ msgid "%(service_tagline)s"
+#~ msgstr ""
+
+#~ msgid "Quelles sont les conditions d’accès pour accéder aux services ?"
+#~ msgstr "What are the conditions of access to the services?"
+
+#~ msgid ""
+#~ "Cette plateforme offre une solution "
+#~ "complète et puissante, adaptée à de "
+#~ "nombreux types d’événements en ligne, "
+#~ "jusqu’à 350 participants (Séminaire, "
+#~ "formation, table ronde, ateliers "
+#~ "collaboratifs…)\n"
+#~ "\n"
+#~ "Pour qui ?\n"
+#~ "\n"
+#~ "L’accès à ce service est dédié aux"
+#~ " agents de l’État et à leurs "
+#~ "interlocuteurs (suivant le nom de "
+#~ "domaine autorisé, demande sur "
+#~ "contact@webinaire.numerique.gouv.fr) depuis un poste"
+#~ " de travail sur site ou en "
+#~ "télétravail ou un appareil mobile "
+#~ "personnel ou professionnel.\n"
+#~ "L’accès au Webinaire de L’Etat n’est "
+#~ "pas ouvert aux collectivités territoriales,"
+#~ " ni aux Universités et établissements "
+#~ "d'enseignements du Ministère de l’enseignement"
+#~ " supérieur.\n"
+#~ "\n"
+#~ "Par quel moyen ?\n"
+#~ "\n"
+#~ "• Sur site :\n"
+#~ "Depuis votre ordinateur de travail en"
+#~ " utilisant les navigateurs préconisés : "
+#~ "Edge, Chromium, Chrome, et aussi Firefox"
+#~ " pour l'éducation nationale\n"
+#~ "\n"
+#~ "• En télétravail :\n"
+#~ "Depuis votre ordinateur de travail (VPN"
+#~ " activé ou désactivé) les navigateurs "
+#~ "préconisés sont : Edge, Chromium, "
+#~ "Chrome, et aussi Firefox pour "
+#~ "l'éducation nationale ou ordinateur personnel"
+#~ " (Navigateurs Edge, Chrome, Chromium, "
+#~ "Firefox)\n"
+#~ "\n"
+#~ "• Depuis vos appareils mobiles :\n"
+#~ "- Téléphone portable ou tablette  (sans"
+#~ " application, un lien participant ou "
+#~ "modérateur suffit).\n"
+#~ "- Sur IOS, le navigateur Safari "
+#~ "est recommandé pour les iphone et "
+#~ "ipad (IOS 12.2+)\n"
+#~ "- Sur Android, utiliser le navigateur"
+#~ " Chrome par défaut (Android 6.0+)\n"
+#~ msgstr ""
+#~ "This platform offers a complete and "
+#~ "powerful solution, suitable for a wide"
+#~ " range of many types of online "
+#~ "events, up to 350 participants(Seminar, "
+#~ "training, round table, collaborative "
+#~ "workshops...)\n"
+#~ "\n"
+#~ "For who?\n"
+#~ "\n"
+#~ "Access to this service is dedicated "
+#~ "to State agents and their interlocutors"
+#~ " (according to the authorised domain "
+#~ "name, request on "
+#~ "contact@webinaire.numerique.gouv.fr) from an on-"
+#~ "site workstation or telework or a "
+#~ "personal or business mobile device. \n"
+#~ "Access to the State Webinar is not"
+#~ " open to local authorities, nor to"
+#~ " universities and educational establishments "
+#~ "of the Ministry of Higher Education."
+#~ "\n"
+#~ "\n"
+#~ "By what means?\n"
+#~ "\n"
+#~ "• On site :\n"
+#~ "From your work computer using "
+#~ "recommended browsers: Edge, Chromium, Chrome,"
+#~ " and also Firefox for national "
+#~ "education\n"
+#~ "\n"
+#~ "• Teleworking:\n"
+#~ "From your work computer (VPN on or"
+#~ " off) the recommended browsers are :"
+#~ " Edge, Chromium, Chrome, and also "
+#~ "Firefox for national education or "
+#~ "personal computer (Edge browsers, Chrome, "
+#~ "Chromium, Firefox)\n"
+#~ "\n"
+#~ "• From your mobile devices:\n"
+#~ "- Mobile phone or tablet (without "
+#~ "application, a participant link or\"moderator"
+#~ " is sufficient).\n"
+#~ "- On IOS, the Safari browser is"
+#~ " recommended for iphone and ipad (IOS"
+#~ " 12.2+)\n"
+#~ "- On Android, use Chrome or Firefox browser (Android 6.0+)\n"
+
+#~ msgid "Quel est le matériel nécessaire ?"
+#~ msgstr "What equipment is needed?"
+
+#~ msgid ""
+#~ "Pour utiliser l’outil Webinaire de "
+#~ "l’État, il vous suffit de disposer "
+#~ "du matériel suivant :\n"
+#~ "\n"
+#~ "    • un ordinateur connecté à Internet\n"
+#~ "    • un navigateur web (pas "
+#~ "d’application à télécharger et à "
+#~ "installer). Il est recommandé d’utiliser "
+#~ "la dernière version de Microsoft Edge"
+#~ " (Chromium), Chromium ou Google Chrome."
+#~ "\n"
+#~ "    • une webcam,\n"
+#~ "    • un micro et des haut-"
+#~ "parleurs, ou, de préférence, un casque"
+#~ " avec micro intégré.\n"
+#~ "    • Le webinaire de l’Etat "
+#~ "fonctionne également sur les appareils "
+#~ "mobiles (sans application). Le navigateur "
+#~ "Safari est recommandé pour les iphone"
+#~ " et ipad (IOS 12.2+). Sur Android,"
+#~ " utiliser le navigateur chrome par "
+#~ "défaut (Android 6.0+)\n"
+#~ "    • Pour rejoindre un webinaire, "
+#~ "vous devez juste cliquer sur le "
+#~ "lien envoyé par l’organisateur/modérateur "
+#~ "depuis votre smartphone ou tablette sous"
+#~ " Android ou iOS, la caméra et "
+#~ "le micro sont activables suivant le "
+#~ "contexte d’intervention."
+#~ msgstr ""
+#~ "To use this Webinar tool, all you need is the following equipment:\n"
+#~ "\n"
+#~ "    • a computer connected to the Internet\n"
+#~ "    • a web browser (no "
+#~ "application to download and install). It"
+#~ " is recommended to use the latest "
+#~ "version of a modern\"web browser "
+#~ "(Firefox, Edge, Chrome, Chromium...).\n"
+#~ "    • a webcam,\n"
+#~ "    • a microphone and speakers, "
+#~ "or preferably a headset with a "
+#~ "microphone\"integrated.\n"
+#~ "    • The webinar also works on"
+#~ " mobile devices (without application). "
+#~ "Safari browser is recommended for "
+#~ "iphones and ipad (IOS 12.2+). On "
+#~ "Android, use the latest version of "
+#~ "a modern web browser (Firefox, "
+#~ "Chrome...). (Android 6.0+)\n"
+#~ "    • To join a webinar, you "
+#~ "just have to click on the link "
+#~ "sent by the organiser/moderator from "
+#~ "your smartphone or tablet under Android"
+#~ " or iOS, the camera and microphone"
+#~ " can be activated depending on the"
+#~ " contextcontext of intervention."
+
+#~ msgid "Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"
+#~ msgstr "Can I use my smartphone or tablet to connect?"
+
+#~ msgid ""
+#~ "Le Webinaire de l’Etat fonctionne "
+#~ "également sur les appareils mobiles par"
+#~ " un simple lien (sans application) "
+#~ "sur le portail ou dans le "
+#~ "séminaire. Sur les iphone et ipad "
+#~ "(IOS 12.2+) le navigateur Safari est "
+#~ "recommandé. Sur Android, utiliser le "
+#~ "navigateur chrome par défaut (Android "
+#~ "6.0+).\n"
+#~ msgstr ""
+#~ "The Webinar also works on mobile "
+#~ "devices by a simple link (no app)"
+#~ " on the portal or in the "
+#~ "seminar. On iphone and ipad (IOS "
+#~ "12.2+) the Safari browser is "
+#~ "recommended. On Android, use the latest"
+#~ " version of a modern web browser "
+#~ "(Firefox, Chrome...). (Android 6.0+)\n"
+
+#~ msgid "Comment créer un séminaire ?"
+#~ msgstr "How to create a webinar ?"
+
+#~ msgid ""
+#~ "Si vous êtes un agent de l’état, vous pouvez :\n"
+#~ "- Créer des séminaires immédiatement en"
+#~ " renseignant votre courriel professionnel "
+#~ "sur .gouv.fr et suivant les noms "
+#~ "de domaines autorisés.\n"
+#~ "- Créer un compte pour créer et"
+#~ " configurer des séminaires que vous "
+#~ "pourrez retrouver facilement dans votre "
+#~ "espace ainsi que les liens de "
+#~ "connexions, les replays des enregistrements…"
+#~ "\n"
+#~ "- Pour les personnels du MENJS "
+#~ "vous devez utiliser le bouton « "
+#~ "HUB d'authentification Éducation, Jeunesse et"
+#~ " Sports. »\n"
+#~ "\n"
+#~ "Si votre nom de domaine n’est pas"
+#~ " reconnu, et que vous pensez être "
+#~ "éligible au service, envoyez un mail "
+#~ "à contact@webinaire.numerique.gouv.fr\n"
+#~ msgstr ""
+#~ "If you are a public official, you can :\n"
+#~ "- Create seminars immediately by "
+#~ "entering your professional email address "
+#~ "on .gouv.fr and following the authorized"
+#~ " domain names.\n"
+#~ "- Create an account to create and"
+#~ " set up seminars that you can "
+#~ "find easily in your space as well"
+#~ " as the links of connections, replays"
+#~ " of recordings…\n"
+#~ "- For MENJ staff you must use "
+#~ "the ministry \"HUB\" button for "
+#~ "authentication.\n"
+#~ "\n"
+#~ "If your domain name is not "
+#~ "recognised, and you think you are "
+#~ "eligible for the service, send an "
+#~ "email to contact@webinaire.numerique.gouv.fr\n"
+
+#~ msgid "Comment créer un compte ?"
+#~ msgstr "How to create an account?"
+
+#~ msgid ""
+#~ "En tant qu’agent de l’État, si "
+#~ "vous organisez régulièrement des séminaires"
+#~ " vous pouvez créer un compte pour "
+#~ "organiser et conserver facilement vos "
+#~ "séminaires sur mesure.\n"
+#~ "\n"
+#~ "Vous avez la possibilité créer une "
+#~ "ou plusieurs salles de séminaire et "
+#~ "les configurer suivant le type de "
+#~ "dispositifs adaptés (ex : Séminaire, "
+#~ "Formation, classe virtuelle, Conférence "
+#~ "interactive, Plénière, Table ronde, Assemblée"
+#~ " générale, Ateliers collaboratifs ou "
+#~ "d’idéation, Comités en grand nombre, "
+#~ "…etc.)."
+#~ msgstr ""
+#~ "As a government employee, if you "
+#~ "regularly conduct seminars you can "
+#~ "create an account to easily organize "
+#~ "and store easily your customized "
+#~ "seminars.\n"
+#~ "\n"
+#~ "You have the possibility to create "
+#~ "one or more seminar rooms and "
+#~ "configure them according to the type "
+#~ "of adapted devices (ex: Seminar, "
+#~ "Training, Virtual Classroom, Interactive "
+#~ "Conference, Plenary, Table Round table, "
+#~ "General Assembly, Collaborative or ideation"
+#~ " workshops, Committees in large numbers,"
+#~ " ... etc.)."
+
+#~ msgid "Comment inviter les participants/ modérateurs"
+#~ msgstr "How to invite participants/moderators"
+
+#~ msgid ""
+#~ "L’organisateur qui a créé le séminaire peut partager le lien :\n"
+#~ "« Participants » qu’ils soient de "
+#~ "l’administration ou de l’extérieur "
+#~ "(partenaires, prestataires, entreprises, citoyens…)"
+#~ "\n"
+#~ "« Organisateurs/modérateurs » qui géreront avec vous le séminaire."
+#~ msgstr ""
+
+#~ msgid "Rejoindre un Webinaire en appel téléphonique ?"
+#~ msgstr "Join a Webinar on a phone call?"
+
+#~ msgid ""
+#~ "Une fois dans le séminaire, il est"
+#~ " possible d’utiliser aussi son téléphone"
+#~ " fixe ou mobile pour suivre le "
+#~ "séminaire.\n"
+#~ "Les informations sont visibles dans le"
+#~ " séminaire sur discussion publique. Vous"
+#~ " pouvez transmettre ses informations "
+#~ "composées du numéro d’appel et du "
+#~ "code du séminaire :\n"
+#~ "\n"
+#~ "Pour rejoindre cette conférence par téléphone, composez-le :\n"
+#~ "+33 1 XX XX XX XX\n"
+#~ "Puis entrez le code d’accès XXXXX suivi de la touche #.\n"
+#~ "Une fois dans la conférence, appuyez "
+#~ "sur la touche « 0 » de votre"
+#~ " téléphone afin d’activer ou de "
+#~ "désactiver votre microphone."
+#~ msgstr ""
+#~ "Once in the seminar, it is "
+#~ "possible to also use your landline "
+#~ "or cell phone to follow the "
+#~ "seminar.\n"
+#~ "The information is visible in the "
+#~ "seminar on public discussion.You can "
+#~ "transmit its information consisting of "
+#~ "the call number and the seminar "
+#~ "code:\n"
+#~ "\n"
+#~ "To join this conference by phone, dial:\n"
+#~ "+33 1 XX XX XX XX\n"
+#~ "Then enter the access code XXXXX followed by the # key.\n"
+#~ "Once in the conference, press the "
+#~ "\"0\" key on your phone to turn"
+#~ " your microphone on or off."
+
+#~ msgid "J'ai des perturbations audio ou vidéo ?"
+#~ msgstr "I have audio or video disturbances?"
+
+#~ msgid ""
+#~ "\n"
+#~ "Pour l’audio, rapprochez-vous de votre"
+#~ " borne wifi, ou/et coupez votre "
+#~ "caméra\n"
+#~ "Nous vous invitons à utiliser un "
+#~ "casque pour une meilleure écoute et "
+#~ "pour que les bruits de fond autour"
+#~ " de vous ne perturbent pas les "
+#~ "autres participants.\n"
+#~ "\n"
+#~ "Pour la vidéo, baisser la résolution "
+#~ "de votre caméra lors de votre "
+#~ "connexion sur le Webinaire\n"
+#~ "\n"
+#~ "La fonctionnalité partage d’écran est la"
+#~ " plus consommatrice de bande passante "
+#~ "devant la vidéo. Si vous êtes "
+#~ "organisateur et que votre bande passante"
+#~ " est faible, elle peut dégrader la"
+#~ " qualité de votre séminaire.\n"
+#~ "\n"
+#~ "Pour utiliser moins de bande passante"
+#~ " et profiter du service dans les "
+#~ "meilleures conditions, avec beaucoup de "
+#~ "participants, nous recommandons de vous "
+#~ "connecter hors VPN.\n"
+#~ msgstr ""
+#~ "For audio, get closer to your wifi"
+#~ " terminal, or/and turn off your "
+#~ "camera\n"
+#~ "We encourage you to use headphones "
+#~ "for better listening and for that "
+#~ "background noise around you not does "
+#~ "to disturb other participants.\n"
+#~ "\n"
+#~ "For video, lower your camera resolution when you login to the webinar\n"
+#~ "\n"
+#~ "The screen sharing feature is the "
+#~ "most bandwidth consuming bandwidth consuming"
+#~ " feature ahead of video. If you "
+#~ "are an organizer and your bandwidth "
+#~ "bandwidth is low, it can degrade "
+#~ "the quality of your seminar.\n"
+#~ "\n"
+#~ "To use less bandwidth and enjoy "
+#~ "the service in the best conditions, "
+#~ "with many participants, we recommend to"
+#~ " connect outside VPN.\n"
+
+#~ msgid "Besoin de contacter l'équipe du Webinaire de l’Etat ?"
+#~ msgstr "Need to contact the Webinar team?"
+
+#~ msgid "contact@webinaire.numerique.gouv.fr"
+#~ msgstr ""
+
+#~ msgid "Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"
+#~ msgstr "Need to contact the ministry of Education's team?"
+
+#~ msgid ""
+#~ "Rendez-vous sur votre portail "
+#~ "d'assistance académique https://www.education.gouv.fr"
+#~ "/la-messagerie-professionnelle-3446 ou sur "
+#~ "Apps.education.fr"
+#~ msgstr ""
+#~ "Go to your academic support portal "
+#~ "https://www.education.gouv.fr/la-messagerie-"
+#~ "professionnelle-3446 or on https://apps.education.fr"
+
+#~ msgid "FAQ - Modalités d'accès"
+#~ msgstr "FAQ - How to access"
+
+#~ msgid ""
+#~ "Service accessible suivant les politiques "
+#~ "de sécurité de votre ministère."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si l'audio ou la vidéo ne "
+#~ "fonctionne pas, veuillez ré-essayer en "
+#~ "vous déconnectant de votre réseau "
+#~ "internet professionnel RIE."
+#~ msgstr ""
+
+#~ msgid "en savoir plus"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Service proposé par la Direction "
+#~ "interministérielle du numérique et la "
+#~ "Direction du numérique pour l'éducation"
+#~ msgstr ""
+#~ "Service offered by the Direction "
+#~ "interministérielle du numérique and the "
+#~ "Direction du numérique pour l'éducation"
+
+#~ msgid "Le code source est ouvert et les contributions sont bienvenues."
+#~ msgstr "The source code is open and contributions are welcome."
+
+#~ msgid "Voir le code source - nouvelle fenêtre"
+#~ msgstr "View source code - new window"
+
+#~ msgid "Voir le code source"
+#~ msgstr "View source code"
+
+#~ msgid ""
+#~ "Ceci est une version de développement"
+#~ " et ne doit en aucun cas être"
+#~ " déployée dans des environnements de "
+#~ "production."
+#~ msgstr ""
+
+#~ msgid "Accessibilité : non conforme"
+#~ msgstr "Accessibility: not compliant"
+
+#~ msgid "Mentions légales"
+#~ msgstr "Legal Notice"
+
+#~ msgid "Données personnelles et cookies"
+#~ msgstr "Personal data and cookies"
+
+#~ msgid "Conditions générales d’utilisation"
+#~ msgstr "Terms and Conditions"
+
+#~ msgid "Contact"
+#~ msgstr ""
+
+#~ msgid "Accueil - %(service_title)s"
+#~ msgstr ""
+
+#~ msgid "Fermer"
+#~ msgstr ""
+
+#~ msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
+#~ msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
+#~ msgstr[0] "Currently, there is <b>%(count)s</b> webinar"
+#~ msgstr[1] "Currently, there is <b>%(count)s</b> webinars"
+
+#~ msgid "et <b>%(count)s</b> participant"
+#~ msgid_plural "et <b>%(count)s</b> participants"
+#~ msgstr[0] "and <b>%(count)s</b> participant"
+#~ msgstr[1] "and <b>%(count)s</b> participants"
+
+#~ msgid ""
+#~ " sur une capacité moyenne pour la"
+#~ " plateforme de %(max_participants)s participants."
+#~ msgstr ""
+#~ "on an average capacity for the "
+#~ "platform of %(max_participants)s participants."
+
+#~ msgid "Ouvrir une nouvelle réunion temporaire"
+#~ msgstr "Start a temporary meeting"
+
+#~ msgid "Lancer la réunion - nouvelle fenêtre"
+#~ msgstr "Start the meeting - new window"
+
+#~ msgid "Ouvrir une réunion temporaire"
+#~ msgstr "Start a temporary meeting"
+
+#~ msgid "Vous organisez régulièrement des réunions"
+#~ msgstr "You regularly organize meetings"
+
+#~ msgid ""
+#~ "Vous êtes agent de l'État, créez "
+#~ "un compte pour organiser et conserver"
+#~ " vos réunions."
+#~ msgstr ""
+#~ "You are a state employee, create "
+#~ "an account to organize and keep "
+#~ "your meetings."
+
+#~ msgid "Se connecter ou créer un compte"
+#~ msgstr "Connect or create an account"
+
+#~ msgid "Modalités d'accès"
+#~ msgstr ""
+
+#~ msgid "se déconnecter"
+#~ msgstr ""
+
+#~ msgid "S’identifier"
+#~ msgstr ""
+
+#~ msgid "Erreur 400"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La requête que vous avez effectué "
+#~ "est invalide. Vous pouvez <a "
+#~ "href=\"%(index_url)s\">retourner à l’accueil</a>."
+#~ msgstr ""
+
+#~ msgid "Erreur 403"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous n’êtes pas autorisé à accéder "
+#~ "cette page. Vous pouvez <a "
+#~ "href=\"%(index_url)s\">retourner à l’accueil</a>."
+#~ msgstr ""
+
+#~ msgid "Erreur 404"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Cette page n'existe pas. Vous pouvez "
+#~ "<a href=\"%(index_url)s\">retourner à l’accueil</a>."
+#~ msgstr ""
+
+#~ msgid "Erreur 500"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le serveur a rencontré une erreur "
+#~ "interne, veuillez réessayer ultérieurement."
+#~ msgstr ""
+
+#~ msgid "Erreur du service de visioconférence"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Service de visioconférence momentanément "
+#~ "inaccessible, veuillez retenter ultérieurement."
+#~ msgstr ""
+
+#~ msgid "Accessibilité"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le site webinaire.numerique.gouv.fr est "
+#~ "développé selon les recommendations du "
+#~ "<a href=\"https://www.numerique.gouv.fr/publications/rgaa-"
+#~ "accessibilite/\" target=\"_blank\"  rel=\"noopener "
+#~ "noreferrer\" title=\"référentiel général "
+#~ "d’amélioration d’accessibilité - nouvelle "
+#~ "fenêtre\">référentiel général d’amélioration "
+#~ "d’accessibilité</a> pour être accessible à "
+#~ "tous les usagers quel que soit le"
+#~ " matériel ou le logiciel utilisé pour"
+#~ " naviguer sur internet."
+#~ msgstr ""
+
+#~ msgid "Cependant, aucun audit formel n’a été effectué."
+#~ msgstr ""
+
+#~ msgid "Droit à compensation"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Dans l’attente d’une mise en conformité"
+#~ " totale, vous pouvez obtenir une "
+#~ "version accessible des documents ou des"
+#~ " informations qui y seraient contenues "
+#~ "en envoyant un courriel à "
+#~ "contact@webinaire.numerique.gouv.fr en indiquant le"
+#~ " nom du document concerné et/ou les"
+#~ " informations que vous souhaiteriez "
+#~ "obtenir. Les informations demandées vous "
+#~ "seront transmises dans les plus bref "
+#~ "délais."
+#~ msgstr ""
+
+#~ msgid "Amélioration et contact"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez nous aider à améliorer "
+#~ "l’accessibilité du site en nous "
+#~ "signalant les problèmes éventuels que "
+#~ "vous rencontrez. Pour ce faire, "
+#~ "envoyez-nous un courriel à "
+#~ "contact@webinaire.numerique.gouv.fr ."
+#~ msgstr ""
+
+#~ msgid "Défenseur des droits"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si vous constatez un défaut "
+#~ "d'accessibilité vous empêchant d'accéder à "
+#~ "un contenu ou une fonctionnalité du "
+#~ "site, que vous nous le signalez et"
+#~ " que vous ne parvenez pas à "
+#~ "obtenir une réponse rapide de notre "
+#~ "part, vous êtes en droit de faire"
+#~ " parvenir vos doléances ou une "
+#~ "demande de saisine au Défenseur des "
+#~ "droits. Plusieurs moyens sont à votre"
+#~ " disposition :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "un <a href=\"https://www.defenseurdesdroits.fr/nous-"
+#~ "contacter\" title=\"formulaire de contact -"
+#~ " nouvelle fenêtre\" target=\"_blank\" "
+#~ "rel=\"noopener noreferrer\" >formulaire de "
+#~ "contact</a></li><li>la <a "
+#~ "href=\"https://www.defenseurdesdroits.fr/fr/saisir/delegues\" "
+#~ "title=\"liste des délégués de votre "
+#~ "région - nouvelle fenêtre\" target=\"_blank\""
+#~ "  rel=\"noopener noreferrer\">liste des délégués"
+#~ " de votre région</a> avec leurs "
+#~ "informations de contact directs</li><li>un "
+#~ "numéro de téléphone : le 09 69 "
+#~ "39 00 00 du lundi au vendredi "
+#~ "de 8h00 à 20h00 (coût d'un appel"
+#~ " local)</li><li>une adresse postale dans "
+#~ "l'<a href=\"https://lannuaire.service-public.fr"
+#~ "/autorites-independantes/autorite-administrative-"
+#~ "independante_195381\" title=\"annuaire de "
+#~ "l'administration - nouvelle fenêtre\" "
+#~ "target=\"_blank\" rel=\"noopener noreferrer\" "
+#~ ">annuaire de l'administration</a>"
+#~ msgstr ""
+
+#~ msgid "Objet"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les présentes conditions générales "
+#~ "d’utilisation (CGU) ont pour objet de"
+#~ " déterminer les conditions d’accès et "
+#~ "les règles d’utilisation de VISIO-AGENTS"
+#~ " (le Service) par ses Utilisateurs et"
+#~ " Utilisatrices."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’accès au Service est subordonné au "
+#~ "respect des CGU. La Direction du "
+#~ "numérique pour l’éducation (DNE) se "
+#~ "réserve le droit de modifier ou de"
+#~ " mettre à jour unilatéralement ces "
+#~ "CGU afin de se conformer aux "
+#~ "évolutions légales et techniques."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les utilisateurs doivent consulter "
+#~ "régulièrement la dernière version des "
+#~ "CGU disponible en permanence sur le "
+#~ "site."
+#~ msgstr ""
+
+#~ msgid "Code de conduite et responsabilités des Utilisateurs"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’utilisation du Service ministériel VISIO-"
+#~ "AGENTS est libre et gratuite pour "
+#~ "les agents du ministère de l’Education"
+#~ " Nationale et de la Jeunesse (MENJ)."
+#~ " Les partenaires du service public "
+#~ "voire le grand public (citoyen, "
+#~ "entreprise, association) peuvent être invités"
+#~ " à participer sous la responsabilité "
+#~ "des agents du ministère."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice peut, s’il "
+#~ "ou elle le souhaite, utiliser quelque"
+#~ " pseudonyme qu’il lui plaira de "
+#~ "choisir dans le respect des règles "
+#~ "suivantes : sont interdits les "
+#~ "pseudonymes relevant de l’insulte, de "
+#~ "l’injure, évoquant des propos, situations "
+#~ "ou pratiques obscènes, grossières, à "
+#~ "caractère sexuel ou attentatoire à la"
+#~ " dignité humaine ou aux bonnes mœurs."
+#~ " Sont également prohibés les pseudonymes"
+#~ " pouvant entraîner un risque de "
+#~ "confusion dans l’esprit du public quant"
+#~ " à l’auteur du message ou à sa"
+#~ " qualité ou qualification, ainsi que "
+#~ "ceux faisant référence directement ou "
+#~ "indirectement à un signe commercial "
+#~ "protégé, que l’utilisation du pseudonyme "
+#~ "soit ou non dénigrante."
+#~ msgstr ""
+
+#~ msgid "Description du Service"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service regroupant VISIO-AGENTS et"
+#~ " CLASSE VIRTUELLE est un outil de "
+#~ "visioconférence en ligne proposé par la"
+#~ " DNE, qui en assure le maintien "
+#~ "en conditions opérationnelles et les "
+#~ "évolutions."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Toute utilisation des ressources de "
+#~ "domaine de publication est subordonnée "
+#~ "au respect des présentes conditions "
+#~ "générales d’utilisation (CGU)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service permet notamment la création"
+#~ " d’espaces de discussion en ligne et"
+#~ " a été conçu pour répondre aux "
+#~ "besoins de communication virtuelle des "
+#~ "agents du ministère de l’Éducation "
+#~ "Nationale et de la Jeunesse et "
+#~ "évolue au fil de l’eau, selon un"
+#~ " cycle d’amélioration continue dans lequel"
+#~ " les utilisateurs sont placés au "
+#~ "centre de la démarche et de "
+#~ "l’attention de l’équipe qui pilote le"
+#~ " produit."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service VISIO-AGENTS est un "
+#~ "logiciel libre basé sur un logiciel "
+#~ "développé par la société Blindside "
+#~ "Networks."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’hébergement du Service et des données"
+#~ " est réalisé chez l’entreprise Scaleway,"
+#~ " validée offre Cloud Cercle 3."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La société française Arawa assure "
+#~ "l’infogérance et la surveillance des "
+#~ "infrastructures de la solution de "
+#~ "visioconférence en heures ouvrées."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’équipe nationale du pôle FOAD assure"
+#~ " l’exploitation de la solution de "
+#~ "frontal de gestion des salons en "
+#~ "heures ouvrées."
+#~ msgstr ""
+
+#~ msgid "Accès et utilisation du Service"
+#~ msgstr ""
+
+#~ msgid "Accès au Service"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service est accessible depuis un "
+#~ "navigateur récent connecté à Internet, "
+#~ "quel que soit le terminal utilisé."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez accéder à la page "
+#~ "d’accueil du site en utilisant l’adresse"
+#~ " : <a class=\"rf_link\" href=\"https://visio-"
+#~ "agents.education.fr\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://visio-agents.education.fr</a> ou"
+#~ " à votre service académique de Classe"
+#~ " Virtuelle depuis votre portail <a "
+#~ "class=\"rf_link\" href=\"https://apps.education.fr\" "
+#~ "target=\"_blank\" "
+#~ "rel=\"noopener\">https://apps.education.fr</a>."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le service est accessible 365 jours "
+#~ "par an et 24 heures sur 24, "
+#~ "sauf cas de force majeure, évènements"
+#~ " hors de contrôle de la DNE "
+#~ "et/ou de l’hébergeur et à l’exception"
+#~ " d’opérations de maintenances ou "
+#~ "d’incidents ne pouvant être traités par"
+#~ " le support que lors des jours "
+#~ "ouvrés, en heures ouvrées."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les incidents ne seront traités par "
+#~ "le support que lors de ses "
+#~ "horaires d’ouvertures les jours ouvrés, "
+#~ "en heures ouvrées."
+#~ msgstr ""
+
+#~ msgid "Utilisation du Service"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service est mis à disposition "
+#~ "des agents publics du ministère de "
+#~ "l’Éducation nationale et de la Jeunesse"
+#~ " et de leurs collaborateurs pour un"
+#~ " usage strictement professionnel."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice est "
+#~ "responsable des données, contenus ou "
+#~ "propos qu'il ou elle échange grâce "
+#~ "au Service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L'Utilisateur ou l’Utilisatrice ne partage "
+#~ "pas en ligne et ni ne communique"
+#~ " de contenus ou informations contraires "
+#~ "aux dispositions légales et réglementaires "
+#~ "en vigueur. Il ou elle veille "
+#~ "notamment à ne jamais tenir de "
+#~ "propos ou échanger de contenus "
+#~ "insultants, diffamatoires ou indécents, ou "
+#~ "qui porteraient atteinte aux droits des"
+#~ " tiers, y compris leurs droits de "
+#~ "propriété intellectuelle."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice doit être "
+#~ "attentif à ce que ces usages "
+#~ "demeurent raisonnables et ne mettent pas"
+#~ " en péril la sécurité informatique du"
+#~ " Service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice utilise le "
+#~ "Service dans le respect du secret "
+#~ "professionnel et fait preuve de "
+#~ "discrétion professionnelle pour tous les "
+#~ "faits, informations ou documents dont il"
+#~ " ou elle a connaissance dans le "
+#~ "cadre de l’utilisation du Service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Sauf preuve contraire, toute connexion "
+#~ "au Service ou transmission de données"
+#~ " effectuées à partir du compte d’un"
+#~ " Utilisateur ou d’une Utilisatrice, sera"
+#~ " réputée avoir été effectuée par ce"
+#~ " dernier ou cette dernière."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si l’Utilisateur ou l’Utilisatrice estime "
+#~ "que son identité académique est "
+#~ "compromise, il ou elle doit modifier "
+#~ "son mot de passe sans délai."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "En cas de compromission de son "
+#~ "compte, l’Utilisateur ou l’Utilisatrice doit"
+#~ " contacter l’équipe support :"
+#~ msgstr ""
+
+#~ msgid "Limitations d'utilisation du Service"
+#~ msgstr ""
+
+#~ msgid "Limitations d’utilisation du Service"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Service est prévu pour le "
+#~ "traitement et le partage de données "
+#~ "sans sensibilité particulière."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Tout utilisateur ou utilisatrice qui "
+#~ "constate la présence de contenus "
+#~ "illicites, inappropriés ou contraires aux "
+#~ "présentes conditions d’utilisation peut le "
+#~ "signaler en s’adressant au support :"
+#~ msgstr ""
+
+#~ msgid "Disponibilité et sécurité du Service"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La DNE s’engage à mettre en œuvre"
+#~ " tous les moyens dont elle dispose"
+#~ " pour assurer la bonne qualité et "
+#~ "la fiabilité du Service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le système bénéficie d’une supervision "
+#~ "opérationnelle en heures ouvrées. Il "
+#~ "peut malgré tout être sujet à des"
+#~ " anomalies ou des erreurs pouvant "
+#~ "avoir des impacts sur les performances"
+#~ " ou la disponibilité du service. A"
+#~ " ce titre, la DNE ne peut être"
+#~ " tenue responsable des pertes et/ou "
+#~ "préjudices, de quelque nature qu’ils "
+#~ "soient, qui pourraient être causés à "
+#~ "la suite d’un dysfonctionnement ou une"
+#~ " indisponibilité du Service. De telles "
+#~ "situations n'ouvriront droit à aucune "
+#~ "compensation financière."
+#~ msgstr ""
+
+#~ msgid "Données personnelles"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’utilisation du Service donne lieu à"
+#~ " des traitements de données à "
+#~ "caractère personnel et au dépôt de "
+#~ "cookies conformément à la politique de"
+#~ " protection des données personnelles et "
+#~ "de gestion des cookies, accessible ici"
+#~ " : <a class=\"rf_link\" "
+#~ "href=\"https://projet.apps.education.fr/donnees-"
+#~ "personnelles/#cloud\" target=\"_blank\" "
+#~ "rel=\"noopener\">https://projet.apps.education.fr/donnees-"
+#~ "personnelles/#cloud</a>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données personnelles transmises ne "
+#~ "seront utilisées que pour assurer le "
+#~ "fonctionnement du Service. Elles ne "
+#~ "seront en aucun cas transmises à "
+#~ "des tiers sans votre autorisation "
+#~ "préalable, sauf exigences légales."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Conformément à la législation les "
+#~ "prestataires techniques sont tenus de "
+#~ "conserver et de déférer à l’autorité "
+#~ "judiciaire les informations de connections "
+#~ "(log, IP, date/heure) permettant la "
+#~ "poursuite de l’auteur d’une infraction. "
+#~ "Toutes les informations nécessaires seront "
+#~ "donc conservées pour la durée légale "
+#~ "prévue. Elles seront détruites au terme"
+#~ " du délai légal de conservation."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données personnelles qui auraient "
+#~ "été transmises par le biais d’un "
+#~ "salon de visio-conférence (oralement, "
+#~ "par le chat ou un document "
+#~ "partagé) ne sont pas conservées au-"
+#~ "delà de la fin du salon, sauf "
+#~ "si un enregistrement a été réalisé "
+#~ "(pour VISIO-AGENTS uniquement). Dans ce"
+#~ " dernier cas, cet enregistrement est "
+#~ "sous la responsabilité du propriétaire "
+#~ "du salon, et le stockage de cette"
+#~ " vidéo n’est assuré par le Service"
+#~ " que pour une durée de 12 mois."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Concernant le frontal proposé par le "
+#~ "service, vous disposez d'un droit "
+#~ "d'accès, de modification, de rectification "
+#~ "et de suppression des données qui "
+#~ "vous concernent (art. 34 de la loi"
+#~ " « Informatique et Libertés » du "
+#~ "6 janvier 1978). Vous pouvez, à "
+#~ "tout moment, demander que vos "
+#~ "contributions à cet espace soient "
+#~ "supprimées. Les demandes concernant le "
+#~ "droit d’accès, de modification et de "
+#~ "rectification doivent être adressées par "
+#~ "mail à l’adresse :"
+#~ msgstr ""
+
+#~ msgid "Responsabilités"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice s’engage, lors"
+#~ " de l’utilisation qu’il fait du "
+#~ "Service, à ne pas contrevenir aux "
+#~ "dispositions législatives et réglementaires en"
+#~ " vigueur, aux bons usages d’Internet "
+#~ "et aux CGU."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "De manière générale, la DNE se "
+#~ "dégage de toute responsabilité en cas"
+#~ " d’utilisation non-conforme aux CGU "
+#~ "du Service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La DNE se réserve le droit de "
+#~ "suspendre ou de résilier l’accès au "
+#~ "Service d’un Utilisateur ou d’une "
+#~ "Utilisatrice en cas de violation des "
+#~ "CGU."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice est "
+#~ "responsable de tout préjudice matériel "
+#~ "ou immatériel, direct et/ou indirect de"
+#~ " quelque nature que ce soit causé "
+#~ "en cas d’utilisation non-conforme aux"
+#~ " CGU."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’Utilisateur ou l’Utilisatrice est informé"
+#~ " que toute violation des stipulations "
+#~ "des CGU est susceptible d’être signalée"
+#~ " à son administration et d'entraîner "
+#~ "des poursuites judiciaires et des "
+#~ "sanctions à son encontre."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Pour toute question sur le Service, "
+#~ "vous pouvez écrire à l’adresse mail "
+#~ ":"
+#~ msgstr ""
+
+#~ msgid "Évolution des conditions d'utilisation"
+#~ msgstr "Terms and Conditions"
+
+#~ msgid "Évolution des conditions d’utilisation"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les termes des présentes conditions "
+#~ "d’utilisation peuvent être amendés à "
+#~ "tout moment, sans préavis, en fonction"
+#~ " des modifications apportées à la "
+#~ "page d’accueil, de l’évolution de la "
+#~ "législation ou pour tout autre motif "
+#~ "jugé nécessaire."
+#~ msgstr ""
+
+#~ msgid "Textes de référence"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Loi n° 78-17 du 6 janvier 1978 "
+#~ "relative à l’informatique, aux fichiers "
+#~ "et aux libertés"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Loi n° 2004-575 du 21 juin 2004"
+#~ " pour la confiance dans l’économie "
+#~ "numérique"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Ordonnance 2005-1516 du 8 décembre 2005"
+#~ " relative aux échanges électroniques entre"
+#~ " les usagers et les autorités "
+#~ "administratives et entre les autorités "
+#~ "administratives et notamment ses articles "
+#~ "9 à 12."
+#~ msgstr ""
+
+#~ msgid "Loi n° 2016-1321 du 7 octobre 2016 pour une République numérique"
+#~ msgstr ""
+
+#~ msgid "Documentation"
+#~ msgstr ""
+
+#~ msgid "Guides utilisateurs"
+#~ msgstr ""
+
+#~ msgid "Présentation des nouveautés de la v2.4"
+#~ msgstr ""
+
+#~ msgid "Créer une réunion improvisée"
+#~ msgstr "Start a temporary meeting"
+
+#~ msgid "Participer à une réunion"
+#~ msgstr ""
+
+#~ msgid "Créer et parametrer une salle de réunion"
+#~ msgstr "You regularly organize meetings"
+
+#~ msgid "Créer et paramétrer une salle de réunion "
+#~ msgstr "You regularly organize meetings"
+
+#~ msgid "Activer le matériel dans le navigateur"
+#~ msgstr ""
+
+#~ msgid "Gérer les utilisateurs"
+#~ msgstr ""
+
+#~ msgid "Gérer les documents"
+#~ msgstr ""
+
+#~ msgid "Gestion des réunions privées"
+#~ msgstr ""
+
+#~ msgid "Déléguer la création de réunion"
+#~ msgstr ""
+
+#~ msgid "Enregistrer une réunion"
+#~ msgstr "Recording"
+
+#~ msgid "Créer un sondage"
+#~ msgstr ""
+
+#~ msgid "Joindre une réunion par téléphone"
+#~ msgstr "Join a Webinar on a phone call?"
+
+#~ msgid "Afficher le tableau de bord"
+#~ msgstr ""
+
+#~ msgid "Gérer la mise en page"
+#~ msgstr ""
+
+#~ msgid "Extension contrôle du volume"
+#~ msgstr ""
+
+#~ msgid "Contrôle du volume"
+#~ msgstr ""
+
+#~ msgid "Liste des serveurs BigBlueButton pour l'Éducation"
+#~ msgstr ""
+
+#~ msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
+#~ msgstr ""
+
+#~ msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
+#~ msgstr ""
+
+#~ msgid "Gestion des cookies"
+#~ msgstr ""
+
+#~ msgid "À propos des cookies / traceurs"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Afin de permettre aux applications Web"
+#~ " de fournir des services, des « "
+#~ "cookies » (« traceurs » en "
+#~ "français) peuvent être utilisés."
+#~ msgstr ""
+
+#~ msgid "Qu’est-ce qu’un « cookie » ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Un « cookie » est un fichier "
+#~ "de taille limitée, généralement constitué "
+#~ "de lettres et de chiffres, envoyé "
+#~ "par le serveur internet au fichier "
+#~ "cookie du navigateur situé sur le "
+#~ "disque dur de votre ordinateur."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Quels types de « cookies » sont"
+#~ " utilisés par les services visio-"
+#~ "agents/Classe Virtuelle/Webinaire de l’Etat ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les cookies servent à l’authentification "
+#~ "sur les services visio-agents/Classe "
+#~ "Virtuelle/Webinaire de l’Etat"
+#~ msgstr ""
+
+#~ msgid "Il n’y a pas de cookie de mesure d’audience"
+#~ msgstr ""
+
+#~ msgid "Informations complémentaires sur les « cookies »"
+#~ msgstr ""
+
+#~ msgid "Quelle sécurité pour vos données personnelles ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Nous veillons à prendre les mesures "
+#~ "physiques, techniques et organisationnelles "
+#~ "appropriées pour garantir la sécurité et"
+#~ " la confidentialité de vos données "
+#~ "personnelles."
+#~ msgstr ""
+
+#~ msgid "Politique de confidentialité"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Dans le cadre de l’utilisation des "
+#~ "services visio-agents/Classe Virtuelle/Webinaire "
+#~ "de l’Etat, des données à caractère "
+#~ "personnel vous concernant font l’objet "
+#~ "d’un traitement par la DNE (visio-"
+#~ "agents/Classe Virtuelle, \"nous\" par la "
+#~ "suite dans ces cas) ou la DINum"
+#~ " (Direction Interministérielle du Numérique "
+#~ "pour le Webinaire de l’Etat, \"nous\""
+#~ " par la suite dans ce cas)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La présente politique décrit nos "
+#~ "engagements en ce qui concerne le "
+#~ "traitement de vos données, conformément "
+#~ "au Règlement européen sur la protection"
+#~ " des données (Règlement UE n° "
+#~ "2026/679 du 27 avril 2016, ci-"
+#~ "après « RGPD ») et à la loi"
+#~ " n° 78-17 du 6 janvier 1978 "
+#~ "modifiée relative à l’informatique, aux "
+#~ "fichiers et aux libertés (ci-après "
+#~ "loi « Informatique et Libertés »)."
+#~ msgstr ""
+
+#~ msgid "Quel est notre rôle ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le Webinaire est un service en "
+#~ "ligne proposé aux agents de l’Etat "
+#~ "destiné à faciliter le travail à "
+#~ "distance par l’organisation et la tenue"
+#~ " de réunions, de conférences et de"
+#~ " formations en ligne."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La DINUM est responsable de traitement"
+#~ " des informations traitées dans le "
+#~ "cadre du Service et, à ce titre,"
+#~ " s’engage à respecter les obligations "
+#~ "inhérentes à ce traitement, notamment "
+#~ "celles relevant de la loi n° 78-17"
+#~ " du 6 janvier 1978 relative à "
+#~ "l’informatique aux fichiers et aux "
+#~ "libertés."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Visio-agents est un service en "
+#~ "ligne proposé aux agents du ministère"
+#~ " de l'Éducation Nationale destiné à "
+#~ "faciliter le travail à distance par "
+#~ "l’organisation et la tenue de réunions,"
+#~ " de conférences et de formations en"
+#~ " ligne."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Classe Virtuelle est un service en "
+#~ "ligne proposé aux enseignants du "
+#~ "ministère de l'Éducation Nationale destiné "
+#~ "à la continuité pédagogique en cas "
+#~ "d'impossibilité de rejoindre la classe."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La DNE est responsable de traitement "
+#~ "des informations traitées dans le cadre"
+#~ " des services visio-agents et Classe"
+#~ " Virtuelle et, à ce titre, s’engage"
+#~ " à respecter les obligations inhérentes "
+#~ "à ce traitement, notamment celles "
+#~ "relevant de la loi n° 78-17 du "
+#~ "6 janvier 1978 relative à l’informatique"
+#~ " aux fichiers et aux libertés."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les organisateurs qui procèdent aux "
+#~ "invitations et à l’enregistrement des "
+#~ "salons de visioconférence sont responsables"
+#~ " des traitements ultérieurs qu’ils "
+#~ "réalisent à partir de ces "
+#~ "enregistrements. Il leur appartient de "
+#~ "vous délivrer une information sur ces"
+#~ " traitements."
+#~ msgstr ""
+
+#~ msgid "Quels sont les traitements de données mis en œuvre ?"
+#~ msgstr ""
+
+#~ msgid "Finalité du traitement"
+#~ msgstr ""
+
+#~ msgid "Base légale du traitement"
+#~ msgstr ""
+
+#~ msgid "Catégorie de données personnelles traitées"
+#~ msgstr ""
+
+#~ msgid "Durée de conservation"
+#~ msgstr ""
+
+#~ msgid "Gestion des comptes des organisateurs de webinaires"
+#~ msgstr ""
+
+#~ msgid "Article 6-1(e) RGPD : exécution d’une mission de service public"
+#~ msgstr ""
+
+#~ msgid "Données d’identification :"
+#~ msgstr ""
+
+#~ msgid "Nom"
+#~ msgstr ""
+
+#~ msgid "Prénom"
+#~ msgstr ""
+
+#~ msgid "Adresse électronique"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données sont supprimées après une"
+#~ " période de 12 mois d’inactivité du"
+#~ " compte ou au moment de la "
+#~ "désactivation du compte (1ère moe "
+#~ "planifiée au plus tard en 12/22)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enregistrement des visio-conférences à "
+#~ "des fins de partage et de "
+#~ "rediffusion"
+#~ msgstr ""
+
+#~ msgid "Enregistrement vidéo des visio-conférences"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données d’enregistrement peuvent être "
+#~ "supprimées à tout moment par "
+#~ "l’organisateur. Elles sont automatiquement "
+#~ "supprimées 12 mois après la date "
+#~ "de la visio-conférences."
+#~ msgstr ""
+
+#~ msgid "Outils de chat et de vote en ligne"
+#~ msgstr ""
+
+#~ msgid "Échanges écrits entre participants et résultats des votes en lignes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données sont supprimées à l’issue"
+#~ " de la session de visio-conférence."
+#~ msgstr ""
+
+#~ msgid "Gestion de la sécurité de la visio-conférence"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "(Loi n° 2004-575 du 25 juin 2005"
+#~ " pour la confiance dans l’économie "
+#~ "numérique, Décret n° 2021-1362 du 20 "
+#~ "octobre 2021 relatif à la conservation"
+#~ " des données permettant d’identifier toute"
+#~ " personne ayant contribué à la "
+#~ "création d’un contenu en ligne)"
+#~ msgstr ""
+
+#~ msgid "Données de connexion des utilisateurs du service (logs, adresse IP)"
+#~ msgstr ""
+
+#~ msgid "12 mois"
+#~ msgstr ""
+
+#~ msgid "Quels sont les destinataires de vos données ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les destinataires de vos données "
+#~ "personnelles sont les agents et "
+#~ "salariées dûment habilitées de la, "
+#~ "respectivement, DNE ou DINUM et de "
+#~ "nos sous-traitants qui interviennent "
+#~ "pour l’hébergement, et l’infogérance du "
+#~ "service."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Nous nous sommes assurés de la "
+#~ "mise en œuvre par nos sous-"
+#~ "traitants de garanties adéquates et du"
+#~ " respect de conditions strictes de "
+#~ "confidentialité, d’usage et de protection "
+#~ "des données."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les données collectées sur la visio-"
+#~ "conférence ne sont pas transférées en"
+#~ " dehors de l’Union européenne."
+#~ msgstr ""
+
+#~ msgid "Quels sont vos droits ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous disposez d’un droit d’accès et "
+#~ "de rectification des données à caractère"
+#~ " personnel qui vous concernent. Vous "
+#~ "disposez également d’un droit d’opposition "
+#~ "et de limitation du traitement de "
+#~ "vos données."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Pour exercer vos droits ou pour "
+#~ "toute question sur le traitement de "
+#~ "vos données, vous pouvez nous écrire,"
+#~ " respectivement, aux adresses : "
+#~ "contact@apps.education.fr ou "
+#~ "contact@webinaire.numerique.gouv.fr."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez également, dans le cas "
+#~ "du Webinaire de l'État, contacter le "
+#~ "délégué à la protection des données "
+#~ "(DPD) des services du Premier Ministre"
+#~ " :"
+#~ msgstr ""
+
+#~ msgid "par mail à dpd@pm.gouv.fr"
+#~ msgstr ""
+
+#~ msgid "ou par courrier à l’adresse suivante :"
+#~ msgstr ""
+
+#~ msgid "Services du Premier Ministre"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "À l’attention du délégué à la protection des données (DPD)</br>\n"
+#~ "            56 rue de Varenne </br>\n"
+#~ "            75007 Paris"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si vous estimez, après nous avoir "
+#~ "contactés, que vos droits Informatiques "
+#~ "et Libertés ne sont pas respectés "
+#~ "vous pouvez adresser une réclamation à"
+#~ " la CNIL :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Commission nationale informatique et libertés </br>\n"
+#~ "            3 place de Fontenoy – TSA 80715 – </br>\n"
+#~ "            75334 PARIS CEDEX 07"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les modalités de réclamation sont "
+#~ "précisées sur le site de la CNIL"
+#~ " : www.cnil.fr."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Contactez le Délégué à la protection "
+#~ "des données pour les services "
+#~ "Écoles/Colléges/Lycées/Agents"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Pour ce faire, envoyez un courriel "
+#~ "à <strong>dpd[chez]education.gouv.fr</strong>"
+#~ msgstr ""
+
+#~ msgid "Éditeur"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Ministère de l’Éducation nationale et de"
+#~ " la jeunesse Direction du numérique "
+#~ "pour l’éducation 110 rue Grenelle, 75007"
+#~ " Paris"
+#~ msgstr ""
+
+#~ msgid "Directeur de publication"
+#~ msgstr ""
+
+#~ msgid "Directeur de la publication"
+#~ msgstr ""
+
+#~ msgid "M. Audran Le Baron, Directeur du numérique pour l’éducation"
+#~ msgstr ""
+
+#~ msgid "Gestionnaire des statistiques"
+#~ msgstr ""
+
+#~ msgid "Il n’y a pas d’outil de mesure d’audience pour ce site."
+#~ msgstr ""
+
+#~ msgid "Conception et gestion du site"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Le suivi éditorial, graphique et "
+#~ "technique du site est assuré au "
+#~ "quotidien par les équipes de la "
+#~ "DINUM et du Pôle de compétence "
+#~ "Identité du MENJS."
+#~ msgstr ""
+
+#~ msgid "Droits de reproduction"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Conformément au droit public de la "
+#~ "propriété intellectuelle et notamment selon"
+#~ " l’article L122-5 du Code de la "
+#~ "propriété intellectuelle, les ’’documents "
+#~ "officiels’’ sont librement réutilisables."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Cependant, le bon usage veut que "
+#~ "la reprise de ces contenus de "
+#~ "façon partielle ou intégrale mentionne "
+#~ "clairement la source, et le cas "
+#~ "échéant avec un lien vers le "
+#~ "document original en ligne sur ce "
+#~ "site."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Toutes les infographies et vidéos "
+#~ "réalisées par le service de "
+#~ "communication de l’éditeur se trouvent "
+#~ "sous « Licence Ouverte V2.0 » et"
+#~ " sont librement réutilisables sous les "
+#~ "conditions suivantes :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Attribution : vous devez attribuer "
+#~ "l’œuvre de la manière indiquée par "
+#~ "l’auteur de l’œuvre ou le titulaire "
+#~ "des droits (mais pas d’une manière "
+#~ "qui suggérerait qu’ils vous approuvent, "
+#~ "vous ou votre utilisation de l’œuvre)."
+#~ msgstr ""
+
+#~ msgid "Liens hypertextes pointant vers ce site :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Tout site public ou privé est "
+#~ "autorisé à établir, sans autorisation "
+#~ "préalable, un lien (y compris profond)"
+#~ " vers les informations diffusées par "
+#~ "ce site de webinaire, Visio-"
+#~ "ecoles/colleges/lycees/agents."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Pour les sites Internet, la "
+#~ "reproduction, après autorisation, d’un contenu"
+#~ " doit mentionner très clairement l’origine"
+#~ " du document sous forme d’une adresse"
+#~ " internet :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La mise en place de “liens "
+#~ "profonds” pointant directement sur le "
+#~ "document souhaité devra être privilégiée "
+#~ "par rapport à la reproduction de "
+#~ "contenus."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "En effet, dans ce cas, la mise "
+#~ "en place de liens vers ce site"
+#~ "  de Webinaire/Visio-ecoles/colleges/lycees/agents "
+#~ "n’est conditionnée à aucun accord "
+#~ "préalable. Cependant la mention explicite "
+#~ "du site dans l’intitulé du lien "
+#~ "est recommandée."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les sites qui font le choix de "
+#~ "pointer vers ce site  de Webinaire, "
+#~ "Visio-ecoles/colleges/lycees/agents engagent leur"
+#~ " responsabilité dès lors qu’ils porteraient"
+#~ " atteinte à l’image du site public."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Liens hypertextes proposés par ce site"
+#~ "  de Webinaire, Visio-"
+#~ "ecoles/colleges/lycees/agents :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les liens vers chaque service "
+#~ "interministériel référencé dans le catalogue"
+#~ " que proposé par de ce site. "
+#~ "Leur présence engage l’éditeur et la "
+#~ "gouvernance SIC interministérielle quant à "
+#~ "leur contenu et ne vise qu’à "
+#~ "faciliter l’accès, particulièrement pour les"
+#~ " agents de l’Etat et du service "
+#~ "public plus généralement, aux ressources "
+#~ "numériques mises à disposition au plan"
+#~ " interministériel."
+#~ msgstr ""
+
+#~ msgid "Clause de responsabilité"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les informations proposées sur ce site"
+#~ " le sont à titre de service "
+#~ "rendu aux agents du service public, "
+#~ "notamment aux agents des services de "
+#~ "l’État."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les informations et/ou documents disponibles"
+#~ " sur ce site sont susceptibles d’être"
+#~ " modifiés à tout moment, et peuvent"
+#~ " faire l’objet de mises à jour "
+#~ "pour faciliter l’accès aux ressources "
+#~ "numériques."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Les informations et/ou documents accédés "
+#~ "à partir de ce site relèvent de"
+#~ " la responsabilité des porteurs de "
+#~ "chaque service interministériel ainsi mis "
+#~ "à disposition."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "L’éditeur ne pourra en aucun cas "
+#~ "être tenue responsable de tout dommage"
+#~ " de quelque nature qu’il soit "
+#~ "résultant de la mauvaise utilisation des"
+#~ " ressources accessibles à partir de "
+#~ "ce site."
+#~ msgstr ""
+
+#~ msgid "Droit à la compensation"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Dans l’attente d’une mise en conformité"
+#~ " totale d’un de ces services, vous"
+#~ " pouvez obtenir une version accessible "
+#~ "des documents ou des informations qui"
+#~ " y seraient contenues en envoyant un"
+#~ " courriel au contact indiqué sur la"
+#~ " page d’accès du service en indiquant"
+#~ " le nom du document concerné et/ou"
+#~ " les informations que vous souhaiteriez "
+#~ "obtenir. Les informations demandées vous "
+#~ "seront transmises dans les plus brefs"
+#~ " délais."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous pouvez nous aider à améliorer "
+#~ "l’accessibilité du site en nous "
+#~ "signalant les problèmes éventuels que "
+#~ "vous rencontrez. Pour ce faire, "
+#~ "envoyez-nous un courriel à "
+#~ "<strong>apps[chez]education.gouv.fr</strong>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Cette réunion est actuellement en cours"
+#~ " avec les anciens paramètres.<br>\n"
+#~ "            Souhaitez-vous y mettre fin"
+#~ " pour permettre la prise en compte"
+#~ " immédiate de ces nouveaux paramètres "
+#~ "? Les éventuels participants seront "
+#~ "déconnectés."
+#~ msgstr ""
+
+#~ msgid "Mettre fin à la réunion en cours"
+#~ msgstr ""
+
+#~ msgid "Patienter jusqu'à la fin de la réunion"
+#~ msgstr ""
+
+#~ msgid "Service temporairement indisponible"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Un problème technique empêche l'accès au"
+#~ " service de fichiers. Veuillez réessayer"
+#~ " dans quelques minutes."
+#~ msgstr ""
+
+#~ msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
+#~ msgstr ""
+
+#~ msgid "Retour à mes réunions"
+#~ msgstr ""
+
+#~ msgid "Enregistrement impossible car certains champs sont mal renseignés."
+#~ msgstr ""
+
+#~ msgid "Ajouter"
+#~ msgstr ""
+
+#~ msgid "Vous pouvez ajouter un fichier :"
+#~ msgstr ""
+
+#~ msgid "Nuage temporairement indisponible"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Un problème technique empêche l'accès au"
+#~ " Nuage. Certaines fonctionnalités sont "
+#~ "momentanément désactivées. Veuillez réessayer "
+#~ "dans quelques minutes."
+#~ msgstr ""
+
+#~ msgid "depuis une URL"
+#~ msgstr ""
+
+#~ msgid "nuage"
+#~ msgstr ""
+
+#~ msgid "depuis le Nuage"
+#~ msgstr ""
+
+#~ msgid "téléversement"
+#~ msgstr ""
+
+#~ msgid "par Téléversement"
+#~ msgstr ""
+
+#~ msgid "Vos fichiers associés sont :"
+#~ msgstr ""
+
+#~ msgid "Téléchargeable"
+#~ msgstr ""
+
+#~ msgid "Titre"
+#~ msgstr ""
+
+#~ msgid "Ajouté le"
+#~ msgstr ""
+
+#~ msgid "Supprimer"
+#~ msgstr ""
+
+#~ msgid "Télécharger"
+#~ msgstr ""
+
+#~ msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
+#~ msgstr ""
+
+#~ msgid "Annuler"
+#~ msgstr ""
+
+#~ msgid "Oui"
+#~ msgstr ""
+
+#~ msgid "Non"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Aucun document de présentation n'est "
+#~ "prévu pour cette réunion actuellement"
+#~ msgstr ""
+
+#~ msgid "Activé"
+#~ msgstr ""
+
+#~ msgid "Désactivé"
+#~ msgstr ""
+
+#~ msgid "Modifier"
+#~ msgstr ""
+
+#~ msgid "Créer une réunion"
+#~ msgstr ""
+
+#~ msgid "Accueil des participants"
+#~ msgstr ""
+
+#~ msgid "Conseils pour la mise en forme"
+#~ msgstr ""
+
+#~ msgid "%%CONFNAME%% : affiche le nom de votre salle"
+#~ msgstr ""
+
+#~ msgid "Interactions"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Tous ces paramètres sont modifiables "
+#~ "directement depuis la salle de réunion"
+#~ " à tout moment."
+#~ msgstr ""
+
+#~ msgid "Enregistrement"
+#~ msgstr "Recording"
+
+#~ msgid ""
+#~ "L'enregistrement de la salle comprend la"
+#~ " vidéo, l'audio, le tableau blanc et"
+#~ " le tchat public."
+#~ msgstr ""
+
+#~ msgid "Paramètres avancés"
+#~ msgstr ""
+
+#~ msgid "Enregistrer"
+#~ msgstr ""
+
+#~ msgid "Créer la salle"
+#~ msgstr ""
+
+#~ msgid "Rejoindre la réunion"
+#~ msgstr ""
+
+#~ msgid "Votre nom"
+#~ msgstr ""
+
+#~ msgid "Vous pouvez également préciser votre service ou votre fonction."
+#~ msgstr ""
+
+#~ msgid "Le nom affiché sera «"
+#~ msgstr ""
+
+#~ msgid "»."
+#~ msgstr ""
+
+#~ msgid "Rejoindre"
+#~ msgstr ""
+
+#~ msgid "Vous êtes propriétaire de cette salle ?"
+#~ msgstr ""
+
+#~ msgid "Créer une salle permanente"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous avez atteint la limite des "
+#~ "%(max_meetings_per_user)s réunions. Pour pouvoir "
+#~ "en créer davantage, veuillez supprimer "
+#~ "des réunions inactives."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous n'avez pas encore créé de "
+#~ "salle de réunion permanente. Vous pouvez"
+#~ " créer votre salle permanente ou "
+#~ "accéder à une salle temporaire plus "
+#~ "bas."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "En créant une salle de réunion "
+#~ "permanente, vous pouvez créer une base"
+#~ " de documents permanente, choisir d'ajouter"
+#~ " une salle d'attente, de bloquer les"
+#~ " micros et les caméras ouverts ou "
+#~ "fermés, d'afficher ou non les espaces"
+#~ " de discussions privés et publiques, "
+#~ "ou encore accéder aux enregistrements à"
+#~ " la fin de votre réunion."
+#~ msgstr ""
+
+#~ msgid "Trier par :"
+#~ msgstr ""
+
+#~ msgid "Date"
+#~ msgstr ""
+
+#~ msgid "Alphabétique"
+#~ msgstr ""
+
+#~ msgid "Favoris"
+#~ msgstr ""
+
+#~ msgid "Ajouter aux favoris"
+#~ msgstr ""
+
+#~ msgid "Label bouton"
+#~ msgstr ""
+
+#~ msgid "Retirer des favoris"
+#~ msgstr ""
+
+#~ msgid "Enregistrements de <em>%(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Cette réunion est toujours en cours"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si un enregistrement est en cours, "
+#~ "il ne sera encodé qu'après la fin"
+#~ " de la réunion"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Après la fin d'une réunion, l'encodage"
+#~ " de l'enregistrement peut prendre autant"
+#~ " de temps que la durée de la"
+#~ " réunion."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si aucun modérateur ne met fin à"
+#~ " la réunion, un délai supplémentaire "
+#~ "de plusieurs minutes s'ajoute après que"
+#~ " tous les utilisateurs l'aient quitté."
+#~ msgstr ""
+
+#~ msgid "Les enregistrements sont conservés pour une période de %(duration)s."
+#~ msgstr ""
+
+#~ msgid "Renommer l’enregistrement"
+#~ msgstr "Recording"
+
+#~ msgid ""
+#~ "\n"
+#~ "                    Enregistré le %(start_date)s -\n"
+#~ "                    Expire le %(expiration_date)s\n"
+#~ "                "
+#~ msgstr ""
+
+#~ msgid "Visuels"
+#~ msgstr ""
+
+#~ msgid "Actions"
+#~ msgstr ""
+
+#~ msgid "Voir l'enregistrement"
+#~ msgstr "Recording"
+
+#~ msgid "Copier le lien de l'enregistrement dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Voir l'enregistrement mp4"
+#~ msgstr "Recording"
+
+#~ msgid "Partager l'enregistrement mp4"
+#~ msgstr "Recording"
+
+#~ msgid "Supprimer video de %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Voulez-vous vraiment supprimer "
+#~ "l'enregistrement <em>%(recording_name)s</em> de "
+#~ "<em>%(meeting_name)s</em>&nbsp;?"
+#~ msgstr ""
+
+#~ msgid "Modifier le nom de l'enregistrement"
+#~ msgstr "Recording"
+
+#~ msgid "Renommer"
+#~ msgstr ""
+
+#~ msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Cet enregistrement est conservé temporairement"
+#~ " sur ce service. Pour le mettre "
+#~ "à disposition de manière pérenne, "
+#~ "fournissez ce lien à des services "
+#~ "dédiés à la diffusion"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "En cas de diffusion publique, veillez"
+#~ " préalablement à obtenir l'autorisation des"
+#~ " participants."
+#~ msgstr ""
+
+#~ msgid "Lancer %(meeting_name)s - nouvelle fenêtre"
+#~ msgstr ""
+
+#~ msgid "Envoyer un courriel aux modérateurs"
+#~ msgstr ""
+
+#~ msgid "Copier le lien Modérateur dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Participer à %(meeting_name)s - nouvelle fenêtre"
+#~ msgstr ""
+
+#~ msgid "Envoyer un courriel aux participants"
+#~ msgstr ""
+
+#~ msgid "Copier le lien Participant dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Modifier %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Fichiers associés à %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Supprimer %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Fermer la fenêtre modale"
+#~ msgstr ""
+
+#~ msgid "Lancer"
+#~ msgstr ""
+
+#~ msgid "Inviter"
+#~ msgstr ""
+
+#~ msgid "Voir les enregistrements de %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Code de connexion :"
+#~ msgstr ""
+
+#~ msgid "Saisir le code de connexion de votre réunion"
+#~ msgstr ""
+
+#~ msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
+#~ msgstr ""
+
+#~ msgid "SAISIR LE CAPTCHA"
+#~ msgstr ""
+
+#~ msgid "Connexion"
+#~ msgstr ""
+
+#~ msgid "Bonjour %(fullname)s, vous pourrez bientôt entrer"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "\n"
+#~ "                        La salle de visio-"
+#~ "conférence est en cours de création. "
+#~ "Vous entrerez automatiquement dans la "
+#~ "salle dès qu'elle sera opérationnelle.\n"
+#~ "                    "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "\n"
+#~ "                        Votre hôte n’est pas"
+#~ " encore arrivé. Vous entrerez "
+#~ "automatiquement dans la salle de "
+#~ "visio-conférence dès qu’il sera présent."
+#~ "\n"
+#~ "                    "
+#~ msgstr ""
+
+#~ msgid "Modérateur"
+#~ msgstr ""
+
+#~ msgid "Participant"
+#~ msgstr ""
+
+#~ msgid "À la réunion suivante :"
+#~ msgstr ""
+
+#~ msgid "Le lien pour s'y inscrire est le suivant :"
+#~ msgstr ""
+
+#~ msgid "Le mot de passe de cette réunion est :"
+#~ msgstr "You cannot change this item"
+
+#~ msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
+#~ msgstr ""
+
+#~ msgid "Invitation"
+#~ msgstr ""
+
+#~ msgid "Supprimer \"<em>%(meeting_name)s</em>\" ?"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Voulez-vous vraiment supprimer la "
+#~ "réunion \"<em>%(meeting_name)s</em>\" ?"
+#~ msgstr ""
+
+#~ msgid "La suppression est définitive"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si vous supprimez cette salle, tous "
+#~ "les médias (documents importés et "
+#~ "enregistrements) qui lui sont rattachés "
+#~ "seront supprimés."
+#~ msgstr ""
+
+#~ msgid "Supprimer la réunion"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "La clé privée n'a pas été "
+#~ "configurée dans les paramètres B3Desk "
+#~ "pour sécuriser la connexion SIPMediaGW"
 #~ msgstr ""
 
