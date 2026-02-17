@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 14:00+0100\n"
+"POT-Creation-Date: 2026-02-17 16:20+0100\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@seminaire\n"
@@ -72,7 +72,9 @@ msgstr ""
 msgid ""
 "A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h ="
 " 120, 3h = 180, 4h = 240."
-msgstr "A l'issue de cette durée le séminaire stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240."
+msgstr ""
+"A l'issue de cette durée le séminaire stoppe automatiquement. 1h = 60, 2h"
+" = 120, 3h = 180, 4h = 240."
 
 #: web/b3desk/forms.py:104
 msgid "Salle d'attente"
@@ -103,7 +105,9 @@ msgstr ""
 msgid ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de réunion plus calme."
-msgstr "Vous pouvez choisir de faire arriver les participants dans la salle avec leur micro fermé, pour un démarrage du séminaire plus calme."
+msgstr ""
+"Vous pouvez choisir de faire arriver les participants dans la salle avec "
+"leur micro fermé, pour un démarrage du séminaire plus calme."
 
 #: web/b3desk/forms.py:125
 msgid "Caméras des participants"
@@ -232,7 +236,9 @@ msgstr ""
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
-msgstr "Bienvenue aux modérateurs. Pour inviter quelqu'un à ce séminaire, envoyez-lui l'un de ces liens :"
+msgstr ""
+"Bienvenue aux modérateurs. Pour inviter quelqu'un à ce séminaire, "
+"envoyez-lui l'un de ces liens :"
 
 #: web/b3desk/endpoints/join.py:67
 msgid "Aucune réunion ne correspond à ces paramètres"
@@ -336,8 +342,9 @@ msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:251
-msgid "Réunion terminée"
-msgstr "Séminaire terminé"
+#, python-format
+msgid "Réunion « %(meeting_name)s » terminée"
+msgstr "Séminaire « %(meeting_name)s » terminé"
 
 #: web/b3desk/endpoints/meetings.py:255
 msgid "Vous ne pouvez pas terminer cette réunion"
@@ -687,6 +694,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
+#: web/b3desk/templates/meeting/modals/invite.html:8
+#: web/b3desk/templates/meeting/modals/invite.html:9
 #: web/b3desk/templates/meeting/recordings.html:87
 #: web/b3desk/templates/meeting/recordings.html:88
 #: web/b3desk/templates/meeting/recordings.html:126
@@ -742,7 +751,9 @@ msgstr "Vous organisez régulièrement des séminaires"
 msgid ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver "
 "vos réunions."
-msgstr "Vous êtes agent de l'État, créez un compte pour organiser et conserver vos séminaires."
+msgstr ""
+"Vous êtes agent de l'État, créez un compte pour organiser et conserver "
+"vos séminaires."
 
 #: web/b3desk/templates/jumbotron.html:71
 #: web/b3desk/templates/jumbotron.html:108
@@ -1894,7 +1905,11 @@ msgid ""
 "            Souhaitez-vous y mettre fin pour permettre la prise en compte"
 " immédiate de ces nouveaux paramètres ? Les éventuels participants seront"
 " déconnectés."
-msgstr "Ce séminaire est actuellement en cours avec les anciens paramètres.<br>\n            Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés."
+msgstr ""
+"Ce séminaire est actuellement en cours avec les anciens paramètres.<br>\n"
+"            Souhaitez-vous y mettre fin pour permettre la prise en compte"
+" immédiate de ces nouveaux paramètres ? Les éventuels participants seront"
+" déconnectés."
 
 #: web/b3desk/templates/meeting/end.html:11
 msgid "Mettre fin à la réunion en cours"
@@ -2135,13 +2150,18 @@ msgstr ""
 msgid ""
 "Vous avez atteint la limite des %(max_meetings_per_user)s réunions. Pour "
 "pouvoir en créer davantage, veuillez supprimer des réunions inactives."
-msgstr "Vous avez atteint la limite des %(max_meetings_per_user)s séminaires. Pour pouvoir en créer davantage, veuillez supprimer des séminaires inactifs."
+msgstr ""
+"Vous avez atteint la limite des %(max_meetings_per_user)s séminaires. "
+"Pour pouvoir en créer davantage, veuillez supprimer des séminaires "
+"inactifs."
 
 #: web/b3desk/templates/meeting/list.html:28
 msgid ""
 "Vous n'avez pas encore créé de salle de réunion permanente. Vous pouvez "
 "créer votre salle permanente ou accéder à une salle temporaire plus bas."
-msgstr "Vous n'avez pas encore créé de salle de séminaire permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas."
+msgstr ""
+"Vous n'avez pas encore créé de salle de séminaire permanente. Vous pouvez"
+" créer votre salle permanente ou accéder à une salle temporaire plus bas."
 
 #: web/b3desk/templates/meeting/list.html:33
 msgid ""
@@ -2150,7 +2170,12 @@ msgid ""
 "les micros et les caméras ouverts ou fermés, d'afficher ou non les "
 "espaces de discussions privés et publiques, ou encore accéder aux "
 "enregistrements à la fin de votre réunion."
-msgstr "En créant une salle de séminaire permanente, vous pouvez créer une base de documents permanente, choisir d'ajouter une salle d'attente, de bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de discussions privés et publiques, ou encore accéder aux enregistrements à la fin de votre séminaire."
+msgstr ""
+"En créant une salle de séminaire permanente, vous pouvez créer une base "
+"de documents permanente, choisir d'ajouter une salle d'attente, de "
+"bloquer les micros et les caméras ouverts ou fermés, d'afficher ou non "
+"les espaces de discussions privés et publiques, ou encore accéder aux "
+"enregistrements à la fin de votre séminaire."
 
 #: web/b3desk/templates/meeting/list.html:38
 msgid "Trier par :"
@@ -2202,14 +2227,19 @@ msgstr ""
 msgid ""
 "Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre "
 "autant de temps que la durée de la réunion."
-msgstr "Après la fin d'un séminaire, l'encodage de l'enregistrement peut prendre autant de temps que la durée du séminaire."
+msgstr ""
+"Après la fin d'un séminaire, l'encodage de l'enregistrement peut prendre "
+"autant de temps que la durée du séminaire."
 
 #: web/b3desk/templates/meeting/recordings.html:19
 msgid ""
 "Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de "
 "plusieurs minutes s'ajoute après que tous les utilisateurs l'aient "
 "quitté."
-msgstr "Si aucun modérateur ne met fin au séminaire, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté."
+msgstr ""
+"Si aucun modérateur ne met fin au séminaire, un délai supplémentaire de "
+"plusieurs minutes s'ajoute après que tous les utilisateurs l'aient "
+"quitté."
 
 #: web/b3desk/templates/meeting/recordings.html:20
 #, python-format
@@ -2444,7 +2474,9 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:17
 #, python-format
 msgid "Voulez-vous vraiment supprimer la réunion \"<em>%(meeting_name)s</em>\" ?"
-msgstr "Voulez-vous vraiment supprimer le séminaire \"<em>%(meeting_name)s</em>\" ?"
+msgstr ""
+"Voulez-vous vraiment supprimer le séminaire \"<em>%(meeting_name)s</em>\""
+" ?"
 
 #: web/b3desk/templates/meeting/modals/delete.html:21
 msgid "La suppression est définitive"
@@ -2459,6 +2491,87 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:32
 msgid "Supprimer la réunion"
 msgstr "Supprimer le séminaire"
+
+#: web/b3desk/templates/meeting/modals/invite.html:15
+msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:17
+msgid "Avec droits modérateurs :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:22
+msgid "Le code de connexion"
+msgstr "Saisir le code de connexion de votre séminaire"
+
+#: web/b3desk/templates/meeting/modals/invite.html:24
+msgid "NOUVEAU"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:28
+msgid "Copier le code de connexion dans le presse-papiers"
+msgstr "Saisir le code de connexion de votre séminaire"
+
+#: web/b3desk/templates/meeting/modals/invite.html:37
+msgid "Le lien modérateur"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:44
+msgid "Copier le lien modérateur dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:54
+msgid "Le lien SIP"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:57
+msgid "Lien requis pour l'utilisation d'équipements SIP."
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:62
+msgid "Copier le lien SIP dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:69
+msgid "Avec droits restreints :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:74
+#, python-format
+msgid "Le lien participant"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:81
+msgid "Copier le lien participant dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+msgid "Le lien authentifié"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+#, python-format
+msgid "via %(service_name)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:97
+msgid "Copier le lien participant authentifié dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:107
+msgid "Connexion par téléphone"
+msgstr "Joindre un séminaire par téléphone"
+
+#: web/b3desk/templates/meeting/modals/invite.html:110
+#, python-format
+msgid ""
+"n° de téléphone : %(bbb_dialnumber)s<br>\n"
+"                                            code PIN : %(voice_bridge)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:115
+msgid "Copier les informations dans le presse-papiers"
+msgstr ""
 
 #: web/b3desk/utils/__init__.py:142
 msgid ""

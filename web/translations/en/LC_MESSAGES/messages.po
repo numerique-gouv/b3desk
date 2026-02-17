@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 13:15+0100\n"
+"POT-Creation-Date: 2026-02-17 16:20+0100\n"
 "PO-Revision-Date: 2022-05-05 16:01+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -336,7 +336,8 @@ msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:251
-msgid "Réunion terminée"
+#, python-format
+msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:255
@@ -687,6 +688,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
+#: web/b3desk/templates/meeting/modals/invite.html:8
+#: web/b3desk/templates/meeting/modals/invite.html:9
 #: web/b3desk/templates/meeting/recordings.html:87
 #: web/b3desk/templates/meeting/recordings.html:88
 #: web/b3desk/templates/meeting/recordings.html:126
@@ -2458,6 +2461,87 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:32
 msgid "Supprimer la réunion"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:15
+msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:17
+msgid "Avec droits modérateurs :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:22
+msgid "Le code de connexion"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:24
+msgid "NOUVEAU"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:28
+msgid "Copier le code de connexion dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:37
+msgid "Le lien modérateur"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:44
+msgid "Copier le lien modérateur dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:54
+msgid "Le lien SIP"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:57
+msgid "Lien requis pour l'utilisation d'équipements SIP."
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:62
+msgid "Copier le lien SIP dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:69
+msgid "Avec droits restreints :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:74
+#, fuzzy, python-format
+msgid "Le lien participant"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:81
+msgid "Copier le lien participant dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+msgid "Le lien authentifié"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+#, python-format
+msgid "via %(service_name)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:97
+msgid "Copier le lien participant authentifié dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:107
+msgid "Connexion par téléphone"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:110
+#, python-format
+msgid ""
+"n° de téléphone : %(bbb_dialnumber)s<br>\n"
+"                                            code PIN : %(voice_bridge)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/invite.html:115
+msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
 #: web/b3desk/utils/__init__.py:142
