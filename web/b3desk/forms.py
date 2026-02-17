@@ -49,9 +49,7 @@ class MeetingFilesForm(FlaskForm):
     )
     guestPolicy = BooleanField(
         label="Salle d'attente",
-        description="Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
-        + current_app.config["WORDING_THE_MEETING"]
-        + ". L'organisateur ou le modérateur devra les accepter individuellement.",
+        description="Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement.",
         default=False,
     )
 
@@ -60,16 +58,13 @@ class MeetingForm(FlaskForm):
     id = IntegerField()
     name = StringField(
         label=_(
-            "Nom %(of_the_meeting)s",
-            of_the_meeting=current_app.config["WORDING_OF_THE_MEETING"],
+            "Nom de la réunion",
         ),
         description=_(
             "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est visible des participants",
-            a_meeting=current_app.config["WORDING_A_MEETING"],
         ),
         default=_(
-            "%(my_meeting)s",
-            my_meeting=current_app.config["WORDING_MY_MEETING"].title(),
+            "Ma réunion",
         ),
         validators=[
             validators.DataRequired(),
@@ -82,8 +77,7 @@ class MeetingForm(FlaskForm):
             "Ce texte apparait comme message de bienvenue sur le tchat public. 150 caractères max."
         ),
         default=_(
-            "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
-            this_meeting=current_app.config["WORDING_THIS_MEETING"],
+            "Bienvenue dans cette réunion %(meeting_name)s.",
             meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
@@ -97,8 +91,7 @@ class MeetingForm(FlaskForm):
     duration = IntegerField(
         label=_("Durée maximale (minutes)"),
         description=_(
-            "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
         ),
         default=int(DEFAULT_MEETING_DURATION.total_seconds() // 60),
         validators=[
@@ -110,8 +103,7 @@ class MeetingForm(FlaskForm):
     guestPolicy = BooleanField(
         label=_("Salle d'attente"),
         description=_(
-            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent %(the_meeting)s. L'organisateur ou le modérateur devra les accepter individuellement.",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement.",
         ),
         default=False,
     )
@@ -174,8 +166,7 @@ class MeetingForm(FlaskForm):
     )
     logoutUrl = StringField(
         label=_(
-            "Url de redirection après %(the_meeting)s",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Url de redirection après la réunion",
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
         validators=[validators.length(max=MAX_LOGOUTURL_LENGTH)],
@@ -202,8 +193,7 @@ class MeetingForm(FlaskForm):
     voiceBridge = StringField(
         label=_("PIN"),
         description=_(
-            "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)",
         ),
         default=lambda: pin_generation(),
         validators=[
@@ -224,8 +214,7 @@ class MeetingForm(FlaskForm):
     visio_code = StringField(
         label=_("Code de connexion"),
         description=_(
-            "Code de connexion pour rejoindre %(the_meeting)s %(sip)s",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Code de connexion pour rejoindre la réunion %(sip)s",
             sip=_("(utilisé dans le lien SIP)")
             if current_app.config["ENABLE_SIP"]
             else "",

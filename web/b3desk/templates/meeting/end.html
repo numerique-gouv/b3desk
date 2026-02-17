@@ -2,13 +2,13 @@
 
 {% block main %}
     <p>
-        {% trans this_meeting=this_meeting.capitalize() %}{{ this_meeting }} est actuellement en cours avec les anciens paramètres.<br>
+        {% trans %}Cette réunion est actuellement en cours avec les anciens paramètres.<br>
             Souhaitez-vous y mettre fin pour permettre la prise en compte immédiate de ces nouveaux paramètres ? Les éventuels participants seront déconnectés.{% endtrans %}
     </p>
 
     <form action="{{ url_for("meetings.end_meeting") }}" method="POST">
         {{ form.hidden_tag() }}
-        <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin {{ to_the_meeting }} en cours{% endtrans %}</button>
-        <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">{% trans %}Patienter jusqu'à la fin {{ of_the_meeting }}{% endtrans %}</a>
+        <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin à la réunion en cours{% endtrans %}</button>
+        <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">{% trans %}Patienter jusqu'à la fin de la réunion{% endtrans %}</a>
     </form>
 {% endblock %}

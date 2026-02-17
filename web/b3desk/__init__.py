@@ -224,7 +224,6 @@ def setup_jinja(app):
             "version": __version__,
             "LANGUAGES": LANGUAGES,
             "Role": Role,
-            **app.config["WORDINGS"],
         }
 
 

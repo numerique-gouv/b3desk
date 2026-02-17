@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-12 11:48+0100\n"
+"POT-Creation-Date: 2026-02-17 10:50+0100\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: web/b3desk/__init__.py:290 web/b3desk/endpoints/meeting_files.py:128
+#: web/b3desk/__init__.py:292 web/b3desk/endpoints/meeting_files.py:128
 #: web/b3desk/endpoints/meeting_files.py:184
 #: web/b3desk/endpoints/meeting_files.py:289
 #: web/b3desk/endpoints/meeting_files.py:476
@@ -27,294 +27,232 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/forms.py:63
-#, python-format
-msgid "Nom %(of_the_meeting)s"
+#: web/b3desk/forms.py:61
+msgid "Nom de la réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:67
+#: web/b3desk/forms.py:64
 msgid ""
 "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est"
 " visible des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:71
-#, python-format
-msgid "%(my_meeting)s"
+#: web/b3desk/forms.py:67
+msgid "Ma réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:80
+#: web/b3desk/forms.py:75
 msgid "Texte de bienvenue"
 msgstr ""
 
-#: web/b3desk/forms.py:82
+#: web/b3desk/forms.py:77
 msgid ""
 "Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
 "caractères max."
 msgstr ""
 
-#: web/b3desk/forms.py:85
+#: web/b3desk/forms.py:80
 #, python-format
-msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
+msgid "Bienvenue dans cette réunion %(meeting_name)s."
 msgstr ""
 
-#: web/b3desk/forms.py:93
+#: web/b3desk/forms.py:87
 msgid "Nombre maximal de participants"
 msgstr ""
 
-#: web/b3desk/forms.py:94
+#: web/b3desk/forms.py:88
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:98
+#: web/b3desk/forms.py:92
 msgid "Durée maximale (minutes)"
 msgstr ""
 
-#: web/b3desk/forms.py:100
-#, python-format
+#: web/b3desk/forms.py:94
 msgid ""
-"A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60,"
-" 2h = 120, 3h = 180, 4h = 240."
+"A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h ="
+" 120, 3h = 180, 4h = 240."
 msgstr ""
 
-#: web/b3desk/forms.py:111
+#: web/b3desk/forms.py:104
 msgid "Salle d'attente"
 msgstr ""
 
-#: web/b3desk/forms.py:113
-#, python-format
+#: web/b3desk/forms.py:106
 msgid ""
-"Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
-"%(the_meeting)s. L'organisateur ou le modérateur devra les accepter "
+"Placer les participants dans une salle d'attente lorsqu'ils rejoignent la"
+" réunion. L'organisateur ou le modérateur devra les accepter "
 "individuellement."
 msgstr ""
 
-#: web/b3desk/forms.py:119
+#: web/b3desk/forms.py:111
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
-#: web/b3desk/forms.py:121
+#: web/b3desk/forms.py:113
 msgid ""
 "Seuls vous et les modérateurs pouvez voir les caméras des autres "
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:126
+#: web/b3desk/forms.py:118
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
-#: web/b3desk/forms.py:128
+#: web/b3desk/forms.py:120
 msgid ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
-#: web/b3desk/forms.py:133
+#: web/b3desk/forms.py:125
 msgid "Caméras des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:135
+#: web/b3desk/forms.py:127
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture de la caméra des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:141
+#: web/b3desk/forms.py:133
 msgid "Micros des participants"
 msgstr ""
 
-#: web/b3desk/forms.py:143
+#: web/b3desk/forms.py:135
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture du microphone des "
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:149
+#: web/b3desk/forms.py:141
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:154
+#: web/b3desk/forms.py:146
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:159
+#: web/b3desk/forms.py:151
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:164
+#: web/b3desk/forms.py:156
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:165
+#: web/b3desk/forms.py:157
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:166 web/b3desk/models/meetings.py:290
+#: web/b3desk/forms.py:158 web/b3desk/models/meetings.py:290
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
-#: web/b3desk/forms.py:170
+#: web/b3desk/forms.py:162
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:177
-#, python-format
-msgid "Url de redirection après %(the_meeting)s"
+#: web/b3desk/forms.py:169
+msgid "Url de redirection après la réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:185
+#: web/b3desk/forms.py:176
 msgid "Renouveler le lien modérateur"
 msgstr ""
 
-#: web/b3desk/forms.py:187 web/b3desk/forms.py:196
+#: web/b3desk/forms.py:178 web/b3desk/forms.py:187
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
 msgstr ""
 
-#: web/b3desk/forms.py:194
+#: web/b3desk/forms.py:185
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:203
+#: web/b3desk/forms.py:194
 msgid "PIN"
 msgstr ""
 
-#: web/b3desk/forms.py:205
-#, python-format
-msgid "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)"
+#: web/b3desk/forms.py:196
+msgid "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)"
 msgstr ""
 
-#: web/b3desk/forms.py:225
+#: web/b3desk/forms.py:215
 msgid "Code de connexion"
 msgstr ""
 
-#: web/b3desk/forms.py:227
+#: web/b3desk/forms.py:217
 #, python-format
-msgid "Code de connexion pour rejoindre %(the_meeting)s %(sip)s"
+msgid "Code de connexion pour rejoindre la réunion %(sip)s"
 msgstr ""
 
-#: web/b3desk/forms.py:229
+#: web/b3desk/forms.py:218
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:243
+#: web/b3desk/forms.py:232
 msgid "Enregistrement manuel"
 msgstr ""
 
-#: web/b3desk/forms.py:245
+#: web/b3desk/forms.py:234
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:250
+#: web/b3desk/forms.py:239
 msgid "Enregistrement automatique"
 msgstr ""
 
-#: web/b3desk/forms.py:252
+#: web/b3desk/forms.py:241
 msgid ""
 "L'enregistrement démarre automatiquement à l'ouverture de la salle et "
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/settings.py:68
-msgid "une réunion improvisée"
+#: web/b3desk/settings.py:582 web/b3desk/templates/meeting/list.html:4
+msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:73
-msgid "une réunion immédiate"
+#: web/b3desk/settings.py:586
+msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:78
-msgid "réunions privées"
+#: web/b3desk/settings.py:599
+msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:83
-msgid "bonne réunion"
-msgstr ""
-
-#: web/b3desk/settings.py:88
-msgid "une"
-msgstr ""
-
-#: web/b3desk/settings.py:93
-msgid "une réunion à laquelle"
-msgstr ""
-
-#: web/b3desk/settings.py:98
-msgid ""
-"Créez en un clic un cours aux réglages standards. Il ne sera pas "
-"enregistré dans votre liste de salles."
-msgstr ""
-
-#: web/b3desk/settings.py:101
-msgid ""
-"Créez en un clic une réunion aux réglages standards. Elle ne sera pas "
-"enregistrée dans votre liste de salles."
-msgstr ""
-
-#: web/b3desk/settings.py:104
-msgid ""
-"Créez en un clic un séminaire aux réglages standards. Il ne sera pas "
-"enregistré dans votre liste de salles."
-msgstr ""
-
-#: web/b3desk/settings.py:108
-msgid "Invitation à un cours en ligne immédiat du Webinaire de l’Etat"
-msgstr ""
-
-#: web/b3desk/settings.py:110
-msgid "Invitation à une réunion en ligne immédiat du Webinaire de l’Etat"
-msgstr ""
-
-#: web/b3desk/settings.py:113
-msgid "Invitation à un séminaire en ligne immédiat du Webinaire de l’Etat"
-msgstr ""
-
-#: web/b3desk/settings.py:117
-msgid "un nouveau cours"
-msgstr ""
-
-#: web/b3desk/settings.py:118
-msgid "une nouvelle réunion"
-msgstr ""
-
-#: web/b3desk/settings.py:119
-msgid "un nouveau séminaire"
-msgstr ""
-
-#: web/b3desk/settings.py:1042
+#: web/b3desk/settings.py:602
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:1045
+#: web/b3desk/settings.py:605
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:1062
-#, python-format
+#: web/b3desk/settings.py:609
 msgid ""
-"Bienvenue aux modérateurs. Pour inviter quelqu'un à %(this_meeting)s, "
+"Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68
-#, python-format
-msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
+#: web/b3desk/endpoints/join.py:67
+msgid "Aucune réunion ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:82 web/b3desk/endpoints/join.py:148
-#: web/b3desk/endpoints/join.py:153 web/b3desk/endpoints/join.py:210
-#: web/b3desk/endpoints/join.py:218
+#: web/b3desk/endpoints/join.py:80 web/b3desk/endpoints/join.py:146
+#: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:208
+#: web/b3desk/endpoints/join.py:216
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:185
+#: web/b3desk/endpoints/join.py:183
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:321
+#: web/b3desk/endpoints/join.py:319
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:326
+#: web/b3desk/endpoints/join.py:324
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
@@ -363,7 +301,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:404
-#: web/b3desk/endpoints/meetings.py:306
+#: web/b3desk/endpoints/meetings.py:305
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -397,36 +335,48 @@ msgstr ""
 msgid "{meeting_name} modifications prises en compte"
 msgstr ""
 
+#: web/b3desk/endpoints/meetings.py:253
+msgid "Réunion terminée"
+msgstr ""
+
 #: web/b3desk/endpoints/meetings.py:257
 msgid "Vous ne pouvez pas terminer cette réunion"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:289
 #, python-brace-format
-msgid ""
-"Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : "
-"{message}"
+msgid "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:298
+#: web/b3desk/endpoints/meetings.py:297
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:321
+#: web/b3desk/endpoints/meetings.py:320
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:332
+#: web/b3desk/endpoints/meetings.py:331
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:340
+#: web/b3desk/endpoints/meetings.py:339
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
 #: web/b3desk/models/meetings.py:271 web/b3desk/models/meetings.py:278
 msgid "Ce code PIN est déjà utilisé"
+msgstr ""
+
+#: web/b3desk/models/meetings.py:285
+#, python-format
+msgid "la réunion de %s"
+msgstr ""
+
+#: web/b3desk/models/meetings.py:286
+#, python-format
+msgid "Bienvenue dans la réunion de %s"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:5
@@ -441,6 +391,7 @@ msgstr ""
 
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
+#: web/b3desk/templates/header-lasuite.html:37
 #: web/b3desk/templates/tools.html:41 web/b3desk/templates/tools.html:43
 msgid "Les services de La Suite numérique"
 msgstr ""
@@ -451,6 +402,9 @@ msgid "Accueil - %(service_title)s - République Française"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:28
+#: web/b3desk/templates/header-lasuite.html:7
+#: web/b3desk/templates/header-lasuite.html:22
+#: web/b3desk/templates/jumbotron.html:56
 #, python-format
 msgid "%(service_title)s"
 msgstr ""
@@ -769,32 +723,27 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:35
-#, python-format
-msgid "Ouvrir %(a_new_meeting)s temporaire"
+msgid "Ouvrir une nouvelle réunion temporaire"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:37
-#, python-format
-msgid "Lancer %(the_meeting)s - nouvelle fenêtre"
+msgid "Lancer la réunion - nouvelle fenêtre"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:38
-#, python-format
-msgid "Ouvrir %(a_meeting)s temporaire"
+msgid "Ouvrir une réunion temporaire"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:68
 #: web/b3desk/templates/jumbotron.html:106
-#, python-format
-msgid "Vous organisez régulièrement des %(some_meetings)s"
+msgid "Vous organisez régulièrement des réunions"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:70
 #: web/b3desk/templates/jumbotron.html:107
-#, python-format
 msgid ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver "
-"vos %(some_meetings)s."
+"vos réunions."
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:71
@@ -1349,28 +1298,19 @@ msgid "Présentation des nouveautés de la v2.4"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:14
-#, python-format
-msgid "Créer %(a_meeting)s improvisée"
-msgstr ""
-
-#: web/b3desk/templates/footer/documentation.html:14
-#, python-format
-msgid "Créer %(an_improvised_meeting)s"
+msgid "Créer une réunion improvisée"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:15
-#, python-format
-msgid "Participer à %(a_meeting)s"
+msgid "Participer à une réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:16
-#, python-format
-msgid "Créer et parametrer une salle de %(a_meeting)s"
+msgid "Créer et parametrer une salle de réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:16
-#, python-format
-msgid "Créer et paramétrer une salle de %(meeting_label)s"
+msgid "Créer et paramétrer une salle de réunion "
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:17
@@ -1386,18 +1326,15 @@ msgid "Gérer les documents"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:20
-#, python-format
-msgid "Gestion des %(private_meetings)s"
+msgid "Gestion des réunions privées"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:21
-#, python-format
-msgid "Déléguer la création de %(meeting_label)s"
+msgid "Déléguer la création de réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:22
-#, python-format
-msgid "Enregistrer %(a_meeting)s"
+msgid "Enregistrer une réunion"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:23
@@ -1405,8 +1342,7 @@ msgid "Créer un sondage"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:24
-#, python-format
-msgid "Joindre %(a_meeting)s par téléphone"
+msgid "Joindre une réunion par téléphone"
 msgstr ""
 
 #: web/b3desk/templates/footer/documentation.html:25
@@ -1955,23 +1891,19 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:5
-#, python-format
 msgid ""
-"%(this_meeting)s est actuellement en cours avec les anciens "
-"paramètres.<br>\n"
+"Cette réunion est actuellement en cours avec les anciens paramètres.<br>\n"
 "            Souhaitez-vous y mettre fin pour permettre la prise en compte"
 " immédiate de ces nouveaux paramètres ? Les éventuels participants seront"
 " déconnectés."
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:11
-#, python-format
-msgid "Mettre fin %(to_the_meeting)s en cours"
+msgid "Mettre fin à la réunion en cours"
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:12
-#, python-format
-msgid "Patienter jusqu'à la fin %(of_the_meeting)s"
+msgid "Patienter jusqu'à la fin de la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/file_picker.html:26
@@ -1986,17 +1918,14 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:39
 #, python-format
-msgid ""
-"Gestion des %(meeting_presentation)ss associées à "
-"<em>%(meeting_name)s</em>"
+msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:42
 #: web/b3desk/templates/meeting/files.html:220
 #: web/b3desk/templates/meeting/recordings.html:9
 #: web/b3desk/templates/meeting/recordings.html:205
-#, python-format
-msgid "Retour à mes %(meeting_label)ss"
+msgid "Retour à mes réunions"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:47
@@ -2114,7 +2043,7 @@ msgid "Modifier"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:58
-msgid "Créer"
+msgid "Créer une réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:74
@@ -2126,7 +2055,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, no-python-format
+#, no-python-format, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -2163,8 +2092,7 @@ msgid "Créer la salle"
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:4
-#, python-format
-msgid "Rejoindre %(the_meeting)s"
+msgid "Rejoindre la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:14
@@ -2199,11 +2127,6 @@ msgstr ""
 msgid "Vous êtes propriétaire de cette salle ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:4
-#, python-format
-msgid "Mes salles de %(some_meetings)s"
-msgstr ""
-
 #: web/b3desk/templates/meeting/list.html:8
 #: web/b3desk/templates/meeting/list.html:30
 msgid "Créer une salle permanente"
@@ -2212,17 +2135,14 @@ msgstr ""
 #: web/b3desk/templates/meeting/list.html:18
 #, python-format
 msgid ""
-"Vous avez atteint la limite des %(max_meetings_per_user)s "
-"%(meeting_label)ss. Pour pouvoir en créer davantage, veuillez supprimer "
-"des %(meeting_label)ss inactives."
+"Vous avez atteint la limite des %(max_meetings_per_user)s réunions. Pour "
+"pouvoir en créer davantage, veuillez supprimer des réunions inactives."
 msgstr ""
 
 #: web/b3desk/templates/meeting/list.html:28
-#, python-format
 msgid ""
-"Vous n'avez pas encore créé de salle de %(some_meetings)s permanente. "
-"Vous pouvez créer votre salle permanente ou accéder à une salle "
-"temporaire plus bas."
+"Vous n'avez pas encore créé de salle de réunion permanente. Vous pouvez "
+"créer votre salle permanente ou accéder à une salle temporaire plus bas."
 msgstr ""
 
 #: web/b3desk/templates/meeting/list.html:33
@@ -2271,30 +2191,26 @@ msgid "Enregistrements de <em>%(meeting_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:14
-#, python-format
-msgid "%(this_meeting)s est toujours en cours"
+msgid "Cette réunion est toujours en cours"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:15
-#, python-format
 msgid ""
-"Si un enregistrement est en cours, il ne sera encodé qu'après la fin "
-"%(of_the_meeting)s"
+"Si un enregistrement est en cours, il ne sera encodé qu'après la fin de "
+"la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:18
-#, python-format
 msgid ""
-"Après la fin d'%(a_meeting)s, l'encodage de l'enregistrement peut prendre"
-" autant de temps que la durée %(of_the_meeting)s."
+"Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre "
+"autant de temps que la durée de la réunion."
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:19
-#, python-format
 msgid ""
-"Si aucun modérateur ne met fin %(of_the_meeting)s, un délai "
-"supplémentaire de plusieurs minutes s'ajoute après que tous les "
-"utilisateurs l'aient quitté."
+"Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de "
+"plusieurs minutes s'ajoute après que tous les utilisateurs l'aient "
+"quitté."
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:20
@@ -2451,13 +2367,11 @@ msgstr ""
 #: web/b3desk/templates/meeting/visio_code_form.html:3
 #: web/b3desk/templates/meeting/visio_code_form.html:5
 #: web/b3desk/templates/meeting/visio_code_form.html:7
-#, python-format
-msgid "Saisir le code de connexion de votre %(meeting_label)s"
+msgid "Saisir le code de connexion de votre réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/visio_code_form.html:10
-#, python-format
-msgid "Remplissez le code de connexion reçu dans l’invitation %(of_the_meeting)s."
+msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
 msgstr ""
 
 #: web/b3desk/templates/meeting/visio_code_form.html:32
@@ -2501,8 +2415,7 @@ msgid "Participant"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:9
-#, python-format
-msgid "À %(the_meeting)s suivante :"
+msgid "À la réunion suivante :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:13
@@ -2510,8 +2423,7 @@ msgid "Le lien pour s'y inscrire est le suivant :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:17
-#, python-format
-msgid "Le mot de passe de %(this_meeting)s est :"
+msgid "Le mot de passe de cette réunion est :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:25
@@ -2529,9 +2441,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:17
 #, python-format
-msgid ""
-"Voulez-vous vraiment supprimer %(the_meeting)s "
-"\"<em>%(meeting_name)s</em>\" ?"
+msgid "Voulez-vous vraiment supprimer la réunion \"<em>%(meeting_name)s</em>\" ?"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:21
@@ -2545,15 +2455,11 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:32
-#, python-format
-msgid "Supprimer %(the_meeting)s"
+msgid "Supprimer la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:15
-#, python-format
-msgid ""
-"Invitez des participants à votre %(meeting_label)s en leur envoyant, au "
-"choix :"
+msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:17
@@ -3741,5 +3647,234 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Suppression d'enregistrement"
+#~ msgstr ""
+
+#~ msgid "Nom %(of_the_meeting)s"
+#~ msgstr ""
+
+#~ msgid "%(my_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Bienvenue dans %(this_meeting)s %(meeting_name)s."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A l'issue de cette durée %(the_meeting)s"
+#~ " stoppe automatiquement. 1h = 60, 2h"
+#~ " = 120, 3h = 180, 4h = "
+#~ "240."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Placer les participants dans une salle"
+#~ " d'attente lorsqu'ils rejoignent %(the_meeting)s."
+#~ " L'organisateur ou le modérateur devra "
+#~ "les accepter individuellement."
+#~ msgstr ""
+
+#~ msgid "Url de redirection après %(the_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)"
+#~ msgstr ""
+
+#~ msgid "Code de connexion pour rejoindre %(the_meeting)s %(sip)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Créez en un clic un cours aux "
+#~ "réglages standards. Il ne sera pas "
+#~ "enregistré dans votre liste de salles."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Créez en un clic une réunion aux"
+#~ " réglages standards. Elle ne sera pas"
+#~ " enregistrée dans votre liste de "
+#~ "salles."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Créez en un clic un séminaire aux"
+#~ " réglages standards. Il ne sera pas"
+#~ " enregistré dans votre liste de "
+#~ "salles."
+#~ msgstr ""
+
+#~ msgid "Invitation à un cours en ligne immédiat du Webinaire de l’Etat"
+#~ msgstr ""
+
+#~ msgid "Invitation à une réunion en ligne immédiat du Webinaire de l’Etat"
+#~ msgstr ""
+
+#~ msgid "Invitation à un séminaire en ligne immédiat du Webinaire de l’Etat"
+#~ msgstr ""
+
+#~ msgid "un nouveau cours"
+#~ msgstr ""
+
+#~ msgid "une nouvelle réunion"
+#~ msgstr ""
+
+#~ msgid "un nouveau séminaire"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Bienvenue aux modérateurs. Pour inviter "
+#~ "quelqu'un à %(this_meeting)s, envoyez-lui "
+#~ "l'un de ces liens :"
+#~ msgstr ""
+
+#~ msgid "Aucune %(meeting_label)s ne correspond à ces paramètres"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Nous n'avons pas pu supprimer les "
+#~ "vidéos de cette {meeting_label} : "
+#~ "{message}"
+#~ msgstr ""
+
+#~ msgid "Ouvrir %(a_new_meeting)s temporaire"
+#~ msgstr ""
+
+#~ msgid "Lancer %(the_meeting)s - nouvelle fenêtre"
+#~ msgstr ""
+
+#~ msgid "Ouvrir %(a_meeting)s temporaire"
+#~ msgstr ""
+
+#~ msgid "Vous organisez régulièrement des %(some_meetings)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous êtes agent de l'État, créez "
+#~ "un compte pour organiser et conserver"
+#~ " vos %(some_meetings)s."
+#~ msgstr ""
+
+#~ msgid "Créer %(a_meeting)s improvisée"
+#~ msgstr ""
+
+#~ msgid "Créer %(an_improvised_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Participer à %(a_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Créer et parametrer une salle de %(a_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Créer et paramétrer une salle de %(meeting_label)s"
+#~ msgstr ""
+
+#~ msgid "Gestion des %(private_meetings)s"
+#~ msgstr ""
+
+#~ msgid "Déléguer la création de %(meeting_label)s"
+#~ msgstr ""
+
+#~ msgid "Enregistrer %(a_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Joindre %(a_meeting)s par téléphone"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "%(this_meeting)s est actuellement en cours "
+#~ "avec les anciens paramètres.<br>\n"
+#~ "            Souhaitez-vous y mettre fin"
+#~ " pour permettre la prise en compte"
+#~ " immédiate de ces nouveaux paramètres "
+#~ "? Les éventuels participants seront "
+#~ "déconnectés."
+#~ msgstr ""
+
+#~ msgid "Mettre fin %(to_the_meeting)s en cours"
+#~ msgstr ""
+
+#~ msgid "Patienter jusqu'à la fin %(of_the_meeting)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Gestion des %(meeting_presentation)ss associées "
+#~ "à <em>%(meeting_name)s</em>"
+#~ msgstr ""
+
+#~ msgid "Retour à mes %(meeting_label)ss"
+#~ msgstr ""
+
+#~ msgid "Créer"
+#~ msgstr ""
+
+#~ msgid "Rejoindre %(the_meeting)s"
+#~ msgstr ""
+
+#~ msgid "Mes salles de %(some_meetings)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous avez atteint la limite des "
+#~ "%(max_meetings_per_user)s %(meeting_label)ss. Pour "
+#~ "pouvoir en créer davantage, veuillez "
+#~ "supprimer des %(meeting_label)ss inactives."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vous n'avez pas encore créé de "
+#~ "salle de %(some_meetings)s permanente. Vous"
+#~ " pouvez créer votre salle permanente "
+#~ "ou accéder à une salle temporaire "
+#~ "plus bas."
+#~ msgstr ""
+
+#~ msgid "%(this_meeting)s est toujours en cours"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si un enregistrement est en cours, "
+#~ "il ne sera encodé qu'après la fin"
+#~ " %(of_the_meeting)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Après la fin d'%(a_meeting)s, l'encodage "
+#~ "de l'enregistrement peut prendre autant "
+#~ "de temps que la durée "
+#~ "%(of_the_meeting)s."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Si aucun modérateur ne met fin "
+#~ "%(of_the_meeting)s, un délai supplémentaire de"
+#~ " plusieurs minutes s'ajoute après que "
+#~ "tous les utilisateurs l'aient quitté."
+#~ msgstr ""
+
+#~ msgid "Saisir le code de connexion de votre %(meeting_label)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Remplissez le code de connexion reçu "
+#~ "dans l’invitation %(of_the_meeting)s."
+#~ msgstr ""
+
+#~ msgid "À %(the_meeting)s suivante :"
+#~ msgstr ""
+
+#~ msgid "Le mot de passe de %(this_meeting)s est :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Voulez-vous vraiment supprimer %(the_meeting)s"
+#~ " \"<em>%(meeting_name)s</em>\" ?"
+#~ msgstr ""
+
+#~ msgid "Supprimer %(the_meeting)s"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Invitez des participants à votre "
+#~ "%(meeting_label)s en leur envoyant, au "
+#~ "choix :"
 #~ msgstr ""
 

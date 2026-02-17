@@ -282,8 +282,10 @@ def create_and_save_shadow_meeting(user):
     """Create and save a new shadow meeting for a user."""
     random_string = get_random_alphanumeric_string(8)
     meeting = Meeting(
-        name=f"{current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
-        welcome=f"Bienvenue dans {current_app.config['WORDING_THE_MEETING']} de {user.fullname}",
+        name=str(_("la réunion de %(fullname)s", fullname=user.fullname)),
+        welcome=str(
+            _("Bienvenue dans la réunion de %(fullname)s", fullname=user.fullname)
+        ),
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
         maxParticipants=DEFAULT_MAX_PARTICIPANTS,
         logoutUrl=current_app.config["MEETING_LOGOUT_URL"],

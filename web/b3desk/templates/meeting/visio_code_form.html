@@ -1,13 +1,13 @@
 <div>
     {% if g.user %}
-        <h4>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h4>
+        <h4>{% trans %}Saisir le code de connexion de votre réunion{% endtrans %}</h4>
     {% elif config.get("ENABLE_LASUITENUMERIQUE") and not g.user %}
-        <h2>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h2>
+        <h2>{% trans %}Saisir le code de connexion de votre réunion{% endtrans %}</h2>
     {% else %}
-        <h6>{% trans %}Saisir le code de connexion de votre {{ meeting_label }}{% endtrans %}</h6>
+        <h6>{% trans %}Saisir le code de connexion de votre réunion{% endtrans %}</h6>
     {% endif %}
     <p>
-        {% trans %}Remplissez le code de connexion reçu dans l’invitation {{ of_the_meeting }}.{% endtrans %}<br><br>
+        {% trans %}Remplissez le code de connexion reçu dans l’invitation de la réunion.{% endtrans %}<br><br>
     </p>
     <form id="visio-code-form" action="{{ url_for("join.visio_code_connection") }}" method="POST" target="_blank">
         {% include 'meeting/csrf.html' %}
