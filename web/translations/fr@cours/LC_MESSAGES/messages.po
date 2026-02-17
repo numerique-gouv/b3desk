@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 10:50+0100\n"
+"POT-Creation-Date: 2026-02-17 11:55+0100\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@cours\n"
@@ -145,7 +145,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:158 web/b3desk/models/meetings.py:290
+#: web/b3desk/forms.py:158 web/b3desk/models/meetings.py:292
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -301,7 +301,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:404
-#: web/b3desk/endpoints/meetings.py:305
+#: web/b3desk/endpoints/meetings.py:303
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -331,37 +331,37 @@ msgid "Le formulaire contient des erreurs"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:221
-#, python-brace-format
-msgid "{meeting_name} modifications prises en compte"
+#, python-format
+msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:253
+#: web/b3desk/endpoints/meetings.py:251
 msgid "Réunion terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:257
+#: web/b3desk/endpoints/meetings.py:255
 msgid "Vous ne pouvez pas terminer cette réunion"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:289
+#: web/b3desk/endpoints/meetings.py:287
 #, python-brace-format
 msgid "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:297
+#: web/b3desk/endpoints/meetings.py:295
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:320
+#: web/b3desk/endpoints/meetings.py:318
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:331
+#: web/b3desk/endpoints/meetings.py:329
 #, python-format
 msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:339
+#: web/b3desk/endpoints/meetings.py:337
 msgid "Vous ne pouvez pas supprimer cette enregistrement"
 msgstr ""
 
@@ -371,12 +371,12 @@ msgstr ""
 
 #: web/b3desk/models/meetings.py:285
 #, python-format
-msgid "la réunion de %s"
+msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:286
+#: web/b3desk/models/meetings.py:287
 #, python-format
-msgid "Bienvenue dans la réunion de %s"
+msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:5
@@ -687,8 +687,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
-#: web/b3desk/templates/meeting/modals/invite.html:8
-#: web/b3desk/templates/meeting/modals/invite.html:9
 #: web/b3desk/templates/meeting/recordings.html:87
 #: web/b3desk/templates/meeting/recordings.html:88
 #: web/b3desk/templates/meeting/recordings.html:126
@@ -2364,6 +2362,10 @@ msgstr ""
 msgid "Voir les enregistrements de %(meeting_name)s"
 msgstr ""
 
+#: web/b3desk/templates/meeting/signin_links.html:3
+msgid "Code de connexion :"
+msgstr ""
+
 #: web/b3desk/templates/meeting/visio_code_form.html:3
 #: web/b3desk/templates/meeting/visio_code_form.html:5
 #: web/b3desk/templates/meeting/visio_code_form.html:7
@@ -2456,79 +2458,6 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:32
 msgid "Supprimer la réunion"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:15
-msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:17
-msgid "Avec droits modérateurs :"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:22
-msgid "Le code de connexion"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:24
-msgid "NOUVEAU"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:28
-msgid "Copier le code de connexion dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:37
-msgid "Le lien modérateur"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:44
-msgid "Copier le lien modérateur dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:54
-msgid "Le lien SIP"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:57
-msgid "Lien requis pour l'utilisation d'équipements SIP."
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:62
-msgid "Copier le lien SIP dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:69
-msgid "Avec droits restreints :"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:74
-msgid "Le lien participant"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:81
-msgid "Copier le lien participant dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:90
-msgid "Le lien authentifié"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:90
-#, python-format
-msgid "via %(service_name)s"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:97
-msgid "Copier le lien participant authentifié dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:107
-msgid "Connexion par téléphone"
-msgstr ""
-
-#: web/b3desk/templates/meeting/modals/invite.html:115
-msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
 #: web/b3desk/utils/__init__.py:142
@@ -2782,5 +2711,68 @@ msgstr ""
 #~ "Invitez des participants à votre "
 #~ "%(meeting_label)s en leur envoyant, au "
 #~ "choix :"
+#~ msgstr ""
+
+#~ msgid "{meeting_name} modifications prises en compte"
+#~ msgstr ""
+
+#~ msgid "la réunion de %s"
+#~ msgstr ""
+
+#~ msgid "Bienvenue dans la réunion de %s"
+#~ msgstr ""
+
+#~ msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
+#~ msgstr ""
+
+#~ msgid "Avec droits modérateurs :"
+#~ msgstr ""
+
+#~ msgid "Le code de connexion"
+#~ msgstr ""
+
+#~ msgid "NOUVEAU"
+#~ msgstr ""
+
+#~ msgid "Copier le code de connexion dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Le lien modérateur"
+#~ msgstr ""
+
+#~ msgid "Copier le lien modérateur dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Le lien SIP"
+#~ msgstr ""
+
+#~ msgid "Lien requis pour l'utilisation d'équipements SIP."
+#~ msgstr ""
+
+#~ msgid "Copier le lien SIP dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Avec droits restreints :"
+#~ msgstr ""
+
+#~ msgid "Le lien participant"
+#~ msgstr ""
+
+#~ msgid "Copier le lien participant dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Le lien authentifié"
+#~ msgstr ""
+
+#~ msgid "via %(service_name)s"
+#~ msgstr ""
+
+#~ msgid "Copier le lien participant authentifié dans le presse-papiers"
+#~ msgstr ""
+
+#~ msgid "Connexion par téléphone"
+#~ msgstr ""
+
+#~ msgid "Copier les informations dans le presse-papiers"
 #~ msgstr ""
 
