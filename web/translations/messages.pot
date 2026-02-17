@@ -316,7 +316,8 @@ msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:251
-msgid "Réunion terminée"
+#, python-format
+msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
 #: web/b3desk/endpoints/meetings.py:255

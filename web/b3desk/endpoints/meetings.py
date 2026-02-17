@@ -248,7 +248,7 @@ def end_meeting():
         data = BBB(meeting.meetingID).end()
         if BBB.success(data):
             flash(
-                _("Réunion terminée"),
+                _("Réunion « %(meeting_name)s » terminée", meeting_name=meeting.name),
                 "success",
             )
     else:
