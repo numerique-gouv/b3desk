@@ -439,6 +439,7 @@ msgid "%(service_title)s"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32
+#: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32
 msgid ""
 "L'instance est configurée en mode déboggage. Ne pas utiliser en "
 "production !"
@@ -665,17 +666,21 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/footer.html:23
+#: web/b3desk/templates/footer.html:23
 msgid "Le code source est ouvert et les contributions sont bienvenues."
 msgstr ""
 
+#: web/b3desk/templates/footer.html:24
 #: web/b3desk/templates/footer.html:24
 msgid "Voir le code source - nouvelle fenêtre"
 msgstr ""
 
 #: web/b3desk/templates/footer.html:24
+#: web/b3desk/templates/footer.html:24
 msgid "Voir le code source"
 msgstr ""
 
+#: web/b3desk/templates/footer.html:27
 #: web/b3desk/templates/footer.html:27
 msgid ""
 "Ceci est une version de développement et ne doit en aucun cas être "
@@ -683,18 +688,22 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/footer.html:55
+#: web/b3desk/templates/footer.html:55
 msgid "Accessibilité : non conforme"
 msgstr ""
 
+#: web/b3desk/templates/footer.html:58
 #: web/b3desk/templates/footer.html:58
 #: web/b3desk/templates/footer/mentions_legales.html:5
 msgid "Mentions légales"
 msgstr ""
 
 #: web/b3desk/templates/footer.html:61
+#: web/b3desk/templates/footer.html:61
 msgid "Données personnelles et cookies"
 msgstr ""
 
+#: web/b3desk/templates/footer.html:64 web/b3desk/templates/footer/cgu.html:5
 #: web/b3desk/templates/footer.html:64 web/b3desk/templates/footer/cgu.html:5
 msgid "Conditions générales d’utilisation"
 msgstr ""
@@ -713,6 +722,7 @@ msgstr ""
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:57
 #: web/b3desk/templates/meeting/files.html:79
+#: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/files.html:153
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
@@ -788,6 +798,7 @@ msgstr ""
 msgid "se déconnecter"
 msgstr ""
 
+#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:51
 #: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:51
 msgid "S’identifier"
 msgstr ""
@@ -1952,6 +1963,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:42
 #: web/b3desk/templates/meeting/files.html:220
+#: web/b3desk/templates/meeting/files.html:220
 #: web/b3desk/templates/meeting/recordings.html:9
 #: web/b3desk/templates/meeting/recordings.html:205
 msgid "Retour à mes réunions"
@@ -1982,41 +1994,66 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:111
+#: web/b3desk/templates/meeting/files.html:103
+msgid "Nuage temporairement indisponible"
+msgstr ""
+
+#: web/b3desk/templates/meeting/files.html:104
+msgid ""
+"Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités"
+" sont momentanément désactivées. Veuillez réessayer dans quelques "
+"minutes."
+msgstr ""
+
+#: web/b3desk/templates/meeting/files.html:111
 msgid "depuis une URL"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:114
+#: web/b3desk/templates/meeting/files.html:114
 msgid "nuage"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:114
 #: web/b3desk/templates/meeting/files.html:114
 msgid "depuis le Nuage"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:117
 msgid "téléversement"
+#: web/b3desk/templates/meeting/files.html:117
+msgid "téléversement"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:117
 #: web/b3desk/templates/meeting/files.html:117
 msgid "par Téléversement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:132
+#: web/b3desk/templates/meeting/files.html:132
 msgid "Vos fichiers associés sont :"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:136
 #: web/b3desk/templates/meeting/files.html:136
 msgid "Téléchargeable"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:137
+#: web/b3desk/templates/meeting/files.html:137
 msgid "Titre"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:138
+#: web/b3desk/templates/meeting/files.html:138
 msgid "Ajouté le"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:139
+#: web/b3desk/templates/meeting/files.html:157
+#: web/b3desk/templates/meeting/files.html:166
+#: web/b3desk/templates/meeting/files.html:196
 #: web/b3desk/templates/meeting/files.html:139
 #: web/b3desk/templates/meeting/files.html:157
 #: web/b3desk/templates/meeting/files.html:166
@@ -2027,14 +2064,19 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:140
 #: web/b3desk/templates/meeting/files.html:200
+#: web/b3desk/templates/meeting/files.html:140
+#: web/b3desk/templates/meeting/files.html:200
 msgid "Télécharger"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:159
 #: web/b3desk/templates/meeting/files.html:159
 #, python-format
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:169
+#: web/b3desk/templates/meeting/form.html:177
 #: web/b3desk/templates/meeting/files.html:169
 #: web/b3desk/templates/meeting/form.html:177
 #: web/b3desk/templates/meeting/modals/delete.html:36
@@ -2045,14 +2087,19 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:186
 #: web/b3desk/templates/meeting/files.html:189
+#: web/b3desk/templates/meeting/files.html:186
+#: web/b3desk/templates/meeting/files.html:189
 msgid "Oui"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:186
 #: web/b3desk/templates/meeting/files.html:189
+#: web/b3desk/templates/meeting/files.html:186
+#: web/b3desk/templates/meeting/files.html:189
 msgid "Non"
 msgstr ""
 
+#: web/b3desk/templates/meeting/files.html:212
 #: web/b3desk/templates/meeting/files.html:212
 msgid "Aucun document de présentation n'est prévu pour cette réunion actuellement"
 msgstr ""
@@ -2084,7 +2131,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, python-format
+#, no-python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -2120,38 +2167,54 @@ msgstr ""
 msgid "Créer la salle"
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:173
+msgid "Enregistrer"
+msgstr ""
+
+#: web/b3desk/templates/meeting/form.html:175
+msgid "Créer la salle"
+msgstr ""
+
 #: web/b3desk/templates/meeting/join.html:4
 msgid "Rejoindre la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:14
+#: web/b3desk/templates/meeting/join.html:14
 msgid "Votre nom"
 msgstr ""
 
+#: web/b3desk/templates/meeting/join.html:15
 #: web/b3desk/templates/meeting/join.html:15
 msgid "Vous pouvez également préciser votre service ou votre fonction."
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:23
+#: web/b3desk/templates/meeting/join.html:23
 msgid "Informations facultatives"
 msgstr ""
 
+#: web/b3desk/templates/meeting/join.html:24
 #: web/b3desk/templates/meeting/join.html:24
 msgid "Si ce champ est rempli, il sera affiché dans BBB."
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:28
+#: web/b3desk/templates/meeting/join.html:28
 msgid "Le nom affiché sera «"
 msgstr ""
 
+#: web/b3desk/templates/meeting/join.html:28
 #: web/b3desk/templates/meeting/join.html:28
 msgid "»."
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:33
+#: web/b3desk/templates/meeting/join.html:33
 msgid "Rejoindre"
 msgstr ""
 
+#: web/b3desk/templates/meeting/join.html:40
 #: web/b3desk/templates/meeting/join.html:40
 msgid "Vous êtes propriétaire de cette salle ?"
 msgstr ""
@@ -2463,6 +2526,7 @@ msgstr ""
 msgid "Le mot de passe de cette réunion est :"
 msgstr ""
 
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:25
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:25
 msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
 msgstr ""
