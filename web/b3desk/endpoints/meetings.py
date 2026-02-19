@@ -218,9 +218,7 @@ def save_meeting():
             updated_data,
         )
     flash(
-        _("{meeting_name} modifications prises en compte").format(
-            meeting_name=meeting.name
-        ),
+        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
         "success",
     )
 
@@ -250,7 +248,7 @@ def end_meeting():
         data = BBB(meeting.meetingID).end()
         if BBB.success(data):
             flash(
-                f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
+                _("Réunion « %(meeting_name)s » terminée", meeting_name=meeting.name),
                 "success",
             )
     else:
@@ -286,9 +284,8 @@ def delete_meeting():
             if data and not BBB.success(data):
                 flash(
                     _(
-                        "Nous n'avons pas pu supprimer les vidéos de cette {meeting_label} : {message}"
+                        "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
                     ).format(
-                        meeting_label=current_app.config["WORDINGS"]["meeting_label"],
                         message=data.get("message", ""),
                     ),
                     "error",

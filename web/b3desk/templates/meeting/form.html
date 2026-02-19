@@ -55,7 +55,7 @@
 {% if meeting is not none %}
   <h1 class="fr-h2">{% trans %}Modifier{% endtrans %} <em>{{meeting.name }}</em></h1>
 {% else %}
-  <h1 class="fr-h2">{% trans %}Créer{% endtrans %} {{ a_meeting }}</h1>
+  <h1 class="fr-h2">{% trans %}Créer une réunion{% endtrans %}</h1>
 {% endif %}
 
 <form id="meeting-form" action="{{ url_for("meetings.save_meeting") }}" method="POST">

@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    <h1 class="fr-h2">{% trans %}Rejoindre {{ the_meeting }}{% endtrans %}</h1>
+    <h1 class="fr-h2">{% trans %}Rejoindre la réunion{% endtrans %}</h1>
 
     <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
         {% include 'meeting/csrf.html' %}

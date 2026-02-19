@@ -61,12 +61,10 @@ def signin_meeting(
     - Authenticated users are redirected to 'waiting_meeting'
     """
     meeting = get_meeting_from_meeting_id(meeting_fake_id)
-    wordings = current_app.config["WORDINGS"]
     if meeting is None:
         flash(
             _(
-                "Aucune %(meeting_label)s ne correspond à ces paramètres",
-                meeting_label=wordings["meeting_label"],
+                "Aucune réunion ne correspond à ces paramètres",
             ),
             "success",
         )

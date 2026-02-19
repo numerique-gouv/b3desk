@@ -1,1 +1,1 @@
-{% trans %}Invitation{% endtrans %} {{ to_the_meeting }} {{ meeting.name }}
+{% trans %}Invitation à la réunion{% endtrans %} {{ meeting.name }}
