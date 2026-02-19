@@ -2108,7 +2108,7 @@ msgstr ""
 msgid ""
 "Tous ces paramètres sont modifiables directement depuis la salle de "
 "réunion à tout moment."
-msgstr ""
+msgstr "Tous ces paramètres sont modifiables directement depuis la salle de cours à tout moment."
 
 #: web/b3desk/templates/meeting/form.html:130
 msgid "Enregistrement"
@@ -2248,7 +2248,7 @@ msgstr "Ce cours est toujours en cours"
 msgid ""
 "Si un enregistrement est en cours, il ne sera encodé qu'après la fin de "
 "la réunion"
-msgstr ""
+msgstr "Si un enregistrement est en cours, il ne sera encodé qu'après la fin du cours"
 
 #: web/b3desk/templates/meeting/recordings.html:18
 msgid ""
@@ -2431,7 +2431,7 @@ msgstr "Saisir le code de connexion de votre cours"
 
 #: web/b3desk/templates/meeting/visio_code_form.html:10
 msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
-msgstr ""
+msgstr "Remplissez le code de connexion reçu dans l’invitation du cours."
 
 #: web/b3desk/templates/meeting/visio_code_form.html:29
 msgid "Recopier le code de sécurité de cette image"
@@ -2527,7 +2527,7 @@ msgstr "Supprimer le cours"
 
 #: web/b3desk/templates/meeting/modals/invite.html:15
 msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
-msgstr ""
+msgstr "Invitez des participants à votre cours en leur envoyant, au choix :"
 
 #: web/b3desk/templates/meeting/modals/invite.html:17
 msgid "Avec droits modérateurs :"
