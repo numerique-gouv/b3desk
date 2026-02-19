@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-17 16:20+0100\n"
+"POT-Creation-Date: 2026-02-19 09:20+0100\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -26,6 +26,29 @@ msgstr ""
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
+msgstr ""
+
+#: web/b3desk/forms.py:43
+msgid "Lien web du fichier à ajouter"
+msgstr ""
+
+#: web/b3desk/forms.py:44
+msgid "Le lien web à entrer doit permettre de télécharger un fichier"
+msgstr ""
+
+#: web/b3desk/forms.py:47
+msgid "Le texte est trop long"
+msgstr ""
+
+#: web/b3desk/forms.py:51 web/b3desk/forms.py:104
+msgid "Salle d'attente"
+msgstr ""
+
+#: web/b3desk/forms.py:52 web/b3desk/forms.py:106
+msgid ""
+"Placer les participants dans une salle d'attente lorsqu'ils rejoignent la"
+" réunion. L'organisateur ou le modérateur devra les accepter "
+"individuellement."
 msgstr ""
 
 #: web/b3desk/forms.py:61
@@ -73,17 +96,6 @@ msgstr ""
 msgid ""
 "A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h ="
 " 120, 3h = 180, 4h = 240."
-msgstr ""
-
-#: web/b3desk/forms.py:104
-msgid "Salle d'attente"
-msgstr ""
-
-#: web/b3desk/forms.py:106
-msgid ""
-"Placer les participants dans une salle d'attente lorsqu'ils rejoignent la"
-" réunion. L'organisateur ou le modérateur devra les accepter "
-"individuellement."
 msgstr ""
 
 #: web/b3desk/forms.py:111
@@ -178,6 +190,18 @@ msgstr ""
 msgid "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)"
 msgstr ""
 
+#: web/b3desk/forms.py:202
+msgid "Entez un PIN de 9 chiffres"
+msgstr ""
+
+#: web/b3desk/forms.py:206
+msgid "Le code PIN est composé de chiffres uniquement"
+msgstr ""
+
+#: web/b3desk/forms.py:209
+msgid "Le premier chiffre doit être différent de 0"
+msgstr ""
+
 #: web/b3desk/forms.py:215
 msgid "Code de connexion"
 msgstr ""
@@ -207,6 +231,10 @@ msgstr ""
 msgid ""
 "L'enregistrement démarre automatiquement à l'ouverture de la salle et "
 "s'arrête à sa fermeture."
+msgstr ""
+
+#: web/b3desk/forms.py:249
+msgid "Nom de l'enregistrement"
 msgstr ""
 
 #: web/b3desk/settings.py:582 web/b3desk/templates/meeting/list.html:4
@@ -2382,12 +2410,16 @@ msgstr ""
 msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/visio_code_form.html:32
+#: web/b3desk/templates/meeting/visio_code_form.html:29
+msgid "Recopier le code de sécurité de cette image"
+msgstr ""
+
+#: web/b3desk/templates/meeting/visio_code_form.html:31
 msgid "SAISIR LE CAPTCHA"
 msgstr ""
 
+#: web/b3desk/templates/meeting/visio_code_form.html:38
 #: web/b3desk/templates/meeting/visio_code_form.html:39
-#: web/b3desk/templates/meeting/visio_code_form.html:40
 msgid "Connexion"
 msgstr ""
 
@@ -2438,8 +2470,12 @@ msgstr ""
 msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
 msgstr ""
 
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:27
+msgid "Bonne réunion."
+msgstr ""
+
 #: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
-msgid "Invitation"
+msgid "Invitation à la réunion"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delete.html:15
@@ -2511,7 +2547,6 @@ msgid "Avec droits restreints :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:74
-#, fuzzy, python-format
 msgid "Le lien participant"
 msgstr ""
 

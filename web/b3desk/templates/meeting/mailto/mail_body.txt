@@ -24,4 +24,4 @@ Vous êtes invité en tant que :
 ---
 {% trans %}Vous devez rentrer votre nom complet et le mot de passe pour y accéder.{% endtrans %}
 
-Bonne réunion.
+{% trans %}Bonne réunion.{% endtrans%}

@@ -40,16 +40,18 @@ class ShowMeetingForm(Form):
 
 class MeetingFilesForm(FlaskForm):
     url = TextAreaField(
-        label="Lien web du fichier à ajouter",
-        description="Le lien web à entrer doit permettre de télécharger un fichier",
+        label=_("Lien web du fichier à ajouter"),
+        description=_("Le lien web à entrer doit permettre de télécharger un fichier"),
         render_kw={"rows": 1, "placeholder": "https://exemple.com/image.jpg"},
         validators=[
-            validators.length(max=MAX_URL_LENGTH, message="Le texte est trop long")
+            validators.length(max=MAX_URL_LENGTH, message=_("Le texte est trop long"))
         ],
     )
     guestPolicy = BooleanField(
-        label="Salle d'attente",
-        description="Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement.",
+        label=_("Salle d'attente"),
+        description=_(
+            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement."
+        ),
         default=False,
     )
 
@@ -199,14 +201,14 @@ class MeetingForm(FlaskForm):
         validators=[
             validators.DataRequired(),
             validators.length(
-                min=PIN_LENGTH, max=PIN_LENGTH, message="Entez un PIN de 9 chiffres"
+                min=PIN_LENGTH, max=PIN_LENGTH, message=_("Entez un PIN de 9 chiffres")
             ),
             validators.Regexp(
                 regex=f"[0-9]{{{PIN_LENGTH}}}",
-                message="Le code PIN est composé de chiffres uniquement",
+                message=_("Le code PIN est composé de chiffres uniquement"),
             ),
             validators.Regexp(
-                regex="^[1-9]", message="Le premier chiffre doit être différent de 0"
+                regex="^[1-9]", message=_("Le premier chiffre doit être différent de 0")
             ),
             pin_is_unique_validator,
         ],
@@ -246,7 +248,7 @@ class MeetingWithRecordForm(MeetingForm):
 
 class RecordingForm(FlaskForm):
     name = StringField(
-        validators=[validators.DataRequired()], label="Nom de l'enregistrement"
+        validators=[validators.DataRequired()], label=_("Nom de l'enregistrement")
     )
 
 

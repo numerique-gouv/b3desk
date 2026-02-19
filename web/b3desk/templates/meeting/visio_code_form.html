@@ -26,8 +26,7 @@
         </div>
 
         <div class="captcha-container" id="captcha-container" style="{% if not should_display_captcha %}display: none;{% endif %}">
-            <div id="captchetat" captchaStyleName="captchaFR" altImage="Recopier le code de sécurité de cette
-                                                                        image" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
+            <div id="captchetat" captchaStyleName="captchaFR" altImage="{% trans %}Recopier le code de sécurité de cette image{% endtrans %}" urlBackend="{{ url_for("captcha.captcha_proxy") }}"></div>
             <label class="fr-label" for="text-input" id="captcha-description"></label>
             <input class="fr-input" type="text" placeholder="{% trans %}SAISIR LE CAPTCHA{% endtrans %}" id="captchaCode" name="captchaCode" maxlength="12"/>
         </div>
