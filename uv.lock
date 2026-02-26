@@ -179,6 +179,7 @@ dev = [
     { name = "pytest-postgresql" },
     { name = "pytest-smtpd" },
     { name = "pytest-xdist" },
+    { name = "setuptools" },
     { name = "time-machine" },
     { name = "tox-uv" },
     { name = "wsgidav" },
@@ -242,6 +243,7 @@ dev = [
     { name = "pytest-postgresql", specifier = ">=7.0.0,<8.0.0" },
     { name = "pytest-smtpd", specifier = ">=0.1.0,<0.2.0" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
+    { name = "setuptools", specifier = ">=82.0.0" },
     { name = "time-machine", specifier = ">=3.0.0,<4.0.0" },
     { name = "tox-uv", specifier = ">=1.28.0" },
     { name = "wsgidav", specifier = ">=4.3.1,<5.0.0" },
@@ -2267,6 +2269,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/15/8a/3c4f53d32c21012e9870913544e56bfa9e931aede080779a0f177513f534/sentry_sdk-2.50.0.tar.gz", hash = "sha256:873437a989ee1b8b25579847bae8384515bf18cfed231b06c591b735c1781fe3", size = 401233, upload-time = "2026-01-20T12:53:16.244Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4e/5b/cbc2bb9569f03c8e15d928357e7e6179e5cfab45544a3bbac8aec4caf9be/sentry_sdk-2.50.0-py2.py3-none-any.whl", hash = "sha256:0ef0ed7168657ceb5a0be081f4102d92042a125462d1d1a29277992e344e749e", size = 424961, upload-time = "2026-01-20T12:53:14.826Z" },
+]
+
+[[package]]
+name = "setuptools"
+version = "82.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/82/f3/748f4d6f65d1756b9ae577f329c951cda23fb900e4de9f70900ced962085/setuptools-82.0.0.tar.gz", hash = "sha256:22e0a2d69474c6ae4feb01951cb69d515ed23728cf96d05513d36e42b62b37cb", size = 1144893, upload-time = "2026-02-08T15:08:40.206Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/c6/76dc613121b793286a3f91621d7b75a2b493e0390ddca50f11993eadf192/setuptools-82.0.0-py3-none-any.whl", hash = "sha256:70b18734b607bd1da571d097d236cfcfacaf01de45717d59e6e04b96877532e0", size = 1003468, upload-time = "2026-02-08T15:08:38.723Z" },
 ]
 
 [[package]]
