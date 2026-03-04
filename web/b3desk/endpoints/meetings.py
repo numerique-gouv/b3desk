@@ -372,7 +372,7 @@ def manage_delegation(meeting: Meeting, user: User):
             form=form,
         )
 
-    data = form.search.data
+    data = form.search.data.lower()
     new_delegate = (
         db.session.query(User)
         .filter(

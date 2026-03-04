@@ -158,6 +158,26 @@ def test_owner_can_add_new_delegate(
     assert len(smtpd.messages) == 1
 
 
+def test_add_new_delegate_with_uppercase_email(
+    client_app,
+    authenticated_user,
+    user_2,
+    meeting,
+    bbb_response,
+    smtpd,
+):
+    """Test that searching for a delegate with uppercase email works."""
+    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    form = response.form
+    form["search"] = "Berenice@Domain.TLD"
+    response = form.submit()
+    assert (
+        "success",
+        "L'utilisateur a été ajouté aux délégataires",
+    ) in response.flashes
+    assert user_2 in meeting.get_all_delegates
+
+
 def test_add_new_delegate_with_wrong_email(
     client_app,
     authenticated_user,
