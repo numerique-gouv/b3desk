@@ -1,5 +1,6 @@
 import datetime
 import json
+from enum import StrEnum
 from typing import Annotated
 from typing import Any
 
@@ -23,6 +24,14 @@ def split_comma_separated_strings(value):
 
 
 ListOfStrings = Annotated[list[str], BeforeValidator(split_comma_separated_strings)]
+
+
+class MeetingLocaleVariant(StrEnum):
+    """Variante de locale pour le vocabulaire des réunions."""
+
+    REUNION = ""
+    COURS = "cours"
+    SEMINAIRE = "seminaire"
 
 
 class MainSettings(BaseSettings):
@@ -572,10 +581,10 @@ class MainSettings(BaseSettings):
     https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/track-modifications/
     """
 
-    MEETING_LOCALE_VARIANT: str = ""
+    MEETING_LOCALE_VARIANT: MeetingLocaleVariant = MeetingLocaleVariant.REUNION
     """Variante de locale pour le vocabulaire des réunions.
 
-    Peut être *cours* ou *séminaire*.
+    Peut être ``cours`` ou ``seminaire``.
     Si vide : réunion par défaut.
     """
 
