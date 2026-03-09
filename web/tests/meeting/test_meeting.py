@@ -209,7 +209,7 @@ def test_save_existing_meeting_running(
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
 
     res = res.form.submit()
-    assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
+    assert ("success", "Séminaire « meeting » terminé") in res.flashes
 
 
 def test_save_moderatorOnlyMessage_too_long(
@@ -602,7 +602,7 @@ def test_create_without_logout_url_gets_default(
     """Test that default logout URL is used when none specified."""
     res = client_app.get("/meeting/new")
     res = res.form.submit()
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    assert ("success", "Mon séminaire modifications prises en compte") in res.flashes
 
     meeting = db.session.get(Meeting, 1)
     assert meeting
@@ -1040,7 +1040,7 @@ def test_delete_old_voiceBridges_with_form(
     res = client_app.get("/meeting/new")
     res.form["voiceBridge"] = "999999999"
     res = res.form.submit()
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    assert ("success", "Mon séminaire modifications prises en compte") in res.flashes
 
     res = client_app.get("/").follow()
     res = client_app.post("/meeting/delete", {"id": "1"})
@@ -1074,7 +1074,7 @@ def test_delete_old_voiceBridges_with_form(
     res.form["voiceBridge"] = "999999999"
     res = res.form.submit()
     res.mustcontain(no="Ce code PIN est déjà utilisé")
-    assert ("success", "Mon Séminaire modifications prises en compte") in res.flashes
+    assert ("success", "Mon séminaire modifications prises en compte") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 0
     assert previous_voiceBridges == []

@@ -32,10 +32,10 @@
                 </div>
                 {% if quick_meeting is defined and quick_meeting %}
                     <div class="fr-col">
-                        <h4>{% trans %}Ouvrir {{ a_new_meeting }} temporaire{% endtrans %}</h4>
-                        <p class="fr-mt-2w">{{ welcome_page_subtitle }}</p>
-                        <a class="fr-btn fr-btn--visio fr-btn--icon-right fr-icon-live-line" target="_blank" href="{{ url_for("meetings.quick_meeting") }}" rel="noopener" title="{% trans %}Lancer {{ the_meeting }} - nouvelle fenêtre{% endtrans %}">
-                            {% trans %}Ouvrir {{ a_meeting }} temporaire{% endtrans %}
+                        <h4>{% trans %}Ouvrir une nouvelle réunion temporaire{% endtrans %}</h4>
+                        <p class="fr-mt-2w">{{ config.get("WELCOME_PAGE_SUBTITLE") }}</p>
+                        <a class="fr-btn fr-btn--visio fr-btn--icon-right fr-icon-live-line" target="_blank" href="{{ url_for("meetings.quick_meeting") }}" rel="noopener" title="{% trans %}Lancer la réunion - nouvelle fenêtre{% endtrans %}">
+                            {% trans %}Ouvrir une réunion temporaire{% endtrans %}
                         </a>
                     </div>
                 {% endif %}
@@ -53,10 +53,10 @@
                             <div class="lasuite-homepage__tagline-container">
                                 <h1 class="lasuite-homepage__tagline">
                                     <strong class="lasuite-homepage__tagline-strong">
-                                        {{ service_title }}
+                                        {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
                                     </strong>
                                     <br>
-                                    {% trans %}{{ service_tagline }}{% endtrans %}
+                                    {% trans service_tagline=config.get("SERVICE_TAGLINE") %}{{ service_tagline }}{% endtrans %}
                                 </h1>
                             </div>
                         </div>
@@ -65,9 +65,9 @@
                                 <div class="lasuite-homepage__form">
                                     <div>
                                         {% include 'meeting/visio_code_form.html' %}
-                                        <h2 class="fr-mt-8w">{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h2>
+                                        <h2 class="fr-mt-8w">{% trans %}Vous organisez régulièrement des réunions{% endtrans %}</h2>
                                         <p>
-                                            {% trans %}Vous êtes agent de l'État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}<br><br>
+                                            {% trans %}Vous êtes agent de l'État, créez un compte pour organiser et conserver vos réunions.{% endtrans %}<br><br>
                                             <a class="fr-btn" target="_blank" rel="noopener" href="{{ url_for("public.welcome") }}">{% trans %}Se connecter ou créer un compte{% endtrans %}</a>
                                         </p>
                                     </div>
@@ -103,8 +103,8 @@
                     <br>
                 </div>
                 <div class="fr-col-md-6">
-                    <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous organisez régulièrement des {{ some_meetings }}{% endtrans %}</h1>
-                    <p class="fr-text">{% trans %}Vous êtes agent de l'État, créez un compte pour organiser et conserver vos {{ some_meetings }}.{% endtrans %}</p>
+                    <h1 class="fr-text--lead fr-text--bold">{% trans %}Vous organisez régulièrement des réunions{% endtrans %}</h1>
+                    <p class="fr-text">{% trans %}Vous êtes agent de l'État, créez un compte pour organiser et conserver vos réunions.{% endtrans %}</p>
                     <p><a class="fr-btn" target="_blank" rel="noopener" href="{{ url_for("public.welcome") }}">{% trans %}Se connecter ou créer un compte{% endtrans %}</a></p>
                 </div>
                 <p></p>

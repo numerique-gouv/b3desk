@@ -12,7 +12,7 @@ from b3desk.nextcloud import is_nextcloud_available
 
 def get_hash(meeting, role: Role, hash_from_string=False):
     """Generate a hash for meeting access verification based on role."""
-    name = meeting.name or current_app.config["QUICK_MEETING_DEFAULT_NAME"]
+    name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
     s = f"{meeting.meetingID}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
@@ -190,7 +190,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     from b3desk.models.meetings import pin_generation
 
     meeting_id = f"meeting-vanish-{fake_id}--"
-    name = current_app.config["QUICK_MEETING_DEFAULT_NAME"]
+    name = str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
     moderator_pw = get_deterministic_password(fake_id, "moderator")
     attendee_pw = get_deterministic_password(fake_id, "attendee")
     meta_academy = user.mail_domain if user and user.mail_domain else None

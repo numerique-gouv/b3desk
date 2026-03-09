@@ -22,10 +22,10 @@
         </div>
     </div>
     <div class="fr-header__service">
-        <a href="{{ url_for("public.index") }}" title="{% trans %}Accueil - {{ service_title }} - République Française{% endtrans %}">
+        <a href="{{ url_for("public.index") }}" title="{% trans service_title=config.get("SERVICE_TITLE") %}Accueil - {{ service_title }} - République Française{% endtrans %}">
             <!-- Webinaire de l'État -->
             <p class="fr-header__service-title">
-                {% trans %}{{ service_title }}{% endtrans %}
+                {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
                 {% if config.get("BETA") %}
                     {% if development_version %}
                         <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
@@ -39,6 +39,6 @@
             </p>
         </a>
         <!-- Le service de réunions en ligne pour les agents de l'État -->
-        <p class="fr-header__service-tagline">{% trans %}{{ service_tagline }}{% endtrans %}</p>
+        <p class="fr-header__service-tagline">{% trans service_tagline=config.get("SERVICE_TAGLINE") %}{{ service_tagline }}{% endtrans %}</p>
     </div>
 </div>

@@ -25,6 +25,18 @@ from wsgidav.wsgidav_app import WsgiDAVApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
+TRANSLATIONS_DIR = str(Path(__file__).parent.parent / "translations")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def compile_translations():
+    from babel.messages.frontend import compile_catalog
+
+    cmd = compile_catalog()
+    cmd.directory = TRANSLATIONS_DIR
+    cmd.quiet = True
+    cmd.finalize_options()
+    cmd.run()
 
 
 def pytest_addoption(parser):
@@ -285,7 +297,8 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "TMP_DOWNLOAD_DIR": str(tmp_path),
         "RECORDING": True,
         "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL": "https://bbb-analytics.test/v1/post_events",
-        "MEETING_KEY_WORDING": "seminaire",
+        "MEETING_LOCALE_VARIANT": "seminaire",
+        "BABEL_TRANSLATION_DIRECTORIES": "../translations",
         "QUICK_MEETING_LOGOUT_URL": "http://quick-meeting-logout.test/",
         "FORCE_HTTPS_ON_EXTERNAL_URLS": False,
         "NC_LOGIN_API_URL": "http://tokenmock.test:9000/",

@@ -4,14 +4,14 @@
             <div class="fr-header__body-row">
                 <div class="fr-header__brand lasuite-header__brand fr-enlarge-link">
                     <div class="fr-header__brand-top lasuite-header__brand-top">
-                        <div class="fr-header__logo"><p class="fr-logo">{{ service_title }}</p></div>
+                        <div class="fr-header__logo"><p class="fr-logo">{% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}</p></div>
                     </div>
                     <div class="fr-header__service lasuite-header__service">
                         <a
                             class="lasuite-header__service-link"
                             href="/"
-                            title="{% trans service_title %}Accueil - {{ service_title }}{% endtrans %}"
-                            aria-label="{% trans service_title %}Accueil - {{ service_title }}{% endtrans %}"
+                            title="{% trans service_title=config.get("SERVICE_TITLE") %}Accueil - {{ service_title}}{% endtrans %}"
+                            aria-label="{% trans service_title=config.get("SERVICE_TITLE") %}Accueil - {{ service_title }}{% endtrans %}"
                         >
                             <img
                                 class="lasuite-header__service-logo fr-responsive-img"
@@ -19,7 +19,7 @@
                                 alt=""
                             />
                             <p class="fr-header__service-title lasuite-header__service-title">
-                                {{ service_title }}
+                                {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
                             </p>
                         </a>
                     </div>
@@ -34,7 +34,7 @@
                             class="lasuite-gaufre-btn lasuite-gaufre-btn--vanilla js-lasuite-gaufre-btn"
                             title="{% trans %}Les services de La Suite numérique{% endtrans %}"
                         >
-                            Les services de La Suite numérique
+                            {% trans %}Les services de La Suite numérique{% endtrans %}
                         </button>
                     </div>
                 </div>

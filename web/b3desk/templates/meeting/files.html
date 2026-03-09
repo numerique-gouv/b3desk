@@ -36,10 +36,10 @@
 <script src="{{ url_for('static', filename='js/dropzone-min.js') }}"></script>
 <script>Dropzone.autoDiscover = false;</script>
 
-<h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des {{ meeting_presentation }}s associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
+<h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}</a>
+    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
 </div>
 
 <div id="messageHolder">
@@ -217,6 +217,6 @@
 <div class="fr-container fr-mt-4w">
     <a href="{{ url_for("public.welcome") }}">
         <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
-        {% trans %}Retour à mes {{ meeting_label }}s{% endtrans %}
+        {% trans %}Retour à mes réunions{% endtrans %}
     </a>
 </div>
