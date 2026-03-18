@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-13 13:38+0100\n"
+"POT-Creation-Date: 2026-03-18 11:09+0100\n"
 "PO-Revision-Date: 2022-05-05 16:01+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2299,7 +2299,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, python-format
+#, no-python-format, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -4032,6 +4032,9 @@ msgstr ""
 #~ msgid "Créer %(my_meeting)s"
 #~ msgstr "Create my meeting"
 
+#~ msgid "Vous essayez de rejoindre %(a_meeting)s"
+#~ msgstr "You try to join a meeting"
+
 #~ msgid ""
 #~ "Pour rejoindre %(a_meeting_to_which)s vous "
 #~ "êtes invité, cliquez sur le lien "
@@ -4130,4 +4133,10 @@ msgstr ""
 
 #~ msgid "Suppression d'enregistrement"
 #~ msgstr ""
+
+#~ msgid "Vous ne pouvez pas terminer cette réunion"
+#~ msgstr "You cannot change this item"
+
+#~ msgid "Nous n'avons pas pu supprimer cette vidéo : %(code)s, %(message)s"
+#~ msgstr "We were unable to remove this video : %(code)s, %(message)s"
 

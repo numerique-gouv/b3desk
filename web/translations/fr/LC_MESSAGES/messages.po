@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-13 13:38+0100\n"
+"POT-Creation-Date: 2026-03-18 11:09+0100\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -2181,7 +2181,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, python-format
+#, no-python-format, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -3864,5 +3864,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Suppression d'enregistrement"
+#~ msgstr ""
+
+#~ msgid "Vous ne pouvez pas terminer cette réunion"
 #~ msgstr ""
 

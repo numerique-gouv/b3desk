@@ -20,11 +20,12 @@ Vous pouvez ensuite mettre à jour les "catalogues" des différentes langues ave
 ```shell
 just translation-update
 ```
-Cette commande va mettre à jour les catalogues existants avec de nouveaux messages (sans écraser ceux qui ont déjà été traduits) que vous pouvez alors traduire dans la langue voulue.
+Cette commande va mettre à jour les "catalogues" existants avec de nouveaux messages (sans écraser ceux qui ont déjà été traduits).
 
 ## Traduire du texte
 
-Les fichiers à traduire sont `web/b3desk/translations/*/LC_MESSAGES/messages.po`.
+Les traductions sont gérées via [Weblate](https://hosted.weblate.org/projects/B3desk/). Weblate synchronise automatiquement les traductions avec le dépôt Git (branche `main`).
+
 Lors de la traduction, il ne faut pas traduire les motifs du type `%(...)s` mais simplement mettre l'équivalent traduit.
 Par exemple, pour une traduction vers l'anglais :
 
@@ -33,7 +34,9 @@ msgid "Inviter quelqu'un à %(this_meeting)s."
 msgstr "Invite someone to this meeting."
 ```
 
-Une fois les traductions réalisées, vous devez compiler le catalogue pour qu'elle soient visible pour l'utilisateur avec :
+### Développement local
+
+Pour tester les traductions en local, vous devez compiler les "catalogues" :
 ```shell
 just translation-compile
 ```
