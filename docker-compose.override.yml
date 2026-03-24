@@ -33,6 +33,9 @@ services:
       - postgres
     env_file:
       - ${ENV_KC_FILE_OVERRIDE-keycloak.env}
+    # needed for the CI until keycloak is updated to 24+
+    environment:
+      - JAVA_OPTS=-XX:-UseContainerSupport
     volumes:
       - ./keycloak/themes/dsfr:/opt/jboss/keycloak/themes/dsfr
     ports:
