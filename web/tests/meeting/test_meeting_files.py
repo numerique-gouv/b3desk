@@ -146,17 +146,17 @@ def test_ncdownload(
             with open(local_path, "wb") as f:
                 f.write(b"fake pdf content")
 
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     nc_path = "folder/file1.pdf"
-    token = get_meeting_file_hash(meeting.user.id, nc_path)
-    response = client_app.get(f"/ncdownload/{token}/{meeting.user.id}/{nc_path}")
+    token = get_meeting_file_hash(meeting.owner.id, nc_path)
+    response = client_app.get(f"/ncdownload/{token}/{meeting.owner.id}/{nc_path}")
 
     assert "Service requesting file url folder/file1.pdf" in caplog.text
     assert response.status_int == 200
@@ -168,7 +168,7 @@ def test_ncdownload_with_bad_token_abort_404(
 ):
     nc_path = "folder/file1.pdf"
     client_app.get(
-        f"/ncdownload/invalid-token/{meeting.user.id}/{nc_path}",
+        f"/ncdownload/invalid-token/{meeting.owner.id}/{nc_path}",
         status=404,
     )
 
@@ -176,21 +176,21 @@ def test_ncdownload_with_bad_token_abort_404(
 def test_ncdownload_webdav_exception(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
-    """Test that WebDAV exception returns a 500 error but preserves credentials."""
+    """Test that WebDAV exception returns a 503 error but preserves credentials."""
     meeting_file = MeetingFiles(
         nc_path="/folder/test.pdf",
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
     )
     db.session.add(meeting_file)
     db.session.commit()
 
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     class FakeClient:
@@ -200,17 +200,18 @@ def test_ncdownload_webdav_exception(
     mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
 
     nc_path = "folder/test.pdf"
-    token = get_meeting_file_hash(meeting.user.id, nc_path)
+    token = get_meeting_file_hash(meeting.owner.id, nc_path)
     response = client_app.get(
-        f"/ncdownload/{token}/{meeting.user.id}/{nc_path}",
+        f"/ncdownload/{token}/{meeting.owner.id}/{nc_path}",
+        expect_errors=True,
     )
 
     # WebDavException is handled by global error handler, returns HTTP 200 with error in JSON
     assert response.status_int == 200
     assert "indisponible" in response.json["msg"]
-    db.session.refresh(meeting.user)
-    assert meeting.user.nc_locator is not None
-    assert meeting.user.nc_token is not None
+    db.session.refresh(meeting.owner)
+    assert meeting.owner.nc_locator is not None
+    assert meeting.owner.nc_token is not None
 
 
 def test_download_meeting_file_from_nextcloud(
@@ -222,14 +223,14 @@ def test_download_meeting_file_from_nextcloud(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
     )
     db.session.add(meeting_file)
 
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     class FakeClient:
@@ -245,7 +246,7 @@ def test_download_meeting_file_from_nextcloud(
     url = url_for(
         "meeting_files.download_meeting_files",
         meeting=meeting,
-        file_id=meeting_file.id,
+        meeting_file=meeting_file,
     )
     response = client_app.get(url)
 
@@ -262,7 +263,7 @@ def test_download_meeting_file_without_webdav_credentials(
         title="test.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
     )
     db.session.add(meeting_file)
     db.session.commit()
@@ -274,7 +275,7 @@ def test_download_meeting_file_without_webdav_credentials(
     url = url_for(
         "meeting_files.download_meeting_files",
         meeting=meeting,
-        file_id=meeting_file.id,
+        meeting_file=meeting_file,
     )
     response = client_app.get(url, status=302)
 
@@ -339,9 +340,9 @@ def test_download_file_for_bbb_without_webdav_credentials(client_app, meeting, m
     )
 
     nc_path = "folder/file.pdf"
-    token = get_meeting_file_hash(meeting.user.id, nc_path)
+    token = get_meeting_file_hash(meeting.owner.id, nc_path)
     response = client_app.get(
-        f"/ncdownload/{token}/{meeting.user.id}/{nc_path}",
+        f"/ncdownload/{token}/{meeting.owner.id}/{nc_path}",
         expect_errors=True,
     )
 
@@ -477,10 +478,10 @@ def test_add_nextcloud_file_upload(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
     """Test nominal path: add file from Nextcloud."""
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     class FakeClient:
@@ -503,10 +504,10 @@ def test_add_nextcloud_file_sqlalchemy_error(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
     """SQLAlchemy error returns appropriate error message."""
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     class FakeClient:
@@ -562,12 +563,12 @@ def test_add_url_file_sqlalchemy_error(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
     """SQLAlchemy error during URL file add returns appropriate error message."""
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    meeting.user.nc_last_auto_enroll = datetime.now()
-    meeting.user.last_connection_utc_datetime = datetime.now(timezone.utc)
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    meeting.owner.nc_last_auto_enroll = datetime.now()
+    meeting.owner.last_connection_utc_datetime = datetime.now(timezone.utc)
+    db.session.add(meeting.owner)
     db.session.commit()
 
     mock_head = mocker.Mock()
@@ -596,10 +597,10 @@ def test_add_nextcloud_file_too_large(
     client_app, authenticated_user, meeting, mocker, nextcloud_credentials
 ):
     """Test error when Nextcloud file exceeds max upload size."""
-    meeting.user.nc_login = nextcloud_credentials["nclogin"]
-    meeting.user.nc_locator = nextcloud_credentials["nclocator"]
-    meeting.user.nc_token = nextcloud_credentials["nctoken"]
-    db.session.add(meeting.user)
+    meeting.owner.nc_login = nextcloud_credentials["nclogin"]
+    meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
+    meeting.owner.nc_token = nextcloud_credentials["nctoken"]
+    db.session.add(meeting.owner)
     db.session.commit()
 
     class FakeClient:
@@ -821,38 +822,23 @@ def test_add_meeting_files_invalid_from(client_app, authenticated_user, meeting)
 def test_download_meeting_file_not_found(client_app, authenticated_user, meeting):
     """Test download when file_id doesn't match any file in meeting."""
     response = client_app.get(
-        url_for(
-            "meeting_files.download_meeting_files",
-            meeting=meeting,
-            file_id=99999,
-        ),
+        f"/meeting/files/{meeting.id}/99999/download",
         expect_errors=True,
     )
 
     assert response.status_int == 404
-    assert "file not found" in response.json["msg"]
 
 
 def test_download_meeting_file_from_url(
     client_app, authenticated_user, meeting, mocker
 ):
     """Test downloading a file that has a URL (not from Nextcloud)."""
-    # Add a first file that won't match (to cover the loop continue branch)
-    other_file = MeetingFiles(
-        url="https://example.com/other.pdf",
-        title="other.pdf",
-        created_at=date.today(),
-        meeting_id=meeting.id,
-        owner=meeting.user,
-    )
-    db.session.add(other_file)
-
     meeting_file = MeetingFiles(
         url="https://example.com/doc.pdf",
         title="doc.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
     )
     db.session.add(meeting_file)
     db.session.commit()
@@ -865,7 +851,7 @@ def test_download_meeting_file_from_url(
         url_for(
             "meeting_files.download_meeting_files",
             meeting=meeting,
-            file_id=meeting_file.id,
+            meeting_file=meeting_file,
         ),
     )
 
@@ -952,14 +938,18 @@ def test_toggledownload_success(client_app, authenticated_user, meeting):
         title="doc.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
         is_downloadable=False,
     )
     db.session.add(meeting_file)
     db.session.commit()
 
     response = client_app.post(
-        f"/meeting/files/{meeting_file.id}/toggledownload",
+        url_for(
+            "meeting_files.toggledownload",
+            meeting=meeting,
+            meeting_file=meeting_file,
+        ),
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
     )
@@ -970,10 +960,10 @@ def test_toggledownload_success(client_app, authenticated_user, meeting):
     assert meeting_file.is_downloadable is True
 
 
-def test_toggledownload_not_found(client_app, authenticated_user):
+def test_toggledownload_not_found(client_app, authenticated_user, meeting):
     """Test toggle on non-existent file returns 404."""
     response = client_app.post(
-        "/meeting/files/99999/toggledownload",
+        f"/meeting/files/{meeting.id}/99999/toggledownload",
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
         expect_errors=True,
@@ -988,7 +978,7 @@ def test_toggledownload_not_owner(client_app, authenticated_user, meeting):
     db.session.add(other_user)
     db.session.flush()
 
-    other_meeting = Meeting(name="Other meeting", user=other_user)
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
     db.session.add(other_meeting)
     assign_unique_codes(other_meeting)
     db.session.commit()
@@ -1004,13 +994,63 @@ def test_toggledownload_not_owner(client_app, authenticated_user, meeting):
     db.session.commit()
 
     response = client_app.post(
-        f"/meeting/files/{meeting_file.id}/toggledownload",
+        url_for(
+            "meeting_files.toggledownload",
+            meeting=other_meeting,
+            meeting_file=meeting_file,
+        ),
         params=json.dumps({"value": True}),
         headers={"Content-Type": "application/json"},
         expect_errors=True,
     )
 
     assert response.status_int == 403
+
+
+def test_toggledownload_file_not_in_meeting(
+    client_app, authenticated_user, meeting, meeting_2
+):
+    """Test toggle returns 404 when file doesn't belong to meeting in URL."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_2.id,
+        owner=meeting_2.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
+
+
+def test_download_file_not_in_meeting(
+    client_app, authenticated_user, meeting, meeting_2
+):
+    """Test download returns 404 when file doesn't belong to meeting in URL."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_2.id,
+        owner=meeting_2.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.get(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/download",
+        expect_errors=True,
+    )
+
+    assert response.status_int == 404
 
 
 def test_delete_meeting_file_success(client_app, authenticated_user, meeting):
@@ -1020,7 +1060,7 @@ def test_delete_meeting_file_success(client_app, authenticated_user, meeting):
         title="doc.pdf",
         created_at=date.today(),
         meeting_id=meeting.id,
-        owner=meeting.user,
+        owner=meeting.owner,
     )
     db.session.add(meeting_file)
     db.session.commit()
@@ -1057,7 +1097,7 @@ def test_delete_meeting_file_not_owner(client_app, authenticated_user, meeting):
     db.session.add(other_user)
     db.session.flush()
 
-    other_meeting = Meeting(name="Other meeting", user=other_user)
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
     db.session.add(other_meeting)
     assign_unique_codes(other_meeting)
     db.session.commit()
