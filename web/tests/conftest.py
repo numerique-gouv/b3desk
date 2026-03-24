@@ -59,6 +59,9 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         upgrade(directory=MIGRATIONS_DIR)
 
@@ -112,6 +115,9 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         upgrade(directory=MIGRATIONS_DIR)
 
@@ -225,6 +231,21 @@ def iam_user_2(iam_server):
 
 
 @pytest.fixture
+def iam_user_3(iam_server):
+    iam_user_3 = iam_server.random_user(
+        id="user_id3",
+        emails=["charlie@domain.tld"],
+        given_name="Charlie",
+        user_name="Charlie_user_name",
+        family_name="Crooner",
+    )
+    iam_server.backend.save(iam_user_3)
+
+    yield iam_user_3
+    iam_server.backend.delete(iam_user_3)
+
+
+@pytest.fixture
 def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
@@ -333,6 +354,9 @@ def app(configuration, jinja_cache_directory):
     app.jinja_env.bytecode_cache = FileSystemBytecodeCache(jinja_cache_directory)
 
     with app.app_context():
+        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.users  # noqa: F401
+
         Migrate(app, db, compare_type=True)
         db.create_all()
 
@@ -350,18 +374,18 @@ def meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="meeting",
         maxParticipants=99,
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        is_favorite=True,
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
     )
     db.session.add(meeting)
+    meeting.favorite_of.append(user)
     db.session.commit()
 
     yield meeting
@@ -372,18 +396,18 @@ def meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="a meeting",
         maxParticipants=99,
         duration=999,
         moderatorPW="moderator",
         attendeePW="attendee",
-        is_favorite=True,
         voiceBridge="111111112",
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
     )
     db.session.add(meeting)
+    meeting.favorite_of.append(user)
     db.session.commit()
 
     yield meeting
@@ -394,7 +418,7 @@ def meeting_3(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="meeting",
         maxParticipants=99,
         duration=999,
@@ -410,11 +434,41 @@ def meeting_3(client_app, user):
 
 
 @pytest.fixture
+def meeting_1_user_2(client_app, user, user_2):
+    from b3desk.models.meetings import AccessLevel
+    from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingAccess
+
+    meeting = Meeting(
+        owner=user_2,
+        name="delegated meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="222222222",
+        visio_code="922222222",
+    )
+    db.session.add(meeting)
+    db.session.commit()
+
+    access = MeetingAccess(
+        user_id=user.id,
+        meeting_id=meeting.id,
+        level=AccessLevel.DELEGATE,
+    )
+    db.session.add(access)
+    db.session.commit()
+
+    yield meeting
+
+
+@pytest.fixture
 def shadow_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -434,7 +488,7 @@ def shadow_meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting must disappear",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -454,7 +508,7 @@ def shadow_meeting_3(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
-        user=user,
+        owner=user,
         name="shadow meeting must disappear too",
         moderatorPW="moderator",
         attendeePW="attendee",
@@ -498,6 +552,21 @@ def user_2(client_app, iam_user_2):
     db.session.commit()
 
     yield user_2
+
+
+@pytest.fixture
+def user_3(client_app, iam_user_3):
+    from b3desk.models.users import User
+
+    user_3 = User(
+        email=iam_user_3.emails[0],
+        given_name=iam_user_3.given_name,
+        family_name=iam_user_3.family_name,
+    )
+    db.session.add(user_3)
+    db.session.commit()
+
+    yield user_3
 
 
 @pytest.fixture

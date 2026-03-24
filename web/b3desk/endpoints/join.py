@@ -19,6 +19,7 @@ from b3desk.join import get_hash
 from b3desk.join import get_join_url
 from b3desk.join import get_role
 from b3desk.models import db
+from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id
@@ -31,7 +32,7 @@ from b3desk.utils import check_token_errors
 
 from .. import auth
 from ..session import get_authenticated_attendee_fullname
-from ..session import meeting_owner_needed
+from ..session import meeting_access_required
 from ..session import should_display_captcha
 
 bp = Blueprint("join", __name__)
@@ -265,8 +266,8 @@ def join_meeting_as_authenticated(meeting_id):
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-@meeting_owner_needed
-def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
+@meeting_access_required(AccessLevel.DELEGATE)
+def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
     if role == Role.moderator:
         created = create_bbb_meeting(meeting, g.user)
@@ -277,7 +278,7 @@ def join_meeting_as_role(meeting: Meeting, role: Role, owner: User):
         get_join_url(
             meeting,
             role,
-            owner.fullname,
+            user.fullname,
             waiting_room=waiting_room,
         )
     )

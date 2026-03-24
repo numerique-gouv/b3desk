@@ -31,7 +31,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.5.8"
+__version__ = "1.6.0"
 
 LANGUAGES = ["en", "fr"]
 
@@ -324,13 +324,13 @@ def setup_user_session(app):
     from flask import session
     from flask_pyoidc.user_session import UserSession
 
+    from b3desk import session as b3desk_session
     from b3desk.models.users import get_or_create_user
-    from b3desk.session import has_user_session
 
     @app.before_request
     def load_user():
         g.user = None
-        if not has_user_session():
+        if not b3desk_session.has_user_session():
             return
 
         try:
