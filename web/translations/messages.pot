@@ -1954,11 +1954,11 @@ msgstr ""
 msgid "Patienter jusqu'à la fin %(of_the_meeting)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/file_picker.html:26
+#: web/b3desk/templates/meeting/file_picker.html:27
 msgid "Service temporairement indisponible"
 msgstr ""
 
-#: web/b3desk/templates/meeting/file_picker.html:27
+#: web/b3desk/templates/meeting/file_picker.html:28
 msgid ""
 "Un problème technique empêche l'accès au service de fichiers. Veuillez "
 "réessayer dans quelques minutes."

@@ -534,3 +534,7 @@ This is a fix until we deal with the update.
 .justify-content-space-between.btn-copy span::after {
   content: "Copié";
 }
+
+.fr-header__brand-top {
+  flex-shrink: 0;
+}

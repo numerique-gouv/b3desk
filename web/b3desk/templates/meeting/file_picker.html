@@ -10,6 +10,7 @@
         const nc_login = "{{ g.user.nc_login }}";
         const nc_token = "{{ g.user.nc_token }}";
         const insert_documents_url = "{{ url_for("meeting_files.file_picker_callback", bbb_meeting_id=bbb_meeting_id) }}";
+        const file_picker_wrapper_url = "{{ url_for('static', filename='nextcloud/filePickerWrapper.js') }}";
     </script>
     <script src="{{ url_for('static', filename='js/file_picker.js')}}"></script>
 {% else %}
