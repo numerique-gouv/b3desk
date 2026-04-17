@@ -42,7 +42,7 @@
         </div>
         <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
             {% if meeting in g.user.meetings %}
-                <a href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
+                <a href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" class="fr-btn {% if not meeting.get_all_delegates %}fr-btn--secondary{% endif %} fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
                     {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
                 </a>
             {% endif %}
