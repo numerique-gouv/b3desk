@@ -279,29 +279,34 @@ def delete_meeting():
         meeting = db.session.get(Meeting, meeting_id)
 
         if meeting.owner_id == g.user.id:
-            for meeting_file in meeting.files:
-                db.session.delete(meeting_file)
+            if not meeting.get_all_delegates:
+                for meeting_file in meeting.files:
+                    db.session.delete(meeting_file)
 
-            data = BBB(meeting.meetingID).delete_all_recordings()
-            if data and not BBB.success(data):
-                flash(
-                    _(
-                        "Impossible de supprimer les vidéos de ce {meeting_label} : {message}"
-                    ).format(
-                        meeting_label=current_app.config["WORDINGS"]["meeting_label"],
-                        message=data.get("message", ""),
-                    ),
-                    "error",
-                )
+                data = BBB(meeting.meetingID).delete_all_recordings()
+                if data and not BBB.success(data):
+                    flash(
+                        _(
+                            "Impossible de supprimer les vidéos de ce {meeting_label} : {message}"
+                        ).format(
+                            meeting_label=current_app.config["WORDINGS"][
+                                "meeting_label"
+                            ],
+                            message=data.get("message", ""),
+                        ),
+                        "error",
+                    )
+                else:
+                    save_voiceBridge_and_delete_meeting(meeting)
+                    flash(_("Élément supprimé"), "success")
+                    current_app.logger.info(
+                        "Meeting %s %s was deleted by %s",
+                        meeting.name,
+                        meeting.id,
+                        g.user.email,
+                    )
             else:
-                save_voiceBridge_and_delete_meeting(meeting)
-                flash(_("Élément supprimé"), "success")
-                current_app.logger.info(
-                    "Meeting %s %s was deleted by %s",
-                    meeting.name,
-                    meeting.id,
-                    g.user.email,
-                )
+                flash(_("Vous devez retirer les délégataires"), "error")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("public.welcome"))
