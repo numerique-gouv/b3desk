@@ -2483,7 +2483,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:40
 #, python-format
-msgid "Vous êtes délégataire de %(meeting_name)s"
+msgid "Propriétaire : %(meeting_owner_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:45
