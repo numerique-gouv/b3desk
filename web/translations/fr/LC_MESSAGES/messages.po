@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-30 09:59+0200\n"
+"POT-Creation-Date: 2026-04-30 10:45+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -240,27 +240,27 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/settings.py:591 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:593 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:595
+#: web/b3desk/settings.py:597
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:608
+#: web/b3desk/settings.py:610
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:611
+#: web/b3desk/settings.py:613
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:614
+#: web/b3desk/settings.py:616
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:618
+#: web/b3desk/settings.py:620
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -453,14 +453,6 @@ msgstr ""
 #: web/b3desk/templates/brand.html:25
 #, python-format
 msgid "Accueil - %(service_title)s - République Française"
-msgstr ""
-
-#: web/b3desk/templates/brand.html:28
-#: web/b3desk/templates/header-lasuite.html:7
-#: web/b3desk/templates/header-lasuite.html:22
-#: web/b3desk/templates/jumbotron.html:56
-#, python-format
-msgid "%(service_title)s"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32

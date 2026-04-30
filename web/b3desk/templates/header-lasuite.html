@@ -4,7 +4,7 @@
             <div class="fr-header__body-row">
                 <div class="fr-header__brand lasuite-header__brand fr-enlarge-link">
                     <div class="fr-header__brand-top lasuite-header__brand-top">
-                        <div class="fr-header__logo"><p class="fr-logo">{% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}</p></div>
+                        <div class="fr-header__logo"><p class="fr-logo">{{ config.get("SERVICE_TITLE") }}</p></div>
                     </div>
                     <div class="fr-header__service lasuite-header__service">
                         <a
@@ -19,7 +19,7 @@
                                 alt=""
                             />
                             <p class="fr-header__service-title lasuite-header__service-title">
-                                {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
+                                {{ config.get("SERVICE_TITLE") }}
                             </p>
                         </a>
                     </div>

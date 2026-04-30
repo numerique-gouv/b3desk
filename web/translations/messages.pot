@@ -435,14 +435,6 @@ msgstr ""
 msgid "Accueil - %(service_title)s - République Française"
 msgstr ""
 
-#: web/b3desk/templates/brand.html:28
-#: web/b3desk/templates/header-lasuite.html:7
-#: web/b3desk/templates/header-lasuite.html:22
-#: web/b3desk/templates/jumbotron.html:56
-#, python-format
-msgid "%(service_title)s"
-msgstr ""
-
 #: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32
 msgid ""
 "L'instance est configurée en mode déboggage. Ne pas utiliser en "

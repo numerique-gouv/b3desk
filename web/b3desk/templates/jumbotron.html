@@ -53,7 +53,7 @@
                             <div class="lasuite-homepage__tagline-container">
                                 <h1 class="lasuite-homepage__tagline">
                                     <strong class="lasuite-homepage__tagline-strong">
-                                        {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
+                                        {{ config.get("SERVICE_TITLE") }}
                                     </strong>
                                     <br>
                                     {% trans service_tagline=config.get("SERVICE_TAGLINE") %}{{ service_tagline }}{% endtrans %}

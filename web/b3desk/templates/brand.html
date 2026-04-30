@@ -25,7 +25,7 @@
         <a href="{{ url_for("public.index") }}" title="{% trans service_title=config.get("SERVICE_TITLE") %}Accueil - {{ service_title }} - République Française{% endtrans %}">
             <!-- Webinaire de l'État -->
             <p class="fr-header__service-title">
-                {% trans service_title=config.get("SERVICE_TITLE") %}{{ service_title }}{% endtrans %}
+                {{ config.get("SERVICE_TITLE") }}
                 {% if config.get("BETA") %}
                     {% if development_version %}
                         <span class="fr-badge fr-badge--sm fr-badge--warning">DEV</span>
