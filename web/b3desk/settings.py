@@ -1,11 +1,15 @@
 import datetime
 import json
+import os
+import warnings
 from enum import Enum
 from typing import Annotated
 from typing import Any
 
 from flask_babel import lazy_gettext as _
+from pydantic import AliasChoices
 from pydantic import BeforeValidator
+from pydantic import Field
 from pydantic import FilePath
 from pydantic import PositiveInt
 from pydantic import ValidationInfo
@@ -583,12 +587,29 @@ class MainSettings(BaseSettings):
     https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/track-modifications/
     """
 
-    MEETING_LOCALE_VARIANT: MeetingLocaleVariant = MeetingLocaleVariant.REUNION
+    MEETING_LOCALE_VARIANT: MeetingLocaleVariant = Field(
+        default=MeetingLocaleVariant.REUNION,
+        validation_alias=AliasChoices("MEETING_LOCALE_VARIANT", "MEETING_KEY_WORDING"),
+    )
     """Variante de locale pour le vocabulaire des réunions.
 
     Peut être ``cours`` ou ``seminaire``.
     Si vide : réunion par défaut.
     """
+
+    @field_validator("MEETING_LOCALE_VARIANT", mode="before")
+    @classmethod
+    def _warn_meeting_key_wording(cls, value):
+        if (
+            "MEETING_KEY_WORDING" in os.environ
+            and "MEETING_LOCALE_VARIANT" not in os.environ
+        ):
+            warnings.warn(
+                "MEETING_KEY_WORDING est déprécié, utiliser MEETING_LOCALE_VARIANT à la place",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return value
 
     WELCOME_PAGE_SUBTITLE: Any = _("Mes salles de réunion")
     """Formulation du sous-titre de la page de création de réunion."""
