@@ -45,7 +45,7 @@ function createNCFilePicker() {
 
 }
 document.addEventListener('DOMContentLoaded', (event) => {
-    import('/static/nextcloud/filePickerWrapper.js').then(() => {
+    import(file_picker_wrapper_url).then(() => {
         createNCFilePicker();
     });
 })

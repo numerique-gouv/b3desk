@@ -358,6 +358,14 @@ def get_user_nc_credentials(user):
         )
         return {"nctoken": None, "nclocator": None, "nclogin": None}
 
+    if "error" in result:
+        current_app.logger.error(
+            "Cannot contact NC %s, returning error %s",
+            current_app.config["NC_LOGIN_API_URL"],
+            result["error"],
+        )
+        return {"nctoken": None, "nclocator": None, "nclogin": None}
+
     if "nclogin" not in result:
         result["nclogin"] = nc_username
 

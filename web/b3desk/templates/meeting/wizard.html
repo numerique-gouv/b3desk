@@ -5,4 +5,7 @@
 
 {% block main %}
     {% include 'meeting/form.html' %}
+    {% if meeting in g.user.get_all_delegated_meetings %}
+        {% include 'meeting/modals/delegate-confirmation.html' %}
+    {% endif %}
 {% endblock %}

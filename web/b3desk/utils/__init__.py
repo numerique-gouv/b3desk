@@ -1,11 +1,16 @@
 import random
+import smtplib
 import string
+from email.message import EmailMessage
+from email.mime.text import MIMEText
 from functools import wraps
 
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import render_template
 from flask import request
+from flask import url_for
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from itsdangerous import BadSignature
@@ -46,6 +51,63 @@ def get_random_alphanumeric_string(length):
     letters_and_digits = string.ascii_letters + string.digits
     result_str = "".join(random.choice(letters_and_digits) for i in range(length))
     return result_str
+
+
+def make_smtp():
+    return {
+        "from_email": current_app.config["SMTP_FROM"],
+        "host": current_app.config["SMTP_HOST"],
+        "port": current_app.config["SMTP_PORT"],
+        "ssl": current_app.config["SMTP_SSL"],
+        "starttls": current_app.config["SMTP_STARTTLS"],
+        "username": current_app.config["SMTP_USERNAME"],
+        "password": current_app.config["SMTP_PASSWORD"],
+    }
+
+
+def send_delegation_mail(meeting, delegate, new_delegation: bool):
+    """Send email to inform of the new delegate status."""
+    smtp = make_smtp()
+    msg = EmailMessage()
+    body_file = (
+        "mail_add_delegation_body.txt"
+        if new_delegation
+        else "mail_remove_delegation_body.txt"
+    )
+    content = render_template(
+        f"meeting/mailto/{body_file}",
+        meeting=meeting,
+        delegate=delegate,
+        welcome_url=url_for("public.welcome", _external=True),
+    )
+    msg["Subject"] = (
+        str(_(f"Nouvelle délégation pour {meeting.name}"))
+        if new_delegation
+        else str(_(f"Retrait de délégation pour {meeting.name}"))
+    )
+    msg["From"] = smtp["from_email"]
+    msg["To"] = delegate.email
+
+    send_email(msg, content, smtp)
+
+
+def send_email(msg, content, smtp):
+    html = MIMEText(content, "html")
+    msg.make_mixed()  # This converts the message to multipart/mixed
+    msg.attach(html)
+
+    connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
+    try:
+        with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+            if smtp["starttls"]:
+                smtp_connect.starttls()
+            if smtp["username"]:
+                smtp_connect.login(smtp["username"], smtp["password"])
+            smtp_connect.send_message(msg)
+    except (smtplib.SMTPException, OSError) as e:
+        current_app.logger.warning(
+            "Could not connect to SMTP host %s : %s", smtp["host"], e
+        )
 
 
 def model_converter(model):

@@ -108,3 +108,34 @@ steps:
 ```
 sudo systemctl restart bbb-rap-resque-worker.service
 ```
+
+## Configurer la transcription IA
+
+La transcription nécessite d'avoir livekit comme moteur audio (afin d'avoir des pistes séparées) et un ensemble de scripts pour extraire l'audio, envoyer les pistes à un modèle de transcription, récupérer les transcript puis les envoyer à un second modèle pour produire une synthèse.
+
+L'installation est automatisée, disponible avec le script suivant, aussi disponible à [cette adresse](https://bigbluebutton.nyc3.digitaloceanspaces.com/install-bbb-record-ai-summary.sh).
+
+Le script demandera des informations sur le service à utiliser (Albert ou OpenAI) ainsi que la clé d'API. Après installation de la documentation est disponible dans /tmp/bbb-record-ai-summary-ai-summary-new-format sous format markdown.
+
+Après un enregistrement, le transcript ainsi que le résumé sont alors disponibles via l'endpoint `getRecordings` de l'API BBB.
+
+Le prompt de résumé par défaut utilisé est :
+
+```
+Create a concise summary that includes:
+
+1. Main topics discussed
+2. Key decisions made
+3. Action items (if any)
+4. Important points raised
+
+Detect the language of the transcript and write the entire summary in that same language.
+Never translate or switch languages.
+
+Keep the summary clear, professional, and under 500 words.
+```
+
+```{literalinclude} install-bbb-record-ai-summary.sh
+:language: bash
+:caption: Script d'installation
+```

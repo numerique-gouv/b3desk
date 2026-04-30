@@ -59,7 +59,7 @@ def test_get_or_create_shadow_meeting(client_app, user):
     assert not get_or_create_shadow_meeting(user).guestPolicy
     assert not get_or_create_shadow_meeting(user).logo
     assert get_or_create_shadow_meeting(user).is_shadow
-    assert get_or_create_shadow_meeting(user).user == user
+    assert get_or_create_shadow_meeting(user).owner == user
     assert get_or_create_shadow_meeting(user).attendeePW
     assert get_or_create_shadow_meeting(user).moderatorPW
     assert get_or_create_shadow_meeting(user).voiceBridge.isdigit()
