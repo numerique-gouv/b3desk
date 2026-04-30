@@ -1,6 +1,6 @@
 import datetime
 import json
-from enum import StrEnum
+from enum import Enum
 from typing import Annotated
 from typing import Any
 
@@ -26,12 +26,14 @@ def split_comma_separated_strings(value):
 ListOfStrings = Annotated[list[str], BeforeValidator(split_comma_separated_strings)]
 
 
-class MeetingLocaleVariant(StrEnum):
+class MeetingLocaleVariant(str, Enum):
     """Variante de locale pour le vocabulaire des réunions."""
 
     REUNION = ""
     COURS = "cours"
     SEMINAIRE = "seminaire"
+
+    __str__ = str.__str__
 
 
 class MainSettings(BaseSettings):
