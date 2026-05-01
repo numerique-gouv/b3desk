@@ -6,7 +6,7 @@ Vous êtes invité en tant que :
 {% trans %}Participant{% endtrans %}
 {% endif %}
 ---
-{% trans %}À {{ the_meeting }} suivante :{% endtrans %}
+{% trans %}À la réunion suivante :{% endtrans %}
 
 {{ meeting.name }}
 ---
@@ -14,7 +14,7 @@ Vous êtes invité en tant que :
 
 {{ signin_url }}
 ---
-{% trans %}Le mot de passe de {{ this_meeting }} est :{% endtrans %}
+{% trans %}Le mot de passe de cette réunion est :{% endtrans %}
 
 {% if role == Role.moderator %}
 {{ meeting.moderatorPW }}
@@ -24,4 +24,4 @@ Vous êtes invité en tant que :
 ---
 {% trans %}Vous devez rentrer votre nom complet et le mot de passe pour y accéder.{% endtrans %}
 
-{{ good_meeting | capitalize }}.
+{% trans %}Bonne réunion.{% endtrans%}

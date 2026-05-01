@@ -69,6 +69,7 @@ dev = [
     "tox-uv>=1.28.0",
     "diff-cover>=9.7.2",
     "pytest-xdist>=3.8.0",
+    "setuptools>=82.0.0",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",

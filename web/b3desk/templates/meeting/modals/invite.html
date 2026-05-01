@@ -12,7 +12,7 @@
                     <div class="fr-modal__content">
                         <!-- modal -->
                         <h3 id="share-{{ meeting.id }}-title" class="fr-modal__title fr-mb-12v">
-                            {% trans %}Invitez des participants à votre {{ meeting_label }} en leur envoyant, au choix :{% endtrans %}
+                            {% trans %}Invitez des participants à votre réunion en leur envoyant, au choix :{% endtrans %}
                         </h3>
                         <h6>{% trans %}Avec droits modérateurs :{% endtrans %} </h6>
                         <!-- visio-code -->
@@ -107,8 +107,8 @@
                                         <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{meeting.id}}-voiceBridge">{% trans %}Connexion par téléphone{% endtrans %}</button>
                                     </h3>
                                     <div class="fr-collapse" id="accordion-{{meeting.id}}-voiceBridge">
-                                        <code id="meeting-{{ meeting.id }}-moderator-url">n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}<br>
-                                            code PIN : {{ meeting.voiceBridge }}</code>
+                                        <code id="meeting-{{ meeting.id }}-moderator-url">{% trans bbb_dialnumber=config.get("BIGBLUEBUTTON_DIALNUMBER"), voice_bridge=meeting.voiceBridge %}n° de téléphone : {{ bbb_dialnumber }}<br>
+                                            code PIN : {{ voice_bridge }}{% endtrans %}</code>
                                     </div>
                                 </section>
                                 <div>
