@@ -221,7 +221,7 @@ def test_maximum_delegate_number_limit(
     response = form.submit()
     assert (
         "warning",
-        "ce séminaire ne peut plus recevoir de nouvelle délégation",
+        "Ce séminaire ne peut plus recevoir de nouvelle délégation",
     ) in response.flashes
     assert user_3 not in meeting.get_all_delegates
     assert len(smtpd.messages) == 1

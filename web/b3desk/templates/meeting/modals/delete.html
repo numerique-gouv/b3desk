@@ -14,7 +14,7 @@
                             <span class="" aria-hidden="true"></span>
                             {% trans meeting_name=meeting.name %}Supprimer "<em>{{ meeting_name }}</em>" ?{% endtrans %}
                         </h1>
-                        <p>{% trans meeting_name=meeting.name %}Voulez-vous vraiment supprimer {{ the_meeting }} "<em>{{ meeting_name }}</em>" ?{% endtrans %}</p>
+                        <p>{% trans meeting_name=meeting.name %}Voulez-vous vraiment supprimer la réunion "<em>{{ meeting_name }}</em>" ?{% endtrans %}</p>
                         {% if not meeting.get_all_delegates %}
                             <div class="fr-notice fr-notice--info">
                                 <div class="fr-container">
@@ -28,7 +28,7 @@
                             <div class="fr-alert fr-alert--warning">
                                 <div class="fr-container">
                                     <div class="fr-alert__body">
-                                        <p class="fr-alert__title">{% trans %}{{ the_meeting }} a des délégataires{% endtrans %}</p>
+                                        <p class="fr-alert__title">{% trans %}La réunion a des délégataires{% endtrans %}</p>
                                     </div>
                                     <p>{% trans meeting_name=meeting.name %}Vous ne pouvez supprimer {{ meeting_name }} pour le moment.{% endtrans %}</p>
                                     <p>{% trans %}Vous devez retirer tous les délégataires au préalable.{% endtrans %}</p>
@@ -42,11 +42,11 @@
                                 <li>
                                     {% if not meeting.get_all_delegates %}
                                         <button type="submit" class="fr-btn fr-btn--delete">
-                                            {% trans %}Supprimer {{ the_meeting }}{% endtrans %}
+                                            {% trans %}Supprimer la réunion{% endtrans %}
                                         </button>
                                     {% else %}
                                         <button type="submit" class="fr-btn fr-btn--delete" disabled="">
-                                            {% trans %}Supprimer {{ the_meeting }}{% endtrans %}
+                                            {% trans %}Supprimer la réunion{% endtrans %}
                                         </button>
                                     {% endif %}
                                 </li>

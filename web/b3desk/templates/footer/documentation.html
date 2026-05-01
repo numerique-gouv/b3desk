@@ -3,25 +3,25 @@
 {% block main %}
     <h1>{% trans %}Documentation{% endtrans %}</h1>
     <h2>{% trans %}Guides utilisateurs{% endtrans %}</h2>
-    {% if documentation_page_subtitle %}
-        <p>{{ documentation_page_subtitle }}</p>
+    {% if config.get("DOCUMENTATION_PAGE_SUBTITLE") %}
+        <p>{{ config.get("DOCUMENTATION_PAGE_SUBTITLE") }}</p>
     {% endif %}
     <li><a href="{{ url_for('static', filename='misc/PresentationNouveautes2-4.pdf') }}" title="{% trans %}Présentation des nouveautés de la v2.4{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Présentation des nouveautés de la v2.4{% endtrans %}</a></li>
     <br>
     <iframe src="https://podeduc.apps.education.fr/video/0089-big-blue-button-24-les-nouveautes/?is_iframe=true" width="640" height="360" style="padding: 0; margin: 0; border:0"
             sandbox="allow-scripts allow-same-origin" allowfullscreen></iframe>
     <br>
-    <li><a href="{{ url_for('static', filename='misc/1.Creer_une_reunion_Improvisee.pdf') }}" title="{% trans a_meeting %}Créer {{ a_meeting }} improvisée{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer {{ an_improvised_meeting }}{% endtrans %}</a></li>
-    <li><a href="{{ url_for('static', filename='misc/2.Participer_a_une_reunion.pdf') }}" title="{% trans a_meeting %}Participer à {{ a_meeting }}{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Participer à {{ a_meeting }}{% endtrans %} </a></li>
-    <li><a href="{{ url_for('static', filename='misc/3.Creer_et_parametrer_une_salle_de_reunion.pdf') }}" title="{% trans a_meeting %}Créer et parametrer une salle de {{ a_meeting }}{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer et paramétrer une salle de {{ meeting_label }}{% endtrans %} </a></li>
+    <li><a href="{{ url_for('static', filename='misc/1.Creer_une_reunion_Improvisee.pdf') }}" title="{% trans %}Créer une réunion improvisée{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer une réunion improvisée{% endtrans %}</a></li>
+    <li><a href="{{ url_for('static', filename='misc/2.Participer_a_une_reunion.pdf') }}" title="{% trans %}Participer à une réunion{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Participer à une réunion{% endtrans %} </a></li>
+    <li><a href="{{ url_for('static', filename='misc/3.Creer_et_parametrer_une_salle_de_reunion.pdf') }}" title="{% trans %}Créer et parametrer une salle de réunion{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer et paramétrer une salle de réunion {% endtrans %} </a></li>
     <li><a href="{{ url_for('static', filename='misc/4.Activer_le_materiel_dans_le_navigateur.pdf') }}" title="{% trans %}Activer le matériel dans le navigateur{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Activer le matériel dans le navigateur{% endtrans %} </a></li>
     <li><a href="{{ url_for('static', filename='misc/5.G%C3%A9rer_les_participants.pdf') }}" title="{% trans %}Gérer les utilisateurs{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer les utilisateurs{% endtrans %} </a></li>
     <li><a href="{{ url_for('static', filename='misc/6.G%C3%A9rer_les_documents.pdf') }}" title="{% trans %}Gérer les documents{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer les documents{% endtrans %} </a></li>
-    <li><a href="{{ url_for('static', filename='misc/7.Creer_des_r%C3%A9unions_priv%C3%A9es.pdf') }}" title="{% trans private_meetings %}Gestion des {{ private_meetings }}{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Gestion des {{ private_meetings }}{% endtrans %} </a></li>
-    <li><a href="{{ url_for('static', filename='misc/8.D%C3%A9l%C3%A9guer_la_cr%C3%A9ation_de_r%C3%A9union.pdf') }}" title="{% trans meeting_label %}Déléguer la création de {{ meeting_label }}{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Déléguer la création de {{ meeting_label }}{% endtrans %} </a></li>
-    <li><a href="{{ url_for('static', filename='misc/9.Enregistrer_une_r%C3%A9union.pdf') }}" title="{% trans a_meeting %}Enregistrer {{ a_meeting }}{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Enregistrer {{ a_meeting }}{% endtrans %} </a></li>
+    <li><a href="{{ url_for('static', filename='misc/7.Creer_des_r%C3%A9unions_priv%C3%A9es.pdf') }}" title="{% trans %}Gestion des réunions privées{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Gestion des réunions privées{% endtrans %} </a></li>
+    <li><a href="{{ url_for('static', filename='misc/8.D%C3%A9l%C3%A9guer_la_cr%C3%A9ation_de_r%C3%A9union.pdf') }}" title="{% trans %}Déléguer la création de réunion{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Déléguer la création de réunion{% endtrans %} </a></li>
+    <li><a href="{{ url_for('static', filename='misc/9.Enregistrer_une_r%C3%A9union.pdf') }}" title="{% trans %}Enregistrer une réunion{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Enregistrer une réunion{% endtrans %} </a></li>
     <li><a href="{{ url_for('static', filename='misc/10.Cr%C3%A9er_un_Sondage.pdf') }}" title="{% trans %}Créer un sondage{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Créer un sondage{% endtrans %} </a></li>
-    <li><a href="{{ url_for('static', filename='misc/11.Joindre_une_reunion_par_telephone.pdf') }}" title="{% trans a_meeting %}Joindre {{ a_meeting }} par téléphone{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Joindre {{ a_meeting }} par téléphone{% endtrans %}</a></li>
+    <li><a href="{{ url_for('static', filename='misc/11.Joindre_une_reunion_par_telephone.pdf') }}" title="{% trans %}Joindre une réunion par téléphone{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Joindre une réunion par téléphone{% endtrans %}</a></li>
     <li><a href="{{ url_for('static', filename='misc/12.Afficher_le_tableau_de_bord_activite_participants.pdf') }}" title="{% trans %}Afficher le tableau de bord{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Afficher le tableau de bord{% endtrans %}</a></li>
     <li><a href="{{ url_for('static', filename='misc/13.G%C3%A9rer_la_mise_en_page.pdf') }}" title="{% trans %}Gérer la mise en page{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Gérer la mise en page{% endtrans %}</a></li>
     <li><a href="{{ url_for('static', filename='misc/14.PluginControleVolume.pdf') }}" title="{% trans %}Extension contrôle du volume{% endtrans %}" target="_blank" rel="noopener noreferrer"> {% trans %}Contrôle du volume{% endtrans %}</a></li>

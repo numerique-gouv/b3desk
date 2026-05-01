@@ -54,7 +54,7 @@ dev = [
     "Flask-WebTest>=0.1.6,<0.2.0",
     "prek>=0.2.0,<1.0.0",
     "pyquery>=2.0.0,<3.0.0",
-    "pytest>=9.0.0,<10.0.0",
+    "pytest>=9.0.3,<10.0.0",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
     "pytest-iam>=0.2.4",
@@ -69,6 +69,7 @@ dev = [
     "tox-uv>=1.28.0",
     "diff-cover>=9.7.2",
     "pytest-xdist>=3.8.0",
+    "setuptools>=82.0.0",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",

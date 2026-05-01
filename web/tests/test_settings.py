@@ -1,9 +1,11 @@
 import sys
+import warnings
 from unittest.mock import Mock
 
 import pytest
 from b3desk import create_app
 from b3desk.settings import MainSettings
+from b3desk.settings import MeetingLocaleVariant
 
 
 def test_list_of_strings_type(configuration):
@@ -185,3 +187,46 @@ def test_sip_settings_correctly_completed(configuration):
     configuration["PRIVATE_KEY"] = "very_private_key"
 
     MainSettings.model_validate(configuration)
+
+
+def test_meeting_key_wording_alias_loads_into_locale_variant(configuration):
+    """L'ancien nom MEETING_KEY_WORDING alimente MEETING_LOCALE_VARIANT."""
+    configuration.pop("MEETING_LOCALE_VARIANT", None)
+    configuration["MEETING_KEY_WORDING"] = "seminaire"
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        config_obj = MainSettings.model_validate(configuration)
+
+    assert config_obj.MEETING_LOCALE_VARIANT == MeetingLocaleVariant.SEMINAIRE
+
+
+def test_meeting_key_wording_emits_deprecation_warning(configuration):
+    """Définir MEETING_KEY_WORDING émet un DeprecationWarning."""
+    configuration.pop("MEETING_LOCALE_VARIANT", None)
+    configuration["MEETING_KEY_WORDING"] = "seminaire"
+
+    with pytest.warns(DeprecationWarning, match="MEETING_KEY_WORDING est déprécié"):
+        MainSettings.model_validate(configuration)
+
+
+def test_meeting_locale_variant_emits_no_warning(configuration):
+    """MEETING_LOCALE_VARIANT seul n'émet pas de DeprecationWarning."""
+    configuration["MEETING_LOCALE_VARIANT"] = "seminaire"
+    configuration.pop("MEETING_KEY_WORDING", None)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        MainSettings.model_validate(configuration)
+
+
+def test_meeting_locale_variant_takes_precedence_over_legacy(configuration):
+    """Quand les deux sont définis, MEETING_LOCALE_VARIANT a priorité."""
+    configuration["MEETING_LOCALE_VARIANT"] = "cours"
+    configuration["MEETING_KEY_WORDING"] = "seminaire"
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        config_obj = MainSettings.model_validate(configuration)
+
+    assert config_obj.MEETING_LOCALE_VARIANT == MeetingLocaleVariant.COURS
