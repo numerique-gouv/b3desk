@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-04-30 10:45+0200\n"
-"PO-Revision-Date: 2022-05-05 16:01+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-05-05 10:03+0000\n"
+"Last-Translator: Éloi Rivard <eloi.rivard@nubla.fr>\n"
+"Language-Team: English <https://hosted.weblate.org/projects/B3desk/b3desk/"
+"en/>\n"
 "Language: en\n"
-"Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.17.1\n"
 "Generated-By: Babel 2.17.0\n"
 
 #: web/b3desk/__init__.py:292 web/b3desk/endpoints/meeting_files.py:124
@@ -37,7 +39,7 @@ msgstr ""
 
 #: web/b3desk/forms.py:47
 msgid "Le texte est trop long"
-msgstr ""
+msgstr "The text is too long"
 
 #: web/b3desk/forms.py:51 web/b3desk/forms.py:106
 msgid "Salle d'attente"
@@ -6671,4 +6673,3 @@ msgstr ""
 
 #~ msgid "vous a retiré des délégataires %(of_the_meeting)s"
 #~ msgstr ""
-
