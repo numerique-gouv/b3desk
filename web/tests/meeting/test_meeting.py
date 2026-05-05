@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import os
 import time
+from datetime import date
 from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -733,6 +734,27 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     assert previous_voiceBridges[0] == "111111111"
 
 
+def test_delete_meeting_with_meeting_files(
+    client_app, authenticated_user, meeting, bbb_response
+):
+    """Test that meeting can be deleted even if there is meeting files."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    assert ("success", "Élément supprimé") in res.flashes
+    assert len(Meeting.query.all()) == 0
+    previous_voiceBridges = get_all_previous_voiceBridges()
+    assert len(previous_voiceBridges) == 1
+    assert previous_voiceBridges[0] == "111111111"
+
+
 def test_meeting_link_retrocompatibility(meeting):
     """Old meeting links must still be usable for long lasting users, and for links since 1.2.0.
 
@@ -1249,3 +1271,18 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
         "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
         in caplog.text
     )
+
+
+def test_delete_recordings_failure_when_delete_meeting(
+    mocker, client_app, authenticated_user, meeting
+):
+    """Test delete_all_recordings fails ."""
+    mocker.patch(
+        "b3desk.models.bbb.BBB.delete_all_recordings",
+        return_value={"returncode": "FAILED", "message": "some error"},
+    )
+    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    assert (
+        "error",
+        "Impossible de supprimer les vidéos de ce séminaire : some error",
+    ) in res.flashes

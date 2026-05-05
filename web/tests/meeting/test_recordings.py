@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from datetime import timezone
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -182,7 +182,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
         images[0]["url"]
         == "https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png"
     )
-    assert first_recording["start_date"] == datetime(
+    assert first_recording["start_date"] == datetime.datetime(
         2018, 7, 4, 15, 38, 41, tzinfo=timezone.utc
     )
     second_recording = recordings[1]
