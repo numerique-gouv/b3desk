@@ -3,6 +3,8 @@ from flask import Blueprint
 from flask import current_app
 
 from b3desk.models.meetings import delete_all_old_shadow_meetings
+from b3desk.models.users import grant_admin_rights
+from b3desk.models.users import remove_admin_rights
 
 bp = Blueprint("commands", __name__, cli_group=None)
 
@@ -135,3 +137,25 @@ def check_sip_token(token):
     else:
         print(errors)
         print("Token provided is not valid.")
+
+
+@bp.cli.command("user-to-admin")
+@click.argument("email")
+def user_to_admin(email):
+    """CLI command to grant administrator rights to a user."""
+    fullname, admin = grant_admin_rights(email)
+    message = fullname
+    message += " is " if admin else " is not "
+    message += "admin."
+    print(message)
+
+
+@bp.cli.command("admin-to-user")
+@click.argument("email")
+def admin_to_user(email):
+    """CLI command to grant administrator rights to a user."""
+    fullname, admin = remove_admin_rights(email)
+    message = fullname
+    message += " is " if admin else " is not "
+    message += "admin."
+    print(message)

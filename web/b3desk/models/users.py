@@ -31,7 +31,7 @@ def get_or_create_user(user_info):
     preferred_username = user_info.get("preferred_username")
     email = user_info["email"].lower()
 
-    user = db.session.query(User).filter(User.email == email).first()
+    user = User.get_user_by_email(email)
 
     if user is None:
         user = User(
@@ -72,6 +72,22 @@ def get_or_create_user(user_info):
             db.session.commit()
 
     return user
+
+
+def grant_admin_rights(email):
+    user = User.get_user_by_email(email)
+    user.admin = True
+    db.session.add(user)
+    db.session.commit()
+    return (user.fullname, user.admin)
+
+
+def remove_admin_rights(email):
+    user = User.get_user_by_email(email)
+    user.admin = False
+    db.session.add(user)
+    db.session.commit()
+    return (user.fullname, user.admin)
 
 
 class User(db.Model):
@@ -133,3 +149,7 @@ class User(db.Model):
             )
             .all()
         )
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        return db.session.query(User).filter(User.email == email).first()
