@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import os
 import time
+from datetime import date
 from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -210,7 +211,7 @@ def test_save_existing_meeting_running(
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
 
     res = res.forms[0].submit()
-    assert ("success", "Séminaire « meeting » terminé(e)") in res.flashes
+    assert ("success", "Séminaire « meeting » terminé") in res.flashes
 
 
 def test_save_moderatorOnlyMessage_too_long(
@@ -603,7 +604,7 @@ def test_create_without_logout_url_gets_default(
     """Test that default logout URL is used when none specified."""
     res = client_app.get("/meeting/new")
     res = res.forms[0].submit()
-    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
+    assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
 
     meeting = db.session.get(Meeting, 1)
     assert meeting
@@ -725,6 +726,27 @@ def test_deactivated_meeting_files_cannot_edit(
 
 def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     """Test that meeting can be deleted and voiceBridge is archived."""
+    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    assert ("success", "Élément supprimé") in res.flashes
+    assert len(Meeting.query.all()) == 0
+    previous_voiceBridges = get_all_previous_voiceBridges()
+    assert len(previous_voiceBridges) == 1
+    assert previous_voiceBridges[0] == "111111111"
+
+
+def test_delete_meeting_with_meeting_files(
+    client_app, authenticated_user, meeting, bbb_response
+):
+    """Test that meeting can be deleted even if there is meeting files."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
@@ -1026,7 +1048,7 @@ def test_delete_old_voiceBridges_with_form(
     res = client_app.get("/meeting/new")
     res.forms[0]["voiceBridge"] = "999999999"
     res = res.forms[0].submit()
-    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
+    assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
 
     res = client_app.get("/").follow()
     res = client_app.post("/meeting/delete", {"id": "1"})
@@ -1060,7 +1082,7 @@ def test_delete_old_voiceBridges_with_form(
     res.forms[0]["voiceBridge"] = "999999999"
     res = res.forms[0].submit()
     res.mustcontain(no="Ce code PIN est déjà utilisé")
-    assert ("success", "Mon Séminaire a bien été créé(e)") in res.flashes
+    assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 0
     assert previous_voiceBridges == []
@@ -1249,3 +1271,18 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
         "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
         in caplog.text
     )
+
+
+def test_delete_recordings_failure_when_delete_meeting(
+    mocker, client_app, authenticated_user, meeting
+):
+    """Test delete_all_recordings fails ."""
+    mocker.patch(
+        "b3desk.models.bbb.BBB.delete_all_recordings",
+        return_value={"returncode": "FAILED", "message": "some error"},
+    )
+    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    assert (
+        "error",
+        "Impossible de supprimer les vidéos de ce séminaire : some error",
+    ) in res.flashes

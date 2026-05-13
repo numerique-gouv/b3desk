@@ -31,7 +31,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 
 LANGUAGES = ["en", "fr"]
 
@@ -179,7 +179,10 @@ def setup_i18n(app):
     def locale_selector():
         if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
-        return session.get("lang") if session.get("lang") in LANGUAGES else "fr"
+        lang = session.get("lang") if session.get("lang") in LANGUAGES else "fr"
+        if lang == "fr" and app.config.get("MEETING_LOCALE_VARIANT"):
+            return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
+        return lang
 
     babel.init_app(app, locale_selector=locale_selector)
 
@@ -221,7 +224,6 @@ def setup_jinja(app):
             "version": __version__,
             "LANGUAGES": LANGUAGES,
             "Role": Role,
-            **app.config["WORDINGS"],
         }
 
 

@@ -33,7 +33,7 @@ def test_get_or_create_shadow_meeting(client_app, user):
     assert get_or_create_shadow_meeting(user).name == "le séminaire de Alice Cooper"
     assert (
         get_or_create_shadow_meeting(user).welcome
-        == f"Bienvenue dans {client_app.app.config['WORDING_THE_MEETING']} de {user.fullname}"
+        == f"Bienvenue dans le séminaire de {user.fullname}"
     )
     assert get_or_create_shadow_meeting(user).duration == 280
     assert get_or_create_shadow_meeting(user).maxParticipants == 350

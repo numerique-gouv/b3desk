@@ -229,9 +229,7 @@ def edit_meeting(meeting: Meeting, user: User):
         updated_data,
     )
     flash(
-        _("{meeting_name} modifications prises en compte").format(
-            meeting_name=meeting.name
-        ),
+        _("%(meeting_name)s modifications prises en compte", meeting_name=meeting.name),
         "success",
     )
 
@@ -252,7 +250,7 @@ def end_meeting(meeting: Meeting, user: User):
     data = BBB(meeting.meetingID).end()
     if BBB.success(data):
         flash(
-            f"{current_app.config['WORDING_MEETING'].capitalize()} « {meeting.name} » terminé(e)",
+            _("Réunion « %(meeting_name)s » terminée", meeting_name=meeting.name),
             "success",
         )
     return redirect(url_for("public.welcome"))
@@ -279,29 +277,29 @@ def delete_meeting():
         meeting = db.session.get(Meeting, meeting_id)
 
         if meeting.owner_id == g.user.id:
-            for meeting_file in meeting.files:
-                db.session.delete(meeting_file)
+            if not meeting.get_all_delegates:
+                for meeting_file in meeting.files:
+                    db.session.delete(meeting_file)
 
-            data = BBB(meeting.meetingID).delete_all_recordings()
-            if data and not BBB.success(data):
-                flash(
-                    _(
-                        "Impossible de supprimer les vidéos de ce {meeting_label} : {message}"
-                    ).format(
-                        meeting_label=current_app.config["WORDINGS"]["meeting_label"],
-                        message=data.get("message", ""),
-                    ),
-                    "error",
-                )
+                data = BBB(meeting.meetingID).delete_all_recordings()
+                if data and not BBB.success(data):
+                    flash(
+                        _(
+                            "Impossible de supprimer les vidéos de cette réunion : {message}"
+                        ).format(message=data.get("message", "")),
+                        "error",
+                    )
+                else:
+                    save_voiceBridge_and_delete_meeting(meeting)
+                    flash(_("Élément supprimé"), "success")
+                    current_app.logger.info(
+                        "Meeting %s %s was deleted by %s",
+                        meeting.name,
+                        meeting.id,
+                        g.user.email,
+                    )
             else:
-                save_voiceBridge_and_delete_meeting(meeting)
-                flash(_("Élément supprimé"), "success")
-                current_app.logger.info(
-                    "Meeting %s %s was deleted by %s",
-                    meeting.name,
-                    meeting.id,
-                    g.user.email,
-                )
+                flash(_("Vous devez retirer les délégataires"), "error")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("public.welcome"))
@@ -393,10 +391,7 @@ def manage_delegation(meeting: Meeting, user: User):
         >= current_app.config["MAXIMUM_MEETING_DELEGATES"]
     ):
         flash(
-            _(
-                "%(meeting_label)s ne peut plus recevoir de nouvelle délégation",
-                meeting_label=current_app.config["WORDINGS"]["this_meeting"],
-            ),
+            _("Cette réunion ne peut plus recevoir de nouvelle délégation"),
             "warning",
         )
 

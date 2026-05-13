@@ -221,7 +221,7 @@ def test_maximum_delegate_number_limit(
     response = form.submit()
     assert (
         "warning",
-        "ce séminaire ne peut plus recevoir de nouvelle délégation",
+        "Ce séminaire ne peut plus recevoir de nouvelle délégation",
     ) in response.flashes
     assert user_3 not in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
@@ -404,3 +404,14 @@ def test_delegate_can_delete_meeting_file(
     assert response.json["id"] == file_id
     assert "supprimé avec succès" in response.json["msg"]
     assert db.session.get(MeetingFiles, file_id) is None
+
+
+def test_owner_cannot_delete_meeting_if_meeting_has_delegate(
+    client_app,
+    authenticated_user_2,
+    meeting_1_user_2,
+    bbb_response,
+):
+    """Test delegate can not delete a meeting having delegate."""
+    response = client_app.post("/meeting/delete", {"id": meeting_1_user_2.id})
+    assert ("error", "Vous devez retirer les délégataires") in response.flashes

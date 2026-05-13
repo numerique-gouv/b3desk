@@ -1,7 +1,7 @@
 <div class="list-meeting-rooms">
     <div class="fr-container">
         <div class="list-meeting-rooms-title">
-            <h2>{% trans %}Mes salles de {{ some_meetings }}{% endtrans %}</h2>
+            <h2>{% trans %}Mes salles de réunion{% endtrans %}</h2>
             {% if can_create_meetings == True %}
                 <div>
                     <a href="{{ url_for("meetings.new_meeting") }}" class="fr-link fr-link--icon-left fr-icon-add-line">
@@ -15,7 +15,7 @@
         <div class="fr-highlight error">
             <p class="">
                 <i class="ri-error-warning-line"></i>
-                {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} {{ meeting_label }}s. Pour pouvoir en créer davantage, veuillez supprimer des {{ meeting_label }}s inactives.{% endtrans %}
+                {% trans %}Vous avez atteint la limite des {{ max_meetings_per_user }} réunions. Pour pouvoir en créer davantage, veuillez supprimer des réunions inactives.{% endtrans %}
             </p>
         </div>
     {% endif %}
@@ -25,7 +25,7 @@
             <div class="fr-col-md-4 image-no-meetings">
             </div>
             <div class="fr-col-md-8">
-                <p>{% trans %}Vous n'avez pas encore créé de salle de {{ some_meetings }} permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.{% endtrans %}</p>
+                <p>{% trans %}Vous n'avez pas encore créé de salle de réunion permanente. Vous pouvez créer votre salle permanente ou accéder à une salle temporaire plus bas.{% endtrans %}</p>
                 <a href="{{ url_for("meetings.new_meeting") }}" class="fr-btn fr-btn--icon-left fr-icon-add-line">
                     {% trans %}Créer une salle permanente{% endtrans %}
                 </a>

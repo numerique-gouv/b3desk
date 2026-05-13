@@ -40,18 +40,18 @@ class ShowMeetingForm(Form):
 
 class MeetingFilesForm(FlaskForm):
     url = TextAreaField(
-        label="Lien web du fichier à ajouter",
-        description="Le lien web à entrer doit permettre de télécharger un fichier",
+        label=_("Lien web du fichier à ajouter"),
+        description=_("Le lien web à entrer doit permettre de télécharger un fichier"),
         render_kw={"rows": 1, "placeholder": "https://exemple.com/image.jpg"},
         validators=[
-            validators.length(max=MAX_URL_LENGTH, message="Le texte est trop long")
+            validators.length(max=MAX_URL_LENGTH, message=_("Le texte est trop long"))
         ],
     )
     guestPolicy = BooleanField(
-        label="Salle d'attente",
-        description="Placer les participants dans une salle d'attente lorsqu'ils rejoignent "
-        + current_app.config["WORDING_THE_MEETING"]
-        + ". L'organisateur ou le modérateur devra les accepter individuellement.",
+        label=_("Salle d'attente"),
+        description=_(
+            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement."
+        ),
         default=False,
     )
 
@@ -60,16 +60,13 @@ class MeetingForm(FlaskForm):
     id = IntegerField()
     name = StringField(
         label=_(
-            "Nom %(of_the_meeting)s",
-            of_the_meeting=current_app.config["WORDING_OF_THE_MEETING"],
+            "Nom de la réunion",
         ),
         description=_(
             "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est visible des participants",
-            a_meeting=current_app.config["WORDING_A_MEETING"],
         ),
         default=_(
-            "%(my_meeting)s",
-            my_meeting=current_app.config["WORDING_MY_MEETING"].title(),
+            "Ma réunion",
         ),
         validators=[
             validators.DataRequired(),
@@ -82,8 +79,7 @@ class MeetingForm(FlaskForm):
             "Ce texte apparait comme message de bienvenue sur le tchat public. 150 caractères max."
         ),
         default=_(
-            "Bienvenue dans %(this_meeting)s %(meeting_name)s.",
-            this_meeting=current_app.config["WORDING_THIS_MEETING"],
+            "Bienvenue dans cette réunion %(meeting_name)s.",
             meeting_name="<u><strong> %%CONFNAME%% </strong></u>",
         ),
         render_kw={"rows": 3},
@@ -97,8 +93,7 @@ class MeetingForm(FlaskForm):
     duration = IntegerField(
         label=_("Durée maximale (minutes)"),
         description=_(
-            "A l'issue de cette durée %(the_meeting)s stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h = 120, 3h = 180, 4h = 240.",
         ),
         default=int(DEFAULT_MEETING_DURATION.total_seconds() // 60),
         validators=[
@@ -110,8 +105,7 @@ class MeetingForm(FlaskForm):
     guestPolicy = BooleanField(
         label=_("Salle d'attente"),
         description=_(
-            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent %(the_meeting)s. L'organisateur ou le modérateur devra les accepter individuellement.",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement.",
         ),
         default=False,
     )
@@ -174,8 +168,7 @@ class MeetingForm(FlaskForm):
     )
     logoutUrl = StringField(
         label=_(
-            "Url de redirection après %(the_meeting)s",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Url de redirection après la réunion",
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
         validators=[validators.length(max=MAX_LOGOUTURL_LENGTH)],
@@ -202,21 +195,20 @@ class MeetingForm(FlaskForm):
     voiceBridge = StringField(
         label=_("PIN"),
         description=_(
-            "Code PIN pour rejoindre %(the_meeting)s par téléphone (9 chiffres)",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)",
         ),
         default=lambda: pin_generation(),
         validators=[
             validators.DataRequired(),
             validators.length(
-                min=PIN_LENGTH, max=PIN_LENGTH, message="Entez un PIN de 9 chiffres"
+                min=PIN_LENGTH, max=PIN_LENGTH, message=_("Entez un PIN de 9 chiffres")
             ),
             validators.Regexp(
                 regex=f"[0-9]{{{PIN_LENGTH}}}",
-                message="Le code PIN est composé de chiffres uniquement",
+                message=_("Le code PIN est composé de chiffres uniquement"),
             ),
             validators.Regexp(
-                regex="^[1-9]", message="Le premier chiffre doit être différent de 0"
+                regex="^[1-9]", message=_("Le premier chiffre doit être différent de 0")
             ),
             pin_is_unique_validator,
         ],
@@ -224,8 +216,7 @@ class MeetingForm(FlaskForm):
     visio_code = StringField(
         label=_("Code de connexion"),
         description=_(
-            "Code de connexion pour rejoindre %(the_meeting)s %(sip)s",
-            the_meeting=current_app.config["WORDING_THE_MEETING"],
+            "Code de connexion pour rejoindre la réunion %(sip)s",
             sip=_("(utilisé dans le lien SIP)")
             if current_app.config["ENABLE_SIP"]
             else "",
@@ -257,7 +248,7 @@ class MeetingWithRecordForm(MeetingForm):
 
 class RecordingForm(FlaskForm):
     name = StringField(
-        validators=[validators.DataRequired()], label="Nom de l'enregistrement"
+        validators=[validators.DataRequired()], label=_("Nom de l'enregistrement")
     )
 
 
