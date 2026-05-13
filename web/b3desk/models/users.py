@@ -86,6 +86,7 @@ class User(db.Model):
     nc_last_auto_enroll = db.Column(db.DateTime)
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    admin = db.Column(db.Boolean, default=False)
 
     meetings = db.relationship("Meeting", back_populates="owner")
     favorites = db.relationship(
