@@ -313,7 +313,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:406
-#: web/b3desk/endpoints/meetings.py:303
+#: web/b3desk/endpoints/meetings.py:304
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -357,45 +357,49 @@ msgstr ""
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:287
+#: web/b3desk/endpoints/meetings.py:288
 #, python-brace-format
-msgid "Nous n'avons pas pu supprimer les vidéos de cette réunion : {message}"
+msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:295
+#: web/b3desk/endpoints/meetings.py:294
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:316
+#: web/b3desk/endpoints/meetings.py:302
+msgid "Vous devez retirer les délégataires"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:317
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:327
+#: web/b3desk/endpoints/meetings.py:328
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:383
+#: web/b3desk/endpoints/meetings.py:384
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:386
+#: web/b3desk/endpoints/meetings.py:387
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:393
+#: web/b3desk/endpoints/meetings.py:394
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:406
+#: web/b3desk/endpoints/meetings.py:407
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:427
+#: web/b3desk/endpoints/meetings.py:428
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:434
+#: web/b3desk/endpoints/meetings.py:435
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -2065,7 +2069,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:171
 #: web/b3desk/templates/meeting/form.html:177
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
-#: web/b3desk/templates/meeting/modals/delete.html:36
+#: web/b3desk/templates/meeting/modals/delete.html:54
 #: web/b3desk/templates/meeting/recordings.html:109
 #: web/b3desk/templates/meeting/recordings.html:153
 msgid "Annuler"
@@ -2417,7 +2421,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:40
 #, python-format
-msgid "Vous êtes délégataire de %(meeting_name)s"
+msgid "Propriétaire : %(meeting_owner_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:45
@@ -2563,17 +2567,31 @@ msgstr ""
 msgid "Voulez-vous vraiment supprimer la réunion \"<em>%(meeting_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delete.html:21
+#: web/b3desk/templates/meeting/modals/delete.html:22
 msgid "La suppression est définitive"
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delete.html:23
+#: web/b3desk/templates/meeting/modals/delete.html:24
 msgid ""
 "Si vous supprimez cette salle, tous les médias (documents importés et "
 "enregistrements) qui lui sont rattachés seront supprimés."
 msgstr ""
 
-#: web/b3desk/templates/meeting/modals/delete.html:32
+#: web/b3desk/templates/meeting/modals/delete.html:31
+msgid "La réunion a des délégataires"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delete.html:33
+#, python-format
+msgid "Vous ne pouvez supprimer %(meeting_name)s pour le moment."
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delete.html:34
+msgid "Vous devez retirer tous les délégataires au préalable."
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/delete.html:45
+#: web/b3desk/templates/meeting/modals/delete.html:49
 msgid "Supprimer la réunion"
 msgstr ""
 
