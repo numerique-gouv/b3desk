@@ -91,6 +91,24 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     send_email(msg, content, smtp)
 
 
+def send_available_recording_notification_mail(meeting, recording_url):
+    """Send email to notify the recording is available."""
+    smtp = make_smtp()
+    msg = EmailMessage()
+    body_file = "mail_available_recording_notification_body.txt"
+    content = render_template(
+        f"meeting/mailto/{body_file}",
+        meeting=meeting,
+        recording_url=recording_url,
+        welcome_url=url_for("public.welcome", _external=True),
+    )
+    msg["Subject"] = str(_(f"Votre enregistrement pour {meeting.name}"))
+    msg["From"] = smtp["from_email"]
+    msg["To"] = meeting.owner.email
+
+    send_email(msg, content, smtp)
+
+
 def send_email(msg, content, smtp):
     html = MIMEText(content, "html")
     msg.make_mixed()  # This converts the message to multipart/mixed

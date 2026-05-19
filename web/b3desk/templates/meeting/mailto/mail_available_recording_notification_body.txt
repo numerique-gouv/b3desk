@@ -1,0 +1,12 @@
+<html>
+{% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
+<br/>
+<br/>
+Votre nouvel enregistrement pour la réunion {{ meeting.name }} est disponible.
+<br/>
+<br/>
+{% trans %}Vous pouvez dès à présent le visionner : <a href="{{ recording_url }}">Lien vers la vidéo</a> {% endtrans %}
+<br/>
+<br/>
+{% trans %} Ou rendez vous sur <a href="{{ welcome_url }}">votre espace</a>.{% endtrans %}
+</html>

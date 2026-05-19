@@ -305,6 +305,7 @@ def setup_endpoints(app):
     with app.app_context():
         import b3desk.commands
         import b3desk.endpoints.api
+        import b3desk.endpoints.bbb_callback
         import b3desk.endpoints.captcha
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
@@ -318,6 +319,7 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+        app.register_blueprint(b3desk.endpoints.bbb_callback.bp)
 
 
 def setup_user_session(app):

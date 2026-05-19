@@ -170,6 +170,7 @@ class BBB:
         moderator_only_message=None,
         meta_academy=None,
         analytics_callback_url=None,
+        meta_bbb_recording_ready_url=None,
     ):
         """Create a new meeting.
 
@@ -236,6 +237,8 @@ class BBB:
         if moderator_only_message:
             params["moderatorOnlyMessage"] = moderator_only_message
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
+        if meta_bbb_recording_ready_url:
+            params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
 
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
@@ -275,13 +278,17 @@ class BBB:
         return self.bbb_response(request)
 
     @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
-    def get_recordings(self):
-        """Get the list of recordings for a meeting.
+    def get_recordings(self, bbb_recording_id=None):
+        """Get the list of recordings for a meeting or infos of one recording.
 
-        https://docs.bigbluebutton.org/development/api/#getrecordings
+        https://docs.bigbluebutton.org/development/api/#get-getrecordings
         """
-        request = self.bbb_request(
-            "getRecordings", params={"meetingID": self.meeting_id}
+        request = (
+            self.bbb_request("getRecordings", params={"recordID": bbb_recording_id})
+            if bbb_recording_id
+            else self.bbb_request(
+                "getRecordings", params={"meetingID": self.meeting_id}
+            )
         )
         root = self._send_request(request)
         data = {c.tag: c.text for c in root}

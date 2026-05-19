@@ -199,6 +199,14 @@ class Meeting(db.Model):
         )
 
 
+def get_meeting_from_bbb_meetingID(bbb_meetingID):
+    try:
+        id = bbb_meetingID.split("-")[2]
+        return get_meeting_from_meeting_id(id) if id.isdigit() else None
+    except:
+        return None
+
+
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
