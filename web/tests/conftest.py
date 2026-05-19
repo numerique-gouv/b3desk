@@ -306,6 +306,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
+        "BIGBLUEBUTTON_SECRET": "test-bbb-secret",
         "OIDC_ISSUER": iam_server.url,
         "OIDC_REDIRECT_URI": iam_client.redirect_uris[0],
         "OIDC_CLIENT_ID": iam_client.client_id,
@@ -762,3 +763,31 @@ def valid_secondary_identity_token(mocker):
 @pytest.fixture
 def cli_runner(app):
     return app.test_cli_runner(catch_exceptions=False)
+
+
+@pytest.fixture
+def bbb_recording(mocker):
+    return mocker.patch(
+        "b3desk.models.bbb.BBB.get_recordings",
+        return_value=[
+            {
+                "playbacks": {
+                    "presentation": {
+                        "url": "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=xyz"
+                    }
+                }
+            }
+        ],
+    )
+
+
+@pytest.fixture
+def make_signed_parameters(app):
+    from joserfc import jwt
+    from joserfc.jwk import OctKey
+
+    def make(payload):
+        key = OctKey.import_key(app.config["BIGBLUEBUTTON_SECRET"].encode())
+        return jwt.encode({"alg": "HS256"}, payload, key)
+
+    return make
