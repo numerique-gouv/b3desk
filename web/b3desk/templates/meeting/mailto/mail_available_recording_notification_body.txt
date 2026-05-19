@@ -5,7 +5,12 @@
 Votre nouvel enregistrement pour la réunion {{ meeting.name }} est disponible.
 <br/>
 <br/>
-{% trans %}Vous pouvez dès à présent le visionner : <a href="{{ recording_url }}">Lien vers la vidéo</a> {% endtrans %}
+{% if recording_name %}
+{{ recording_name }}
+<br/>
+<br/>
+{% endif %}
+{% trans %}Vous pouvez dès à présent visionner l'enregistrement du {{ recording_start }} : <a href="{{ recording_url }}">Lien vers la vidéo</a> {% endtrans %}
 <br/>
 <br/>
 {% trans %} Ou rendez vous sur <a href="{{ welcome_url }}">votre espace</a>.{% endtrans %}

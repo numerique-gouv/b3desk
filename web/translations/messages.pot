@@ -2507,14 +2507,15 @@ msgstr ""
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:8
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:13
 #, python-format
 msgid ""
-"Vous pouvez dès à présent le visionner : <a "
-"href=\"%(recording_url)s\">Lien vers la vidéo</a> "
+"Vous pouvez dès à présent visionner l'enregistrement du "
+"%(recording_start)s : <a href=\"%(recording_url)s\">Lien vers la "
+"vidéo</a> "
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:11
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:16
 #, python-format
 msgid " Ou rendez vous sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
@@ -2688,7 +2689,7 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:222
+#: web/b3desk/utils/__init__.py:226
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

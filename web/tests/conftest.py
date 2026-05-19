@@ -775,7 +775,11 @@ def bbb_recording(mocker):
                     "presentation": {
                         "url": "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=xyz"
                     }
-                }
+                },
+                "start_date": datetime.datetime(
+                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.timezone.utc
+                ),
+                "name": "",
             }
         ],
     )

@@ -91,7 +91,9 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     send_email(msg, content, smtp)
 
 
-def send_available_recording_notification_mail(meeting, recording_url):
+def send_available_recording_notification_mail(
+    meeting, recording_url, recording_name, recording_start
+):
     """Send email to notify the recording is available."""
     smtp = make_smtp()
     msg = EmailMessage()
@@ -100,6 +102,8 @@ def send_available_recording_notification_mail(meeting, recording_url):
         f"meeting/mailto/{body_file}",
         meeting=meeting,
         recording_url=recording_url,
+        recording_name=recording_name,
+        recording_start=recording_start,
         welcome_url=url_for("public.welcome", _external=True),
     )
     msg["Subject"] = str(_(f"Votre enregistrement pour {meeting.name}"))
