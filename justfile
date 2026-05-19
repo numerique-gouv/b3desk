@@ -12,7 +12,7 @@ translation-compile:
     uv run pybabel compile --directory web/translations
 
 doc:
-    uv run sphinx-build documentation build/sphinx/html
+    uv run sphinx-build -E documentation build/sphinx/html
 
 test:
     uv run pytest -nauto
