@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-13 09:34+0200\n"
+"POT-Creation-Date: 2026-05-19 17:02+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -157,7 +157,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:328
+#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:336
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -423,16 +423,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:307 web/b3desk/models/meetings.py:314
+#: web/b3desk/models/meetings.py:315 web/b3desk/models/meetings.py:322
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:321
+#: web/b3desk/models/meetings.py:329
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:323
+#: web/b3desk/models/meetings.py:331
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -2507,6 +2507,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:2
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:2
 msgid "Bonjour"
 msgstr ""
@@ -2524,6 +2525,19 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:11
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:13
+#, python-format
+msgid ""
+"Vous pouvez dès à présent visionner l'enregistrement du "
+"%(recording_start)s : <a href=\"%(recording_url)s\">Lien vers la "
+"vidéo</a> "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:16
+#, python-format
+msgid " Ou rendez vous sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -2695,7 +2709,7 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:204
+#: web/b3desk/utils/__init__.py:226
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
