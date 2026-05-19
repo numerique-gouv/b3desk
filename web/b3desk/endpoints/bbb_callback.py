@@ -53,12 +53,13 @@ def recording_status():
     bbb = BBB(bbb_meeting_id)
     try:
         recordings = bbb.get_recordings(bbb_recording_id=bbb_recording_id)
-        recording = recordings[0]
-        playback = recording["playbacks"]["presentation"]
+        recording_url = recordings[0]["playbacks"]["presentation"]["url"]
     except Exception as e:
         logger.error("BBB failed to find recording: %s", e)
         return "", 500
 
-    send_available_recording_notification_mail(meeting, playback["url"])
-    logger.info("bbb recording ready for meeting %s: %s", meeting.name, playback["url"])
+    send_available_recording_notification_mail(meeting, recording_url)
+    logger.info(
+        "BBB recording is available for meeting %s: %s", meeting.name, recording_url
+    )
     return "", 200
