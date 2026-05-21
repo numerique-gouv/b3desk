@@ -334,6 +334,16 @@ class MainSettings(BaseSettings):
 
     Passé en paramètre ``auth_request_params`` de flask-pyoidc.
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
+
+    .. code-block:: toml
+        :caption: Exemple dans un fichier de configuration TOML
+
+        OIDC_SCOPES = "openid, email, profile, siret, usual_name"
+
+    .. code-block:: shell
+        :caption: Exemple en variable d’environnement
+
+        OIDC_SCOPES="openid,email,profile,siret,usual_name"
     """
 
     OIDC_USERINFO_HTTP_METHOD: str = "POST"
