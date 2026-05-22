@@ -26,12 +26,10 @@ def api_meetings():
     return {
         "meetings": [
             {
-                **{
-                    "name": meeting.name,
-                    "moderator_url": get_signin_url(meeting, Role.moderator),
-                    "attendee_url": get_signin_url(meeting, Role.attendee),
-                    "visio_code": meeting.visio_code,
-                },
+                "name": meeting.name,
+                "moderator_url": get_signin_url(meeting, Role.moderator),
+                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "visio_code": meeting.visio_code,
                 **(
                     {
                         "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
@@ -71,12 +69,10 @@ def shadow_meeting():
     return {
         "shadow-meeting": [
             {
-                **{
-                    "name": meeting.name,
-                    "moderator_url": get_signin_url(meeting, Role.moderator),
-                    "attendee_url": get_signin_url(meeting, Role.attendee),
-                    "visio_code": meeting.visio_code,
-                },
+                "name": meeting.name,
+                "moderator_url": get_signin_url(meeting, Role.moderator),
+                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "visio_code": meeting.visio_code,
                 **(
                     {
                         "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
