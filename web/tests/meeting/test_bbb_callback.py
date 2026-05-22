@@ -124,3 +124,25 @@ def test_recording_not_found_returns_500(
         status=500,
     )
     assert len(smtpd.messages) == 0
+
+
+def test_recording_unexpected_structure_returns_410(
+    client_app, meeting, smtpd, mocker, make_signed_parameters
+):
+    """When BBB returns a recording with an unexpected structure, returns 410 to stop retries."""
+    from b3desk.models.bbb import BBB
+
+    mocker.patch.object(
+        BBB.get_recordings, "uncached", return_value=[{"unexpected": "structure"}]
+    )
+
+    signed = make_signed_parameters(
+        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+    )
+
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=410,
+    )
+    assert len(smtpd.messages) == 0

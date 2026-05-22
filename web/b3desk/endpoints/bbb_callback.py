@@ -65,14 +65,18 @@ def recording_status():
         return "", 410
 
     bbb = BBB(bbb_meeting_id)
+    recordings = BBB.get_recordings.uncached(bbb, bbb_recording_id=bbb_recording_id)
+    if not recordings:
+        logger.error("BBB returned no recording for %s yet", bbb_recording_id)
+        return "", 500
+
     try:
-        recordings = BBB.get_recordings.uncached(bbb, bbb_recording_id=bbb_recording_id)
         recording_url = recordings[0]["playbacks"]["presentation"]["url"]
         recording_name = recordings[0]["name"]
         recording_start = recordings[0]["start_date"].strftime("%Y-%m-%d %H:%M:%S")
-    except (IndexError, KeyError, AttributeError) as e:
-        logger.error("BBB failed to find recording: %s", e)
-        return "", 500
+    except (KeyError, AttributeError) as e:
+        logger.error("Unexpected BBB recording structure: %s", e)
+        return "", 410
 
     send_recording_notification.apply_async(
         args=[meeting.id, recording_url, recording_name, recording_start],
