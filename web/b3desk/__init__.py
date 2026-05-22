@@ -13,6 +13,7 @@ from logging.config import dictConfig
 from logging.config import fileConfig
 
 from flask import Flask
+from flask import has_app_context
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -66,8 +67,6 @@ def setup_configuration(app, config=None):
 
 def setup_celery(app):
     """Configure Celery task queue for the application."""
-    from flask import has_app_context
-
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
@@ -75,7 +74,7 @@ def setup_celery(app):
     class ContextTask(celery.Task):
         abstract = True
 
-        def __call__(self, *args, **kwargs):
+        def __call__(self, *args, **kwargs):  # pragma: no cover
             if has_app_context():
                 return self.run(*args, **kwargs)
             with app.app_context():

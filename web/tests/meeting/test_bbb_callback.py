@@ -106,6 +106,20 @@ def test_invalid_meeting_id_returns_410(
     assert len(smtpd.messages) == 0
 
 
+def test_non_digit_meeting_id_returns_410(client_app, smtpd, make_signed_parameters):
+    """BBB-shaped meeting_id with non-digit id segment returns 410."""
+    signed = make_signed_parameters(
+        {"meeting_id": "meeting-persistent-abc--hash", "record_id": RECORD_ID}
+    )
+
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=410,
+    )
+    assert len(smtpd.messages) == 0
+
+
 def test_recording_not_found_returns_500(
     client_app, meeting, smtpd, mocker, make_signed_parameters
 ):
