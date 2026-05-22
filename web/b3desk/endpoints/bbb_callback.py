@@ -10,7 +10,7 @@ from joserfc.errors import DecodeError
 from joserfc.jwk import OctKey
 
 from b3desk import csrf
-from b3desk.models.meetings import get_meeting_from_bbb_meetingID
+from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
 from b3desk.tasks import send_recording_notification
 
 bp = Blueprint("bbb-callback", __name__)
@@ -60,7 +60,7 @@ def recording_status():
         )
         return "", 410
 
-    meeting = get_meeting_from_bbb_meetingID(bbb_meeting_id)
+    meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
     if not meeting:
         return "", 410
 

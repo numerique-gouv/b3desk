@@ -199,10 +199,10 @@ class Meeting(db.Model):
         )
 
 
-def get_meeting_from_bbb_meetingID(bbb_meetingID):
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
     try:
-        id = bbb_meetingID.split("-")[2]
+        id = bbb_meeting_id.split("-")[2]
     except (IndexError, AttributeError):
         return None
     if not id.isdigit():
