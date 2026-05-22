@@ -2,7 +2,7 @@
 {% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
 <br/>
 <br/>
-Votre nouvel enregistrement pour la réunion {{ meeting.name }} est disponible.
+{% trans meeting_name=meeting.name %}Votre nouvel enregistrement pour la réunion {{ meeting_name }} est disponible.{% endtrans %}
 <br/>
 <br/>
 {% if recording_name %}

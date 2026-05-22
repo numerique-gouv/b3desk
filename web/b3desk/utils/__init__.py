@@ -106,7 +106,9 @@ def send_available_recording_notification_mail(
         recording_start=recording_start,
         welcome_url=url_for("public.welcome", _external=True),
     )
-    msg["Subject"] = str(_(f"Votre enregistrement pour {meeting.name}"))
+    msg["Subject"] = str(
+        _("Votre enregistrement pour {name}").format(name=meeting.name)
+    )
     msg["From"] = smtp["from_email"]
     msg["To"] = meeting.owner.email
 

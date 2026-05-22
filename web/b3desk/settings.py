@@ -752,6 +752,16 @@ class MainSettings(BaseSettings):
     Timeout for BBB request expressed in seconds in logs
     """
 
+    RECORDING_NOTIFICATION_DELAY: int = 60
+    """Délai (en secondes) avant l'envoi du mail notifiant la disponibilité
+    d'un enregistrement.
+
+    BBB envoie le callback dès que l'enregistrement est prêt côté serveur BBB,
+    mais il peut y avoir un décalage de quelques secondes à quelques minutes
+    avant qu'il soit réellement transféré et disponible côté Scalelite. Cette
+    temporisation absorbe ce décalage.
+    """
+
     MATOMO_URL: str | None = None
     """URL de l’instance de Matomo vers laquelle envoyer des statistiques."""
 

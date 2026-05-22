@@ -332,6 +332,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
+        "RECORDING_NOTIFICATION_DELAY": 0,
         "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
         "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
@@ -767,8 +768,11 @@ def cli_runner(app):
 
 @pytest.fixture
 def bbb_recording(mocker):
-    return mocker.patch(
-        "b3desk.models.bbb.BBB.get_recordings",
+    from b3desk.models.bbb import BBB
+
+    return mocker.patch.object(
+        BBB.get_recordings,
+        "uncached",
         return_value=[
             {
                 "playbacks": {

@@ -11,11 +11,11 @@ from joserfc.jwk import OctKey
 
 from b3desk import csrf
 from b3desk.models.meetings import get_meeting_from_bbb_meetingID
-from b3desk.utils import send_available_recording_notification_mail
+from b3desk.tasks import send_recording_notification
 
 bp = Blueprint("bbb-callback", __name__)
 
-logger = logging.getLogger("bbb-callback")
+logger = logging.getLogger(__name__)
 
 
 def get_recording_status_callback_url():
@@ -30,21 +30,35 @@ def get_recording_status_callback_url():
 @csrf.exempt
 @bp.route("/bbb-callback/recording_status", methods=["POST"])
 def recording_status():
-    """Handle BBB callback when a recording is available."""
+    """Handle BBB callback when a recording is available.
+
+    Returns 410 on definitively invalid payloads to stop BBB retries
+    (BBB only stops retrying on 2xx and 410, per the API documentation).
+    """
     from b3desk.models.bbb import BBB
+
+    signed_parameters = request.form.get("signed_parameters")
+    if not signed_parameters:
+        logger.error("Missing 'signed_parameters' in callback payload")
+        return "", 410
 
     key = OctKey.import_key(current_app.config["BIGBLUEBUTTON_SECRET"].encode())
 
     try:
-        token = jwt.decode(request.form["signed_parameters"], key)
-    except (BadSignatureError, DecodeError):
-        logger.error(
-            "The shared secret does not match %s %s", BadSignatureError, DecodeError
-        )
+        token = jwt.decode(signed_parameters, key)
+    except (BadSignatureError, DecodeError) as e:
+        logger.error("Invalid signature on callback: %s", e)
         return "", 401
 
-    bbb_meeting_id = token.claims["meeting_id"]
-    bbb_recording_id = token.claims["record_id"]
+    bbb_meeting_id = token.claims.get("meeting_id")
+    bbb_recording_id = token.claims.get("record_id")
+    if not bbb_meeting_id or not bbb_recording_id:
+        logger.error(
+            "Missing claims in callback token: meeting_id=%r record_id=%r",
+            bbb_meeting_id,
+            bbb_recording_id,
+        )
+        return "", 410
 
     meeting = get_meeting_from_bbb_meetingID(bbb_meeting_id)
     if not meeting:
@@ -52,19 +66,19 @@ def recording_status():
 
     bbb = BBB(bbb_meeting_id)
     try:
-        recordings = bbb.get_recordings(bbb_recording_id=bbb_recording_id)
+        recordings = BBB.get_recordings.uncached(bbb, bbb_recording_id=bbb_recording_id)
         recording_url = recordings[0]["playbacks"]["presentation"]["url"]
         recording_name = recordings[0]["name"]
         recording_start = recordings[0]["start_date"].strftime("%Y-%m-%d %H:%M:%S")
-    except Exception as e:
+    except (IndexError, KeyError, AttributeError) as e:
         logger.error("BBB failed to find recording: %s", e)
         return "", 500
 
-    send_available_recording_notification_mail(
-        meeting, recording_url, recording_name, recording_start
+    send_recording_notification.apply_async(
+        args=[meeting.id, recording_url, recording_name, recording_start],
+        countdown=current_app.config["RECORDING_NOTIFICATION_DELAY"],
     )
     logger.info(
         "BBB recording is available for meeting %s: %s", meeting.name, recording_url
     )
-    logger.warning(recordings[0]["start_date"])
     return "", 200

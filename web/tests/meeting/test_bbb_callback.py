@@ -19,6 +19,14 @@ def test_valid_callback_returns_200_and_sends_email(
         status=200,
     )
     assert len(smtpd.messages) == 1
+    sent = smtpd.messages[0]
+    assert meeting.owner.email in sent["To"]
+    html_body = next(
+        part.get_payload(decode=True).decode()
+        for part in sent.walk()
+        if part.get_content_type() == "text/html"
+    )
+    assert "https://bbb.test/playback/presentation" in html_body
 
 
 def test_invalid_signature_returns_401(client_app, meeting, smtpd):
@@ -32,6 +40,38 @@ def test_invalid_signature_returns_401(client_app, meeting, smtpd):
         "/bbb-callback/recording_status",
         {"signed_parameters": signed},
         status=401,
+    )
+    assert len(smtpd.messages) == 0
+
+
+def test_missing_signed_parameters_returns_410(client_app, smtpd):
+    """POST without signed_parameters returns 410 to stop BBB retries."""
+    client_app.post("/bbb-callback/recording_status", {}, status=410)
+    assert len(smtpd.messages) == 0
+
+
+def test_missing_meeting_id_claim_returns_410(
+    client_app, smtpd, make_signed_parameters
+):
+    """Token missing the meeting_id claim returns 410 to stop BBB retries."""
+    signed = make_signed_parameters({"record_id": RECORD_ID})
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=410,
+    )
+    assert len(smtpd.messages) == 0
+
+
+def test_missing_record_id_claim_returns_410(
+    client_app, meeting, smtpd, make_signed_parameters
+):
+    """Token missing the record_id claim returns 410 to stop BBB retries."""
+    signed = make_signed_parameters({"meeting_id": meeting.meetingID})
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=410,
     )
     assert len(smtpd.messages) == 0
 
@@ -69,8 +109,10 @@ def test_invalid_meeting_id_returns_410(
 def test_recording_not_found_returns_500(
     client_app, meeting, smtpd, mocker, make_signed_parameters
 ):
-    """When BBB returns no recordings, returns 500 without sending email."""
-    mocker.patch("b3desk.models.bbb.BBB.get_recordings", return_value=[])
+    """When BBB returns no recordings, returns 500 (transient) without sending email."""
+    from b3desk.models.bbb import BBB
+
+    mocker.patch.object(BBB.get_recordings, "uncached", return_value=[])
 
     signed = make_signed_parameters(
         {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}

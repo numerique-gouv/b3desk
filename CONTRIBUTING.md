@@ -35,6 +35,17 @@ Le compte d'accès est `bbb-visio-user`, mot de passe `Pa55w0rd`.
 Des comptes supplémentaires `bbb-visio-user1` à `bbb-visio-user5` sont disponibles (mot de passe = username).
 Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
 
+#### Simuler l'envoi et la réception de mails avec mailpit
+
+Le service `mailpit` du `docker-compose.override.yml` capture les mails envoyés
+par l'application. Dans `web.env`, renseigner :
+```
+SMTP_FROM=secretariat@incubateur.net
+SMTP_HOST=mailpit
+SMTP_PORT=1025
+```
+Les mails captés sont consultables sur http://mailpit.localhost:8025/.
+
 ### Environnement de développement
 
 #### Installation locale

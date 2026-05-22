@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-19 17:02+0200\n"
+"POT-Creation-Date: 2026-05-22 15:16+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: web/b3desk/__init__.py:292 web/b3desk/endpoints/meeting_files.py:124
+#: web/b3desk/__init__.py:305 web/b3desk/endpoints/meeting_files.py:124
 #: web/b3desk/endpoints/meeting_files.py:183
 #: web/b3desk/endpoints/meeting_files.py:288
 #: web/b3desk/endpoints/meeting_files.py:478
@@ -157,7 +157,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:336
+#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:339
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -423,16 +423,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:315 web/b3desk/models/meetings.py:322
+#: web/b3desk/models/meetings.py:318 web/b3desk/models/meetings.py:325
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:329
+#: web/b3desk/models/meetings.py:332
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:331
+#: web/b3desk/models/meetings.py:334
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -2527,6 +2527,13 @@ msgstr ""
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:5
+#, python-format
+msgid ""
+"Votre nouvel enregistrement pour la réunion %(meeting_name)s est "
+"disponible."
+msgstr ""
+
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:13
 #, python-format
 msgid ""
@@ -2707,6 +2714,11 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:115
 msgid "Copier les informations dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:109
+#, python-brace-format
+msgid "Votre enregistrement pour {name}"
 msgstr ""
 
 #: web/b3desk/utils/__init__.py:226

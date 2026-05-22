@@ -66,9 +66,22 @@ def setup_configuration(app, config=None):
 
 def setup_celery(app):
     """Configure Celery task queue for the application."""
+    from flask import has_app_context
+
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
+
+    class ContextTask(celery.Task):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            if has_app_context():
+                return self.run(*args, **kwargs)
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
 
 
 def setup_cache(app):
