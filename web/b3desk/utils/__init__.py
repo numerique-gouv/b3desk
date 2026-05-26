@@ -8,6 +8,7 @@ from functools import wraps
 from flask import abort
 from flask import current_app
 from flask import flash
+from flask import has_request_context
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -36,7 +37,7 @@ def secret_key():
 
 def is_rie():
     """Check wether the request was made from inside the state network "Réseau Interministériel de l'État"."""
-    if not request.remote_addr:
+    if not has_request_context() or not request.remote_addr:
         return False
 
     return current_app.config["RIE_NETWORK_IPS"] and any(

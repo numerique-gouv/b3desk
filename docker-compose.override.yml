@@ -19,6 +19,8 @@ services:
       - FLASK_DEBUG=1
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
+    volumes:
+      - ./web/b3desk:/opt/bbb-visio/b3desk
 
   broker:
     hostname: broker.localhost

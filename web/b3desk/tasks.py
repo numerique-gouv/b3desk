@@ -4,6 +4,9 @@ import requests
 from celery import Celery
 from celery.utils.log import get_task_logger
 
+from b3desk.models import db
+from b3desk.utils import send_available_recording_notification_mail
+
 REDIS_URL = os.environ.get("REDIS_URL")
 DEBUG = os.environ.get("FLASK_DEBUG")
 
@@ -39,9 +42,7 @@ def send_recording_notification(
     meeting_id, recording_url, recording_name, recording_start
 ):
     """Send the recording-available notification mail for the given meeting."""
-    from b3desk.models import db
     from b3desk.models.meetings import Meeting
-    from b3desk.utils import send_available_recording_notification_mail
 
     meeting = db.session.get(Meeting, meeting_id)
     if not meeting:
@@ -50,6 +51,7 @@ def send_recording_notification(
             meeting_id,
         )
         return
+
     send_available_recording_notification_mail(
         meeting, recording_url, recording_name, recording_start
     )

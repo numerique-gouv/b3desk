@@ -30,17 +30,14 @@ services:
       - broker
     build:
       context: ./web
-      dockerfile: Dockerfile-celery
+      dockerfile: Dockerfile
       additional_contexts:
         root: .
     # env_file:
     #   - web.env  # to get shared REDIS_URL
     # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env
-    environment:
-      - APP=tasks.celery
-    volumes:
-      - ./web/b3desk:/usr/src/app
-    command: celery --app tasks.celery worker --loglevel=info
+    entrypoint: []
+    command: celery --app b3desk.celery_worker.celery worker --loglevel=info
 
   broker:
     container_name: broker

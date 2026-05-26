@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:302 web/b3desk/endpoints/meeting_files.py:123
+#: web/b3desk/__init__.py:310 web/b3desk/endpoints/meeting_files.py:123
 #: web/b3desk/endpoints/meeting_files.py:182
 #: web/b3desk/endpoints/meeting_files.py:287
 #: web/b3desk/endpoints/meeting_files.py:477
@@ -2696,12 +2696,12 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:109
+#: web/b3desk/utils/__init__.py:110
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:228
+#: web/b3desk/utils/__init__.py:229
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

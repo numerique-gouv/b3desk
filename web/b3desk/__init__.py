@@ -14,6 +14,7 @@ from pathlib import Path
 
 from flask import Flask
 from flask import has_app_context
+from flask import has_request_context
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -146,6 +147,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -166,6 +168,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -188,6 +191,11 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
+        if not has_request_context():
+            if app.config.get("MEETING_LOCALE_VARIANT"):
+                return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
+            return "fr"
+
         if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
         lang = session.get("lang") if session.get("lang") in LANGUAGES else "fr"
