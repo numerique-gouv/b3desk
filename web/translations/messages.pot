@@ -2533,22 +2533,19 @@ msgid "Date :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:12
-msgid "Accéder à l'enregistrement"
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
+msgid "Formats disponibles :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:14
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
 msgid "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:14
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
 msgid "votre espace"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
-msgid "Accéder à l'enregistrement :"
-msgstr ""
-
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:12
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:14
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
@@ -2724,12 +2721,20 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:113
+#: web/b3desk/utils/__init__.py:100
+msgid "Présentation interactive"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:108
+msgid "Vidéo (téléchargement direct)"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:142
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:231
+#: web/b3desk/utils/__init__.py:260
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

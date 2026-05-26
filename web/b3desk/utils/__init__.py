@@ -91,16 +91,45 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     send_email(msg, text, html, smtp)
 
 
+def _build_recording_links(playbacks):
+    """Return an ordered list of {label, url} entries from a BBB playbacks dict."""
+    links = []
+    if "presentation" in playbacks:
+        links.append(
+            {
+                "label": _("Présentation interactive"),
+                "url": playbacks["presentation"]["url"],
+            }
+        )
+    if "video" in playbacks:
+        video = playbacks["video"]
+        links.append(
+            {
+                "label": _("Vidéo (téléchargement direct)"),
+                "url": video.get("direct_link", video["url"]),
+            }
+        )
+    return links
+
+
 def send_available_recording_notification_mail(
-    meeting, recording_url, recording_name, recording_start
+    meeting, playbacks, recording_name, recording_start
 ):
-    """Send email to notify the recording is available."""
+    """Send email to notify the recording is available, listing every available format."""
+    recording_links = _build_recording_links(playbacks)
+    if not recording_links:
+        current_app.logger.warning(
+            "No usable playback format for meeting %s, skipping notification mail",
+            meeting.id,
+        )
+        return
+
     smtp = make_smtp()
     msg = EmailMessage()
     body_file = "mail_available_recording_notification_body"
     context = {
         "meeting": meeting,
-        "recording_url": recording_url,
+        "recording_links": recording_links,
         "recording_name": recording_name,
         "recording_start": format_datetime(
             datetime.fromisoformat(recording_start), format="medium"

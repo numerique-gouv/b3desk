@@ -38,10 +38,9 @@ def background_upload(endpoint, xml):
 
 
 @celery.task(name="send_recording_notification")
-def send_recording_notification(
-    meeting_id, recording_url, recording_name, recording_start
-):
-    """Send the recording-available notification mail for the given meeting."""
+def send_recording_notification(meeting_id, bbb_recording_id):
+    """Send a single notification mail covering all formats currently available."""
+    from b3desk.models.bbb import BBB
     from b3desk.models.meetings import Meeting
 
     meeting = db.session.get(Meeting, meeting_id)
@@ -52,6 +51,26 @@ def send_recording_notification(
         )
         return
 
+    bbb = BBB(meeting.meetingID)
+    recordings = BBB.get_recordings.uncached(bbb, bbb_recording_id=bbb_recording_id)
+    if not recordings:
+        logger.warning(
+            "No recording returned by BBB for %s, skipping notification",
+            bbb_recording_id,
+        )
+        return
+
+    try:
+        recording = recordings[0]
+        playbacks = recording["playbacks"]
+        recording_name = recording["name"]
+        recording_start = recording["start_date"].isoformat()
+    except (KeyError, AttributeError) as e:
+        logger.error(
+            "Unexpected BBB recording structure for %s: %s", bbb_recording_id, e
+        )
+        return
+
     send_available_recording_notification_mail(
-        meeting, recording_url, recording_name, recording_start
+        meeting, playbacks, recording_name, recording_start
     )

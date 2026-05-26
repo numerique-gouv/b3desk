@@ -9,7 +9,12 @@
         {% endif %}
         <p>{% trans %}Date :{% endtrans %} {{ recording_start }}</p>
 
-        <p><a href="{{ recording_url }}">{% trans %}Accéder à l'enregistrement{% endtrans %}</a></p>
+        <p>{% trans %}Formats disponibles :{% endtrans %}</p>
+        <ul>
+            {% for link in recording_links %}
+                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+            {% endfor %}
+        </ul>
 
         <p>{% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis{% endtrans %} <a href="{{ welcome_url }}">{% trans %}votre espace{% endtrans %}</a>.</p>
     </body>

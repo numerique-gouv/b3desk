@@ -766,10 +766,21 @@ class MainSettings(BaseSettings):
     """Délai (en secondes) avant l'envoi du mail notifiant la disponibilité
     d'un enregistrement.
 
-    BBB envoie le callback dès que l'enregistrement est prêt côté serveur BBB,
-    mais il peut y avoir un décalage de quelques secondes à quelques minutes
-    avant qu'il soit réellement transféré et disponible côté Scalelite. Cette
-    temporisation absorbe ce décalage.
+    BBB envoie un callback par format de rendu disponible (``presentation``,
+    ``video``...), ce qui peut produire plusieurs notifications pour le même
+    enregistrement à quelques secondes ou minutes d'intervalle. Pour n'envoyer
+    qu'un seul mail listant tous les formats prêts, le premier callback reçu
+    pour un ``record_id`` donné planifie la tâche d'envoi avec ce délai en
+    ``countdown`` ; les callbacks suivants pour le même ``record_id`` sont
+    acquittés (HTTP 200) mais ignorés. À l'expiration du délai, la tâche
+    re-interroge BBB pour récupérer l'état final des formats disponibles avant
+    d'envoyer le mail.
+
+    Le timer n'est pas réinitialisé par les callbacks suivants : un format qui
+    arriverait après l'expiration ne déclenchera pas de nouveau mail, mais il
+    restera accessible depuis la page des enregistrements dans B3Desk. Cette
+    valeur doit donc être un peu généreuse pour englober la latence usuelle
+    entre les rendus BBB.
     """
 
     MATOMO_URL: str | None = None

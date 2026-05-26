@@ -7,6 +7,8 @@
 {% endif -%}
 {% trans %}Date :{% endtrans %} {{ recording_start }}
 
-{% trans %}Accéder à l'enregistrement :{% endtrans %} {{ recording_url }}
-
+{% trans %}Formats disponibles :{% endtrans %}
+{% for link in recording_links -%}
+- {{ link.label }} : {{ link.url }}
+{% endfor %}
 {% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis votre espace :{% endtrans %} {{ welcome_url }}

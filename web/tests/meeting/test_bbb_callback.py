@@ -121,10 +121,31 @@ def test_non_digit_meeting_id_returns_410(client_app, smtpd, make_signed_paramet
     assert len(smtpd.messages) == 0
 
 
-def test_recording_not_found_returns_500(
+def test_duplicate_callback_for_same_record_id_only_sends_one_mail(
+    client_app, meeting, smtpd, bbb_recording, make_signed_parameters
+):
+    """A second callback for the same record_id is acknowledged but does not re-notify."""
+    signed = make_signed_parameters(
+        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+    )
+
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=200,
+    )
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=200,
+    )
+    assert len(smtpd.messages) == 1
+
+
+def test_callback_acknowledges_even_when_bbb_has_no_recording_yet(
     client_app, meeting, smtpd, mocker, make_signed_parameters
 ):
-    """When BBB returns no recordings, returns 500 (transient) without sending email."""
+    """Recording lookup happens in the task; the callback always acknowledges."""
     from b3desk.models.bbb import BBB
 
     mocker.patch.object(BBB.get_recordings, "uncached", return_value=[])
@@ -136,28 +157,6 @@ def test_recording_not_found_returns_500(
     client_app.post(
         "/bbb-callback/recording_status",
         {"signed_parameters": signed},
-        status=500,
-    )
-    assert len(smtpd.messages) == 0
-
-
-def test_recording_unexpected_structure_returns_410(
-    client_app, meeting, smtpd, mocker, make_signed_parameters
-):
-    """When BBB returns a recording with an unexpected structure, returns 410 to stop retries."""
-    from b3desk.models.bbb import BBB
-
-    mocker.patch.object(
-        BBB.get_recordings, "uncached", return_value=[{"unexpected": "structure"}]
-    )
-
-    signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
-    )
-
-    client_app.post(
-        "/bbb-callback/recording_status",
-        {"signed_parameters": signed},
-        status=410,
+        status=200,
     )
     assert len(smtpd.messages) == 0
