@@ -1,8 +1,8 @@
 import random
 import smtplib
 import string
+from datetime import datetime
 from email.message import EmailMessage
-from email.mime.text import MIMEText
 from functools import wraps
 
 from flask import abort
@@ -12,6 +12,7 @@ from flask import has_request_context
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_babel import format_datetime
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from itsdangerous import BadSignature
@@ -70,16 +71,15 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     smtp = make_smtp()
     msg = EmailMessage()
     body_file = (
-        "mail_add_delegation_body.txt"
-        if new_delegation
-        else "mail_remove_delegation_body.txt"
+        "mail_add_delegation_body" if new_delegation else "mail_remove_delegation_body"
     )
-    content = render_template(
-        f"meeting/mailto/{body_file}",
-        meeting=meeting,
-        delegate=delegate,
-        welcome_url=url_for("public.welcome", _external=True),
-    )
+    context = {
+        "meeting": meeting,
+        "delegate": delegate,
+        "welcome_url": url_for("public.welcome", _external=True),
+    }
+    text = render_template(f"meeting/mailto/{body_file}.txt", **context)
+    html = render_template(f"meeting/mailto/{body_file}.html", **context)
     msg["Subject"] = (
         str(_(f"Nouvelle délégation pour {meeting.name}"))
         if new_delegation
@@ -88,7 +88,7 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     msg["From"] = smtp["from_email"]
     msg["To"] = delegate.email
 
-    send_email(msg, content, smtp)
+    send_email(msg, text, html, smtp)
 
 
 def send_available_recording_notification_mail(
@@ -97,28 +97,30 @@ def send_available_recording_notification_mail(
     """Send email to notify the recording is available."""
     smtp = make_smtp()
     msg = EmailMessage()
-    body_file = "mail_available_recording_notification_body.txt"
-    content = render_template(
-        f"meeting/mailto/{body_file}",
-        meeting=meeting,
-        recording_url=recording_url,
-        recording_name=recording_name,
-        recording_start=recording_start,
-        welcome_url=url_for("public.welcome", _external=True),
-    )
+    body_file = "mail_available_recording_notification_body"
+    context = {
+        "meeting": meeting,
+        "recording_url": recording_url,
+        "recording_name": recording_name,
+        "recording_start": format_datetime(
+            datetime.fromisoformat(recording_start), format="medium"
+        ),
+        "welcome_url": url_for("public.welcome", _external=True),
+    }
+    text = render_template(f"meeting/mailto/{body_file}.txt", **context)
+    html = render_template(f"meeting/mailto/{body_file}.html", **context)
     msg["Subject"] = str(
         _("Votre enregistrement pour {name}").format(name=meeting.name)
     )
     msg["From"] = smtp["from_email"]
     msg["To"] = meeting.owner.email
 
-    send_email(msg, content, smtp)
+    send_email(msg, text, html, smtp)
 
 
-def send_email(msg, content, smtp):
-    html = MIMEText(content, "html")
-    msg.make_mixed()  # This converts the message to multipart/mixed
-    msg.attach(html)
+def send_email(msg, text, html, smtp):
+    msg.set_content(text)
+    msg.add_alternative(html, subtype="html")
 
     connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
     try:

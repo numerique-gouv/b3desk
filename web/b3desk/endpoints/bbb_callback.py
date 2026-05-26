@@ -73,7 +73,7 @@ def recording_status():
     try:
         recording_url = recordings[0]["playbacks"]["presentation"]["url"]
         recording_name = recordings[0]["name"]
-        recording_start = recordings[0]["start_date"].strftime("%Y-%m-%d %H:%M:%S")
+        recording_start = recordings[0]["start_date"].isoformat()
     except (KeyError, AttributeError) as e:
         logger.error("Unexpected BBB recording structure: %s", e)
         return "", 410

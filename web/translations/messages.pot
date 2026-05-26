@@ -2486,45 +2486,72 @@ msgid ""
 "                    "
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:2
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:2
-#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:2
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:3
 msgid "vous a nommé délégataire de la réunion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:8
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
 msgid ""
 "Vous pouvez dès à présent consulter et gérer l'édition, les "
 "enregistrements et les fichiers associés à cette réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:11
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:5
-#, python-format
-msgid ""
-"Votre nouvel enregistrement pour la réunion %(meeting_name)s est "
-"disponible."
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
+msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:13
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:3
 #, python-format
-msgid ""
-"Vous pouvez dès à présent visionner l'enregistrement du "
-"%(recording_start)s : <a href=\"%(recording_url)s\">Lien vers la "
-"vidéo</a> "
+msgid "L'enregistrement de la réunion %(meeting_name)s est disponible."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:16
-#, python-format
-msgid " Ou rendez vous sur <a href=\"%(welcome_url)s\">votre espace</a>."
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:6
+msgid "Nom :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:10
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:8
+msgid "Date :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:12
+msgid "Accéder à l'enregistrement"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:14
+msgid "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:14
+msgid "votre espace"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
+msgid "Accéder à l'enregistrement :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:12
+msgid ""
+"Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
+"votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -2555,7 +2582,8 @@ msgstr ""
 msgid "Bonne réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:5
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:3
 msgid "vous a retiré des délégataires de la réunion"
 msgstr ""
 
@@ -2696,12 +2724,12 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:110
+#: web/b3desk/utils/__init__.py:113
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:229
+#: web/b3desk/utils/__init__.py:231
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <p>{% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},</p>
+
+        <p>{% trans meeting_name=meeting.name %}L'enregistrement de la réunion {{ meeting_name }} est disponible.{% endtrans %}</p>
+
+        {% if recording_name %}
+            <p>{% trans %}Nom :{% endtrans %} {{ recording_name }}</p>
+        {% endif %}
+        <p>{% trans %}Date :{% endtrans %} {{ recording_start }}</p>
+
+        <p><a href="{{ recording_url }}">{% trans %}Accéder à l'enregistrement{% endtrans %}</a></p>
+
+        <p>{% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis{% endtrans %} <a href="{{ welcome_url }}">{% trans %}votre espace{% endtrans %}</a>.</p>
+    </body>
+</html>

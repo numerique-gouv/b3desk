@@ -1,17 +1,12 @@
-<html>
 {% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
-<br/>
-<br/>
-{% trans meeting_name=meeting.name %}Votre nouvel enregistrement pour la réunion {{ meeting_name }} est disponible.{% endtrans %}
-<br/>
-<br/>
-{% if recording_name %}
-{{ recording_name }}
-<br/>
-<br/>
-{% endif %}
-{% trans %}Vous pouvez dès à présent visionner l'enregistrement du {{ recording_start }} : <a href="{{ recording_url }}">Lien vers la vidéo</a> {% endtrans %}
-<br/>
-<br/>
-{% trans %} Ou rendez vous sur <a href="{{ welcome_url }}">votre espace</a>.{% endtrans %}
-</html>
+
+{% trans meeting_name=meeting.name %}L'enregistrement de la réunion {{ meeting_name }} est disponible.{% endtrans %}
+
+{% if recording_name -%}
+{% trans %}Nom :{% endtrans %} {{ recording_name }}
+{% endif -%}
+{% trans %}Date :{% endtrans %} {{ recording_start }}
+
+{% trans %}Accéder à l'enregistrement :{% endtrans %} {{ recording_url }}
+
+{% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis votre espace :{% endtrans %} {{ welcome_url }}

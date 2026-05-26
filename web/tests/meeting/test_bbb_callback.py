@@ -21,12 +21,13 @@ def test_valid_callback_returns_200_and_sends_email(
     assert len(smtpd.messages) == 1
     sent = smtpd.messages[0]
     assert meeting.owner.email in sent["To"]
-    html_body = next(
-        part.get_payload(decode=True).decode()
-        for part in sent.walk()
-        if part.get_content_type() == "text/html"
-    )
+    parts = {part.get_content_type(): part for part in sent.walk()}
+    assert "text/plain" in parts
+    assert "text/html" in parts
+    html_body = parts["text/html"].get_payload(decode=True).decode()
+    text_body = parts["text/plain"].get_payload(decode=True).decode()
     assert "https://bbb.test/playback/presentation" in html_body
+    assert "https://bbb.test/playback/presentation" in text_body
 
 
 def test_invalid_signature_returns_401(client_app, meeting, smtpd):
