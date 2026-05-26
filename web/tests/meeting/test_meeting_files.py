@@ -1,8 +1,8 @@
 import json
-import os
 from datetime import date
 from datetime import datetime
 from datetime import timezone
+from pathlib import Path
 
 import pytest
 import requests
@@ -84,7 +84,7 @@ def test_add_dropzone_file(
 
     assert res.json["msg"] == "ok"
 
-    with open(os.path.join(tmp_path, "chunks", "1-1-file.jpg"), "rb") as fd:
+    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
 
 
@@ -143,7 +143,7 @@ def test_ncdownload(
             return {"content_type": "application/pdf"}
 
         def download_sync(self, remote_path, local_path):
-            with open(local_path, "wb") as f:
+            with Path(local_path).open("wb") as f:
                 f.write(b"fake pdf content")
 
     meeting.owner.nc_login = nextcloud_credentials["nclogin"]
@@ -238,7 +238,7 @@ def test_download_meeting_file_from_nextcloud(
             return []
 
         def download_sync(self, remote_path, local_path):
-            with open(local_path, "wb") as f:
+            with Path(local_path).open("wb") as f:
                 f.write(b"fake content")
 
     mocker.patch("b3desk.nextcloud.WebDAVClient", return_value=FakeClient())
@@ -654,7 +654,7 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=200)
     assert res.json["msg"] == "ok"
-    with open(os.path.join(tmp_path, "chunks", "1-1-file.jpg"), "rb") as fd:
+    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
 
     res = dropzone_post(status=409)
@@ -701,9 +701,7 @@ def test_upload_file_chunks_disk_write_error(
     client_app, authenticated_user, meeting, jpg_file_content, mocker
 ):
     """Test that OSError during disk write returns 500."""
-    mocker.patch(
-        "b3desk.endpoints.meeting_files.open", side_effect=OSError("Disk full")
-    )
+    mocker.patch("pathlib.Path.open", side_effect=OSError("Disk full"))
 
     response = client_app.post(
         f"/meeting/files/{meeting.id}/upload",

@@ -96,7 +96,7 @@ format=[%(asctime)s] %(levelname)s in %(module)s: %(message)s
 
     configuration["LOG_CONFIG"] = str(ini_file)
     config_obj = MainSettings.model_validate(configuration)
-    assert config_obj.LOG_CONFIG == ini_file
+    assert ini_file == config_obj.LOG_CONFIG
 
     mock_fileConfig = Mock()
     monkeypatch.setattr("b3desk.fileConfig", mock_fileConfig)
@@ -137,7 +137,7 @@ handlers = ["wsgi"]
 
     configuration["LOG_CONFIG"] = str(toml_file)
     config_obj = MainSettings.model_validate(configuration)
-    assert config_obj.LOG_CONFIG == toml_file
+    assert toml_file == config_obj.LOG_CONFIG
 
     mock_dictConfig = Mock()
     monkeypatch.setattr("b3desk.dictConfig", mock_dictConfig)

@@ -8,12 +8,13 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import os
 from logging.config import dictConfig
 from logging.config import fileConfig
+from pathlib import Path
 
 from flask import Flask
 from flask import has_app_context
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -45,8 +46,6 @@ migrate = Migrate()
 
 class BigBlueButtonUnavailable(Exception):
     """BBB server is unreachable (network error, timeout, invalid response)."""
-
-    pass
 
 
 def setup_configuration(app, config=None):
@@ -114,7 +113,7 @@ def setup_sentry(app):  # pragma: no cover
         import sentry_sdk
         from sentry_sdk.integrations.flask import FlaskIntegration
 
-    except Exception:
+    except ImportError:
         return None
 
     sentry_sdk.init(dsn=app.config["SENTRY_DSN"], integrations=[FlaskIntegration()])
@@ -128,7 +127,7 @@ def load_toml_log_config(path: str):
         return None
 
     try:
-        with open(path, "rb") as fd:
+        with Path(path).open("rb") as fd:
             return tomllib.load(fd)
 
     except tomllib.TOMLDecodeError:
@@ -261,7 +260,6 @@ def setup_error_pages(app):
     from flask import flash
     from flask import g
     from flask import jsonify
-    from flask import redirect
     from flask_babel import lazy_gettext as _
     from webdav3.exceptions import WebDavException
 
@@ -334,6 +332,21 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.bbb_callback.bp)
 
 
+def setup_debug_host_redirect(app):
+    """En debug, redirige vers SERVER_NAME si l'hôte de la requête ne matche pas."""
+    if not app.debug:
+        return
+
+    @app.before_request
+    def redirect_to_server_name():
+        server_name = app.config.get("SERVER_NAME")
+        if not server_name or request.host == server_name:
+            return None
+
+        scheme = app.config.get("PREFERRED_URL_SCHEME", "http")
+        return redirect(f"{scheme}://{server_name}{request.full_path}", code=302)
+
+
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
     from flask import g
@@ -404,7 +417,7 @@ def setup_oidc(app):
     }
     try:
         auth.init_app(app)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
@@ -425,6 +438,7 @@ def create_app(test_config=None):
         setup_error_pages(app)
         setup_endpoints(app)
         setup_oidc(app)
+        setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover
         if sentry_sdk:
@@ -432,6 +446,6 @@ def create_app(test_config=None):
         raise
 
     # ensure the instance folder exists
-    os.makedirs(app.instance_path, exist_ok=True)
+    Path(app.instance_path).mkdir(parents=True, exist_ok=True)
 
     return app

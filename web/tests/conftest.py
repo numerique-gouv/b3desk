@@ -71,7 +71,7 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
-        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
         Migrate(app, db, compare_type=True)
@@ -127,7 +127,7 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
-        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
         Migrate(app, db, compare_type=True)
@@ -292,8 +292,7 @@ def iam_token(iam_server, iam_client, iam_user):
 def private_key():
     private_key = RSAKey.generate_key(1024, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
-    private_pem_str = private_pem_bytes.decode("utf-8")
-    return private_pem_str
+    return private_pem_bytes.decode("utf-8")
 
 
 @pytest.fixture
@@ -369,7 +368,7 @@ def app(configuration, jinja_cache_directory):
     app.jinja_env.bytecode_cache = FileSystemBytecodeCache(jinja_cache_directory)
 
     with app.app_context():
-        import b3desk.models.meetings  # noqa: F401
+        import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
         Migrate(app, db, compare_type=True)

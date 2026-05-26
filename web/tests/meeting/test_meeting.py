@@ -1,8 +1,8 @@
 import datetime
 import hashlib
-import os
 import time
 from datetime import date
+from pathlib import Path
 from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -389,8 +389,8 @@ def test_create_with_only_a_default_file(
 
     client_app.app.config["FILE_SHARING"] = True
 
-    file_path = os.path.join(tmp_path, "foobar.jpg")
-    with open(file_path, "wb") as fd:
+    file_path = str(tmp_path / "foobar.jpg")
+    with Path(file_path).open("wb") as fd:
         fd.write(jpg_file_content)
 
     mocked_background_upload = mocker.patch(
@@ -498,8 +498,8 @@ def test_create_with_files(
 
     client_app.app.config["FILE_SHARING"] = True
 
-    file_path = os.path.join(tmp_path, "foobar.jpg")
-    with open(file_path, "wb") as fd:
+    file_path = str(tmp_path / "foobar.jpg")
+    with Path(file_path).open("wb") as fd:
         fd.write(jpg_file_content)
 
     mocked_background_upload = mocker.patch(

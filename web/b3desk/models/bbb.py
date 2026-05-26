@@ -142,7 +142,7 @@ class BBB:
         data = self.bbb_response(request)
         return self.success(data) and data["running"] == "true"
 
-    def create(
+    def create(  # noqa: C901
         self,
         *,
         name,
@@ -278,7 +278,7 @@ class BBB:
         return self.bbb_response(request)
 
     @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
-    def get_recordings(self, bbb_recording_id=None):
+    def get_recordings(self, bbb_recording_id=None):  # noqa: C901
         """Get the list of recordings for a meeting or infos of one recording.
 
         https://docs.bigbluebutton.org/development/api/#get-getrecordings
@@ -338,7 +338,7 @@ class BBB:
                                 media_url + "video-0.m4v"
                             )
                 result.append(data)
-        except Exception as exception:
+        except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
         return result
 

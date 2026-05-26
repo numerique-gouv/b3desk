@@ -22,7 +22,7 @@ def get_role(meeting, hashed_role, user=None) -> Role | None:
     """Determine the meeting role based on hash and user."""
     if meeting.owner and meeting.owner == user:
         return Role.moderator
-    elif hashed_role in [
+    if hashed_role in [
         get_hash(meeting, Role.attendee),
         get_hash(meeting, Role.attendee, hash_from_string=True),
     ]:
@@ -268,7 +268,4 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
 
     current_app.logger.info("BBB room %s creation result: %s", meeting_id, result)
 
-    if not BBB.success(result):
-        return False
-
-    return True
+    return BBB.success(result)
