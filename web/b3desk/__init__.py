@@ -13,6 +13,7 @@ from logging.config import fileConfig
 from pathlib import Path
 
 from flask import Flask
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -318,6 +319,21 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.captcha.bp)
 
 
+def setup_debug_host_redirect(app):
+    """En debug, redirige vers SERVER_NAME si l'hôte de la requête ne matche pas."""
+    if not app.debug:
+        return
+
+    @app.before_request
+    def redirect_to_server_name():
+        server_name = app.config.get("SERVER_NAME")
+        if not server_name or request.host == server_name:
+            return None
+
+        scheme = app.config.get("PREFERRED_URL_SCHEME", "http")
+        return redirect(f"{scheme}://{server_name}{request.full_path}", code=302)
+
+
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
     from flask import g
@@ -409,6 +425,7 @@ def create_app(test_config=None):
         setup_error_pages(app)
         setup_endpoints(app)
         setup_oidc(app)
+        setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover
         if sentry_sdk:
