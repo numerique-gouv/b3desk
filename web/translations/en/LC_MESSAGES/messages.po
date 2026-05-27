@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-27 11:17+0200\n"
+"POT-Creation-Date: 2026-05-27 16:10+0200\n"
 "PO-Revision-Date: 2026-05-05 10:03+0000\n"
 "Last-Translator: Éloi Rivard <eloi.rivard@nubla.fr>\n"
 "Language: en\n"
@@ -342,7 +342,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:406
-#: web/b3desk/endpoints/meetings.py:308
+#: web/b3desk/endpoints/meetings.py:314
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -363,72 +363,72 @@ msgstr ""
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:127
+#: web/b3desk/endpoints/meetings.py:128
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:145 web/b3desk/endpoints/meetings.py:200
+#: web/b3desk/endpoints/meetings.py:147 web/b3desk/endpoints/meetings.py:205
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:169
+#: web/b3desk/endpoints/meetings.py:172
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:232
+#: web/b3desk/endpoints/meetings.py:238
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:257
+#: web/b3desk/endpoints/meetings.py:263
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:292
+#: web/b3desk/endpoints/meetings.py:298
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:298
+#: web/b3desk/endpoints/meetings.py:304
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:306
+#: web/b3desk/endpoints/meetings.py:312
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:321
+#: web/b3desk/endpoints/meetings.py:327
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:332
+#: web/b3desk/endpoints/meetings.py:338
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:388
+#: web/b3desk/endpoints/meetings.py:394
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:391
+#: web/b3desk/endpoints/meetings.py:397
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:398
+#: web/b3desk/endpoints/meetings.py:404
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:411
+#: web/b3desk/endpoints/meetings.py:417
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:432
+#: web/b3desk/endpoints/meetings.py:438
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:439
+#: web/b3desk/endpoints/meetings.py:445
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -841,9 +841,35 @@ msgstr ""
 msgid "S’identifier"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_table.html:29
+#: web/b3desk/templates/admin/meeting_table.html:10
+#: web/b3desk/templates/admin/selected_user.html:14
+#: web/b3desk/templates/admin/users.html:21
+msgid "Identifiant"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:11
+#: web/b3desk/templates/admin/selected_user.html:22
+#: web/b3desk/templates/admin/users.html:22
+#: web/b3desk/templates/footer/donnees_personnelles.html:54
+msgid "Nom"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:12
+msgid "Visio-code"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:13
+#: web/b3desk/templates/meeting/form.html:56
+msgid "Modifier"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:30
 #, python-format
-msgid "%(meeting_name)s infos"
+msgid "Éditer %(meeting_name)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:34
+msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meetings.html:10
@@ -872,59 +898,64 @@ msgstr ""
 msgid "Réunions"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:13
-msgid "Identifiant"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_user.html:21
-#: web/b3desk/templates/footer/donnees_personnelles.html:54
-msgid "Nom"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_user.html:29
+#: web/b3desk/templates/admin/selected_user.html:30
+#: web/b3desk/templates/admin/users.html:24
 msgid "Email"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:37
+#: web/b3desk/templates/admin/selected_user.html:38
 msgid "Alias"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:45
+#: web/b3desk/templates/admin/selected_user.html:46
 msgid "Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:53
+#: web/b3desk/templates/admin/selected_user.html:54
 msgid "Création"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:61
+#: web/b3desk/templates/admin/selected_user.html:62
 msgid "Admin"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:69
+#: web/b3desk/templates/admin/selected_user.html:70
 msgid "NC Locator"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:77
+#: web/b3desk/templates/admin/selected_user.html:78
 msgid "NC Login"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:85
+#: web/b3desk/templates/admin/selected_user.html:86
 msgid "NC Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:100
+#: web/b3desk/templates/admin/selected_user.html:101
 #, python-format
 msgid "Liste des réunions de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:104
+#: web/b3desk/templates/admin/selected_user.html:105
 #, python-format
 msgid "%(fullname)s n'a pas créé de réunion."
 msgstr ""
 
+#: web/b3desk/templates/admin/selected_user.html:108
+msgid "Réunions déléguées"
+msgstr ""
+
 #: web/b3desk/templates/admin/users.html:10
 msgid "Aucun utilisateur ne correspond à cette recherche."
+msgstr ""
+
+#: web/b3desk/templates/admin/users.html:23
+#: web/b3desk/templates/footer/donnees_personnelles.html:55
+msgid "Prénom"
+msgstr ""
+
+#: web/b3desk/templates/admin/users.html:25
+msgid "Consulter"
 msgstr ""
 
 #: web/b3desk/templates/admin/users.html:44
@@ -1707,10 +1738,6 @@ msgstr ""
 msgid "Données d’identification :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:55
-msgid "Prénom"
-msgstr ""
-
 #: web/b3desk/templates/footer/donnees_personnelles.html:56
 msgid "Adresse électronique"
 msgstr ""
@@ -2200,7 +2227,8 @@ msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:171
-#: web/b3desk/templates/meeting/form.html:177
+#: web/b3desk/templates/meeting/form.html:178
+#: web/b3desk/templates/meeting/form.html:180
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
 #: web/b3desk/templates/meeting/recordings.html:109
@@ -2230,10 +2258,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:11
 #: web/b3desk/templates/meeting/form.html:13
 msgid "Désactivé"
-msgstr ""
-
-#: web/b3desk/templates/meeting/form.html:56
-msgid "Modifier"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:58
@@ -6807,5 +6831,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "%(username)s n'a pas créé de réunion."
+#~ msgstr ""
+
+#~ msgid "%(meeting_name)s infos"
 #~ msgstr ""
 
