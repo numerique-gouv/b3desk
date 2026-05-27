@@ -7,10 +7,10 @@
                         <table id="meetings">
                             <thead class="">
                                 <tr class="">
-                                    <th class="fr-col fr-cell--center"> Identifiant </th>
-                                    <th class="fr-col fr-cell--center">Nom</th>
-                                    <th class="fr-col fr-cell--center">Visio-code</th>
-                                    <th class="fr-col fr-cell--center">Modifier</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Visio-code{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Modifier{% endtrans %}</th>
                                 </tr>
                             </thead>
                             <tbody class="">
@@ -25,9 +25,15 @@
                                         <td class="fr-col fr-cell--center">
                                             {{ meeting.visio_code }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
-                                            <a href="{{ url_for("meetings.edit_meeting",  meeting=meeting, admin_mode=admin_mode) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Éditer {{ meeting_name }}{% endtrans %}"></a>
-                                        </td>
+                                        {% if not meeting.is_shadow %}
+                                            <td class="fr-col fr-cell--center">
+                                                <a href="{{ url_for("meetings.edit_meeting",  meeting=meeting, admin_mode=admin_mode) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Éditer {{ meeting_name }}{% endtrans %}"></a>
+                                            </td>
+                                        {% else %}
+                                            <td class="fr-col fr-cell--center">
+                                                {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>

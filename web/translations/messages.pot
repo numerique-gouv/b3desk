@@ -820,9 +820,35 @@ msgstr ""
 msgid "S’identifier"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_table.html:29
+#: web/b3desk/templates/admin/meeting_table.html:10
+#: web/b3desk/templates/admin/selected_user.html:14
+#: web/b3desk/templates/admin/users.html:21
+msgid "Identifiant"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:11
+#: web/b3desk/templates/admin/selected_user.html:22
+#: web/b3desk/templates/admin/users.html:22
+#: web/b3desk/templates/footer/donnees_personnelles.html:54
+msgid "Nom"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:12
+msgid "Visio-code"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:13
+#: web/b3desk/templates/meeting/form.html:56
+msgid "Modifier"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:30
 #, python-format
 msgid "Éditer %(meeting_name)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_table.html:34
+msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meetings.html:10
@@ -851,16 +877,8 @@ msgstr ""
 msgid "Réunions"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:14
-msgid "Identifiant"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_user.html:22
-#: web/b3desk/templates/footer/donnees_personnelles.html:54
-msgid "Nom"
-msgstr ""
-
 #: web/b3desk/templates/admin/selected_user.html:30
+#: web/b3desk/templates/admin/users.html:24
 msgid "Email"
 msgstr ""
 
@@ -908,6 +926,15 @@ msgstr ""
 
 #: web/b3desk/templates/admin/users.html:10
 msgid "Aucun utilisateur ne correspond à cette recherche."
+msgstr ""
+
+#: web/b3desk/templates/admin/users.html:23
+#: web/b3desk/templates/footer/donnees_personnelles.html:55
+msgid "Prénom"
+msgstr ""
+
+#: web/b3desk/templates/admin/users.html:25
+msgid "Consulter"
 msgstr ""
 
 #: web/b3desk/templates/admin/users.html:44
@@ -1690,10 +1717,6 @@ msgstr ""
 msgid "Données d’identification :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:55
-msgid "Prénom"
-msgstr ""
-
 #: web/b3desk/templates/footer/donnees_personnelles.html:56
 msgid "Adresse électronique"
 msgstr ""
@@ -2214,10 +2237,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:11
 #: web/b3desk/templates/meeting/form.html:13
 msgid "Désactivé"
-msgstr ""
-
-#: web/b3desk/templates/meeting/form.html:56
-msgid "Modifier"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:58
