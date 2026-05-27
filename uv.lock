@@ -132,7 +132,7 @@ wheels = [
 
 [[package]]
 name = "b3desk"
-version = "1.6.2.dev0"
+version = "1.6.3.dev0"
 source = { editable = "." }
 dependencies = [
     { name = "celery" },

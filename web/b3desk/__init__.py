@@ -32,7 +32,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.6.2dev"
+__version__ = "1.6.3dev"
 
 LANGUAGES = ["en", "fr"]
 
