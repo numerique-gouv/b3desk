@@ -123,6 +123,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
 @auth.oidc_auth("default")
 def new_meeting():
     """Display the form to create a new meeting and handle submission."""
+    admin_mode = "admin_mode" in request.args or False
     if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
@@ -139,6 +140,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -148,6 +150,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     meeting = Meeting()

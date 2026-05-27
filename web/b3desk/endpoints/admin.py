@@ -13,7 +13,7 @@ from ..session import admin_needed
 bp = Blueprint("admin", __name__)
 
 
-MAX_PER_PAGE = 3
+MAX_PER_PAGE = 50
 
 
 @bp.route("/admin/home")
