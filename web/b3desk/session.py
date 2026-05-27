@@ -17,8 +17,11 @@ def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info.get("given_name", "").title()
-    family_name = attendee_info.get("family_name", "").title()
+    mapping = current_app.config["OIDC_ATTENDEE_CLAIMS_MAPPING"]
+    given_name = attendee_info.get(mapping.get("given_name", "given_name"), "").title()
+    family_name = attendee_info.get(
+        mapping.get("family_name", "family_name"), ""
+    ).title()
     return f"{given_name} {family_name}".strip()
 
 
