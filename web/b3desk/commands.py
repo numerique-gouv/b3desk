@@ -143,19 +143,26 @@ def check_sip_token(token):
 @click.argument("email")
 def user_to_admin(email):
     """CLI command to grant administrator rights to a user."""
-    fullname, admin = grant_admin_rights(email)
-    message = fullname
-    message += " is " if admin else " is not "
-    message += "admin."
-    print(message)
+    try:
+        user = grant_admin_rights(email)
+        print("User to Admin result: " + message_maker(user.fullname, user.admin))
+    except ValueError as e:
+        print(f"User to Admin result: {e}")
 
 
 @bp.cli.command("admin-to-user")
 @click.argument("email")
 def admin_to_user(email):
-    """CLI command to grant administrator rights to a user."""
-    fullname, admin = remove_admin_rights(email)
+    """CLI command to remove administrator rights from a user."""
+    try:
+        user = remove_admin_rights(email)
+        print("Admin to User result: " + message_maker(user.fullname, user.admin))
+    except ValueError as e:
+        print(f"Admin to User result: {e}")
+
+
+def message_maker(fullname, admin):
     message = fullname
     message += " is " if admin else " is not "
     message += "admin."
-    print(message)
+    return message

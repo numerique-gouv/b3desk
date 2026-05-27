@@ -174,6 +174,10 @@
     {% else %}
       <button type="submit" class="fr-btn">{% trans %}Créer la salle{% endtrans %}</button>
     {% endif %}
-    <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
+    {% if not admin_mode %}
+      <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
+    {% else %}
+      <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.home") }}">{% trans %}Annuler{% endtrans %}</a>
+    {% endif %}
   </div>
 </form>

@@ -304,6 +304,7 @@ def setup_endpoints(app):
     """Import and register all application blueprints."""
     with app.app_context():
         import b3desk.commands
+        import b3desk.endpoints.admin
         import b3desk.endpoints.api
         import b3desk.endpoints.captcha
         import b3desk.endpoints.join
@@ -318,6 +319,7 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+        app.register_blueprint(b3desk.endpoints.admin.bp)
 
 
 def setup_user_session(app):

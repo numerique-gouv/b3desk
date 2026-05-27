@@ -61,6 +61,21 @@ DATA_RETENTION = timedelta(days=365)
 PASSWORD_HASH_LENGTH = 16
 
 
+def get_meetings_paginate(max_per_page, data):
+    from sqlalchemy import or_
+
+    query = db.select(Meeting).order_by(Meeting.created_at)
+    if data:
+        query = query.where(
+            or_(
+                Meeting.id == int(data) if data.isdigit() else None,
+                Meeting.name.ilike(f"%{data}%"),
+                Meeting.visio_code == data,
+            )
+        )
+    return db.paginate(query, max_per_page=max_per_page)
+
+
 def get_meeting_file_hash(*args):
     serializer = URLSafeSerializer(
         current_app.config["SECRET_KEY"], salt="meeting-file"

@@ -1,0 +1,40 @@
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12">
+        <div class="fr-table fr-table--no-caption" id="meetings-component">
+            <div class="fr-table__wrapper ">
+                <div class="fr-table__container">
+                    <div class="fr-table__content">
+                        <table id="meetings">
+                            <thead class="">
+                                <tr class="">
+                                    <th class="fr-col fr-cell--center"> Identifiant </th>
+                                    <th class="fr-col fr-cell--center">Nom</th>
+                                    <th class="fr-col fr-cell--center">Visio-code</th>
+                                    <th class="fr-col fr-cell--center">Modifier</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                {% for meeting in meetings %}
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.id }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.name }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.visio_code }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("meetings.edit_meeting",  meeting=meeting, admin_mode=admin_mode) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans meeting_name=meeting.name %}Éditer {{ meeting_name }}{% endtrans %}"></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -178,6 +178,7 @@ def new_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
+    admin_mode = "admin_mode" in request.args
     form = (
         MeetingWithRecordForm(
             request.form if request.method == "POST" else None, obj=meeting
@@ -194,6 +195,7 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -203,6 +205,7 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     del form.id
@@ -238,6 +241,10 @@ def edit_meeting(meeting: Meeting, user: User):
             "meeting/end.html",
             meeting=meeting,
         )
+
+    if admin_mode:
+        return redirect(url_for("admin.home"))
+
     return redirect(url_for("public.welcome"))
 
 

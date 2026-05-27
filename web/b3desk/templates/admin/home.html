@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    {% include 'admin/options.html' %}
+    {% if users_page %}
+        {% include 'admin/users.html' %}
+    {% endif %}
+    {% if meetings_page %}
+        {% include 'admin/meetings.html' %}
+    {% endif %}
+    {% if selected_user %}
+        {% include 'admin/selected_user.html' %}
+    {% endif %}
+{% endblock %}
