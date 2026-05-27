@@ -1,5 +1,6 @@
 {% set user = selected_user %}
 {% set meetings = user.meetings %}
+{% set delegated_meetings = user.get_all_delegated_meetings %}
 <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
         <div class="fr-table fr-table--no-caption" id="users-component">
@@ -102,4 +103,10 @@
     {% include 'admin/meeting_table.html' %}
 {% else %}
     <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
+{% endif %}
+{% if delegated_meetings %}
+    <h5>{% trans %}Réunions déléguées{% endtrans %}</h5>
+    {% with meetings=delegated_meetings %}
+        {% include 'admin/meeting_table.html' %}
+    {% endwith %}
 {% endif %}

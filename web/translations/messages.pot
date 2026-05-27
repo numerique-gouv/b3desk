@@ -851,55 +851,59 @@ msgstr ""
 msgid "Réunions"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:13
+#: web/b3desk/templates/admin/selected_user.html:14
 msgid "Identifiant"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:21
+#: web/b3desk/templates/admin/selected_user.html:22
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:29
+#: web/b3desk/templates/admin/selected_user.html:30
 msgid "Email"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:37
+#: web/b3desk/templates/admin/selected_user.html:38
 msgid "Alias"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:45
+#: web/b3desk/templates/admin/selected_user.html:46
 msgid "Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:53
+#: web/b3desk/templates/admin/selected_user.html:54
 msgid "Création"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:61
+#: web/b3desk/templates/admin/selected_user.html:62
 msgid "Admin"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:69
+#: web/b3desk/templates/admin/selected_user.html:70
 msgid "NC Locator"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:77
+#: web/b3desk/templates/admin/selected_user.html:78
 msgid "NC Login"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:85
+#: web/b3desk/templates/admin/selected_user.html:86
 msgid "NC Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:100
+#: web/b3desk/templates/admin/selected_user.html:101
 #, python-format
 msgid "Liste des réunions de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:104
+#: web/b3desk/templates/admin/selected_user.html:105
 #, python-format
 msgid "%(fullname)s n'a pas créé de réunion."
+msgstr ""
+
+#: web/b3desk/templates/admin/selected_user.html:108
+msgid "Réunions déléguées"
 msgstr ""
 
 #: web/b3desk/templates/admin/users.html:10
