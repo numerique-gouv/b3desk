@@ -9,6 +9,7 @@ from flask import Flask
 from flask import current_app
 from flask import jsonify
 from flask import request
+from werkzeug.exceptions import BadRequest
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ def load_config():
     """Load configuration from environment and key file."""
     key_file_path = Path("conf/key.txt")
     try:
-        with open(key_file_path) as f:
+        with key_file_path.open() as f:
             nextcloud_sessiontoken_key = f.read().strip()
     except FileNotFoundError as exc:
         raise RuntimeError(f"Key file not found: {key_file_path}") from exc
@@ -56,7 +57,7 @@ def token():
 
     try:
         data = request.get_json()
-    except Exception:
+    except BadRequest:
         return jsonify({"error": "Invalid JSON payload"}), 400
 
     if not data or "username" not in data:

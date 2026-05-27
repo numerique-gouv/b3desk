@@ -63,10 +63,7 @@ def captcha_proxy():
         captcha_error(message)
         return {"success": False}, response.status_code
 
-    captcha_info = (
-        response.content if "sound" == dict(request.args)["get"] else response.json()
-    )
-    return captcha_info
+    return response.content if dict(request.args)["get"] == "sound" else response.json()
 
 
 def captcha_validation(captcha_uuid, captcha_code):

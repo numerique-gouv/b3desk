@@ -25,6 +25,7 @@ def test_api_meetings_nominal(
         "phone_number": "+33bbbphonenumber",
         "visio_code": "911111111",
         "SIPMediaGW_url": "911111111@sip.test",
+        "delegate": False,
     }
     assert len(res.json["meetings"]) == 3
 
@@ -39,6 +40,7 @@ def test_api_meetings_nominal(
         "name": "meeting",
         "visio_code": "911111111",
         "SIPMediaGW_url": "911111111@sip.test",
+        "delegate": False,
     }
     assert len(res.json["meetings"]) == 3
 
@@ -52,8 +54,28 @@ def test_api_meetings_nominal(
         "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
         "name": "meeting",
         "visio_code": "911111111",
+        "delegate": False,
     }
     assert len(res.json["meetings"]) == 3
+
+
+def test_api_meetings_includes_delegated(
+    client_app,
+    user,
+    meeting,
+    meeting_1_user_2,
+    iam_token,
+):
+    """Delegated meetings are returned by the API with delegate set to True."""
+    res = client_app.get(
+        "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
+    )
+
+    meetings_by_name = {item["name"]: item for item in res.json["meetings"]}
+    assert "meeting" in meetings_by_name
+    assert "delegated meeting" in meetings_by_name
+    assert meetings_by_name["meeting"]["delegate"] is False
+    assert meetings_by_name["delegated meeting"]["delegate"] is True
 
 
 def test_api_meetings_no_token(client_app):

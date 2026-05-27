@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import datetime
-import os
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath("../web"))
+sys.path.insert(0, str(Path("../web").resolve()))
 
 import b3desk
 

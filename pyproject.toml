@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.6.1"
+version = "1.6.2"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }
@@ -96,12 +96,20 @@ filterwarnings = [
 
 [tool.ruff.lint]
 select = [
+    "C90", # mccabe
     "B", # flake8-bugbear
     "D", # pydocstyle
     "E", # pycodestyle
     "F", # pyflakes
     "I", # isort
     "UP", # pyupgrade
+    "SIM",
+    "RET",
+    "BLE",
+    "ERA",
+    "PIE",
+    "RUF",
+    "PTH",
 ]
 ignore = [
     "E501", # line-too-long
@@ -116,9 +124,13 @@ ignore = [
     "D107", # public init
     "D203", # no-blank-line-before-class
     "D213", # multi-line-summary-second-line
+    "RUF001", # ambiguous unicode chars in strings (we keep French typography)
+    "RUF002", # ambiguous unicode chars in docstrings (we keep French typography)
+    "RUF003", # ambiguous unicode chars in comments (we keep French typography)
 ]
 
-
+[tool.ruff.lint.per-file-ignores]
+"web/migrations/*" = ["ERA001"] # stock Alembic template comments
 
 [tool.ruff.lint.isort]
 force-single-line = true

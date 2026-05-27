@@ -17,21 +17,23 @@ bp = Blueprint("api", __name__)
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["profile", "email"])
 def api_meetings():
-    """Return all non-shadow meetings for the authenticated user via API."""
+    """Return all non-shadow meetings owned by or delegated to the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
     user = get_or_create_user(userinfo)
 
+    owned = [(meeting, False) for meeting in user.meetings if not meeting.is_shadow]
+    delegated = [(meeting, True) for meeting in user.get_all_delegated_meetings]
+
     return {
         "meetings": [
             {
-                **{
-                    "name": meeting.name,
-                    "moderator_url": get_signin_url(meeting, Role.moderator),
-                    "attendee_url": get_signin_url(meeting, Role.attendee),
-                    "visio_code": meeting.visio_code,
-                },
+                "name": meeting.name,
+                "moderator_url": get_signin_url(meeting, Role.moderator),
+                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "visio_code": meeting.visio_code,
+                "delegate": is_delegate,
                 **(
                     {
                         "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],
@@ -50,8 +52,7 @@ def api_meetings():
                     else {}
                 ),
             }
-            for meeting in user.meetings
-            if not meeting.is_shadow
+            for meeting, is_delegate in owned + delegated
         ]
     }
 
@@ -71,12 +72,10 @@ def shadow_meeting():
     return {
         "shadow-meeting": [
             {
-                **{
-                    "name": meeting.name,
-                    "moderator_url": get_signin_url(meeting, Role.moderator),
-                    "attendee_url": get_signin_url(meeting, Role.attendee),
-                    "visio_code": meeting.visio_code,
-                },
+                "name": meeting.name,
+                "moderator_url": get_signin_url(meeting, Role.moderator),
+                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "visio_code": meeting.visio_code,
                 **(
                     {
                         "phone_number": current_app.config["BIGBLUEBUTTON_DIALNUMBER"],

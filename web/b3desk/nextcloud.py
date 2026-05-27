@@ -135,10 +135,7 @@ def is_nextcloud_unavailable_error(error):
     if isinstance(error, (NoConnection, ConnectionException)):
         return True
 
-    if isinstance(error, ResponseErrorCode) and error.code >= 500:
-        return True
-
-    return False
+    return bool(isinstance(error, ResponseErrorCode) and error.code >= 500)
 
 
 def is_auth_error(error):
@@ -293,7 +290,7 @@ def get_secondary_identity_provider_id_from_email(email):
     found_users = users_response.json()
     if (user_count := len(found_users)) > 1:
         raise TooManyUsers(f"There are {user_count} users with the email {email}")
-    elif user_count < 1:
+    if user_count < 1:
         raise NoUserFound(f"There are no users with the email {email}")
 
     [user] = found_users
@@ -313,10 +310,8 @@ def can_get_file_sharing_credentials(preferred_username, email):
         and current_app.config["FILE_SHARING"]
     )
     return (
-        is_cloud_configured
-        and has_secondary_identity_with_email(email)
-        or preferred_username
-    )
+        is_cloud_configured and has_secondary_identity_with_email(email)
+    ) or preferred_username
 
 
 def get_user_nc_credentials(user):

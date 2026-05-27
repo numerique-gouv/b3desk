@@ -26,7 +26,7 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
-from .users import User  # noqa: F401
+from .users import User
 
 
 class AccessLevel(IntEnum):
@@ -171,11 +171,10 @@ class Meeting(db.Model):
         """Return the meeting ID or temporary fake ID for quick meetings."""
         if self.id is not None:
             return self.id
-        else:
-            try:
-                return self._fake_id
-            except:
-                return None
+        try:
+            return self._fake_id
+        except:
+            return None
 
     @fake_id.setter
     def fake_id(self, fake_value):
@@ -363,12 +362,11 @@ def get_or_create_shadow_meeting(user):
         for shadow_meeting in shadow_meetings:
             if shadow_meeting is not shadow_meetings[0]:
                 save_voiceBridge_and_delete_meeting(shadow_meeting)
-    meeting = (
+    return (
         create_and_save_shadow_meeting(user)
         if not shadow_meetings
         else shadow_meetings[0]
     )
-    return meeting
 
 
 def save_voiceBridge_and_delete_meeting(meeting):
