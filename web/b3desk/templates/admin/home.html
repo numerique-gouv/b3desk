@@ -2,13 +2,22 @@
 
 {% block main %}
     {% include 'admin/options.html' %}
-    {% if users_page %}
-        {% include 'admin/users.html' %}
-    {% endif %}
-    {% if meetings_page %}
-        {% include 'admin/meetings.html' %}
-    {% endif %}
-    {% if selected_user %}
-        {% include 'admin/selected_user.html' %}
-    {% endif %}
+    <div class="fr-py-3w main-connected-actions">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col">
+                    <h4>{% trans %}Liste des utilisateurs{% endtrans %}</h4>
+                    <a class="fr-btn" href="{{ url_for("admin.manage_users") }}" title="{% trans %}Liste des utilisateurs{% endtrans %}">
+                        {% trans %}Utilisateurs{% endtrans %}
+                    </a>
+                </div>
+                <div class="fr-col">
+                    <h4>{% trans %}Liste des réunions{% endtrans %}</h4>
+                    <a class="fr-btn" href="{{ url_for("admin.manage_meetings") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                        {% trans %}Réunions{% endtrans %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

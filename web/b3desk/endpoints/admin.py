@@ -21,10 +21,6 @@ MAX_PER_PAGE = 50
 def home():
     return render_template(
         "admin/home.html",
-        admin_mode=True,
-        users_page=None,
-        meetings_page=None,
-        selected_user=None,
     )
 
 
@@ -35,22 +31,18 @@ def manage_users():
     if not request.form or not form.validate():
         users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=None)
         return render_template(
-            "admin/home.html",
+            "admin/users.html",
             admin_mode=True,
             users_page=users_page,
-            meetings_page=None,
-            selected_user=None,
             form=form,
             data=None,
         )
     data = form.search.data.lower()
     users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
     return render_template(
-        "admin/home.html",
+        "admin/users.html",
         admin_mode=True,
         users_page=users_page,
-        meetings_page=None,
-        selected_user=None,
         form=form,
         data=data,
     )
@@ -63,22 +55,18 @@ def manage_meetings():
     if not request.form or not form.validate():
         meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=None)
         return render_template(
-            "admin/home.html",
+            "admin/meetings.html",
             admin_mode=True,
-            users_page=None,
             meetings_page=meetings_page,
-            selected_user=None,
             form=form,
             data=None,
         )
     data = form.search.data.lower()
     meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=data)
     return render_template(
-        "admin/home.html",
+        "admin/meetings.html",
         admin_mode=True,
-        users_page=None,
         meetings_page=meetings_page,
-        selected_user=None,
         form=form,
         data=data,
     )
@@ -88,9 +76,7 @@ def manage_meetings():
 @admin_needed
 def user_infos(user: User):
     return render_template(
-        "admin/home.html",
+        "admin/selected_user.html",
         admin_mode=True,
-        users_page=None,
-        meetings_page=None,
         selected_user=user,
     )

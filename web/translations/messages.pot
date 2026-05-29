@@ -220,11 +220,11 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:3
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:7
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:3
+#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:7
 msgid "Rechercher une réunion"
 msgstr ""
 
@@ -767,16 +767,15 @@ msgid "Vous êtes administrateur."
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:40
-msgid "Vous pouvez accéder à la page d'administration."
+msgid "Vous pouvez accéder au menu d'administration."
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:1
 #: web/b3desk/templates/jumbotron.html:44
-msgid "Ouvrir la page d'administration"
+msgid "Ouvrir le menu d'administration"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:45
-msgid "Page d'administration"
+msgid "Menu d'administration"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:63
@@ -820,15 +819,33 @@ msgstr ""
 msgid "S’identifier"
 msgstr ""
 
+#: web/b3desk/templates/admin/home.html:9
+#: web/b3desk/templates/admin/home.html:10
+msgid "Liste des utilisateurs"
+msgstr ""
+
+#: web/b3desk/templates/admin/home.html:11
+msgid "Utilisateurs"
+msgstr ""
+
+#: web/b3desk/templates/admin/home.html:15
+#: web/b3desk/templates/admin/home.html:16
+msgid "Liste des réunions"
+msgstr ""
+
+#: web/b3desk/templates/admin/home.html:17
+msgid "Réunions"
+msgstr ""
+
 #: web/b3desk/templates/admin/meeting_table.html:10
 #: web/b3desk/templates/admin/selected_user.html:14
-#: web/b3desk/templates/admin/users.html:21
+#: web/b3desk/templates/admin/users.html:25
 msgid "Identifiant"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_table.html:11
 #: web/b3desk/templates/admin/selected_user.html:22
-#: web/b3desk/templates/admin/users.html:22
+#: web/b3desk/templates/admin/users.html:26
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
 msgstr ""
@@ -852,34 +869,22 @@ msgstr ""
 msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
-#: web/b3desk/templates/admin/meetings.html:10
+#: web/b3desk/templates/admin/meetings.html:14
 msgid "Aucune réunion ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:2
+#: web/b3desk/templates/admin/options.html:5
+#: web/b3desk/templates/admin/options.html:6
 msgid "Quitter la page d'administration"
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:10
 #: web/b3desk/templates/admin/options.html:11
-msgid "Liste des utilisateurs"
-msgstr ""
-
 #: web/b3desk/templates/admin/options.html:12
-msgid "Utilisateurs"
-msgstr ""
-
-#: web/b3desk/templates/admin/options.html:16
-#: web/b3desk/templates/admin/options.html:17
-msgid "Liste des réunions"
-msgstr ""
-
-#: web/b3desk/templates/admin/options.html:18
-msgid "Réunions"
+msgid "Retour au menu d'administration"
 msgstr ""
 
 #: web/b3desk/templates/admin/selected_user.html:30
-#: web/b3desk/templates/admin/users.html:24
+#: web/b3desk/templates/admin/users.html:28
 msgid "Email"
 msgstr ""
 
@@ -925,20 +930,20 @@ msgstr ""
 msgid "Réunions déléguées"
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:10
+#: web/b3desk/templates/admin/users.html:14
 msgid "Aucun utilisateur ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:23
+#: web/b3desk/templates/admin/users.html:27
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:25
+#: web/b3desk/templates/admin/users.html:29
 msgid "Consulter"
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:44
+#: web/b3desk/templates/admin/users.html:48
 #, python-format
 msgid "%(username)s infos"
 msgstr ""
