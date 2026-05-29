@@ -109,6 +109,13 @@ def _build_recording_links(playbacks):
                 "url": video.get("direct_link", video["url"]),
             }
         )
+    if "ai-summary" in playbacks:
+        summary = playbacks["ai-summary"]
+        links.append({"label": _("Compte-rendu (HTML)"), "url": summary["url"]})
+        if "pdf" in summary:
+            links.append({"label": _("Compte-rendu (PDF)"), "url": summary["pdf"]})
+        if "md" in summary:
+            links.append({"label": _("Compte-rendu (Markdown)"), "url": summary["md"]})
     return links
 
 
