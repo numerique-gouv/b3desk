@@ -320,6 +320,15 @@ class BBB:
                     continue
 
                 for format in playback.iter("format"):
+                    type = format.find("type").text
+                    if type not in ("presentation", "video"):
+                        logger.warning(
+                            "Unhandled recording playback format %r for recording %s",
+                            type,
+                            data["recordID"],
+                        )
+                        continue
+
                     images = []
                     preview = format.find("preview")
                     if preview is not None:
@@ -327,16 +336,15 @@ class BBB:
                             image = {k: v for k, v in i.attrib.items()}
                             image["url"] = i.text
                             images.append(image)
-                    type = format.find("type").text
-                    if type in ("presentation", "video"):
-                        data["playbacks"][type] = {
-                            "url": (media_url := format.find("url").text),
-                            "images": images,
-                        }
-                        if type == "video":
-                            data["playbacks"][type]["direct_link"] = (
-                                media_url + "video-0.m4v"
-                            )
+
+                    data["playbacks"][type] = {
+                        "url": (media_url := format.find("url").text),
+                        "images": images,
+                    }
+                    if type == "video":
+                        data["playbacks"][type]["direct_link"] = (
+                            media_url + "video-0.m4v"
+                        )
                 result.append(data)
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
