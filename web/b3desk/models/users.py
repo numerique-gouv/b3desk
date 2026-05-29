@@ -128,6 +128,9 @@ class User(db.Model):
     favorites = db.relationship(
         "Meeting", secondary="favorite", back_populates="favorite_of"
     )
+    groups = db.relationship(
+        "Group", secondary="group_member", back_populates="members"
+    )
 
     @property
     def fullname(self):

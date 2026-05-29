@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:292 web/b3desk/endpoints/meeting_files.py:124
+#: web/b3desk/__init__.py:293 web/b3desk/endpoints/meeting_files.py:124
 #: web/b3desk/endpoints/meeting_files.py:183
 #: web/b3desk/endpoints/meeting_files.py:288
 #: web/b3desk/endpoints/meeting_files.py:478
@@ -837,6 +837,7 @@ msgstr ""
 msgid "Visio-code"
 msgstr ""
 
+#: web/b3desk/templates/admin/group/form.html:24
 #: web/b3desk/templates/admin/meeting_table.html:13
 #: web/b3desk/templates/meeting/form.html:56
 msgid "Modifier"
@@ -940,6 +941,40 @@ msgstr ""
 #: web/b3desk/templates/admin/users.html:44
 #, python-format
 msgid "%(username)s infos"
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:26
+msgid "Créer un groupe"
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:32
+#: web/b3desk/templates/meeting/files.html:47
+#: web/b3desk/templates/meeting/form.html:63
+msgid "Enregistrement impossible car certains champs sont mal renseignés."
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:39
+msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:46
+#: web/b3desk/templates/meeting/form.html:173
+msgid "Enregistrer"
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:48
+msgid "Créer le groupe"
+msgstr ""
+
+#: web/b3desk/templates/admin/group/form.html:50
+#: web/b3desk/templates/meeting/files.html:171
+#: web/b3desk/templates/meeting/form.html:178
+#: web/b3desk/templates/meeting/form.html:180
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
+#: web/b3desk/templates/meeting/modals/delete.html:54
+#: web/b3desk/templates/meeting/recordings.html:109
+#: web/b3desk/templates/meeting/recordings.html:153
+msgid "Annuler"
 msgstr ""
 
 #: web/b3desk/templates/errors/400.html:7
@@ -2126,11 +2161,6 @@ msgstr ""
 msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:47
-#: web/b3desk/templates/meeting/form.html:63
-msgid "Enregistrement impossible car certains champs sont mal renseignés."
-msgstr ""
-
 #: web/b3desk/templates/meeting/files.html:87
 msgid "Ajouter"
 msgstr ""
@@ -2205,16 +2235,6 @@ msgstr ""
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:171
-#: web/b3desk/templates/meeting/form.html:178
-#: web/b3desk/templates/meeting/form.html:180
-#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
-#: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:109
-#: web/b3desk/templates/meeting/recordings.html:153
-msgid "Annuler"
-msgstr ""
-
 #: web/b3desk/templates/meeting/files.html:188
 #: web/b3desk/templates/meeting/files.html:191
 msgid "Oui"
@@ -2278,10 +2298,6 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:148
 msgid "Paramètres avancés"
-msgstr ""
-
-#: web/b3desk/templates/meeting/form.html:173
-msgid "Enregistrer"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:175
