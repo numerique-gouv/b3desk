@@ -20,4 +20,23 @@
             </div>
         </div>
     </div>
+    <div class="fr-py-3w main-connected-actions">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col">
+                    <h4>{% trans %}Créer un groupe{% endtrans %}</h4>
+                    <a class="fr-btn" href="{{ url_for("admin.create_group") }}" title="{% trans %}Liste des utilisateurs{% endtrans %}">
+                        {% trans %}Créer{% endtrans %}
+                    </a>
+                </div>
+                <div class="fr-col">
+                    <h4>{% trans %}Gestion des groupes{% endtrans %}</h4>
+                    <a class="fr-btn" href="{{ url_for("admin.manage_groups") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                        {% trans %}Gérer{% endtrans %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
 {% endblock %}

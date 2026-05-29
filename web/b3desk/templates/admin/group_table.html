@@ -1,0 +1,44 @@
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12">
+        <div class="fr-table fr-table--no-caption" id="groups-component">
+            <div class="fr-table__wrapper ">
+                <div class="fr-table__container">
+                    <div class="fr-table__content">
+                        <table id="groups">
+                            <thead class="">
+                                <tr class="">
+                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Modifier le groupe{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Gérer les membres{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                {% for group in groups %}
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {{ group.id }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ group.name }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("admin.edit_group", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans group_name=group.name %}Éditer {{ group_name }}{% endtrans %}"></a>
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("admin.manage_group_members", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-team-line" title="{% trans group_name=group.name %}Gérer les membres de {{ group_name }}{% endtrans %}"></a>
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("admin.delete_group", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans group_name=group.name %}Supprimer {{ group_name }}{% endtrans %}"></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

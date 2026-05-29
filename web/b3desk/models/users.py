@@ -21,22 +21,6 @@ from b3desk.utils import secret_key
 from . import db
 
 
-def get_users_paginate(max_per_page, data=None):
-    from sqlalchemy import or_
-
-    query = db.select(User).order_by(User.created_at)
-    if data:
-        query = query.where(
-            or_(
-                User.id == int(data) if data.isdigit() else None,
-                User.given_name.ilike(f"%{data}%"),
-                User.family_name.ilike(f"%{data}%"),
-                User.email.ilike(f"%{data}%"),
-            )
-        )
-    return db.paginate(query, max_per_page=max_per_page)
-
-
 def get_or_create_user(user_info):
     """Get existing user by email or create a new user from user_info dictionary.
 

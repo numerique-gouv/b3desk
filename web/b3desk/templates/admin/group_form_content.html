@@ -1,0 +1,13 @@
+{% include 'meeting/csrf.html' %}
+{% if form.errors %}
+    <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
+{% endif %}
+
+{{ render_field(form.name) }}
+{% if config.FQDN_SIP_SERVER %}
+    {{ render_field(form.enable_sip) }}
+{% else %}
+    {{ render_field(form.enable_sip, description=_("Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"), disabled=True) }}
+{% endif %}
+{{ render_field(form.enable_file_sharing) }}
+{{ render_field(form.enable_transcription) }}

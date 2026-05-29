@@ -13,50 +13,7 @@
         <br>
         <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12">
-                <div class="fr-table fr-table--no-caption" id="users-component">
-                    <div class="fr-table__wrapper ">
-                        <div class="fr-table__container">
-                            <div class="fr-table__content">
-                                <table id="users">
-                                    <thead class="">
-                                        <tr class="">
-                                            <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
-                                            <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
-                                            <th class="fr-col fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
-                                            <th class="fr-col fr-cell--center">{% trans %}Email{% endtrans %}</th>
-                                            <th class="fr-col fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="">
-                                        {% for user in users %}
-                                            <tr class="">
-                                                <td class="fr-col fr-cell--center">
-                                                    {{ user.id }}
-                                                </td>
-                                                <td class="fr-col fr-cell--center">
-                                                    {{ user.family_name }}
-                                                </td>
-                                                <td class="fr-col fr-cell--center">
-                                                    {{ user.given_name }}
-                                                </td>
-                                                <td class="fr-col fr-cell--center">
-                                                    {{ user.email }}
-                                                </td>
-                                                <td class="fr-col fr-cell--center">
-                                                    <a href="{{ url_for("admin.user_infos", user=user) }}" target="_blank" rel="noopener" class="fr-tag" title="{% trans username=user.fullname %}{{ username }} infos{% endtrans %}"></a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'admin/user_table.html' %}
 
         <nav>
             {% if users_page.has_prev %}

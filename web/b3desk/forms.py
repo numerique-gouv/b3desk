@@ -8,6 +8,7 @@ from wtforms import EmailField
 from wtforms import FloatField
 from wtforms import Form
 from wtforms import IntegerField
+from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import validators
@@ -273,4 +274,68 @@ class MeetingSearchForm(FlaskForm):
     search = StringField(
         label=_("Rechercher une réunion"),
         render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )
+
+
+class GroupSearchForm(FlaskForm):
+    search = StringField(
+        label=_("Rechercher un groupe"),
+        render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )
+
+
+class MemberSearchForm(FlaskForm):
+    search = EmailField(
+        label=_("Ajout de membre"),
+        render_kw={
+            "placeholder": "Saisir l'e-mail de l'utilisateur (ex: nom@exemple.fr)"
+        },
+        validators=[validators.DataRequired()],
+    )
+
+
+def nullable_bool(value):
+    if value in (None, "", "None"):
+        return None
+    return value in (True, "True")
+
+
+class GroupForm(FlaskForm):
+    id = IntegerField()
+    name = StringField(
+        label=_(
+            "Nom du groupe",
+        ),
+        description=_("doit être unique"),
+        validators=[
+            validators.DataRequired(),
+            validators.length(max=MAX_MEETING_NAME_LENGTH),
+        ],
+    )
+    enable_sip = SelectField(
+        label=_(
+            "SIP",
+        ),
+        description=_(f"{current_app.config['ENABLE_SIP']} par défaut"),
+        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        coerce=nullable_bool,
+        default="None",
+    )
+    enable_file_sharing = SelectField(
+        label=_(
+            "Ajout de document",
+        ),
+        description=_(f"{current_app.config['FILE_SHARING']} par défaut"),
+        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        coerce=nullable_bool,
+        default="None",
+    )
+    enable_transcription = SelectField(
+        label=_(
+            "Transcription",
+        ),
+        description=_("inexistant"),
+        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        coerce=nullable_bool,
+        default="None",
     )

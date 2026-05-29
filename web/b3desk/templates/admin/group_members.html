@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    {% include 'admin/options.html' %}
+    <h1 class="fr-h2">{% trans %}Gérer les membres{% endtrans %}</h2>
+    <form class="fr-search-bar" id="memberSearchForm", name="search_by_email" role="search" action="{{ url_for('admin.manage_group_members', group=group) }}" method="post">
+        {% include 'meeting/csrf.html' %}
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Ajouter l'utilisateur au groupe{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    {% include 'admin/group_member_table.html'%}
+{% endblock %}
