@@ -2,6 +2,14 @@
   # Other container are available in docker-compose.override.yml if needed
   # see documentation [link] for more info
 
+x-app-volumes: &app-volumes
+  - ./web/logs:/var/log
+  - ./web/conf:/opt/bbb-visio/conf
+  - ./web/b3desk:/opt/bbb-visio/b3desk
+  - ./web/instance:/opt/bbb-visio/instance
+  - ./web/migrations:/opt/bbb-visio/migrations
+  - ./web/translations:/opt/bbb-visio/translations
+
 services:
   web:
     container_name: web
@@ -14,13 +22,7 @@ services:
     #   - web.env
     environment:
       - FLASK_APP=b3desk
-    volumes:
-      - ./web/logs:/var/log
-      - ./web/conf:/opt/bbb-visio/conf
-      - ./web/b3desk:/opt/bbb-visio/b3desk
-      - ./web/instance:/opt/bbb-visio/instance
-      - ./web/migrations:/opt/bbb-visio/migrations
-      - ./web/translations:/opt/bbb-visio/translations
+    volumes: *app-volumes
     ports:
       - 5000:5000
 
@@ -36,6 +38,7 @@ services:
     # env_file:
     #   - web.env  # to get shared REDIS_URL
     # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env
+    volumes: *app-volumes
     entrypoint: []
     command: celery --app b3desk.celery_worker.celery worker --loglevel=info
 
