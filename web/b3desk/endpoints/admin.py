@@ -295,6 +295,7 @@ def manage_group_members(group: Group):
 def remove_member(group: Group, member: User):
     """Display group members list and member removing admin page."""
     form = MemberSearchForm()
+    current_app.logger.warning(member)
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
     else:
@@ -330,4 +331,6 @@ def confirm_delete_group(group: Group):
     """Display group deletion of admin page."""
     db.session.delete(group)
     db.session.commit()
+    flash(_("Le groupe a été supprimé"), "success")
+    current_app.logger.info("Groupe %s %s deleted", group.id, group.name)
     return redirect(url_for("admin.manage_groups"))

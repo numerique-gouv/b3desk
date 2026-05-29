@@ -326,12 +326,16 @@ msgstr ""
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:299
+#: web/b3desk/endpoints/admin.py:300
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:303
+#: web/b3desk/endpoints/admin.py:304
 msgid "L'utilisateur a été retiré du groupe"
+msgstr ""
+
+#: web/b3desk/endpoints/admin.py:334
+msgid "Le groupe a été supprimé"
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:68
@@ -982,6 +986,10 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_member_table.html:10
 msgid "membres"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_member_table.html:10
+msgid "membre"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_member_table.html:11

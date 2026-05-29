@@ -583,6 +583,22 @@ def user_3(client_app, iam_user_3):
 
 
 @pytest.fixture
+def group(client_app):
+    from b3desk.models.groups import Group
+
+    group = Group(
+        name="Group 1",
+        enable_sip=True,
+        enable_file_sharing=True,
+        enable_transcription=True,
+    )
+    db.session.add(group)
+    db.session.commit()
+
+    yield group
+
+
+@pytest.fixture
 def previous_voiceBridge(client_app):
     from b3desk.models.meetings import PreviousVoiceBridge
 

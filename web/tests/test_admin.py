@@ -1,4 +1,13 @@
+import pytest
 from b3desk.commands import bp
+from b3desk.models import db
+from b3desk.models.groups import Group
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_user):
@@ -213,8 +222,15 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
 
 
 def test_admin_can_edit_meeting_for_other_user(
-    cli_runner, user, user_2, meeting_1_user_2, client_app, authenticated_user
+    cli_runner,
+    user,
+    user_2,
+    meeting_1_user_2,
+    client_app,
+    authenticated_user,
+    mock_meeting_is_not_running,
 ):
+    """Test admin can edit meeting owned by an other user."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/meeting/edit/1?admin_mode=True", status=200)
     assert res.template == "meeting/wizard.html"
@@ -224,3 +240,212 @@ def test_admin_can_edit_meeting_for_other_user(
         "success",
         "delegated meeting modifications prises en compte",
     ) in res.flashes
+    assert res.location == "/admin/home"
+
+
+def test_admin_can_create_group(
+    cli_runner,
+    user,
+    client_app,
+    authenticated_user,
+):
+    """Test admin can create group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/create-group", status=200)
+    res.form["name"] = "Group 1"
+    res.form["enable_sip"] = None
+    res.form["enable_file_sharing"] = None
+    res.form["enable_transcription"] = None
+    res = res.form.submit()
+    assert (
+        "success",
+        "Group 1 a bien été créé(e)",
+    ) in res.flashes
+
+
+def test_create_group_have_a_condition_on_sip(
+    cli_runner,
+    user,
+    client_app,
+    authenticated_user,
+):
+    """Test creation group have a condition on enable sip parameter."""
+    client_app.app.config["FQDN_SIP_SERVER"] = None
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/create-group", status=200)
+    assert "disabled" in res.form["enable_sip"].attrs
+
+
+def test_admin_cannot_create_group_with_existing_name(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test group name is a unique value."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/create-group", status=200)
+    res.form["name"] = "Group 1"
+    res.form["enable_sip"] = None
+    res.form["enable_file_sharing"] = None
+    res.form["enable_transcription"] = None
+    res = res.form.submit()
+    assert "Ce nom est déjà utilisé." in res.text
+    assert len(Group.query.all()) == 1
+
+
+def test_admin_can_display_groups(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test admin can display groups."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups", status=200)
+    assert "Group 1" in res.text
+
+
+def test_admin_can_add_member_in_group(
+    cli_runner, user, client_app, authenticated_user, group, caplog
+):
+    """Test admin can add a user in a group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
+    assert "(1 membre)" in res.text
+    assert len(group.members) == 1
+    assert ("success", "L'utilisateur a été ajouté au groupe") in res.flashes
+    assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+
+
+def test_admin_cannot_add_member_already_in_group(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test admin cannot add a user already in a group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
+    assert ("warning", "L'utilisateur est déjà dans le groupe") in res.flashes
+    assert "(1 membre)" in res.text
+    assert len(group.members) == 1
+
+
+def test_admin_can_read_an_information_adding_user_with_wrong_mail_in_group(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test admin can read message adding wrong email to add group member."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "john@domain.tld"
+    res = res.form.submit()
+    assert len(group.members) == 0
+    assert "(0 membre)" in res.text
+    assert ("error", "L'utilisateur recherché n'existe pas") in res.flashes
+    assert "Ce groupe n'a pas encore de membre." in res.text
+
+
+def test_admin_can_remove_member_from_group(
+    cli_runner, user, client_app, authenticated_user, group, caplog
+):
+    """Test admin can remove member from group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
+    res = client_app.get("/admin/manage-group-members/1/1", status=200)
+    assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
+    assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
+
+
+def test_admin_can_read_information_removing_non_member_user(
+    cli_runner, user, user_2, client_app, authenticated_user, group
+):
+    """Test admin can read inforamtion removing non member user."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
+    res = client_app.get("/admin/manage-group-members/1/2", status=200)
+    assert ("error", "L'utilisateur ne fait pas partie du groupe") in res.flashes
+
+
+def test_admin_can_read_group_infos_before_confirm_group_removing(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test admin can read group infos before confirm group removing."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/delete-group/1", status=200)
+    assert res.template == "admin/delete_group.html"
+
+
+def test_research_bar_with_no_result_in_group_list_in_admin_page(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test search with no result in groups."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups", status=200)
+    res.form["search"] = "zzz"
+    res = res.form.submit()
+    assert "Aucun groupe ne correspond à cette recherche." in res.text
+
+
+def test_research_bar_with_digit_in_group_list_in_admin_page(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test search with digit in groups."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups", status=200)
+    res.form["search"] = "1"
+    res = res.form.submit()
+    assert "Group 1" in res.text
+
+
+def test_research_bar_with_letters_in_group_list_in_admin_page(
+    cli_runner, user, client_app, authenticated_user, group
+):
+    """Test search with letters in groups."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups", status=200)
+    res.form["search"] = "gro"
+    res = res.form.submit()
+    assert "Group 1" in res.text
+
+
+def test_admin_can_remove_group(
+    cli_runner, user, client_app, authenticated_user, group, caplog
+):
+    """Test admin can remove group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/confirm-delete-group/1", status=302)
+    assert ("success", "Le groupe a été supprimé") in res.flashes
+    assert "Groupe 1 Group 1 deleted" in caplog.text
+    groups = db.session.scalars(db.select(Group)).all()
+    assert len(groups) == 0
+
+
+def test_admin_can_edit_group(
+    cli_runner, user, client_app, authenticated_user, group, caplog
+):
+    """Test admin can edit group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/edit-group/1", status=200)
+    res.form["name"] = "Group 2"
+    res.form["enable_sip"] = None
+    res.form["enable_file_sharing"] = None
+    res.form["enable_transcription"] = None
+    res.form.submit()
+    assert (
+        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_transcription': None}"
+        in caplog.text
+    )
+    group = db.session.get(Group, 1)
+    assert group.name == "Group 2"
+
+
+def test_edit_group_invalid_form(cli_runner, client_app, authenticated_user, group):
+    """Test group edition form dipsplay message if not validated."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get(f"/admin/edit-group/{group.id}", status=200)
+    res.form["name"] = ""
+    res = res.form.submit()
+    assert res.status_int == 200
+    assert ("error", "Le formulaire contient des erreurs") in res.flashes
