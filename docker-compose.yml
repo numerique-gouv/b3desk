@@ -38,9 +38,11 @@ services:
     # env_file:
     #   - web.env  # to get shared REDIS_URL
     # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env
+    environment:
+      - APP=b3desk.celery_worker.celery
     volumes: *app-volumes
     entrypoint: []
-    command: celery --app b3desk.celery_worker.celery worker --loglevel=info
+    command: celery worker --loglevel=info
 
   broker:
     container_name: broker
