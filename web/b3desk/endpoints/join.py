@@ -77,7 +77,7 @@ def signin_meeting(
         return redirect(
             url_for("join.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
         )
-    elif not role:
+    if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
 
         return redirect(url_for("public.index"))

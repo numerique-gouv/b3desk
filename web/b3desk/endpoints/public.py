@@ -42,11 +42,10 @@ def get_meetings_stats():
         stats_array = [row.split(",") for row in stats_array]
         participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
         running_count = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except Exception:
+    except requests.RequestException:
         return None
 
-    result = {"participantCount": participant_count, "runningCount": running_count}
-    return result
+    return {"participantCount": participant_count, "runningCount": running_count}
 
 
 @bp.route("/")
@@ -54,8 +53,7 @@ def index():
     """Redirect to welcome page if authenticated, otherwise to home page."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
-    else:
-        return redirect(url_for("public.home"))
+    return redirect(url_for("public.home"))
 
 
 @bp.route("/home")

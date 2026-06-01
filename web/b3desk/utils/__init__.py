@@ -49,8 +49,7 @@ def is_rie():
 def get_random_alphanumeric_string(length):
     """Generate a random alphanumeric string of specified length."""
     letters_and_digits = string.ascii_letters + string.digits
-    result_str = "".join(random.choice(letters_and_digits) for i in range(length))
-    return result_str
+    return "".join(random.choice(letters_and_digits) for i in range(length))
 
 
 def make_smtp():
@@ -149,6 +148,7 @@ def enum_converter(enum):
                 if identifier == slugify(item.value):
                     return item
             abort(404)
+            return None
 
     return EnumConverter
 
