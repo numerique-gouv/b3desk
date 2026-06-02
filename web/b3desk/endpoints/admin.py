@@ -126,6 +126,17 @@ def manage_meetings():
     )
 
 
+@bp.route("/admin/meeting/<meeting:meeting>")
+@admin_needed
+def meeting_infos(meeting: Meeting):
+    """Display meeting infos of admin page."""
+    return render_template(
+        "admin/selected_meeting.html",
+        admin_mode=True,
+        selected_meeting=meeting,
+    )
+
+
 @bp.route("/admin/user/<user:user>")
 @admin_needed
 def user_infos(user: User):

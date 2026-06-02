@@ -50,6 +50,7 @@ bp = Blueprint("meeting_files", __name__)
 def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
+    admin_mode = "admin_mode" in request.args or False
 
     if not meeting.owner_can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
@@ -64,6 +65,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
+        admin_mode=admin_mode,
     )
 
 
