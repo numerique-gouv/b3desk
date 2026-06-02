@@ -281,7 +281,13 @@ def test_save_meeting_in_no_recording_environment(
 
 
 def test_create_no_file(
-    client_app, meeting, mocker, bbb_response, mock_meeting_is_not_running
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
 ):
     """Tests the BBB meeting creation request.
 

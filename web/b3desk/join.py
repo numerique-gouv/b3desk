@@ -158,6 +158,9 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         analytics_callback_url=current_app.config[
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
+        file_sharing=user.can_use_file_sharing
+        if user
+        else current_app.config["FILE_SHARING"],
     )
 
     current_app.logger.info(

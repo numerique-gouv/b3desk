@@ -197,6 +197,22 @@ class Meeting(db.Model):
             .all()
         )
 
+    @property
+    def owner_can_use_sip(self):
+        owner = self.owner
+        if not owner.groups:
+            return current_app.config["ENABLE_SIP"]
+        if any(group.enable_sip for group in owner.groups):
+            return True
+        if all(group.enable_sip is False for group in owner.groups):
+            return False
+        return current_app.config["ENABLE_SIP"]
+
+    @property
+    def owner_can_use_file_sharing(self):
+        owner = self.owner
+        return owner.can_use_file_sharing
+
 
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)

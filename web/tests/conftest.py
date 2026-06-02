@@ -476,6 +476,36 @@ def meeting_1_user_2(client_app, user, user_2):
 
 
 @pytest.fixture
+def meeting_1_user_3(client_app, user, user_3):
+    from b3desk.models.meetings import AccessLevel
+    from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingAccess
+
+    meeting = Meeting(
+        owner=user_3,
+        name="delegated meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="333333333",
+        visio_code="933333333",
+    )
+    db.session.add(meeting)
+    db.session.commit()
+
+    access = MeetingAccess(
+        user_id=user.id,
+        meeting_id=meeting.id,
+        level=AccessLevel.DELEGATE,
+    )
+    db.session.add(access)
+    db.session.commit()
+
+    yield meeting
+
+
+@pytest.fixture
 def shadow_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
@@ -592,6 +622,38 @@ def group(client_app):
         enable_transcription=True,
     )
     db.session.add(group)
+    db.session.commit()
+
+    yield group
+
+
+@pytest.fixture
+def group_2(client_app):
+    from b3desk.models.groups import Group
+
+    group_2 = Group(
+        name="Group 2",
+        enable_sip=False,
+        enable_file_sharing=False,
+        enable_transcription=False,
+    )
+    db.session.add(group_2)
+    db.session.commit()
+
+    yield group
+
+
+@pytest.fixture
+def group_3(client_app):
+    from b3desk.models.groups import Group
+
+    group_3 = Group(
+        name="Group 3",
+        enable_sip=None,
+        enable_file_sharing=None,
+        enable_transcription=None,
+    )
+    db.session.add(group_3)
     db.session.commit()
 
     yield group

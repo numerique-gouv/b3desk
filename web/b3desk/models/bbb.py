@@ -170,6 +170,7 @@ class BBB:
         moderator_only_message=None,
         meta_academy=None,
         analytics_callback_url=None,
+        file_sharing=None,
     ):
         """Create a new meeting.
 
@@ -237,7 +238,7 @@ class BBB:
             params["moderatorOnlyMessage"] = moderator_only_message
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
 
-        if not current_app.config["FILE_SHARING"]:
+        if not file_sharing:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)
 

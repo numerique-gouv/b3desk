@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <!-- lien SIP -->
-                        {% if config.get("ENABLE_SIP") %}
+                        {% if meeting.owner_can_use_sip %}
                             <div class="fr-text--sm invite-accordion">
                                 <section class="fr-accordion">
                                     <h3 class="fr-accordion__title">

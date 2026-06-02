@@ -163,3 +163,13 @@ class User(db.Model):
     @classmethod
     def get_user_by_email(cls, email):
         return db.session.query(User).filter(User.email == email).first()
+
+    @property
+    def can_use_file_sharing(self):
+        if not self.groups:
+            return current_app.config["FILE_SHARING"]
+        if any(group.enable_file_sharing for group in self.groups):
+            return True
+        if all(group.enable_file_sharing is False for group in self.groups):
+            return False
+        return current_app.config["FILE_SHARING"]

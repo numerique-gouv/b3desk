@@ -51,7 +51,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
 
-    if not current_app.config["FILE_SHARING"]:
+    if not meeting.owner_can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
