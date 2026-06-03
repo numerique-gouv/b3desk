@@ -1,24 +1,26 @@
-<form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="post">
-    {% include 'meeting/csrf.html' %}
-    <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
-    {{ form.search.label(class_="fr-label") }}
-    {{ form.search(class_="fr-input")  }}
-</form>
-{% set meetings = meetings_page.items %}
-{% if not meetings %}
-    <br>
-    <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
-{% else %}
-    {% include 'admin/meeting_table.html' %}
-    <nav>
-        {% if meetings_page.has_prev %}
-            <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.prev_num)}}">Précédent</a>
-        {% endif %}
+{% extends 'layout.html' %}
+{% block main %}
+    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="post">
+        {% include 'meeting/csrf.html' %}
+        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+    </form>
+    {% set meetings = meetings_page.items %}
+    {% if not meetings %}
+        <br>
+        <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
+    {% else %}
+        {% include 'admin/meeting_table.html' %}
+        <nav>
+            {% if meetings_page.has_prev %}
+                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.prev_num)}}">Précédent</a>
+            {% endif %}
+            <span>Page {{ meetings_page.page }} / {{ meetings_page.pages }}</span>
 
-        <span>Page {{ meetings_page.page }} / {{ meetings_page.pages }}</span>
-
-        {% if meetings_page.has_next %}
-            <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.next_num)}}">Suivant</a>
-        {% endif %}
-    </nav>
-{% endif %}
+            {% if meetings_page.has_next %}
+                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.next_num)}}">Suivant</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

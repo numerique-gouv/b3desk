@@ -246,7 +246,7 @@ def edit_meeting(meeting: Meeting, user: User):
         )
 
     if admin_mode:
-        return redirect(url_for("admin.home"))
+        return redirect(url_for("admin.meeting_infos", meeting=meeting))
 
     return redirect(url_for("public.welcome"))
 

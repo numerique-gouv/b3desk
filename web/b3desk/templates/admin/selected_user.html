@@ -1,112 +1,115 @@
-{% set user = selected_user %}
-{% set meetings = user.meetings %}
-{% set delegated_meetings = user.get_all_delegated_meetings %}
-<div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-12">
-        <div class="fr-table fr-table--no-caption" id="users-component">
-            <div class="fr-table__wrapper ">
-                <div class="fr-table__container">
-                    <div class="fr-table__content">
-                        <table id="users">
-                            <tbody class="">
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Identifiant{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.id }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Nom{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.fullname }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Email{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.email }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Alias{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.preferred_username }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Dernière connexion{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.last_connection_utc_datetime }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Création{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.created_at }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}Admin{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.admin }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}NC Locator{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.nc_locator }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}NC Login{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.nc_login }}
-                                    </td>
-                                </tr>
-                                <tr class="">
-                                    <td class="fr-col fr-cell--center">
-                                        {% trans %}NC Dernière connexion{% endtrans %}
-                                    </td>
-                                    <td class="fr-col fr-cell--center">
-                                        {{ user.nc_last_auto_enroll }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+{% extends 'layout.html' %}
+
+{% block main %}
+    {% set user = selected_user %}
+    {% set meetings = user.meetings %}
+    {% set delegated_meetings = user.get_all_delegated_meetings %}
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="fr-table fr-table--no-caption" id="selected-user-component">
+                <div class="fr-table__wrapper ">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table id="selected-user">
+                                <tbody class="">
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Identifiant{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.id }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Nom{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.fullname }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Email{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.email }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Alias{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.preferred_username }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Dernière connexion{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.last_connection_utc_datetime }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Création{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.created_at }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Admin{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.admin }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}NC Locator{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.nc_locator }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}NC Login{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.nc_login }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}NC Dernière connexion{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ user.nc_last_auto_enroll }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<h5>{% trans fullname = user.fullname %}Liste des réunions de {{ fullname }}{% endtrans %}</h5>
-{% if meetings %}
-    {% include 'admin/meeting_table.html' %}
-{% else %}
-    <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
-{% endif %}
-{% if delegated_meetings %}
-    <h5>{% trans %}Réunions déléguées{% endtrans %}</h5>
-    {% with meetings=delegated_meetings %}
+    <h5>{% trans fullname = user.fullname %}Liste des réunions de {{ fullname }}{% endtrans %}</h5>
+    {% if meetings %}
         {% include 'admin/meeting_table.html' %}
-    {% endwith %}
-{% endif %}
+    {% else %}
+        <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
+    {% endif %}
+    {% if delegated_meetings %}
+        <h5>{% trans %}Réunions déléguées{% endtrans %}</h5>
+        {% with meetings=delegated_meetings %}
+            {% include 'admin/meeting_table.html' %}
+        {% endwith %}
+    {% endif %}
+{% endblock %}

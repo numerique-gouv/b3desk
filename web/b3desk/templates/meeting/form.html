@@ -177,7 +177,7 @@
     {% if not admin_mode %}
       <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
     {% else %}
-      <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.home") }}">{% trans %}Annuler{% endtrans %}</a>
+      <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">{% trans %}Annuler{% endtrans %}</a>
     {% endif %}
   </div>
 </form>
