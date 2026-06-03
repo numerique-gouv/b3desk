@@ -30,6 +30,33 @@ def delete_old_shadow_meetings():
     delete_all_old_shadow_meetings()
 
 
+@bp.cli.command("populate")
+@click.option("--users", "n_users", default=50, help="Number of users to generate.")
+@click.option(
+    "--meetings", "n_meetings", default=100, help="Number of meetings to generate."
+)
+@click.option(
+    "--seed",
+    default=None,
+    type=int,
+    help="Random seed for reproducible data.",
+)
+def populate(n_users, n_meetings, seed):
+    """CLI command to fill the database with random data (development only)."""
+    if not (current_app.debug or current_app.testing):
+        raise click.ClickException(
+            "The 'populate' command is only available in development."
+        )
+
+    from b3desk.populate import populate as populate_database
+
+    summary = populate_database(n_users=n_users, n_meetings=n_meetings, seed=seed)
+    click.echo(
+        "Created {users} users ({admins} admins), {meetings} meetings, "
+        "{delegations} delegations and {favorites} favorites.".format(**summary)
+    )
+
+
 @bp.cli.command("generate-private-key")
 @click.option("--size", default=2048, help="RSA key size in bits")
 def generate_private_key(size):
