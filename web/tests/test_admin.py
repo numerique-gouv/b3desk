@@ -5,14 +5,14 @@ def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_
     """Test admin can enter admin page."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/home").follow()
-    assert "Vous êtes administrateur." in res.text
+    assert "Admin" in res.text
     client_app.get("/admin/home", status=200)
 
 
 def test_user_cannot_enter_admin_page(cli_runner, user, client_app, authenticated_user):
     """Test user non admin cannot enter admin page."""
     res = client_app.get("/home").follow()
-    assert "Vous êtes administrateur." not in res.text
+    assert "Admin" not in res.text
     client_app.get("/admin/home", status=403)
 
 

@@ -1,22 +1,43 @@
 {% extends 'layout.html' %}
 
 {% block main %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
     <div class="fr-py-3w main-connected-actions">
         <div class="fr-container">
             <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col">
-                    <h4>{% trans %}Liste des utilisateurs{% endtrans %}</h4>
-                    <a class="fr-btn" href="{{ url_for("admin.manage_users") }}" title="{% trans %}Liste des utilisateurs{% endtrans %}">
-                        {% trans %}Utilisateurs{% endtrans %}
-                    </a>
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_users") }}" title="{% trans %}Liste des utilisateurs{% endtrans %}">
+                                    {% trans %}Utilisateurs{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
                 </div>
-                <div class="fr-col">
-                    <h4>{% trans %}Liste des réunions{% endtrans %}</h4>
-                    <a class="fr-btn" href="{{ url_for("admin.manage_meetings") }}" title="{% trans %}Liste des réunions{% endtrans %}">
-                        {% trans %}Réunions{% endtrans %}
-                    </a>
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_meetings") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                                    {% trans %}Réunions{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 {% endblock %}
