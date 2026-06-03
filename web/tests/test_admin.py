@@ -1,7 +1,17 @@
+import json
+from datetime import date
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
+
 import pytest
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import assign_unique_codes
+from b3desk.models.users import User
+from flask import url_for
 
 
 @pytest.fixture()
@@ -449,3 +459,227 @@ def test_edit_group_invalid_form(cli_runner, client_app, authenticated_user, gro
     res = res.form.submit()
     assert res.status_int == 200
     assert ("error", "Le formulaire contient des erreurs") in res.flashes
+
+
+def test_admin_can_toggledownload_meeting_file_not_owner_meeting(
+    cli_runner, client_app, authenticated_user, meeting
+):
+    """Test admin can toggle download meeting file."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=other_meeting.id,
+        owner=other_user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        url_for(
+            "meeting_files.toggledownload",
+            meeting=other_meeting,
+            meeting_file=meeting_file,
+        ),
+        params=json.dumps({"value": True}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 200
+    assert response.json["id"] == meeting_file.id
+    db.session.refresh(meeting_file)
+    assert meeting_file.is_downloadable is True
+
+
+def test_admin_can_delete_meeting_file(
+    cli_runner, client_app, authenticated_user, meeting
+):
+    """Test admin can delete meeting file."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=other_meeting.id,
+        owner=other_user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    file_id = meeting_file.id
+
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": file_id}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 200
+    assert response.json["id"] == meeting_file.id
+    print(response)
+    assert not MeetingFiles.query.all()
+
+
+def test_admin_can_update_recording_name(
+    cli_runner, client_app, authenticated_user, bbb_response
+):
+    """Test admin can update recording name."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/{other_meeting.id}/recordings/recording_id",
+        {"name": "First recording"},
+        status=302,
+    )
+
+    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_url.startswith(
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
+    )
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+    assert bbb_params["meta_name"] == "First recording"
+    assert bbb_params["recordID"] == "recording_id"
+
+    assert f"meeting/recordings/{other_meeting.id}" in response.location
+
+
+###
+
+
+def test_admin_can_delete_recordings(
+    cli_runner,
+    mocker,
+    client_app,
+    authenticated_user,
+    bbb_getRecordings_response,
+    caplog,
+):
+    """Test admin can delete recordings."""
+    from b3desk.models.bbb import BBB
+
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    class DirectLinkRecording:
+        status_code = 200
+
+    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    recordings = BBB(other_meeting.meetingID).get_recordings()
+
+    assert len(recordings) == 2
+    first_recording_id = recordings[0]["recordID"]
+
+    response = client_app.post(
+        f"/meeting/{other_meeting.id}/video/delete",
+        {"recordID": first_recording_id},
+    )
+
+    assert (
+        f"Meeting Other meeting {other_meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
+    ) in caplog.text
+    assert ("success", "Vidéo supprimée") in response.flashes
+
+
+def test_admin_can_open_recordings_page(
+    cli_runner,
+    client_app,
+    authenticated_user,
+    mocker,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Test admin can open recordings page."""
+    from b3desk.models.bbb import BBB
+
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    class DirectLinkRecording:
+        status_code = 200
+
+    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    response = client_app.get(f"/meeting/recordings/{other_meeting.id}")
+    html = response.body.decode("utf-8")
+    assert (
+        html.count(
+            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line"'
+        )
+        == 2
+    )
+    assert len(BBB(other_meeting.meetingID).get_recordings()) == 2
+
+
+def test_admin_can_read_meeting_infos(
+    cli_runner, user, meeting_2_user_2, client_app, authenticated_user
+):
+    """Test admin can read meeting infos."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/meeting/1", status=200)
+    assert res.text.count("922222221") == 1
+    assert res.text.count("222222221") == 1
+    assert res.text.count("Berenice Cooler") == 1
+
+
+def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
+    cli_runner, client_app, authenticated_user, user_2, meeting_2_user_2, group_2
+):
+    """Test admin cannot edit meeting files if owner cannot use file sharing."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "berenice@domain.tld"
+    res = res.form.submit()
+    assert user_2.groups[0].name == "Group 2"
+    res = client_app.get(
+        url_for("meeting_files.edit_meeting_files", meeting=meeting_2_user_2),
+        status=302,
+    )
+    assert ("warning", "Vous ne pouvez pas modifier cet élément") in res.flashes
