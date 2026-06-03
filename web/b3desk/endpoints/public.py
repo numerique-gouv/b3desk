@@ -133,6 +133,7 @@ def welcome():
         order_key=order_key,
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
+        admin_mode=False,
     )
 
 
