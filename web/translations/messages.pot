@@ -221,11 +221,11 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:18
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:20
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:18
+#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:20
 msgid "Rechercher une réunion"
 msgstr ""
 

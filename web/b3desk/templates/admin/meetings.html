@@ -15,9 +15,9 @@
     </nav>
     <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="post">
         {% include 'meeting/csrf.html' %}
-        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
     <br>
     {% set meetings = meetings_page.items %}
