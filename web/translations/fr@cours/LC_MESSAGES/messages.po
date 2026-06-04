@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-27 16:10+0200\n"
+"POT-Creation-Date: 2026-06-04 14:28+0200\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@cours\n"
@@ -40,6 +40,7 @@ msgid "Le texte est trop long"
 msgstr ""
 
 #: web/b3desk/forms.py:51 web/b3desk/forms.py:106
+#: web/b3desk/templates/admin/selected_meeting.html:243
 msgid "Salle d'attente"
 msgstr ""
 
@@ -67,7 +68,7 @@ msgstr ""
 msgid "Ma réunion"
 msgstr "Mon cours"
 
-#: web/b3desk/forms.py:77
+#: web/b3desk/forms.py:77 web/b3desk/templates/admin/selected_meeting.html:147
 msgid "Texte de bienvenue"
 msgstr ""
 
@@ -82,7 +83,7 @@ msgstr ""
 msgid "Bienvenue dans cette réunion %(meeting_name)s."
 msgstr "Bienvenue dans ce cours %(meeting_name)s."
 
-#: web/b3desk/forms.py:89
+#: web/b3desk/forms.py:89 web/b3desk/templates/admin/selected_meeting.html:122
 msgid "Nombre maximal de participants"
 msgstr ""
 
@@ -90,7 +91,7 @@ msgstr ""
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:94
+#: web/b3desk/forms.py:94 web/b3desk/templates/admin/selected_meeting.html:139
 msgid "Durée maximale (minutes)"
 msgstr ""
 
@@ -102,7 +103,7 @@ msgstr ""
 "A l'issue de cette durée le cours stoppe automatiquement. 1h = 60, 2h = "
 "120, 3h = 180, 4h = 240."
 
-#: web/b3desk/forms.py:113
+#: web/b3desk/forms.py:113 web/b3desk/templates/admin/selected_meeting.html:180
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
@@ -112,7 +113,7 @@ msgid ""
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:120
+#: web/b3desk/forms.py:120 web/b3desk/templates/admin/selected_meeting.html:189
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
@@ -124,7 +125,7 @@ msgstr ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de cours plus calme."
 
-#: web/b3desk/forms.py:127
+#: web/b3desk/forms.py:127 web/b3desk/templates/admin/selected_meeting.html:198
 msgid "Caméras des participants"
 msgstr ""
 
@@ -134,7 +135,7 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:135
+#: web/b3desk/forms.py:135 web/b3desk/templates/admin/selected_meeting.html:207
 msgid "Micros des participants"
 msgstr ""
 
@@ -144,19 +145,19 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:143
+#: web/b3desk/forms.py:143 web/b3desk/templates/admin/selected_meeting.html:216
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:148
+#: web/b3desk/forms.py:148 web/b3desk/templates/admin/selected_meeting.html:225
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:153
+#: web/b3desk/forms.py:153 web/b3desk/templates/admin/selected_meeting.html:234
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:158
+#: web/b3desk/forms.py:158 web/b3desk/templates/admin/selected_meeting.html:155
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
@@ -164,7 +165,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:343
+#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:328
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -172,7 +173,7 @@ msgstr ""
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:171
+#: web/b3desk/forms.py:171 web/b3desk/templates/admin/selected_meeting.html:130
 msgid "Url de redirection après la réunion"
 msgstr "Url de redirection après le cours"
 
@@ -188,7 +189,7 @@ msgstr ""
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:196
+#: web/b3desk/forms.py:196 web/b3desk/templates/admin/selected_meeting.html:106
 msgid "PIN"
 msgstr ""
 
@@ -221,7 +222,7 @@ msgstr "Code de connexion pour rejoindre le cours %(sip)s"
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:234
+#: web/b3desk/forms.py:234 web/b3desk/templates/admin/selected_meeting.html:172
 msgid "Enregistrement manuel"
 msgstr ""
 
@@ -229,7 +230,7 @@ msgstr ""
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:241
+#: web/b3desk/forms.py:241 web/b3desk/templates/admin/selected_meeting.html:163
 msgid "Enregistrement automatique"
 msgstr ""
 
@@ -247,11 +248,11 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:3
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:20
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:3
+#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:20
 #, fuzzy
 msgid "Rechercher une réunion"
 msgstr "Créer un cours"
@@ -441,16 +442,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:322 web/b3desk/models/meetings.py:329
+#: web/b3desk/models/meetings.py:307 web/b3desk/models/meetings.py:314
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:336
+#: web/b3desk/models/meetings.py:321
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr "le cours de %(fullname)s"
 
-#: web/b3desk/models/meetings.py:338
+#: web/b3desk/models/meetings.py:323
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr "Bienvenue dans le cours de %(fullname)s"
@@ -468,7 +469,7 @@ msgstr ""
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/header-lasuite.html:37
-#: web/b3desk/templates/tools.html:41 web/b3desk/templates/tools.html:43
+#: web/b3desk/templates/tools.html:48 web/b3desk/templates/tools.html:50
 msgid "Les services de La Suite numérique"
 msgstr ""
 
@@ -483,7 +484,7 @@ msgid ""
 "production !"
 msgstr ""
 
-#: web/b3desk/templates/brand.html:42 web/b3desk/templates/jumbotron.html:87
+#: web/b3desk/templates/brand.html:42 web/b3desk/templates/jumbotron.html:59
 #, python-format
 msgid "%(service_tagline)s"
 msgstr ""
@@ -769,7 +770,7 @@ msgid "Fermer"
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:9
-#: web/b3desk/templates/jumbotron.html:142
+#: web/b3desk/templates/jumbotron.html:114
 #, python-format
 msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
 msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
@@ -777,7 +778,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: web/b3desk/templates/jumbotron.html:14
-#: web/b3desk/templates/jumbotron.html:147
+#: web/b3desk/templates/jumbotron.html:119
 #, python-format
 msgid "et <b>%(count)s</b> participant"
 msgid_plural "et <b>%(count)s</b> participants"
@@ -785,7 +786,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: web/b3desk/templates/jumbotron.html:19
-#: web/b3desk/templates/jumbotron.html:152
+#: web/b3desk/templates/jumbotron.html:124
 #, python-format
 msgid ""
 " sur une capacité moyenne pour la plateforme de %(max_participants)s "
@@ -793,41 +794,24 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/jumbotron.html:35
-msgid "Vous êtes administrateur."
-msgstr ""
-
-#: web/b3desk/templates/jumbotron.html:40
-msgid "Vous pouvez accéder à la page d'administration."
-msgstr ""
-
-#: web/b3desk/templates/admin/options.html:1
-#: web/b3desk/templates/jumbotron.html:44
-msgid "Ouvrir la page d'administration"
-msgstr ""
-
-#: web/b3desk/templates/jumbotron.html:45
-msgid "Page d'administration"
-msgstr ""
-
-#: web/b3desk/templates/jumbotron.html:63
 msgid "Ouvrir une nouvelle réunion temporaire"
 msgstr "Ouvrir un nouveau cours temporaire"
 
-#: web/b3desk/templates/jumbotron.html:65
+#: web/b3desk/templates/jumbotron.html:37
 msgid "Lancer la réunion - nouvelle fenêtre"
 msgstr "Lancer le cours - nouvelle fenêtre"
 
-#: web/b3desk/templates/jumbotron.html:66
+#: web/b3desk/templates/jumbotron.html:38
 msgid "Ouvrir une réunion temporaire"
 msgstr "Ouvrir un cours temporaire"
 
-#: web/b3desk/templates/jumbotron.html:96
-#: web/b3desk/templates/jumbotron.html:134
+#: web/b3desk/templates/jumbotron.html:68
+#: web/b3desk/templates/jumbotron.html:106
 msgid "Vous organisez régulièrement des réunions"
 msgstr "Vous organisez régulièrement des cours"
 
-#: web/b3desk/templates/jumbotron.html:98
-#: web/b3desk/templates/jumbotron.html:135
+#: web/b3desk/templates/jumbotron.html:70
+#: web/b3desk/templates/jumbotron.html:107
 msgid ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver "
 "vos réunions."
@@ -835,8 +819,8 @@ msgstr ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver "
 "vos cours."
 
-#: web/b3desk/templates/jumbotron.html:99
-#: web/b3desk/templates/jumbotron.html:136
+#: web/b3desk/templates/jumbotron.html:71
+#: web/b3desk/templates/jumbotron.html:108
 msgid "Se connecter ou créer un compte"
 msgstr ""
 
@@ -844,23 +828,52 @@ msgstr ""
 msgid "Modalités d'accès"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:32
+#: web/b3desk/templates/tools.html:30
+msgid "Ouvrir la page d'administration"
+msgstr ""
+
+#: web/b3desk/templates/admin/selected_user.html:81
+#: web/b3desk/templates/tools.html:31
+msgid "Admin"
+msgstr ""
+
+#: web/b3desk/templates/tools.html:39
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:51
+#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:58
 msgid "S’identifier"
 msgstr ""
 
+#: web/b3desk/templates/admin/home.html:21
+msgid "Liste des utilisateurs"
+msgstr ""
+
+#: web/b3desk/templates/admin/home.html:22
+msgid "Utilisateurs"
+msgstr ""
+
+#: web/b3desk/templates/admin/home.html:32
+#, fuzzy
+msgid "Liste des réunions"
+msgstr "Enregistrer un cours"
+
+#: web/b3desk/templates/admin/home.html:33
+#, fuzzy
+msgid "Réunions"
+msgstr "Mon cours"
+
 #: web/b3desk/templates/admin/meeting_table.html:10
-#: web/b3desk/templates/admin/selected_user.html:14
-#: web/b3desk/templates/admin/users.html:21
+#: web/b3desk/templates/admin/selected_meeting.html:31
+#: web/b3desk/templates/admin/selected_user.html:33
+#: web/b3desk/templates/admin/user_table.html:10
 msgid "Identifiant"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_table.html:11
-#: web/b3desk/templates/admin/selected_user.html:22
-#: web/b3desk/templates/admin/users.html:22
+#: web/b3desk/templates/admin/selected_meeting.html:39
+#: web/b3desk/templates/admin/selected_user.html:41
+#: web/b3desk/templates/admin/user_table.html:11
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
 msgstr ""
@@ -870,8 +883,8 @@ msgid "Visio-code"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_table.html:13
-#: web/b3desk/templates/meeting/form.html:56
-msgid "Modifier"
+#: web/b3desk/templates/admin/user_table.html:14
+msgid "Consulter"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_table.html:30
@@ -880,106 +893,138 @@ msgid "Éditer %(meeting_name)s"
 msgstr "Cours « %(meeting_name)s » terminé"
 
 #: web/b3desk/templates/admin/meeting_table.html:34
+#: web/b3desk/templates/admin/selected_meeting.html:65
 msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
-#: web/b3desk/templates/admin/meetings.html:10
+#: web/b3desk/templates/admin/meetings.html:26
 #, fuzzy
 msgid "Aucune réunion ne correspond à cette recherche."
 msgstr "Aucun cours ne correspond à ces paramètres"
 
-#: web/b3desk/templates/admin/options.html:2
-msgid "Quitter la page d'administration"
+#: web/b3desk/templates/admin/paging.html:7
+#: web/b3desk/templates/admin/paging.html:9
+msgid "Première page"
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:10
-#: web/b3desk/templates/admin/options.html:11
-msgid "Liste des utilisateurs"
+#: web/b3desk/templates/admin/paging.html:14
+#: web/b3desk/templates/admin/paging.html:16
+msgid "Page précédente"
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:12
-msgid "Utilisateurs"
+#: web/b3desk/templates/admin/paging.html:30
+#: web/b3desk/templates/admin/paging.html:32
+msgid "Page suivante"
 msgstr ""
 
-#: web/b3desk/templates/admin/options.html:16
-#: web/b3desk/templates/admin/options.html:17
+#: web/b3desk/templates/admin/paging.html:37
+#: web/b3desk/templates/admin/paging.html:39
 #, fuzzy
-msgid "Liste des réunions"
-msgstr "Enregistrer un cours"
+msgid "Dernière page"
+msgstr "Saisir le code de connexion de votre cours"
 
-#: web/b3desk/templates/admin/options.html:18
+#: web/b3desk/templates/admin/selected_meeting.html:47
 #, fuzzy
-msgid "Réunions"
-msgstr "Mon cours"
+msgid "Éditer la réunion"
+msgstr "Nom du cours"
 
-#: web/b3desk/templates/admin/selected_user.html:30
-#: web/b3desk/templates/admin/users.html:24
-msgid "Email"
+#: web/b3desk/templates/admin/selected_meeting.html:50
+#: web/b3desk/templates/admin/selected_meeting.html:51
+#: web/b3desk/templates/meeting/row.html:20
+#: web/b3desk/templates/meeting/row.html:54
+#, python-format
+msgid "Modifier %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:38
-msgid "Alias"
+#: web/b3desk/templates/admin/selected_meeting.html:57
+msgid "Propriétaire"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:46
+#: web/b3desk/templates/admin/selected_meeting.html:74
+#: web/b3desk/templates/admin/selected_user.html:65
 #, fuzzy
 msgid "Dernière connexion"
 msgstr "Saisir le code de connexion de votre cours"
 
-#: web/b3desk/templates/admin/selected_user.html:54
+#: web/b3desk/templates/admin/selected_meeting.html:82
+#: web/b3desk/templates/admin/selected_user.html:73
 msgid "Création"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:62
-msgid "Admin"
+#: web/b3desk/templates/admin/selected_meeting.html:90
+#, fuzzy
+msgid "Dernière modification"
+msgstr "Saisir le code de connexion de votre cours"
+
+#: web/b3desk/templates/admin/selected_meeting.html:98
+#, fuzzy
+msgid "n° de téléphone"
+msgstr "Joindre un cours par téléphone"
+
+#: web/b3desk/templates/admin/selected_meeting.html:114
+#, fuzzy
+msgid "Code de connexion (visio_code)"
+msgstr "Saisir le code de connexion de votre cours"
+
+#: web/b3desk/templates/admin/selected_user.html:49
+#: web/b3desk/templates/admin/user_table.html:13
+msgid "Email"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:70
+#: web/b3desk/templates/admin/selected_user.html:57
+msgid "Alias"
+msgstr ""
+
+#: web/b3desk/templates/admin/selected_user.html:90
 msgid "NC Locator"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:78
+#: web/b3desk/templates/admin/selected_user.html:98
 msgid "NC Login"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:86
+#: web/b3desk/templates/admin/selected_user.html:106
 #, fuzzy
 msgid "NC Dernière connexion"
 msgstr "Saisir le code de connexion de votre cours"
 
-#: web/b3desk/templates/admin/selected_user.html:101
+#: web/b3desk/templates/admin/selected_user.html:120
 #, fuzzy, python-format
 msgid "Liste des réunions de %(fullname)s"
 msgstr "le cours de %(fullname)s"
 
-#: web/b3desk/templates/admin/selected_user.html:105
+#: web/b3desk/templates/admin/selected_user.html:124
 #, python-format
 msgid "%(fullname)s n'a pas créé de réunion."
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:108
+#: web/b3desk/templates/admin/selected_user.html:127
 #, fuzzy
 msgid "Réunions déléguées"
 msgstr "Le cours a des délégataires"
 
-#: web/b3desk/templates/admin/users.html:10
-#, fuzzy
-msgid "Aucun utilisateur ne correspond à cette recherche."
-msgstr "Aucun cours ne correspond à ces paramètres"
+#: web/b3desk/templates/admin/true_false_display.html:2
+msgid "OUI"
+msgstr ""
 
-#: web/b3desk/templates/admin/users.html:23
+#: web/b3desk/templates/admin/true_false_display.html:4
+msgid "NON"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:12
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:25
-msgid "Consulter"
-msgstr ""
-
-#: web/b3desk/templates/admin/users.html:44
+#: web/b3desk/templates/admin/user_table.html:33
 #, python-format
 msgid "%(username)s infos"
 msgstr ""
+
+#: web/b3desk/templates/admin/users.html:26
+#, fuzzy
+msgid "Aucun utilisateur ne correspond à cette recherche."
+msgstr "Aucun cours ne correspond à ces paramètres"
 
 #: web/b3desk/templates/errors/400.html:7
 msgid "Erreur 400"
@@ -2282,6 +2327,10 @@ msgstr ""
 msgid "Désactivé"
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:56
+msgid "Modifier"
+msgstr ""
+
 #: web/b3desk/templates/meeting/form.html:58
 msgid "Créer une réunion"
 msgstr "Créer un cours"
@@ -2582,12 +2631,6 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:17
 msgid "Copier le lien Participant dans le presse-papiers"
-msgstr ""
-
-#: web/b3desk/templates/meeting/row.html:20
-#: web/b3desk/templates/meeting/row.html:54
-#, python-format
-msgid "Modifier %(meeting_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:22
@@ -5500,5 +5543,17 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "%(username)s n'a pas créé de réunion."
+#~ msgstr ""
+
+#~ msgid "Vous êtes administrateur."
+#~ msgstr ""
+
+#~ msgid "Vous pouvez accéder à la page d'administration."
+#~ msgstr ""
+
+#~ msgid "Page d'administration"
+#~ msgstr ""
+
+#~ msgid "Quitter la page d'administration"
 #~ msgstr ""
 
