@@ -1,3 +1,4 @@
+import pytest
 from b3desk.commands import bp
 
 
@@ -212,8 +213,19 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
     assert res.text.count("Aucune réunion ne correspond à cette recherche.") == 1
 
 
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
 def test_admin_can_edit_meeting_for_other_user(
-    cli_runner, user, user_2, meeting_1_user_2, client_app, authenticated_user
+    cli_runner,
+    user,
+    user_2,
+    meeting_1_user_2,
+    client_app,
+    authenticated_user,
+    mock_meeting_is_not_running,
 ):
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/meeting/edit/1?admin_mode=True", status=200)
@@ -224,3 +236,18 @@ def test_admin_can_edit_meeting_for_other_user(
         "success",
         "delegated meeting modifications prises en compte",
     ) in res.flashes
+    assert res.location == "/admin/meeting/1"
+
+
+def test_admin_can_read_meeting_infos(
+    cli_runner,
+    user,
+    user_2,
+    meeting_1_user_2,
+    client_app,
+    authenticated_user,
+):
+    """Test read meeting infos."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/meeting/1", status=200)
+    assert res.text.count("922222222") == 1
