@@ -15,9 +15,11 @@ from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
 from b3desk.forms import MemberSearchForm
 from b3desk.forms import UserSearchForm
+from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
+from b3desk.models.roles import Role
 from b3desk.models.users import User
 
 from ..session import admin_needed
@@ -130,6 +132,9 @@ def manage_meetings():
 @admin_needed
 def meeting_infos(meeting: Meeting):
     """Display meeting infos of admin page."""
+    meeting.moderator_url = get_signin_url(meeting, Role.moderator)
+    meeting.attendee_url = get_signin_url(meeting, Role.attendee)
+    meeting.authenticated_url = get_signin_url(meeting, Role.authenticated)
     return render_template(
         "admin/selected_meeting.html",
         admin_mode=True,
