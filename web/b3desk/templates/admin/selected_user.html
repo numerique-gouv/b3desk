@@ -81,7 +81,8 @@
                                             {% trans %}Admin{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.admin }}
+                                            {% set bool_value = user.admin %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">

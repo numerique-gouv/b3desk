@@ -65,7 +65,8 @@
                                             {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.is_shadow }}
+                                            {% set bool_value = meeting.is_shadow %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -162,7 +163,8 @@
                                             {% trans %}Enregistrement automatique{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.autoStartRecording }}
+                                            {% set bool_value = meeting.autoStartRecording %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -170,14 +172,16 @@
                                             {% trans %}Enregistrement manuel{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.allowStartStopRecording }}
+                                            {% set bool_value = meeting.allowStartStopRecording %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr><tr class="">
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Caméras visibles par les modérateurs uniquement{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.webcamsOnlyForModerator }}
+                                            {% set bool_value = meeting.webcamsOnlyForModerator %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -185,7 +189,8 @@
                                             {% trans %}Participants muets à leur arrivée{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.muteOnStart }}
+                                            {% set bool_value = meeting.muteOnStart %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -193,7 +198,8 @@
                                             {% trans %}Caméras des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableCam }}
+                                            {% set bool_value = meeting.lockSettingsDisableCam %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -201,7 +207,8 @@
                                             {% trans %}Micros des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableMic }}
+                                            {% set bool_value = meeting.lockSettingsDisableMic %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -209,7 +216,8 @@
                                             {% trans %}Discussions privées{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisablePrivateChat }}
+                                            {% set bool_value = meeting.lockSettingsDisablePrivateChat %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -217,7 +225,8 @@
                                             {% trans %}Discussion publique (tchat){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisablePublicChat }}
+                                            {% set bool_value = meeting.lockSettingsDisablePublicChat %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -225,7 +234,8 @@
                                             {% trans %}Prise de note collaborative{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableNote }}
+                                            {% set bool_value = meeting.lockSettingsDisableNote %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -233,7 +243,8 @@
                                             {% trans %}Salle d'attente{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.guestPolicy }}
+                                            {% set bool_value = meeting.guestPolicy%}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                 </tbody>
