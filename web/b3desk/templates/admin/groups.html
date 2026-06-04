@@ -1,7 +1,19 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% include 'admin/options.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
     <form class="fr-search-bar", id="groupSearchForm", name="search_group" role="search" action="{{ url_for("admin.manage_groups") }}" method="post">
         {% include 'meeting/csrf.html' %}
         <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>

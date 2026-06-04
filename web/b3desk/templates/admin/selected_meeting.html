@@ -7,10 +7,10 @@
         <div class="fr-collapse" id="breadcrumb-1">
             <ol class="fr-breadcrumb__list">
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                 </li>
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
                 </li>
                 <li>
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
@@ -18,6 +18,23 @@
             </ol>
         </div>
     </nav>
+    <div class="fr-grid-row">
+        <div class="fr-col meeting-room">
+            <div class="fr-grid-row">
+                <div class="fr-col-8">
+                    <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
+                </div>
+                <div class="fr-col-offset-3"></div>
+                <form action="{{ url_for("meetings.meeting_favorite") }}" method="POST">
+                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
+                        {% include 'meeting/id.html' %}
+                        {% include 'meeting/csrf.html' %}
+                    </div>
+                </form>
+            </div>
+            {% include 'meeting/row.html' %}
+        </div>
+    </div>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-meeting-component">
@@ -44,20 +61,10 @@
                                     </tr>
                                     <tr class="">
                                         <td class="fr-col fr-cell--center">
-                                            {% trans %}Éditer la réunion{% endtrans %}
+                                            {% trans username=meeting.owner.fullname %}Propriétaire : {{ username }}{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">
-                                                {% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Propriétaire{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ meeting.owner.fullname }}
+                                            <a href="{{ url_for("admin.user_infos", user=meeting.owner) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans username=meeting.owner.fullname %}{{ username }} infos{% endtrans %}"></a>
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -256,4 +263,5 @@
         </div>
     </div>
     {% include 'meeting/modals/delete.html' %}
+    {% include 'meeting/modals/invite.html' %}
 {% endblock %}

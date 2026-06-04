@@ -90,7 +90,7 @@ def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count("False") == 1
+    assert res.text.count("NON") == 1
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
 
 
@@ -248,7 +248,7 @@ def test_admin_can_edit_meeting_for_other_user(
         "success",
         "delegated meeting modifications prises en compte",
     ) in res.flashes
-    assert res.location == "/admin/home"
+    assert res.location == "/admin/meeting/1"
 
 
 def test_admin_can_create_group(
@@ -662,9 +662,9 @@ def test_admin_can_read_meeting_infos(
     """Test admin can read meeting infos."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/meeting/1", status=200)
-    assert res.text.count("922222221") == 1
-    assert res.text.count("222222221") == 1
-    assert res.text.count("Berenice Cooler") == 1
+    assert res.text.count("922222221") == 5
+    assert res.text.count("222222221") == 3
+    assert res.text.count("Berenice Cooler") == 2
 
 
 def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(

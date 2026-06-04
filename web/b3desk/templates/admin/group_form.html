@@ -1,7 +1,30 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% include 'admin/options.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                </li>
+                {% if group is none %}
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.create_group') }}">{% trans %}Créer groupe{% endtrans %}</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.edit_group', group=group) }}">
+                            {% trans %}Modifier{% endtrans %} {{ group.name }}
+                        </a>
+                    </li>
+                {% endif %}
+            </ol>
+        </div>
+    </nav>
     {% macro render_field(field, description=None) %}
         <div class="fr-container--fluid">
             <div class="fr-grid-row fr-grid-row--gutters">

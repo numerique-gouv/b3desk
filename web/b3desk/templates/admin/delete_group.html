@@ -1,7 +1,24 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% include 'admin/options.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.delete_group', group=group) }}">
+                        {% trans %}Supprimer{% endtrans %} {{ group.name }}
+                    </a>
+                </li>
+            </ol>
+        </div>
+    </nav>
     <a class="fr-btn fr-btn--delete" href="{{ url_for("admin.confirm_delete_group", group=group) }}" title="{% trans %}Supprimer le groupe{% endtrans %}">
         {% trans group_name=group.name %}Confirmer la suppression de {{ group_name }}{% endtrans %}
     </a>

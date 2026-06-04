@@ -4,6 +4,29 @@
 {% endblock %}
 
 {% block main %}
+    {% if admin_mode %}
+        <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+            <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+            <div class="fr-collapse" id="breadcrumb-1">
+                <ol class="fr-breadcrumb__list">
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for("meetings.show_meeting_recording", meeting=meeting, admin_mode=admin_mode) }}">
+                            {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
+                        </a>
+                    </li>
+                </ol>
+            </div>
+        </nav>
+    {% endif %}
     <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Enregistrements de <em>{{meeting_name }}{% endtrans %}</em></h1>
 
     {% include '/meeting/recordings_previous_page.html' %}
