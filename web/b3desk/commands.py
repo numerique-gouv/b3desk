@@ -192,7 +192,9 @@ def user_to_admin(email):
     """CLI command to grant administrator rights to a user."""
     try:
         user = grant_admin_rights(email)
-        print("User to Admin result: " + message_maker(user.fullname, user.admin))
+        print(
+            f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+        )
     except ValueError as e:
         print(f"User to Admin result: {e}")
 
@@ -203,13 +205,8 @@ def admin_to_user(email):
     """CLI command to remove administrator rights from a user."""
     try:
         user = remove_admin_rights(email)
-        print("Admin to User result: " + message_maker(user.fullname, user.admin))
+        print(
+            f"Admin to User result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+        )
     except ValueError as e:
         print(f"Admin to User result: {e}")
-
-
-def message_maker(fullname, admin):
-    message = fullname
-    message += " is " if admin else " is not "
-    message += "admin."
-    return message
