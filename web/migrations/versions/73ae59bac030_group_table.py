@@ -1,7 +1,7 @@
 """group table.
 
 Revision ID: 73ae59bac030
-Revises: b32f0a8c28bd
+Revises: 791755877bb1
 Create Date: 2026-05-29 07:00:35.826831
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "73ae59bac030"
-down_revision = "b32f0a8c28bd"
+down_revision = "791755877bb1"
 branch_labels = None
 depends_on = None
 
