@@ -1,29 +1,34 @@
 {% extends 'layout.html' %}
-
 {% block main %}
-    {% include 'admin/options.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
     <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="post">
         {% include 'meeting/csrf.html' %}
-        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
+    <br>
     {% set meetings = meetings_page.items %}
     {% if not meetings %}
         <br>
         <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
+        {% set page_obj = meetings_page %}
+        {% set page_url_base = url_for('admin.manage_meetings') ~ '?page=' %}
+        {% include 'admin/paging.html' %}
         {% include 'admin/meeting_table.html' %}
-        <nav>
-            {% if meetings_page.has_prev %}
-                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.prev_num)}}">Précédent</a>
-            {% endif %}
-
-            <span>Page {{ meetings_page.page }} / {{ meetings_page.pages }}</span>
-
-            {% if meetings_page.has_next %}
-                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.next_num)}}">Suivant</a>
-            {% endif %}
-        </nav>
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

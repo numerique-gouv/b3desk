@@ -14,24 +14,18 @@ from b3desk.models.users import User
 from flask import url_for
 
 
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    """Mock meeting.bbb.is_running() to return False."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-
-
 def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_user):
     """Test admin can enter admin page."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/home").follow()
-    assert "Vous êtes administrateur." in res.text
+    assert "Admin" in res.text
     client_app.get("/admin/home", status=200)
 
 
 def test_user_cannot_enter_admin_page(cli_runner, user, client_app, authenticated_user):
     """Test user non admin cannot enter admin page."""
     res = client_app.get("/home").follow()
-    assert "Vous êtes administrateur." not in res.text
+    assert "Admin" not in res.text
     client_app.get("/admin/home", status=403)
 
 
@@ -95,7 +89,6 @@ def test_admin_can_read_user_infos_with_no_meeting(
     """Test read user infos for a user without meeting created."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
-    print(res.text)
     assert res.text.count("berenice@domain.tld") == 1
     assert res.text.count("False") == 1
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
@@ -229,6 +222,11 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
     assert res.text.count("911111112") == 0
     assert res.text.count("911111113") == 0
     assert res.text.count("Aucune réunion ne correspond à cette recherche.") == 1
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_admin_can_edit_meeting_for_other_user(

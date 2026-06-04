@@ -1,30 +1,34 @@
 {% extends 'layout.html' %}
-
 {% block main %}
-    {% include 'admin/options.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">Utilisateurs</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
     <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="post">
         {% include 'meeting/csrf.html' %}
-        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
+    <br>
     {% set users = users_page.items %}
     {% if not users %}
         <br>
         <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
+        {% set page_obj = users_page %}
+        {% set page_url_base = url_for('admin.manage_users') ~ '?page=' %}
+        {% include 'admin/paging.html' %}
         {% include 'admin/user_table.html' %}
-
-        <nav>
-            {% if users_page.has_prev %}
-                <a href="{{ url_for('admin.manage_users', page=users_page.prev_num)}}">Précédent</a>
-            {% endif %}
-
-            <span>Page {{ users_page.page }} / {{ users_page.pages }}</span>
-
-            {% if users_page.has_next %}
-                <a href="{{ url_for('admin.manage_users', page=users_page.next_num)}}">Suivant</a>
-            {% endif %}
-        </nav>
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

@@ -81,7 +81,7 @@ def home():
 @bp.route("/admin/users", methods=["GET", "POST"])
 @admin_needed
 def manage_users():
-    """Display user list to manage users of admin page."""
+    """Display user list to manage users."""
     form = UserSearchForm(request.form)
     if not request.form or not form.validate():
         users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=None)
@@ -103,10 +103,21 @@ def manage_users():
     )
 
 
+@bp.route("/admin/user/<user:user>")
+@admin_needed
+def user_infos(user: User):
+    """Display user infos."""
+    return render_template(
+        "admin/selected_user.html",
+        admin_mode=True,
+        selected_user=user,
+    )
+
+
 @bp.route("/admin/meetings", methods=["GET", "POST"])
 @admin_needed
 def manage_meetings():
-    """Display meeting list to manage meetings of admin page."""
+    """Display meeting list to manage meetings."""
     form = MeetingSearchForm(request.form)
     if not request.form or not form.validate():
         meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=None)
@@ -139,17 +150,6 @@ def meeting_infos(meeting: Meeting):
         "admin/selected_meeting.html",
         admin_mode=True,
         selected_meeting=meeting,
-    )
-
-
-@bp.route("/admin/user/<user:user>")
-@admin_needed
-def user_infos(user: User):
-    """Display user infos of admin page."""
-    return render_template(
-        "admin/selected_user.html",
-        admin_mode=True,
-        selected_user=user,
     )
 
 

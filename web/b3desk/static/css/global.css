@@ -551,3 +551,7 @@ This is a fix until we deal with the update.
 .fr-header__brand-top {
   flex-shrink: 0;
 }
+
+.fr-btn--delete.fr-btn--admin {
+  color: white !important;
+}

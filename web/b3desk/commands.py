@@ -3,9 +3,9 @@ import requests
 from flask import Blueprint
 from flask import current_app
 
+from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
-from b3desk.models.users import grant_admin_rights
-from b3desk.models.users import remove_admin_rights
+from b3desk.models.users import User
 
 bp = Blueprint("commands", __name__, cli_group=None)
 
@@ -29,6 +29,33 @@ def get_apps_id(email):
 def delete_old_shadow_meetings():
     """CLI command to delete expired shadow meetings from database."""
     delete_all_old_shadow_meetings()
+
+
+@bp.cli.command("populate")
+@click.option("--users", "n_users", default=50, help="Number of users to generate.")
+@click.option(
+    "--meetings", "n_meetings", default=100, help="Number of meetings to generate."
+)
+@click.option(
+    "--seed",
+    default=None,
+    type=int,
+    help="Random seed for reproducible data.",
+)
+def populate(n_users, n_meetings, seed):
+    """CLI command to fill the database with random data (development only)."""
+    if not (current_app.debug or current_app.testing):
+        raise click.ClickException(
+            "The 'populate' command is only available in development."
+        )
+
+    from b3desk.populate import populate as populate_database
+
+    summary = populate_database(n_users=n_users, n_meetings=n_meetings, seed=seed)
+    click.echo(
+        "Created {users} users ({admins} admins), {meetings} meetings, "
+        "{delegations} delegations and {favorites} favorites.".format(**summary)
+    )
 
 
 @bp.cli.command("generate-private-key")
@@ -139,13 +166,35 @@ def check_sip_token(token):
         print("Token provided is not valid.")
 
 
+def grant_admin_rights(email):
+    user = User.get_user_by_email(email)
+    if not user:
+        raise ValueError("No user with this email was found.")
+    user.admin = True
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
+def remove_admin_rights(email):
+    user = User.get_user_by_email(email)
+    if not user:
+        raise ValueError("No user with this email was found.")
+    user.admin = False
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
 @bp.cli.command("user-to-admin")
 @click.argument("email")
 def user_to_admin(email):
     """CLI command to grant administrator rights to a user."""
     try:
         user = grant_admin_rights(email)
-        print("User to Admin result: " + message_maker(user.fullname, user.admin))
+        print(
+            f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+        )
     except ValueError as e:
         print(f"User to Admin result: {e}")
 
@@ -156,13 +205,8 @@ def admin_to_user(email):
     """CLI command to remove administrator rights from a user."""
     try:
         user = remove_admin_rights(email)
-        print("Admin to User result: " + message_maker(user.fullname, user.admin))
+        print(
+            f"Admin to User result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+        )
     except ValueError as e:
         print(f"Admin to User result: {e}")
-
-
-def message_maker(fullname, admin):
-    message = fullname
-    message += " is " if admin else " is not "
-    message += "admin."
-    return message

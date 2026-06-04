@@ -1,25 +1,23 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% include 'admin/options.html' %}
     {% set meeting = selected_meeting %}
-    <div class="fr-grid-row">
-        <div class="fr-col meeting-room">
-            <div class="fr-grid-row">
-                <div class="fr-col-8">
-                    <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
-                </div>
-                <div class="fr-col-offset-3"></div>
-                <form action="{{ url_for("meetings.meeting_favorite") }}" method="POST">
-                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
-                        {% include 'meeting/id.html' %}
-                        {% include 'meeting/csrf.html' %}
-                    </div>
-                </form>
-            </div>
-            {% include 'meeting/row.html' %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
+                </li>
+            </ol>
         </div>
-    </div>
+    </nav>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-meeting-component">
@@ -46,6 +44,16 @@
                                     </tr>
                                     <tr class="">
                                         <td class="fr-col fr-cell--center">
+                                            {% trans %}Éditer la réunion{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">
+                                                {% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
                                             {% trans %}Propriétaire{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
@@ -57,7 +65,8 @@
                                             {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.is_shadow }}
+                                            {% set bool_value = meeting.is_shadow %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -154,7 +163,8 @@
                                             {% trans %}Enregistrement automatique{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.autoStartRecording }}
+                                            {% set bool_value = meeting.autoStartRecording %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -162,14 +172,16 @@
                                             {% trans %}Enregistrement manuel{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.allowStartStopRecording }}
+                                            {% set bool_value = meeting.allowStartStopRecording %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr><tr class="">
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Caméras visibles par les modérateurs uniquement{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.webcamsOnlyForModerator }}
+                                            {% set bool_value = meeting.webcamsOnlyForModerator %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -177,7 +189,8 @@
                                             {% trans %}Participants muets à leur arrivée{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.muteOnStart }}
+                                            {% set bool_value = meeting.muteOnStart %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -185,7 +198,8 @@
                                             {% trans %}Caméras des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableCam }}
+                                            {% set bool_value = meeting.lockSettingsDisableCam %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -193,7 +207,8 @@
                                             {% trans %}Micros des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableMic }}
+                                            {% set bool_value = meeting.lockSettingsDisableMic %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -201,7 +216,8 @@
                                             {% trans %}Discussions privées{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisablePrivateChat }}
+                                            {% set bool_value = meeting.lockSettingsDisablePrivateChat %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -209,7 +225,8 @@
                                             {% trans %}Discussion publique (tchat){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisablePublicChat }}
+                                            {% set bool_value = meeting.lockSettingsDisablePublicChat %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -217,7 +234,8 @@
                                             {% trans %}Prise de note collaborative{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ not meeting.lockSettingsDisableNote }}
+                                            {% set bool_value = meeting.lockSettingsDisableNote %}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -225,7 +243,8 @@
                                             {% trans %}Salle d'attente{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.guestPolicy }}
+                                            {% set bool_value = meeting.guestPolicy%}
+                                            {% include '/admin/true_false_display.html' %}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -237,5 +256,4 @@
         </div>
     </div>
     {% include 'meeting/modals/delete.html' %}
-    {% include 'meeting/modals/invite.html' %}
 {% endblock %}

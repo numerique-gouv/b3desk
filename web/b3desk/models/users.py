@@ -77,26 +77,6 @@ def get_or_create_user(user_info):
     return user
 
 
-def grant_admin_rights(email):
-    user = User.get_user_by_email(email)
-    if not user:
-        raise ValueError("No user with this email was found.")
-    user.admin = True
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-def remove_admin_rights(email):
-    user = User.get_user_by_email(email)
-    if not user:
-        raise ValueError("No user with this email was found.")
-    user.admin = False
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.Unicode(255), unique=True)

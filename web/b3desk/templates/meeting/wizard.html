@@ -4,6 +4,27 @@
 {% endblock %}
 
 {% block main %}
+    {% if admin_mode %}
+        <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+            <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+            <div class="fr-collapse" id="breadcrumb-1">
+                <ol class="fr-breadcrumb__list">
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('meetings.edit_meeting', meeting=meeting, admin_mode=admin_mode) }}">Modifier {{ meeting.name }}</a>
+                    </li>
+                </ol>
+            </div>
+        </nav>
+    {% endif %}
     {% include 'meeting/form.html' %}
     {% if meeting in g.user.get_all_delegated_meetings %}
         {% include 'meeting/modals/delegate-confirmation.html' %}

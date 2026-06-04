@@ -24,34 +24,6 @@
             </div>
         </div>
     {% endif %}
-    {% if g.user.admin %}
-        <div class="fr-py-2w">
-            <div class="fr-container">
-                <div class="fr-mt-4w fr-grid-row fr-grid-row--center fr-grid-row--gutters stats-info-container">
-                    <div class="fr-notice fr-notice--info">
-                        <div class="fr-container">
-                            <div class="fr-notice__body">
-                                <p class="fr-notice__title">
-                                    {% trans %}Vous êtes administrateur.{% endtrans %}
-                                </p>
-                            </div>
-                            <br>
-                            <p>
-                                {% trans %}Vous pouvez accéder au menu d'administration.{% endtrans %}
-                            </p>
-                            <br>
-                            <div class="fr-grid-row fr-grid-row--center">
-                                <a class="fr-btn fr-btn--delete" href="{{ url_for("admin.home") }}" title="{% trans %}Ouvrir le menu d'administration{% endtrans %}">
-                                    {% trans %}Menu d'administration{% endtrans %}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br>
-    {% endif %}
     <div class="fr-py-8w main-connected-actions">
         <div class="fr-container">
             <div class="fr-grid-row fr-grid-row--gutters">
