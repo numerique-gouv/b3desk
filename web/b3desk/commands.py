@@ -2,9 +2,9 @@ import click
 from flask import Blueprint
 from flask import current_app
 
+from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
-from b3desk.models.users import grant_admin_rights
-from b3desk.models.users import remove_admin_rights
+from b3desk.models.users import User
 
 bp = Blueprint("commands", __name__, cli_group=None)
 
@@ -164,6 +164,26 @@ def check_sip_token(token):
     else:
         print(errors)
         print("Token provided is not valid.")
+
+
+def grant_admin_rights(email):
+    user = User.get_user_by_email(email)
+    if not user:
+        raise ValueError("No user with this email was found.")
+    user.admin = True
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
+def remove_admin_rights(email):
+    user = User.get_user_by_email(email)
+    if not user:
+        raise ValueError("No user with this email was found.")
+    user.admin = False
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 
 @bp.cli.command("user-to-admin")
