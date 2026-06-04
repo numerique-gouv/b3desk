@@ -19,21 +19,16 @@
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
     </form>
+    <br>
     {% set users = users_page.items %}
     {% if not users %}
         <br>
         <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
+        {% set page_obj = users_page %}
+        {% set page_url_base = url_for('admin.manage_users') ~ '?page=' %}
+        {% include 'admin/paging.html' %}
         {% include 'admin/user_table.html' %}
-        <nav>
-            {% if users_page.has_prev %}
-                <a href="{{ url_for('admin.manage_users', page=users_page.prev_num)}}">Précédent</a>
-            {% endif %}
-            <span>Page {{ users_page.page }} / {{ users_page.pages }}</span>
-
-            {% if users_page.has_next %}
-                <a href="{{ url_for('admin.manage_users', page=users_page.next_num)}}">Suivant</a>
-            {% endif %}
-        </nav>
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

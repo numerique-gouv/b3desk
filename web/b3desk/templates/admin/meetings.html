@@ -19,21 +19,16 @@
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
     </form>
+    <br>
     {% set meetings = meetings_page.items %}
     {% if not meetings %}
         <br>
         <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
+        {% set page_obj = meetings_page %}
+        {% set page_url_base = url_for('admin.manage_meetings') ~ '?page=' %}
+        {% include 'admin/paging.html' %}
         {% include 'admin/meeting_table.html' %}
-        <nav>
-            {% if meetings_page.has_prev %}
-                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.prev_num)}}">Précédent</a>
-            {% endif %}
-            <span>Page {{ meetings_page.page }} / {{ meetings_page.pages }}</span>
-
-            {% if meetings_page.has_next %}
-                <a href="{{ url_for('admin.manage_meetings', meetings_page=meetings_page.next_num)}}">Suivant</a>
-            {% endif %}
-        </nav>
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}
