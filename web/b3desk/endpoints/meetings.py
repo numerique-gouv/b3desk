@@ -381,20 +381,16 @@ def manage_delegation(meeting: Meeting, user: User):
         )
 
     data = form.search.data.lower()
-    new_delegate = (
-        db.session.query(User)
-        .filter(
-            User.email == data,
-            user.email != User.email,
-        )
-        .first()
-    )
+    new_delegate = db.session.query(User).filter(User.email == data).first()
 
     if new_delegate is None:
         flash(_("L'utilisateur recherché n'existe pas"), "error")
 
     elif new_delegate in meeting.get_all_delegates:
         flash(_("L'utilisateur est déjà délégataire"), "warning")
+
+    elif data == meeting.owner.email:
+        flash(_("Cet utilisateur est le propriétaire"), "warning")
 
     elif (
         len(meeting.get_all_delegates)

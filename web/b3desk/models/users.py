@@ -26,10 +26,13 @@ def get_or_create_user(user_info):
 
     Updates user information if any fields have changed and saves to database.
     """
-    given_name = user_info["given_name"]
-    family_name = user_info["family_name"]
-    preferred_username = user_info.get("preferred_username")
-    email = user_info["email"].lower()
+    mapping = current_app.config["OIDC_CLAIMS_MAPPING"]
+    given_name = user_info.get(mapping.get("given_name", "given_name"), "")
+    family_name = user_info.get(mapping.get("family_name", "family_name"), "")
+    preferred_username = user_info.get(
+        mapping.get("preferred_username", "preferred_username")
+    )
+    email = user_info[mapping.get("email", "email")].lower()
 
     user = User.get_user_by_email(email)
 

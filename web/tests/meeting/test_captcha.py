@@ -93,7 +93,7 @@ def test_get_captchetat_token_bad_status_code(client_app, mocker, caplog):
     """Test that bad status code is logged when getting captchetat token."""
     mocker.patch("requests.post", return_value=Access_token_response(401))
     access_token = get_captchetat_token()
-    assert not access_token == "valid-access-token"
+    assert access_token != "valid-access-token"
     assert "captcha error : OAuth access token not received" in caplog.text
 
 
@@ -101,7 +101,7 @@ def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
     """Test that bad response format is logged when getting captchetat token."""
     mocker.patch("requests.post", return_value=Access_token_bad_response(200))
     access_token = get_captchetat_token()
-    assert not access_token == "valid-access-token"
+    assert access_token != "valid-access-token"
     assert "captcha error : OAuth access token not received" in caplog.text
 
 

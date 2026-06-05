@@ -1,4 +1,5 @@
 import click
+import requests
 from flask import Blueprint
 from flask import current_app
 
@@ -20,7 +21,7 @@ def get_apps_id(email):
         current_app.logger.info(
             "ID from secondary identity provider for email %s: %s", email, secondary_id
         )
-    except Exception as e:
+    except requests.RequestException as e:
         current_app.logger.error(e)
 
 
@@ -66,18 +67,17 @@ def generate_private_key(size):
     saved_private_pem_str = (
         current_app.config["PRIVATE_KEY"] if current_app.config["PRIVATE_KEY"] else None
     )
-    if saved_private_pem_str:
-        if (
-            input(
-                "A private-key has already been saved in the settings.\n"
-                "If you choose to change the current private-key, "
-                "all old tokens will become invalid.\n"
-                "Are you sure you want to get a new private-key "
-                "to copy in setting? (y/n) "
-            )
-            != "y"
-        ):
-            exit()
+    if saved_private_pem_str and (
+        input(
+            "A private-key has already been saved in the settings.\n"
+            "If you choose to change the current private-key, "
+            "all old tokens will become invalid.\n"
+            "Are you sure you want to get a new private-key "
+            "to copy in setting? (y/n) "
+        )
+        != "y"
+    ):
+        exit()
     private_key = RSAKey.generate_key(size, parameters={"alg": "RS256", "use": "sig"})
     private_pem_bytes = private_key.as_pem(private=True)
     private_pem_str = private_pem_bytes.decode("utf-8")
@@ -118,7 +118,7 @@ def generate_sip_token():
                 print(
                     "Your private-key is invalid. You must generate and save a new one."
                 )
-        except Exception as e:
+        except ValueError as e:
             print(
                 "Your private-key is invalid. "
                 f"You must generate and save a new one. {e}"
@@ -146,7 +146,7 @@ def check_sip_settings():
             error_message += (
                 "Your private-key is invalid. You must generate and save a new one."
             )
-    except Exception as e:
+    except ValueError as e:
         error_message += (
             f"Your private-key is invalid. You must generate and save a new one. {e}"
         )

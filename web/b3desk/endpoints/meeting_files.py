@@ -1,4 +1,3 @@
-import os
 import secrets
 import uuid
 from datetime import date
@@ -97,19 +96,19 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
     if meeting_file.meeting_id != meeting.id:
         abort(404)
 
-    tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
-    Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
-    tmp_name = os.path.join(tmp_download_dir, secrets.token_urlsafe(32))
+    tmp_download_dir = Path(current_app.config["TMP_DOWNLOAD_DIR"])
+    tmp_download_dir.mkdir(parents=True, exist_ok=True)
+    tmp_name = tmp_download_dir / secrets.token_urlsafe(32)
 
     @after_this_request
     def cleanup(response):
-        if os.path.exists(tmp_name):
-            os.remove(tmp_name)
+        if tmp_name.exists():
+            tmp_name.unlink()
         return response
 
     if meeting_file.url:
         response = requests.get(meeting_file.url)
-        with open(tmp_name, "wb") as f:
+        with tmp_name.open("wb") as f:
             f.write(response.content)
         return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
@@ -155,15 +154,15 @@ def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
 
 def remove_uploaded_file(absolute_path):
     """Remove a file from the upload temporary directory."""
-    os.remove(absolute_path)
+    Path(absolute_path).unlink()
 
 
 def add_meeting_file_from_upload(title, meeting_id):
     """Upload a file to Nextcloud and associate it with a meeting."""
-    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
-    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
-    upload_path = os.path.join(upload_chunk_dir, f"{g.user.id}-{meeting_id}-{title}")
-    metadata = os.stat(upload_path)
+    upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
+    upload_chunk_dir.mkdir(parents=True, exist_ok=True)
+    upload_path = upload_chunk_dir / f"{g.user.id}-{meeting_id}-{title}"
+    metadata = upload_path.stat()
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
             "msg": _(
@@ -186,7 +185,7 @@ def add_meeting_file_from_upload(title, meeting_id):
         }, 503
 
     client.mkdir("visio-agents")  # does not fail if dir already exists
-    nc_path = os.path.join("visio-agents", title)
+    nc_path = f"visio-agents/{title}"
     client.upload_sync(remote_path=nc_path, local_path=upload_path)
     remove_uploaded_file(upload_path)
 
@@ -345,20 +344,20 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
     file = request.files["dropzoneFiles"]
-    upload_chunk_dir = os.path.join(current_app.config["UPLOAD_DIR"], "chunks")
-    Path(upload_chunk_dir).mkdir(parents=True, exist_ok=True)
-    save_path = os.path.join(
-        upload_chunk_dir, secure_filename(f"{user.id}-{meeting.id}-{file.filename}")
+    upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
+    upload_chunk_dir.mkdir(parents=True, exist_ok=True)
+    save_path = upload_chunk_dir / secure_filename(
+        f"{user.id}-{meeting.id}-{file.filename}"
     )
     current_chunk = int(request.form["dzchunkindex"])
 
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
-    if os.path.exists(save_path) and current_chunk == 0:
+    if save_path.exists() and current_chunk == 0:
         return {"msg": _("Le fichier a déjà été mis en ligne")}, 409
 
     try:
-        with open(save_path, "ab") as f:
+        with save_path.open("ab") as f:
             f.seek(int(request.form["dzchunkbyteoffset"]))
             f.write(file.stream.read())
 
@@ -375,11 +374,11 @@ def upload_file_chunks(meeting: Meeting, user: User):
             and mimetype.mime
             not in current_app.config["ALLOWED_MIME_TYPES_SERVER_SIDE"]
         ):
-            os.remove(save_path)
+            save_path.unlink()
             return {"msg": _("Type de fichier non autorisé")}, 400
 
-        if os.path.getsize(save_path) != int(request.form["dztotalfilesize"]):
-            os.remove(save_path)
+        if save_path.stat().st_size != int(request.form["dztotalfilesize"]):
+            save_path.unlink()
             return {"msg": _("Erreur de taille du fichier")}, 400
 
     current_app.logger.debug(f"Wrote a chunk at {save_path}")
@@ -467,10 +466,10 @@ def ncdownload(token, user, ncpath):
     if token != get_meeting_file_hash(user.id, ncpath):
         abort(404, "Bad token provided, no file matching")
 
-    tmp_download_dir = current_app.config["TMP_DOWNLOAD_DIR"]
-    Path(tmp_download_dir).mkdir(parents=True, exist_ok=True)
+    tmp_download_dir = Path(current_app.config["TMP_DOWNLOAD_DIR"])
+    tmp_download_dir.mkdir(parents=True, exist_ok=True)
     uniqfile = str(uuid.uuid4())
-    tmp_name = os.path.join(tmp_download_dir, uniqfile)
+    tmp_name = tmp_download_dir / uniqfile
 
     if not is_nextcloud_available(user):
         return {
@@ -484,8 +483,8 @@ def ncdownload(token, user, ncpath):
 
     @after_this_request
     def cleanup(response):
-        if os.path.exists(tmp_name):
-            os.remove(tmp_name)
+        if tmp_name.exists():
+            tmp_name.unlink()
         return response
 
     mimetype = client.info(ncpath).get("content_type")
