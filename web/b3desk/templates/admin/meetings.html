@@ -27,7 +27,21 @@
     {% else %}
         {% set page_obj = meetings_page %}
         {% set page_url_base = url_for('admin.manage_meetings') ~ '?page=' %}
-        {% include 'admin/paging.html' %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} réunion correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} réunions correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} réunion
+                    {% pluralize %}
+                    {{ count }} réunions
+                {% endtrans %}
+            {% endif %}
+        </p>
         {% include 'admin/meeting_table.html' %}
         {% include 'admin/paging.html' %}
     {% endif %}

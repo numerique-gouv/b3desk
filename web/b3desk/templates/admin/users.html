@@ -27,7 +27,21 @@
     {% else %}
         {% set page_obj = users_page %}
         {% set page_url_base = url_for('admin.manage_users') ~ '?page=' %}
-        {% include 'admin/paging.html' %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} utilisateurs correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur
+                    {% pluralize %}
+                    {{ count }} utilisateurs
+                {% endtrans %}
+            {% endif %}
+        </p>
         {% include 'admin/user_table.html' %}
         {% include 'admin/paging.html' %}
     {% endif %}

@@ -551,3 +551,7 @@ This is a fix until we deal with the update.
 .fr-btn--delete.fr-btn--admin {
   color: white !important;
 }
+
+.fr-pagination__list.pagination--center {
+  justify-content: center;
+}

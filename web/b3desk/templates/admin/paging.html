@@ -1,7 +1,7 @@
 {% set start_page = [1, page_obj.page - 2]|max %}
 {% set end_page = [page_obj.pages, page_obj.page + 2]|min %}
 <nav role="navigation" class="fr-pagination" aria-label="pagination">
-    <ul class="fr-pagination__list">
+    <ul class="fr-pagination__list pagination--center">
         <li>
             {% if page_obj.page > 1 %}
                 <a class="fr-pagination__link fr-pagination__link--first" href="{{ page_url_base ~ 1 }}" title="Première page">{% trans %}Première page{% endtrans %}</a>

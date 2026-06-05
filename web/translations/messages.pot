@@ -871,6 +871,20 @@ msgstr ""
 msgid "Aucune réunion ne correspond à cette recherche."
 msgstr ""
 
+#: web/b3desk/templates/admin/meetings.html:32
+#, python-format
+msgid "%(count)s réunion correspondant aux critères"
+msgid_plural "%(count)s réunions correspondant aux critères"
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/meetings.html:38
+#, python-format
+msgid "%(count)s réunion"
+msgid_plural "%(count)s réunions"
+msgstr[0] ""
+msgstr[1] ""
+
 #: web/b3desk/templates/admin/paging.html:7
 #: web/b3desk/templates/admin/paging.html:9
 msgid "Première page"
@@ -985,6 +999,20 @@ msgstr ""
 #: web/b3desk/templates/admin/users.html:26
 msgid "Aucun utilisateur ne correspond à cette recherche."
 msgstr ""
+
+#: web/b3desk/templates/admin/users.html:32
+#, python-format
+msgid "%(count)s utilisateur correspondant aux critères"
+msgid_plural "%(count)s utilisateurs correspondant aux critères"
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/users.html:38
+#, python-format
+msgid "%(count)s utilisateur"
+msgid_plural "%(count)s utilisateurs"
+msgstr[0] ""
+msgstr[1] ""
 
 #: web/b3desk/templates/errors/400.html:7
 msgid "Erreur 400"
