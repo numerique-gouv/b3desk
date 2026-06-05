@@ -113,6 +113,22 @@ def test_change_language_rejects_invalid_locales(app):
     assert res.session["lang"] == "fr"
 
 
+def test_language_selector_renders_active_language(app):
+    """Test that the DSFR language selector reflects the active language."""
+    client_app = TestApp(app)
+
+    res = client_app.get("/faq?lang=en", status=200)
+    assert '<html lang="en">' in res.text
+    assert 'class="fr-translate fr-nav"' in res.text
+    assert 'EN<span class="fr-hidden-lg">' in res.text
+    assert 'hreflang="en"' in res.text and 'hreflang="fr"' in res.text
+    assert 'aria-current="true"' in res.text
+
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert '<html lang="fr">' in res.text
+    assert 'FR<span class="fr-hidden-lg">' in res.text
+
+
 def test_faq__anonymous_user(client_app):
     """Test that FAQ page displays without user name for anonymous users."""
     response = client_app.get("/faq", status=200)

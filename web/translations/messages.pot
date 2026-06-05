@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:291 web/b3desk/endpoints/meeting_files.py:123
+#: web/b3desk/__init__.py:310 web/b3desk/endpoints/meeting_files.py:123
 #: web/b3desk/endpoints/meeting_files.py:182
 #: web/b3desk/endpoints/meeting_files.py:287
 #: web/b3desk/endpoints/meeting_files.py:477
@@ -229,27 +229,27 @@ msgstr ""
 msgid "Rechercher une réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:657 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:661
+#: web/b3desk/settings.py:664
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:674
+#: web/b3desk/settings.py:677
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:677
+#: web/b3desk/settings.py:680
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:680
+#: web/b3desk/settings.py:683
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:684
+#: web/b3desk/settings.py:687
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -443,7 +443,7 @@ msgstr ""
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/header-lasuite.html:37
-#: web/b3desk/templates/tools.html:48 web/b3desk/templates/tools.html:50
+#: web/b3desk/templates/tools.html:42 web/b3desk/templates/tools.html:44
 msgid "Les services de La Suite numérique"
 msgstr ""
 
@@ -796,24 +796,28 @@ msgstr ""
 msgid "Se connecter ou créer un compte"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:13
+#: web/b3desk/templates/language-selector.html:6
+msgid "Sélectionner une langue"
+msgstr ""
+
+#: web/b3desk/templates/tools.html:7
 msgid "Modalités d'accès"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:30
+#: web/b3desk/templates/tools.html:24
 msgid "Ouvrir la page d'administration"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:81
-#: web/b3desk/templates/tools.html:31
+#: web/b3desk/templates/tools.html:25
 msgid "Admin"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:39
+#: web/b3desk/templates/tools.html:33
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:58
+#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:52
 msgid "S’identifier"
 msgstr ""
 

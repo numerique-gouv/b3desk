@@ -11,13 +11,16 @@
 from logging.config import dictConfig
 from logging.config import fileConfig
 from pathlib import Path
+from urllib.parse import urlencode
 
+from babel import Locale
 from flask import Flask
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import Babel
+from flask_babel import get_locale
 from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_pyoidc import OIDCAuthentication
@@ -34,7 +37,7 @@ from .utils import model_converter
 
 __version__ = "1.6.4dev"
 
-LANGUAGES = ["en", "fr"]
+LANGUAGES = ["fr", "en"]
 
 babel = Babel()
 cache = Cache()
@@ -178,7 +181,8 @@ def setup_i18n(app):
     def locale_selector():
         if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
-        lang = session.get("lang") if session.get("lang") in LANGUAGES else "fr"
+        default = app.config["BABEL_DEFAULT_LOCALE"]
+        lang = session.get("lang") if session.get("lang") in LANGUAGES else default
         if lang == "fr" and app.config.get("MEETING_LOCALE_VARIANT"):
             return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
         return lang
@@ -211,8 +215,18 @@ def setup_jinja(app):
     if app.debug or app.testing:
         app.jinja_env.undefined = StrictUndefined
 
+    def lang_url(code):
+        args = request.args.to_dict(flat=True)
+        args["lang"] = code
+        return f"{request.path}?{urlencode(args)}"
+
+    def language_name(code):
+        name = Locale.parse(code).display_name
+        return name[:1].upper() + name[1:]
+
     @app.context_processor
     def global_processor():
+        locale = get_locale()
         return {
             "debug": app.debug,
             "config": app.config,
@@ -222,6 +236,11 @@ def setup_jinja(app):
             "is_rie": is_rie(),
             "version": __version__,
             "LANGUAGES": LANGUAGES,
+            "current_lang": locale.language
+            if locale
+            else app.config["BABEL_DEFAULT_LOCALE"],
+            "lang_url": lang_url,
+            "language_name": language_name,
             "Role": Role,
         }
 
