@@ -379,27 +379,31 @@ msgstr ""
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:384
+#: web/b3desk/endpoints/meetings.py:377
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:387
+#: web/b3desk/endpoints/meetings.py:380
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:394
+#: web/b3desk/endpoints/meetings.py:383
+msgid "Cet utilisateur est le propriétaire"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:390
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:407
+#: web/b3desk/endpoints/meetings.py:403
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:428
+#: web/b3desk/endpoints/meetings.py:424
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:435
+#: web/b3desk/endpoints/meetings.py:431
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
