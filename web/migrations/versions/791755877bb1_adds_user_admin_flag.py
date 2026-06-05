@@ -18,7 +18,17 @@ depends_on = None
 
 def upgrade():
     with op.batch_alter_table("user", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("admin", sa.Boolean(), nullable=True))
+        batch_op.add_column(
+            sa.Column(
+                "admin",
+                sa.Boolean(),
+                nullable=False,
+                server_default=sa.false(),
+            )
+        )
+
+    with op.batch_alter_table("user", schema=None) as batch_op:
+        batch_op.alter_column("admin", server_default=None)
 
 
 def downgrade():
