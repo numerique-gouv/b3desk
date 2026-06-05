@@ -20,7 +20,7 @@ msgid "Le texte est trop long"
 msgstr ""
 
 #: web/b3desk/forms.py:51 web/b3desk/forms.py:106
-#: web/b3desk/templates/admin/selected_meeting.html:236
+#: web/b3desk/templates/admin/meeting_infos.html:235
 msgid "Salle d'attente"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Ma réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:77 web/b3desk/templates/admin/selected_meeting.html:149
+#: web/b3desk/forms.py:77 web/b3desk/templates/admin/meeting_infos.html:148
 msgid "Texte de bienvenue"
 msgstr ""
 
@@ -60,7 +60,7 @@ msgstr ""
 msgid "Bienvenue dans cette réunion %(meeting_name)s."
 msgstr ""
 
-#: web/b3desk/forms.py:89 web/b3desk/templates/admin/selected_meeting.html:124
+#: web/b3desk/forms.py:89 web/b3desk/templates/admin/meeting_infos.html:123
 msgid "Nombre maximal de participants"
 msgstr ""
 
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:94 web/b3desk/templates/admin/selected_meeting.html:141
+#: web/b3desk/forms.py:94 web/b3desk/templates/admin/meeting_infos.html:140
 msgid "Durée maximale (minutes)"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgid ""
 " 120, 3h = 180, 4h = 240."
 msgstr ""
 
-#: web/b3desk/forms.py:113 web/b3desk/templates/admin/selected_meeting.html:180
+#: web/b3desk/forms.py:113 web/b3desk/templates/admin/meeting_infos.html:179
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
@@ -88,7 +88,7 @@ msgid ""
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:120 web/b3desk/templates/admin/selected_meeting.html:188
+#: web/b3desk/forms.py:120 web/b3desk/templates/admin/meeting_infos.html:187
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
@@ -98,7 +98,7 @@ msgid ""
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
-#: web/b3desk/forms.py:127 web/b3desk/templates/admin/selected_meeting.html:196
+#: web/b3desk/forms.py:127 web/b3desk/templates/admin/meeting_infos.html:195
 msgid "Caméras des participants"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:135 web/b3desk/templates/admin/selected_meeting.html:204
+#: web/b3desk/forms.py:135 web/b3desk/templates/admin/meeting_infos.html:203
 msgid "Micros des participants"
 msgstr ""
 
@@ -118,19 +118,19 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:143 web/b3desk/templates/admin/selected_meeting.html:212
+#: web/b3desk/forms.py:143 web/b3desk/templates/admin/meeting_infos.html:211
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:148 web/b3desk/templates/admin/selected_meeting.html:220
+#: web/b3desk/forms.py:148 web/b3desk/templates/admin/meeting_infos.html:219
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:153 web/b3desk/templates/admin/selected_meeting.html:228
+#: web/b3desk/forms.py:153 web/b3desk/templates/admin/meeting_infos.html:227
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:158 web/b3desk/templates/admin/selected_meeting.html:157
+#: web/b3desk/forms.py:158 web/b3desk/templates/admin/meeting_infos.html:156
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:171 web/b3desk/templates/admin/selected_meeting.html:132
+#: web/b3desk/forms.py:171 web/b3desk/templates/admin/meeting_infos.html:131
 msgid "Url de redirection après la réunion"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:196 web/b3desk/templates/admin/selected_meeting.html:108
+#: web/b3desk/forms.py:196 web/b3desk/templates/admin/meeting_infos.html:107
 msgid "PIN"
 msgstr ""
 
@@ -195,7 +195,7 @@ msgstr ""
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:234 web/b3desk/templates/admin/selected_meeting.html:173
+#: web/b3desk/forms.py:234 web/b3desk/templates/admin/meeting_infos.html:172
 msgid "Enregistrement manuel"
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr ""
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:241 web/b3desk/templates/admin/selected_meeting.html:165
+#: web/b3desk/forms.py:241 web/b3desk/templates/admin/meeting_infos.html:164
 msgid "Enregistrement automatique"
 msgstr ""
 
@@ -804,7 +804,7 @@ msgstr ""
 msgid "Ouvrir la page d'administration"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:82
+#: web/b3desk/templates/admin/user_infos.html:81
 #: web/b3desk/templates/tools.html:31
 msgid "Admin"
 msgstr ""
@@ -845,19 +845,59 @@ msgstr ""
 msgid "Non"
 msgstr ""
 
+#: web/b3desk/templates/admin/meeting_infos.html:24
+#: web/b3desk/templates/meeting/form.html:56
+msgid "Modifier"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:29
+msgid "Voir le propriétaire"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:43
 #: web/b3desk/templates/admin/meeting_table.html:10
-#: web/b3desk/templates/admin/selected_meeting.html:44
-#: web/b3desk/templates/admin/selected_user.html:34
+#: web/b3desk/templates/admin/user_infos.html:33
 #: web/b3desk/templates/admin/user_table.html:10
 msgid "Identifiant"
 msgstr ""
 
+#: web/b3desk/templates/admin/meeting_infos.html:51
 #: web/b3desk/templates/admin/meeting_table.html:11
-#: web/b3desk/templates/admin/selected_meeting.html:52
-#: web/b3desk/templates/admin/selected_user.html:42
+#: web/b3desk/templates/admin/user_infos.html:41
 #: web/b3desk/templates/admin/user_table.html:11
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:59
+msgid "Propriétaire"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:67
+#: web/b3desk/templates/admin/meeting_table.html:34
+msgid "Réunion silencieuse (shadow_meeting)"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:75
+#: web/b3desk/templates/admin/user_infos.html:65
+msgid "Dernière connexion"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:83
+#: web/b3desk/templates/admin/user_infos.html:73
+msgid "Création"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:91
+msgid "Dernière modification"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:99
+msgid "n° de téléphone"
+msgstr ""
+
+#: web/b3desk/templates/admin/meeting_infos.html:115
+msgid "Code de connexion (visio_code)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_table.html:12
@@ -872,11 +912,6 @@ msgstr ""
 #: web/b3desk/templates/admin/meeting_table.html:30
 #, python-format
 msgid "Éditer %(meeting_name)s"
-msgstr ""
-
-#: web/b3desk/templates/admin/meeting_table.html:34
-#: web/b3desk/templates/admin/selected_meeting.html:68
-msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meetings.html:25
@@ -917,73 +952,38 @@ msgstr ""
 msgid "Dernière page"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_meeting.html:25
-#: web/b3desk/templates/meeting/form.html:56
-msgid "Modifier"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:30
-msgid "Voir le propriétaire"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:60
-msgid "Propriétaire"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:76
-#: web/b3desk/templates/admin/selected_user.html:66
-msgid "Dernière connexion"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:84
-#: web/b3desk/templates/admin/selected_user.html:74
-msgid "Création"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:92
-msgid "Dernière modification"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:100
-msgid "n° de téléphone"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_meeting.html:116
-msgid "Code de connexion (visio_code)"
-msgstr ""
-
-#: web/b3desk/templates/admin/selected_user.html:50
+#: web/b3desk/templates/admin/user_infos.html:49
 #: web/b3desk/templates/admin/user_table.html:13
 msgid "Email"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:58
+#: web/b3desk/templates/admin/user_infos.html:57
 msgid "Alias"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:90
+#: web/b3desk/templates/admin/user_infos.html:89
 msgid "NC Locator"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:98
+#: web/b3desk/templates/admin/user_infos.html:97
 msgid "NC Login"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:106
+#: web/b3desk/templates/admin/user_infos.html:105
 msgid "NC Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:120
+#: web/b3desk/templates/admin/user_infos.html:119
 #, python-format
 msgid "Liste des réunions de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:124
+#: web/b3desk/templates/admin/user_infos.html:123
 #, python-format
 msgid "%(fullname)s n'a pas créé de réunion."
 msgstr ""
 
-#: web/b3desk/templates/admin/selected_user.html:127
+#: web/b3desk/templates/admin/user_infos.html:126
 msgid "Réunions déléguées"
 msgstr ""
 

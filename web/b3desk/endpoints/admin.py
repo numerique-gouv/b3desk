@@ -74,9 +74,9 @@ def manage_users():
 def user_infos(user: User):
     """Display user infos."""
     return render_template(
-        "admin/selected_user.html",
+        "admin/user_infos.html",
         admin_mode=True,
-        selected_user=user,
+        user=user,
     )
 
 
@@ -101,7 +101,7 @@ def manage_meetings():
 def meeting_infos(meeting: Meeting):
     """Display meeting infos."""
     return render_template(
-        "admin/selected_meeting.html",
+        "admin/meeting_infos.html",
         admin_mode=True,
-        selected_meeting=meeting,
+        meeting=meeting,
     )

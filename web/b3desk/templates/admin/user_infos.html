@@ -2,7 +2,6 @@
 
 {% block main %}
     {% from 'admin/macros.html' import yesno, value %}
-    {% set user = selected_user %}
     {% set meetings = user.meetings %}
     {% set delegated_meetings = user.get_all_delegated_meetings %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
