@@ -3,16 +3,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-05 22:47+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-06-06 21:01+0000\n"
+"Last-Translator: Александр Косенков <akosenkov149@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/B3desk/b3desk/"
+"ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Translate Toolkit 3.19.11\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: web/b3desk/__init__.py:291 web/b3desk/endpoints/meeting_files.py:123
 #: web/b3desk/endpoints/meeting_files.py:182
@@ -22,22 +23,25 @@ msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez réessayer "
 "dans quelques minutes."
 msgstr ""
+"Файловая служба временно недоступна. Пожалуйста, повторите попытку через "
+"несколько минут."
 
 #: web/b3desk/forms.py:43
 msgid "Lien web du fichier à ajouter"
-msgstr ""
+msgstr "Веб-ссылка на файл, который нужно добавить"
 
 #: web/b3desk/forms.py:44
 msgid "Le lien web à entrer doit permettre de télécharger un fichier"
-msgstr ""
+msgstr "Вводимая веб-ссылка должна позволять загружать файл"
 
 #: web/b3desk/forms.py:47
 msgid "Le texte est trop long"
-msgstr ""
+msgstr "Текст слишком длинный"
 
 #: web/b3desk/forms.py:51 web/b3desk/forms.py:106
+#, fuzzy
 msgid "Salle d'attente"
-msgstr ""
+msgstr "Ожидание"
 
 #: web/b3desk/forms.py:53 web/b3desk/forms.py:108
 msgid ""
