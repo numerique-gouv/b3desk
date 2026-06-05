@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block main %}
+    {% from 'admin/macros.html' import yesno, value %}
     {% set meeting = selected_meeting %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
         <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
@@ -18,6 +19,18 @@
             </ol>
         </div>
     </nav>
+    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+        <li>
+            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line">
+                {% trans %}Modifier{% endtrans %}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin.user_infos', user=meeting.owner) }}" class="fr-btn fr-btn--secondary fr-icon-account-line">
+                {% trans %}Voir le propriétaire{% endtrans %}
+            </a>
+        </li>
+    </ul>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-meeting-component">
@@ -44,16 +57,6 @@
                                     </tr>
                                     <tr class="">
                                         <td class="fr-col fr-cell--center">
-                                            {% trans %}Éditer la réunion{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">
-                                                {% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
                                             {% trans %}Propriétaire{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
@@ -65,8 +68,7 @@
                                             {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.is_shadow %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.is_shadow) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -74,7 +76,7 @@
                                             {% trans %}Dernière connexion{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.last_connection_utc_datetime }}
+                                            {{ value(meeting.last_connection_utc_datetime) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -82,7 +84,7 @@
                                             {% trans %}Création{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.created_at }}
+                                            {{ value(meeting.created_at) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -90,7 +92,7 @@
                                             {% trans %}Dernière modification{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.updated_at }}
+                                            {{ value(meeting.updated_at) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -98,7 +100,7 @@
                                             {% trans %}n° de téléphone{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.dialNumber }}
+                                            {{ value(meeting.dialNumber) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -106,7 +108,7 @@
                                             {% trans %}PIN{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.voiceBridge }}
+                                            {{ value(meeting.voiceBridge) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -114,7 +116,7 @@
                                             {% trans %}Code de connexion (visio_code){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.visio_code }}
+                                            {{ value(meeting.visio_code) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -122,7 +124,7 @@
                                             {% trans %}Nombre maximal de participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.maxParticipants }}
+                                            {{ value(meeting.maxParticipants) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -130,7 +132,7 @@
                                             {% trans %}Url de redirection après la réunion{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.logoutUrl }}
+                                            {{ value(meeting.logoutUrl) }}
                                         </td>
                                     </tr>
 
@@ -139,7 +141,7 @@
                                             {% trans %}Durée maximale (minutes){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.duration }}
+                                            {{ value(meeting.duration) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -147,7 +149,7 @@
                                             {% trans %}Texte de bienvenue{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.welcome }}
+                                            {{ value(meeting.welcome) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -155,7 +157,7 @@
                                             {% trans %}Message à l'attention des modérateurs{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ meeting.moderatorOnlyMessage }}
+                                            {{ value(meeting.moderatorOnlyMessage) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -163,8 +165,7 @@
                                             {% trans %}Enregistrement automatique{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.autoStartRecording %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.autoStartRecording) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -172,16 +173,14 @@
                                             {% trans %}Enregistrement manuel{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.allowStartStopRecording %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.allowStartStopRecording) }}
                                         </td>
                                     </tr><tr class="">
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Caméras visibles par les modérateurs uniquement{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.webcamsOnlyForModerator %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.webcamsOnlyForModerator) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -189,8 +188,7 @@
                                             {% trans %}Participants muets à leur arrivée{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.muteOnStart %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.muteOnStart) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -198,8 +196,7 @@
                                             {% trans %}Caméras des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.lockSettingsDisableCam %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.lockSettingsDisableCam) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -207,8 +204,7 @@
                                             {% trans %}Micros des participants{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.lockSettingsDisableMic %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.lockSettingsDisableMic) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -216,8 +212,7 @@
                                             {% trans %}Discussions privées{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.lockSettingsDisablePrivateChat %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.lockSettingsDisablePrivateChat) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -225,8 +220,7 @@
                                             {% trans %}Discussion publique (tchat){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.lockSettingsDisablePublicChat %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.lockSettingsDisablePublicChat) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -234,8 +228,7 @@
                                             {% trans %}Prise de note collaborative{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.lockSettingsDisableNote %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.lockSettingsDisableNote) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -243,8 +236,7 @@
                                             {% trans %}Salle d'attente{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = meeting.guestPolicy%}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(meeting.guestPolicy) }}
                                         </td>
                                     </tr>
                                 </tbody>

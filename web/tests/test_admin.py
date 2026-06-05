@@ -91,7 +91,7 @@ def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count("NON") == 1
+    assert res.text.count('fr-badge">Non</p>') == 1
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
 
 

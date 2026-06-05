@@ -1,0 +1,9 @@
+{% macro yesno(value) %}
+    {% if value %}
+        <p class="fr-badge fr-badge--success">{% trans %}Oui{% endtrans %}</p>
+    {% else %}
+        <p class="fr-badge">{% trans %}Non{% endtrans %}</p>
+    {% endif %}
+{% endmacro %}
+
+{% macro value(v) %}{{ v if v is not none else '' }}{% endmacro %}
