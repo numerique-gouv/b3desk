@@ -221,11 +221,11 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:20
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:20
+#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:19
 msgid "Rechercher une réunion"
 msgstr ""
 
@@ -867,7 +867,7 @@ msgstr ""
 msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
-#: web/b3desk/templates/admin/meetings.html:26
+#: web/b3desk/templates/admin/meetings.html:25
 msgid "Aucune réunion ne correspond à cette recherche."
 msgstr ""
 
@@ -996,7 +996,7 @@ msgstr ""
 msgid "%(username)s infos"
 msgstr ""
 
-#: web/b3desk/templates/admin/users.html:26
+#: web/b3desk/templates/admin/users.html:25
 msgid "Aucun utilisateur ne correspond à cette recherche."
 msgstr ""
 

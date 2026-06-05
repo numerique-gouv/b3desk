@@ -13,8 +13,7 @@
             </ol>
         </div>
     </nav>
-    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="post">
-        {% include 'meeting/csrf.html' %}
+    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
@@ -26,7 +25,8 @@
         <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
     {% else %}
         {% set page_obj = meetings_page %}
-        {% set page_url_base = url_for('admin.manage_meetings') ~ '?page=' %}
+        {% set page_endpoint = 'admin.manage_meetings' %}
+        {% set search = data %}
         <p class="fr-table__detail">
             {% if data %}
                 {% trans trimmed count=page_obj.total %}

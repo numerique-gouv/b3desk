@@ -53,21 +53,12 @@ def home():
     )
 
 
-@bp.route("/admin/users", methods=["GET", "POST"])
+@bp.route("/admin/users")
 @admin_needed
 def manage_users():
     """Display user list to manage users."""
-    form = UserSearchForm(request.form)
-    if not request.form or not form.validate():
-        users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=None)
-        return render_template(
-            "admin/users.html",
-            admin_mode=True,
-            users_page=users_page,
-            form=form,
-            data=None,
-        )
-    data = form.search.data.lower()
+    form = UserSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
     users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
     return render_template(
         "admin/users.html",
@@ -89,21 +80,12 @@ def user_infos(user: User):
     )
 
 
-@bp.route("/admin/meetings", methods=["GET", "POST"])
+@bp.route("/admin/meetings")
 @admin_needed
 def manage_meetings():
     """Display meeting list to manage meetings."""
-    form = MeetingSearchForm(request.form)
-    if not request.form or not form.validate():
-        meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=None)
-        return render_template(
-            "admin/meetings.html",
-            admin_mode=True,
-            meetings_page=meetings_page,
-            form=form,
-            data=None,
-        )
-    data = form.search.data.lower()
+    form = MeetingSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
     meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=data)
     return render_template(
         "admin/meetings.html",
