@@ -18,18 +18,6 @@
             </ol>
         </div>
     </nav>
-    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
-        <li>
-            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line">
-                {% trans %}Modifier{% endtrans %}
-            </a>
-        </li>
-        <li>
-            <a href="{{ url_for('admin.user_infos', user=meeting.owner) }}" class="fr-btn fr-btn--secondary fr-icon-account-line">
-                {% trans %}Voir le propriétaire{% endtrans %}
-            </a>
-        </li>
-    </ul>
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
             <div class="fr-grid-row">

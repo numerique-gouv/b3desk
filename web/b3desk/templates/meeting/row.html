@@ -31,16 +31,21 @@
                data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></a>
         </div>
     {% else %}
-        <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6">
+        <div class="fr-col-xs-7 fr-col-sm-7 fr-col-lg-7">
             <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
             <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
                 {% trans %}Inviter{% endtrans %}
             </button>
+            {% if admin_mode %}
+                <a href="{{ url_for('admin.user_infos', user=meeting.owner) }}" class="fr-btn fr-btn--secondary fr-btn--icon-left">
+                    {% trans %}Voir le propriétaire{% endtrans %}
+                </a>
+            {% endif %}
             {% if meeting in g.user.get_all_delegated_meetings %}
                 <i class="fr-icon-parent-fill delegated-icon" aria-hidden="true" title="{% trans meeting_owner_name=meeting.owner.fullname %}Propriétaire : {{ meeting_owner_name }}{% endtrans %}"></i>
             {% endif %}
         </div>
-        <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
+        <div class="fr-col-xs-5 fr-col-sm-5 fr-col-lg-5 btn-actions">
             {% if meeting in g.user.meetings or admin_mode %}
                 <a href="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn {% if not meeting.get_all_delegates %}fr-btn--secondary{% endif %} fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
                     {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
