@@ -924,7 +924,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:168
 #: web/b3desk/templates/meeting/files.html:198
 #: web/b3desk/templates/meeting/recordings.html:128
-#: web/b3desk/templates/meeting/row.html:64
+#: web/b3desk/templates/meeting/row.html:63
 msgid "Supprimer"
 msgstr ""
 
@@ -2404,8 +2404,8 @@ msgid "Supprimer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation.html:23
+#: web/b3desk/templates/meeting/row.html:49
 #: web/b3desk/templates/meeting/row.html:50
-#: web/b3desk/templates/meeting/row.html:51
 #, python-format
 msgid "Gérer les délégations de %(meeting_name)s"
 msgstr ""
@@ -2521,7 +2521,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/filesform.html:20
 #: web/b3desk/templates/meeting/row.html:22
-#: web/b3desk/templates/meeting/row.html:61
+#: web/b3desk/templates/meeting/row.html:60
 #, python-format
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
@@ -2676,8 +2676,8 @@ msgid "Retirer des favoris"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:23
+#: web/b3desk/templates/meeting/row.html:54
 #: web/b3desk/templates/meeting/row.html:55
-#: web/b3desk/templates/meeting/row.html:56
 #, python-format
 msgid "Voir les enregistrements de %(meeting_name)s"
 msgstr ""
@@ -2824,7 +2824,7 @@ msgid "Copier le lien Participant dans le presse-papiers"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:20
-#: web/b3desk/templates/meeting/row.html:59
+#: web/b3desk/templates/meeting/row.html:58
 #, python-format
 msgid "Modifier %(meeting_name)s"
 msgstr ""
@@ -2832,7 +2832,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:26
 #: web/b3desk/templates/meeting/row.html:27
 #: web/b3desk/templates/meeting/row.html:29
-#: web/b3desk/templates/meeting/row.html:65
+#: web/b3desk/templates/meeting/row.html:64
 #, python-format
 msgid "Supprimer %(meeting_name)s"
 msgstr ""
@@ -2853,7 +2853,7 @@ msgstr ""
 msgid "Voir le propriétaire"
 msgstr ""
 
-#: web/b3desk/templates/meeting/row.html:45
+#: web/b3desk/templates/meeting/row.html:44
 #, python-format
 msgid "Propriétaire : %(meeting_owner_name)s"
 msgstr ""

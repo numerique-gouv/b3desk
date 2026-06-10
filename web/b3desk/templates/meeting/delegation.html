@@ -19,7 +19,7 @@
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
                     </li>
                     <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode) }}">
+                        <a class="fr-breadcrumb__link" href="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}">
                             {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
                         </a>
                     </li>

@@ -455,5 +455,7 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
             meeting.name,
         )
     return redirect(
-        url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode)
+        url_for(
+            "meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None
+        )
     )
