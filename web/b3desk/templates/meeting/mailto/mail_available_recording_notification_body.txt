@@ -1,0 +1,14 @@
+{% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
+
+{% trans meeting_name=meeting.name %}L'enregistrement de la réunion {{ meeting_name }} est disponible.{% endtrans %}
+
+{% if recording_name -%}
+{% trans %}Nom :{% endtrans %} {{ recording_name }}
+{% endif -%}
+{% trans %}Date :{% endtrans %} {{ recording_start }}
+
+{% trans %}Formats disponibles :{% endtrans %}
+{% for link in recording_links -%}
+- {{ link.label }} : {{ link.url }}
+{% endfor %}
+{% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis votre espace :{% endtrans %} {{ welcome_url }}

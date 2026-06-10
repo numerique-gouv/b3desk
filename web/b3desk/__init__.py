@@ -13,6 +13,8 @@ from logging.config import fileConfig
 from pathlib import Path
 
 from flask import Flask
+from flask import has_app_context
+from flask import has_request_context
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -68,6 +70,17 @@ def setup_celery(app):
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
+
+    class ContextTask(celery.Task):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):  # pragma: no cover
+            if has_app_context():
+                return self.run(*args, **kwargs)
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
 
 
 def setup_cache(app):
@@ -134,6 +147,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -154,6 +168,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -176,6 +191,11 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
+        if not has_request_context():
+            if app.config.get("MEETING_LOCALE_VARIANT"):
+                return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
+            return "fr"
+
         if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
         lang = session.get("lang") if session.get("lang") in LANGUAGES else "fr"
@@ -249,7 +269,6 @@ def setup_error_pages(app):
     from flask import flash
     from flask import g
     from flask import jsonify
-    from flask import redirect
     from flask_babel import lazy_gettext as _
     from webdav3.exceptions import WebDavException
 
@@ -306,6 +325,7 @@ def setup_endpoints(app):
         import b3desk.commands
         import b3desk.endpoints.admin
         import b3desk.endpoints.api
+        import b3desk.endpoints.bbb_callback
         import b3desk.endpoints.captcha
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
@@ -319,6 +339,7 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+        app.register_blueprint(b3desk.endpoints.bbb_callback.bp)
         app.register_blueprint(b3desk.endpoints.admin.bp)
 
 

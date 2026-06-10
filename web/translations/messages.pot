@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:292 web/b3desk/endpoints/meeting_files.py:125
+#: web/b3desk/__init__.py:311 web/b3desk/endpoints/meeting_files.py:125
 #: web/b3desk/endpoints/meeting_files.py:184
 #: web/b3desk/endpoints/meeting_files.py:289
 #: web/b3desk/endpoints/meeting_files.py:480
@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:343
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:354
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -492,16 +492,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:322 web/b3desk/models/meetings.py:329
+#: web/b3desk/models/meetings.py:333 web/b3desk/models/meetings.py:340
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:336
+#: web/b3desk/models/meetings.py:347
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:338
+#: web/b3desk/models/meetings.py:349
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -810,12 +810,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
 #: web/b3desk/templates/meeting/modals/invite.html:9
-#: web/b3desk/templates/meeting/recordings.html:109
-#: web/b3desk/templates/meeting/recordings.html:110
-#: web/b3desk/templates/meeting/recordings.html:150
-#: web/b3desk/templates/meeting/recordings.html:151
-#: web/b3desk/templates/meeting/recordings.html:193
-#: web/b3desk/templates/meeting/recordings.html:194
+#: web/b3desk/templates/meeting/recordings.html:126
+#: web/b3desk/templates/meeting/recordings.html:127
+#: web/b3desk/templates/meeting/recordings.html:167
+#: web/b3desk/templates/meeting/recordings.html:168
+#: web/b3desk/templates/meeting/recordings.html:210
+#: web/b3desk/templates/meeting/recordings.html:211
 msgid "Fermer"
 msgstr ""
 
@@ -923,7 +923,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:156
 #: web/b3desk/templates/meeting/files.html:168
 #: web/b3desk/templates/meeting/files.html:198
-#: web/b3desk/templates/meeting/recordings.html:128
+#: web/b3desk/templates/meeting/recordings.html:145
 #: web/b3desk/templates/meeting/row.html:63
 msgid "Supprimer"
 msgstr ""
@@ -994,8 +994,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:180
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:131
-#: web/b3desk/templates/meeting/recordings.html:175
+#: web/b3desk/templates/meeting/recordings.html:148
+#: web/b3desk/templates/meeting/recordings.html:192
 msgid "Annuler"
 msgstr ""
 
@@ -2421,8 +2421,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:160
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:120
-#: web/b3desk/templates/meeting/recordings.html:167
+#: web/b3desk/templates/meeting/recordings.html:137
+#: web/b3desk/templates/meeting/recordings.html:184
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr ""
@@ -2741,7 +2741,7 @@ msgid "Voir l'enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:81
-#: web/b3desk/templates/meeting/recordings.html:216
+#: web/b3desk/templates/meeting/recordings.html:233
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
@@ -2758,39 +2758,67 @@ msgstr ""
 msgid "Supprimer video de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:100
+msgid "Compte-rendu"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:103
+msgid "Ouvrir le compte-rendu HTML"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:103
+msgid "HTML"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:105
+msgid "Télécharger le compte-rendu PDF"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:105
+msgid "PDF"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:108
+msgid "Télécharger le compte-rendu Markdown"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:108
+msgid "Markdown"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:133
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:118
+#: web/b3desk/templates/meeting/recordings.html:135
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
 "<em>%(recording_name)s</em> de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:172
+#: web/b3desk/templates/meeting/recordings.html:189
 msgid "Modifier le nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:172
+#: web/b3desk/templates/meeting/recordings.html:189
 msgid "Renommer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:217
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:203
+#: web/b3desk/templates/meeting/recordings.html:220
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
 "services dédiés à la diffusion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:210
+#: web/b3desk/templates/meeting/recordings.html:227
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
@@ -2908,24 +2936,69 @@ msgid ""
 "                    "
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:2
-#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:2
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:3
 msgid "vous a nommé délégataire de la réunion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:8
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
 msgid ""
 "Vous pouvez dès à présent consulter et gérer l'édition, les "
 "enregistrements et les fichiers associés à cette réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:11
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
+msgid "Rendez-vous simplement sur votre espace :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:3
+#, python-format
+msgid "L'enregistrement de la réunion %(meeting_name)s est disponible."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:6
+msgid "Nom :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:10
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:8
+msgid "Date :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:12
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
+msgid "Formats disponibles :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+msgid "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+msgid "votre espace"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:14
+msgid ""
+"Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
+"votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -2956,7 +3029,8 @@ msgstr ""
 msgid "Bonne réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:5
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:3
 msgid "vous a retiré des délégataires de la réunion"
 msgstr ""
 
@@ -3097,7 +3171,32 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:204
+#: web/b3desk/utils/__init__.py:100
+msgid "Présentation interactive"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:108
+msgid "Vidéo (téléchargement direct)"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:114
+msgid "Compte-rendu (HTML)"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:116
+msgid "Compte-rendu (PDF)"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:118
+msgid "Compte-rendu (Markdown)"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:149
+#, python-brace-format
+msgid "Votre enregistrement pour {name}"
+msgstr ""
+
+#: web/b3desk/utils/__init__.py:267
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

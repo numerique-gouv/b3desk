@@ -34,6 +34,18 @@ def cache_key(func, caller, prepped, *args, **kwargs):
     return prepped.url
 
 
+def derive_ai_summary_playback(html_url):
+    """Build the ai-summary playback entry from its HTML report URL."""
+    playback = {"url": html_url}
+    # BBB only exposes the HTML report; the PDF and Markdown reports are
+    # published as sibling files, so derive their URLs from the HTML one.
+    if html_url.endswith(".html"):
+        stem = html_url[: -len(".html")]
+        playback["pdf"] = f"{stem}.pdf"
+        playback["md"] = f"{stem}.md"
+    return playback
+
+
 def caching_exclusion(func, caller, prepped, *args, **kwargs):
     """Only read-only methods should be cached."""
     url = urlparse(prepped.url)
@@ -170,6 +182,7 @@ class BBB:
         moderator_only_message=None,
         meta_academy=None,
         analytics_callback_url=None,
+        meta_bbb_recording_ready_url=None,
         file_sharing=None,
     ):
         """Create a new meeting.
@@ -237,6 +250,8 @@ class BBB:
         if moderator_only_message:
             params["moderatorOnlyMessage"] = moderator_only_message
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
+        if meta_bbb_recording_ready_url:
+            params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
 
         if not file_sharing:
             request = self.bbb_request("create", params=params)
@@ -276,13 +291,17 @@ class BBB:
         return self.bbb_response(request)
 
     @cache.memoize(timeout=current_app.config["BIGBLUEBUTTON_API_CACHE_DURATION"])
-    def get_recordings(self):  # noqa: C901
-        """Get the list of recordings for a meeting.
+    def get_recordings(self, bbb_recording_id=None):  # noqa: C901
+        """Get the list of recordings for a meeting or infos of one recording.
 
-        https://docs.bigbluebutton.org/development/api/#getrecordings
+        https://docs.bigbluebutton.org/development/api/#get-getrecordings
         """
-        request = self.bbb_request(
-            "getRecordings", params={"meetingID": self.meeting_id}
+        request = (
+            self.bbb_request("getRecordings", params={"recordID": bbb_recording_id})
+            if bbb_recording_id
+            else self.bbb_request(
+                "getRecordings", params={"meetingID": self.meeting_id}
+            )
         )
         root = self._send_request(request)
         data = {c.tag: c.text for c in root}
@@ -314,6 +333,24 @@ class BBB:
                     continue
 
                 for format in playback.iter("format"):
+                    type = format.find("type").text
+
+                    if type == "ai-summary":
+                        url_elem = format.find("url")
+                        if url_elem is not None and url_elem.text:
+                            data["playbacks"][type] = derive_ai_summary_playback(
+                                url_elem.text
+                            )
+                        continue
+
+                    if type not in ("presentation", "video"):
+                        logger.warning(
+                            "Unhandled recording playback format %r for recording %s",
+                            type,
+                            data["recordID"],
+                        )
+                        continue
+
                     images = []
                     preview = format.find("preview")
                     if preview is not None:
@@ -321,16 +358,15 @@ class BBB:
                             image = {k: v for k, v in i.attrib.items()}
                             image["url"] = i.text
                             images.append(image)
-                    type = format.find("type").text
-                    if type in ("presentation", "video"):
-                        data["playbacks"][type] = {
-                            "url": (media_url := format.find("url").text),
-                            "images": images,
-                        }
-                        if type == "video":
-                            data["playbacks"][type]["direct_link"] = (
-                                media_url + "video-0.m4v"
-                            )
+
+                    data["playbacks"][type] = {
+                        "url": (media_url := format.find("url").text),
+                        "images": images,
+                    }
+                    if type == "video":
+                        data["playbacks"][type]["direct_link"] = (
+                            media_url + "video-0.m4v"
+                        )
                 result.append(data)
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
