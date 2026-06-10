@@ -45,7 +45,7 @@ def test_research_bar_with_letters_in_user_list_in_admin_page(
 ):
     """Test research bar in user list with 'ber'."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/users", status=200)
+    res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "ber"
     res = form.submit()
@@ -59,7 +59,7 @@ def test_research_bar_with_digit_in_user_list_in_admin_page(
 ):
     """Test research bar in user list with '1'."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/users", status=200)
+    res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "1"
     res = form.submit()
@@ -73,7 +73,7 @@ def test_research_bar_with_no_result_in_user_list_in_admin_page(
 ):
     """Test research bar in user list with 'zzzzzzzzzzzzzzzzz'."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/users", status=200)
+    res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "zzzzzzzzzzzzzzzzz"
     res = form.submit()
@@ -83,6 +83,19 @@ def test_research_bar_with_no_result_in_user_list_in_admin_page(
     assert res.text.count("Aucun utilisateur ne correspond à cette recherche.") == 1
 
 
+def test_research_bar_is_kept_through_pagination_in_user_list_in_admin_page(
+    cli_runner, user, user_2, user_3, client_app, authenticated_user, mocker
+):
+    """The search criteria must survive when navigating to another page."""
+    # 'li' matches Alice (page 1) and Charlie (page 2), but not Berenice.
+    mocker.patch("b3desk.endpoints.admin.MAX_PER_PAGE", 1)
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/users?search=li&page=2", status=200)
+    assert res.text.count("charlie@domain.tld") == 1
+    assert res.text.count("alice@domain.tld") == 0
+    assert res.text.count("berenice@domain.tld") == 0
+
+
 def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner, user, user_2, client_app, authenticated_user
 ):
@@ -90,7 +103,7 @@ def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count("NON") == 1
+    assert res.text.count('fr-badge">Non</p>') == 1
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
 
 

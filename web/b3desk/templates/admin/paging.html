@@ -1,17 +1,17 @@
 {% set start_page = [1, page_obj.page - 2]|max %}
 {% set end_page = [page_obj.pages, page_obj.page + 2]|min %}
 <nav role="navigation" class="fr-pagination" aria-label="pagination">
-    <ul class="fr-pagination__list">
+    <ul class="fr-pagination__list pagination--center">
         <li>
             {% if page_obj.page > 1 %}
-                <a class="fr-pagination__link fr-pagination__link--first" href="{{ page_url_base ~ 1 }}" title="Première page">{% trans %}Première page{% endtrans %}</a>
+                <a class="fr-pagination__link fr-pagination__link--first" href="{{ url_for(page_endpoint, page=1, search=search) }}" title="Première page">{% trans %}Première page{% endtrans %}</a>
             {% else %}
                 <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true" role="link" title="Première page">{% trans %}Première page{% endtrans %}</a>
             {% endif %}
         </li>
         <li>
             {% if page_obj.has_prev %}
-                <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ page_url_base ~ page_obj.prev_num }}" title="Page précédente">{% trans %}Page précédente{% endtrans %}</a>
+                <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ url_for(page_endpoint, page=page_obj.prev_num, search=search) }}" title="Page précédente">{% trans %}Page précédente{% endtrans %}</a>
             {% else %}
                 <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" aria-disabled="true" role="link" title="Page précédente">{% trans %}Page précédente{% endtrans %}</a>
             {% endif %}
@@ -21,20 +21,20 @@
                 {% if p == page_obj.page %}
                     <a class="fr-pagination__link" aria-current="page" title="Page {{ p }}">{{ p }}</a>
                 {% else %}
-                    <a class="fr-pagination__link" href="{{ page_url_base ~ p }}" title="Page {{ p }}">{{ p }}</a>
+                    <a class="fr-pagination__link" href="{{ url_for(page_endpoint, page=p, search=search) }}" title="Page {{ p }}">{{ p }}</a>
                 {% endif %}
             </li>
         {% endfor %}
         <li>
             {% if page_obj.has_next %}
-                <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ page_url_base ~ page_obj.next_num }}" title="Page suivante">{% trans %}Page suivante{% endtrans %}</a>
+                <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ url_for(page_endpoint, page=page_obj.next_num, search=search) }}" title="Page suivante">{% trans %}Page suivante{% endtrans %}</a>
             {% else %}
                 <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" aria-disabled="true" role="link" title="Page suivante">{% trans %}Page suivante{% endtrans %}</a>
             {% endif %}
         </li>
         <li>
             {% if page_obj.page < page_obj.pages %}
-                <a class="fr-pagination__link fr-pagination__link--last" href="{{ page_url_base ~ page_obj.pages }}" title="Dernière page">{% trans %}Dernière page{% endtrans %}</a>
+                <a class="fr-pagination__link fr-pagination__link--last" href="{{ url_for(page_endpoint, page=page_obj.pages, search=search) }}" title="Dernière page">{% trans %}Dernière page{% endtrans %}</a>
             {% else %}
                 <a class="fr-pagination__link fr-pagination__link--last" aria-disabled="true" role="link" title="Dernière page">{% trans %}Dernière page{% endtrans %}</a>
             {% endif %}

@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% set user = selected_user %}
+    {% from 'admin/macros.html' import yesno, value %}
     {% set meetings = user.meetings %}
     {% set delegated_meetings = user.get_all_delegated_meetings %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
@@ -57,7 +57,7 @@
                                             {% trans %}Alias{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.preferred_username }}
+                                            {{ value(user.preferred_username) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -65,7 +65,7 @@
                                             {% trans %}Dernière connexion{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.last_connection_utc_datetime }}
+                                            {{ value(user.last_connection_utc_datetime) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -73,7 +73,7 @@
                                             {% trans %}Création{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.created_at }}
+                                            {{ value(user.created_at) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -81,8 +81,7 @@
                                             {% trans %}Admin{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {% set bool_value = user.admin %}
-                                            {% include '/admin/true_false_display.html' %}
+                                            {{ yesno(user.admin) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -90,7 +89,7 @@
                                             {% trans %}NC Locator{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.nc_locator }}
+                                            {{ value(user.nc_locator) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -98,7 +97,7 @@
                                             {% trans %}NC Login{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.nc_login }}
+                                            {{ value(user.nc_login) }}
                                         </td>
                                     </tr>
                                     <tr class="">
@@ -106,7 +105,7 @@
                                             {% trans %}NC Dernière connexion{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ user.nc_last_auto_enroll }}
+                                            {{ value(user.nc_last_auto_enroll) }}
                                         </td>
                                     </tr>
                                 </tbody>
