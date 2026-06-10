@@ -146,15 +146,6 @@ class User(db.Model):
 
     @property
     def can_use_file_sharing(self):
-        current_app.logger.warning(not self.groups)
-        current_app.logger.warning(current_app.config["FILE_SHARING"])
-        current_app.logger.warning(
-            any(group.enable_file_sharing for group in self.groups)
-        )
-        current_app.logger.warning(
-            all(group.enable_file_sharing is False for group in self.groups)
-        )
-
         if not self.groups:
             return current_app.config["FILE_SHARING"]
         if any(group.enable_file_sharing for group in self.groups):
