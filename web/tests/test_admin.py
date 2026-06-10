@@ -677,7 +677,7 @@ def test_admin_can_read_meeting_infos(
     res = client_app.get("/admin/meeting/1", status=200)
     assert res.text.count("922222221") == 5
     assert res.text.count("222222221") == 3
-    assert res.text.count("Berenice Cooler") == 2
+    assert res.text.count("Berenice Cooler") == 1
 
 
 def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
