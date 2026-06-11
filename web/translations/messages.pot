@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:354
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:359
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -492,16 +492,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:333 web/b3desk/models/meetings.py:340
+#: web/b3desk/models/meetings.py:338 web/b3desk/models/meetings.py:345
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:347
+#: web/b3desk/models/meetings.py:352
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:349
+#: web/b3desk/models/meetings.py:354
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -3191,12 +3191,12 @@ msgstr ""
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:149
+#: web/b3desk/utils/__init__.py:150
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:267
+#: web/b3desk/utils/__init__.py:268
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

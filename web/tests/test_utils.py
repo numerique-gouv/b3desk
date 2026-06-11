@@ -5,7 +5,7 @@ from flask_babel import get_locale
 def test_build_recording_links_falls_back_to_url_without_direct_link(app):
     """Video format without direct_link should still produce a link using its url."""
     with app.app_context():
-        links = _build_recording_links({"video": {"url": "https://bbb.test/v/"}})
+        links = _build_recording_links({"video": {"url": "https://bbb.test/v/"}}, True)
     assert links == [{"label": links[0]["label"], "url": "https://bbb.test/v/"}]
 
 

@@ -4,6 +4,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.commands import bp
 
 
 @pytest.fixture
@@ -398,7 +399,7 @@ def test_build_recording_links_ai_summary():
             "md": "https://bbb.test/ai-summary/rec/ai-summary.md",
         }
     }
-    links = _build_recording_links(playbacks)
+    links = _build_recording_links(playbacks, True)
 
     assert [link["url"] for link in links] == [
         "https://bbb.test/ai-summary/rec/ai-summary.html",
@@ -408,16 +409,21 @@ def test_build_recording_links_ai_summary():
 
 
 def test_open_recordings_page_ai_summary(
+    cli_runner,
     client_app,
     authenticated_user,
     mocker,
     meeting,
     bbb_response,
     bbb_getRecordings_ai_summary,
+    group,
 ):
     """The recordings page shows the ai-summary report links (HTML/PDF/Markdown)."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/manage-group-members/1", status=200)
+    res.form["search"] = "alice@domain.tld"
+    res = res.form.submit()
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
     html = response.body.decode("utf-8")
 

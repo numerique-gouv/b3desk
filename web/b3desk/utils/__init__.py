@@ -91,7 +91,7 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     send_email(msg, text, html, smtp)
 
 
-def _build_recording_links(playbacks):
+def _build_recording_links(playbacks, enable_transcription):
     """Return an ordered list of {label, url} entries from a BBB playbacks dict."""
     links = []
     if "presentation" in playbacks:
@@ -109,7 +109,7 @@ def _build_recording_links(playbacks):
                 "url": video.get("direct_link", video["url"]),
             }
         )
-    if "ai-summary" in playbacks:
+    if "ai-summary" in playbacks and enable_transcription:
         summary = playbacks["ai-summary"]
         links.append({"label": _("Compte-rendu (HTML)"), "url": summary["url"]})
         if "pdf" in summary:
@@ -123,7 +123,8 @@ def send_available_recording_notification_mail(
     meeting, playbacks, recording_name, recording_start
 ):
     """Send email to notify the recording is available, listing every available format."""
-    recording_links = _build_recording_links(playbacks)
+    enable_transcription = meeting.owner_can_use_transcription
+    recording_links = _build_recording_links(playbacks, enable_transcription)
     if not recording_links:
         current_app.logger.warning(
             "No usable playback format for meeting %s, skipping notification mail",

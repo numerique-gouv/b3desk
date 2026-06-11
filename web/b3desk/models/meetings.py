@@ -213,6 +213,11 @@ class Meeting(db.Model):
         owner = self.owner
         return owner.can_use_file_sharing
 
+    @property
+    def owner_can_use_transcription(self):
+        owner = self.owner
+        return any(group.enable_transcription for group in owner.groups)
+
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
