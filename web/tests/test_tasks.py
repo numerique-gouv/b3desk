@@ -55,9 +55,9 @@ def test_send_recording_notification_no_usable_format(
 
 
 def test_send_recording_notification_lists_all_available_formats(
-    client_app, meeting, smtpd, mocker
+    client_app, meeting, smtpd, mocker, caplog
 ):
-    """Both presentation and video formats appear in the notification mail."""
+    """Both presentation and video formats appear in the notification mail, and a success log is emitted."""
     from b3desk.models.bbb import BBB
 
     mocker.patch.object(
@@ -86,3 +86,4 @@ def test_send_recording_notification_lists_all_available_formats(
     html_body = parts["text/html"].get_payload(decode=True).decode()
     assert "https://bbb.test/playback/presentation" in html_body
     assert "https://bbb.test/playback/video/video-0.m4v" in html_body
+    assert f"Email sent to {meeting.owner.email}" in caplog.text
