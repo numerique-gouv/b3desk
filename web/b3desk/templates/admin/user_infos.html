@@ -3,6 +3,7 @@
 {% block main %}
     {% from 'admin/macros.html' import yesno, value %}
     {% set meetings = user.meetings %}
+    {% set groups = user.groups %}
     {% set delegated_meetings = user.get_all_delegated_meetings %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
         <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
@@ -127,5 +128,11 @@
         {% with meetings=delegated_meetings %}
             {% include 'admin/meeting_table.html' %}
         {% endwith %}
+    {% endif %}
+    <h5>{% trans fullname = user.fullname %}Liste des groupes de {{ fullname }}{% endtrans %}</h5>
+    {% if groups %}
+        {% include 'admin/group_table.html' %}
+    {% else %}
+        <p>{% trans fullname = user.fullname %}{{ fullname }} n'appartient à aucun groupe.{% endtrans %}</p>
     {% endif %}
 {% endblock %}
