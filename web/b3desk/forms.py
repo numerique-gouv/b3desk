@@ -316,8 +316,10 @@ class GroupForm(FlaskForm):
         label=_(
             "SIP",
         ),
-        description=_(f"{current_app.config['ENABLE_SIP']} par défaut"),
-        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        description=_(
+            f"{'Activé' if current_app.config['ENABLE_SIP'] else 'Désactivé'} par défaut"
+        ),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
     )
@@ -325,8 +327,10 @@ class GroupForm(FlaskForm):
         label=_(
             "Ajout de document",
         ),
-        description=_(f"{current_app.config['FILE_SHARING']} par défaut"),
-        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        description=_(
+            f"{'Activé' if current_app.config['FILE_SHARING'] else 'Désactivé'} par défaut"
+        ),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
     )
@@ -334,7 +338,8 @@ class GroupForm(FlaskForm):
         label=_(
             "Transcription",
         ),
-        choices=[("None", "None"), ("True", "True"), ("False", "False")],
+        description=_("Désactivé par défaut"),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
     )

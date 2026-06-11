@@ -250,20 +250,24 @@ msgstr ""
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:319
-msgid "ENABLE_SIP"
+#: web/b3desk/forms.py:320
+msgid "ActivéENABLE_SIPDésactivé"
 msgstr ""
 
-#: web/b3desk/forms.py:326 web/b3desk/templates/admin/delete_group.html:59
+#: web/b3desk/forms.py:328 web/b3desk/templates/admin/delete_group.html:59
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:328
-msgid "FILE_SHARING"
+#: web/b3desk/forms.py:331
+msgid "ActivéFILE_SHARINGDésactivé"
 msgstr ""
 
-#: web/b3desk/forms.py:335 web/b3desk/templates/admin/delete_group.html:67
+#: web/b3desk/forms.py:339 web/b3desk/templates/admin/delete_group.html:67
 msgid "Transcription"
+msgstr ""
+
+#: web/b3desk/forms.py:341
+msgid "Désactivé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:657 web/b3desk/templates/meeting/list.html:4
