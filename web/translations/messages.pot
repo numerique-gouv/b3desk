@@ -266,10 +266,6 @@ msgstr ""
 msgid "Transcription"
 msgstr ""
 
-#: web/b3desk/forms.py:337
-msgid "inexistant"
-msgstr ""
-
 #: web/b3desk/settings.py:657 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""

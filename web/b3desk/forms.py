@@ -334,7 +334,6 @@ class GroupForm(FlaskForm):
         label=_(
             "Transcription",
         ),
-        description=_("inexistant"),
         choices=[("None", "None"), ("True", "True"), ("False", "False")],
         coerce=nullable_bool,
         default="None",
