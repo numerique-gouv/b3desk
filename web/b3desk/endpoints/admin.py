@@ -18,6 +18,7 @@ from b3desk.forms import UserSearchForm
 from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.groups import Group
+from b3desk.models.groups import group_member_table
 from b3desk.models.meetings import Meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import User
@@ -52,6 +53,16 @@ def get_meetings_paginate(max_per_page, data):
                 Meeting.visio_code == data,
             )
         )
+    return db.paginate(query, max_per_page=max_per_page)
+
+
+def get_group_members_paginate(group, max_per_page):
+    query = (
+        db.select(User)
+        .join(group_member_table, User.id == group_member_table.c.user_id)
+        .where(group_member_table.c.group_id == group.id)
+        .order_by(User.family_name, User.given_name)
+    )
     return db.paginate(query, max_per_page=max_per_page)
 
 
@@ -253,6 +264,7 @@ def manage_group_members(group: Group):
             "admin/group_members.html",
             group=group,
             form=form,
+            members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
         )
 
     data = form.search.data.lower()
@@ -285,6 +297,7 @@ def manage_group_members(group: Group):
         "admin/group_members.html",
         group=group,
         form=form,
+        members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
     )
 
 
@@ -293,7 +306,6 @@ def manage_group_members(group: Group):
 def remove_member(group: Group, member: User):
     """Display group members list and member removing admin page."""
     form = MemberSearchForm()
-    current_app.logger.warning(member)
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
     else:
@@ -310,6 +322,7 @@ def remove_member(group: Group, member: User):
         "admin/group_members.html",
         group=group,
         form=form,
+        members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
     )
 
 

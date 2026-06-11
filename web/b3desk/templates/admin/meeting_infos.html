@@ -55,7 +55,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Nom{% endtrans %}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ meeting.name }}
                                         </td>
                                     </tr>
@@ -63,7 +63,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {% trans username=meeting.owner.fullname %}Propriétaire{% endtrans %}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ meeting.owner.fullname }}
                                         </td>
                                     </tr>

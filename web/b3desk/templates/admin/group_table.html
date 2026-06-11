@@ -7,11 +7,12 @@
                         <table id="groups">
                             <thead class="">
                                 <tr class="">
-                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Modifier le groupe{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Gérer les membres{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
+                                    <th class="fr-col--md fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Modifier{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Gérer les membres{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Ajouter des membres{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
                                 </tr>
                             </thead>
                             <tbody class="">
@@ -20,7 +21,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {{ group.id }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ group.name }}
                                         </td>
                                         <td class="fr-col fr-cell--center">
@@ -28,6 +29,9 @@
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             <a href="{{ url_for("admin.manage_group_members", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-team-line" title="{% trans group_name=group.name %}Gérer les membres de {{ group_name }}{% endtrans %}"></a>
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-user-add-line" title="{% trans group_name=group.name %}Ajouter des membres à {{ group_name }}{% endtrans %}"></a>
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             <a href="{{ url_for("admin.delete_group", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans group_name=group.name %}Supprimer {{ group_name }}{% endtrans %}"></a>
