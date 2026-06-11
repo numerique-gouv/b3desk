@@ -166,9 +166,13 @@ def send_email(msg, text, html, smtp):
             if smtp["username"]:
                 smtp_connect.login(smtp["username"], smtp["password"])
             smtp_connect.send_message(msg)
+        current_app.logger.info("Email sent to %s", msg["To"])
     except (smtplib.SMTPException, OSError) as e:
-        current_app.logger.warning(
-            "Could not connect to SMTP host %s : %s", smtp["host"], e
+        current_app.logger.error(
+            "Failed to send email to %s via SMTP host %s: %s",
+            msg["To"],
+            smtp["host"],
+            e,
         )
 
 
