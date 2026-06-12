@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-12 13:40+0200\n"
+"POT-Creation-Date: 2026-06-12 16:09+0200\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -323,34 +323,34 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:173
+#: web/b3desk/endpoints/admin.py:172
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:188
+#: web/b3desk/endpoints/admin.py:187
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:240 web/b3desk/endpoints/meetings.py:149
+#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:149
 #: web/b3desk/endpoints/meetings.py:207
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:265
+#: web/b3desk/endpoints/admin.py:264
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:296
+#: web/b3desk/endpoints/admin.py:295
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:300
+#: web/b3desk/endpoints/admin.py:299
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:334
+#: web/b3desk/endpoints/admin.py:333
 msgid "Le groupe a été supprimé"
 msgstr ""
 
