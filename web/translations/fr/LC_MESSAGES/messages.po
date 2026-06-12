@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-12 13:40+0200\n"
+"POT-Creation-Date: 2026-06-12 16:05+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -322,34 +322,34 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:173
+#: web/b3desk/endpoints/admin.py:172
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:188
+#: web/b3desk/endpoints/admin.py:187
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:240 web/b3desk/endpoints/meetings.py:149
+#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:149
 #: web/b3desk/endpoints/meetings.py:207
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:265
+#: web/b3desk/endpoints/admin.py:264
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:296
+#: web/b3desk/endpoints/admin.py:295
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:300
+#: web/b3desk/endpoints/admin.py:299
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:334
+#: web/b3desk/endpoints/admin.py:333
 msgid "Le groupe a été supprimé"
 msgstr ""
 
@@ -359,6 +359,10 @@ msgstr ""
 
 #: web/b3desk/endpoints/admin.py:366
 msgid "L'utilisateur a été ajouté au groupe"
+msgstr ""
+
+#: web/b3desk/endpoints/admin.py:393
+msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:68
@@ -997,9 +1001,14 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
 
+#: web/b3desk/templates/admin/add_group_members_page.html:71
+#: web/b3desk/templates/admin/add_group_members_page.html:75
+msgid "Ajouter les utilisateurs sélectionnés"
+msgstr ""
+
 #: web/b3desk/templates/admin/delete_group.html:19
 #: web/b3desk/templates/admin/group_infos.html:40
-#: web/b3desk/templates/admin/user_table.html:16
+#: web/b3desk/templates/admin/user_table.html:19
 #: web/b3desk/templates/meeting/files.html:139
 #: web/b3desk/templates/meeting/files.html:156
 #: web/b3desk/templates/meeting/files.html:168
@@ -1106,7 +1115,7 @@ msgstr ""
 #: web/b3desk/templates/admin/meeting_infos.html:37
 #: web/b3desk/templates/admin/meeting_table.html:10
 #: web/b3desk/templates/admin/user_infos.html:35
-#: web/b3desk/templates/admin/user_table.html:10
+#: web/b3desk/templates/admin/user_table.html:13
 msgid "ID"
 msgstr ""
 
@@ -1115,7 +1124,7 @@ msgstr ""
 #: web/b3desk/templates/admin/meeting_infos.html:45
 #: web/b3desk/templates/admin/meeting_table.html:11
 #: web/b3desk/templates/admin/user_infos.html:43
-#: web/b3desk/templates/admin/user_table.html:11
+#: web/b3desk/templates/admin/user_table.html:14
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
 msgstr ""
@@ -1144,7 +1153,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_table.html:12
 #: web/b3desk/templates/admin/meeting_table.html:13
-#: web/b3desk/templates/admin/user_table.html:14
+#: web/b3desk/templates/admin/user_table.html:17
 msgid "Consulter"
 msgstr ""
 
@@ -1293,7 +1302,7 @@ msgid "Utilisateur"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:51
-#: web/b3desk/templates/admin/user_table.html:13
+#: web/b3desk/templates/admin/user_table.html:16
 msgid "Email"
 msgstr ""
 
@@ -1343,30 +1352,33 @@ msgstr ""
 msgid "%(fullname)s n'appartient à aucun groupe."
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:12
+#: web/b3desk/templates/admin/user_table.html:11
+msgid "Ajouter au groupe"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:15
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:19
-msgid "Ajouter au groupe"
+#: web/b3desk/templates/admin/user_table.html:29
+#, python-format
+msgid "%(fullname)s est dans le groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:39
+#: web/b3desk/templates/admin/user_table.html:29
+#: web/b3desk/templates/admin/user_table.html:31
+#, python-format
+msgid "Sélectionner %(fullname)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:49
 #, python-format
 msgid "%(username)s infos"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:43
+#: web/b3desk/templates/admin/user_table.html:53
 msgid "Supprimer le membre"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_table.html:48
-msgid "Ajouter le membre"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_table.html:48
-msgid "Déjà membre"
 msgstr ""
 
 #: web/b3desk/templates/errors/400.html:7
@@ -7073,5 +7085,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Réunions déléguées"
+#~ msgstr ""
+
+#~ msgid "Ajouter le membre"
+#~ msgstr ""
+
+#~ msgid "Déjà membre"
 #~ msgstr ""
 
