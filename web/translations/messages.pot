@@ -333,12 +333,8 @@ msgstr ""
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:366
-msgid "L'utilisateur est déjà dans le groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:370
-msgid "L'utilisateur a été ajouté au groupe"
+#: web/b3desk/endpoints/admin.py:369
+msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:68
@@ -976,6 +972,11 @@ msgid "%(count)s utilisateur"
 msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
+
+#: web/b3desk/templates/admin/add_group_members_page.html:71
+#: web/b3desk/templates/admin/add_group_members_page.html:75
+msgid "Ajouter les utilisateurs sélectionnés"
+msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:19
 #: web/b3desk/templates/admin/group_infos.html:40

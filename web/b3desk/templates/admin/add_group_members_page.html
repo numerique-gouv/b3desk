@@ -64,7 +64,18 @@
                 {% endtrans %}
             {% endif %}
         </p>
-        {% include 'admin/user_table.html' %}
+        <form method="post" action="{{ url_for('admin.add_group_members_page', group=group) }}">
+            {% include 'meeting/csrf.html' %}
+            {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
+            <div class="fr-grid-row fr-grid-row--center fr-mt-2w">
+                <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
+            </div>
+            {% include 'admin/user_table.html' %}
+            <div class="fr-grid-row fr-grid-row--center">
+                <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
+            </div>
+        </form>
+        <br>
         {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

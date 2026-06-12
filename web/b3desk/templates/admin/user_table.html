@@ -26,7 +26,7 @@
                                         {% if add_members %}
                                             <td class="fr-cell--fixed fr-cell--center" scope="row">
                                                 <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                                    <input {% if group in user.groups %} disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox">
+                                                    <input {% if group in user.groups %} disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
                                                     <label class="fr-label" for="table-select-checkbox-{{user.id}}">
                                                         {% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}
                                                     </label>
