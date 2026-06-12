@@ -26,10 +26,10 @@ from ..session import admin_needed
 bp = Blueprint("admin", __name__)
 
 
-MAX_PER_PAGE = 50
+PER_PAGE = 50
 
 
-def get_groups_paginate(max_per_page, data):
+def get_groups_paginate(per_page, data):
     query = db.select(Group).order_by(Group.created_at)
     if data:
         query = query.where(
@@ -38,10 +38,10 @@ def get_groups_paginate(max_per_page, data):
                 Group.name.ilike(f"%{data}%"),
             )
         )
-    return db.paginate(query, max_per_page=max_per_page)
+    return db.paginate(query, per_page=per_page)
 
 
-def get_meetings_paginate(max_per_page, data):
+def get_meetings_paginate(per_page, data):
     query = db.select(Meeting).order_by(Meeting.created_at)
     if data:
         query = query.where(
@@ -51,10 +51,10 @@ def get_meetings_paginate(max_per_page, data):
                 Meeting.visio_code == data,
             )
         )
-    return db.paginate(query, max_per_page=max_per_page)
+    return db.paginate(query, per_page=per_page)
 
 
-def get_group_members_paginate(group, max_per_page, data=None):
+def get_group_members_paginate(group, per_page, data=None):
     members = group.get_all_members
     if data:
         members = members.where(
@@ -65,10 +65,10 @@ def get_group_members_paginate(group, max_per_page, data=None):
                 User.email.ilike(f"%{data}%"),
             )
         )
-    return db.paginate(members, max_per_page=max_per_page)
+    return db.paginate(members, per_page=per_page)
 
 
-def get_users_paginate(max_per_page, data=None):
+def get_users_paginate(per_page, data=None):
     query = db.select(User).order_by(User.created_at)
     if data:
         query = query.where(
@@ -79,7 +79,7 @@ def get_users_paginate(max_per_page, data=None):
                 User.email.ilike(f"%{data}%"),
             )
         )
-    return db.paginate(query, max_per_page=max_per_page)
+    return db.paginate(query, per_page=per_page)
 
 
 @bp.route("/admin/home")
@@ -97,7 +97,7 @@ def manage_users():
     """Display user list to manage users."""
     form = UserSearchForm(request.args, meta={"csrf": False})
     data = form.search.data.lower() if form.search.data else None
-    users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/users.html",
         admin_mode=True,
@@ -126,7 +126,7 @@ def manage_meetings():
     """Display meeting list to manage meetings."""
     form = MeetingSearchForm(request.args, meta={"csrf": False})
     data = form.search.data.lower() if form.search.data else None
-    meetings_page = get_meetings_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/meetings.html",
         admin_mode=True,
@@ -206,7 +206,7 @@ def manage_groups():
     """Display group list to manage groups of admin page."""
     form = GroupSearchForm(request.form)
     if not request.form or not form.validate():
-        groups_page = get_groups_paginate(max_per_page=MAX_PER_PAGE, data=None)
+        groups_page = get_groups_paginate(per_page=PER_PAGE, data=None)
         return render_template(
             "admin/groups.html",
             groups_page=groups_page,
@@ -214,7 +214,7 @@ def manage_groups():
             data=None,
         )
     data = form.search.data.lower()
-    groups_page = get_groups_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    groups_page = get_groups_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/groups.html",
         groups_page=groups_page,
@@ -274,9 +274,7 @@ def manage_group_members(group: Group):
     """Display group members list and member addition of admin page."""
     form = UserSearchForm(request.args, meta={"csrf": False})
     data = form.search.data.lower() if form.search.data else None
-    members_page = get_group_members_paginate(
-        group, max_per_page=MAX_PER_PAGE, data=data
-    )
+    members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
     return render_template(
         "admin/group_members.html",
         group=group,
@@ -305,9 +303,7 @@ def remove_member(group: Group, member: User):
             group.id,
             group.name,
         )
-    members_page = get_group_members_paginate(
-        group, max_per_page=MAX_PER_PAGE, data=data
-    )
+    members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
     return render_template(
         "admin/group_members.html",
         group=group,
@@ -345,7 +341,7 @@ def add_group_members_page(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args, meta={"csrf": False})
     data = form.search.data.lower() if form.search.data else None
-    users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/add_group_members_page.html",
         group=group,
@@ -374,7 +370,7 @@ def add_group_members(group: Group, user: User):
             group.id,
             group.name,
         )
-    users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/add_group_members_page.html",
         group=group,

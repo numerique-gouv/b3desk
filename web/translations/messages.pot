@@ -321,23 +321,23 @@ msgstr ""
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:297
+#: web/b3desk/endpoints/admin.py:295
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:301
+#: web/b3desk/endpoints/admin.py:299
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:337
+#: web/b3desk/endpoints/admin.py:333
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:366
+#: web/b3desk/endpoints/admin.py:362
 msgid "L'utilisateur est déjà dans le groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:370
+#: web/b3desk/endpoints/admin.py:366
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
