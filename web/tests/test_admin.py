@@ -88,7 +88,7 @@ def test_research_bar_is_kept_through_pagination_in_user_list_in_admin_page(
 ):
     """The search criteria must survive when navigating to another page."""
     # 'li' matches Alice (page 1) and Charlie (page 2), but not Berenice.
-    mocker.patch("b3desk.endpoints.admin.MAX_PER_PAGE", 1)
+    mocker.patch("b3desk.endpoints.admin.PER_PAGE", 1)
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users?search=li&page=2", status=200)
     assert res.text.count("charlie@domain.tld") == 1
