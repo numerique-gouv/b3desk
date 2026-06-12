@@ -12,6 +12,9 @@
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
                 </li>
                 <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
+                </li>
+                <li>
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_group_members', group=group) }}">
                         {% trans %}Gérer les membres de{% endtrans %} {{ group.name }}
                     </a>
@@ -19,16 +22,20 @@
             </ol>
         </div>
     </nav>
-    <h1 class="fr-h2">{% trans %}Gérer les membres{% endtrans %}</h2>
-    <form class="fr-search-bar" id="memberSearchForm", name="search_by_email" role="search" action="{{ url_for('admin.manage_group_members', group=group) }}" method="post">
-        {% include 'meeting/csrf.html' %}
+    <h5 class="fr-h2">{% trans group_name=group.name %}Gérer les membres de {{ group_name }}{% endtrans %}</h5>
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_group_members", group=group) }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Ajouter l'utilisateur au groupe{% endtrans %}" type="submit" class="fr-btn"></button>
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
-    {% set members = members_page.items %}
-    {% if not members %}
-        <p>{% trans %}Ce groupe n'a pas encore de membre.{% endtrans %}</p>
+    <br>
+    {% set users = members_page.items %}
+    {% if not users %}
+        {% if data %}
+            <p>{% trans %}Aucun membre ne correspond à cette recherche.{% endtrans %}</p>
+        {% else %}
+            <p>{% trans %}Ce groupe n'a pas encore de membre.{% endtrans %}</p>
+        {% endif %}
     {% else %}
         <p class="fr-table__detail">
             {% trans trimmed count=members_page.total %}
@@ -37,50 +44,10 @@
                 {{ count }} membres
             {% endtrans %}
         </p>
-        {% include 'admin/group_member_table.html' %}
         {% set page_obj = members_page %}
-        {% set start_page = [1, page_obj.page - 2]|max %}
-        {% set end_page = [page_obj.pages, page_obj.page + 2]|min %}
-        <nav role="navigation" class="fr-pagination" aria-label="pagination">
-            <ul class="fr-pagination__list pagination--center">
-                <li>
-                    {% if page_obj.page > 1 %}
-                        <a class="fr-pagination__link fr-pagination__link--first" href="{{ url_for('admin.manage_group_members', group=group, page=1) }}" title="Première page">{% trans %}Première page{% endtrans %}</a>
-                    {% else %}
-                        <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true" role="link" title="Première page">{% trans %}Première page{% endtrans %}</a>
-                    {% endif %}
-                </li>
-                <li>
-                    {% if page_obj.has_prev %}
-                        <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ url_for('admin.manage_group_members', group=group, page=page_obj.prev_num) }}" title="Page précédente">{% trans %}Page précédente{% endtrans %}</a>
-                    {% else %}
-                        <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" aria-disabled="true" role="link" title="Page précédente">{% trans %}Page précédente{% endtrans %}</a>
-                    {% endif %}
-                </li>
-                {% for p in range(start_page, end_page + 1) %}
-                    <li>
-                        {% if p == page_obj.page %}
-                            <a class="fr-pagination__link" aria-current="page" title="Page {{ p }}">{{ p }}</a>
-                        {% else %}
-                            <a class="fr-pagination__link" href="{{ url_for('admin.manage_group_members', group=group, page=p) }}" title="Page {{ p }}">{{ p }}</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                <li>
-                    {% if page_obj.has_next %}
-                        <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ url_for('admin.manage_group_members', group=group, page=page_obj.next_num) }}" title="Page suivante">{% trans %}Page suivante{% endtrans %}</a>
-                    {% else %}
-                        <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" aria-disabled="true" role="link" title="Page suivante">{% trans %}Page suivante{% endtrans %}</a>
-                    {% endif %}
-                </li>
-                <li>
-                    {% if page_obj.page < page_obj.pages %}
-                        <a class="fr-pagination__link fr-pagination__link--last" href="{{ url_for('admin.manage_group_members', group=group, page=page_obj.pages) }}" title="Dernière page">{% trans %}Dernière page{% endtrans %}</a>
-                    {% else %}
-                        <a class="fr-pagination__link fr-pagination__link--last" aria-disabled="true" role="link" title="Dernière page">{% trans %}Dernière page{% endtrans %}</a>
-                    {% endif %}
-                </li>
-            </ul>
-        </nav>
+        {% set page_endpoint = 'admin.manage_group_members' %}
+        {% set search = data %}
+        {% include 'admin/user_table.html' %}
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

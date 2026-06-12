@@ -17,6 +17,9 @@
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
                     </li>
                     <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
+                    </li>
+                    <li>
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.edit_group', group=group) }}">
                             {% trans %}Modifier{% endtrans %} {{ group.name }}
                         </a>
@@ -61,7 +64,7 @@
             {% include 'admin/group_form_content.html'%}
             <div class="fr-mt-4w">
                 <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Enregistrer{% endtrans %}</button>
-                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.home") }}">{% trans %}Annuler{% endtrans %}</a>
+                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.group_infos", group=group) }}">{% trans %}Annuler{% endtrans %}</a>
             </div>
         </form>
     {% endif %}

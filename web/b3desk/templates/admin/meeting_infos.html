@@ -18,13 +18,9 @@
             </ol>
         </div>
     </nav>
+    <h5>{{ meeting.name }}</h5>
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
-            <div class="fr-grid-row">
-                <div class="fr-col-8">
-                    <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
-                </div>
-            </div>
             {% include 'meeting/row.html' %}
         </div>
     </div>
@@ -38,7 +34,7 @@
                                 <tbody class="">
                                     <tr class="">
                                         <td class="fr-col fr-cell--center">
-                                            {% trans %}Identifiant{% endtrans %}
+                                            {% trans %}ID{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             {{ meeting.id }}

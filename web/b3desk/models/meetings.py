@@ -197,27 +197,6 @@ class Meeting(db.Model):
             .all()
         )
 
-    @property
-    def owner_can_use_sip(self):
-        owner = self.owner
-        if not owner.groups:
-            return current_app.config["ENABLE_SIP"]
-        if any(group.enable_sip for group in owner.groups):
-            return True
-        if all(group.enable_sip is False for group in owner.groups):
-            return False
-        return current_app.config["ENABLE_SIP"]
-
-    @property
-    def owner_can_use_file_sharing(self):
-        owner = self.owner
-        return owner.can_use_file_sharing
-
-    @property
-    def owner_can_use_transcription(self):
-        owner = self.owner
-        return any(group.enable_transcription for group in owner.groups)
-
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""

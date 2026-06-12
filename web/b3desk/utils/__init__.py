@@ -123,7 +123,7 @@ def send_available_recording_notification_mail(
     meeting, playbacks, recording_name, recording_start
 ):
     """Send email to notify the recording is available, listing every available format."""
-    enable_transcription = meeting.owner_can_use_transcription
+    enable_transcription = meeting.owner.can_use_transcription
     recording_links = _build_recording_links(playbacks, enable_transcription)
     if not recording_links:
         current_app.logger.warning(

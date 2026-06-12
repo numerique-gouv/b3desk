@@ -25,3 +25,14 @@ class Group(db.Model):
     members = db.relationship(
         "User", secondary=group_member_table, back_populates="groups"
     )
+
+    @property
+    def get_all_members(self):
+        from b3desk.models.users import User
+
+        return (
+            db.select(User)
+            .join(group_member_table, User.id == group_member_table.c.user_id)
+            .where(group_member_table.c.group_id == self.id)
+            .order_by(User.family_name, User.given_name)
+        )

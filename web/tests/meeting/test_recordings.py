@@ -421,9 +421,7 @@ def test_open_recordings_page_ai_summary(
     """The recordings page shows the ai-summary report links (HTML/PDF/Markdown)."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "alice@domain.tld"
-    res = res.form.submit()
+    response = client_app.get("/admin/add-group-members/1/1", status=200)
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
     html = response.body.decode("utf-8")
 

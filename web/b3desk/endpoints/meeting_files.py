@@ -52,7 +52,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
     form = MeetingFilesForm()
     admin_mode = "admin_mode" in request.args or False
 
-    if not meeting.owner_can_use_file_sharing:
+    if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 

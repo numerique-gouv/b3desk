@@ -20,22 +20,35 @@
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
+    <br>
     {% set groups = groups_page.items %}
     {% if not groups %}
         <br>
-        <p>{% trans %}Aucun groupe ne correspond à cette recherche.{% endtrans %}</p>
+        {% if data %}
+            <p>{% trans %}Aucun groupe ne correspond à cette recherche.{% endtrans %}</p>
+        {% else %}
+            <p>{% trans %}Aucun groupe n'a encore été créé.{% endtrans %}</p>
+        {% endif %}
     {% else %}
+        {% set page_obj = groups_page %}
+        {% set page_endpoint = 'admin.manage_groups' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} groupe correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} groupes correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} groupe
+                    {% pluralize %}
+                    {{ count }} groupes
+                {% endtrans %}
+            {% endif %}
+        </p>
         {% include 'admin/group_table.html' %}
-        <nav>
-            {% if groups_page.has_prev %}
-                <a href="{{ url_for('admin.manage_groups', groups_page=groups_page.prev_num)}}">Précédent</a>
-            {% endif %}
-
-            <span>Page {{ groups_page.page }} / {{ groups_page.pages }}</span>
-
-            {% if groups_page.has_next %}
-                <a href="{{ url_for('admin.manage_groups', groups_page=groups_page.next_num)}}">Suivant</a>
-            {% endif %}
-        </nav>
+        {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

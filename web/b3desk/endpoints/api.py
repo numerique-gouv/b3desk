@@ -48,7 +48,7 @@ def api_meetings():
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if meeting.owner_can_use_sip
+                    if meeting.owner.can_use_sip
                     else {}
                 ),
             }
@@ -90,7 +90,7 @@ def shadow_meeting():
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if meeting.owner_can_use_sip
+                    if meeting.owner.can_use_sip
                     else {}
                 ),
             }

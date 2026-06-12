@@ -18,7 +18,7 @@
         </div>
         <div class="fr-col">
             <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-fi-edit-line"></span></a>
-            {% if meeting.owner_can_use_file_sharing %}
+            {% if meeting.owner.can_use_file_sharing %}
                 <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}"><span class="fr-fi-file-pdf-line"></span></a>
             {% endif %}
             <a href="#"
@@ -56,7 +56,7 @@
                 </a>
             {% endif %}
             <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}</a>
-            {% if meeting.owner_can_use_file_sharing %}
+            {% if meeting.owner.can_use_file_sharing %}
                 <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}</a>
             {% endif %}
             {% if meeting in g.user.meetings or admin_mode %}

@@ -13,12 +13,10 @@ from sqlalchemy.exc import IntegrityError
 from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
-from b3desk.forms import MemberSearchForm
 from b3desk.forms import UserSearchForm
 from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.groups import Group
-from b3desk.models.groups import group_member_table
 from b3desk.models.meetings import Meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import User
@@ -56,14 +54,18 @@ def get_meetings_paginate(max_per_page, data):
     return db.paginate(query, max_per_page=max_per_page)
 
 
-def get_group_members_paginate(group, max_per_page):
-    query = (
-        db.select(User)
-        .join(group_member_table, User.id == group_member_table.c.user_id)
-        .where(group_member_table.c.group_id == group.id)
-        .order_by(User.family_name, User.given_name)
-    )
-    return db.paginate(query, max_per_page=max_per_page)
+def get_group_members_paginate(group, max_per_page, data=None):
+    members = group.get_all_members
+    if data:
+        members = members.where(
+            or_(
+                User.id == int(data) if data.isdigit() else None,
+                User.given_name.ilike(f"%{data}%"),
+                User.family_name.ilike(f"%{data}%"),
+                User.email.ilike(f"%{data}%"),
+            )
+        )
+    return db.paginate(members, max_per_page=max_per_page)
 
 
 def get_users_paginate(max_per_page, data=None):
@@ -102,6 +104,8 @@ def manage_users():
         users_page=users_page,
         form=form,
         data=data,
+        group=None,
+        add_members=False,
     )
 
 
@@ -186,6 +190,16 @@ def create_group():
     return redirect(url_for("admin.home"))
 
 
+@bp.route("/admin/group/<group:group>")
+@admin_needed
+def group_infos(group: Group):
+    """Display group infos of admin page."""
+    return render_template(
+        "admin/group_infos.html",
+        group=group,
+    )
+
+
 @bp.route("/admin/groups", methods=["GET", "POST"])
 @admin_needed
 def manage_groups():
@@ -258,46 +272,18 @@ def edit_group(group: Group):
 @admin_needed
 def manage_group_members(group: Group):
     """Display group members list and member addition of admin page."""
-    form = MemberSearchForm(request.form if request.method == "POST" else None)
-    if not request.form or not form.validate():
-        return render_template(
-            "admin/group_members.html",
-            group=group,
-            form=form,
-            members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
-        )
-
-    data = form.search.data.lower()
-    new_member = (
-        db.session.query(User)
-        .filter(
-            User.email == data,
-        )
-        .first()
+    form = UserSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
+    members_page = get_group_members_paginate(
+        group, max_per_page=MAX_PER_PAGE, data=data
     )
-
-    if new_member is None:
-        flash(_("L'utilisateur recherché n'existe pas"), "error")
-
-    elif new_member in group.members:
-        flash(_("L'utilisateur est déjà dans le groupe"), "warning")
-
-    else:
-        group.members.append(new_member)
-        db.session.commit()
-        flash(_("L'utilisateur a été ajouté au groupe"), "success")
-        current_app.logger.info(
-            "%s became member of group %s %s",
-            new_member.email,
-            group.id,
-            group.name,
-        )
-
     return render_template(
         "admin/group_members.html",
         group=group,
         form=form,
-        members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
+        members_page=members_page,
+        data=data,
+        add_members=False,
     )
 
 
@@ -305,7 +291,8 @@ def manage_group_members(group: Group):
 @admin_needed
 def remove_member(group: Group, member: User):
     """Display group members list and member removing admin page."""
-    form = MemberSearchForm()
+    form = UserSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
     else:
@@ -318,11 +305,16 @@ def remove_member(group: Group, member: User):
             group.id,
             group.name,
         )
+    members_page = get_group_members_paginate(
+        group, max_per_page=MAX_PER_PAGE, data=data
+    )
     return render_template(
         "admin/group_members.html",
         group=group,
         form=form,
-        members_page=get_group_members_paginate(group, max_per_page=MAX_PER_PAGE),
+        members_page=members_page,
+        data=data,
+        add_members=False,
     )
 
 
@@ -345,3 +337,49 @@ def confirm_delete_group(group: Group):
     flash(_("Le groupe a été supprimé"), "success")
     current_app.logger.info("Groupe %s %s deleted", group.id, group.name)
     return redirect(url_for("admin.manage_groups"))
+
+
+@bp.route("/admin/add-group-members/<group:group>")
+@admin_needed
+def add_group_members_page(group: Group):
+    """Display non member users list to add members."""
+    form = UserSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
+    users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    return render_template(
+        "admin/add_group_members_page.html",
+        group=group,
+        form=form,
+        users_page=users_page,
+        data=data,
+        add_members=True,
+    )
+
+
+@bp.route("/admin/add-group-members/<group:group>/<user:user>")
+@admin_needed
+def add_group_members(group: Group, user: User):
+    """Add member in group."""
+    form = UserSearchForm(request.args, meta={"csrf": False})
+    data = form.search.data.lower() if form.search.data else None
+    if user in group.members:
+        flash(_("L'utilisateur est déjà dans le groupe"), "error")
+    else:
+        group.members.append(user)
+        db.session.commit()
+        flash(_("L'utilisateur a été ajouté au groupe"), "success")
+        current_app.logger.info(
+            "%s became member of group %s %s",
+            user.email,
+            group.id,
+            group.name,
+        )
+    users_page = get_users_paginate(max_per_page=MAX_PER_PAGE, data=data)
+    return render_template(
+        "admin/add_group_members_page.html",
+        group=group,
+        form=form,
+        users_page=users_page,
+        data=data,
+        add_members=True,
+    )

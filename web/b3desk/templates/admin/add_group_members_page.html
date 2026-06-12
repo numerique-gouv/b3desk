@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.add_group_members_page', group=group) }}">
+                        {% trans %}Ajouter des membres à{% endtrans %} {{ group.name }}
+                    </a>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <h5 class="fr-h2">{% trans group_name=group.name %}Ajouter des membres à {{ group_name }}{% endtrans %}</h5>
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members_page", group=group) }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
+    {% if not group.members %}
+        <p>{% trans %}Ce groupe n'a pas encore de membre.{% endtrans %}</p>
+    {% else %}
+        <p class="fr-table__detail">
+            {% trans trimmed count=group.members | length %}
+                {{ count }} membre
+                {% pluralize %}
+                {{ count }} membres
+            {% endtrans %}
+        </p>
+    {% endif %}
+    {% set users = users_page.items %}
+    {% if not users %}
+        <br>
+        <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
+    {% else %}
+        <h5>{% trans %}Liste des utilisateurs{% endtrans %}</h5>
+        {% set page_obj = users_page %}
+        {% set page_endpoint = 'admin.add_group_members_page' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} utilisateurs correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur
+                    {% pluralize %}
+                    {{ count }} utilisateurs
+                {% endtrans %}
+            {% endif %}
+        </p>
+        {% include 'admin/user_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}

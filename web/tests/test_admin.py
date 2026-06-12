@@ -103,7 +103,7 @@ def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count('fr-badge">Non</p>') == 1
+    assert res.text.count('fr-badge fr-badge--error">Non</p>') == 2
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
 
 
@@ -123,7 +123,7 @@ def test_admin_can_read_user_infos_with_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/1", status=200)
     assert res.text.count("alice@domain.tld") == 1
-    assert res.text.count("Réunions déléguées") == 1
+    assert res.text.count("Liste des réunions déléguées") == 1
     assert res.text.count("922222222") == 1
     assert res.text.count("511111111") == 1
     assert res.text.count("911111111") == 1
@@ -326,10 +326,8 @@ def test_admin_can_add_member_in_group(
 ):
     """Test admin can add a user in a group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "alice@domain.tld"
-    res = res.form.submit()
-    assert "(1 membre)" in res.text
+    res = client_app.get("/admin/add-group-members/1/1", status=200)
+    assert "1 membre" in res.text
     assert len(group.members) == 1
     assert ("success", "L'utilisateur a été ajouté au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
@@ -340,28 +338,11 @@ def test_admin_cannot_add_member_already_in_group(
 ):
     """Test admin cannot add a user already in a group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "alice@domain.tld"
-    res = res.form.submit()
-    res.form["search"] = "alice@domain.tld"
-    res = res.form.submit()
-    assert ("warning", "L'utilisateur est déjà dans le groupe") in res.flashes
-    assert "(1 membre)" in res.text
+    res = client_app.get("/admin/add-group-members/1/1", status=200)
+    res = client_app.get("/admin/add-group-members/1/1", status=200)
+    assert ("error", "L'utilisateur est déjà dans le groupe") in res.flashes
+    assert "1 membre" in res.text
     assert len(group.members) == 1
-
-
-def test_admin_can_read_an_information_adding_user_with_wrong_mail_in_group(
-    cli_runner, user, client_app, authenticated_user, group
-):
-    """Test admin can read message adding wrong email to add group member."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "john@domain.tld"
-    res = res.form.submit()
-    assert len(group.members) == 0
-    assert "(0 membre)" in res.text
-    assert ("error", "L'utilisateur recherché n'existe pas") in res.flashes
-    assert "Ce groupe n'a pas encore de membre." in res.text
 
 
 def test_admin_can_remove_member_from_group(
@@ -369,9 +350,7 @@ def test_admin_can_remove_member_from_group(
 ):
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "alice@domain.tld"
-    res = res.form.submit()
+    res = client_app.get("/admin/add-group-members/1/1", status=200)
     res = client_app.get("/admin/manage-group-members/1/1", status=200)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
     assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
@@ -685,9 +664,7 @@ def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
 ):
     """Test admin cannot edit meeting files if owner cannot use file sharing."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/manage-group-members/1", status=200)
-    res.form["search"] = "berenice@domain.tld"
-    res = res.form.submit()
+    res = client_app.get("/admin/add-group-members/1/2", status=200)
     assert user_2.groups[0].name == "Group 2"
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting_2_user_2),

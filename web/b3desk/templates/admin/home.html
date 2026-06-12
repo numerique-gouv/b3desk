@@ -47,19 +47,27 @@
                         </div>
                     </div>
                 </div>
-                <div class="fr-col fr-tile fr-enlarge-link">
+            </div>
+        </div>
+    </div>
+    <div class="fr-py-3w main-connected-actions">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                <div class="fr-col-3 fr-tile fr-enlarge-link">
                     <div class="fr-tile__body">
                         <div class="fr-tile__content">
                             <h3 class="fr-tile__title">
                                 <a href="{{ url_for("admin.create_group") }}" title="{% trans %}Liste des réunions{% endtrans %}">
-                                    {% trans %}Créer groupe{% endtrans %}
+                                    {% trans %}Créer{% endtrans %}
                                 </a>
                             </h3>
+                            <div class="fr-tile__start">
+                                <p class="fr-badge fr-badge--purple-glycine">{% trans %}Nouveau groupe{% endtrans %}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock %}

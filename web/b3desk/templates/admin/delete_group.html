@@ -12,6 +12,9 @@
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
                 </li>
                 <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
+                </li>
+                <li>
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.delete_group', group=group) }}">
                         {% trans %}Supprimer{% endtrans %} {{ group.name }}
                     </a>
@@ -19,80 +22,17 @@
             </ol>
         </div>
     </nav>
-    <a class="fr-btn fr-btn--delete" href="{{ url_for("admin.confirm_delete_group", group=group) }}" title="{% trans %}Supprimer le groupe{% endtrans %}">
-        {% trans group_name=group.name %}Confirmer la suppression de {{ group_name }}{% endtrans %}
-    </a>
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12">
-            <div class="fr-table fr-table--no-caption" id="group-component">
-                <div class="fr-table__wrapper ">
-                    <div class="fr-table__container">
-                        <div class="fr-table__content">
-                            <table id="group">
-                                <tbody class="">
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Identifiant{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.id }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Nom{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.name }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}SIP{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.enable_sip }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Ajout de document{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.enable_file_sharing }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Transcription{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.enable_transcription }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Création{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.created_at }}
-                                        </td>
-                                    </tr>
-                                    <tr class="">
-                                        <td class="fr-col fr-cell--center">
-                                            {% trans %}Dernière modification{% endtrans %}
-                                        </td>
-                                        <td class="fr-col fr-cell--center">
-                                            {{ group.updated_at }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% include 'admin/group_member_table.html'%}
+    <h5>{{  group.name }}</h5>
+    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+        <li>
+            <a class="fr-btn fr-btn--delete" href="{{ url_for("admin.confirm_delete_group", group=group) }}" title="{% trans %}Supprimer le groupe{% endtrans %}">
+                {% trans group_name=group.name %}Confirmer la suppression du groupe{% endtrans %}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for("admin.group_infos", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary" title="{% trans group_name=group.name %}Supprimer {{ group_name }}{% endtrans %}">
+                {% trans %}Annuler{% endtrans %}
+            </a>
+        </li>
+    </ul>
 {% endblock %}

@@ -95,7 +95,7 @@
                             </tr>
                         {% endif %}
                         {% set ai_summary = recording.playbacks.get("ai-summary") %}
-                        {% if ai_summary and meeting.owner_can_use_transcription %}
+                        {% if ai_summary and meeting.owner.can_use_transcription %}
                             <tr style="background-color: white;">
                                 <td style="vertical-align: middle">{% trans %}Compte-rendu{% endtrans %}</td>
                                 <td style="vertical-align: middle">
