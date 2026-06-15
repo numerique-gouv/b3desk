@@ -937,7 +937,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members_page.html:25
 #: web/b3desk/templates/admin/group_infos.html:34
-#: web/b3desk/templates/admin/group_table.html:35
 #, python-format
 msgid "Ajouter des membres à %(group_name)s"
 msgstr ""
@@ -1008,7 +1007,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:33
 #: web/b3desk/templates/admin/group_infos.html:39
-#: web/b3desk/templates/admin/group_table.html:38
 #, python-format
 msgid "Supprimer %(group_name)s"
 msgstr ""
@@ -1070,14 +1068,12 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:24
 #: web/b3desk/templates/admin/group_table.html:25
-#: web/b3desk/templates/admin/group_table.html:29
 #, python-format
 msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:29
 #: web/b3desk/templates/admin/group_members.html:25
-#: web/b3desk/templates/admin/group_table.html:32
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
 msgstr ""
