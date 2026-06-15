@@ -192,7 +192,7 @@ def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
     res = form.submit()
     assert res.text.count("Réunion silencieuse (shadow_meeting)") == 1
     assert res.text.count("922222222") == 0
-    assert res.text.count("511111111") == 2
+    assert res.pyquery("#meetings").text().count("511111111") == 1
     assert res.text.count("911111111") == 0
     assert res.text.count("911111112") == 0
     assert res.text.count("911111113") == 0

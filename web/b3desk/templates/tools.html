@@ -2,12 +2,6 @@
     <div class="fr-header__tools-links">
         <ul class="fr-btns-group">
             <li>
-                {% for language in LANGUAGES %}
-                    <a href="?lang={{ language }}" class="fr-btn">{{ language}}</a>
-                {% endfor %}
-            </li>
-
-            <li>
                 <a class="fr-btn" href="{{ url_for("public.faq") }}">
                     <span aria-hidden="true" class="ri-information-line fr-mr-1w"></span>
                     {% trans %}Modalités d'accès{% endtrans %}
@@ -60,5 +54,6 @@
                 </li>
             {% endif %}
         </ul>
+        {% include 'language-selector.html' %}
     </div>
 </div>
