@@ -343,7 +343,6 @@ def add_group_members(group: Group):
     data = form.search.data.lower() if form.search.data else None
     if request.method == "POST":
         user_ids = request.form.getlist("user_ids")
-        current_app.logger.warning(bool(user_ids))
         if user_ids:
             added_users = []
             for user_id in user_ids:

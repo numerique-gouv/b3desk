@@ -221,7 +221,7 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:268
+#: web/b3desk/forms.py:268 web/b3desk/templates/admin/add_group_members.html:29
 #: web/b3desk/templates/admin/add_group_members_page.html:29
 #: web/b3desk/templates/admin/group_members.html:29
 #: web/b3desk/templates/admin/users.html:19
@@ -333,7 +333,7 @@ msgstr ""
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:364
+#: web/b3desk/endpoints/admin.py:363
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
@@ -895,6 +895,7 @@ msgstr ""
 msgid "S’identifier"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:9
 #: web/b3desk/templates/admin/add_group_members_page.html:9
 #: web/b3desk/templates/admin/delete_group.html:9
 #: web/b3desk/templates/admin/group_form.html:9
@@ -913,6 +914,7 @@ msgstr ""
 msgid "Menu Admin"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:12
 #: web/b3desk/templates/admin/add_group_members_page.html:12
 #: web/b3desk/templates/admin/delete_group.html:12
 #: web/b3desk/templates/admin/group_form.html:17
@@ -923,20 +925,24 @@ msgstr ""
 msgid "Groupes"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:19
 #: web/b3desk/templates/admin/add_group_members_page.html:19
 msgid "Ajouter des membres à"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:25
 #: web/b3desk/templates/admin/add_group_members_page.html:25
 #, python-format
 msgid "Ajouter des membres à <em>%(group_name)s</em>"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:33
 #: web/b3desk/templates/admin/add_group_members_page.html:33
 #: web/b3desk/templates/admin/group_members.html:37
 msgid "Ce groupe n'a pas encore de membre."
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:36
 #: web/b3desk/templates/admin/add_group_members_page.html:36
 #: web/b3desk/templates/admin/group_members.html:41
 #, python-format
@@ -945,16 +951,19 @@ msgid_plural "%(count)s membres"
 msgstr[0] ""
 msgstr[1] ""
 
+#: web/b3desk/templates/admin/add_group_members.html:46
 #: web/b3desk/templates/admin/add_group_members_page.html:46
 #: web/b3desk/templates/admin/users.html:25
 msgid "Aucun utilisateur ne correspond à cette recherche."
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:48
 #: web/b3desk/templates/admin/add_group_members_page.html:48
 #: web/b3desk/templates/admin/home.html:21
 msgid "Liste des utilisateurs"
 msgstr ""
 
+#: web/b3desk/templates/admin/add_group_members.html:54
 #: web/b3desk/templates/admin/add_group_members_page.html:54
 #: web/b3desk/templates/admin/users.html:32
 #, python-format
@@ -963,6 +972,7 @@ msgid_plural "%(count)s utilisateurs correspondant aux critères"
 msgstr[0] ""
 msgstr[1] ""
 
+#: web/b3desk/templates/admin/add_group_members.html:60
 #: web/b3desk/templates/admin/add_group_members_page.html:60
 #: web/b3desk/templates/admin/users.html:38
 #, python-format
@@ -971,6 +981,8 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
 
+#: web/b3desk/templates/admin/add_group_members.html:71
+#: web/b3desk/templates/admin/add_group_members.html:75
 #: web/b3desk/templates/admin/add_group_members_page.html:71
 #: web/b3desk/templates/admin/add_group_members_page.html:75
 msgid "Ajouter les utilisateurs sélectionnés"
