@@ -104,7 +104,8 @@ def test_admin_can_read_user_infos_with_no_meeting(
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
     assert res.text.count('fr-badge fr-badge--error">Non</p>') == 2
-    assert "Berenice Cooler n'a pas créé de réunion." in res.text
+    print(res.text)
+    assert "<em>Berenice Cooler</em> n'a pas créé de réunion." in res.text
 
 
 def test_admin_can_read_user_infos_with_meeting(
@@ -326,11 +327,12 @@ def test_admin_can_add_member_in_group(
 ):
     """Test admin can add a user in a group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    assert "1 membre" in res.text
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     assert len(group.members) == 1
-    assert ("success", "L'utilisateur a été ajouté au groupe") in res.flashes
+    assert ("success", "1 membre(s) ajouté(s) au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+    res = client_app.get(res.location)
+    assert "1 membre" in res.text
 
 
 def test_admin_cannot_add_member_already_in_group(
@@ -338,9 +340,10 @@ def test_admin_cannot_add_member_already_in_group(
 ):
     """Test admin cannot add a user already in a group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    assert ("error", "L'utilisateur est déjà dans le groupe") in res.flashes
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    assert ("success", "0 membre(s) ajouté(s) au groupe") in res.flashes
+    res = client_app.get(res.location)
     assert "1 membre" in res.text
     assert len(group.members) == 1
 
@@ -350,7 +353,7 @@ def test_admin_can_remove_member_from_group(
 ):
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     res = client_app.get("/admin/manage-group-members/1/1", status=200)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
     assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
@@ -664,7 +667,7 @@ def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
 ):
     """Test admin cannot edit meeting files if owner cannot use file sharing."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/2", status=200)
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [2]}, status=302)
     assert user_2.groups[0].name == "Group 2"
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting_2_user_2),

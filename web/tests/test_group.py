@@ -113,8 +113,8 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_none_able_to_use_sip(
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: none able sip and settings enable sip."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/2", status=200)
+    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
+    res = client_app.post("/admin/add-group-members/3", {"user_ids": [2]}, status=302)
     assert user_2.groups[0].name == "Group 2"
     assert user_2.groups[1].name == "Group 3"
     res = client_app.get(
@@ -165,8 +165,8 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_cannot(
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: disable sip and settings enable sip."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/2", status=200)
+    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
+    res = client_app.post("/admin/add-group-members/3", {"user_ids": [2]}, status=302)
     res = client_app.get("/admin/edit-group/3", status=200)
     res.form["enable_sip"] = False
     res.form.submit()
@@ -214,9 +214,9 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
 ):
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting True."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/3", status=200)
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
+    res = client_app.post("/admin/add-group-members/3", {"user_ids": [3]}, status=302)
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -250,9 +250,9 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting False."""
     client_app.app.config["FILE_SHARING"] = False
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/3", status=200)
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
+    res = client_app.post("/admin/add-group-members/3", {"user_ids": [3]}, status=302)
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -266,3 +266,26 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     assert not res.context["meetings"][1].owner.can_use_file_sharing
     assert res.context["meetings"][0].visio_code == "933333333"
     assert not res.context["meetings"][0].owner.can_use_file_sharing
+
+
+def test_admin_can_add_multiple_users_at_once_in_a_group(
+    cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
+):
+    """Test admin can add multiple users at once in a group."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.post(
+        "/admin/add-group-members/1", {"user_ids": [1, 2, 3]}, status=302
+    )
+    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
+    assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
+
+
+def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
+    cli_runner, client_app, user, group, authenticated_user, caplog
+):
+    """Test a message is displayed if tha admin has not selected a user to add."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": []}, status=302)
+    assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
