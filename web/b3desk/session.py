@@ -25,6 +25,19 @@ def get_authenticated_attendee_fullname():
     return f"{given_name} {family_name}".strip()
 
 
+def admin_needed(view_function):
+    """Require that authenticated user is admin."""
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not g.user or not g.user.admin:
+            abort(403)
+
+        return view_function(*args, **kwargs)
+
+    return decorator
+
+
 def user_needed(view_function):
     """Require that an authenticated user is present."""
 
@@ -52,7 +65,7 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user:
+            if meeting.owner == g.user or g.user.admin:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

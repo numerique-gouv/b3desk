@@ -34,7 +34,7 @@ def get_or_create_user(user_info):
     )
     email = user_info[mapping.get("email", "email")].lower()
 
-    user = db.session.query(User).filter(User.email == email).first()
+    user = User.get_user_by_email(email)
 
     if user is None:
         user = User(
@@ -89,6 +89,7 @@ class User(db.Model):
     nc_last_auto_enroll = db.Column(db.DateTime)
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
 
     meetings = db.relationship("Meeting", back_populates="owner")
     favorites = db.relationship(
@@ -135,3 +136,7 @@ class User(db.Model):
             )
             .all()
         )
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        return db.session.query(User).filter(User.email == email).first()

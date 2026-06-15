@@ -260,3 +260,17 @@ class DelegationSearchForm(FlaskForm):
         },
         validators=[validators.DataRequired()],
     )
+
+
+class UserSearchForm(FlaskForm):
+    search = StringField(
+        label=_("Rechercher un utilisateur"),
+        render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )
+
+
+class MeetingSearchForm(FlaskForm):
+    search = StringField(
+        label=_("Rechercher une réunion"),
+        render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )

@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block main %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
+    {% set meetings = meetings_page.items %}
+    {% if not meetings %}
+        <br>
+        <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
+    {% else %}
+        {% set page_obj = meetings_page %}
+        {% set page_endpoint = 'admin.manage_meetings' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} réunion correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} réunions correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} réunion
+                    {% pluralize %}
+                    {{ count }} réunions
+                {% endtrans %}
+            {% endif %}
+        </p>
+        {% include 'admin/meeting_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}
