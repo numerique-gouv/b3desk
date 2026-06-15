@@ -1,7 +1,7 @@
 from b3desk.commands import bp
 
 
-def test_add_group_members_page_displays_users(
+def test_add_group_members_displays_users(
     cli_runner,
     client_app,
     user,
@@ -14,7 +14,7 @@ def test_add_group_members_page_displays_users(
     assert user.email in res.text
 
 
-def test_add_group_members_page_filters_by_search(
+def test_add_group_members_filters_by_search(
     cli_runner,
     client_app,
     user,

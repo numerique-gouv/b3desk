@@ -333,15 +333,7 @@ msgstr ""
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:362
-msgid "L'utilisateur est déjà dans le groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:366
-msgid "L'utilisateur a été ajouté au groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:393
+#: web/b3desk/endpoints/admin.py:364
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 

@@ -337,39 +337,10 @@ def confirm_delete_group(group: Group):
 
 @bp.route("/admin/add-group-members/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def add_group_members_page(group: Group):
+def add_group_members(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args, meta={"csrf": False})
     data = form.search.data.lower() if form.search.data else None
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
-    return render_template(
-        "admin/add_group_members_page.html",
-        group=group,
-        form=form,
-        users_page=users_page,
-        data=data,
-        add_members=True,
-    )
-
-
-@bp.route("/admin/add-group-members/<group:group>/<user:user>")
-@admin_needed
-def add_group_members(group: Group, user: User):
-    """Add member in group."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
-    data = form.search.data.lower() if form.search.data else None
-    if user in group.members:
-        flash(_("L'utilisateur est déjà dans le groupe"), "error")
-    else:
-        group.members.append(user)
-        db.session.commit()
-        flash(_("L'utilisateur a été ajouté au groupe"), "success")
-        current_app.logger.info(
-            "%s became member of group %s %s",
-            user.email,
-            group.id,
-            group.name,
-        )
     if request.method == "POST":
         user_ids = request.form.getlist("user_ids")
         current_app.logger.warning(bool(user_ids))
@@ -391,12 +362,10 @@ def add_group_members(group: Group, user: User):
             )
         else:
             flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
-        return redirect(
-            url_for("admin.add_group_members_page", group=group, search=data)
-        )
+        return redirect(url_for("admin.add_group_members", group=group, search=data))
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
-        "admin/add_group_members_page.html",
+        "admin/add_group_members.html",
         group=group,
         form=form,
         users_page=users_page,

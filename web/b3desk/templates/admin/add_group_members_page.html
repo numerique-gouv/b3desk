@@ -15,7 +15,7 @@
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
                 </li>
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.add_group_members_page', group=group) }}">
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.add_group_members', group=group) }}">
                         {% trans %}Ajouter des membres à{% endtrans %} {{ group.name }}
                     </a>
                 </li>
@@ -23,7 +23,7 @@
         </div>
     </nav>
     <h5 class="fr-h2">{% trans group_name=group.name %}Ajouter des membres à <em>{{ group_name }}</em>{% endtrans %}</h5>
-    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members_page", group=group) }}" method="get">
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
@@ -47,7 +47,7 @@
     {% else %}
         <h5>{% trans %}Liste des utilisateurs{% endtrans %}</h5>
         {% set page_obj = users_page %}
-        {% set page_endpoint = 'admin.add_group_members_page' %}
+        {% set page_endpoint = 'admin.add_group_members' %}
         {% set search = data %}
         <p class="fr-table__detail">
             {% if data %}
@@ -64,7 +64,7 @@
                 {% endtrans %}
             {% endif %}
         </p>
-        <form method="post" action="{{ url_for('admin.add_group_members_page', group=group) }}">
+        <form method="post" action="{{ url_for('admin.add_group_members', group=group) }}">
             {% include 'meeting/csrf.html' %}
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
             <div class="fr-grid-row fr-grid-row--center fr-mt-2w">
