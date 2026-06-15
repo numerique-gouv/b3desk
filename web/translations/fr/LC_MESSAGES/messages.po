@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-12 16:05+0200\n"
+"POT-Creation-Date: 2026-06-15 09:56+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -241,8 +241,7 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:268
-#: web/b3desk/templates/admin/add_group_members.html:29
+#: web/b3desk/forms.py:268 web/b3desk/templates/admin/add_group_members.html:29
 #: web/b3desk/templates/admin/group_members.html:29
 #: web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
@@ -353,15 +352,7 @@ msgstr ""
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:362
-msgid "L'utilisateur est déjà dans le groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:366
-msgid "L'utilisateur a été ajouté au groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:393
+#: web/b3desk/endpoints/admin.py:363
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
@@ -956,10 +947,8 @@ msgid "Ajouter des membres à"
 msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:25
-#: web/b3desk/templates/admin/group_infos.html:34
-#: web/b3desk/templates/admin/group_table.html:35
 #, python-format
-msgid "Ajouter des membres à %(group_name)s"
+msgid "Ajouter des membres à <em>%(group_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:33
@@ -1028,7 +1017,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:33
 #: web/b3desk/templates/admin/group_infos.html:39
-#: web/b3desk/templates/admin/group_table.html:38
 #, python-format
 msgid "Supprimer %(group_name)s"
 msgstr ""
@@ -1090,20 +1078,22 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:24
 #: web/b3desk/templates/admin/group_table.html:25
-#: web/b3desk/templates/admin/group_table.html:29
 #, python-format
 msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:29
-#: web/b3desk/templates/admin/group_members.html:25
-#: web/b3desk/templates/admin/group_table.html:32
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:30
 msgid "Gérer les membres"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:34
+#, python-format
+msgid "Ajouter des membres à %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:35
@@ -1145,6 +1135,11 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_members.html:19
 msgid "Gérer les membres de"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_members.html:25
+#, python-format
+msgid "Gérer les membres de <em>%(group_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_members.html:35
@@ -1324,32 +1319,32 @@ msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:121
 #, python-format
-msgid "Liste des réunions de %(fullname)s"
+msgid "Liste des réunions de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:125
 #, python-format
-msgid "%(fullname)s n'a pas créé de réunion."
+msgid "<em>%(fullname)s</em> n'a pas créé de réunion."
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:128
 #, python-format
-msgid "Liste des réunions déléguées de %(fullname)s"
+msgid "Liste des réunions déléguées de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:133
 #, python-format
-msgid "Droits de %(fullname)s"
+msgid "Droits de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:174
 #, python-format
-msgid "Liste des groupes de %(fullname)s"
+msgid "Liste des groupes de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:178
 #, python-format
-msgid "%(fullname)s n'appartient à aucun groupe."
+msgid "<em>%(fullname)s</em> n'appartient à aucun groupe."
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:11
@@ -2502,7 +2497,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:3
 #, python-format
-msgid "Délégation de la réunion %(meeting_name)s"
+msgid "Délégation de la réunion <em>%(meeting_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:9
@@ -7091,5 +7086,32 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Déjà membre"
+#~ msgstr ""
+
+#~ msgid "L'utilisateur est déjà dans le groupe"
+#~ msgstr ""
+
+#~ msgid "L'utilisateur a été ajouté au groupe"
+#~ msgstr ""
+
+#~ msgid "Liste des réunions de %(fullname)s"
+#~ msgstr ""
+
+#~ msgid "%(fullname)s n'a pas créé de réunion."
+#~ msgstr ""
+
+#~ msgid "Liste des réunions déléguées de %(fullname)s"
+#~ msgstr ""
+
+#~ msgid "Droits de %(fullname)s"
+#~ msgstr ""
+
+#~ msgid "Liste des groupes de %(fullname)s"
+#~ msgstr ""
+
+#~ msgid "%(fullname)s n'appartient à aucun groupe."
+#~ msgstr ""
+
+#~ msgid "Délégation de la réunion %(meeting_name)s"
 #~ msgstr ""
 
