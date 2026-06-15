@@ -18,7 +18,7 @@
             </ol>
         </div>
     </nav>
-    <h5>{{  group.name }}</h5>
+    <h5><em>{{  group.name }}</em></h5>
     <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <li>
             <a href="{{ url_for("admin.edit_group", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans group_name=group.name %}Éditer {{ group_name }}{% endtrans %}">

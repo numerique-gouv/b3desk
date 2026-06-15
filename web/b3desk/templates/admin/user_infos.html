@@ -21,7 +21,7 @@
             </ol>
         </div>
     </nav>
-    <h5>{{ user.fullname }}</h5>
+    <h5><em>{{ user.fullname }}</em></h5>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-user-component">
@@ -118,19 +118,19 @@
             </div>
         </div>
     </div>
-    <h5>{% trans fullname = user.fullname %}Liste des réunions de {{ fullname }}{% endtrans %}</h5>
+    <h5>{% trans fullname = user.fullname %}Liste des réunions de <em>{{ fullname }}</em>{% endtrans %}</h5>
     {% if meetings %}
         {% include 'admin/meeting_table.html' %}
     {% else %}
-        <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
+        <p>{% trans fullname = user.fullname %}<em>{{ fullname }}</em> n'a pas créé de réunion.{% endtrans %}</p>
     {% endif %}
     {% if delegated_meetings %}
-        <h5>{% trans fullname = user.fullname %}Liste des réunions déléguées de {{ fullname }}{% endtrans %}</h5>
+        <h5>{% trans fullname = user.fullname %}Liste des réunions déléguées de <em>{{ fullname }}</em>{% endtrans %}</h5>
         {% with meetings=delegated_meetings %}
             {% include 'admin/meeting_table.html' %}
         {% endwith %}
     {% endif %}
-    <h5>{% trans fullname = user.fullname %}Droits de {{ fullname }}{% endtrans %}</h5>
+    <h5>{% trans fullname = user.fullname %}Droits de <em>{{ fullname }}</em>{% endtrans %}</h5>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-user-component">
@@ -171,10 +171,10 @@
             </div>
         </div>
     </div>
-    <h5>{% trans fullname = user.fullname %}Liste des groupes de {{ fullname }}{% endtrans %}</h5>
+    <h5>{% trans fullname = user.fullname %}Liste des groupes de <em>{{ fullname }}</em>{% endtrans %}</h5>
     {% if groups %}
         {% include 'admin/group_table.html' %}
     {% else %}
-        <p>{% trans fullname = user.fullname %}{{ fullname }} n'appartient à aucun groupe.{% endtrans %}</p>
+        <p>{% trans fullname = user.fullname %}<em>{{ fullname }}</em> n'appartient à aucun groupe.{% endtrans %}</p>
     {% endif %}
 {% endblock %}
