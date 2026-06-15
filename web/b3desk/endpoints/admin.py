@@ -82,6 +82,22 @@ def get_users_paginate(per_page, data=None):
     return db.paginate(query, per_page=per_page)
 
 
+def get_all_users_not_in_group(group, data=None):
+    query = (
+        db.select(User).where(~User.groups.contains(group)).order_by(User.created_at)
+    )
+    if data:
+        query = query.where(
+            or_(
+                User.id == int(data) if data.isdigit() else None,
+                User.given_name.ilike(f"%{data}%"),
+                User.family_name.ilike(f"%{data}%"),
+                User.email.ilike(f"%{data}%"),
+            )
+        )
+    return db.session.execute(query).scalars().all()
+
+
 @bp.route("/admin/home")
 @admin_needed
 def home():
@@ -335,39 +351,70 @@ def confirm_delete_group(group: Group):
     return redirect(url_for("admin.manage_groups"))
 
 
+def add_users_in_group(selected_users, group, ids=False):
+    added_users = []
+    for user in selected_users:
+        user = db.session.get(User, int(user)) if ids else user
+        if user and user not in group.members:
+            group.members.append(user)
+            added_users.append(user)
+    db.session.commit()
+    for user in added_users:
+        current_app.logger.info(
+            "%s became member of group %s %s", user.email, group.id, group.name
+        )
+    flash(
+        _(f"{len(added_users)} membre(s) ajouté(s) au groupe"),
+        "success",
+    )
+
+
 @bp.route("/admin/add-group-members/<group:group>", methods=["GET", "POST"])
 @admin_needed
 def add_group_members(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args, meta={"csrf": False})
-    data = form.search.data.lower() if form.search.data else None
+    select_all = (
+        bool(request.values.get("select_all"))
+        if request.values.get("select_all")
+        else False
+    )
+
+    if request.method == "GET":
+        data = form.search.data.lower() if form.search.data else None
+    else:
+        data = (
+            request.form.get("search").lower() if request.form.get("search") else None
+        )
+
+    selected_users = get_all_users_not_in_group(group, data)
+    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
+
     if request.method == "POST":
         user_ids = request.form.getlist("user_ids")
-        if user_ids:
-            added_users = []
-            for user_id in user_ids:
-                user = db.session.get(User, int(user_id))
-                if user and user not in group.members:
-                    group.members.append(user)
-                    added_users.append(user)
-            db.session.commit()
-            for user in added_users:
-                current_app.logger.info(
-                    "%s became member of group %s %s", user.email, group.id, group.name
-                )
-            flash(
-                _(f"{len(added_users)} membre(s) ajouté(s) au groupe"),
-                "success",
-            )
+        if select_all:
+            add_users_in_group(selected_users, group)
+        elif user_ids:
+            add_users_in_group(user_ids, group, ids=True)
         else:
             flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
-        return redirect(url_for("admin.add_group_members", group=group, search=data))
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
+        return redirect(
+            url_for(
+                "admin.add_group_members",
+                group=group,
+                search=data,
+                select_all=1 if select_all else None,
+            )
+        )
+
     return render_template(
         "admin/add_group_members.html",
         group=group,
+        search=data,
         form=form,
         users_page=users_page,
         data=data,
         add_members=True,
+        selected_users=selected_users,
+        select_all=select_all,
     )

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-15 09:56+0200\n"
+"POT-Creation-Date: 2026-06-15 15:34+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -241,7 +241,7 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:268 web/b3desk/templates/admin/add_group_members.html:29
+#: web/b3desk/forms.py:268 web/b3desk/templates/admin/add_group_members.html:40
 #: web/b3desk/templates/admin/group_members.html:29
 #: web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
@@ -321,38 +321,38 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:172
+#: web/b3desk/endpoints/admin.py:186
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:187
+#: web/b3desk/endpoints/admin.py:201
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:149
+#: web/b3desk/endpoints/admin.py:253 web/b3desk/endpoints/meetings.py:149
 #: web/b3desk/endpoints/meetings.py:207
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:264
+#: web/b3desk/endpoints/admin.py:278
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:295
+#: web/b3desk/endpoints/admin.py:309
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:299
+#: web/b3desk/endpoints/admin.py:313
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:333
+#: web/b3desk/endpoints/admin.py:347
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:363
+#: web/b3desk/endpoints/admin.py:393
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
@@ -951,12 +951,12 @@ msgstr ""
 msgid "Ajouter des membres à <em>%(group_name)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members.html:33
+#: web/b3desk/templates/admin/add_group_members.html:27
 #: web/b3desk/templates/admin/group_members.html:37
 msgid "Ce groupe n'a pas encore de membre."
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members.html:36
+#: web/b3desk/templates/admin/add_group_members.html:30
 #: web/b3desk/templates/admin/group_members.html:41
 #, fuzzy, python-format
 msgid "%(count)s membre"
@@ -990,8 +990,42 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:71
+#: web/b3desk/templates/admin/add_group_members.html:72
+msgid "Tout sélectionner"
+msgstr ""
+
 #: web/b3desk/templates/admin/add_group_members.html:75
+#, fuzzy, python-format
+msgid ""
+"\n"
+"                            Sélectionner %(count)s utilisateur "
+"correspondant aux critères et ne faisant pas partie du groupe\n"
+"                        "
+msgid_plural ""
+"\n"
+"                            Sélectionner %(count)s utilisateurs "
+"correpondants au critères et ne faisant pas partie du groupe\n"
+"                        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/add_group_members.html:81
+#, python-format
+msgid ""
+"\n"
+"                            Sélectionner %(count)s utilisateur ne faisant"
+" pas partie du groupe\n"
+"                        "
+msgid_plural ""
+"\n"
+"                            Sélectionner %(count)s utilisateurs ne "
+"faisant pas partie du groupe\n"
+"                        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/add_group_members.html:98
+#: web/b3desk/templates/admin/add_group_members.html:102
 msgid "Ajouter les utilisateurs sélectionnés"
 msgstr ""
 
@@ -1348,7 +1382,7 @@ msgid "<em>%(fullname)s</em> n'appartient à aucun groupe."
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:11
-msgid "Ajouter au groupe"
+msgid "Sélectionner"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:15
@@ -7113,5 +7147,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Délégation de la réunion %(meeting_name)s"
+#~ msgstr ""
+
+#~ msgid "Ajouter au groupe"
 #~ msgstr ""
 

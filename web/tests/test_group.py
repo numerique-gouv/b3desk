@@ -289,3 +289,17 @@ def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": []}, status=302)
     assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
+
+
+def test_admin_can_add_multiple_users_filtered_with_search(
+    cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
+):
+    """Test admin can add multiple users filtered with search."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.post(
+        "/admin/add-group-members/1?search=%40ladomain.tld&select_all=1"
+    )
+    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
+    assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text

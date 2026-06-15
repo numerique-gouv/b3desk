@@ -8,7 +8,7 @@
                             <thead class="">
                                 <tr class="">
                                     {% if add_members %}
-                                        <th class="fr-col fr-cell--center fr-cell--multiline">{% trans %}Ajouter au groupe{% endtrans %}</th>
+                                        <th class="fr-col fr-cell--center fr-cell--multiline">{% trans %}Sélectionner{% endtrans %}</th>
                                     {% endif %}
                                     <th class="fr-col--xs fr-cell--center">{% trans %}ID{% endtrans %}</th>
                                     <th class="fr-col--xs fr-cell--center">{% trans %}Nom{% endtrans %}</th>
@@ -26,7 +26,7 @@
                                         {% if add_members %}
                                             <td class="fr-cell--fixed fr-cell--center" scope="row">
                                                 <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                                    <input {% if group in user.groups %} disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
+                                                    <input {% if select_all and user in selected_users %}checked{% elif group in user.groups %} checked disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
                                                     <label class="fr-label" for="table-select-checkbox-{{user.id}}">
                                                         {% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}
                                                     </label>

@@ -23,12 +23,6 @@
         </div>
     </nav>
     <h5 class="fr-h2">{% trans group_name=group.name %}Ajouter des membres à <em>{{ group_name }}</em>{% endtrans %}</h5>
-    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
-        {{ form.search.label(class_="fr-label") }}
-        {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
-    </form>
-    <br>
     {% if not group.members %}
         <p>{% trans %}Ce groupe n'a pas encore de membre.{% endtrans %}</p>
     {% else %}
@@ -40,6 +34,12 @@
             {% endtrans %}
         </p>
     {% endif %}
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
     {% set users = users_page.items %}
     {% if not users %}
         <br>
@@ -64,9 +64,35 @@
                 {% endtrans %}
             {% endif %}
         </p>
+        <form method="get" action="{{ url_for("admin.add_group_members", group=group) }}">
+            {% include 'meeting/csrf.html' %}
+            {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
+            <input type="hidden" name="page" value="{{ page_obj.page }}">
+            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                <input id="checkbox" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="{% trans %}Tout sélectionner{% endtrans %}" onchange="this.form.submit()">
+                <label class="fr-label" for="checkbox">
+                    {% if data %}
+                        {% trans count=selected_users | length %}
+                            Sélectionner {{ count }} utilisateur correspondant aux critères et ne faisant pas partie du groupe
+                            {% pluralize %}
+                            Sélectionner {{ count }} utilisateurs correpondants au critères et ne faisant pas partie du groupe
+                        {% endtrans %}
+                    {% else %}
+                        {% trans count=selected_users | length %}
+                            Sélectionner {{ count }} utilisateur ne faisant pas partie du groupe
+                            {% pluralize %}
+                            Sélectionner {{ count }} utilisateurs ne faisant pas partie du groupe
+                        {% endtrans %}
+                    {% endif %}
+                </label>
+                <div class="fr-messages-group" id="checkbox-messages" aria-live="polite">
+                </div>
+            </div>
+        </form>
         <form method="post" action="{{ url_for('admin.add_group_members', group=group) }}">
             {% include 'meeting/csrf.html' %}
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
+            {% if select_all %}<input type="hidden" name="select_all" value="1">{% endif %}
             <div class="fr-grid-row fr-grid-row--center fr-mt-2w">
                 <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
             </div>
