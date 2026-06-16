@@ -16,7 +16,7 @@ Les réponses sont au format json sous la forme suivante :
       "visio_code": "111222333",
       "phone_number": "+33 1 23 45 67 89",
       "PIN": "123456789",
-      "SIPMediaGW_url": "111222333@@sip.url",
+      "SIPMediaGW_url": "111222333@sip.url",
     }
   ]
 }
