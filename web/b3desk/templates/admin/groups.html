@@ -14,6 +14,12 @@
             </ol>
         </div>
     </nav>
+
+    <a href="{{ url_for("admin.create_group") }}" class="fr-btn fr-btn--primary">
+        {% trans %}Nouveau groupe{% endtrans %}
+    </a>
+    <br>
+    <br>
     <form class="fr-search-bar", id="groupSearchForm", name="search_group" role="search" action="{{ url_for("admin.manage_groups") }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.search.label(class_="fr-label") }}

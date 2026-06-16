@@ -281,7 +281,7 @@ def edit_group(group: Group):
         "success",
     )
 
-    return redirect(url_for("admin.home"))
+    return redirect(url_for("admin.group_infos", group=group))
 
 
 @bp.route("/admin/manage-group-members/<group:group>", methods=["GET", "POST"])

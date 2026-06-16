@@ -1,3 +1,53 @@
+{% macro render_field(field, description=None, disabled=False) %}
+    <div class="fr-container--fluid">
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-4">
+                {{ field.label(class_="fr-label") }}
+                <div class="fr-input-group">
+                    <p class="fr-hint-text">{{ description or field.description }}</p>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="fr-error-text">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="fr-col-8">
+                {% if field.type == 'SelectField' %}
+                    <fieldset class="fr-segmented" name="{{field.name}}-value">
+                        <div class="fr-segmented__elements">
+                            <div class="fr-segmented__element">
+                                <input {% if disabled %}disabled{% elif field.data is sameas true %}checked{% endif %} value="True" type="radio" id="{{field.name}}-true" name="{{field.name}}">
+                                <label class="fr-label" for="{{field.name}}-true">
+                                    {% if disabled %}
+                                        <p class="fr-badge fr-badge--warning" title="{% trans %}Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER){% endtrans %}">{% trans %}OUI{% endtrans %}</p>
+                                    {% else %}
+                                        {{ yesno(True) }}
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <div class="fr-segmented__element">
+                                <input {% if field.data is none %}checked{% endif %} value="None" type="radio" id="{{field.name}}-none" name="{{field.name}}">
+                                <label class="fr-label" for="{{field.name}}-none">
+                                    {{ yesno(None) }}
+                                </label>
+                            </div>
+                            <div class="fr-segmented__element">
+                                <input {% if field.data is sameas false %}checked{% endif %} value="False" type="radio" id="{{field.name}}-false" name="{{field.name}}">
+                                <label class="fr-label" for="{{field.name}}-false">
+                                    {{ yesno(False) }}
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                {% else %}
+                    {{ field(class_="fr-input", **kwargs) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+{% from 'admin/macros.html' import yesno, value %}
 {% include 'meeting/csrf.html' %}
 {% if form.errors %}
     <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
