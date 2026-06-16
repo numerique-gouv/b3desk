@@ -8,14 +8,14 @@
                 <li>
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                 </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                </li>
                 {% if group is none %}
                     <li>
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.create_group') }}">{% trans %}Créer groupe{% endtrans %}</a>
                     </li>
                 {% else %}
-                    <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
-                    </li>
                     <li>
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
                     </li>
@@ -54,7 +54,7 @@
             {% include 'admin/group_form_content.html'%}
             <div class="fr-mt-4w">
                 <button type="submit" class="fr-btn">{% trans %}Créer le groupe{% endtrans %}</button>
-                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.home") }}">{% trans %}Annuler{% endtrans %}</a>
+                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.manage_groups") }}">{% trans %}Annuler{% endtrans %}</a>
             </div>
         </form>
     {% else %}

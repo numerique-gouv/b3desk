@@ -228,7 +228,7 @@ msgstr ""
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:275 web/b3desk/templates/admin/groups.html:21
+#: web/b3desk/forms.py:275 web/b3desk/templates/admin/groups.html:27
 #: web/b3desk/templates/admin/meetings.html:19
 msgid "Rechercher une réunion"
 msgstr ""
@@ -919,7 +919,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members_page.html:12
 #: web/b3desk/templates/admin/delete_group.html:12
-#: web/b3desk/templates/admin/group_form.html:17
+#: web/b3desk/templates/admin/group_form.html:12
 #: web/b3desk/templates/admin/group_infos.html:13
 #: web/b3desk/templates/admin/group_members.html:12
 #: web/b3desk/templates/admin/groups.html:12
@@ -1017,7 +1017,7 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:13
+#: web/b3desk/templates/admin/group_form.html:16
 msgid "Créer groupe"
 msgstr ""
 
@@ -1128,22 +1128,26 @@ msgstr ""
 msgid "Consulter"
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:28
+#: web/b3desk/templates/admin/groups.html:19
+msgid "Nouveau groupe"
+msgstr ""
+
+#: web/b3desk/templates/admin/groups.html:34
 msgid "Aucun groupe ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:30
+#: web/b3desk/templates/admin/groups.html:36
 msgid "Aucun groupe n'a encore été créé."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:38
+#: web/b3desk/templates/admin/groups.html:44
 #, python-format
 msgid "%(count)s groupe correspondant aux critères"
 msgid_plural "%(count)s groupes correspondant aux critères"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/groups.html:44
+#: web/b3desk/templates/admin/groups.html:50
 #, python-format
 msgid "%(count)s groupe"
 msgid_plural "%(count)s groupes"
@@ -1157,7 +1161,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/home.html:32
 #: web/b3desk/templates/admin/home.html:43
-#: web/b3desk/templates/admin/home.html:60
 msgid "Liste des réunions"
 msgstr ""
 
@@ -1169,14 +1172,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:16
 #: web/b3desk/templates/meeting/wizard.html:16
 msgid "Réunions"
-msgstr ""
-
-#: web/b3desk/templates/admin/home.html:61
-msgid "Créer"
-msgstr ""
-
-#: web/b3desk/templates/admin/home.html:65
-msgid "Nouveau groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/macros.html:3
