@@ -1005,8 +1005,8 @@ msgid "Supprimer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:34
-#: web/b3desk/templates/admin/group_form.html:57
-#: web/b3desk/templates/admin/group_form.html:67
+#: web/b3desk/templates/admin/group_form.html:37
+#: web/b3desk/templates/admin/group_form.html:47
 #: web/b3desk/templates/meeting/files.html:171
 #: web/b3desk/templates/meeting/form.html:178
 #: web/b3desk/templates/meeting/form.html:180
@@ -1022,41 +1022,46 @@ msgid "Créer groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_form.html:24
-#: web/b3desk/templates/admin/group_form.html:61
+#: web/b3desk/templates/admin/group_form.html:41
 #: web/b3desk/templates/admin/group_infos.html:25
 #: web/b3desk/templates/meeting/form.html:56
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:52
+#: web/b3desk/templates/admin/group_form.html:32
 msgid "Créer un groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:56
+#: web/b3desk/templates/admin/group_form.html:36
 msgid "Créer le groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:62
+#: web/b3desk/templates/admin/group_form.html:42
 #, python-format
 msgid ""
 "%(group_name)s a été créé le %(group_created)s et modifié le "
 "%(group_updated)s."
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:66
+#: web/b3desk/templates/admin/group_form.html:46
 #: web/b3desk/templates/meeting/form.html:173
 msgid "Enregistrer"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form_content.html:3
+#: web/b3desk/templates/admin/group_form_content.html:23
+#: web/b3desk/templates/admin/group_form_content.html:60
+msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_form_content.html:23
+msgid "OUI"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_form_content.html:53
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/form.html:63
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
-msgstr ""
-
-#: web/b3desk/templates/admin/group_form_content.html:10
-msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:24

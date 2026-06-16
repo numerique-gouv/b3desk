@@ -28,26 +28,6 @@
             </ol>
         </div>
     </nav>
-    {% macro render_field(field, description=None) %}
-        <div class="fr-container--fluid">
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-4">
-                    {{ field.label(class_="fr-label") }}
-                    <div class="fr-input-group">
-                        <p class="fr-hint-text">{{ description or field.description }}</p>
-                        {% if field.errors %}
-                            {% for error in field.errors %}
-                                <p class="fr-error-text">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="fr-col-8">
-                    {{ field(class_="fr-input", **kwargs) }}
-                </div>
-            </div>
-        </div>
-    {% endmacro %}
     {% if group is none %}
         <h1 class="fr-h2">{% trans %}Créer un groupe{% endtrans %}</h1>
         <form id="group-form" action="{{ url_for("admin.create_group") }}" method="post">
