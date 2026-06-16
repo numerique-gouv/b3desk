@@ -369,7 +369,7 @@ def test_smtp_error_when_sending_delegation_mail(
         in caplog.text
     )
     assert (
-        f"Could not connect to SMTP host {client_app.app.config['SMTP_HOST']}"
+        f"Failed to send email to {user_2.email} via SMTP host {client_app.app.config['SMTP_HOST']}"
         in caplog.text
     )
 

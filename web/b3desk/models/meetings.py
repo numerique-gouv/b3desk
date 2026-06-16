@@ -198,6 +198,17 @@ class Meeting(db.Model):
         )
 
 
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
+    """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
+    try:
+        id = bbb_meeting_id.split("-")[2]
+    except (IndexError, AttributeError):
+        return None
+    if not id.isdigit():
+        return None
+    return get_meeting_from_meeting_id(id)
+
+
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)

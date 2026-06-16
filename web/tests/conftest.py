@@ -305,6 +305,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
+        "BIGBLUEBUTTON_SECRET": "test-bbb-secret",
         "OIDC_ISSUER": iam_server.url,
         "OIDC_REDIRECT_URI": iam_client.redirect_uris[0],
         "OIDC_CLIENT_ID": iam_client.client_id,
@@ -330,6 +331,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
+        "RECORDING_NOTIFICATION_DELAY": 0,
         "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
         "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
@@ -761,3 +763,38 @@ def valid_secondary_identity_token(mocker):
 @pytest.fixture
 def cli_runner(app):
     return app.test_cli_runner(catch_exceptions=False)
+
+
+@pytest.fixture
+def bbb_recording(mocker):
+    from b3desk.models.bbb import BBB
+
+    return mocker.patch.object(
+        BBB.get_recordings,
+        "uncached",
+        return_value=[
+            {
+                "playbacks": {
+                    "presentation": {
+                        "url": "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=xyz"
+                    }
+                },
+                "start_date": datetime.datetime(
+                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.timezone.utc
+                ),
+                "name": "",
+            }
+        ],
+    )
+
+
+@pytest.fixture
+def make_signed_parameters(app):
+    from joserfc import jwt
+    from joserfc.jwk import OctKey
+
+    def make(payload):
+        key = OctKey.import_key(app.config["BIGBLUEBUTTON_SECRET"].encode())
+        return jwt.encode({"alg": "HS256"}, payload, key)
+
+    return make

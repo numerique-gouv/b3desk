@@ -5,6 +5,7 @@ from flask import current_app
 from flask import render_template
 from flask import url_for
 
+from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.models import db
 from b3desk.models.roles import Role
 from b3desk.nextcloud import is_nextcloud_available
@@ -118,6 +119,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         ],
         attendee_signin_url=get_signin_url(meeting, Role.attendee),
     )
+    meta_bbb_recording_ready_url = get_recording_status_callback_url()
 
     meta_academy = user.mail_domain if user and user.mail_domain else None
 
@@ -158,6 +160,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         analytics_callback_url=current_app.config[
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
+        meta_bbb_recording_ready_url=meta_bbb_recording_ready_url,
     )
 
     current_app.logger.info(

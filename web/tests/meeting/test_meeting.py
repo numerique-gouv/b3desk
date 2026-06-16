@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_role
 from b3desk.models import db
@@ -361,6 +362,7 @@ def test_create_no_file(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
     }
 
     assert bbb_params == body
@@ -470,6 +472,7 @@ def test_create_with_only_a_default_file(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
     }
 
     assert bbb_params == body
@@ -579,6 +582,7 @@ def test_create_with_files(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
     }
 
     assert bbb_params == body
