@@ -1,0 +1,250 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    {% from 'admin/macros.html' import yesno, value %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+        <li>
+            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line">
+                {% trans %}Modifier{% endtrans %}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin.user_infos', user=meeting.owner) }}" class="fr-btn fr-btn--secondary fr-icon-account-line">
+                {% trans %}Voir le propriétaire{% endtrans %}
+            </a>
+        </li>
+    </ul>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="fr-table fr-table--no-caption" id="selected-meeting-component">
+                <div class="fr-table__wrapper ">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table id="selected-meeting">
+                                <tbody class="">
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Identifiant{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.id }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Nom{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.name }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Propriétaire{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ meeting.owner.fullname }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.is_shadow) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Dernière connexion{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.last_connection_utc_datetime) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Création{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.created_at) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Dernière modification{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.updated_at) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}n° de téléphone{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.dialNumber) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}PIN{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.voiceBridge) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Code de connexion (visio_code){% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.visio_code) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Nombre maximal de participants{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.maxParticipants) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Url de redirection après la réunion{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.logoutUrl) }}
+                                        </td>
+                                    </tr>
+
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Durée maximale (minutes){% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.duration) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Texte de bienvenue{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.welcome) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Message à l'attention des modérateurs{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ value(meeting.moderatorOnlyMessage) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Enregistrement automatique{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.autoStartRecording) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Enregistrement manuel{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.allowStartStopRecording) }}
+                                        </td>
+                                    </tr><tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Caméras visibles par les modérateurs uniquement{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.webcamsOnlyForModerator) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Participants muets à leur arrivée{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.muteOnStart) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Caméras des participants{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.lockSettingsDisableCam) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Micros des participants{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.lockSettingsDisableMic) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Discussions privées{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.lockSettingsDisablePrivateChat) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Discussion publique (tchat){% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.lockSettingsDisablePublicChat) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Prise de note collaborative{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.lockSettingsDisableNote) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Salle d'attente{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(meeting.guestPolicy) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'meeting/modals/delete.html' %}
+{% endblock %}

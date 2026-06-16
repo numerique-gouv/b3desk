@@ -253,6 +253,9 @@ class MainSettings(BaseSettings):
     https://python-babel.github.io/flask-babel/#configuration
     """
 
+    BABEL_DEFAULT_LOCALE: str = "fr"
+    """La langue utilisée par défaut lorsque l’utilisateur n’en a pas choisi."""
+
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
@@ -354,8 +357,26 @@ class MainSettings(BaseSettings):
     https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
-    OIDC_INFO_REQUESTED_FIELDS: list[str] = ["email", "given_name", "family_name"]
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
+    OIDC_CLAIMS_MAPPING: dict[str, str] = {}
+    """Correspondance entre les champs utilisateur de B3Desk (clés) et les
+    claims renvoyés par le serveur d’identité (valeurs).
+
+    Permet d’adapter B3Desk à des serveurs OIDC qui n’utilisent pas les
+    claims standards, par exemple ProConnect où le nom de famille est
+    renvoyé dans le claim ``usual_name`` plutôt que ``family_name``.
+
+    Les champs utilisateurs supportés sont ``given_name``, ``family_name``,
+    ``email`` et ``preferred_username``. Tout champ absent de la
+    configuration est lu directement depuis le claim de même nom.
+
+    Si laissé vide (valeur par défaut), aucun mapping n’est appliqué et
+    les claims sont lus tels quels.
+
+    .. code-block:: shell
+        :caption: Exemple en variable d’environnement
+
+        OIDC_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name","email":"email"}'
+    """
 
     OIDC_ISSUER: str | None = None
     """URL du serveur d’identité des organisateurs de réunion.
@@ -471,6 +492,19 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
+    OIDC_ATTENDEE_CLAIMS_MAPPING: dict[str, str] = {}
+    """Correspondance entre les champs utilisateur de B3Desk (clés) et les
+    claims renvoyés par le serveur d’identité des participants authentifiés
+    (valeurs).
+
+    Si non renseigné, prend la valeur de ``OIDC_CLAIMS_MAPPING``.
+
+    .. code-block:: shell
+        :caption: Exemple en variable d’environnement
+
+        OIDC_ATTENDEE_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name"}'
+    """
+
     SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
     Nextcloud est activée.
@@ -550,6 +584,13 @@ class MainSettings(BaseSettings):
     ) -> str:
         """Return OIDC_SCOPES if attendee scopes are not specified."""
         return attendee_scopes or info.data.get("OIDC_SCOPES")
+
+    @field_validator("OIDC_ATTENDEE_CLAIMS_MAPPING")
+    def get_attendee_claims_mapping(
+        cls, attendee_claims_mapping: dict[str, str], info: ValidationInfo
+    ) -> dict[str, str]:
+        """Return OIDC_CLAIMS_MAPPING if attendee claims mapping is not specified."""
+        return attendee_claims_mapping or info.data.get("OIDC_CLAIMS_MAPPING") or {}
 
     DOCUMENTATION_LINK_URL: str | None = None
     """Surcharge l’adresse de la page de documentation si renseigné."""
@@ -913,7 +954,7 @@ class MainSettings(BaseSettings):
     Number of attempts to enter the visio-code before submitting a captcha
     """
 
-    MAXIMUM_MEETING_DELEGATES: int | None = 1
+    MAXIMUM_MEETING_DELEGATES: int | None = 15
     """ Maximum meeting delegates
 
     Maximum number of delegates for one meeting

@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block main %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">Utilisateurs</a>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
+    {% set users = users_page.items %}
+    {% if not users %}
+        <br>
+        <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
+    {% else %}
+        {% set page_obj = users_page %}
+        {% set page_endpoint = 'admin.manage_users' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} utilisateurs correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur
+                    {% pluralize %}
+                    {{ count }} utilisateurs
+                {% endtrans %}
+            {% endif %}
+        </p>
+        {% include 'admin/user_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}

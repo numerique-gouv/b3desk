@@ -17,9 +17,25 @@ def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
     attendee_session = UserSession(session)
     attendee_info = attendee_session.userinfo
-    given_name = attendee_info.get("given_name", "").title()
-    family_name = attendee_info.get("family_name", "").title()
+    mapping = current_app.config["OIDC_ATTENDEE_CLAIMS_MAPPING"]
+    given_name = attendee_info.get(mapping.get("given_name", "given_name"), "").title()
+    family_name = attendee_info.get(
+        mapping.get("family_name", "family_name"), ""
+    ).title()
     return f"{given_name} {family_name}".strip()
+
+
+def admin_needed(view_function):
+    """Require that authenticated user is admin."""
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not g.user or not g.user.admin:
+            abort(403)
+
+        return view_function(*args, **kwargs)
+
+    return decorator
 
 
 def user_needed(view_function):
@@ -49,7 +65,7 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user:
+            if meeting.owner == g.user or g.user.admin:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

@@ -239,7 +239,7 @@ def test_owner_cannot_add_himself_as_delegate(
     form = response.form
     form["search"] = "alice@domain.tld"
     response = form.submit()
-    assert ("error", "L'utilisateur recherché n'existe pas") in response.flashes
+    assert ("warning", "Cet utilisateur est le propriétaire") in response.flashes
     assert meeting.get_all_delegates == []
 
 
