@@ -254,22 +254,22 @@ msgstr ""
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:320 web/b3desk/forms.py:333
-msgid "Activé par défaut"
-msgstr ""
-
-#: web/b3desk/forms.py:322 web/b3desk/forms.py:335 web/b3desk/forms.py:345
-msgid "Désactivé par défaut"
-msgstr ""
-
-#: web/b3desk/forms.py:330 web/b3desk/templates/admin/group_infos.html:78
+#: web/b3desk/forms.py:325 web/b3desk/templates/admin/group_infos.html:78
 #: web/b3desk/templates/admin/user_infos.html:152
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:86
+#: web/b3desk/forms.py:333 web/b3desk/templates/admin/group_infos.html:86
 #: web/b3desk/templates/admin/user_infos.html:160
 msgid "Transcription"
+msgstr ""
+
+#: web/b3desk/forms.py:335 web/b3desk/forms.py:346 web/b3desk/forms.py:351
+msgid "Désactivé par défaut"
+msgstr ""
+
+#: web/b3desk/forms.py:344 web/b3desk/forms.py:349
+msgid "Activé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4

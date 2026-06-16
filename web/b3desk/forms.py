@@ -316,11 +316,6 @@ class GroupForm(FlaskForm):
         label=_(
             "SIP",
         ),
-        description=(
-            _("Activé par défaut")
-            if current_app.config["ENABLE_SIP"]
-            else _("Désactivé par défaut")
-        ),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
@@ -328,11 +323,6 @@ class GroupForm(FlaskForm):
     enable_file_sharing = SelectField(
         label=_(
             "Ajout de document",
-        ),
-        description=(
-            _("Activé par défaut")
-            if current_app.config["FILE_SHARING"]
-            else _("Désactivé par défaut")
         ),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
@@ -347,3 +337,16 @@ class GroupForm(FlaskForm):
         coerce=nullable_bool,
         default="None",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.enable_sip.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_SIP"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_file_sharing.description = (
+            _("Activé par défaut")
+            if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )
