@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-16 14:22+0200\n"
+"POT-Creation-Date: 2026-06-16 16:42+0200\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@cours\n"
@@ -283,26 +283,22 @@ msgstr ""
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:320
-msgid "ActivéENABLE_SIPDésactivé"
+#: web/b3desk/forms.py:320 web/b3desk/forms.py:333
+msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:328 web/b3desk/templates/admin/group_infos.html:78
+#: web/b3desk/forms.py:322 web/b3desk/forms.py:335 web/b3desk/forms.py:345
+msgid "Désactivé par défaut"
+msgstr ""
+
+#: web/b3desk/forms.py:330 web/b3desk/templates/admin/group_infos.html:78
 #: web/b3desk/templates/admin/user_infos.html:152
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:331
-msgid "ActivéFILE_SHARINGDésactivé"
-msgstr ""
-
-#: web/b3desk/forms.py:339 web/b3desk/templates/admin/group_infos.html:86
+#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:86
 #: web/b3desk/templates/admin/user_infos.html:160
 msgid "Transcription"
-msgstr ""
-
-#: web/b3desk/forms.py:341
-msgid "Désactivé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4
