@@ -392,7 +392,7 @@ def add_group_members(group: Group):
 
     if request.method == "POST":
         user_ids = request.form.getlist("user_ids")
-        if select_all:
+        if select_all and selected_users:
             add_users_in_group(selected_users, group)
         elif user_ids:
             add_users_in_group(user_ids, group, ids=True)
