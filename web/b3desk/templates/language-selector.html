@@ -1,0 +1,30 @@
+<nav role="navigation" class="fr-translate fr-nav">
+    <div class="fr-nav__item">
+        <button
+            aria-controls="language-selector"
+            aria-expanded="false"
+            title="{% trans %}Sélectionner une langue{% endtrans %}"
+            type="button"
+            class="fr-translate__btn fr-btn fr-btn--tertiary"
+        >
+            {{ current_lang.upper() }}<span class="fr-hidden-lg">&nbsp;- {{ language_name(current_lang) }}</span>
+        </button>
+        <div class="fr-collapse fr-translate__menu fr-menu" id="language-selector">
+            <ul class="fr-menu__list">
+                {% for code in LANGUAGES %}
+                    <li>
+                        <a
+                            class="fr-translate__language fr-nav__link"
+                            href="{{ lang_url(code) }}"
+                            hreflang="{{ code }}"
+                            lang="{{ code }}"
+                            {% if code == current_lang %}aria-current="true"{% endif %}
+                        >
+                            {{ code.upper() }} - {{ language_name(code) }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
