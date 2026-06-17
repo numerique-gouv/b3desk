@@ -123,6 +123,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
 @auth.oidc_auth("default")
 def new_meeting():
     """Display the form to create a new meeting and handle submission."""
+    admin_mode = False
     if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
@@ -139,6 +140,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -148,6 +150,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     meeting = Meeting()
@@ -178,6 +181,7 @@ def new_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
+    admin_mode = "admin_mode" in request.args
     form = (
         MeetingWithRecordForm(
             request.form if request.method == "POST" else None, obj=meeting
@@ -194,6 +198,7 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -203,6 +208,7 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     del form.id
@@ -238,6 +244,10 @@ def edit_meeting(meeting: Meeting, user: User):
             "meeting/end.html",
             meeting=meeting,
         )
+
+    if admin_mode:
+        return redirect(url_for("admin.meeting_infos", meeting=meeting))
+
     return redirect(url_for("public.welcome"))
 
 
@@ -371,20 +381,16 @@ def manage_delegation(meeting: Meeting, user: User):
         )
 
     data = form.search.data.lower()
-    new_delegate = (
-        db.session.query(User)
-        .filter(
-            User.email == data,
-            user.email != User.email,
-        )
-        .first()
-    )
+    new_delegate = db.session.query(User).filter(User.email == data).first()
 
     if new_delegate is None:
         flash(_("L'utilisateur recherché n'existe pas"), "error")
 
     elif new_delegate in meeting.get_all_delegates:
         flash(_("L'utilisateur est déjà délégataire"), "warning")
+
+    elif data == meeting.owner.email:
+        flash(_("Cet utilisateur est le propriétaire"), "warning")
 
     elif (
         len(meeting.get_all_delegates)

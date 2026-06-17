@@ -346,7 +346,6 @@ def test_open_recordings_page(
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
-    print(response.body)
     html = response.body.decode("utf-8")
     assert (
         html.count(
