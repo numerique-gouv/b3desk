@@ -341,6 +341,7 @@ def create_and_save_shadow_meeting(user):
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
         autoStartRecording=False,
+        meta_disable_recording_ai_summary=True,
         allowStartStopRecording=False,
         lockSettingsDisableMic=False,
         lockSettingsDisablePrivateChat=False,
