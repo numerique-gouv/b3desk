@@ -139,6 +139,9 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
+    meta_disable_recording_ai_summary = db.Column(
+        db.Boolean, unique=False, default=True, nullable=False
+    )
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
