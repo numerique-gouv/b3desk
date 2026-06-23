@@ -20,14 +20,14 @@ def upgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column(
-                "meta_disable_recording_ai_summary",
+                "ai_summary",
                 sa.Boolean(),
                 nullable=False,
-                server_default=sa.true(),
+                server_default=sa.false(),
             )
         )
 
 
 def downgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
-        batch_op.drop_column("meta_disable_recording_ai_summary")
+        batch_op.drop_column("ai_summary")

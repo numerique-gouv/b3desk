@@ -180,7 +180,7 @@
                                             {% trans %}Génération de résumé (IA){% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
-                                            {{ yesno(not meeting.meta_disable_recording_ai_summary) }}
+                                            {{ yesno(meeting.ai_summary) }}
                                         </td>
                                     </tr>
                                     <tr class="">

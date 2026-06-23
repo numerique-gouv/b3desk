@@ -183,7 +183,7 @@ class BBB:
         meta_academy=None,
         analytics_callback_url=None,
         meta_bbb_recording_ready_url=None,
-        meta_disable_recording_ai_summary=None,
+        ai_summary=None,
     ):
         """Create a new meeting.
 
@@ -252,10 +252,7 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
-        if (
-            meta_disable_recording_ai_summary
-            or not current_app.config["ENABLE_AI_SUMMARY"]
-        ):
+        if not ai_summary or not current_app.config["ENABLE_AI_SUMMARY"]:
             params["meta_bbb-disable-recording-formats"] = "ai-summary"
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)

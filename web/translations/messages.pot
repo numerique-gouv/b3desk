@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:341
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:339
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -217,29 +217,29 @@ msgstr ""
 msgid "Génération de résumé (IA)"
 msgstr ""
 
-#: web/b3desk/forms.py:252
+#: web/b3desk/forms.py:251
 msgid "La génération de résumé est basée sur l'audio de l'enregistrement."
 msgstr ""
 
-#: web/b3desk/forms.py:263
+#: web/b3desk/forms.py:262
 msgid ""
 "La génération de résumé nécessite d'activer l'enregistrement manuel ou "
 "automatique."
 msgstr ""
 
-#: web/b3desk/forms.py:270
+#: web/b3desk/forms.py:269
 msgid "Nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/forms.py:276
+#: web/b3desk/forms.py:275
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:286 web/b3desk/templates/admin/users.html:19
+#: web/b3desk/forms.py:285 web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:293 web/b3desk/templates/admin/meetings.html:19
+#: web/b3desk/forms.py:292 web/b3desk/templates/admin/meetings.html:19
 msgid "Rechercher une réunion"
 msgstr ""
 
@@ -430,16 +430,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:320 web/b3desk/models/meetings.py:327
+#: web/b3desk/models/meetings.py:318 web/b3desk/models/meetings.py:325
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:334
+#: web/b3desk/models/meetings.py:332
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:336
+#: web/b3desk/models/meetings.py:334
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""

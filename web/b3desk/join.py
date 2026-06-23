@@ -161,7 +161,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
         meta_bbb_recording_ready_url=meta_bbb_recording_ready_url,
-        meta_disable_recording_ai_summary=meeting.meta_disable_recording_ai_summary,
+        ai_summary=meeting.ai_summary,
     )
 
     current_app.logger.info(
