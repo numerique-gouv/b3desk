@@ -245,17 +245,16 @@ class MeetingWithRecordForm(MeetingForm):
         ),
         default=False,
     )
-    meta_disable_recording_ai_summary = BooleanField(
+    ai_summary = BooleanField(
         label=_("Génération de résumé (IA)"),
-        filters=[lambda x: not x],
         description=_(
             "La génération de résumé est basée sur l'audio de l'enregistrement."
         ),
         default=True,
     )
 
-    def validate_meta_disable_recording_ai_summary(self, field):
-        if not field.data and not (
+    def validate_ai_summary(self, field):
+        if field.data and not (
             self.allowStartStopRecording.data or self.autoStartRecording.data
         ):
             raise ValidationError(

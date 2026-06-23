@@ -317,7 +317,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.meta_disable_recording_ai_summary = True
+    meeting.ai_summary = False
     create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
@@ -419,7 +419,7 @@ def test_create_with_only_a_default_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.meta_disable_recording_ai_summary = True
+    meeting.ai_summary = False
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -700,6 +700,7 @@ def test_create_quick_meeting(
         "checksum": mock.ANY,
         "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "presentationUploadExternalUrl": mock.ANY,
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
 
@@ -1304,7 +1305,7 @@ def test_create_meeting_ai_summary_requires_recording(
     res = client_app.get("/meeting/new")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["allowStartStopRecording"] = False
-    res.forms[0]["meta_disable_recording_ai_summary"] = "on"
+    res.forms[0]["ai_summary"] = "on"
     res = res.forms[0].submit()
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
