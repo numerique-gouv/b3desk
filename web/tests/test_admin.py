@@ -103,7 +103,7 @@ def test_admin_can_read_user_infos_with_no_meeting(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count('fr-badge fr-badge--error">Non</p>') == 2
+    assert res.text.count('fr-badge fr-badge--error">Non</p>') == 1
     assert "Berenice Cooler n'a pas créé de réunion." in res.text
 
 
@@ -280,7 +280,7 @@ def test_admin_can_create_group(
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert (
         "success",
@@ -310,7 +310,7 @@ def test_admin_cannot_create_group_with_existing_name(
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert "Ce nom est déjà utilisé." in res.text
     assert len(Group.query.all()) == 1
@@ -435,10 +435,10 @@ def test_admin_can_edit_group(
     res.form["name"] = "Group 2"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res.form.submit()
     assert (
-        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_transcription': None}"
+        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_ai_summary': None}"
         in caplog.text
     )
     group = db.session.get(Group, 1)

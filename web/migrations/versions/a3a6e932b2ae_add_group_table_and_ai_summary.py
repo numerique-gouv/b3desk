@@ -1,8 +1,8 @@
-"""group table.
+"""add group table and ai-summary.
 
-Revision ID: 73ae59bac030
+Revision ID: a3a6e932b2ae
 Revises: 791755877bb1
-Create Date: 2026-05-29 07:00:35.826831
+Create Date: 2026-06-23 12:11:52.642974
 
 """
 
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "73ae59bac030"
+revision = "a3a6e932b2ae"
 down_revision = "791755877bb1"
 branch_labels = None
 depends_on = None
@@ -25,7 +25,7 @@ def upgrade():
         sa.Column("name", sa.Unicode(length=150), nullable=True),
         sa.Column("enable_sip", sa.Boolean(), nullable=True),
         sa.Column("enable_file_sharing", sa.Boolean(), nullable=True),
-        sa.Column("enable_transcription", sa.Boolean(), nullable=True),
+        sa.Column("enable_ai_summary", sa.Boolean(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
@@ -43,14 +43,20 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("user_id", "group_id"),
     )
-
-    with op.batch_alter_table("user", schema=None) as batch_op:
-        batch_op.alter_column("admin", existing_type=sa.BOOLEAN(), nullable=True)
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.add_column(
+            sa.Column(
+                "ai_summary",
+                sa.Boolean(),
+                nullable=False,
+                server_default=sa.false(),
+            )
+        )
 
 
 def downgrade():
-    with op.batch_alter_table("user", schema=None) as batch_op:
-        batch_op.alter_column("admin", existing_type=sa.BOOLEAN(), nullable=False)
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.drop_column("ai_summary")
 
     op.drop_table("group_member")
     op.drop_table("group")

@@ -95,22 +95,20 @@
                             </tr>
                         {% endif %}
                         {% set ai_summary = recording.playbacks.get("ai-summary") %}
-                        {% if ai_summary and meeting.owner.can_use_transcription %}
-                            <tr style="background-color: white;">
-                                <td style="vertical-align: middle">{% trans %}Compte-rendu{% endtrans %}</td>
-                                <td style="vertical-align: middle">
-                                    <div class="fr-grid-row fr-grid-row--gutters btn-actions">
-                                        <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ ai_summary.url }}" title="{% trans %}Ouvrir le compte-rendu HTML{% endtrans %}">{% trans %}HTML{% endtrans %}</a>
-                                        {% if ai_summary.pdf %}
-                                            <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.pdf }}" title="{% trans %}Télécharger le compte-rendu PDF{% endtrans %}">{% trans %}PDF{% endtrans %}</a>
-                                        {% endif %}
-                                        {% if ai_summary.md %}
-                                            <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.md }}" title="{% trans %}Télécharger le compte-rendu Markdown{% endtrans %}">{% trans %}Markdown{% endtrans %}</a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
+                        <tr style="background-color: white;">
+                            <td style="vertical-align: middle">{% trans %}Compte-rendu{% endtrans %}</td>
+                            <td style="vertical-align: middle">
+                                <div class="fr-grid-row fr-grid-row--gutters btn-actions">
+                                    <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ ai_summary.url }}" title="{% trans %}Ouvrir le compte-rendu HTML{% endtrans %}">{% trans %}HTML{% endtrans %}</a>
+                                    {% if ai_summary.pdf %}
+                                        <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.pdf }}" title="{% trans %}Télécharger le compte-rendu PDF{% endtrans %}">{% trans %}PDF{% endtrans %}</a>
+                                    {% endif %}
+                                    {% if ai_summary.md %}
+                                        <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.md }}" title="{% trans %}Télécharger le compte-rendu Markdown{% endtrans %}">{% trans %}Markdown{% endtrans %}</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

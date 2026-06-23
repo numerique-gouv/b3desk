@@ -144,7 +144,7 @@
             <ul class="fr-toggle__list">
               {{ render_field(form.allowStartStopRecording) }}
               {{ render_field(form.autoStartRecording) }}
-              {% if config.get("ENABLE_AI_SUMMARY") %}
+              {% if (meeting is not none and meeting.owner.can_use_ai_summary) or g.user.can_use_ai_summary %}
                 {{ render_field(form.ai_summary) }}
               {% endif %}
             </ul>

@@ -266,3 +266,23 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     assert not res.context["meetings"][1].owner.can_use_file_sharing
     assert res.context["meetings"][0].visio_code == "933333333"
     assert not res.context["meetings"][0].owner.can_use_file_sharing
+
+
+def test_can_use_ai_summary_returns_true_when_group_enables_it(client_app, user, group):
+    user.groups.append(group)  # group: enable_ai_summary=True
+    assert user.can_use_ai_summary is True
+
+
+def test_can_use_ai_summary_returns_false_when_all_groups_disable_it(
+    client_app, user, group_2
+):
+    user.groups.append(group_2)  # group_2: enable_ai_summary=False
+    assert user.can_use_ai_summary is False
+
+
+def test_can_use_ai_summary_falls_back_to_config_when_group_has_none(
+    client_app, user, group_3
+):
+    client_app.app.config["ENABLE_AI_SUMMARY"] = True
+    user.groups.append(group_3)  # group_3: enable_ai_summary=None
+    assert user.can_use_ai_summary is True

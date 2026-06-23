@@ -159,7 +159,7 @@ def generate_groups(faker, users, count=GROUP_COUNT, max_members=MAX_MEMBERS_PER
             name=faker.unique.bs()[:150],
             enable_sip=random.choice([True, False, None]),
             enable_file_sharing=random.choice([True, False, None]),
-            enable_transcription=random.choice([True, False, None]),
+            enable_ai_summary=random.choice([True, False, None]),
         )
         group.members = random.sample(
             users, min(len(users), random.randint(1, max_members))

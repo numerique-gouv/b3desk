@@ -20,7 +20,7 @@ class Group(db.Model):
     name = db.Column(db.Unicode(150), unique=True)
     enable_sip = db.Column(db.Boolean, default=None)
     enable_file_sharing = db.Column(db.Boolean, default=None)
-    enable_transcription = db.Column(db.Boolean, default=None)
+    enable_ai_summary = db.Column(db.Boolean, default=None)
 
     members = db.relationship(
         "User", secondary=group_member_table, back_populates="groups"

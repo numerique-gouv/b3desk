@@ -253,7 +253,7 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
-        if not ai_summary or not current_app.config["ENABLE_AI_SUMMARY"]:
+        if not ai_summary:
             params["meta_bbb-disable-recording-formats"] = "ai-summary"
 
         if not file_sharing:

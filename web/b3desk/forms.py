@@ -346,9 +346,9 @@ class GroupForm(FlaskForm):
         coerce=nullable_bool,
         default="None",
     )
-    enable_transcription = SelectField(
+    enable_ai_summary = SelectField(
         label=_(
-            "Transcription",
+            "Génération de résumé (IA)",
         ),
         description=_("Désactivé par défaut"),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
