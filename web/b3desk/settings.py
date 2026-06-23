@@ -965,3 +965,9 @@ class MainSettings(BaseSettings):
 
     If entered, a 'contact' button wil appear in footer
     """
+
+    ENABLE_AI_SUMMARY: bool | None = False
+    """Enable AI summary
+
+    Allow AI summary generation on records
+    """
