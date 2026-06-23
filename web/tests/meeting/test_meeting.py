@@ -364,7 +364,7 @@ def test_create_no_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_disable-recording-ai-summary": "true",
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -476,7 +476,7 @@ def test_create_with_only_a_default_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_disable-recording-ai-summary": "true",
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -588,7 +588,7 @@ def test_create_with_files(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_disable-recording-ai-summary": "true",
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body

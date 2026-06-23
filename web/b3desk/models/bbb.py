@@ -256,7 +256,7 @@ class BBB:
             meta_disable_recording_ai_summary
             or not current_app.config["ENABLE_AI_SUMMARY"]
         ):
-            params["meta_disable-recording-ai-summary"] = "true"
+            params["meta_bbb-disable-recording-formats"] = "ai-summary"
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)

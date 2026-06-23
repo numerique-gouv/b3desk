@@ -99,8 +99,10 @@ steps:
   captions:
     - "process:presentation"
     - "process:video"
+    - "process:ai-summary"
   "process:presentation": "publish:presentation"
   "process:video": "publish:video"
+  "process:ai-summary": "publish:ai-summary"
 ```
 
 - Redémarrer la file d'attente de traitement des enregistrements
