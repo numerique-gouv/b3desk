@@ -133,14 +133,14 @@
       <div class="fr-accordion">
         <h2 class="fr-accordion__title fr-h3">
           {% set accordion_4_errors = form.allowStartStopRecording.errors or form.autoStartRecording.errors or form.meta_disable_recording_ai_summary.errors %}
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_4_errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_4_errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement et Résumé{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
           <div class="fr-grid-row">
             <p>
               {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
             </p>
-              <!-- Enregistrement -->
+              <!-- Enregistrement et Résumé -->
             <ul class="fr-toggle__list">
               {{ render_field(form.allowStartStopRecording) }}
               {{ render_field(form.autoStartRecording) }}
