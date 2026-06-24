@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import pytest
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
+from b3desk.join import get_hash_legacy
 from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
@@ -790,6 +791,34 @@ def test_meeting_link_retrocompatibility(meeting):
         f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
+
+
+def test_moderator_link_retrocompatibility(meeting):
+    """Links generated before the moderatorPW fix must still be accepted.
+
+    Before the fix, get_hash used attendeePW for all roles including moderator.
+    Those links must remain valid via get_hash_legacy.
+    """
+    legacy_moderator_hash = get_hash_legacy(meeting, Role.moderator)
+    assert get_role(meeting, legacy_moderator_hash) == Role.moderator
+
+
+def test_password_renewal_independence(meeting):
+    """Renewing attendeePW must not affect the moderator link, and vice versa."""
+    initial_moderator_hash = get_hash(meeting, Role.moderator)
+    initial_attendee_hash = get_hash(meeting, Role.attendee)
+    initial_authenticated_hash = get_hash(meeting, Role.authenticated)
+
+    meeting.attendeePW = "new-attendee"
+    assert get_hash(meeting, Role.moderator) == initial_moderator_hash
+    assert get_hash(meeting, Role.attendee) != initial_attendee_hash
+    assert get_hash(meeting, Role.authenticated) != initial_authenticated_hash
+
+    meeting.attendeePW = "attendee"
+    meeting.moderatorPW = "new-moderator"
+    assert get_hash(meeting, Role.moderator) != initial_moderator_hash
+    assert get_hash(meeting, Role.attendee) == initial_attendee_hash
+    assert get_hash(meeting, Role.authenticated) == initial_authenticated_hash
 
 
 def test_meeting_order_default(
