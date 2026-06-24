@@ -2674,7 +2674,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:136
-msgid "Enregistrement et Résumé"
+msgid "Enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:141
