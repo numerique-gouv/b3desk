@@ -529,16 +529,16 @@ def meeting_1_user_3(client_app, user, user_3):
 
 
 @pytest.fixture
-def shadow_meeting(client_app, user):
+def hidden_meeting(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
         owner=user,
-        name="shadow meeting",
+        name="hidden meeting",
         moderatorPW="moderator",
         attendeePW="attendee",
         voiceBridge="555555551",
-        is_shadow=True,
+        is_hidden=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
     )
@@ -549,16 +549,16 @@ def shadow_meeting(client_app, user):
 
 
 @pytest.fixture
-def shadow_meeting_2(client_app, user):
+def hidden_meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
         owner=user,
-        name="shadow meeting must disappear",
+        name="hidden meeting must disappear",
         moderatorPW="moderator",
         attendeePW="attendee",
         voiceBridge="555555552",
-        is_shadow=True,
+        is_hidden=True,
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
     )
@@ -569,16 +569,16 @@ def shadow_meeting_2(client_app, user):
 
 
 @pytest.fixture
-def shadow_meeting_3(client_app, user):
+def hidden_meeting_3(client_app, user):
     from b3desk.models.meetings import Meeting
 
     meeting = Meeting(
         owner=user,
-        name="shadow meeting must disappear too",
+        name="hidden meeting must disappear too",
         moderatorPW="moderator",
         attendeePW="attendee",
         voiceBridge="555555553",
-        is_shadow=True,
+        is_hidden=True,
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
     )

@@ -91,7 +91,7 @@ def welcome():
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
 
-    meetings = [meeting for meeting in g.user.meetings if not meeting.is_shadow] + [
+    meetings = [meeting for meeting in g.user.meetings if not meeting.is_hidden] + [
         meeting for meeting in g.user.get_all_delegated_meetings
     ]
     favorite_meetings = []

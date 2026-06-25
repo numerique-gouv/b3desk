@@ -1198,7 +1198,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/meeting_infos.html:61
 #: web/b3desk/templates/admin/meeting_table.html:34
-msgid "Réunion silencieuse (shadow_meeting)"
+msgid "Réunion cachée (hidden_meeting)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_infos.html:69

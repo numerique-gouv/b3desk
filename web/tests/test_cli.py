@@ -1,7 +1,10 @@
+import datetime
+
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.users import User
 
 
@@ -70,3 +73,22 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     assert res.exit_code != 0
     assert "only available in development" in res.output
     assert db.session.query(User).count() == 0
+
+
+def test_delete_old_hidden_meetings(
+    cli_runner,
+    time_machine,
+    meeting,
+    meeting_2,
+    meeting_3,
+    hidden_meeting,
+    hidden_meeting_2,
+    hidden_meeting_3,
+    user,
+):
+    """Test that old hidden meetings are deleted except the most recent one."""
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    cli_runner.invoke(bp.cli, ["delete-old-hidden-meetings"])
+    voiceBridges = get_all_previous_voiceBridges()
+    assert voiceBridges == ["555555552", "555555553"]
+    assert user.meetings == [meeting, meeting_2, meeting_3, hidden_meeting]

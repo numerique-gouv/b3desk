@@ -811,7 +811,7 @@ def test_meeting_order_default(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings are ordered by creation date descending by default."""
@@ -825,7 +825,7 @@ def test_meeting_order_alpha_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered alphabetically ascending."""
@@ -841,7 +841,7 @@ def test_meeting_order_alpha_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered alphabetically descending."""
@@ -857,7 +857,7 @@ def test_meeting_order_date_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered by creation date descending."""
@@ -874,7 +874,7 @@ def test_meeting_order_date_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered by creation date ascending."""
@@ -891,7 +891,7 @@ def test_favorite_meeting_order_alpha_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered alphabetically ascending."""
@@ -907,7 +907,7 @@ def test_favorite_meeting_order_alpha_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered alphabetically descending."""
@@ -923,7 +923,7 @@ def test_favorite_meeting_order_date_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered by creation date descending."""
@@ -940,7 +940,7 @@ def test_favorite_meeting_order_date_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered by creation date ascending."""
@@ -957,7 +957,7 @@ def test_add_and_remove_favorite(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
@@ -1021,7 +1021,7 @@ def test_generate_existing_pin(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     authenticated_user,
     mock_meeting_is_not_running,
     mocker,
@@ -1030,7 +1030,7 @@ def test_generate_existing_pin(
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     # Mock returns existing PINs first, then a free one
-    # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (shadow)
+    # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (hidden)
     mocker.patch(
         "b3desk.models.meetings.random.randint",
         side_effect=[111111111, 111111112, 111111113, 222222222],
@@ -1120,7 +1120,7 @@ def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
 
 
 def test_get_forbidden_pins(
-    previous_voiceBridge, meeting, meeting_2, meeting_3, shadow_meeting
+    previous_voiceBridge, meeting, meeting_2, meeting_3, hidden_meeting
 ):
     """Test that forbidden PINs include active and archived voiceBridges."""
     assert (
@@ -1138,7 +1138,7 @@ def test_get_forbidden_pins(
             meeting_2.voiceBridge,
             meeting_3.voiceBridge,
             previous_voiceBridge.voiceBridge,
-            shadow_meeting.voiceBridge,
+            hidden_meeting.voiceBridge,
         ]
     )
 
@@ -1152,7 +1152,7 @@ def test_generate_random_pin():
 
 
 def test_unique_visio_code_generation(
-    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+    meeting, meeting_2, meeting_3, hidden_meeting, hidden_meeting_2, hidden_meeting_3
 ):
     """Test that visio code generation creates valid unique 9-digit codes."""
     random_visio_codes = []
@@ -1175,7 +1175,7 @@ def test_unique_visio_code_generation_with_collision(client_app, mocker):
 
 
 def test_visio_code_exists(
-    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+    meeting, meeting_2, meeting_3, hidden_meeting, hidden_meeting_2, hidden_meeting_3
 ):
     """Test that visio_code_exists correctly checks existing codes."""
     assert visio_code_exists("911111111")

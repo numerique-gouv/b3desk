@@ -114,7 +114,7 @@ class Meeting(db.Model):
     )
     files = db.relationship("MeetingFiles", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
-    is_shadow = db.Column(db.Boolean, unique=False, default=False)
+    is_hidden = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
 
     # BBB params
@@ -330,8 +330,8 @@ def pin_is_unique_validator(form, field):
         raise ValidationError(_("Ce code PIN est déjà utilisé"))
 
 
-def create_and_save_shadow_meeting(user):
-    """Create and save a new shadow meeting for a user."""
+def create_and_save_hidden_meeting(user):
+    """Create and save a new hidden meeting for a user."""
     random_string = get_random_alphanumeric_string(8)
     meeting = Meeting(
         name=str(_("la réunion de %(fullname)s", fullname=user.fullname)),
@@ -356,7 +356,7 @@ def create_and_save_shadow_meeting(user):
         muteOnStart=True,
         guestPolicy=False,
         logo=None,
-        is_shadow=True,
+        is_hidden=True,
         owner=user,
         attendeePW=f"{random_string}-{random_string}",
         moderatorPW=f"{user.hash}-{random_string}",
@@ -365,26 +365,6 @@ def create_and_save_shadow_meeting(user):
     assign_unique_codes(meeting)
     db.session.commit()
     return meeting
-
-
-def get_or_create_shadow_meeting(user):
-    """Retrieve the user's shadow meeting or create one if it doesn't exist."""
-    shadow_meetings = [
-        shadow_meeting
-        for shadow_meeting in db.session.query(Meeting).filter(
-            Meeting.is_shadow,
-            Meeting.owner_id == user.id,
-        )
-    ]
-    if len(shadow_meetings) > 1:
-        for shadow_meeting in shadow_meetings:
-            if shadow_meeting is not shadow_meetings[0]:
-                save_voiceBridge_and_delete_meeting(shadow_meeting)
-    return (
-        create_and_save_shadow_meeting(user)
-        if not shadow_meetings
-        else shadow_meetings[0]
-    )
 
 
 def save_voiceBridge_and_delete_meeting(meeting):
@@ -396,18 +376,18 @@ def save_voiceBridge_and_delete_meeting(meeting):
     db.session.commit()
 
 
-def delete_all_old_shadow_meetings():
-    """Delete all shadow meetings not used in the past year."""
-    old_shadow_meetings = [
-        shadow_meeting
-        for shadow_meeting in db.session.query(Meeting).filter(
+def delete_all_old_hidden_meetings():
+    """Delete all hidden meetings not used in the past year."""
+    old_hidden_meetings = [
+        hidden_meeting
+        for hidden_meeting in db.session.query(Meeting).filter(
             Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
-            Meeting.is_shadow,
+            Meeting.is_hidden,
         )
     ]
 
-    for shadow_meeting in old_shadow_meetings:
-        save_voiceBridge_and_delete_meeting(shadow_meeting)
+    for hidden_meeting in old_hidden_meetings:
+        save_voiceBridge_and_delete_meeting(hidden_meeting)
 
 
 def visio_code_exists(code):

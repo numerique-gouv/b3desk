@@ -4,7 +4,7 @@ from flask import Blueprint
 from flask import current_app
 
 from b3desk.models import db
-from b3desk.models.meetings import delete_all_old_shadow_meetings
+from b3desk.models.meetings import delete_all_old_hidden_meetings
 from b3desk.models.users import User
 
 bp = Blueprint("commands", __name__, cli_group=None)
@@ -25,10 +25,10 @@ def get_apps_id(email):
         current_app.logger.error(e)
 
 
-@bp.cli.command("delete-old-shadow-meetings")
-def delete_old_shadow_meetings():
-    """CLI command to delete expired shadow meetings from database."""
-    delete_all_old_shadow_meetings()
+@bp.cli.command("delete-old-hidden-meetings")
+def delete_old_hidden_meetings():
+    """CLI command to delete expired hidden meetings from database."""
+    delete_all_old_hidden_meetings()
 
 
 @bp.cli.command("populate")
