@@ -331,7 +331,9 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
-        "RECORDING_NOTIFICATION_DELAY": 0,
+        "RECORDING_NOTIFICATION_MIN_DELAY": 0,
+        "RECORDING_NOTIFICATION_MAX_DELAY": 0,
+        "RECORDING_EXPECTED_FORMATS": ["presentation"],
         "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
         "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",

@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:339
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:346
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -505,16 +505,16 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:318 web/b3desk/models/meetings.py:325
+#: web/b3desk/models/meetings.py:325 web/b3desk/models/meetings.py:332
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:332
+#: web/b3desk/models/meetings.py:339
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:334
+#: web/b3desk/models/meetings.py:341
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
