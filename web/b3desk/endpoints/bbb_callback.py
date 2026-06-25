@@ -12,9 +12,6 @@ from joserfc.jwk import OctKey
 from b3desk import cache
 from b3desk import csrf
 from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
-from b3desk.tasks import RECORDING_CACHE_TTL
-from b3desk.tasks import recording_notified_key
-from b3desk.tasks import recording_scheduled_key
 from b3desk.tasks import send_recording_notification
 
 bp = Blueprint("bbb-callback", __name__)
@@ -38,13 +35,10 @@ def recording_status():
 
     BBB triggers this callback once per rendered format (presentation, video, ...).
     To send a single notification covering all formats, the first callback for a
-    given record_id schedules two deadline tasks: one at
-    ``RECORDING_NOTIFICATION_MIN_DELAY`` that unlocks sending, and one at
-    ``RECORDING_NOTIFICATION_MAX_DELAY`` that sends whatever is ready as a safety
-    net. Subsequent callbacks re-check the available formats and send as soon as
-    all expected ones are present (once the minimum delay has elapsed). The
-    ``send_recording_notification`` task re-queries BBB each time and
-    guards against duplicate mails with an atomic cache flag.
+    given record_id schedules a Celery task with a ``RECORDING_NOTIFICATION_DELAY``
+    countdown; subsequent callbacks for the same record_id within that window are
+    acknowledged (200) but do nothing. The task re-queries BBB at expiry to fetch
+    the final list of available formats before sending the mail.
 
     Returns 410 on definitively invalid payloads to stop BBB retries
     (BBB only stops retrying on 2xx and 410, per the API documentation).
@@ -76,41 +70,24 @@ def recording_status():
     if not meeting:
         return "", 410
 
-    if cache.get(recording_notified_key(bbb_recording_id)):
+    cache_key = f"recording_notification_scheduled:{bbb_recording_id}"
+    if cache.get(cache_key):
         logger.info(
-            "Recording notification already sent for %s, ignoring callback",
+            "Recording notification already scheduled for %s, ignoring callback",
             bbb_recording_id,
         )
         return "", 200
 
-    is_first_callback = cache.add(
-        recording_scheduled_key(bbb_recording_id), True, timeout=RECORDING_CACHE_TTL
+    delay = current_app.config["RECORDING_NOTIFICATION_DELAY"]
+    cache.set(cache_key, True, timeout=7 * 24 * 3600)
+    send_recording_notification.apply_async(
+        args=[meeting.id, bbb_recording_id],
+        countdown=delay,
     )
-    if is_first_callback:
-        min_delay = current_app.config["RECORDING_NOTIFICATION_MIN_DELAY"]
-        max_delay = current_app.config["RECORDING_NOTIFICATION_MAX_DELAY"]
-        send_recording_notification.apply_async(
-            args=[meeting.id, bbb_recording_id],
-            kwargs={"is_min_deadline": True},
-            countdown=min_delay,
-        )
-        send_recording_notification.apply_async(
-            args=[meeting.id, bbb_recording_id],
-            kwargs={"force": True},
-            countdown=max_delay,
-        )
-        logger.info(
-            "Recording notification scheduled for meeting %s (record=%s): "
-            "min=%ss max=%ss",
-            meeting.name,
-            bbb_recording_id,
-            min_delay,
-            max_delay,
-        )
-    else:
-        send_recording_notification.delay(meeting.id, bbb_recording_id)
-        logger.info(
-            "Recording callback for %s: re-checking expected formats",
-            bbb_recording_id,
-        )
+    logger.info(
+        "Recording notification scheduled for meeting %s in %ss (record=%s)",
+        meeting.name,
+        delay,
+        bbb_recording_id,
+    )
     return "", 200

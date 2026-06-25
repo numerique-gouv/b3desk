@@ -1,5 +1,3 @@
-from b3desk import cache
-from b3desk.tasks import recording_scheduled_key
 from joserfc import jwt
 from joserfc.jwk import OctKey
 
@@ -162,23 +160,3 @@ def test_callback_acknowledges_even_when_bbb_has_no_recording_yet(
         status=200,
     )
     assert len(smtpd.messages) == 0
-
-
-def test_subsequent_callback_triggers_recheck(
-    client_app, meeting, mocker, make_signed_parameters
-):
-    """A callback arriving after scheduling triggers an immediate re-check task."""
-    cache.set(recording_scheduled_key(RECORD_ID), True)
-    delay = mocker.patch(
-        "b3desk.endpoints.bbb_callback.send_recording_notification.delay"
-    )
-
-    signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
-    )
-    client_app.post(
-        "/bbb-callback/recording_status",
-        {"signed_parameters": signed},
-        status=200,
-    )
-    delay.assert_called_once_with(meeting.id, RECORD_ID)
