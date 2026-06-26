@@ -1,7 +1,7 @@
-#: web/b3desk/__init__.py:330 web/b3desk/endpoints/meeting_files.py:125
-#: web/b3desk/endpoints/meeting_files.py:184
-#: web/b3desk/endpoints/meeting_files.py:289
-#: web/b3desk/endpoints/meeting_files.py:480
+#: web/b3desk/__init__.py:330 web/b3desk/endpoints/meeting_files.py:127
+#: web/b3desk/endpoints/meeting_files.py:186
+#: web/b3desk/endpoints/meeting_files.py:291
+#: web/b3desk/endpoints/meeting_files.py:482
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -318,8 +318,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:149
-#: web/b3desk/endpoints/meetings.py:207
+#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/meetings.py:211
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -370,138 +370,138 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:56
+#: web/b3desk/endpoints/meeting_files.py:58
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:171
-#: web/b3desk/endpoints/meeting_files.py:252
+#: web/b3desk/endpoints/meeting_files.py:173
+#: web/b3desk/endpoints/meeting_files.py:254
 #, python-brace-format
 msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:214
-#: web/b3desk/endpoints/meeting_files.py:273
-#: web/b3desk/endpoints/meeting_files.py:320
-#: web/b3desk/endpoints/meeting_files.py:359
+#: web/b3desk/endpoints/meeting_files.py:216
+#: web/b3desk/endpoints/meeting_files.py:275
+#: web/b3desk/endpoints/meeting_files.py:322
+#: web/b3desk/endpoints/meeting_files.py:361
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:237
-#: web/b3desk/endpoints/meeting_files.py:244
+#: web/b3desk/endpoints/meeting_files.py:239
+#: web/b3desk/endpoints/meeting_files.py:246
 #, python-brace-format
 msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:299
+#: web/b3desk/endpoints/meeting_files.py:301
 #, python-brace-format
 msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:367
+#: web/b3desk/endpoints/meeting_files.py:369
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:380
+#: web/b3desk/endpoints/meeting_files.py:382
 msgid "Type de fichier non autorisé"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:384
+#: web/b3desk/endpoints/meeting_files.py:386
 msgid "Erreur de taille du fichier"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:399
+#: web/b3desk/endpoints/meeting_files.py:401
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:408
-#: web/b3desk/endpoints/meetings.py:317
+#: web/b3desk/endpoints/meeting_files.py:410
+#: web/b3desk/endpoints/meetings.py:324
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:416
+#: web/b3desk/endpoints/meeting_files.py:418
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:440
+#: web/b3desk/endpoints/meeting_files.py:442
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:111
+#: web/b3desk/endpoints/meetings.py:113
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:114
+#: web/b3desk/endpoints/meetings.py:116
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:130
+#: web/b3desk/endpoints/meetings.py:132
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:174
+#: web/b3desk/endpoints/meetings.py:176
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:240
+#: web/b3desk/endpoints/meetings.py:244
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:265
+#: web/b3desk/endpoints/meetings.py:269
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:301
+#: web/b3desk/endpoints/meetings.py:308
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:307
+#: web/b3desk/endpoints/meetings.py:314
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:315
+#: web/b3desk/endpoints/meetings.py:322
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:330
+#: web/b3desk/endpoints/meetings.py:337
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:341
+#: web/b3desk/endpoints/meetings.py:348
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:392
+#: web/b3desk/endpoints/meetings.py:401
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:395
+#: web/b3desk/endpoints/meetings.py:404
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:398
+#: web/b3desk/endpoints/meetings.py:407
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:405
+#: web/b3desk/endpoints/meetings.py:414
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:418
+#: web/b3desk/endpoints/meetings.py:427
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:442
+#: web/b3desk/endpoints/meetings.py:451
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:449
+#: web/b3desk/endpoints/meetings.py:458
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -996,7 +996,7 @@ msgstr[1] ""
 #: web/b3desk/templates/meeting/files.html:168
 #: web/b3desk/templates/meeting/files.html:198
 #: web/b3desk/templates/meeting/recordings.html:143
-#: web/b3desk/templates/meeting/row.html:63
+#: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr ""
 
@@ -1211,7 +1211,6 @@ msgid "Propriétaire"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_infos.html:61
-#: web/b3desk/templates/admin/meeting_table.html:34
 msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
@@ -1236,7 +1235,7 @@ msgstr ""
 msgid "Visio-code"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_table.html:30
+#: web/b3desk/templates/admin/meeting_table.html:29
 #, python-format
 msgid "Éditer %(meeting_name)s"
 msgstr ""
@@ -2514,8 +2513,8 @@ msgid "Supprimer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation.html:23
-#: web/b3desk/templates/meeting/row.html:49
-#: web/b3desk/templates/meeting/row.html:50
+#: web/b3desk/templates/meeting/row.html:66
+#: web/b3desk/templates/meeting/row.html:67
 #, python-format
 msgid "Gérer les délégations de %(meeting_name)s"
 msgstr ""
@@ -2631,7 +2630,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/filesform.html:20
 #: web/b3desk/templates/meeting/row.html:22
-#: web/b3desk/templates/meeting/row.html:60
+#: web/b3desk/templates/meeting/row.html:77
 #, python-format
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
@@ -2786,8 +2785,8 @@ msgid "Retirer des favoris"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:23
-#: web/b3desk/templates/meeting/row.html:54
-#: web/b3desk/templates/meeting/row.html:55
+#: web/b3desk/templates/meeting/row.html:71
+#: web/b3desk/templates/meeting/row.html:72
 #, python-format
 msgid "Voir les enregistrements de %(meeting_name)s"
 msgstr ""
@@ -2962,7 +2961,7 @@ msgid "Copier le lien Participant dans le presse-papiers"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:20
-#: web/b3desk/templates/meeting/row.html:58
+#: web/b3desk/templates/meeting/row.html:75
 #, python-format
 msgid "Modifier %(meeting_name)s"
 msgstr ""
@@ -2970,7 +2969,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:26
 #: web/b3desk/templates/meeting/row.html:27
 #: web/b3desk/templates/meeting/row.html:29
-#: web/b3desk/templates/meeting/row.html:64
+#: web/b3desk/templates/meeting/row.html:81
 #, python-format
 msgid "Supprimer %(meeting_name)s"
 msgstr ""
@@ -2994,6 +2993,19 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:44
 #, python-format
 msgid "Propriétaire : %(meeting_owner_name)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/row.html:49
+#: web/b3desk/templates/meeting/row.html:50
+#: web/b3desk/templates/meeting/row.html:52
+#: web/b3desk/templates/meeting/row.html:53
+#: web/b3desk/templates/meeting/row.html:55
+#: web/b3desk/templates/meeting/row.html:56
+#: web/b3desk/templates/meeting/row.html:58
+#: web/b3desk/templates/meeting/row.html:59
+#: web/b3desk/templates/meeting/row.html:61
+#: web/b3desk/templates/meeting/row.html:62
+msgid "Réunion silencieuse"
 msgstr ""
 
 #: web/b3desk/templates/meeting/signin_links.html:3

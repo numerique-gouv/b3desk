@@ -129,7 +129,6 @@ def test_admin_can_read_user_infos_with_meeting(
     assert res.text.count("911111111") == 1
     assert res.text.count("911111112") == 1
     assert res.text.count("911111113") == 1
-    assert res.text.count("Réunion silencieuse (shadow_meeting)") == 1
 
 
 def test_research_bar_with_letters_in_meeting_list_in_admin_page(
@@ -206,7 +205,6 @@ def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
     # in the search input and in the language selector links (which preserve the
     # query string), which would otherwise inflate the count.
     meetings_table = res.pyquery("table#meetings").text()
-    assert meetings_table.count("Réunion silencieuse (shadow_meeting)") == 1
     assert meetings_table.count("922222222") == 0
     assert meetings_table.count("511111111") == 1
     assert meetings_table.count("911111111") == 0

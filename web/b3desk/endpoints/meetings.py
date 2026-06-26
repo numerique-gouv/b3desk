@@ -83,6 +83,8 @@ def quick_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
+    if meeting.is_shadow:
+        abort(403)
     form = RecordingForm()
     admin_mode = "admin_mode" in request.args or False
     return render_template(
@@ -183,6 +185,8 @@ def new_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
+    if meeting.is_shadow:
+        abort(403)
     admin_mode = "admin_mode" in request.args
     form = (
         MeetingWithRecordForm(
@@ -289,6 +293,9 @@ def delete_meeting():
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
+        if meeting.is_shadow:
+            abort(403)
+
         if meeting.owner_id == g.user.id or g.user.admin:
             if not meeting.get_all_delegates:
                 for meeting_file in meeting.files:
@@ -375,6 +382,8 @@ def get_available_visio_code():
 @meeting_access_required()
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
+    if meeting.is_shadow:
+        abort(403)
     form = DelegationSearchForm(request.form)
     admin_mode = "admin_mode" in request.args or False
     if not request.form or not form.validate():

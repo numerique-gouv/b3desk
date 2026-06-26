@@ -49,6 +49,8 @@ bp = Blueprint("meeting_files", __name__)
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
+    if meeting.is_shadow:
+        abort(403)
     form = MeetingFilesForm()
     admin_mode = "admin_mode" in request.args or False
 
