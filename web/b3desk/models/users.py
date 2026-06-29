@@ -165,5 +165,11 @@ class User(db.Model):
         return current_app.config["ENABLE_SIP"]
 
     @property
-    def can_use_transcription(self):
-        return any(group.enable_transcription for group in self.groups)
+    def can_use_ai_summary(self):
+        if not self.groups:
+            return current_app.config["ENABLE_AI_SUMMARY"]
+        if any(group.enable_ai_summary for group in self.groups):
+            return True
+        if all(group.enable_ai_summary is False for group in self.groups):
+            return False
+        return current_app.config["ENABLE_AI_SUMMARY"]

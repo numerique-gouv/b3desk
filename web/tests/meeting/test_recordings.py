@@ -64,6 +64,12 @@ def bbb_getRecordings_response(mocker):
           <length>0</length>
           <size>1104836</size>
         </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
       </playback>
     </recording>
     <recording>
@@ -109,6 +115,12 @@ def bbb_getRecordings_response(mocker):
               <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
             </images>
           </preview>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
         </format>
       </playback>
     </recording>
@@ -212,7 +224,8 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     first_recording = recordings[0]
     assert first_recording["participants"] == 3
     playbacks = first_recording["playbacks"]
-    assert len(playbacks) == 2
+    print(playbacks)
+    assert len(playbacks) == 3
     assert (
         playbacks["presentation"]["url"]
         == "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
@@ -220,6 +233,10 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     assert (
         playbacks["video"]["url"]
         == "https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4"
+    )
+    assert (
+        playbacks["ai-summary"]["url"]
+        == "https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html"
     )
 
     assert playbacks["video"]["images"] == []
@@ -399,7 +416,7 @@ def test_build_recording_links_ai_summary():
             "md": "https://bbb.test/ai-summary/rec/ai-summary.md",
         }
     }
-    links = _build_recording_links(playbacks, True)
+    links = _build_recording_links(playbacks)
 
     assert [link["url"] for link in links] == [
         "https://bbb.test/ai-summary/rec/ai-summary.html",

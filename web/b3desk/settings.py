@@ -253,6 +253,9 @@ class MainSettings(BaseSettings):
     https://python-babel.github.io/flask-babel/#configuration
     """
 
+    BABEL_DEFAULT_LOCALE: str = "fr"
+    """La langue utilisée par défaut lorsque l’utilisateur n’en a pas choisi."""
+
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
@@ -961,4 +964,10 @@ class MainSettings(BaseSettings):
     """Contact link
 
     If entered, a 'contact' button wil appear in footer
+    """
+
+    ENABLE_AI_SUMMARY: bool | None = False
+    """Enable AI summary
+
+    Allow AI summary generation on records
     """

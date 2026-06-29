@@ -1,4 +1,6 @@
+import pytest
 from b3desk.commands import bp
+from b3desk.join import create_bbb_meeting
 
 
 def test_add_group_members_displays_users(
@@ -303,3 +305,52 @@ def test_admin_can_add_multiple_users_filtered_with_search(
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
+
+
+def test_can_use_ai_summary_returns_true_when_group_enables_it(client_app, user, group):
+    user.groups.append(group)  # group: enable_ai_summary=True
+    assert user.can_use_ai_summary is True
+
+
+def test_can_use_ai_summary_returns_false_when_all_groups_disable_it(
+    client_app, user, group_2
+):
+    user.groups.append(group_2)  # group_2: enable_ai_summary=False
+    assert user.can_use_ai_summary is False
+
+
+def test_can_use_ai_summary_falls_back_to_config_when_group_has_none(
+    client_app, user, group_3
+):
+    client_app.app.config["ENABLE_AI_SUMMARY"] = True
+    user.groups.append(group_3)  # group_3: enable_ai_summary=None
+    assert user.can_use_ai_summary is True
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
+def test_meeting_with_ai_summary_but_owner_lost_authorisation(
+    cli_runner,
+    client_app,
+    user,
+    meeting,
+    group,
+    group_2,
+    authenticated_user,
+    mock_meeting_is_not_running,
+    bbb_response,
+):
+    """Test when owner loses ai-summary authorization, ai_summary is disabled on their meetings before launch."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
+    assert user.can_use_ai_summary is True
+    meeting.ai_summary = True
+    client_app.get("/admin/manage-group-members/1/1", status=200)
+    create_bbb_meeting(meeting, meeting.owner)
+    assert meeting.ai_summary is False
+    assert user.can_use_ai_summary is False

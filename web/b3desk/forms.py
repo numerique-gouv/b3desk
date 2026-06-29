@@ -11,6 +11,7 @@ from wtforms import IntegerField
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
+from wtforms import ValidationError
 from wtforms import validators
 
 from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
@@ -245,6 +246,23 @@ class MeetingWithRecordForm(MeetingForm):
         ),
         default=False,
     )
+    ai_summary = BooleanField(
+        label=_("Génération de résumé (IA)"),
+        description=_(
+            "La génération de résumé est basée sur l'audio de l'enregistrement."
+        ),
+        default=False,
+    )
+
+    def validate_ai_summary(self, field):
+        if field.data and not (
+            self.allowStartStopRecording.data or self.autoStartRecording.data
+        ):
+            raise ValidationError(
+                _(
+                    "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+                )
+            )
 
 
 class RecordingForm(FlaskForm):
@@ -316,9 +334,6 @@ class GroupForm(FlaskForm):
         label=_(
             "SIP",
         ),
-        description=_(
-            f"{'Activé' if current_app.config['ENABLE_SIP'] else 'Désactivé'} par défaut"
-        ),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
@@ -327,19 +342,29 @@ class GroupForm(FlaskForm):
         label=_(
             "Ajout de document",
         ),
-        description=_(
-            f"{'Activé' if current_app.config['FILE_SHARING'] else 'Désactivé'} par défaut"
-        ),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
     )
-    enable_transcription = SelectField(
+    enable_ai_summary = SelectField(
         label=_(
-            "Transcription",
+            "Génération de résumé (IA)",
         ),
         description=_("Désactivé par défaut"),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.enable_sip.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_SIP"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_file_sharing.description = (
+            _("Activé par défaut")
+            if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )

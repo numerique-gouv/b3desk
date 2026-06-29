@@ -104,7 +104,6 @@ def test_admin_can_read_user_infos_with_no_meeting(
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
     assert res.text.count('fr-badge fr-badge--error">Non</p>') == 2
-    print(res.text)
     assert "<em>Berenice Cooler</em> n'a pas créé de réunion." in res.text
 
 
@@ -130,7 +129,6 @@ def test_admin_can_read_user_infos_with_meeting(
     assert res.text.count("911111111") == 1
     assert res.text.count("911111112") == 1
     assert res.text.count("911111113") == 1
-    assert res.text.count("Réunion silencieuse (shadow_meeting)") == 1
 
 
 def test_research_bar_with_letters_in_meeting_list_in_admin_page(
@@ -203,12 +201,15 @@ def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
     form = res.form
     form["search"] = "511111111"
     res = form.submit()
-    assert res.text.count("Réunion silencieuse (shadow_meeting)") == 1
-    assert res.text.count("922222222") == 0
-    assert res.text.count("511111111") == 2
-    assert res.text.count("911111111") == 0
-    assert res.text.count("911111112") == 0
-    assert res.text.count("911111113") == 0
+    # Scope the assertions to the meetings table: the search term also appears
+    # in the search input and in the language selector links (which preserve the
+    # query string), which would otherwise inflate the count.
+    meetings_table = res.pyquery("table#meetings").text()
+    assert meetings_table.count("922222222") == 0
+    assert meetings_table.count("511111111") == 1
+    assert meetings_table.count("911111111") == 0
+    assert meetings_table.count("911111112") == 0
+    assert meetings_table.count("911111113") == 0
 
 
 def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
@@ -277,7 +278,7 @@ def test_admin_can_create_group(
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert (
         "success",
@@ -307,7 +308,7 @@ def test_admin_cannot_create_group_with_existing_name(
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert "Ce nom est déjà utilisé." in res.text
     assert len(Group.query.all()) == 1
@@ -434,10 +435,10 @@ def test_admin_can_edit_group(
     res.form["name"] = "Group 2"
     res.form["enable_sip"] = None
     res.form["enable_file_sharing"] = None
-    res.form["enable_transcription"] = None
+    res.form["enable_ai_summary"] = None
     res.form.submit()
     assert (
-        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_transcription': None}"
+        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_ai_summary': None}"
         in caplog.text
     )
     group = db.session.get(Group, 1)

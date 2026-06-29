@@ -342,6 +342,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "PISTE_OAUTH_API_URI": "https://piste.test",
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
+        "ENABLE_AI_SUMMARY": True,
     }
 
     if "smtpd" in request.fixturenames:
@@ -641,7 +642,7 @@ def group(client_app):
         name="Group 1",
         enable_sip=True,
         enable_file_sharing=True,
-        enable_transcription=True,
+        enable_ai_summary=True,
     )
     db.session.add(group)
     db.session.commit()
@@ -657,12 +658,12 @@ def group_2(client_app):
         name="Group 2",
         enable_sip=False,
         enable_file_sharing=False,
-        enable_transcription=False,
+        enable_ai_summary=False,
     )
     db.session.add(group_2)
     db.session.commit()
 
-    yield group
+    yield group_2
 
 
 @pytest.fixture
@@ -673,12 +674,12 @@ def group_3(client_app):
         name="Group 3",
         enable_sip=None,
         enable_file_sharing=None,
-        enable_transcription=None,
+        enable_ai_summary=None,
     )
     db.session.add(group_3)
     db.session.commit()
 
-    yield group
+    yield group_3
 
 
 @pytest.fixture
@@ -828,6 +829,12 @@ def bbb_getRecordings_response(mocker):
           <length>0</length>
           <size>1104836</size>
         </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
       </playback>
     </recording>
     <recording>
@@ -873,6 +880,12 @@ def bbb_getRecordings_response(mocker):
               <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
             </images>
           </preview>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
         </format>
       </playback>
     </recording>

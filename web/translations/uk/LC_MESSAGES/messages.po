@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-15 15:34+0200\n"
+"POT-Creation-Date: 2026-06-17 11:28+0200\n"
 "PO-Revision-Date: 2022-04-29 15:17+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -19,10 +19,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: web/b3desk/__init__.py:311 web/b3desk/endpoints/meeting_files.py:125
-#: web/b3desk/endpoints/meeting_files.py:184
-#: web/b3desk/endpoints/meeting_files.py:289
-#: web/b3desk/endpoints/meeting_files.py:480
+#: web/b3desk/__init__.py:329 web/b3desk/endpoints/meeting_files.py:123
+#: web/b3desk/endpoints/meeting_files.py:182
+#: web/b3desk/endpoints/meeting_files.py:287
+#: web/b3desk/endpoints/meeting_files.py:477
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -242,31 +242,8 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:268 web/b3desk/templates/admin/add_group_members.html:40
-#: web/b3desk/templates/admin/group_members.html:29
-#: web/b3desk/templates/admin/users.html:19
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
-msgstr ""
-
-#: web/b3desk/forms.py:275 web/b3desk/templates/admin/groups.html:21
-#: web/b3desk/templates/admin/meetings.html:19
-msgid "Rechercher une réunion"
-msgstr ""
-
-#: web/b3desk/forms.py:282
-msgid "Rechercher un groupe"
-msgstr ""
-
-#: web/b3desk/forms.py:289
-msgid "Ajout de membre"
-msgstr ""
-
-#: web/b3desk/forms.py:307
-msgid "Nom du groupe"
-msgstr ""
-
-#: web/b3desk/forms.py:309
-msgid "doit être unique"
 msgstr ""
 
 #: web/b3desk/forms.py:317 web/b3desk/templates/admin/group_infos.html:70
@@ -274,49 +251,45 @@ msgstr ""
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:320
-msgid "ActivéENABLE_SIPDésactivé"
+#: web/b3desk/forms.py:320 web/b3desk/forms.py:333
+msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:328 web/b3desk/templates/admin/group_infos.html:78
+#: web/b3desk/forms.py:322 web/b3desk/forms.py:335 web/b3desk/forms.py:345
+msgid "Désactivé par défaut"
+msgstr ""
+
+#: web/b3desk/forms.py:330 web/b3desk/templates/admin/group_infos.html:78
 #: web/b3desk/templates/admin/user_infos.html:152
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:331
-msgid "ActivéFILE_SHARINGDésactivé"
-msgstr ""
-
-#: web/b3desk/forms.py:339 web/b3desk/templates/admin/group_infos.html:86
+#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:86
 #: web/b3desk/templates/admin/user_infos.html:160
 msgid "Transcription"
 msgstr ""
 
-#: web/b3desk/forms.py:341
-msgid "Désactivé par défaut"
-msgstr ""
-
-#: web/b3desk/settings.py:657 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:661
+#: web/b3desk/settings.py:664
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:674
+#: web/b3desk/settings.py:677
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:677
+#: web/b3desk/settings.py:680
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:680
+#: web/b3desk/settings.py:683
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:684
+#: web/b3desk/settings.py:687
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -423,8 +396,8 @@ msgstr ""
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:408
-#: web/b3desk/endpoints/meetings.py:317
+#: web/b3desk/endpoints/meeting_files.py:405
+#: web/b3desk/endpoints/meetings.py:314
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -541,7 +514,7 @@ msgstr ""
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/header-lasuite.html:37
-#: web/b3desk/templates/tools.html:48 web/b3desk/templates/tools.html:50
+#: web/b3desk/templates/tools.html:42 web/b3desk/templates/tools.html:44
 msgid "Les services de La Suite numérique"
 msgstr ""
 
@@ -896,24 +869,28 @@ msgstr ""
 msgid "Se connecter ou créer un compte"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:13
+#: web/b3desk/templates/language-selector.html:6
+msgid "Sélectionner une langue"
+msgstr ""
+
+#: web/b3desk/templates/tools.html:7
 msgid "Modalités d'accès"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:30
+#: web/b3desk/templates/tools.html:24
 msgid "Ouvrir la page d'administration"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:83
-#: web/b3desk/templates/tools.html:31
+#: web/b3desk/templates/tools.html:25
 msgid "Admin"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:39
+#: web/b3desk/templates/tools.html:33
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:58
+#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:52
 msgid "S’identifier"
 msgstr ""
 
@@ -937,7 +914,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:12
 #: web/b3desk/templates/admin/delete_group.html:12
-#: web/b3desk/templates/admin/group_form.html:17
+#: web/b3desk/templates/admin/group_form.html:12
 #: web/b3desk/templates/admin/group_infos.html:13
 #: web/b3desk/templates/admin/group_members.html:12
 #: web/b3desk/templates/admin/groups.html:12
@@ -961,7 +938,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:30
 #: web/b3desk/templates/admin/group_members.html:41
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s membre"
 msgid_plural "%(count)s membres"
 msgstr[0] ""
@@ -1064,8 +1041,8 @@ msgid "Supprimer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:34
-#: web/b3desk/templates/admin/group_form.html:57
-#: web/b3desk/templates/admin/group_form.html:67
+#: web/b3desk/templates/admin/group_form.html:37
+#: web/b3desk/templates/admin/group_form.html:47
 #: web/b3desk/templates/meeting/files.html:171
 #: web/b3desk/templates/meeting/form.html:178
 #: web/b3desk/templates/meeting/form.html:180
@@ -1076,46 +1053,51 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:13
+#: web/b3desk/templates/admin/group_form.html:16
 msgid "Créer groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_form.html:24
-#: web/b3desk/templates/admin/group_form.html:61
+#: web/b3desk/templates/admin/group_form.html:41
 #: web/b3desk/templates/admin/group_infos.html:25
 #: web/b3desk/templates/meeting/form.html:56
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:52
+#: web/b3desk/templates/admin/group_form.html:32
 msgid "Créer un groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:56
+#: web/b3desk/templates/admin/group_form.html:36
 msgid "Créer le groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:62
+#: web/b3desk/templates/admin/group_form.html:42
 #, python-format
 msgid ""
 "%(group_name)s a été créé le %(group_created)s et modifié le "
 "%(group_updated)s."
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form.html:66
+#: web/b3desk/templates/admin/group_form.html:46
 #: web/b3desk/templates/meeting/form.html:173
 msgid "Enregistrer"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_form_content.html:3
+#: web/b3desk/templates/admin/group_form_content.html:23
+#: web/b3desk/templates/admin/group_form_content.html:60
+msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_form_content.html:23
+msgid "OUI"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_form_content.html:53
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/form.html:63
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
-msgstr ""
-
-#: web/b3desk/templates/admin/group_form_content.html:10
-msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:24
@@ -1194,24 +1176,28 @@ msgstr ""
 msgid "Consulter"
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:28
+#: web/b3desk/templates/admin/groups.html:19
+msgid "Nouveau groupe"
+msgstr ""
+
+#: web/b3desk/templates/admin/groups.html:34
 msgid "Aucun groupe ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:30
+#: web/b3desk/templates/admin/groups.html:36
 msgid "Aucun groupe n'a encore été créé."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:38
-#, fuzzy, python-format
+#: web/b3desk/templates/admin/groups.html:44
+#, python-format
 msgid "%(count)s groupe correspondant aux critères"
 msgid_plural "%(count)s groupes correspondant aux critères"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: web/b3desk/templates/admin/groups.html:44
-#, fuzzy, python-format
+#: web/b3desk/templates/admin/groups.html:50
+#, python-format
 msgid "%(count)s groupe"
 msgid_plural "%(count)s groupes"
 msgstr[0] ""
@@ -1225,7 +1211,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/home.html:32
 #: web/b3desk/templates/admin/home.html:43
-#: web/b3desk/templates/admin/home.html:60
 msgid "Liste des réunions"
 msgstr ""
 
@@ -1237,14 +1222,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:16
 #: web/b3desk/templates/meeting/wizard.html:16
 msgid "Réunions"
-msgstr ""
-
-#: web/b3desk/templates/admin/home.html:61
-msgid "Créer"
-msgstr ""
-
-#: web/b3desk/templates/admin/home.html:65
-msgid "Nouveau groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/macros.html:3
@@ -2717,7 +2694,7 @@ msgid "Conseils pour la mise en forme"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:97
-#, no-python-format, python-format
+#, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
@@ -3359,12 +3336,12 @@ msgstr ""
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:150
+#: web/b3desk/utils/__init__.py:149
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:272
+#: web/b3desk/utils/__init__.py:271
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
@@ -7070,25 +7047,25 @@ msgstr ""
 #~ msgid "Vous êtes délégataire de %(meeting_name)s"
 #~ msgstr ""
 
-#~ msgid ""
-#~ "Votre nouvel enregistrement pour la "
-#~ "réunion %(meeting_name)s est disponible."
+#~ msgid "Liste des réunions de %(username)s"
 #~ msgstr ""
 
-#~ msgid ""
-#~ "Vous pouvez dès à présent visionner "
-#~ "l'enregistrement du %(recording_start)s : <a"
-#~ " href=\"%(recording_url)s\">Lien vers la "
-#~ "vidéo</a> "
+#~ msgid "%(username)s n'a pas créé de réunion."
 #~ msgstr ""
 
-#~ msgid " Ou rendez vous sur <a href=\"%(welcome_url)s\">votre espace</a>."
+#~ msgid "%(meeting_name)s infos"
 #~ msgstr ""
 
-#~ msgid "Accéder à l'enregistrement"
+#~ msgid "Vous êtes administrateur."
 #~ msgstr ""
 
-#~ msgid "Accéder à l'enregistrement :"
+#~ msgid "Vous pouvez accéder à la page d'administration."
+#~ msgstr ""
+
+#~ msgid "Page d'administration"
+#~ msgstr ""
+
+#~ msgid "Quitter la page d'administration"
 #~ msgstr ""
 
 #~ msgid "Éditer la réunion"
@@ -7098,74 +7075,5 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "NON"
-#~ msgstr ""
-
-#~ msgid "ENABLE_SIP"
-#~ msgstr ""
-
-#~ msgid "FILE_SHARING"
-#~ msgstr ""
-
-#~ msgid "inexistant"
-#~ msgstr ""
-
-#~ msgid "Confirmer la suppression de %(group_name)s"
-#~ msgstr ""
-
-#~ msgid "Identifiant"
-#~ msgstr ""
-
-#~ msgid "Liste des membres de %(group_name)s"
-#~ msgstr ""
-
-#~ msgid "membres"
-#~ msgstr ""
-
-#~ msgid "membre"
-#~ msgstr ""
-
-#~ msgid "Ajouter l'utilisateur au groupe"
-#~ msgstr ""
-
-#~ msgid "Modifier le groupe"
-#~ msgstr ""
-
-#~ msgid "Réunions déléguées"
-#~ msgstr ""
-
-#~ msgid "Ajouter le membre"
-#~ msgstr ""
-
-#~ msgid "Déjà membre"
-#~ msgstr ""
-
-#~ msgid "L'utilisateur est déjà dans le groupe"
-#~ msgstr ""
-
-#~ msgid "L'utilisateur a été ajouté au groupe"
-#~ msgstr ""
-
-#~ msgid "Liste des réunions de %(fullname)s"
-#~ msgstr ""
-
-#~ msgid "%(fullname)s n'a pas créé de réunion."
-#~ msgstr ""
-
-#~ msgid "Liste des réunions déléguées de %(fullname)s"
-#~ msgstr ""
-
-#~ msgid "Droits de %(fullname)s"
-#~ msgstr ""
-
-#~ msgid "Liste des groupes de %(fullname)s"
-#~ msgstr ""
-
-#~ msgid "%(fullname)s n'appartient à aucun groupe."
-#~ msgstr ""
-
-#~ msgid "Délégation de la réunion %(meeting_name)s"
-#~ msgstr ""
-
-#~ msgid "Ajouter au groupe"
 #~ msgstr ""
 
