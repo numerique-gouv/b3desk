@@ -203,7 +203,7 @@ def create_group():
         _("{group_name} a bien été créé(e)").format(group_name=group.name),
         "success",
     )
-    return redirect(url_for("admin.home"))
+    return redirect(url_for("admin.group_infos", group=group))
 
 
 @bp.route("/admin/group/<group:group>")
