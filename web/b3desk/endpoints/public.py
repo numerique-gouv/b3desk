@@ -91,7 +91,7 @@ def welcome():
     if order_key not in ["created_at", "name"]:
         order_key = "created_at"
 
-    meetings = [meeting for meeting in g.user.meetings if not meeting.is_shadow] + [
+    meetings = [meeting for meeting in g.user.meetings if not meeting.is_hidden] + [
         meeting for meeting in g.user.get_all_delegated_meetings
     ]
     favorite_meetings = []
@@ -127,13 +127,13 @@ def welcome():
         meeting_mailto_params=meeting_mailto_params,
         mailto=current_app.config["MAILTO_LINKS"],
         quick_meeting=current_app.config["QUICK_MEETING"],
-        file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
         meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
+        admin_mode=False,
     )
 
 

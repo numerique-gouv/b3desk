@@ -7,11 +7,17 @@
                         <table id="users">
                             <thead class="">
                                 <tr class="">
-                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Email{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}ID{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Email{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
+                                    {% if group and not add_members %}
+                                        <th class="fr-col fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
+                                    {% endif %}
+                                    {% if add_members %}
+                                        <th class="fr-col fr-cell--center fr-cell--multiline">{% trans %}Ajouter au groupe{% endtrans %}</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody class="">
@@ -20,18 +26,28 @@
                                         <td class="fr-col fr-cell--center">
                                             {{ user.id }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.family_name }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.given_name }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.email }}
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             <a href="{{ url_for("admin.user_infos", user=user) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans username=user.fullname %}{{ username }} infos{% endtrans %}"></a>
                                         </td>
+                                        {% if group and not add_members %}
+                                            <td class="fr-col--xs fr-cell--center">
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}" href="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}"></a>
+                                            </td>
+                                        {% endif %}
+                                        {% if add_members %}
+                                            <td class="fr-col--xs fr-cell--center">
+                                                <a class="fr-btn fr-btn--secondary fr-icon-user-add-line" {% if user not in group.members %} title="{% trans %}Ajouter le membre{% endtrans %}" href="{{ url_for("admin.add_group_members", group=group, user=user, search=search) }} {% else %} title="{% trans %}Déjà membre{% endtrans %}" disabled {% endif %}"></a>
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>

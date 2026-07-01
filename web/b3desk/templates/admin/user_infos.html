@@ -3,16 +3,17 @@
 {% block main %}
     {% from 'admin/macros.html' import yesno, value %}
     {% set meetings = user.meetings %}
+    {% set groups = user.groups %}
     {% set delegated_meetings = user.get_all_delegated_meetings %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
         <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
         <div class="fr-collapse" id="breadcrumb-1">
             <ol class="fr-breadcrumb__list">
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                 </li>
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">Utilisateur</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">{% trans %}Utilisateur{% endtrans %}</a>
                 </li>
                 <li>
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.user_infos', user=user) }}">{{ user.fullname }}</a>
@@ -20,6 +21,7 @@
             </ol>
         </div>
     </nav>
+    <h5>{{ user.fullname }}</h5>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="selected-user-component">
@@ -30,7 +32,7 @@
                                 <tbody class="">
                                     <tr class="">
                                         <td class="fr-col fr-cell--center">
-                                            {% trans %}Identifiant{% endtrans %}
+                                            {% trans %}ID{% endtrans %}
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             {{ user.id }}
@@ -40,7 +42,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Nom{% endtrans %}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.fullname }}
                                         </td>
                                     </tr>
@@ -48,7 +50,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Email{% endtrans %}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.email }}
                                         </td>
                                     </tr>
@@ -56,7 +58,7 @@
                                         <td class="fr-col fr-cell--center">
                                             {% trans %}Alias{% endtrans %}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ value(user.preferred_username) }}
                                         </td>
                                     </tr>
@@ -123,9 +125,56 @@
         <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
     {% endif %}
     {% if delegated_meetings %}
-        <h5>{% trans %}Réunions déléguées{% endtrans %}</h5>
+        <h5>{% trans fullname = user.fullname %}Liste des réunions déléguées de {{ fullname }}{% endtrans %}</h5>
         {% with meetings=delegated_meetings %}
             {% include 'admin/meeting_table.html' %}
         {% endwith %}
+    {% endif %}
+    <h5>{% trans fullname = user.fullname %}Droits de {{ fullname }}{% endtrans %}</h5>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="fr-table fr-table--no-caption" id="selected-user-component">
+                <div class="fr-table__wrapper ">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table id="selected-user">
+                                <tbody class="">
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}SIP{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
+                                            {{ yesno(user.can_use_sip) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Ajout de document{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
+                                            {{ yesno(user.can_use_file_sharing) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {% trans %}Transcription{% endtrans %}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            {{ yesno(user.can_use_ai_summary) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h5>{% trans fullname = user.fullname %}Liste des groupes de {{ fullname }}{% endtrans %}</h5>
+    {% if groups %}
+        {% include 'admin/group_table.html' %}
+    {% else %}
+        <p>{% trans fullname = user.fullname %}{{ fullname }} n'appartient à aucun groupe.{% endtrans %}</p>
     {% endif %}
 {% endblock %}

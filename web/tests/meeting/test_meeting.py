@@ -282,7 +282,13 @@ def test_save_meeting_in_no_recording_environment(
 
 
 def test_create_no_file(
-    client_app, meeting, mocker, bbb_response, mock_meeting_is_not_running
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
 ):
     """Tests the BBB meeting creation request.
 
@@ -317,6 +323,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.ai_summary = False
     create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
@@ -363,6 +370,7 @@ def test_create_no_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -417,6 +425,7 @@ def test_create_with_only_a_default_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.ai_summary = False
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -473,6 +482,7 @@ def test_create_with_only_a_default_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -526,6 +536,7 @@ def test_create_with_files(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.meta_recording_recording_ai_summary = True
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -583,6 +594,7 @@ def test_create_with_files(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -694,6 +706,7 @@ def test_create_quick_meeting(
         "checksum": mock.ANY,
         "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "presentationUploadExternalUrl": mock.ANY,
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
 
@@ -798,7 +811,7 @@ def test_meeting_order_default(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings are ordered by creation date descending by default."""
@@ -812,7 +825,7 @@ def test_meeting_order_alpha_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered alphabetically ascending."""
@@ -828,7 +841,7 @@ def test_meeting_order_alpha_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered alphabetically descending."""
@@ -844,7 +857,7 @@ def test_meeting_order_date_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered by creation date descending."""
@@ -861,7 +874,7 @@ def test_meeting_order_date_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be ordered by creation date ascending."""
@@ -878,7 +891,7 @@ def test_favorite_meeting_order_alpha_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered alphabetically ascending."""
@@ -894,7 +907,7 @@ def test_favorite_meeting_order_alpha_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered alphabetically descending."""
@@ -910,7 +923,7 @@ def test_favorite_meeting_order_date_desc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered by creation date descending."""
@@ -927,7 +940,7 @@ def test_favorite_meeting_order_date_asc(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that favorite meetings can be ordered by creation date ascending."""
@@ -944,7 +957,7 @@ def test_add_and_remove_favorite(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     bbb_response,
 ):
     """Test that meetings can be added and removed from favorites."""
@@ -1008,7 +1021,7 @@ def test_generate_existing_pin(
     meeting,
     meeting_2,
     meeting_3,
-    shadow_meeting,
+    hidden_meeting,
     authenticated_user,
     mock_meeting_is_not_running,
     mocker,
@@ -1017,7 +1030,7 @@ def test_generate_existing_pin(
     client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
 
     # Mock returns existing PINs first, then a free one
-    # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (shadow)
+    # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (hidden)
     mocker.patch(
         "b3desk.models.meetings.random.randint",
         side_effect=[111111111, 111111112, 111111113, 222222222],
@@ -1107,7 +1120,7 @@ def test_delete_old_voiceBridges(previous_voiceBridge, time_machine):
 
 
 def test_get_forbidden_pins(
-    previous_voiceBridge, meeting, meeting_2, meeting_3, shadow_meeting
+    previous_voiceBridge, meeting, meeting_2, meeting_3, hidden_meeting
 ):
     """Test that forbidden PINs include active and archived voiceBridges."""
     assert (
@@ -1125,7 +1138,7 @@ def test_get_forbidden_pins(
             meeting_2.voiceBridge,
             meeting_3.voiceBridge,
             previous_voiceBridge.voiceBridge,
-            shadow_meeting.voiceBridge,
+            hidden_meeting.voiceBridge,
         ]
     )
 
@@ -1139,7 +1152,7 @@ def test_generate_random_pin():
 
 
 def test_unique_visio_code_generation(
-    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+    meeting, meeting_2, meeting_3, hidden_meeting, hidden_meeting_2, hidden_meeting_3
 ):
     """Test that visio code generation creates valid unique 9-digit codes."""
     random_visio_codes = []
@@ -1162,7 +1175,7 @@ def test_unique_visio_code_generation_with_collision(client_app, mocker):
 
 
 def test_visio_code_exists(
-    meeting, meeting_2, meeting_3, shadow_meeting, shadow_meeting_2, shadow_meeting_3
+    meeting, meeting_2, meeting_3, hidden_meeting, hidden_meeting_2, hidden_meeting_3
 ):
     """Test that visio_code_exists correctly checks existing codes."""
     assert visio_code_exists("911111111")
@@ -1290,3 +1303,16 @@ def test_delete_recordings_failure_when_delete_meeting(
         "error",
         "Impossible de supprimer les vidéos de ce séminaire : some error",
     ) in res.flashes
+
+
+def test_create_meeting_ai_summary_requires_recording(
+    client_app, meeting, authenticated_user
+):
+    res = client_app.get("/meeting/new")
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["allowStartStopRecording"] = False
+    res.forms[0]["ai_summary"] = "on"
+    res = res.forms[0].submit()
+    res.mustcontain(
+        "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+    )

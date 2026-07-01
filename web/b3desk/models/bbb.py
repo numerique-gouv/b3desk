@@ -34,6 +34,18 @@ def cache_key(func, caller, prepped, *args, **kwargs):
     return prepped.url
 
 
+def derive_ai_summary_playback(html_url):
+    """Build the ai-summary playback entry from its HTML report URL."""
+    playback = {"url": html_url}
+    # BBB only exposes the HTML report; the PDF and Markdown reports are
+    # published as sibling files, so derive their URLs from the HTML one.
+    if html_url.endswith(".html"):
+        stem = html_url[: -len(".html")]
+        playback["pdf"] = f"{stem}.pdf"
+        playback["md"] = f"{stem}.md"
+    return playback
+
+
 def caching_exclusion(func, caller, prepped, *args, **kwargs):
     """Only read-only methods should be cached."""
     url = urlparse(prepped.url)
@@ -171,6 +183,8 @@ class BBB:
         meta_academy=None,
         analytics_callback_url=None,
         meta_bbb_recording_ready_url=None,
+        ai_summary=None,
+        file_sharing=None,
     ):
         """Create a new meeting.
 
@@ -239,8 +253,10 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
+        if not ai_summary:
+            params["meta_bbb-disable-recording-formats"] = "ai-summary"
 
-        if not current_app.config["FILE_SHARING"]:
+        if not file_sharing:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)
 
@@ -321,6 +337,15 @@ class BBB:
 
                 for format in playback.iter("format"):
                     type = format.find("type").text
+
+                    if type == "ai-summary":
+                        url_elem = format.find("url")
+                        if url_elem is not None and url_elem.text:
+                            data["playbacks"][type] = derive_ai_summary_playback(
+                                url_elem.text
+                            )
+                        continue
+
                     if type not in ("presentation", "video"):
                         logger.warning(
                             "Unhandled recording playback format %r for recording %s",
