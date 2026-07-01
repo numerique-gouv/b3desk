@@ -39,7 +39,7 @@
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-    <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+    {% include '/meeting/files_previous_page.html' %}
 </div>
 
 <div id="messageHolder">
@@ -216,8 +216,5 @@
 </div>
 
 <div class="fr-container fr-mt-4w">
-    <a href="{{ url_for("public.welcome") }}">
-        <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
-        {% trans %}Retour à mes réunions{% endtrans %}
-    </a>
+    {% include '/meeting/files_previous_page.html' %}
 </div>
