@@ -302,16 +302,16 @@ def has_secondary_identity_with_email(email):
     return current_app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] and email
 
 
-def can_get_file_sharing_credentials(preferred_username, email):
+def can_get_file_sharing_credentials(user):
     """Determine if file sharing credentials can be retrieved for the user."""
     is_cloud_configured = (
         current_app.config["NC_LOGIN_API_KEY"]
         and current_app.config["NC_LOGIN_API_URL"]
-        and current_app.config["FILE_SHARING"]
+        and user.can_use_file_sharing
     )
     return (
-        is_cloud_configured and has_secondary_identity_with_email(email)
-    ) or preferred_username
+        is_cloud_configured and has_secondary_identity_with_email(user.email)
+    ) or user.preferred_username
 
 
 def get_user_nc_credentials(user):
@@ -319,7 +319,7 @@ def get_user_nc_credentials(user):
 
     Uses secondary identity provider if configured, otherwise uses preferred_username.
     """
-    if not can_get_file_sharing_credentials(user.preferred_username, user.email):
+    if not can_get_file_sharing_credentials(user):
         current_app.logger.info(
             "File sharing deactivated or unable to perform, no connection to Nextcloud instance"
         )
@@ -379,7 +379,7 @@ def update_user_nc_credentials(user, force_renew=False):
     # visio-agent retrives preferred_username from keycloack ( aka keycloak LOGIN, which is immutable )
     # visio-agent calls EDNAT API for NC_DATA retrieval, passing LOGIN as postData
     # visio-agent can now connect to remote NC with NC_DATA
-    if not current_app.config["FILE_SHARING"]:
+    if not user.can_use_file_sharing:
         return False
 
     if (

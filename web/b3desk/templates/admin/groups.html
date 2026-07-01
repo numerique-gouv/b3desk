@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+
 {% block main %}
     <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
         <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
@@ -8,41 +9,52 @@
                     <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                 </li>
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
                 </li>
             </ol>
         </div>
     </nav>
-    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="get">
+
+    <a href="{{ url_for("admin.create_group") }}" class="fr-btn fr-btn--primary">
+        {% trans %}Nouveau groupe{% endtrans %}
+    </a>
+    <br>
+    <br>
+    <form class="fr-search-bar", id="groupSearchForm", name="search_group" role="search" action="{{ url_for("admin.manage_groups") }}" method="post">
+        {% include 'meeting/csrf.html' %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
     <br>
-    {% set meetings = meetings_page.items %}
-    {% if not meetings %}
+    {% set groups = groups_page.items %}
+    {% if not groups %}
         <br>
-        <p>{% trans %}Aucune réunion ne correspond à cette recherche.{% endtrans %}</p>
+        {% if data %}
+            <p>{% trans %}Aucun groupe ne correspond à cette recherche.{% endtrans %}</p>
+        {% else %}
+            <p>{% trans %}Aucun groupe n'a encore été créé.{% endtrans %}</p>
+        {% endif %}
     {% else %}
-        {% set page_obj = meetings_page %}
-        {% set page_endpoint = 'admin.manage_meetings' %}
+        {% set page_obj = groups_page %}
+        {% set page_endpoint = 'admin.manage_groups' %}
         {% set search = data %}
         <p class="fr-table__detail">
             {% if data %}
                 {% trans trimmed count=page_obj.total %}
-                    {{ count }} réunion correspondant aux critères
+                    {{ count }} groupe correspondant aux critères
                     {% pluralize %}
-                    {{ count }} réunions correspondant aux critères
+                    {{ count }} groupes correspondant aux critères
                 {% endtrans %}
             {% else %}
                 {% trans trimmed count=page_obj.total %}
-                    {{ count }} réunion
+                    {{ count }} groupe
                     {% pluralize %}
-                    {{ count }} réunions
+                    {{ count }} groupes
                 {% endtrans %}
             {% endif %}
         </p>
-        {% include 'admin/meeting_table.html' %}
+        {% include 'admin/group_table.html' %}
         {% include 'admin/paging.html' %}
     {% endif %}
 {% endblock %}

@@ -7,31 +7,52 @@
                         <table id="users">
                             <thead class="">
                                 <tr class="">
-                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Email{% endtrans %}</th>
-                                    <th class="fr-col fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
+                                    {% if add_members %}
+                                        <th class="fr-col fr-cell--center fr-cell--multiline">{% trans %}Sélectionner{% endtrans %}</th>
+                                    {% endif %}
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}ID{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Email{% endtrans %}</th>
+                                    <th class="fr-col--xs fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
+                                    {% if group and not add_members %}
+                                        <th class="fr-col fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody class="">
                                 {% for user in users %}
                                     <tr class="">
+                                        {% if add_members %}
+                                            <td class="fr-cell--fixed fr-cell--center" scope="row">
+                                                <div class="fr-checkbox-group fr-checkbox-group--sm">
+                                                    <input {% if select_all and user in selected_users %}checked{% elif group in user.groups %} checked disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
+                                                    <label class="fr-label" for="table-select-checkbox-{{user.id}}">
+                                                        {% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        {% endif %}
                                         <td class="fr-col fr-cell--center">
                                             {{ user.id }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.family_name }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.given_name }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ user.email }}
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             <a href="{{ url_for("admin.user_infos", user=user) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans username=user.fullname %}{{ username }} infos{% endtrans %}"></a>
                                         </td>
+                                        {% if group and not add_members %}
+                                            <td class="fr-col--xs fr-cell--center">
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}" href="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}"></a>
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>

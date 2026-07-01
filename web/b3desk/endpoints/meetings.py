@@ -83,12 +83,16 @@ def quick_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
+    if meeting.is_shadow:
+        abort(403)
     form = RecordingForm()
+    admin_mode = "admin_mode" in request.args or False
     return render_template(
         "meeting/recordings.html",
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
         form=form,
+        admin_mode=admin_mode,
     )
 
 
@@ -181,6 +185,8 @@ def new_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
+    if meeting.is_shadow:
+        abort(403)
     admin_mode = "admin_mode" in request.args
     form = (
         MeetingWithRecordForm(
@@ -282,11 +288,15 @@ def create_meeting(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 def delete_meeting():
     """Delete a meeting and all its associated files and recordings."""
+    admin_mode = "admin_mode" in request.args or False
     if request.method == "POST":
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
-        if meeting.owner_id == g.user.id:
+        if meeting.is_shadow:
+            abort(403)
+
+        if meeting.owner_id == g.user.id or g.user.admin:
             if not meeting.get_all_delegates:
                 for meeting_file in meeting.files:
                     db.session.delete(meeting_file)
@@ -312,7 +322,7 @@ def delete_meeting():
                 flash(_("Vous devez retirer les délégataires"), "error")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect(url_for("public.welcome"))
+    return redirect(url_for("public.welcome" if not admin_mode else "admin.home"))
 
 
 @bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
@@ -372,12 +382,16 @@ def get_available_visio_code():
 @meeting_access_required()
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
+    if meeting.is_shadow:
+        abort(403)
     form = DelegationSearchForm(request.form)
+    admin_mode = "admin_mode" in request.args or False
     if not request.form or not form.validate():
         return render_template(
             "meeting/delegation.html",
             meeting=meeting,
             form=form,
+            admin_mode=admin_mode,
         )
 
     data = form.search.data.lower()
@@ -422,6 +436,7 @@ def manage_delegation(meeting: Meeting, user: User):
         "meeting/delegation.html",
         meeting=meeting,
         form=form,
+        admin_mode=admin_mode,
     )
 
 
@@ -430,6 +445,8 @@ def manage_delegation(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 @meeting_access_required()
 def remove_delegate(meeting: Meeting, user: User, delegate: User):
+    admin_mode = "admin_mode" in request.args or False
+
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
@@ -446,4 +463,8 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
             meeting.id,
             meeting.name,
         )
-    return redirect(url_for("meetings.manage_delegation", meeting=meeting))
+    return redirect(
+        url_for(
+            "meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None
+        )
+    )

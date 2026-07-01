@@ -1,15 +1,22 @@
 <div class="fr-container">
     <h1 class="fr-h2">
-        {% trans meeting_name=meeting.name %}Délégation de la réunion {{ meeting_name }}{% endtrans %}
+        {% trans meeting_name=meeting.name %}Délégation de la réunion <em>{{ meeting_name }}</em>{% endtrans %}
     </h1>
     <div class="fr-my-4v">
-        <a href="{{ url_for("public.welcome") }}">
-            <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
-            {% trans %}Retour à mes réunions{% endtrans %}
-        </a>
+        {% if not admin_mode %}
+            <a href="{{ url_for("public.welcome") }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans %}Retour à mes réunions{% endtrans %}
+            </a>
+        {% else %}
+            <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans meeting_name=meeting.name %}Retour à l'administration de {{ meeting_name }} {% endtrans %}
+            </a>
+        {% endif %}
     </div>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
-    <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" method="post">
+    <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}

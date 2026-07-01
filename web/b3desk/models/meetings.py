@@ -139,6 +139,7 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
+    ai_summary = db.Column(db.Boolean, unique=False, default=False, nullable=False)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
@@ -196,6 +197,11 @@ class Meeting(db.Model):
             )
             .all()
         )
+
+    def sync_ai_summary_authorisation(self):
+        self.ai_summary = self.ai_summary and self.owner.can_use_ai_summary
+        db.session.add(self)
+        db.session.commit()
 
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
@@ -338,6 +344,7 @@ def create_and_save_shadow_meeting(user):
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
         autoStartRecording=False,
+        ai_summary=False,
         allowStartStopRecording=False,
         lockSettingsDisableMic=False,
         lockSettingsDisablePrivateChat=False,
