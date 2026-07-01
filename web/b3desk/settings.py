@@ -14,6 +14,7 @@ from pydantic import computed_field
 from pydantic import field_validator
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
+from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
 
 
@@ -25,7 +26,9 @@ def split_comma_separated_strings(value):
     return map(str.strip, value.split(","))
 
 
-ListOfStrings = Annotated[list[str], BeforeValidator(split_comma_separated_strings)]
+ListOfStrings = Annotated[
+    list[str], NoDecode, BeforeValidator(split_comma_separated_strings)
+]
 
 
 class MeetingLocaleVariant(str, Enum):
