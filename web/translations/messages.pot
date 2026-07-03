@@ -2138,12 +2138,12 @@ msgid ""
 "envoyez-nous un courriel à <strong>apps[chez]education.gouv.fr</strong>"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:3
+#: web/b3desk/templates/meeting/delegation.html:9
 #, python-format
-msgid "Délégation de la réunion %(meeting_name)s"
+msgid "Délégation de la réunion <em>%(meeting_name)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:8
+#: web/b3desk/templates/meeting/delegation.html:14
 #: web/b3desk/templates/meeting/files.html:42
 #: web/b3desk/templates/meeting/files.html:221
 #: web/b3desk/templates/meeting/recordings.html:9
@@ -2151,16 +2151,26 @@ msgstr ""
 msgid "Retour à mes réunions"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:11
+#: web/b3desk/templates/meeting/delegation.html:17
 msgid " Ajouter des délégataires "
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:16
+#: web/b3desk/templates/meeting/delegation.html:22
 msgid "Ajouter l'utilisateur comme délégataire"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:36
+#: web/b3desk/templates/meeting/delegation.html:42
 msgid "Supprimer le délégataire"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation.html:54
+msgid "Transférer la réunion à un délégataire"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation.html:55
+#: web/b3desk/templates/meeting/delegation.html:56
+#, python-format
+msgid "Transférer %(meeting_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:5
