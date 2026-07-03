@@ -426,23 +426,11 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:478
+#: web/b3desk/endpoints/meetings.py:469
 msgid "Vous devez sélectionner un délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:489
-msgid "L'utilisateur n'a pas été trouvé"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:492
-msgid "L'utilisateur n'est pas délégataire"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:495
-msgid "Cet utilisateur est déjà propriétaire"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:527
+#: web/b3desk/endpoints/meetings.py:516
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
