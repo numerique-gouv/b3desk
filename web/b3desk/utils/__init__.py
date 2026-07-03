@@ -91,6 +91,26 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     send_email(msg, text, html, smtp)
 
 
+def send_new_owner_mail(meeting, new_owner, previous_owner):
+    """Send email to inform the new meeting owner."""
+    smtp = make_smtp()
+    msg = EmailMessage()
+    body_file = "mail_new_owner_body"
+    context = {
+        "meeting": meeting,
+        "new_owner": new_owner,
+        "previous_owner": previous_owner,
+        "welcome_url": url_for("public.welcome", _external=True),
+    }
+    text = render_template(f"meeting/mailto/{body_file}.txt", **context)
+    html = render_template(f"meeting/mailto/{body_file}.html", **context)
+    msg["Subject"] = str(_(f"Transfert de {meeting.name}"))
+    msg["From"] = smtp["from_email"]
+    msg["To"] = new_owner.email
+
+    send_email(msg, text, html, smtp)
+
+
 def _build_recording_links(playbacks):
     """Return an ordered list of {label, url} entries from a BBB playbacks dict."""
     links = []
