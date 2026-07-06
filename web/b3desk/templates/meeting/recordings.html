@@ -41,7 +41,7 @@
         <p>{% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
         <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
         {% for recording in meeting.bbb.get_recordings() %}
-            {% set recording_name = recording.name or recording.start_date.strftime("%Y-%m-%d %H:%M:%S") %}
+            {% set recording_name = recording.name or recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') %}
             <h3 class="fr-h3">
                 {{ recording_name }}
                 <button class="fr-btn fr-btn--secondary fr-icon-edit-line"  data-fr-opened="false" aria-controls="rename-video-{{ recording.recordID }}">
@@ -49,7 +49,7 @@
                 </button>
             </h3>
             <span>
-                {% trans start_date=recording.start_date|dateformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
+                {% trans start_date=recording.start_date|datetimeformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
                     Enregistré le {{ start_date }} -
                     Expire le {{ expiration_date }}
                 {% endtrans %}
