@@ -224,7 +224,6 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     first_recording = recordings[0]
     assert first_recording["participants"] == 3
     playbacks = first_recording["playbacks"]
-    print(playbacks)
     assert len(playbacks) == 3
     assert (
         playbacks["presentation"]["url"]

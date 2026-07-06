@@ -373,7 +373,7 @@ class BBB:
                 result.append(data)
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
-        return result
+        return sorted(result, key=lambda x: x["start_date"], reverse=True)
 
     def update_recordings(self, recording_ids, metadata):
         """Update the recordings of a meeting.
