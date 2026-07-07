@@ -8,6 +8,7 @@ from wtforms import EmailField
 from wtforms import FloatField
 from wtforms import Form
 from wtforms import IntegerField
+from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import validators
@@ -273,4 +274,15 @@ class MeetingSearchForm(FlaskForm):
     search = StringField(
         label=_("Rechercher une réunion"),
         render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )
+
+
+class TransferMeetingOwnership(FlaskForm):
+    select = SelectField(
+        label=_("Sélectionner un délégataire"),
+        description=_(
+            "Transférer la propriété d'une réunion est action définitive. Vous deviendrez délégataire de cette réunion."
+        ),
+        validators=[validators.DataRequired()],
+        choices=[],
     )

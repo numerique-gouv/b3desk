@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block jumbotron %}
+{% endblock %}
+
+{% block main %}
+    <div class="fr-container">
+        <h1 class="fr-h2">
+            {% trans meeting_name=meeting.name %}Transfert de propriété de <em>{{ meeting_name }}</em>{% endtrans %}
+        </h1>
+        <div class="fr-my-4v">
+            <a href="{{ url_for("public.welcome") }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans %}Retour à mes réunions{% endtrans %}
+            </a>
+        </div>
+        <form class="" id="transfertMeetingOwnership", name="transfert-meeting-ownership" action="{{ url_for("meetings.transfert_meeting_ownership", meeting=meeting) }}" method="post">
+            {% include 'meeting/csrf.html' %}
+            <div class="fr-select-group">
+                <label class="fr-label" for="select-hint">
+                    <p class="fr-hint-text">{{ form.select.description }}</p>
+                </label>
+                <select class="fr-select" aria-describedby="select-hint-messages" id="select-hint" name="select">
+                    <option value="" selected>{{ form.select.label(class_="fr-label") }}</option>
+                    {% for delegate in form.select.choices %}
+                        <option value="{{ delegate[0] }}">{{ delegate[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button title="{% trans meeting_name=meeting.name %}Transférer {{ meeting_name }}{% endtrans %}" type="submit" class="fr-btn">
+                {% trans meeting_name=meeting.name %}Transférer {{ meeting_name }}{% endtrans %}
+            </button>
+            <a class="fr-btn fr-btn--secondary" href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}">
+                {% trans %}Annuler{% endtrans %}
+            </a>
+        </form>
+    </div>
+{% endblock %}

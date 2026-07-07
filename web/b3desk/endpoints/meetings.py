@@ -24,6 +24,7 @@ from b3desk.forms import DelegationSearchForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
+from b3desk.forms import TransferMeetingOwnership
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_join_url
@@ -44,6 +45,7 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import meeting_access_required
 from ..utils import send_delegation_mail
+from ..utils import send_new_owner_mail
 
 bp = Blueprint("meetings", __name__)
 
@@ -447,3 +449,76 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
             meeting.name,
         )
     return redirect(url_for("meetings.manage_delegation", meeting=meeting))
+
+
+@bp.route(
+    "/meeting/transfert-meeting-ownership/<meeting:meeting>", methods=["GET", "POST"]
+)
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required()
+def transfert_meeting_ownership(meeting: Meeting, user: User):
+    """Display the page for manage meeting delegation."""
+    form = TransferMeetingOwnership(request.form)
+    form.select.choices = [
+        (delegate.id, delegate.fullname) for delegate in meeting.get_all_delegates
+    ]
+    if not form.validate():
+        if request.method == "POST":
+            flash(
+                _("Vous devez sélectionner un délégataire"),
+                "error",
+            )
+        return render_template(
+            "meeting/transfert_ownership.html",
+            meeting=meeting,
+            form=form,
+        )
+
+    data = form.select.data
+    new_owner = db.session.query(User).filter(User.id == data).first()
+
+    previous_owner = meeting.owner
+    meeting.owner = new_owner
+    meeting.owner_id = new_owner.id
+    new_access = MeetingAccess(
+        meeting_id=meeting.id,
+        user_id=previous_owner.id,
+        level=AccessLevel.DELEGATE,
+    )
+    removed_access = MeetingAccess.query.filter_by(
+        user_id=new_owner.id, meeting_id=meeting.id
+    ).one()
+    db.session.add(new_access)
+    db.session.delete(removed_access)
+    db.session.commit()
+    current_app.logger.info(
+        "Meeting %s %s have a new owner : %s %s",
+        meeting.id,
+        meeting.name,
+        new_owner.id,
+        new_owner.fullname,
+    )
+    current_app.logger.info(
+        "%s became delegate of meeting %s %s",
+        previous_owner.email,
+        meeting.id,
+        meeting.name,
+    )
+    current_app.logger.info(
+        "%s removed from delegates of meeting %s %s",
+        new_owner.email,
+        meeting.id,
+        meeting.name,
+    )
+    flash(
+        _(
+            "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s",
+            owner_name=new_owner.fullname,
+            meeting_name=meeting.name,
+        ),
+        "success",
+    )
+    send_delegation_mail(meeting, previous_owner, new_delegation=True)
+    send_new_owner_mail(meeting, new_owner, previous_owner)
+    return redirect(url_for("public.welcome"))

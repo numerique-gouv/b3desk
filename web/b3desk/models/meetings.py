@@ -194,6 +194,7 @@ class Meeting(db.Model):
                 MeetingAccess.meeting_id == self.id,
                 MeetingAccess.level == AccessLevel.DELEGATE,
             )
+            .order_by(User.family_name, User.given_name)
             .all()
         )
 
