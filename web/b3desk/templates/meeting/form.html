@@ -12,6 +12,9 @@
         {{ field(value="on", class_="fr-toggle__input")}}
         {{ field.label(class_="fr-toggle__label", data_fr_checked_label=_("Activé"), data_fr_unchecked_label=_("Désactivé")) }}
         <p class="fr-hint-text">{{ field.description }}</p>
+        {% for error in field.errors %}
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
       </div>
     </li>
   {% else %}
@@ -71,7 +74,8 @@
   <div class="fr-accordions-group" id="meeting-form-accordion">
     <div class="fr-accordion">
       <h2 class="fr-accordion__title fr-h3">
-        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
+        {% set accordion_1_errors = form.guestPolicy.errors or form.voiceBridge.errors or form.welcome.errors or form.moderatorOnlyMessage.errors %}
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_1_errors else 'false'}}" aria-controls="meeting-form-accordion-body-1">{% trans %}Accueil des participants{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-1" aria-labelledby="meeting-form-accordion-body-1">
         <div class="fr-grid-row">
@@ -104,7 +108,8 @@
 
     <div class="fr-accordion">
       <h2 class="fr-accordion__title fr-h3">
-        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
+        {% set accordion_2_errors = form.lockSettingsDisablePublicChat.errors or form.lockSettingsDisablePrivateChat.errors or form.lockSettingsDisableNote.errors or form.lockSettingsDisableCam.errors or form.lockSettingsDisableMic.errors or form.muteOnStart.errors or form.webcamsOnlyForModerator.errors %}
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_2_errors else 'false'}}" aria-controls="meeting-form-accordion-body-2">{% trans %}Interactions{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-2" aria-labelledby="meeting-form-accordion-body-2">
         <div class="fr-grid-row">
@@ -127,17 +132,21 @@
     {% if recording %}
       <div class="fr-accordion">
         <h2 class="fr-accordion__title fr-h3">
-          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
+          {% set accordion_4_errors = form.allowStartStopRecording.errors or form.autoStartRecording.errors or form.ai_summary.errors %}
+          <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_4_errors else 'false'}}" aria-controls="meeting-form-accordion-body-4">{% trans %}Enregistrement{% endtrans %}</button>
         </h2>
         <div class="fr-collapse" id="meeting-form-accordion-body-4" aria-labelledby="meeting-form-accordion-body-4">
           <div class="fr-grid-row">
             <p>
               {% trans %}L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et le tchat public.{% endtrans %}
             </p>
-              <!-- Enregistrement -->
+              <!-- Enregistrement-->
             <ul class="fr-toggle__list">
               {{ render_field(form.allowStartStopRecording) }}
               {{ render_field(form.autoStartRecording) }}
+              {% if (meeting is not none and meeting.owner.can_use_ai_summary) or g.user.can_use_ai_summary %}
+                {{ render_field(form.ai_summary) }}
+              {% endif %}
             </ul>
           </div>
         </div>
@@ -145,7 +154,8 @@
     {% endif %}
     <div class="fr-accordion">
       <h2 class="fr-accordion__title fr-h3">
-        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if form.errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Paramètres avancés{% endtrans %}</button>
+        {% set accordion_3_errors = form.visio_code.errors or form.moderatorPW.errors or form.attendeePW.errors or form.maxParticipants.errors or form.duration.errors or form.logoutUrl.errors %}
+        <button type="button" class="fr-accordion__btn fr-accordion__btn--icon-right" aria-expanded="{{ 'true' if accordion_3_errors else 'false'}}" aria-controls="meeting-form-accordion-body-3">{% trans %}Paramètres avancés{% endtrans %}</button>
       </h2>
       <div class="fr-collapse" id="meeting-form-accordion-body-3" aria-labelledby="meeting-form-accordion-body-3">
         <div class="fr-grid-row">

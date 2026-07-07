@@ -50,8 +50,9 @@ bp = Blueprint("meeting_files", __name__)
 def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     form = MeetingFilesForm()
+    admin_mode = "admin_mode" in request.args or False
 
-    if not current_app.config["FILE_SHARING"]:
+    if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
@@ -64,6 +65,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
+        admin_mode=admin_mode,
     )
 
 
@@ -398,6 +400,7 @@ def delete_meeting_file():
 
     if (
         meeting_file.meeting.owner_id != g.user.id
+        and not g.user.admin
         and meeting_file.meeting not in g.user.get_all_delegated_meetings
     ):
         return {

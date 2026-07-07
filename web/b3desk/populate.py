@@ -22,6 +22,7 @@ from flask import current_app
 from slugify import slugify
 
 from b3desk.models import db
+from b3desk.models.groups import Group
 from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
 from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
@@ -37,6 +38,8 @@ MAX_DELEGATES_PER_MEETING = 3
 FAVORITE_RATIO = 0.2
 PASSWORD_LENGTH = 16
 EMAIL_TOKEN_LENGTH = 6
+GROUP_COUNT = 5
+MAX_MEMBERS_PER_GROUP = 100
 
 
 def make_faker(locale=DEFAULT_LOCALE, seed=None):
@@ -148,6 +151,25 @@ def generate_favorites(users, meetings, ratio=FAVORITE_RATIO):
     return count
 
 
+def generate_groups(faker, users, count=GROUP_COUNT, max_members=MAX_MEMBERS_PER_GROUP):
+    """Create and commit ``count`` random groups with random members."""
+    groups = []
+    for _ in range(count):
+        group = Group(
+            name=faker.unique.bs()[:150],
+            enable_sip=random.choice([True, False, None]),
+            enable_file_sharing=random.choice([True, False, None]),
+            enable_ai_summary=random.choice([True, False, None]),
+        )
+        group.members = random.sample(
+            users, min(len(users), random.randint(1, max_members))
+        )
+        groups.append(group)
+    db.session.add_all(groups)
+    db.session.commit()
+    return groups
+
+
 def populate(n_users, n_meetings, locale=DEFAULT_LOCALE, seed=None):
     """Populate the database with random users, meetings and their relations."""
     faker = make_faker(locale=locale, seed=seed)
@@ -155,10 +177,12 @@ def populate(n_users, n_meetings, locale=DEFAULT_LOCALE, seed=None):
     meetings = generate_meetings(faker, users, n_meetings) if users else []
     delegations = generate_delegations(users, meetings)
     favorites = generate_favorites(users, meetings)
+    groups = generate_groups(faker, users) if users else []
     return {
         "users": len(users),
         "admins": sum(user.admin for user in users),
         "meetings": len(meetings),
         "delegations": delegations,
         "favorites": favorites,
+        "groups": len(groups),
     }

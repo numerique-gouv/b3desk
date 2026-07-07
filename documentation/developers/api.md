@@ -2,7 +2,7 @@
 
 ## Points d'accès
 
-Une API publique est disponible sur `/api/meetings` et `/api/shadow-meeting`. Cette API est utilisée par les greffons Thunderbird et Outlook.
+Une API publique est disponible sur `/api/meetings` et `/api/hidden-meeting`. Cette API est utilisée par les greffons Thunderbird et Outlook.
 
 Les réponses sont au format json sous la forme suivante :
 
@@ -28,15 +28,16 @@ Les réponses sont au format json sous la forme suivante :
 `/api/meetings`
 L'API renvoie la liste des meetings de l'utilisateurs.
 
-### Meeting 'silencieux'
-`/api/shadow-meeting`
-Chaque utilisateur possède un meeting 'silencieux' invisible dans l'interface b3desk, mais utilisable par des greffons.
-L'API renvoie les liens d'invitation du meeting silencieux.
+### Meeting 'caché'
+`/api/hidden-meeting`
+Chaque utilisateur peut créer des meetings 'cachés' invisibles dans l'interface b3desk, mais utilisables par des greffons.
+L'API renvoie les liens d'invitation du meeting caché.
+Un meeting caché reste accessible 1 an après sa dernière utilisation.
 
-Voici les principales valeur par défaut d'un meeting 'silencieux' :
+Voici les principales valeurs par défaut d'un meeting 'caché' :
 + name= Réunion de <user_name>
 + welcome= Bienvenue dans la réunion de <user_name>
-+ duration= <default_shadow_meeting_duration> (280 par défaut)
++ duration= <settings_default_meeting_duration> (280 par défaut)
 + maxParticipants= 350
 + logoutUrl= <settings_meeting_logout_url>
 + moderatorOnlyMessage= Bienvenue aux modérateurs

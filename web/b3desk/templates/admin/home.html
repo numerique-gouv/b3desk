@@ -6,7 +6,7 @@
         <div class="fr-collapse" id="breadcrumb-1">
             <ol class="fr-breadcrumb__list">
                 <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                 </li>
             </ol>
         </div>
@@ -36,8 +36,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_groups") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                                    {% trans %}Groupes{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 {% endblock %}

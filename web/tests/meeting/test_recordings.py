@@ -4,6 +4,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.commands import bp
 
 
 @pytest.fixture
@@ -63,6 +64,12 @@ def bbb_getRecordings_response(mocker):
           <length>0</length>
           <size>1104836</size>
         </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
       </playback>
     </recording>
     <recording>
@@ -109,6 +116,12 @@ def bbb_getRecordings_response(mocker):
             </images>
           </preview>
         </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
       </playback>
     </recording>
   </recordings>
@@ -151,6 +164,52 @@ def bbb_getRecordings_missing_recordID(mocker):
     yield mocker.patch("requests.Session.send", return_value=Response)
 
 
+@pytest.fixture
+def bbb_getRecordings_ai_summary(mocker):
+    """Fixture providing a getRecordings response that includes an ai-summary format."""
+
+    class Response:
+        content = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <recordings>
+    <recording>
+      <recordID>rec-ai-1</recordID>
+      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
+      <internalMeetingID>rec-ai-1</internalMeetingID>
+      <name>Meeting with summary</name>
+      <startTime>1530718721124</startTime>
+      <endTime>1530718810456</endTime>
+      <participants>2</participants>
+      <metadata>
+        <name>Meeting with summary</name>
+      </metadata>
+      <playback>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/presentation/2.3/rec-ai-1</url>
+          <length>0</length>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
+          <length>0</length>
+          <size>38610</size>
+          <urls>
+            <url type="html">https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
+            <url type="json">https://bbb.test/ai-summary/rec-ai-1/transcription.json</url>
+          </urls>
+        </format>
+      </playback>
+    </recording>
+  </recordings>
+</response>
+"""
+        text = ""
+
+    yield mocker.patch("requests.Session.send", return_value=Response)
+
+
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     """Test that recordings are retrieved and parsed correctly from BBB."""
     from b3desk.models.bbb import BBB
@@ -165,7 +224,8 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     first_recording = recordings[0]
     assert first_recording["participants"] == 3
     playbacks = first_recording["playbacks"]
-    assert len(playbacks) == 2
+    print(playbacks)
+    assert len(playbacks) == 3
     assert (
         playbacks["presentation"]["url"]
         == "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
@@ -173,6 +233,10 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     assert (
         playbacks["video"]["url"]
         == "https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4"
+    )
+    assert (
+        playbacks["ai-summary"]["url"]
+        == "https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html"
     )
 
     assert playbacks["video"]["images"] == []
@@ -308,3 +372,76 @@ def test_open_recordings_page(
         == 2
     )
     assert len(BBB(meeting.meetingID).get_recordings()) == 2
+
+
+def test_derive_ai_summary_playback():
+    """PDF and Markdown report URLs are derived from the HTML report URL."""
+    from b3desk.models.bbb import derive_ai_summary_playback
+
+    base = "https://bbb.test/ai-summary/rec/ai-summary"
+    assert derive_ai_summary_playback(f"{base}.html") == {
+        "url": f"{base}.html",
+        "pdf": f"{base}.pdf",
+        "md": f"{base}.md",
+    }
+
+    # A URL that is not an HTML report yields no derivation.
+    folder_url = "https://bbb.test/ai-summary/rec/"
+    assert derive_ai_summary_playback(folder_url) == {"url": folder_url}
+
+
+def test_get_recordings_ai_summary(mocker, meeting, bbb_getRecordings_ai_summary):
+    """ai-summary playback exposes the HTML report and the derived PDF/Markdown URLs."""
+    from b3desk.models.bbb import BBB
+
+    recordings = BBB(meeting.meetingID).get_recordings()
+
+    assert len(recordings) == 1
+    summary = recordings[0]["playbacks"]["ai-summary"]
+    assert summary == {
+        "url": "https://bbb.test/ai-summary/rec-ai-1/ai-summary.html",
+        "pdf": "https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf",
+        "md": "https://bbb.test/ai-summary/rec-ai-1/ai-summary.md",
+    }
+
+
+def test_build_recording_links_ai_summary():
+    """The notification mail links include the three ai-summary report formats."""
+    from b3desk.utils import _build_recording_links
+
+    playbacks = {
+        "ai-summary": {
+            "url": "https://bbb.test/ai-summary/rec/ai-summary.html",
+            "pdf": "https://bbb.test/ai-summary/rec/ai-summary.pdf",
+            "md": "https://bbb.test/ai-summary/rec/ai-summary.md",
+        }
+    }
+    links = _build_recording_links(playbacks)
+
+    assert [link["url"] for link in links] == [
+        "https://bbb.test/ai-summary/rec/ai-summary.html",
+        "https://bbb.test/ai-summary/rec/ai-summary.pdf",
+        "https://bbb.test/ai-summary/rec/ai-summary.md",
+    ]
+
+
+def test_open_recordings_page_ai_summary(
+    cli_runner,
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_ai_summary,
+    group,
+):
+    """The recordings page shows the ai-summary report links (HTML/PDF/Markdown)."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    response = client_app.get("/admin/add-group-members/1/1", status=200)
+    response = client_app.get(f"/meeting/recordings/{meeting.id}")
+    html = response.body.decode("utf-8")
+
+    assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.html" in html
+    assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf" in html
+    assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.md" in html

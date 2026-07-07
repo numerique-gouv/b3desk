@@ -3,7 +3,7 @@ from flask import current_app
 from flask import request
 
 from b3desk.join import get_signin_url
-from b3desk.models.meetings import get_or_create_shadow_meeting
+from b3desk.models.meetings import create_and_save_hidden_meeting
 from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
 from b3desk.utils import check_oidc_connection
@@ -17,13 +17,13 @@ bp = Blueprint("api", __name__)
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["openid"])
 def api_meetings():
-    """Return all non-shadow meetings owned by or delegated to the authenticated user via API."""
+    """Return all non-hidden meetings owned by or delegated to the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
     user = get_or_create_user(userinfo)
 
-    owned = [(meeting, False) for meeting in user.meetings if not meeting.is_shadow]
+    owned = [(meeting, False) for meeting in user.meetings if not meeting.is_hidden]
     delegated = [(meeting, True) for meeting in user.get_all_delegated_meetings]
 
     return {
@@ -48,7 +48,7 @@ def api_meetings():
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if current_app.config["ENABLE_SIP"]
+                    if meeting.owner.can_use_sip
                     else {}
                 ),
             }
@@ -57,20 +57,20 @@ def api_meetings():
     }
 
 
-@bp.route("/api/shadow-meeting")
+@bp.route("/api/hidden-meeting")
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["openid"])
-def shadow_meeting():
-    """Get or create the shadow meeting for the authenticated user via API."""
+def hidden_meeting():
+    """Get or create the hidden meeting for the authenticated user via API."""
     client = auth.clients["default"]
     access_token = auth._parse_access_token(request)
     userinfo = client.userinfo_request(access_token).to_dict()
     user = get_or_create_user(userinfo)
 
-    meeting = get_or_create_shadow_meeting(user)
+    meeting = create_and_save_hidden_meeting(user)
 
     return {
-        "shadow-meeting": [
+        "hidden-meeting": [
             {
                 "name": meeting.name,
                 "moderator_url": get_signin_url(meeting, Role.moderator),
@@ -90,7 +90,7 @@ def shadow_meeting():
                         + "@"
                         + current_app.config["FQDN_SIP_SERVER"],
                     }
-                    if current_app.config["ENABLE_SIP"]
+                    if meeting.owner.can_use_sip
                     else {}
                 ),
             }
