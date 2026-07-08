@@ -95,7 +95,7 @@ def home():
 @admin_needed
 def manage_users():
     """Display user list to manage users."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -124,7 +124,7 @@ def user_infos(user: User):
 @admin_needed
 def manage_meetings():
     """Display meeting list to manage meetings."""
-    form = MeetingSearchForm(request.args, meta={"csrf": False})
+    form = MeetingSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -270,7 +270,7 @@ def edit_group(group: Group):
 @admin_needed
 def manage_group_members(group: Group):
     """Display group members list and member addition of admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
     return render_template(
@@ -287,7 +287,7 @@ def manage_group_members(group: Group):
 @admin_needed
 def remove_member(group: Group, member: User):
     """Display group members list and member removing admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
@@ -337,7 +337,7 @@ def confirm_delete_group(group: Group):
 @admin_needed
 def add_group_members_page(group: Group):
     """Display non member users list to add members."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -354,7 +354,7 @@ def add_group_members_page(group: Group):
 @admin_needed
 def add_group_members(group: Group, user: User):
     """Add member in group."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if user in group.members:
         flash(_("L'utilisateur est déjà dans le groupe"), "error")
