@@ -10,6 +10,7 @@ from wtforms import Form
 from wtforms import IntegerField
 from wtforms import StringField
 from wtforms import TextAreaField
+from wtforms import ValidationError
 from wtforms import validators
 
 from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
@@ -244,6 +245,24 @@ class MeetingWithRecordForm(MeetingForm):
         ),
         default=False,
     )
+    meta_disable_recording_ai_summary = BooleanField(
+        label=_("Génération de résumé (IA)"),
+        filters=[lambda x: not x],
+        description=_(
+            "La génération de résumé est basée sur l'audio de l'enregistrement."
+        ),
+        default=True,
+    )
+
+    def validate_meta_disable_recording_ai_summary(self, field):
+        if not field.data and not (
+            self.allowStartStopRecording.data or self.autoStartRecording.data
+        ):
+            raise ValidationError(
+                _(
+                    "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+                )
+            )
 
 
 class RecordingForm(FlaskForm):

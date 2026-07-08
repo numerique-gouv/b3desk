@@ -34,6 +34,28 @@ def cache_key(func, caller, prepped, *args, **kwargs):
     return prepped.url
 
 
+def parse_ai_summary_playback(format_element):
+    """Build the ai-summary playback entry from the <urls> summary reports."""
+    playback = {}
+    root_url = format_element.find("url")
+    if root_url is not None and root_url.text:
+        playback["url"] = root_url.text
+
+    urls = format_element.find("urls")
+    if urls is None:
+        return playback
+
+    for url in urls.iter("url"):
+        if url.get("category") != "summary" or not url.text:
+            continue
+        report_type = url.get("type")
+        if report_type == "html":
+            playback["url"] = url.text
+        elif report_type in ("pdf", "md"):
+            playback[report_type] = url.text
+    return playback
+
+
 def caching_exclusion(func, caller, prepped, *args, **kwargs):
     """Only read-only methods should be cached."""
     url = urlparse(prepped.url)
@@ -171,6 +193,7 @@ class BBB:
         meta_academy=None,
         analytics_callback_url=None,
         meta_bbb_recording_ready_url=None,
+        meta_disable_recording_ai_summary=None,
     ):
         """Create a new meeting.
 
@@ -239,7 +262,11 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
-
+        if (
+            meta_disable_recording_ai_summary
+            or not current_app.config["ENABLE_AI_SUMMARY"]
+        ):
+            params["meta_bbb-disable-recording-formats"] = "ai-summary"
         if not current_app.config["FILE_SHARING"]:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)
@@ -321,6 +348,13 @@ class BBB:
 
                 for format in playback.iter("format"):
                     type = format.find("type").text
+
+                    if type == "ai-summary":
+                        summary = parse_ai_summary_playback(format)
+                        if summary.get("url"):
+                            data["playbacks"][type] = summary
+                        continue
+
                     if type not in ("presentation", "video"):
                         logger.warning(
                             "Unhandled recording playback format %r for recording %s",
