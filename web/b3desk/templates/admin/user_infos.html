@@ -1,26 +1,15 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% from 'admin/macros.html' import yesno, value %}
+    {% from 'admin/macros.html' import breadcrumb, yesno, value %}
     {% set meetings = user.meetings %}
     {% set groups = user.groups %}
     {% set delegated_meetings = user.get_all_delegated_meetings %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">{% trans %}Utilisateur{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.user_infos', user=user) }}">{{ user.fullname }}</a>
-                </li>
-            </ol>
-        </div>
-    </nav>
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_users'), 'label': _('Utilisateur')},
+    {'href': url_for('admin.user_infos', user=user), 'label': user.fullname},
+    ]) }}
     <h5>{{ user.fullname }}</h5>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">

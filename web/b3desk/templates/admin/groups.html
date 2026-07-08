@@ -1,19 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
-                </li>
-            </ol>
-        </div>
-    </nav>
+    {% from 'admin/macros.html' import breadcrumb %}
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_groups'), 'label': _('Groupes')},
+    ]) }}
 
     <a href="{{ url_for("admin.create_group") }}" class="fr-btn fr-btn--primary">
         {% trans %}Nouveau groupe{% endtrans %}

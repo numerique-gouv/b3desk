@@ -1,23 +1,12 @@
 {% extends 'layout.html' %}
 
 {% block main %}
-    {% from 'admin/macros.html' import yesno, value %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
-                </li>
-            </ol>
-        </div>
-    </nav>
+    {% from 'admin/macros.html' import breadcrumb, yesno, value %}
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
+    {'href': url_for('admin.meeting_infos', meeting=meeting), 'label': meeting.name},
+    ]) }}
     <h5>{{ meeting.name }}</h5>
     <div class="fr-grid-row">
         <div class="fr-col meeting-room">
