@@ -219,6 +219,8 @@ def edit_meeting(meeting: Meeting, user: User):
 
     del form.id
     del form.name
+    if hasattr(form, "ai_summary") and not meeting.owner.can_use_ai_summary:
+        del form.ai_summary
 
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")

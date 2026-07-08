@@ -1046,6 +1046,26 @@ def test_edit_meeting_without_change_anything(client_app, meeting, authenticated
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
+def test_edit_meeting_preserves_ai_summary_when_owner_unauthorised(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """Editing a meeting must keep the stored ai_summary preference when the owner has lost authorisation and the field is hidden."""
+    meeting.ai_summary = True
+    db.session.commit()
+    client_app.app.config["ENABLE_AI_SUMMARY"] = False
+    assert meeting.owner.can_use_ai_summary is False
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
+    assert "ai_summary" not in res.forms[0].fields
+
+    res.forms[0]["name"] = "Titre modifié"
+    res.forms[0].submit()
+
+    db.session.refresh(meeting)
+    assert meeting.ai_summary is True
+    assert meeting.ai_summary_enabled is False
+
+
 def test_delete_old_voiceBridges_with_form(
     time_machine,
     client_app,
