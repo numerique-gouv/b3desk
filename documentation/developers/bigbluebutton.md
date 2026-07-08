@@ -28,17 +28,30 @@ L'image est assez volumineuse (~8Go), il faudra donc être patient.
 Cette commande vous montre également comment accéder au BBB API-Mate.
 
 - Copiez l'url BBB (BIGBLUEBUTTON_ENDPOINT) et ajoutez `api` à la fin, ainsi que la clé secrète (BIGBLUEBUTTON_SECRET) dans votre fichier web.env
-- Lancez les conteneurs B3Desk
-- Vous avez maintenant un réseau b3desk_default avec tous les services en cours d'exécution et un service BBB autonome
-- Vous devez les connecter ensemble avec :
+
+Le conteneur BBB tourne sur son propre réseau Docker, isolé de celui de B3Desk : il faut donc les relier. Plutôt que le réseau `b3desk_default` géré par Compose (recréé à chaque `docker compose down`/`up`, ce qui débranche BBB), on utilise un réseau externe dédié `bbb-shared` qui survit aux redémarrages.
+
+### Créer le réseau partagé
+
+Cette opération n'est à faire qu'une seule fois. Le réseau doit exister avant le lancement des conteneurs B3Desk :
+
+```bash
+docker network create bbb-shared
+```
+
+Les services `web` et `worker` y sont déjà rattachés dans `docker-compose.override.yml`, ils le rejoignent donc automatiquement à chaque `docker compose up`.
 
 ### Ajouter le conteneur BBB au réseau local
 
+Connectez le conteneur BBB au réseau partagé en lui donnant comme alias le nom d'hôte présent dans `BIGBLUEBUTTON_ENDPOINT` (par défaut `bbb30.test`), afin que B3Desk puisse le résoudre :
+
 ```bash
-docker network connect b3desk_default bbb30
+docker network connect --alias bbb30.test bbb-shared bbb30
 ```
 
-Vous pouvez vérifier si ces services sont effectivement connectés avec un curl depuis bbb30 vers un service B3Desk par exemple
+Le conteneur conserve cette connexion tant qu'il n'est pas recréé : un simple `docker start bbb30` la préserve, mais une réinstallation via `create_bbb.sh` impose de relancer cette commande.
+
+Vous pouvez vérifier que les services communiquent avec un curl depuis bbb30 vers un service B3Desk, par exemple.
 
 ### Autoriser les requêtes http avec BBB
 
@@ -53,14 +66,14 @@ docker exec bbb30 bbb-conf --restart
 
 Si vous avez déjà installé BBB et que le conteneur existe toujours, il n'est pas nécessaire de le réinstaller (le script `create_bbb.sh` supprime toute instance existante et recrée une version mise à jour).
 
-Vous devez simplement connecter les services :
-```
-docker network connect b3desk_default bbb30
-```
-
-Et lancer le conteneur BBB :
+Démarrez le conteneur BBB :
 ```
 docker start bbb30
+```
+
+S'il a été recréé depuis sa dernière connexion, rattachez-le au réseau partagé (étape inutile sinon, la connexion ayant été conservée) :
+```
+docker network connect --alias bbb30.test bbb-shared bbb30
 ```
 
 Vous pouvez vérifier qu'il fonctionne effectivement avec :
