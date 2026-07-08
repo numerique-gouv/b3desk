@@ -2,6 +2,7 @@ import datetime
 from datetime import timezone
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
+from xml.etree import ElementTree
 
 import pytest
 from b3desk.commands import bp
@@ -196,8 +197,12 @@ def bbb_getRecordings_ai_summary(mocker):
           <length>0</length>
           <size>38610</size>
           <urls>
-            <url type="html">https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
-            <url type="json">https://bbb.test/ai-summary/rec-ai-1/transcription.json</url>
+            <url type="pdf" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf</url>
+            <url type="md" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.md</url>
+            <url type="html" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
+            <url type="json" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.json</url>
+            <url type="json" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.json</url>
+            <url type="vtt" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.vtt</url>
           </urls>
         </format>
       </playback>
@@ -313,6 +318,7 @@ def test_delete_recordings(
         f"Meeting meeting {meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
+    assert f"/meeting/recordings/{meeting.id}" in response.location
 
 
 def test_delegate_can_delete_recordings(
@@ -343,6 +349,7 @@ def test_delegate_can_delete_recordings(
         f"Meeting delegated meeting {meeting_1_user_2.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
+    assert f"/meeting/recordings/{meeting_1_user_2.id}" in response.location
 
 
 def test_open_recordings_page(
@@ -373,24 +380,53 @@ def test_open_recordings_page(
     assert len(BBB(meeting.meetingID).get_recordings()) == 2
 
 
-def test_derive_ai_summary_playback():
-    """PDF and Markdown report URLs are derived from the HTML report URL."""
-    from b3desk.models.bbb import derive_ai_summary_playback
+def test_parse_ai_summary_playback():
+    """The ai-summary playback keeps the summary HTML/PDF/Markdown URLs from <urls>."""
+    from b3desk.models.bbb import parse_ai_summary_playback
 
-    base = "https://bbb.test/ai-summary/rec/ai-summary"
-    assert derive_ai_summary_playback(f"{base}.html") == {
-        "url": f"{base}.html",
-        "pdf": f"{base}.pdf",
-        "md": f"{base}.md",
+    format_element = ElementTree.fromstring(
+        """
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/ai-summary/rec/ai-summary.html</url>
+          <urls>
+            <url type="pdf" category="summary">https://bbb.test/ai-summary/rec/ai-summary.pdf</url>
+            <url type="md" category="summary">https://bbb.test/ai-summary/rec/ai-summary.md</url>
+            <url type="html" category="summary">https://bbb.test/ai-summary/rec/ai-summary.html</url>
+            <url type="json" category="summary">https://bbb.test/ai-summary/rec/ai-summary.json</url>
+            <url type="json" category="transcription">https://bbb.test/ai-summary/rec/transcription.json</url>
+          </urls>
+        </format>
+        """
+    )
+
+    assert parse_ai_summary_playback(format_element) == {
+        "url": "https://bbb.test/ai-summary/rec/ai-summary.html",
+        "pdf": "https://bbb.test/ai-summary/rec/ai-summary.pdf",
+        "md": "https://bbb.test/ai-summary/rec/ai-summary.md",
     }
 
-    # A URL that is not an HTML report yields no derivation.
-    folder_url = "https://bbb.test/ai-summary/rec/"
-    assert derive_ai_summary_playback(folder_url) == {"url": folder_url}
+
+def test_parse_ai_summary_playback_without_urls():
+    """Without a <urls> block, only the root HTML URL is kept (no name-based derivation)."""
+    from b3desk.models.bbb import parse_ai_summary_playback
+
+    format_element = ElementTree.fromstring(
+        """
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/ai-summary/rec/ai-summary.html</url>
+        </format>
+        """
+    )
+
+    assert parse_ai_summary_playback(format_element) == {
+        "url": "https://bbb.test/ai-summary/rec/ai-summary.html",
+    }
 
 
 def test_get_recordings_ai_summary(mocker, meeting, bbb_getRecordings_ai_summary):
-    """ai-summary playback exposes the HTML report and the derived PDF/Markdown URLs."""
+    """ai-summary playback exposes the summary HTML/PDF/Markdown URLs from <urls>."""
     from b3desk.models.bbb import BBB
 
     recordings = BBB(meeting.meetingID).get_recordings()

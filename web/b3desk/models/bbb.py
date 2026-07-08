@@ -34,15 +34,25 @@ def cache_key(func, caller, prepped, *args, **kwargs):
     return prepped.url
 
 
-def derive_ai_summary_playback(html_url):
-    """Build the ai-summary playback entry from its HTML report URL."""
-    playback = {"url": html_url}
-    # BBB only exposes the HTML report; the PDF and Markdown reports are
-    # published as sibling files, so derive their URLs from the HTML one.
-    if html_url.endswith(".html"):
-        stem = html_url[: -len(".html")]
-        playback["pdf"] = f"{stem}.pdf"
-        playback["md"] = f"{stem}.md"
+def parse_ai_summary_playback(format_element):
+    """Build the ai-summary playback entry from the <urls> summary reports."""
+    playback = {}
+    root_url = format_element.find("url")
+    if root_url is not None and root_url.text:
+        playback["url"] = root_url.text
+
+    urls = format_element.find("urls")
+    if urls is None:
+        return playback
+
+    for url in urls.iter("url"):
+        if url.get("category") != "summary" or not url.text:
+            continue
+        report_type = url.get("type")
+        if report_type == "html":
+            playback["url"] = url.text
+        elif report_type in ("pdf", "md"):
+            playback[report_type] = url.text
     return playback
 
 
@@ -339,11 +349,9 @@ class BBB:
                     type = format.find("type").text
 
                     if type == "ai-summary":
-                        url_elem = format.find("url")
-                        if url_elem is not None and url_elem.text:
-                            data["playbacks"][type] = derive_ai_summary_playback(
-                                url_elem.text
-                            )
+                        summary = parse_ai_summary_playback(format)
+                        if summary.get("url"):
+                            data["playbacks"][type] = summary
                         continue
 
                     if type not in ("presentation", "video"):

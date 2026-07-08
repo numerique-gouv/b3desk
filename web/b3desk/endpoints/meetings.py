@@ -351,7 +351,7 @@ def delete_video_meeting(meeting: Meeting, user: User):
             ),
             "error",
         )
-    return redirect(url_for("public.welcome"))
+    return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
 @bp.route("/meeting/favorite", methods=["POST"])

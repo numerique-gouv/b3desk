@@ -159,6 +159,11 @@ class Meeting(db.Model):
         return self._bbb
 
     @property
+    def ai_summary_enabled(self):
+        """Whether the AI summary recording format is expected for this meeting."""
+        return bool(self.ai_summary) and bool(current_app.config["ENABLE_AI_SUMMARY"])
+
+    @property
     def meetingID(self):
         """Return the unique BBB meeting identifier."""
         if self.id is not None:
