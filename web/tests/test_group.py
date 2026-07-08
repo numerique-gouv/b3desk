@@ -115,8 +115,8 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_none_able_to_use_sip(
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: none able sip and settings enable sip."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/2", status=200)
+    res = client_app.post("/admin/add-group-members/2/2", status=302)
+    res = client_app.post("/admin/add-group-members/3/2", status=302)
     assert user_2.groups[0].name == "Group 2"
     assert user_2.groups[1].name == "Group 3"
     res = client_app.get(
@@ -167,8 +167,8 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_cannot(
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: disable sip and settings enable sip."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/2", status=200)
+    res = client_app.post("/admin/add-group-members/2/2", status=302)
+    res = client_app.post("/admin/add-group-members/3/2", status=302)
     res = client_app.get("/admin/edit-group/3", status=200)
     res.form["enable_sip"] = False
     res.form.submit()
@@ -216,9 +216,9 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
 ):
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting True."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/3", status=200)
+    res = client_app.post("/admin/add-group-members/1/1", status=302)
+    res = client_app.post("/admin/add-group-members/2/2", status=302)
+    res = client_app.post("/admin/add-group-members/3/3", status=302)
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -252,9 +252,9 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting False."""
     client_app.app.config["FILE_SHARING"] = False
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/add-group-members/1/1", status=200)
-    res = client_app.get("/admin/add-group-members/2/2", status=200)
-    res = client_app.get("/admin/add-group-members/3/3", status=200)
+    res = client_app.post("/admin/add-group-members/1/1", status=302)
+    res = client_app.post("/admin/add-group-members/2/2", status=302)
+    res = client_app.post("/admin/add-group-members/3/3", status=302)
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -309,12 +309,12 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
 ):
     """When the owner loses ai-summary authorisation, the effective decision is off at launch while the stored preference is preserved."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    client_app.get("/admin/add-group-members/1/1", status=200)
-    client_app.get("/admin/add-group-members/2/1", status=200)
+    client_app.post("/admin/add-group-members/1/1", status=302)
+    client_app.post("/admin/add-group-members/2/1", status=302)
     assert user.can_use_ai_summary is True
     meeting.ai_summary = True
     assert meeting.ai_summary_enabled is True
-    client_app.get("/admin/manage-group-members/1/1", status=200)
+    client_app.post("/admin/manage-group-members/1/1", status=302)
     assert user.can_use_ai_summary is False
     create_bbb_meeting(meeting, meeting.owner)
     assert meeting.ai_summary is True

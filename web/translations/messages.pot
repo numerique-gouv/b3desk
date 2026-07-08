@@ -336,15 +336,15 @@ msgstr ""
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:331
+#: web/b3desk/endpoints/admin.py:323
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:360
+#: web/b3desk/endpoints/admin.py:352
 msgid "L'utilisateur est déjà dans le groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:364
+#: web/b3desk/endpoints/admin.py:356
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
@@ -1000,22 +1000,22 @@ msgstr[1] ""
 msgid "Supprimer"
 msgstr ""
 
-#: web/b3desk/templates/admin/delete_group.html:14
+#: web/b3desk/templates/admin/delete_group.html:16
 msgid "Supprimer le groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/delete_group.html:15
+#: web/b3desk/templates/admin/delete_group.html:17
 msgid "Confirmer la suppression du groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/delete_group.html:19
+#: web/b3desk/templates/admin/delete_group.html:22
 #: web/b3desk/templates/admin/group_infos.html:28
 #: web/b3desk/templates/admin/group_table.html:38
 #, python-format
 msgid "Supprimer %(group_name)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/delete_group.html:20
+#: web/b3desk/templates/admin/delete_group.html:23
 #: web/b3desk/templates/admin/group_form.html:24
 #: web/b3desk/templates/admin/group_form.html:34
 #: web/b3desk/templates/meeting/files.html:178
@@ -1351,15 +1351,15 @@ msgstr ""
 msgid "%(username)s infos"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:43
+#: web/b3desk/templates/admin/user_table.html:45
 msgid "Supprimer le membre"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:48
+#: web/b3desk/templates/admin/user_table.html:54
 msgid "Ajouter le membre"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:48
+#: web/b3desk/templates/admin/user_table.html:57
 msgid "Déjà membre"
 msgstr ""
 

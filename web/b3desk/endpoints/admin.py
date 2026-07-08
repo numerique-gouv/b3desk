@@ -283,10 +283,10 @@ def manage_group_members(group: Group):
     )
 
 
-@bp.route("/admin/manage-group-members/<group:group>/<user:member>")
+@bp.route("/admin/manage-group-members/<group:group>/<user:member>", methods=["POST"])
 @admin_needed
 def remove_member(group: Group, member: User):
-    """Display group members list and member removing admin page."""
+    """Remove a member from the group."""
     form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if member not in group.members:
@@ -301,15 +301,7 @@ def remove_member(group: Group, member: User):
             group.id,
             group.name,
         )
-    members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
-    return render_template(
-        "admin/group_members.html",
-        group=group,
-        form=form,
-        members_page=members_page,
-        data=data,
-        add_members=False,
-    )
+    return redirect(url_for("admin.manage_group_members", group=group, search=data))
 
 
 @bp.route("/admin/delete-group/<group:group>")
@@ -322,10 +314,10 @@ def delete_group(group: Group):
     )
 
 
-@bp.route("/admin/confirm-delete-group/<group:group>")
+@bp.route("/admin/confirm-delete-group/<group:group>", methods=["POST"])
 @admin_needed
 def confirm_delete_group(group: Group):
-    """Display group deletion of admin page."""
+    """Delete a group."""
     db.session.delete(group)
     db.session.commit()
     flash(_("Le groupe a été supprimé"), "success")
@@ -350,10 +342,10 @@ def add_group_members_page(group: Group):
     )
 
 
-@bp.route("/admin/add-group-members/<group:group>/<user:user>")
+@bp.route("/admin/add-group-members/<group:group>/<user:user>", methods=["POST"])
 @admin_needed
 def add_group_members(group: Group, user: User):
-    """Add member in group."""
+    """Add a member to the group."""
     form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if user in group.members:
@@ -368,12 +360,4 @@ def add_group_members(group: Group, user: User):
             group.id,
             group.name,
         )
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
-    return render_template(
-        "admin/add_group_members_page.html",
-        group=group,
-        form=form,
-        users_page=users_page,
-        data=data,
-        add_members=True,
-    )
+    return redirect(url_for("admin.add_group_members_page", group=group, search=data))
