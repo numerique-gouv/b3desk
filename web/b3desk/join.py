@@ -96,8 +96,6 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
 
-    meeting.sync_ai_summary_authorisation()
-
     bbb = BBB(meeting.meetingID)
     if bbb.is_running():
         return False
@@ -163,7 +161,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
         meta_bbb_recording_ready_url=meta_bbb_recording_ready_url,
-        ai_summary=meeting.ai_summary,
+        ai_summary=meeting.ai_summary_enabled,
         file_sharing=user.can_use_file_sharing
         if user
         else current_app.config["FILE_SHARING"],

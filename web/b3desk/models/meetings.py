@@ -161,7 +161,7 @@ class Meeting(db.Model):
     @property
     def ai_summary_enabled(self):
         """Whether the AI summary recording format is expected for this meeting."""
-        return bool(self.ai_summary) and bool(current_app.config["ENABLE_AI_SUMMARY"])
+        return bool(self.ai_summary) and self.owner.can_use_ai_summary
 
     @property
     def meetingID(self):
@@ -202,11 +202,6 @@ class Meeting(db.Model):
             )
             .all()
         )
-
-    def sync_ai_summary_authorisation(self):
-        self.ai_summary = self.ai_summary and self.owner.can_use_ai_summary
-        db.session.add(self)
-        db.session.commit()
 
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
