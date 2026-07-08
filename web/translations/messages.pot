@@ -244,12 +244,11 @@ msgstr ""
 msgid "Rechercher un utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:293 web/b3desk/templates/admin/groups.html:19
-#: web/b3desk/templates/admin/meetings.html:12
+#: web/b3desk/forms.py:293 web/b3desk/templates/admin/meetings.html:12
 msgid "Rechercher une réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:300
+#: web/b3desk/forms.py:300 web/b3desk/templates/admin/groups.html:18
 msgid "Rechercher un groupe"
 msgstr ""
 
@@ -318,33 +317,33 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:239 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/admin.py:231 web/b3desk/endpoints/meetings.py:151
 #: web/b3desk/endpoints/meetings.py:211
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:262
+#: web/b3desk/endpoints/admin.py:254
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:293
+#: web/b3desk/endpoints/admin.py:285
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:297
+#: web/b3desk/endpoints/admin.py:289
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:323
+#: web/b3desk/endpoints/admin.py:315
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:352
+#: web/b3desk/endpoints/admin.py:344
 msgid "L'utilisateur est déjà dans le groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:356
+#: web/b3desk/endpoints/admin.py:348
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
@@ -1148,22 +1147,22 @@ msgstr ""
 msgid "Nouveau groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:26
+#: web/b3desk/templates/admin/groups.html:25
 msgid "Aucun groupe ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:28
+#: web/b3desk/templates/admin/groups.html:27
 msgid "Aucun groupe n'a encore été créé."
 msgstr ""
 
-#: web/b3desk/templates/admin/groups.html:36
+#: web/b3desk/templates/admin/groups.html:35
 #, python-format
 msgid "%(count)s groupe correspondant aux critères"
 msgid_plural "%(count)s groupes correspondant aux critères"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/groups.html:42
+#: web/b3desk/templates/admin/groups.html:41
 #, python-format
 msgid "%(count)s groupe"
 msgid_plural "%(count)s groupes"

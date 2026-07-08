@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -410,6 +411,24 @@ def test_research_bar_with_letters_in_group_list_in_admin_page(
     res.form["search"] = "gro"
     res = res.form.submit()
     assert "Group 1" in res.text
+
+
+def test_research_bar_is_kept_through_pagination_in_group_list_in_admin_page(
+    cli_runner, user, client_app, authenticated_user, mocker
+):
+    """The group search criteria must survive when navigating to another page."""
+    # 'team' matches Team-x (page 1) and Team-y (page 2) but not Squad, so
+    # without the filter page 2 would show Squad instead of Team-y.
+    for i, name in enumerate(["Team-x", "Squad", "Team-y"]):
+        db.session.add(Group(name=name, created_at=datetime(2024, 1, 1 + i)))
+    db.session.commit()
+    mocker.patch("b3desk.endpoints.admin.PER_PAGE", 1)
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups?search=team&page=2", status=200)
+    groups_table = res.pyquery("table#groups").text()
+    assert "Team-y" in groups_table
+    assert "Team-x" not in groups_table
+    assert "Squad" not in groups_table
 
 
 def test_admin_can_remove_group(

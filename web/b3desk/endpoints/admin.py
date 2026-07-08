@@ -200,20 +200,12 @@ def group_infos(group: Group):
     )
 
 
-@bp.route("/admin/groups", methods=["GET", "POST"])
+@bp.route("/admin/groups")
 @admin_needed
 def manage_groups():
     """Display group list to manage groups of admin page."""
-    form = GroupSearchForm(request.form)
-    if not request.form or not form.validate():
-        groups_page = get_groups_paginate(per_page=PER_PAGE, data=None)
-        return render_template(
-            "admin/groups.html",
-            groups_page=groups_page,
-            form=form,
-            data=None,
-        )
-    data = form.search.data.lower()
+    form = GroupSearchForm(request.args)
+    data = form.search.data.lower() if form.search.data else None
     groups_page = get_groups_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/groups.html",
