@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
 {% block main %}
-    {% from 'admin/macros.html' import breadcrumb %}
     {{ breadcrumb([
     {'href': url_for('admin.home'), 'label': _('Menu Admin')},
     {'href': url_for('admin.manage_users'), 'label': _('Utilisateurs')},
