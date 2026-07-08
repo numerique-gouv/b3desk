@@ -42,6 +42,7 @@ from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
+from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..utils import send_delegation_mail
 
@@ -86,13 +87,12 @@ def show_meeting_recording(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
     form = RecordingForm()
-    admin_mode = "admin_mode" in request.args or False
     return render_template(
         "meeting/recordings.html",
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
         form=form,
-        admin_mode=admin_mode,
+        admin_mode=is_admin_mode(),
     )
 
 
@@ -187,7 +187,7 @@ def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
     if meeting.is_shadow:
         abort(403)
-    admin_mode = "admin_mode" in request.args
+    admin_mode = is_admin_mode()
     form = (
         MeetingWithRecordForm(
             request.form if request.method == "POST" else None, obj=meeting
@@ -288,7 +288,6 @@ def create_meeting(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 def delete_meeting():
     """Delete a meeting and all its associated files and recordings."""
-    admin_mode = "admin_mode" in request.args or False
     if request.method == "POST":
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
@@ -322,7 +321,7 @@ def delete_meeting():
                 flash(_("Vous devez retirer les délégataires"), "error")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect(url_for("public.welcome" if not admin_mode else "admin.home"))
+    return redirect(url_for("public.welcome" if not is_admin_mode() else "admin.home"))
 
 
 @bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
@@ -385,7 +384,7 @@ def manage_delegation(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
     form = DelegationSearchForm(request.form)
-    admin_mode = "admin_mode" in request.args or False
+    admin_mode = is_admin_mode()
     if not request.form or not form.validate():
         return render_template(
             "meeting/delegation.html",
@@ -445,8 +444,6 @@ def manage_delegation(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 @meeting_access_required()
 def remove_delegate(meeting: Meeting, user: User, delegate: User):
-    admin_mode = "admin_mode" in request.args or False
-
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
@@ -465,6 +462,8 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
         )
     return redirect(
         url_for(
-            "meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None
+            "meetings.manage_delegation",
+            meeting=meeting,
+            admin_mode=is_admin_mode() or None,
         )
     )
