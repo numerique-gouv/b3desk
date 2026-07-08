@@ -213,7 +213,7 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:250 web/b3desk/forms.py:350
+#: web/b3desk/forms.py:250 web/b3desk/forms.py:340
 #: web/b3desk/templates/admin/group_infos.html:75
 #: web/b3desk/templates/admin/meeting_infos.html:163
 msgid "Génération de résumé (IA)"
@@ -252,33 +252,29 @@ msgstr ""
 msgid "Rechercher un groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:307
-msgid "Ajout de membre"
-msgstr ""
-
-#: web/b3desk/forms.py:324
+#: web/b3desk/forms.py:314
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:326
+#: web/b3desk/forms.py:316
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:334 web/b3desk/templates/admin/group_infos.html:59
+#: web/b3desk/forms.py:324 web/b3desk/templates/admin/group_infos.html:59
 #: web/b3desk/templates/admin/user_infos.html:133
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:342 web/b3desk/templates/admin/group_infos.html:67
+#: web/b3desk/forms.py:332 web/b3desk/templates/admin/group_infos.html:67
 #: web/b3desk/templates/admin/user_infos.html:141
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:360 web/b3desk/forms.py:365 web/b3desk/forms.py:370
+#: web/b3desk/forms.py:350 web/b3desk/forms.py:355 web/b3desk/forms.py:360
 msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:362 web/b3desk/forms.py:367 web/b3desk/forms.py:372
+#: web/b3desk/forms.py:352 web/b3desk/forms.py:357 web/b3desk/forms.py:362
 msgid "Désactivé par défaut"
 msgstr ""
 
@@ -943,7 +939,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members_page.html:11
 #: web/b3desk/templates/admin/group_infos.html:23
-#: web/b3desk/templates/admin/group_table.html:35
 #, python-format
 msgid "Ajouter des membres à %(group_name)s"
 msgstr ""
@@ -1009,7 +1004,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:22
 #: web/b3desk/templates/admin/group_infos.html:28
-#: web/b3desk/templates/admin/group_table.html:38
 #, python-format
 msgid "Supprimer %(group_name)s"
 msgstr ""
@@ -1076,14 +1070,12 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:13
 #: web/b3desk/templates/admin/group_table.html:25
-#: web/b3desk/templates/admin/group_table.html:29
 #, python-format
 msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:18
 #: web/b3desk/templates/admin/group_members.html:11
-#: web/b3desk/templates/admin/group_table.html:32
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
 msgstr ""

@@ -302,16 +302,6 @@ class GroupSearchForm(FlaskForm):
     )
 
 
-class MemberSearchForm(FlaskForm):
-    search = EmailField(
-        label=_("Ajout de membre"),
-        render_kw={
-            "placeholder": "Saisir l'e-mail de l'utilisateur (ex: nom@exemple.fr)"
-        },
-        validators=[validators.DataRequired()],
-    )
-
-
 def nullable_bool(value):
     if value in (None, "", "None"):
         return None

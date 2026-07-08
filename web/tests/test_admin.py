@@ -547,7 +547,6 @@ def test_admin_can_delete_meeting_file(
 
     assert response.status_int == 200
     assert response.json["id"] == meeting_file.id
-    print(response)
     assert not MeetingFiles.query.all()
 
 
