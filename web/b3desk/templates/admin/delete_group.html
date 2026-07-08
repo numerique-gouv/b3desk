@@ -19,7 +19,7 @@
             </form>
         </li>
         <li>
-            <a href="{{ url_for("admin.group_infos", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary" title="{% trans group_name=group.name %}Supprimer {{ group_name }}{% endtrans %}">
+            <a href="{{ url_for("admin.group_infos", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary" title="{% trans group_name=group.name %}Revenir à la fiche de {{ group_name }}{% endtrans %}">
                 {% trans %}Annuler{% endtrans %}
             </a>
         </li>

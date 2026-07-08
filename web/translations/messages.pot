@@ -1003,9 +1003,8 @@ msgid "Confirmer la suppression du groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:22
-#: web/b3desk/templates/admin/group_infos.html:28
 #, python-format
-msgid "Supprimer %(group_name)s"
+msgid "Revenir à la fiche de %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/delete_group.html:23
@@ -1086,6 +1085,11 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:24
 msgid "Ajouter des membres"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:28
+#, python-format
+msgid "Supprimer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:43
