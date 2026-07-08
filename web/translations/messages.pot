@@ -274,12 +274,12 @@ msgstr ""
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:352 web/b3desk/forms.py:363 web/b3desk/forms.py:368
-msgid "Désactivé par défaut"
+#: web/b3desk/forms.py:360 web/b3desk/forms.py:365 web/b3desk/forms.py:370
+msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:361 web/b3desk/forms.py:366
-msgid "Activé par défaut"
+#: web/b3desk/forms.py:362 web/b3desk/forms.py:367 web/b3desk/forms.py:372
+msgid "Désactivé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:669 web/b3desk/templates/meeting/list.html:4

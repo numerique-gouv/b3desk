@@ -349,7 +349,6 @@ class GroupForm(FlaskForm):
         label=_(
             "Génération de résumé (IA)",
         ),
-        description=_("Désactivé par défaut"),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
@@ -365,5 +364,10 @@ class GroupForm(FlaskForm):
         self.enable_file_sharing.description = (
             _("Activé par défaut")
             if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_ai_summary.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_AI_SUMMARY"]
             else _("Désactivé par défaut")
         )
