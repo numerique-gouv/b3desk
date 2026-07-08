@@ -319,7 +319,6 @@ def nullable_bool(value):
 
 
 class GroupForm(FlaskForm):
-    id = IntegerField()
     name = StringField(
         label=_(
             "Nom du groupe",

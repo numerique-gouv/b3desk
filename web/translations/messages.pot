@@ -213,7 +213,7 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:250 web/b3desk/forms.py:351
+#: web/b3desk/forms.py:250 web/b3desk/forms.py:350
 #: web/b3desk/templates/admin/group_infos.html:86
 #: web/b3desk/templates/admin/meeting_infos.html:174
 msgid "Génération de résumé (IA)"
@@ -257,29 +257,29 @@ msgstr ""
 msgid "Ajout de membre"
 msgstr ""
 
-#: web/b3desk/forms.py:325
+#: web/b3desk/forms.py:324
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:327
+#: web/b3desk/forms.py:326
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:335 web/b3desk/templates/admin/group_infos.html:70
+#: web/b3desk/forms.py:334 web/b3desk/templates/admin/group_infos.html:70
 #: web/b3desk/templates/admin/user_infos.html:144
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:78
+#: web/b3desk/forms.py:342 web/b3desk/templates/admin/group_infos.html:78
 #: web/b3desk/templates/admin/user_infos.html:152
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:353 web/b3desk/forms.py:364 web/b3desk/forms.py:369
+#: web/b3desk/forms.py:352 web/b3desk/forms.py:363 web/b3desk/forms.py:368
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:362 web/b3desk/forms.py:367
+#: web/b3desk/forms.py:361 web/b3desk/forms.py:366
 msgid "Activé par défaut"
 msgstr ""
 
@@ -323,28 +323,28 @@ msgstr ""
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:264
+#: web/b3desk/endpoints/admin.py:262
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:295
+#: web/b3desk/endpoints/admin.py:293
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:299
+#: web/b3desk/endpoints/admin.py:297
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:333
+#: web/b3desk/endpoints/admin.py:331
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:362
+#: web/b3desk/endpoints/admin.py:360
 msgid "L'utilisateur est déjà dans le groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:366
+#: web/b3desk/endpoints/admin.py:364
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 

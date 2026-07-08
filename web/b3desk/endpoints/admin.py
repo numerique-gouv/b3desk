@@ -243,8 +243,6 @@ def edit_group(group: Group):
             group=group,
         )
 
-    del form.id
-
     updated_data = {
         key: form.data[key]
         for key in form.data
