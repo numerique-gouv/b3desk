@@ -301,6 +301,7 @@ def test_delete_recordings(
         f"Meeting meeting {meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
+    assert f"/meeting/recordings/{meeting.id}" in response.location
 
 
 def test_delegate_can_delete_recordings(
@@ -331,6 +332,7 @@ def test_delegate_can_delete_recordings(
         f"Meeting delegated meeting {meeting_1_user_2.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
+    assert f"/meeting/recordings/{meeting_1_user_2.id}" in response.location
 
 
 def test_open_recordings_page(
