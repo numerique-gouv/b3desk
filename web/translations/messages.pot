@@ -332,7 +332,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:405
-#: web/b3desk/endpoints/meetings.py:316
+#: web/b3desk/endpoints/meetings.py:315
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -344,93 +344,89 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:111
+#: web/b3desk/endpoints/meetings.py:110
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:114
+#: web/b3desk/endpoints/meetings.py:113
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:130
+#: web/b3desk/endpoints/meetings.py:129
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:149 web/b3desk/endpoints/meetings.py:207
+#: web/b3desk/endpoints/meetings.py:148 web/b3desk/endpoints/meetings.py:206
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:174
+#: web/b3desk/endpoints/meetings.py:173
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:240
+#: web/b3desk/endpoints/meetings.py:239
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:265
+#: web/b3desk/endpoints/meetings.py:264
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:300
+#: web/b3desk/endpoints/meetings.py:299
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:306
+#: web/b3desk/endpoints/meetings.py:305
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:314
+#: web/b3desk/endpoints/meetings.py:313
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:329
+#: web/b3desk/endpoints/meetings.py:328
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:340
+#: web/b3desk/endpoints/meetings.py:339
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:389
+#: web/b3desk/endpoints/meetings.py:388
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:392
+#: web/b3desk/endpoints/meetings.py:391
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:395
+#: web/b3desk/endpoints/meetings.py:394
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:402
+#: web/b3desk/endpoints/meetings.py:401
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:415
+#: web/b3desk/endpoints/meetings.py:414
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:436
+#: web/b3desk/endpoints/meetings.py:435
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:443
+#: web/b3desk/endpoints/meetings.py:442
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:469
-msgid "Vous devez sélectionner un délégataire"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:516
+#: web/b3desk/endpoints/meetings.py:498
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
@@ -753,6 +749,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
 #: web/b3desk/templates/meeting/modals/invite.html:9
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:7
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:8
 #: web/b3desk/templates/meeting/recordings.html:87
 #: web/b3desk/templates/meeting/recordings.html:88
 #: web/b3desk/templates/meeting/recordings.html:128
@@ -2167,7 +2165,6 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:221
 #: web/b3desk/templates/meeting/recordings.html:9
 #: web/b3desk/templates/meeting/recordings.html:210
-#: web/b3desk/templates/meeting/transfert_ownership.html:14
 msgid "Retour à mes réunions"
 msgstr ""
 
@@ -2179,18 +2176,23 @@ msgstr ""
 msgid "Ajouter l'utilisateur comme délégataire"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation.html:42
-msgid "Supprimer le délégataire"
+#: web/b3desk/templates/meeting/delegation.html:33
+msgid "Liste des délégataires"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation.html:54
-msgid "Transférer la réunion à un délégataire"
+#: web/b3desk/templates/meeting/delegation.html:34
+msgid "Retirer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation.html:55
-#: web/b3desk/templates/meeting/delegation.html:56
-#: web/b3desk/templates/meeting/transfert_ownership.html:30
-#: web/b3desk/templates/meeting/transfert_ownership.html:31
+#: web/b3desk/templates/meeting/delegation.html:35
+msgid "Transférer"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation.html:43
+msgid "Retirer le délégataire"
+msgstr ""
+
+#: web/b3desk/templates/meeting/delegation.html:46
 #, python-format
 msgid "Transférer %(meeting_name)s"
 msgstr ""
@@ -2319,9 +2321,9 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:180
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:33
 #: web/b3desk/templates/meeting/recordings.html:109
 #: web/b3desk/templates/meeting/recordings.html:153
-#: web/b3desk/templates/meeting/transfert_ownership.html:34
 msgid "Annuler"
 msgstr ""
 
@@ -2676,11 +2678,6 @@ msgstr ""
 msgid "Code de connexion :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/transfert_ownership.html:9
-#, python-format
-msgid "Transfert de propriété de <em>%(meeting_name)s</em>"
-msgstr ""
-
 #: web/b3desk/templates/meeting/visio_code_form.html:3
 #: web/b3desk/templates/meeting/visio_code_form.html:5
 #: web/b3desk/templates/meeting/visio_code_form.html:7
@@ -2853,10 +2850,12 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:20
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:19
 msgid "La confirmation est définitive."
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:29
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:29
 msgid "Confirmer"
 msgstr ""
 
@@ -2976,6 +2975,22 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:115
 msgid "Copier les informations dans le presse-papiers"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:13
+#, python-format
+msgid "Transférer \"%(meeting_name)s\" ?"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:15
+#, python-format
+msgid ""
+"Voulez-vous vraiment transférer la propriété de \"%(meeting_name)s\" à "
+"%(delegate_name)s ?"
+msgstr ""
+
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:21
+msgid "Vous deviendrez délégataire de cette réunion."
 msgstr ""
 
 #: web/b3desk/utils/__init__.py:120

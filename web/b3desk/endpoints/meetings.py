@@ -24,7 +24,6 @@ from b3desk.forms import DelegationSearchForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
-from b3desk.forms import TransferMeetingOwnership
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_join_url
@@ -451,32 +450,15 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     return redirect(url_for("meetings.manage_delegation", meeting=meeting))
 
 
-@bp.route(
-    "/meeting/transfert-meeting-ownership/<meeting:meeting>", methods=["GET", "POST"]
-)
+@bp.route("/meeting/transfert-meeting-ownership/<meeting:meeting>/<user:delegate>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_access_required()
-def transfert_meeting_ownership(meeting: Meeting, user: User):
+def transfert_meeting_ownership(meeting: Meeting, user: User, delegate: User):
     """Display the page for manage meeting delegation."""
-    form = TransferMeetingOwnership(request.form)
-    form.select.choices = [
-        (delegate.id, delegate.fullname) for delegate in meeting.get_all_delegates
-    ]
-    if not form.validate():
-        if request.method == "POST":
-            flash(
-                _("Vous devez sélectionner un délégataire"),
-                "error",
-            )
-        return render_template(
-            "meeting/transfert_ownership.html",
-            meeting=meeting,
-            form=form,
-        )
-
-    data = form.select.data
-    new_owner = db.session.query(User).filter(User.id == data).first()
+    new_owner = delegate
+    if new_owner is None or new_owner not in meeting.get_all_delegates:
+        abort(404)
 
     previous_owner = meeting.owner
     meeting.owner = new_owner

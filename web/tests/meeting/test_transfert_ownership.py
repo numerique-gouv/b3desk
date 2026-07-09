@@ -14,10 +14,7 @@ def test_owner_can_transfer_ownership_to_delegate(
     )
     db.session.add(new_access)
     db.session.commit()
-    res = client_app.get("/meeting/transfert-meeting-ownership/1", status=200)
-    form = res.form
-    form["select"] = 2
-    form.submit()
+    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=302)
     assert meeting.owner is user_2
     assert user in meeting.get_all_delegates
     assert len(smtpd.messages) == 2
@@ -30,12 +27,8 @@ def test_owner_can_transfer_ownership_to_delegate(
     assert "Email sent to berenice@domain.tld" in caplog.text
 
 
-def test_transfert_form_display_message_if_empty_form(
-    client_app, authenticated_user, meeting
+def test_new_owner_is_not_delegate_display_404(
+    client_app, authenticated_user, meeting, user_2
 ):
     """Test form displays message if form is empty."""
-    res = client_app.get("/meeting/transfert-meeting-ownership/1", status=200)
-    form = res.form
-    form["select"] = ""
-    res = form.submit()
-    assert ("error", "Vous devez sélectionner un délégataire") in res.flashes
+    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=404)

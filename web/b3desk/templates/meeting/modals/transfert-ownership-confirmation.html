@@ -1,0 +1,41 @@
+<dialog id="transfert-ownership-confirmation-{{ delegate.id }}" class="fr-modal" role="dialog" aria-labelledby="transfert-ownership-confirmation-{{ delegate.id }}-title">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" aria-controls="transfert-ownership-confirmation-{{ delegate.id }}" title="{% trans %}Fermer{% endtrans %}">
+                            {% trans %}Fermer{% endtrans %}
+                        </button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="transfert-ownership-confirmation-{{ delegate.id }}-title" class="fr-modal__title">
+                            {% trans meeting_name=meeting.name %}Transférer "{{ meeting_name }}" ?{% endtrans %}
+                        </h1>
+                        <p>{% trans meeting_name=meeting.name, delegate_name=delegate.fullname %}Voulez-vous vraiment transférer la propriété de "{{ meeting_name }}" à {{ delegate_name }} ?{% endtrans %}</p>
+                        <div class="fr-notice fr-notice--info">
+                            <div class="fr-container">
+                                <div class="fr-notice__body">
+                                    <p class="fr-notice__title">{% trans %}La confirmation est définitive.{% endtrans %}</p>
+                                </div>
+                                <p>{% trans %}Vous deviendrez délégataire de cette réunion.{% endtrans %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-modal__footer">
+                        <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                            <li>
+                                <a class="fr-btn fr-btn--delete" href="{{ url_for("meetings.transfert_meeting_ownership", meeting=meeting, delegate=delegate) }}">
+                                    {% trans %}Confirmer{% endtrans %}
+                                </a>
+                            </li>
+                            <li>
+                                <button type="button" class="fr-btn fr-btn--secondary" aria-controls="transfert-ownership-confirmation-{{ delegate.id }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
