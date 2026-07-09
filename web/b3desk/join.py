@@ -11,10 +11,18 @@ from b3desk.models.roles import Role
 from b3desk.nextcloud import is_nextcloud_available
 
 
-def get_hash(meeting, role: Role, hash_from_string=False):
+def get_hash_legacy(meeting, role: Role, hash_from_string=False):
     """Generate a hash for meeting access verification based on role."""
     name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
     s = f"{meeting.meetingID}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
+    return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
+def get_hash(meeting, role: Role, hash_from_string=False):
+    """Generate a hash for meeting access verification based on role."""
+    name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
+    password = meeting.moderatorPW if role == Role.moderator else meeting.attendeePW
+    s = f"{meeting.meetingID}|{password}|{name}|{role.name if hash_from_string else role}"
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
@@ -30,6 +38,8 @@ def get_role(meeting, hashed_role, user=None) -> Role | None:
     elif hashed_role in [
         get_hash(meeting, Role.moderator),
         get_hash(meeting, Role.moderator, hash_from_string=True),
+        get_hash_legacy(meeting, Role.moderator),
+        get_hash_legacy(meeting, Role.moderator, hash_from_string=True),
     ]:
         role = Role.moderator
     elif hashed_role in [
@@ -210,7 +220,8 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     )
 
     def compute_hash(role: Role) -> str:
-        s = f"{meeting_id}|{attendee_pw}|{name}|{role}"
+        password = moderator_pw if role == Role.moderator else attendee_pw
+        s = f"{meeting_id}|{password}|{name}|{role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     moderator_signin_url = url_for(

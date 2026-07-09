@@ -256,7 +256,8 @@ def get_quick_meeting_from_fake_id(meeting_fake_id=None):
         meeting_fake_id = get_random_alphanumeric_string(8)
 
     meeting = Meeting(
-        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
+        attendeePW=get_deterministic_password(meeting_fake_id, "attendee"),
+        moderatorPW=get_deterministic_password(meeting_fake_id, "moderator"),
     )
     meeting.fake_id = meeting_fake_id
     return meeting

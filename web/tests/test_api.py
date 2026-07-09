@@ -20,7 +20,7 @@ def test_api_meetings_nominal(
     assert res.json["meetings"][0] == {
         "PIN": "111111111",
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/fcb8b9d35e2222b901bffc66713a5082642c63d8",
         "name": "meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "911111111",
@@ -36,7 +36,7 @@ def test_api_meetings_nominal(
 
     assert res.json["meetings"][0] == {
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/fcb8b9d35e2222b901bffc66713a5082642c63d8",
         "name": "meeting",
         "visio_code": "911111111",
         "SIPMediaGW_url": "911111111@sip.test",
@@ -51,7 +51,7 @@ def test_api_meetings_nominal(
 
     assert res.json["meetings"][0] == {
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/fcb8b9d35e2222b901bffc66713a5082642c63d8",
         "name": "meeting",
         "visio_code": "911111111",
         "delegate": False,
@@ -164,7 +164,7 @@ def test_api_existing_shadow_meeting(
         "PIN": "555555551",
         "SIPMediaGW_url": "511111111@sip.test",
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/75a0be5cc9ff0a9fc897ccad9af7b6e12d3907b5",
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -190,7 +190,7 @@ def test_api_existing_shadow_meeting_without_pin(
     assert res.json["shadow-meeting"][0] == {
         "SIPMediaGW_url": "511111111@sip.test",
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/75a0be5cc9ff0a9fc897ccad9af7b6e12d3907b5",
         "name": "shadow meeting",
         "visio_code": "511111111",
     }
@@ -215,7 +215,7 @@ def test_api_existing_shadow_meeting_without_sip(
     assert res.json["shadow-meeting"][0] == {
         "PIN": "555555551",
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/75a0be5cc9ff0a9fc897ccad9af7b6e12d3907b5",
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -241,7 +241,7 @@ def test_api_existing_shadow_meeting_without_pin_and_sip(
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
         "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/75a0be5cc9ff0a9fc897ccad9af7b6e12d3907b5",
         "name": "shadow meeting",
         "visio_code": "511111111",
     }
