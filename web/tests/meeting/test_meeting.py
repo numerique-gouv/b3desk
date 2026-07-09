@@ -318,6 +318,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.meta_disable_recording_ai_summary = True
     create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
@@ -364,6 +365,7 @@ def test_create_no_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -418,6 +420,7 @@ def test_create_with_only_a_default_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.meta_disable_recording_ai_summary = True
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -474,6 +477,7 @@ def test_create_with_only_a_default_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -527,6 +531,7 @@ def test_create_with_files(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.meta_recording_recording_ai_summary = True
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -584,6 +589,7 @@ def test_create_with_files(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -1319,3 +1325,16 @@ def test_delete_recordings_failure_when_delete_meeting(
         "error",
         "Impossible de supprimer les vidéos de ce séminaire : some error",
     ) in res.flashes
+
+
+def test_create_meeting_ai_summary_requires_recording(
+    client_app, meeting, authenticated_user
+):
+    res = client_app.get("/meeting/new")
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["allowStartStopRecording"] = False
+    res.forms[0]["meta_disable_recording_ai_summary"] = "on"
+    res = res.forms[0].submit()
+    res.mustcontain(
+        "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+    )
