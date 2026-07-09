@@ -33,8 +33,6 @@ def get_role(meeting, hashed_role, user=None) -> Role | None:
     if hashed_role in [
         get_hash(meeting, Role.attendee),
         get_hash(meeting, Role.attendee, hash_from_string=True),
-        get_hash_legacy(meeting, Role.attendee),
-        get_hash_legacy(meeting, Role.attendee, hash_from_string=True),
     ]:
         role = Role.attendee
     elif hashed_role in [
@@ -47,8 +45,6 @@ def get_role(meeting, hashed_role, user=None) -> Role | None:
     elif hashed_role in [
         get_hash(meeting, Role.authenticated),
         get_hash(meeting, Role.authenticated, hash_from_string=True),
-        get_hash_legacy(meeting, Role.authenticated),
-        get_hash_legacy(meeting, Role.authenticated, hash_from_string=True),
     ]:
         role = (
             Role.authenticated
