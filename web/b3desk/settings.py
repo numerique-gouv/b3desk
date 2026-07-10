@@ -508,6 +508,49 @@ class MainSettings(BaseSettings):
         OIDC_ATTENDEE_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name"}'
     """
 
+    # Docs (La Suite numérique) OIDC client and API configuration
+    DOCS_ENABLED: bool = False
+    """Active l’enregistrement des comptes rendus de réunion dans Docs."""
+
+    DOCS_ISSUER: str | None = None
+    """URL de l’``issuer`` OpenID Connect utilisé pour obtenir un jeton d’accès
+    à Docs (ProConnect).
+
+    Distinct de ``OIDC_ISSUER`` : la connexion principale des utilisateurs passe
+    par un autre serveur d’identité.
+    """
+
+    DOCS_CLIENT_ID: str | None = None
+    """ID du client ProConnect dédié à Docs."""
+
+    DOCS_CLIENT_SECRET: str | None = None
+    """Secret du client ProConnect dédié à Docs."""
+
+    DOCS_CLIENT_AUTH_METHOD: str = "client_secret_post"
+    """Méthode d’authentification auprès du ``token_endpoint`` de ProConnect."""
+
+    DOCS_SCOPES: ListOfStrings = ["openid", "email", "given_name", "usual_name"]
+    """Scopes OpenID Connect demandés lors de la connexion ProConnect pour Docs."""
+
+    DOCS_REDIRECT_URI: str | None = None
+    """URL de retour ProConnect après authentification pour Docs.
+
+    Doit être enregistrée pour le client ``DOCS_CLIENT_ID`` et servie par
+    B3Desk, par exemple ``https://visio-test.education.fr/docs_callback``.
+    """
+
+    DOCS_IDP_HINT: str | None = None
+    """Identifiant (``idp_id``) du fournisseur d’identité à présélectionner lors
+    de la connexion ProConnect, pour éviter l’écran de choix du FI.
+
+    À laisser vide en dehors de la production.
+    """
+
+    DOCS_API_URL: str | None = None
+    """URL de base de l’API Docs, par exemple
+    ``https://impress-staging.beta.numerique.gouv.fr``.
+    """
+
     SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
     Nextcloud est activée.

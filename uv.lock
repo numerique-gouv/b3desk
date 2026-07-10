@@ -135,6 +135,7 @@ name = "b3desk"
 version = "1.6.4.dev0"
 source = { editable = "." }
 dependencies = [
+    { name = "authlib" },
     { name = "celery" },
     { name = "filetype" },
     { name = "flask" },
@@ -195,6 +196,7 @@ doc = [
 
 [package.metadata]
 requires-dist = [
+    { name = "authlib", specifier = ">=1.6.12,<1.7" },
     { name = "celery", specifier = ">=5.2.7,<6.0.0" },
     { name = "filetype", specifier = ">=1.2.0,<2.0.0" },
     { name = "flask", specifier = ">=3.0.0,<4.0.0" },
