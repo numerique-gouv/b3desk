@@ -23,7 +23,10 @@ class Group(db.Model):
     enable_ai_summary = db.Column(db.Boolean, default=None)
 
     members = db.relationship(
-        "User", secondary=group_member_table, back_populates="groups"
+        "User",
+        secondary=group_member_table,
+        back_populates="groups",
+        cascade_backrefs=False,
     )
 
     @property
