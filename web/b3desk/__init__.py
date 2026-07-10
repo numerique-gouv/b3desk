@@ -13,6 +13,7 @@ from logging.config import fileConfig
 from pathlib import Path
 from urllib.parse import urlencode
 
+from authlib.integrations.flask_client import OAuth
 from babel import Locale
 from flask import Flask
 from flask import has_app_context
@@ -45,6 +46,7 @@ babel = Babel()
 cache = Cache()
 csrf = CSRFProtect()
 auth = OIDCAuthentication({"default": None, "attendee": None})
+oauth = OAuth()
 migrate = Migrate()
 
 
@@ -450,6 +452,30 @@ def setup_oidc(app):
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
+def setup_docs(app):
+    """Register the ProConnect OIDC client and routes used to push content to Docs."""
+    if not app.config["DOCS_ENABLED"]:
+        return
+
+    oauth.init_app(app)
+    oauth.register(
+        "docs",
+        server_metadata_url=app.config["DOCS_ISSUER"].rstrip("/")
+        + "/.well-known/openid-configuration",
+        client_id=app.config["DOCS_CLIENT_ID"],
+        client_secret=app.config["DOCS_CLIENT_SECRET"],
+        client_kwargs={
+            "scope": " ".join(app.config["DOCS_SCOPES"]),
+            "token_endpoint_auth_method": app.config["DOCS_CLIENT_AUTH_METHOD"],
+        },
+    )
+
+    with app.app_context():
+        import b3desk.endpoints.docs
+
+    app.register_blueprint(b3desk.endpoints.docs.bp)
+
+
 def create_app(test_config=None):
     """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
@@ -467,6 +493,7 @@ def create_app(test_config=None):
         setup_error_pages(app)
         setup_endpoints(app)
         setup_oidc(app)
+        setup_docs(app)
         setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover

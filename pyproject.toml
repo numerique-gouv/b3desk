@@ -36,6 +36,7 @@ dependencies = [
     "sqlalchemy-json>=0.7.0,<0.8.0",
     "sqlalchemy-utils>=0.41.1,<0.50.0",
     "webdavclient3==3.14.6",
+    "authlib>=1.6.12,<1.7",  # 1.7 breaks pytest-iam/canaille OIDC metadata (stricter rfc8414 ui_locales validation)
 ]
 
 [tool.uv]
