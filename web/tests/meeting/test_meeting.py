@@ -378,6 +378,37 @@ def test_create_no_file(
     assert not mocked_background_upload.called
 
 
+def test_create_ai_summary_adds_banner(
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
+):
+    """AI summary enabled adds the banner and keeps the ai-summary format."""
+    from b3desk.join import create_bbb_meeting
+
+    meeting.ai_summary = True
+    assert meeting.ai_summary_enabled
+
+    create_bbb_meeting(meeting, meeting.owner)
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+
+    assert (
+        bbb_params["bannerText"]
+        == "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+    )
+    assert bbb_params["bannerColor"] == "#202c7d"
+    assert "meta_bbb-disable-recording-formats" not in bbb_params
+
+
 def test_create_with_only_a_default_file(
     client_app,
     meeting,

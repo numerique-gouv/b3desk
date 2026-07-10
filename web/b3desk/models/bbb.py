@@ -19,6 +19,7 @@ from xml.etree import ElementTree
 import requests
 from flask import current_app
 from flask import url_for
+from flask_babel import lazy_gettext as _
 
 from b3desk.tasks import background_upload
 
@@ -265,6 +266,14 @@ class BBB:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
         if not ai_summary:
             params["meta_bbb-disable-recording-formats"] = "ai-summary"
+
+        if ai_summary:
+            params["bannerText"] = str(
+                _(
+                    "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+                )
+            )
+            params["bannerColor"] = "#202c7d"
 
         if not file_sharing:
             request = self.bbb_request("create", params=params)

@@ -500,6 +500,10 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
+#: web/b3desk/models/bbb.py:273
+msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+msgstr ""
+
 #: web/b3desk/models/meetings.py:323 web/b3desk/models/meetings.py:330
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
