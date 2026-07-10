@@ -128,9 +128,9 @@ sudo systemctl restart bbb-rap-resque-worker.service
 
 La transcription nécessite d'avoir livekit comme moteur audio (afin d'avoir des pistes séparées) et un ensemble de scripts pour extraire l'audio, envoyer les pistes à un modèle de transcription, récupérer les transcript puis les envoyer à un second modèle pour produire une synthèse.
 
-L'installation est automatisée, disponible avec le script suivant, aussi disponible à [cette adresse](https://bigbluebutton.nyc3.digitaloceanspaces.com/install-bbb-record-ai-summary.sh).
+L'installation est automatisée, disponible avec le script suivant, aussi disponible à [cette adresse](https://bigbluebutton.nyc3.digitaloceanspaces.com/install-bbb-record-ai-summary.sh). Le script installe la [version 0.1.15](https://github.com/bigbluebutton/bbb-record-ai-summary/releases/tag/v0.1.15) du paquet `bbb-record-ai-summary`.
 
-Le script demandera des informations sur le service à utiliser (Albert ou OpenAI) ainsi que la clé d'API. Après installation de la documentation est disponible dans /tmp/bbb-record-ai-summary-ai-summary-new-format sous format markdown.
+Le script demandera des informations sur le service à utiliser (Albert ou OpenAI) ainsi que la clé d'API.
 
 Après un enregistrement, le transcript ainsi que le résumé sont alors disponibles via l'endpoint `getRecordings` de l'API BBB.
 

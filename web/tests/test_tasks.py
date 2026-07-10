@@ -130,7 +130,7 @@ def test_lists_all_available_formats(client_app, meeting, smtpd, mocker, caplog)
 
 def test_ai_summary_expected_but_absent_waits(client_app, meeting, smtpd, mocker):
     """When the AI summary is expected but not yet rendered, no mail at min delay."""
-    meeting.meta_disable_recording_ai_summary = False
+    meeting.ai_summary = True
     _mock_recording(
         mocker,
         playbacks={"presentation": {"url": "https://bbb.test/playback/presentation"}},
@@ -143,7 +143,7 @@ def test_ai_summary_expected_but_absent_waits(client_app, meeting, smtpd, mocker
 
 def test_ai_summary_expected_and_present_sends(client_app, meeting, smtpd, mocker):
     """When the AI summary is expected and present, the mail is sent."""
-    meeting.meta_disable_recording_ai_summary = False
+    meeting.ai_summary = True
     _mock_recording(
         mocker,
         playbacks={
@@ -159,7 +159,7 @@ def test_ai_summary_expected_and_present_sends(client_app, meeting, smtpd, mocke
 
 def test_max_delay_sends_incomplete_recording(client_app, meeting, smtpd, mocker):
     """The max-delay safety net mails the available formats even when incomplete."""
-    meeting.meta_disable_recording_ai_summary = False
+    meeting.ai_summary = True
     _mock_recording(
         mocker,
         playbacks={"presentation": {"url": "https://bbb.test/playback/presentation"}},
