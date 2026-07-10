@@ -138,7 +138,7 @@ def test_save_existing_meeting_not_running(
     """Test that existing meeting can be updated when not running."""
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
     res.forms[0]["maxParticipants"] = 5
@@ -199,7 +199,7 @@ def test_save_existing_meeting_running(
     mocker.patch("b3desk.models.bbb.BBB.end", return_value={"returncode": "SUCCESS"})
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
 
     res = res.forms[0].submit()
@@ -634,7 +634,7 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
@@ -1059,9 +1059,9 @@ def test_delete_old_voiceBridges_with_form(
     res.forms[0]["voiceBridge"] = "999999999"
     res = res.forms[0].submit()
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
-
+    meeting = db.session.query(Meeting).scalar()
     res = client_app.get("/").follow()
-    res = client_app.post("/meeting/delete", {"id": "1"})
+    res = client_app.post("/meeting/delete", {"id": {meeting.id}})
     assert ("success", "Élément supprimé") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
@@ -1224,7 +1224,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     """Test that existing meeting can be updated when not running."""
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
     res.forms[0]["maxParticipants"] = 5

@@ -240,7 +240,9 @@ def test_admin_can_edit_meeting_for_other_user(
     mock_meeting_is_not_running,
 ):
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/meeting/edit/1?admin_mode=True", status=200)
+    res = client_app.get(
+        f"/meeting/edit/{meeting_1_user_2.id}?admin_mode=True", status=200
+    )
     assert res.template == "meeting/wizard.html"
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
@@ -261,5 +263,5 @@ def test_admin_can_read_meeting_infos(
 ):
     """Test read meeting infos."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/meeting/1", status=200)
+    res = client_app.get(f"/admin/meeting/{meeting_1_user_2.id}", status=200)
     assert res.text.count("922222222") == 1

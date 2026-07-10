@@ -216,7 +216,7 @@ def test_timeout_bbb_request(client_app, mocker, authenticated_user, meeting, ca
     mocker.patch(
         "requests.Session.send", side_effect=requests.Timeout("timeout message")
     )
-    client_app.get("/meeting/join/1/moderateur")
+    client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     assert "BBB API timeout error timeout message" in caplog.text
 
 
@@ -228,7 +228,7 @@ def test_timeout_bbb_get_recordings_request(
     )
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
-    client_app.get("/meeting/recordings/1")
+    client_app.get(f"/meeting/recordings/{meeting.id}")
     assert "BBB API timeout error timeout message" in caplog.text
 
 

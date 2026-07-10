@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import random
+import uuid
 from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
@@ -36,7 +37,9 @@ class AccessLevel(IntEnum):
 
 class MeetingAccess(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
+    meeting_id = db.Column(
+        db.String(255), db.ForeignKey("meeting.id"), primary_key=True
+    )
     level = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("User", backref="user_meeting_access")
@@ -46,7 +49,9 @@ class MeetingAccess(db.Model):
 favorite_table = db.Table(
     "favorite",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+    db.Column(
+        "meeting_id", db.String(255), db.ForeignKey("meeting.id"), primary_key=True
+    ),
 )
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
@@ -85,7 +90,7 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     title = db.Column(db.Unicode(4096))
     url = db.Column(db.Unicode(4096))
     nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
@@ -104,7 +109,10 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
 
 
 class Meeting(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid.uuid4()))
+    # Legacy BBB meeting identifier ("meeting-persistent-{old_id}--{owner_hash}"),
+    # kept stable across the switch of `id` from an incrementing Integer to a UUID.
+    bbb_meeting_id = db.Column(db.String(255))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
 

@@ -362,7 +362,7 @@ def test_rasing_time_before_refresh_in_waiting_meeting(
     """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
     mocker.patch("requests.Session.send", return_value=Response)
 
-    response = client_app.get("/meeting/join/1/moderateur")
+    response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     response = client_app.get(response.location)
     assert response.form["seconds_before_refresh"].value == "10"
     response = response.form.submit()
@@ -378,7 +378,7 @@ def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
     mocker.patch("requests.Session.send", return_value=Response)
 
     def increase_waiting_time(previous_waiting_time="10"):
-        response = client_app.get("/meeting/join/1/moderateur")
+        response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
         response = client_app.get(response.location)
         response.form["seconds_before_refresh"].value = previous_waiting_time
         response = response.form.submit()
