@@ -4,9 +4,40 @@
 {% endblock %}
 
 {% block main %}
+    {% if admin_mode %}
+        <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+            <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+            <div class="fr-collapse" id="breadcrumb-1">
+                <ol class="fr-breadcrumb__list">
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for("meetings.show_meeting_recording", meeting=meeting, admin_mode=admin_mode or None) }}">
+                            {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
+                        </a>
+                    </li>
+                </ol>
+            </div>
+        </nav>
+    {% endif %}
     <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Enregistrements de <em>{{meeting_name }}{% endtrans %}</em></h1>
+
     <div class="fr-mt-4w">
-        <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% if not admin_mode %}
+            <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% else %}
+            <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans meeting_name=meeting.name %}Retour à l'administration de {{ meeting_name }} {% endtrans %}
+            </a>
+        {% endif %}
     </div>
     <div class="recording-list">
         {% if meeting.bbb.is_running() %}
@@ -19,7 +50,7 @@
         <p>{% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
         <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
         {% for recording in meeting.bbb.get_recordings() %}
-            {% set recording_name = recording.name or recording.start_date.strftime("%Y-%m-%d %H:%M:%S") %}
+            {% set recording_name = recording.name or recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') %}
             <h3 class="fr-h3">
                 {{ recording_name }}
                 <button class="fr-btn fr-btn--secondary fr-icon-edit-line"  data-fr-opened="false" aria-controls="rename-video-{{ recording.recordID }}">
@@ -27,7 +58,7 @@
                 </button>
             </h3>
             <span>
-                {% trans start_date=recording.start_date|dateformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
+                {% trans start_date=recording.start_date|datetimeformat, expiration_date=(recording.end_date+config["RECORDING_DURATION"])|dateformat %}
                     Enregistré le {{ start_date }} -
                     Expire le {{ expiration_date }}
                 {% endtrans %}
@@ -78,11 +109,13 @@
                                 <td style="vertical-align: middle">{% trans %}Compte-rendu{% endtrans %}</td>
                                 <td style="vertical-align: middle">
                                     <div class="fr-grid-row fr-grid-row--gutters btn-actions">
-                                        <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ ai_summary.url }}" title="{% trans %}Ouvrir le compte-rendu HTML{% endtrans %}">{% trans %}HTML{% endtrans %}</a>
-                                        {% if ai_summary.pdf %}
+                                        {% if "url" in ai_summary %}
+                                            <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ ai_summary.url }}" title="{% trans %}Ouvrir le compte-rendu HTML{% endtrans %}">{% trans %}HTML{% endtrans %}</a>
+                                        {% endif %}
+                                        {% if "pdf" in ai_summary %}
                                             <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.pdf }}" title="{% trans %}Télécharger le compte-rendu PDF{% endtrans %}">{% trans %}PDF{% endtrans %}</a>
                                         {% endif %}
-                                        {% if ai_summary.md %}
+                                        {% if "md" in ai_summary %}
                                             <a class="fr-btn fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.md }}" title="{% trans %}Télécharger le compte-rendu Markdown{% endtrans %}">{% trans %}Markdown{% endtrans %}</a>
                                         {% endif %}
                                     </div>
@@ -224,6 +257,13 @@
         {% endfor %}
     </div>
     <div class="fr-mt-4w">
-        <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% if not admin_mode %}
+            <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% else %}
+            <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans meeting_name=meeting.name %}Retour à l'administration de {{ meeting_name }} {% endtrans %}
+            </a>
+        {% endif %}
     </div>
 {% endblock %}

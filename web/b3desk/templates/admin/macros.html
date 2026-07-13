@@ -1,9 +1,26 @@
 {% macro yesno(value) %}
-    {% if value %}
+    {% if value is none %}
+        <p class="fr-badge">{% trans %}Défaut{% endtrans %}</p>
+    {% elif value %}
         <p class="fr-badge fr-badge--success">{% trans %}Oui{% endtrans %}</p>
     {% else %}
-        <p class="fr-badge">{% trans %}Non{% endtrans %}</p>
+        <p class="fr-badge fr-badge--error">{% trans %}Non{% endtrans %}</p>
     {% endif %}
 {% endmacro %}
 
 {% macro value(v) %}{{ v if v is not none else '' }}{% endmacro %}
+
+{% macro breadcrumb(segments) %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                {% for segment in segments %}
+                    <li>
+                        <a class="fr-breadcrumb__link"{% if loop.last %} aria-current="page"{% endif %} href="{{ segment.href }}">{{ segment.label }}</a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </nav>
+{% endmacro %}

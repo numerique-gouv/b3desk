@@ -3,6 +3,7 @@ from functools import wraps
 from flask import abort
 from flask import current_app
 from flask import g
+from flask import request
 from flask import session
 from flask_pyoidc.user_session import UserSession
 
@@ -36,6 +37,11 @@ def admin_needed(view_function):
         return view_function(*args, **kwargs)
 
     return decorator
+
+
+def is_admin_mode():
+    """Whether admin mode is requested by an actual admin (display hint, not access control)."""
+    return "admin_mode" in request.args and bool(g.user) and g.user.admin
 
 
 def user_needed(view_function):

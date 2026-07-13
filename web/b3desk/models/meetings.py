@@ -147,9 +147,7 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
-    meta_disable_recording_ai_summary = db.Column(
-        db.Boolean, unique=False, default=True, nullable=False
-    )
+    ai_summary = db.Column(db.Boolean, unique=False, default=False, nullable=False)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
@@ -171,9 +169,7 @@ class Meeting(db.Model):
     @property
     def ai_summary_enabled(self):
         """Whether the AI summary recording format is expected for this meeting."""
-        return not self.meta_disable_recording_ai_summary and bool(
-            current_app.config["ENABLE_AI_SUMMARY"]
-        )
+        return bool(self.ai_summary) and self.owner.can_use_ai_summary
 
     @property
     def meetingID(self):
@@ -356,7 +352,7 @@ def create_and_save_shadow_meeting(user):
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
         autoStartRecording=False,
-        meta_disable_recording_ai_summary=True,
+        ai_summary=False,
         allowStartStopRecording=False,
         lockSettingsDisableMic=False,
         lockSettingsDisablePrivateChat=False,
