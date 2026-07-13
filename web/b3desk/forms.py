@@ -251,7 +251,7 @@ class MeetingWithRecordForm(MeetingForm):
         description=_(
             "La génération de résumé est basée sur l'audio de l'enregistrement."
         ),
-        default=False,
+        default=True,
     )
 
     def validate_ai_summary(self, field):

@@ -350,7 +350,37 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
     assert user.can_use_ai_summary is True
     meeting.ai_summary = True
-    client_app.get("/admin/manage-group-members/1/1", status=200)
+    client_app.post("/admin/manage-group-members/1/1", status=302)
     create_bbb_meeting(meeting, meeting.owner)
     assert meeting.ai_summary is False
     assert user.can_use_ai_summary is False
+
+
+def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
+    cli_runner,
+    client_app,
+    user,
+    user_2,
+    meeting,
+    group,
+    group_2,
+    authenticated_user,
+    mock_meeting_is_not_running,
+    mocker,
+):
+    """In delegation, the BBB room file-sharing flag follows the owner's ability, not the launcher's."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    # Owner alice (id 1) in Group 2: file sharing disabled.
+    client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
+    # Launcher berenice (id 2) in Group 1: file sharing enabled.
+    client_app.post("/admin/add-group-members/1", {"user_ids": [2]}, status=302)
+    assert meeting.owner_id == user.id
+    assert user.can_use_file_sharing is False
+    assert user_2.can_use_file_sharing is True
+
+    create = mocker.patch(
+        "b3desk.models.bbb.BBB.create",
+        return_value={"returncode": "SUCCESS", "voiceBridge": meeting.voiceBridge},
+    )
+    create_bbb_meeting(meeting, user_2)
+    assert create.call_args.kwargs["file_sharing"] is False

@@ -1,7 +1,11 @@
 """add group table and ai-summary.
 
+Replaces the ``meta_disable_recording_ai_summary`` column introduced by
+``fd08854f3582`` with the ``ai_summary`` column (inverted semantics) and adds
+the ``group`` and ``group_member`` tables.
+
 Revision ID: a3a6e932b2ae
-Revises: 791755877bb1
+Revises: fd08854f3582
 Create Date: 2026-06-23 12:11:52.642974
 
 """
@@ -11,9 +15,16 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "a3a6e932b2ae"
-down_revision = "791755877bb1"
+down_revision = "fd08854f3582"
 branch_labels = None
 depends_on = None
+
+
+meeting_table = sa.table(
+    "meeting",
+    sa.column("ai_summary", sa.Boolean),
+    sa.column("meta_disable_recording_ai_summary", sa.Boolean),
+)
 
 
 def upgrade():
@@ -43,6 +54,7 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("user_id", "group_id"),
     )
+
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column(
@@ -53,8 +65,33 @@ def upgrade():
             )
         )
 
+    op.execute(
+        meeting_table.update().values(
+            ai_summary=sa.not_(meeting_table.c.meta_disable_recording_ai_summary)
+        )
+    )
+
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.drop_column("meta_disable_recording_ai_summary")
+
 
 def downgrade():
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.add_column(
+            sa.Column(
+                "meta_disable_recording_ai_summary",
+                sa.Boolean(),
+                nullable=False,
+                server_default=sa.true(),
+            )
+        )
+
+    op.execute(
+        meeting_table.update().values(
+            meta_disable_recording_ai_summary=sa.not_(meeting_table.c.ai_summary)
+        )
+    )
+
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.drop_column("ai_summary")
 

@@ -1,33 +1,20 @@
 {% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
 
 {% block main %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
-                </li>
-                {% if group is none %}
-                    <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.create_group') }}">{% trans %}Créer groupe{% endtrans %}</a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
-                    </li>
-                    <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.edit_group', group=group) }}">
-                            {% trans %}Modifier{% endtrans %} {{ group.name }}
-                        </a>
-                    </li>
-                {% endif %}
-            </ol>
-        </div>
-    </nav>
+    {% set segments = [
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_groups'), 'label': _('Groupes')},
+    ] %}
+    {% if group is none %}
+        {% set segments = segments + [{'href': url_for('admin.create_group'), 'label': _('Créer groupe')}] %}
+    {% else %}
+        {% set segments = segments + [
+        {'href': url_for('admin.group_infos', group=group), 'label': group.name},
+        {'href': url_for('admin.edit_group', group=group), 'label': _('Modifier') ~ ' ' ~ group.name},
+        ] %}
+    {% endif %}
+    {{ breadcrumb(segments) }}
     {% if group is none %}
         <h1 class="fr-h2">{% trans %}Créer un groupe{% endtrans %}</h1>
         <form id="group-form" action="{{ url_for("admin.create_group") }}" method="post">

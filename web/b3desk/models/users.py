@@ -96,7 +96,10 @@ class User(db.Model):
         "Meeting", secondary="favorite", back_populates="favorite_of"
     )
     groups = db.relationship(
-        "Group", secondary="group_member", back_populates="members"
+        "Group",
+        secondary="group_member",
+        back_populates="members",
+        cascade_backrefs=False,
     )
 
     @property

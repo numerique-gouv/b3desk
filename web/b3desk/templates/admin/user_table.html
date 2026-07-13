@@ -50,7 +50,10 @@
                                         </td>
                                         {% if group and not add_members %}
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}" href="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}"></a>
+                                                <form method="post" action="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}">
+                                                    {% include 'meeting/csrf.html' %}
+                                                    <button type="submit" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}"></button>
+                                                </form>
                                             </td>
                                         {% endif %}
                                     </tr>

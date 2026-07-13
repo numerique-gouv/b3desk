@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -332,21 +333,19 @@ def test_admin_can_add_member_in_group(
     assert len(group.members) == 1
     assert ("success", "1 membre(s) ajouté(s) au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
-    res = client_app.get(res.location)
-    assert "1 membre" in res.text
+    assert "1 membre" in res.follow().text
 
 
 def test_admin_cannot_add_member_already_in_group(
     cli_runner, user, client_app, authenticated_user, group
 ):
-    """Test admin cannot add a user already in a group."""
+    """Test adding an already-member user again does not duplicate them."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     assert ("success", "0 membre(s) ajouté(s) au groupe") in res.flashes
-    res = client_app.get(res.location)
-    assert "1 membre" in res.text
     assert len(group.members) == 1
+    assert "1 membre" in res.follow().text
 
 
 def test_admin_can_remove_member_from_group(
@@ -355,7 +354,7 @@ def test_admin_can_remove_member_from_group(
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    res = client_app.get("/admin/manage-group-members/1/1", status=200)
+    res = client_app.post("/admin/manage-group-members/1/1", status=302)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
     assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
 
@@ -368,7 +367,7 @@ def test_admin_can_read_information_removing_non_member_user(
     res = client_app.get("/admin/manage-group-members/1", status=200)
     res.form["search"] = "alice@domain.tld"
     res = res.form.submit()
-    res = client_app.get("/admin/manage-group-members/1/2", status=200)
+    res = client_app.post("/admin/manage-group-members/1/2", status=302)
     assert ("error", "L'utilisateur ne fait pas partie du groupe") in res.flashes
 
 
@@ -414,12 +413,30 @@ def test_research_bar_with_letters_in_group_list_in_admin_page(
     assert "Group 1" in res.text
 
 
+def test_research_bar_is_kept_through_pagination_in_group_list_in_admin_page(
+    cli_runner, user, client_app, authenticated_user, mocker
+):
+    """The group search criteria must survive when navigating to another page."""
+    # 'team' matches Team-x (page 1) and Team-y (page 2) but not Squad, so
+    # without the filter page 2 would show Squad instead of Team-y.
+    for i, name in enumerate(["Team-x", "Squad", "Team-y"]):
+        db.session.add(Group(name=name, created_at=datetime(2024, 1, 1 + i)))
+    db.session.commit()
+    mocker.patch("b3desk.endpoints.admin.PER_PAGE", 1)
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.get("/admin/groups?search=team&page=2", status=200)
+    groups_table = res.pyquery("table#groups").text()
+    assert "Team-y" in groups_table
+    assert "Team-x" not in groups_table
+    assert "Squad" not in groups_table
+
+
 def test_admin_can_remove_group(
     cli_runner, user, client_app, authenticated_user, group, caplog
 ):
     """Test admin can remove group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/confirm-delete-group/1", status=302)
+    res = client_app.post("/admin/confirm-delete-group/1", status=302)
     assert ("success", "Le groupe a été supprimé") in res.flashes
     assert "Groupe 1 Group 1 deleted" in caplog.text
     groups = db.session.scalars(db.select(Group)).all()
@@ -530,7 +547,6 @@ def test_admin_can_delete_meeting_file(
 
     assert response.status_int == 200
     assert response.json["id"] == meeting_file.id
-    print(response)
     assert not MeetingFiles.query.all()
 
 

@@ -1,0 +1,3379 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-20 09:35+0200\n"
+"PO-Revision-Date: 2026-06-24 15:01+0000\n"
+"Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
+"Language-Team: Tamil <https://hosted.weblate.org/projects/B3desk/b3desk/ta/"
+">\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.7.dev0\n"
+
+#: web/b3desk/__init__.py:329 web/b3desk/endpoints/meeting_files.py:123
+#: web/b3desk/endpoints/meeting_files.py:182
+#: web/b3desk/endpoints/meeting_files.py:287
+#: web/b3desk/endpoints/meeting_files.py:477
+msgid ""
+"Le service de fichiers est temporairement indisponible. Veuillez réessayer "
+"dans quelques minutes."
+msgstr "கோப்பு பணி தற்காலிகமாக கிடைக்கவில்லை. சில நிமிடங்களில் மீண்டும் முயற்சிக்கவும்."
+
+#: web/b3desk/forms.py:43
+msgid "Lien web du fichier à ajouter"
+msgstr "சேர்க்க வேண்டிய கோப்பின் இணைய இணைப்பு"
+
+#: web/b3desk/forms.py:44
+msgid "Le lien web à entrer doit permettre de télécharger un fichier"
+msgstr "உள்ளிட வேண்டிய இணைய இணைப்பு, கோப்பைப் பதிவிறக்க உங்களை அனுமதிக்க வேண்டும்"
+
+#: web/b3desk/forms.py:47
+msgid "Le texte est trop long"
+msgstr "உரை மிக நீளமாக உள்ளது"
+
+#: web/b3desk/forms.py:51 web/b3desk/forms.py:106
+#: web/b3desk/templates/admin/meeting_infos.html:235
+msgid "Salle d'attente"
+msgstr "காத்திருப்பு அறை"
+
+#: web/b3desk/forms.py:53 web/b3desk/forms.py:108
+msgid ""
+"Placer les participants dans une salle d'attente lorsqu'ils rejoignent la "
+"réunion. L'organisateur ou le modérateur devra les accepter individuellement."
+msgstr ""
+"கூட்டத்தில் சேரும்போது பங்கேற்பாளர்களை காத்திருப்பு அறையில் வைக்கவும். அமைப்பாளர் அல்லது "
+"மதிப்பீட்டாளர் தனித்தனியாக அவற்றை ஏற்றுக்கொள்ள வேண்டும்."
+
+#: web/b3desk/forms.py:63
+msgid "Nom de la réunion"
+msgstr "கூட்டத்தின் பெயர்"
+
+#: web/b3desk/forms.py:66
+msgid ""
+"Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est "
+"visible des participants"
+msgstr ""
+"அறையை உருவாக்கியவுடன் இந்த தலைப்பை மாற்ற முடியாது. இந்தப் பெயர் பங்கேற்பாளர்களுக்குத் "
+"தெரியும்"
+
+#: web/b3desk/forms.py:69
+msgid "Ma réunion"
+msgstr "கூட்டம்"
+
+#: web/b3desk/forms.py:77 web/b3desk/templates/admin/meeting_infos.html:148
+msgid "Texte de bienvenue"
+msgstr "வரவேற்பு உரை"
+
+#: web/b3desk/forms.py:79
+msgid ""
+"Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
+"caractères max."
+msgstr "இந்த உரை பொது அரட்டையில் வரவேற்பு செய்தியாக தோன்றும். அதிகபட்சம் 150 எழுத்துகள்."
+
+#: web/b3desk/forms.py:82
+#, python-format
+msgid "Bienvenue dans cette réunion %(meeting_name)s."
+msgstr "இந்த %(meeting_name)s மீட்டிங்குக்கு வரவேற்கிறோம்."
+
+#: web/b3desk/forms.py:89 web/b3desk/templates/admin/meeting_infos.html:123
+msgid "Nombre maximal de participants"
+msgstr "பங்கேற்பாளர்களின் அதிகபட்ச பெயர்"
+
+#: web/b3desk/forms.py:90
+msgid "Limitez vos salons à 350 personnes pour plus de confort."
+msgstr "அதிக வசதிக்காக உங்கள் ஓய்வறைகளை 350 பேருக்கு வரம்பிடவும்."
+
+#: web/b3desk/forms.py:94 web/b3desk/templates/admin/meeting_infos.html:140
+msgid "Durée maximale (minutes)"
+msgstr "அதிகபட்ச கால அளவு (நிமிடங்கள்)"
+
+#: web/b3desk/forms.py:96
+msgid ""
+"A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h = "
+"120, 3h = 180, 4h = 240."
+msgstr ""
+"இந்த காலகட்டத்தின் முடிவில் சந்திப்பு தானாகவே நின்றுவிடும். 1h = 60, 2h = 120, 3h = "
+"180, 4h = 240."
+
+#: web/b3desk/forms.py:113 web/b3desk/templates/admin/meeting_infos.html:179
+msgid "Caméras visibles par les modérateurs uniquement"
+msgstr "மதிப்பீட்டாளர்களுக்கு மட்டுமே கேமராக்கள் தெரியும்"
+
+#: web/b3desk/forms.py:115
+msgid ""
+"Seuls vous et les modérateurs pouvez voir les caméras des autres "
+"participants quand cette option est activée."
+msgstr ""
+"இந்த விருப்பம் இயக்கப்பட்டிருக்கும் போது, மற்ற பங்கேற்பாளர்களின் கேமராக்களை நீங்களும் "
+"மதிப்பீட்டாளர்களும் மட்டுமே பார்க்க முடியும்."
+
+#: web/b3desk/forms.py:120 web/b3desk/templates/admin/meeting_infos.html:187
+msgid "Participants muets à leur arrivée"
+msgstr "பங்கேற்பாளர்கள் வந்தவுடன் ஒலியடக்கிறார்கள்"
+
+#: web/b3desk/forms.py:122
+msgid ""
+"Vous pouvez choisir de faire arriver les participants dans la salle avec "
+"leur micro fermé, pour un démarrage de réunion plus calme."
+msgstr ""
+"கூட்டத்தை அமைதியாகத் தொடங்க, பங்கேற்பாளர்கள் மைக்ரோஃபோன்களை மூடிய நிலையில் அறைக்குள் "
+"நுழைவதை நீங்கள் தேர்வு செய்யலாம்."
+
+#: web/b3desk/forms.py:127 web/b3desk/templates/admin/meeting_infos.html:195
+msgid "Caméras des participants"
+msgstr "பங்கேற்பாளர் கேமராக்கள்"
+
+#: web/b3desk/forms.py:129
+msgid ""
+"Vous pouvez autoriser ou interdire l'ouverture de la caméra des participants."
+msgstr "பங்கேற்பாளரின் கேமராவைத் திறப்பதை நீங்கள் அனுமதிக்கலாம் அல்லது தடை செய்யலாம்."
+
+#: web/b3desk/forms.py:135 web/b3desk/templates/admin/meeting_infos.html:203
+msgid "Micros des participants"
+msgstr "பங்கேற்பாளர் மைக்ரோஃபோன்கள்"
+
+#: web/b3desk/forms.py:137
+msgid ""
+"Vous pouvez autoriser ou interdire l'ouverture du microphone des "
+"participants."
+msgstr "பங்கேற்பாளர்கள் மைக்ரோஃபோனைத் திறப்பதை நீங்கள் அனுமதிக்கலாம் அல்லது தடை செய்யலாம்."
+
+#: web/b3desk/forms.py:143 web/b3desk/templates/admin/meeting_infos.html:211
+msgid "Discussions privées"
+msgstr "தனிப்பட்ட அரட்டைகள்"
+
+#: web/b3desk/forms.py:148 web/b3desk/templates/admin/meeting_infos.html:219
+msgid "Discussion publique (tchat)"
+msgstr "பொது விவாதம் (அரட்டை)"
+
+#: web/b3desk/forms.py:153 web/b3desk/templates/admin/meeting_infos.html:227
+msgid "Prise de note collaborative"
+msgstr "கூட்டு குறிப்பு எடுத்தல்"
+
+#: web/b3desk/forms.py:158 web/b3desk/templates/admin/meeting_infos.html:156
+msgid "Message à l'attention des modérateurs"
+msgstr "மதிப்பீட்டாளர்களுக்கு செய்தி"
+
+#: web/b3desk/forms.py:159
+msgid "150 caractères max"
+msgstr "அதிகபட்சம் 150 எழுத்துகள்"
+
+#: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:338
+msgid "Bienvenue aux modérateurs"
+msgstr "மதிப்பீட்டாளர்களை வரவேற்கிறோம்"
+
+#: web/b3desk/forms.py:164
+msgid "Le message est trop long"
+msgstr "செய்தி மிக நீளமாக உள்ளது"
+
+#: web/b3desk/forms.py:171 web/b3desk/templates/admin/meeting_infos.html:131
+msgid "Url de redirection après la réunion"
+msgstr "சந்திப்புக்குப் பிறகு முகவரி ஐத் திருப்பிவிடவும்"
+
+#: web/b3desk/forms.py:178
+msgid "Renouveler le lien modérateur"
+msgstr "மதிப்பீட்டாளர் இணைப்பைப் புதுப்பிக்கவும்"
+
+#: web/b3desk/forms.py:180 web/b3desk/forms.py:189
+msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
+msgstr ""
+"நீங்கள் அதை மாற்றினால், பழைய இணைப்புகளைத் தடுக்க இந்தக் குறியீடு உங்களை அனுமதிக்கிறது."
+
+#: web/b3desk/forms.py:187
+msgid "Renouveler le lien participants"
+msgstr "பங்கேற்பாளர் இணைப்பைப் புதுப்பிக்கவும்"
+
+#: web/b3desk/forms.py:196 web/b3desk/templates/admin/meeting_infos.html:107
+msgid "PIN"
+msgstr "முள்"
+
+#: web/b3desk/forms.py:198
+msgid "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)"
+msgstr "ஃபோன் மூலம் மீட்டிங்கில் சேர்வதற்கான பின் குறியீடு (9 இலக்கங்கள்)"
+
+#: web/b3desk/forms.py:204
+msgid "Entez un PIN de 9 chiffres"
+msgstr "9 இலக்க பின்னை உள்ளிடவும்"
+
+#: web/b3desk/forms.py:208
+msgid "Le code PIN est composé de chiffres uniquement"
+msgstr "பின் குறியீடு எண்களால் மட்டுமே ஆனது"
+
+#: web/b3desk/forms.py:211
+msgid "Le premier chiffre doit être différent de 0"
+msgstr "முதல் இலக்கமானது 0 இலிருந்து வேறுபட்டிருக்க வேண்டும்"
+
+#: web/b3desk/forms.py:217
+msgid "Code de connexion"
+msgstr "உள்நுழைவு குறியீடு"
+
+#: web/b3desk/forms.py:219
+#, python-format
+msgid "Code de connexion pour rejoindre la réunion %(sip)s"
+msgstr "மீட்டிங்கில் சேர்வதற்கான இணைப்புக் குறியீடு %(sip)s"
+
+#: web/b3desk/forms.py:220
+msgid "(utilisé dans le lien SIP)"
+msgstr "(SIP இணைப்பில் பயன்படுத்தப்பட்டது)"
+
+#: web/b3desk/forms.py:234 web/b3desk/templates/admin/meeting_infos.html:172
+msgid "Enregistrement manuel"
+msgstr "கைமுறையாக பதிவு செய்தல்"
+
+#: web/b3desk/forms.py:236
+msgid ""
+"Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
+msgstr "நீங்கள் எந்த நேரத்திலும் அறையைப் பதிவுசெய்யத் தொடங்கலாம் அல்லது நிறுத்தலாம்."
+
+#: web/b3desk/forms.py:241 web/b3desk/templates/admin/meeting_infos.html:164
+msgid "Enregistrement automatique"
+msgstr "தானாக சேமிக்கவும்"
+
+#: web/b3desk/forms.py:243
+msgid ""
+"L'enregistrement démarre automatiquement à l'ouverture de la salle et "
+"s'arrête à sa fermeture."
+msgstr "அறை திறக்கும் போது பதிவு தானாகவே தொடங்கும் மற்றும் மூடும் போது நிறுத்தப்படும்."
+
+#: web/b3desk/forms.py:251
+msgid "Nom de l'enregistrement"
+msgstr "பதிவு பெயர்"
+
+#: web/b3desk/forms.py:257
+msgid "Ajout d'utilisateur"
+msgstr "பயனரைச் சேர்க்கவும்"
+
+#: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:19
+msgid "Rechercher un utilisateur"
+msgstr "ஒரு பயனரைத் தேடுங்கள்"
+
+#: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:19
+msgid "Rechercher une réunion"
+msgstr "சந்திப்பைக் கண்டறியவும்"
+
+#: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4
+msgid "Mes salles de réunion"
+msgstr "எனது சந்திப்பு அறைகள்"
+
+#: web/b3desk/settings.py:664
+msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
+msgstr "மாநில வெபினாரின் உடனடி நிகழ்நிலை கூட்டத்திற்கான அழைப்பு"
+
+#: web/b3desk/settings.py:677
+msgid "Réunion improvisée"
+msgstr "திடீர் சந்திப்பு"
+
+#: web/b3desk/settings.py:680
+msgid " Lien Modérateur  "
+msgstr " மதிப்பீட்டாளர் இணைப்பு  "
+
+#: web/b3desk/settings.py:683
+msgid " Lien Participant  "
+msgstr " லீன் பங்கேற்பாளர்  "
+
+#: web/b3desk/settings.py:687
+msgid ""
+"Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, envoyez-"
+"lui l'un de ces liens :"
+msgstr ""
+"மதிப்பீட்டாளர்களை வரவேற்கிறோம். இந்தக் கூட்டத்திற்கு யாரையாவது அழைக்க, பின்வரும் "
+"இணைப்புகளில் ஒன்றை அவர்களுக்கு அனுப்பவும்:"
+
+#: web/b3desk/endpoints/join.py:68
+msgid "Aucune réunion ne correspond à ces paramètres"
+msgstr "இந்த அமைப்புகளுடன் எந்த சந்திப்புகளும் பொருந்தவில்லை"
+
+#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:147
+#: web/b3desk/endpoints/join.py:152 web/b3desk/endpoints/join.py:209
+#: web/b3desk/endpoints/join.py:217
+msgid "Le lien d'invitation que vous avez utilisé est invalide."
+msgstr "நீங்கள் பயன்படுத்திய அழைப்பு இணைப்பு தவறானது."
+
+#: web/b3desk/endpoints/join.py:184
+msgid "Lien invalide"
+msgstr "தவறான இணைப்பு"
+
+#: web/b3desk/endpoints/join.py:320
+msgid "Le captcha saisi est erroné"
+msgstr "உள்ளிட்ட கேப்ட்சா தவறானது"
+
+#: web/b3desk/endpoints/join.py:325
+msgid "Le code de connexion saisi est erroné"
+msgstr "உள்ளிட்ட இணைப்புக் குறியீடு தவறானது"
+
+#: web/b3desk/endpoints/meeting_files.py:55
+msgid "Vous ne pouvez pas modifier cet élément"
+msgstr "இந்த உருப்படியை நீங்கள் திருத்த முடியாது"
+
+#: web/b3desk/endpoints/meeting_files.py:169
+#: web/b3desk/endpoints/meeting_files.py:250
+#, python-brace-format
+msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
+msgstr "கோப்பு {title} மிகவும் பெரியது, {max_size}MB ஐ விட அதிகமாக இல்லை"
+
+#: web/b3desk/endpoints/meeting_files.py:212
+#: web/b3desk/endpoints/meeting_files.py:271
+#: web/b3desk/endpoints/meeting_files.py:318
+#: web/b3desk/endpoints/meeting_files.py:357
+msgid "Le fichier a déjà été mis en ligne"
+msgstr "கோப்பு ஏற்கனவே பதிவேற்றப்பட்டது"
+
+#: web/b3desk/endpoints/meeting_files.py:235
+#: web/b3desk/endpoints/meeting_files.py:242
+#, python-brace-format
+msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
+msgstr "{title} கோப்பு கிடைக்கவில்லை, பரிந்துரைக்கப்பட்ட முகவரி ஐச் சரிபார்க்கவும்"
+
+#: web/b3desk/endpoints/meeting_files.py:297
+#, python-brace-format
+msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
+msgstr "கோப்பு {path} மிகவும் பெரியது, {max_size}MB ஐ விட அதிகமாக இல்லை"
+
+#: web/b3desk/endpoints/meeting_files.py:365
+msgid "Erreur lors de l'écriture du fichier sur le disque"
+msgstr "கோப்பை வட்டுக்கு எழுதுவதில் பிழை"
+
+#: web/b3desk/endpoints/meeting_files.py:378
+msgid "Type de fichier non autorisé"
+msgstr "அங்கீகரிக்கப்படாத கோப்பு வகை"
+
+#: web/b3desk/endpoints/meeting_files.py:382
+msgid "Erreur de taille du fichier"
+msgstr "கோப்பு அளவு பிழை"
+
+#: web/b3desk/endpoints/meeting_files.py:397
+msgid "Fichier introuvable"
+msgstr "கோப்பு கிடைக்கவில்லை"
+
+#: web/b3desk/endpoints/meeting_files.py:405
+#: web/b3desk/endpoints/meetings.py:314
+msgid "Vous ne pouvez pas supprimer cet élément"
+msgstr "நீங்கள் இந்த உருப்படியை நீக்க முடியாது"
+
+#: web/b3desk/endpoints/meeting_files.py:413
+msgid "Fichier supprimé avec succès"
+msgstr "கோப்பு வெற்றிகரமாக நீக்கப்பட்டது"
+
+#: web/b3desk/endpoints/meeting_files.py:437
+msgid "La réunion n'est pas en cours"
+msgstr "கூட்டம் நடைபெறவில்லை"
+
+#: web/b3desk/endpoints/meetings.py:109
+msgid "Enregistrement renommé"
+msgstr "பதிவு பெயர் மாற்றப்பட்டது"
+
+#: web/b3desk/endpoints/meetings.py:112
+#, python-brace-format
+msgid "Impossible de modifier cet enregistrement : {code}, {message}"
+msgstr "இந்தப் பதிவை மாற்ற முடியவில்லை: {code}, {message}"
+
+#: web/b3desk/endpoints/meetings.py:128
+msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
+msgstr "புதிய சந்திப்புகளை உருவாக்க உங்களுக்கு உரிமை இல்லை"
+
+#: web/b3desk/endpoints/meetings.py:147 web/b3desk/endpoints/meetings.py:205
+msgid "Le formulaire contient des erreurs"
+msgstr "படிவத்தில் பிழைகள் உள்ளன"
+
+#: web/b3desk/endpoints/meetings.py:172
+#, python-brace-format
+msgid "{meeting_name} a bien été créé(e)"
+msgstr "{meeting_name} வெற்றிகரமாக உருவாக்கப்பட்டது"
+
+#: web/b3desk/endpoints/meetings.py:238
+#, python-format
+msgid "%(meeting_name)s modifications prises en compte"
+msgstr "%(meeting_name)s மாற்றங்கள் கணக்கில் எடுத்துக்கொள்ளப்பட்டன"
+
+#: web/b3desk/endpoints/meetings.py:263
+#, python-format
+msgid "Réunion « %(meeting_name)s » terminée"
+msgstr "“%(meeting_name)s” சந்திப்பு முடிந்தது"
+
+#: web/b3desk/endpoints/meetings.py:298
+#, python-brace-format
+msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
+msgstr "இந்த சந்திப்பிலிருந்து வீடியோக்களை நீக்க முடியவில்லை: {message}"
+
+#: web/b3desk/endpoints/meetings.py:304
+msgid "Élément supprimé"
+msgstr "நீக்கப்பட்ட உருப்படி"
+
+#: web/b3desk/endpoints/meetings.py:312
+msgid "Vous devez retirer les délégataires"
+msgstr "நீங்கள் பிரதிநிதிகளை அகற்ற வேண்டும்"
+
+#: web/b3desk/endpoints/meetings.py:327
+msgid "Vidéo supprimée"
+msgstr "வீடியோ நீக்கப்பட்டது"
+
+#: web/b3desk/endpoints/meetings.py:338
+#, python-format
+msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
+msgstr "இந்த வீடியோவை நீக்க முடியவில்லை: %(code)s, %(message)s"
+
+#: web/b3desk/endpoints/meetings.py:387
+msgid "L'utilisateur recherché n'existe pas"
+msgstr "நீங்கள் தேடும் பயனர் இல்லை"
+
+#: web/b3desk/endpoints/meetings.py:390
+msgid "L'utilisateur est déjà délégataire"
+msgstr "பயனர் ஏற்கனவே ஒரு சார்பாளர்"
+
+#: web/b3desk/endpoints/meetings.py:393
+msgid "Cet utilisateur est le propriétaire"
+msgstr "இந்த பயனர் உரிமையாளர்"
+
+#: web/b3desk/endpoints/meetings.py:400
+msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
+msgstr "இந்தக் கூட்டத்தில் இனி புதிய பிரதிநிதிகளைப் பெற முடியாது"
+
+#: web/b3desk/endpoints/meetings.py:413
+msgid "L'utilisateur a été ajouté aux délégataires"
+msgstr "பிரதிநிதிகளில் பயனர் சேர்க்கப்பட்டார்"
+
+#: web/b3desk/endpoints/meetings.py:434
+msgid "L'utilisateur ne fait pas partie des délégataires"
+msgstr "பயனர் பிரதிநிதிகளில் ஒருவர் அல்ல"
+
+#: web/b3desk/endpoints/meetings.py:441
+msgid "L'utilisateur a été retiré des délégataires"
+msgstr "பிரதிநிதிகளில் இருந்து பயனர் அகற்றப்பட்டார்"
+
+#: web/b3desk/models/meetings.py:317 web/b3desk/models/meetings.py:324
+msgid "Ce code PIN est déjà utilisé"
+msgstr "இந்த பின் ஏற்கனவே பயன்பாட்டில் உள்ளது"
+
+#: web/b3desk/models/meetings.py:331
+#, python-format
+msgid "la réunion de %(fullname)s"
+msgstr "%(fullname)s சந்திப்பு"
+
+#: web/b3desk/models/meetings.py:333
+#, python-format
+msgid "Bienvenue dans la réunion de %(fullname)s"
+msgstr "%(fullname)s மீட்டிங்குக்கு வரவேற்கிறோம்"
+
+#: web/b3desk/templates/brand.html:5
+msgid ""
+"République\n"
+"                    <br>Française"
+msgstr ""
+"குடியரசு\n"
+"<br>பிரெஞ்சு"
+
+#: web/b3desk/templates/brand.html:10 web/b3desk/templates/brand.html:11
+msgid "Menu"
+msgstr "பட்டியல்"
+
+#: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
+#: web/b3desk/templates/header-lasuite.html:35
+#: web/b3desk/templates/header-lasuite.html:37
+#: web/b3desk/templates/tools.html:42 web/b3desk/templates/tools.html:44
+msgid "Les services de La Suite numérique"
+msgstr "டிசிட்டல் தொகுப்பின் சேவைகள்"
+
+#: web/b3desk/templates/brand.html:25
+#, python-format
+msgid "Accueil - %(service_title)s - République Française"
+msgstr "முகப்பு - %(service_title)s - பிரெஞ்சு குடியரசு"
+
+#: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32
+msgid ""
+"L'instance est configurée en mode déboggage. Ne pas utiliser en production !"
+msgstr ""
+"நிகழ்வு பிழைத்திருத்த பயன்முறையில் கட்டமைக்கப்பட்டுள்ளது. உற்பத்தியில் பயன்படுத்த வேண்டாம்!"
+
+#: web/b3desk/templates/brand.html:42 web/b3desk/templates/jumbotron.html:59
+#, python-format
+msgid "%(service_tagline)s"
+msgstr "%(service_tagline)s"
+
+#: web/b3desk/templates/content.py:6
+msgid "Quelles sont les conditions d’accès pour accéder aux services ?"
+msgstr "சேவைகளை அணுகுவதற்கான அணுகல் நிபந்தனைகள் என்ன?"
+
+#: web/b3desk/templates/content.py:9
+msgid ""
+"Cette plateforme offre une solution complète et puissante, adaptée à de "
+"nombreux types d’événements en ligne, jusqu’à 350 participants (Séminaire, "
+"formation, table ronde, ateliers collaboratifs…)\n"
+"\n"
+"Pour qui ?\n"
+"\n"
+"L’accès à ce service est dédié aux agents de l’État et à leurs "
+"interlocuteurs (suivant le nom de domaine autorisé, demande sur "
+"contact@webinaire.numerique.gouv.fr) depuis un poste de travail sur site ou "
+"en télétravail ou un appareil mobile personnel ou professionnel.\n"
+"L’accès au Webinaire de L’Etat n’est pas ouvert aux collectivités "
+"territoriales, ni aux Universités et établissements d'enseignements du "
+"Ministère de l’enseignement supérieur.\n"
+"\n"
+"Par quel moyen ?\n"
+"\n"
+"• Sur site :\n"
+"Depuis votre ordinateur de travail en utilisant les navigateurs préconisés : "
+"Edge, Chromium, Chrome, et aussi Firefox pour l'éducation nationale\n"
+"\n"
+"• En télétravail :\n"
+"Depuis votre ordinateur de travail (VPN activé ou désactivé) les navigateurs "
+"préconisés sont : Edge, Chromium, Chrome, et aussi Firefox pour l'éducation "
+"nationale ou ordinateur personnel (Navigateurs Edge, Chrome, Chromium, "
+"Firefox)\n"
+"\n"
+"• Depuis vos appareils mobiles :\n"
+"- Téléphone portable ou tablette  (sans application, un lien participant ou "
+"modérateur suffit).\n"
+"- Sur IOS, le navigateur Safari est recommandé pour les iphone et ipad (IOS "
+"12.2+)\n"
+"- Sur Android, utiliser le navigateur Chrome par défaut (Android 6.0+)\n"
+msgstr ""
+"இந்த தளம் ஒரு முழுமையான மற்றும் சக்திவாய்ந்த தீர்வை வழங்குகிறது, பல வகையான நிகழ்நிலை "
+"நிகழ்வுகளுக்கு ஏற்றது, 350 பங்கேற்பாளர்கள் (கருத்தரங்கம், பயிற்சி, வட்ட மேசை, கூட்டுப் "
+"பட்டறைகள் போன்றவை)\n"
+"\n"
+"யாருக்காக? \n"
+"\n"
+"இந்தச் சேவைக்கான அணுகல் மாநில முகவர்கள் மற்றும் அவர்களின் தொடர்புகளுக்கு (அங்கீகரிக்கப்பட்ட "
+"டொமைன் பெயரைப் பொறுத்து, contact@webinaire.numerique.gouv.fr இல் உள்ள கோரிக்கையைப் "
+"பொறுத்து) ஆன்-சைட் பணிநிலையம் அல்லது டெலிவொர்க்கிங் அல்லது தனிப்பட்ட அல்லது தொழில்முறை "
+"மொபைல் சாதனத்திலிருந்து அர்ப்பணிக்கப்பட்டுள்ளது. \n"
+"மாநில வெபினாருக்கான அணுகல் உள்ளக அதிகாரிகளுக்கோ அல்லது உயர்கல்வி அமைச்சகத்தின் "
+"பல்கலைக்கழகங்கள் மற்றும் கல்வி நிறுவனங்களுக்கோ திறக்கப்படவில்லை. \n"
+"\n"
+"எதன் மூலம்? \n"
+"\n"
+"• தளத்தில்:\n"
+"பரிந்துரைக்கப்பட்ட உலாவிகளைப் பயன்படுத்தி உங்கள் பணிக் கணினியிலிருந்து: எட்ச், குரோமியம், "
+"குரோம் மற்றும் தேசியக் கல்விக்கான பயர்பாக்ச்\n"
+"\n"
+"• டெலிவேர்க்கிங்:\n"
+"உங்கள் பணி கணினியிலிருந்து (VPN செயல்படுத்தப்பட்டது அல்லது செயலிழக்கப்பட்டது) "
+"பரிந்துரைக்கப்படும் உலாவிகள்: எட்ச், குரோமியம், குரோம் மற்றும் தேசிய கல்வி அல்லது தனிப்பட்ட "
+"கணினிக்கான பயர்பாக்ச் (எட்ச், குரோம், குரோமியம், பயர்பாக்ச் உலாவிகள்)\n"
+"\n"
+"• உங்கள் மொபைல் சாதனங்களிலிருந்து:\n"
+"- மொபைல் போன் அல்லது டேப்லெட் (பயன்பாடு இல்லாமல், பங்கேற்பாளர் அல்லது மதிப்பீட்டாளர் இணைப்பு "
+"போதுமானது). \n"
+"- ஐஇமு இல், சஃபாரி உலாவி iPhone மற்றும் iPadக்கு பரிந்துரைக்கப்படுகிறது (IOS "
+"12.2+)\n"
+"- ஆண்ட்ராய்டு இல், இயல்புநிலை Chrome உலாவியைப் பயன்படுத்தவும் (Android 6.0+)\n"
+
+#: web/b3desk/templates/content.py:32
+msgid "Quel est le matériel nécessaire ?"
+msgstr "என்ன உபகரணங்கள் தேவை?"
+
+#: web/b3desk/templates/content.py:34
+msgid ""
+"Pour utiliser l’outil Webinaire de l’État, il vous suffit de disposer du "
+"matériel suivant :\n"
+"\n"
+"    • un ordinateur connecté à Internet\n"
+"    • un navigateur web (pas d’application à télécharger et à installer). Il "
+"est recommandé d’utiliser la dernière version de Microsoft Edge (Chromium), "
+"Chromium ou Google Chrome.\n"
+"    • une webcam,\n"
+"    • un micro et des haut-parleurs, ou, de préférence, un casque avec micro "
+"intégré.\n"
+"    • Le webinaire de l’Etat fonctionne également sur les appareils mobiles "
+"(sans application). Le navigateur Safari est recommandé pour les iphone et "
+"ipad (IOS 12.2+). Sur Android, utiliser le navigateur chrome par défaut "
+"(Android 6.0+)\n"
+"    • Pour rejoindre un webinaire, vous devez juste cliquer sur le lien "
+"envoyé par l’organisateur/modérateur depuis votre smartphone ou tablette "
+"sous Android ou iOS, la caméra et le micro sont activables suivant le "
+"contexte d’intervention."
+msgstr ""
+"மாநில வெபினார் கருவியைப் பயன்படுத்த, உங்களுக்கு பின்வரும் பொருட்கள் தேவை:\n"
+"\n"
+"• இணையத்துடன் இணைக்கப்பட்ட கணினி\n"
+"• இணைய உலாவி (பதிவிறக்க மற்றும் நிறுவ பயன்பாடுகள் இல்லை). Microsoft Edge "
+"(Chromium), நீலிரும்பு, குருமம் அல்லது Google Chrome இன் அண்மைக் கால பதிப்பைப் "
+"பயன்படுத்த பரிந்துரைக்கப்படுகிறது. \n"
+"• ஒரு வெப்கேம்,\n"
+"• மைக்ரோஃபோன் மற்றும் ச்பீக்கர்கள், அல்லது, உள்ளமைக்கப்பட்ட மைக்ரோஃபோனுடன் கூடிய எட்செட். \n"
+"• மாநில வெபினார் மொபைல் சாதனங்களிலும் வேலை செய்கிறது (பயன்பாடு இல்லை). சஃபாரி உலாவி "
+"iPhone மற்றும் iPadக்கு பரிந்துரைக்கப்படுகிறது (IOS 12.2+). ஆண்ட்ராய்டு இல், இயல்புநிலை "
+"Chrome உலாவியைப் பயன்படுத்தவும் (Android 6.0+)\n"
+"• webinar இல் சேர, உங்கள் ச்மார்ட்ஃபோன் அல்லது Android அல்லது ஐஇமு இயங்கும் "
+"டேப்லெட்டிலிருந்து அமைப்பாளர்/மதிப்பீட்டாளர் அனுப்பிய இணைப்பைக் சொடுக்கு செய்தால் போதும், "
+"தலையீட்டின் சூழலைப் பொறுத்து கேமரா மற்றும் மைக்ரோஃபோனைச் செயல்படுத்தலாம்."
+
+#: web/b3desk/templates/content.py:46
+msgid "Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"
+msgstr "உள்நுழைய எனது ச்மார்ட்போன் அல்லது டேப்லெட்டைப் பயன்படுத்தலாமா?"
+
+#: web/b3desk/templates/content.py:49
+msgid ""
+"Le Webinaire de l’Etat fonctionne également sur les appareils mobiles par un "
+"simple lien (sans application) sur le portail ou dans le séminaire. Sur les "
+"iphone et ipad (IOS 12.2+) le navigateur Safari est recommandé. Sur Android, "
+"utiliser le navigateur chrome par défaut (Android 6.0+).\n"
+msgstr ""
+"ச்டேட் வெபினார் மொபைல் சாதனங்களில் ஒரு எளிய இணைப்பு மூலம் (பயன்பாடு இல்லாமல்) போர்ட்டலில் "
+"அல்லது கருத்தரங்கில் செயல்படுகிறது. iPhoneகள் மற்றும் iPadகளில் (IOS 12.2+) Safari "
+"உலாவி பரிந்துரைக்கப்படுகிறது. ஆண்ட்ராய்டு இல், இயல்புநிலை Chrome உலாவியைப் "
+"பயன்படுத்தவும் (Android 6.0+).\n"
+
+#: web/b3desk/templates/content.py:54
+msgid "Comment créer un séminaire ?"
+msgstr "ஒரு கருத்தரங்கை எவ்வாறு உருவாக்குவது?"
+
+#: web/b3desk/templates/content.py:56
+msgid ""
+"Si vous êtes un agent de l’état, vous pouvez :\n"
+"- Créer des séminaires immédiatement en renseignant votre courriel "
+"professionnel sur .gouv.fr et suivant les noms de domaines autorisés.\n"
+"- Créer un compte pour créer et configurer des séminaires que vous pourrez "
+"retrouver facilement dans votre espace ainsi que les liens de connexions, "
+"les replays des enregistrements…\n"
+"- Pour les personnels du MENJS vous devez utiliser le bouton « HUB "
+"d'authentification Éducation, Jeunesse et Sports. »\n"
+"\n"
+"Si votre nom de domaine n’est pas reconnu, et que vous pensez être éligible "
+"au service, envoyez un mail à contact@webinaire.numerique.gouv.fr\n"
+msgstr ""
+"நீங்கள் ஒரு அரசு ஊழியராக இருந்தால், உங்களால் முடியும்:\n"
+"- .gouv.fr இல் உங்கள் தொழில்முறை மின்னஞ்சலை உள்ளிட்டு, அங்கீகரிக்கப்பட்ட டொமைன் பெயர்களைப் "
+"பின்பற்றி உடனடியாக கருத்தரங்குகளை உருவாக்கவும். \n"
+"- உங்கள் இடத்தில் நீங்கள் எளிதாகக் கண்டறியக்கூடிய கருத்தரங்குகள் மற்றும் இணைப்பு இணைப்புகள், "
+"ரெக்கார்டிங்குகளின் ரீப்ளேக்கள் போன்றவற்றை உருவாக்க மற்றும் கட்டமைக்க ஒரு கணக்கை "
+"உருவாக்கவும்.\n"
+"- MENJS ஊழியர்களுக்கு நீங்கள் \"கல்வி, இளைஞர்கள் மற்றும் விளையாட்டு அங்கீகார நடுவண்\" "
+"பொத்தானைப் பயன்படுத்த வேண்டும். »\n"
+"\n"
+"உங்கள் டொமைன் பெயர் அங்கீகரிக்கப்படவில்லை என்றால், நீங்கள் சேவைக்கு தகுதியானவர் என்று நீங்கள் "
+"நினைத்தால், contact@webinaire.numerique.gouv.fr க்கு மின்னஞ்சல் அனுப்பவும்\n"
+
+#: web/b3desk/templates/content.py:66
+msgid "Comment créer un compte ?"
+msgstr "கணக்கை உருவாக்குவது எப்படி?"
+
+#: web/b3desk/templates/content.py:68
+msgid ""
+"En tant qu’agent de l’État, si vous organisez régulièrement des séminaires "
+"vous pouvez créer un compte pour organiser et conserver facilement vos "
+"séminaires sur mesure.\n"
+"\n"
+"Vous avez la possibilité créer une ou plusieurs salles de séminaire et les "
+"configurer suivant le type de dispositifs adaptés (ex : Séminaire, "
+"Formation, classe virtuelle, Conférence interactive, Plénière, Table ronde, "
+"Assemblée générale, Ateliers collaboratifs ou d’idéation, Comités en grand "
+"nombre, …etc.)."
+msgstr ""
+"ஒரு அரசாங்க அதிகாரியாக, நீங்கள் கருத்தரங்குகளை தவறாமல் ஏற்பாடு செய்தால், உங்களது "
+"தையல்காரர் கருத்தரங்குகளை எளிதாக ஒழுங்கமைக்கவும் சேமிக்கவும் ஒரு கணக்கை உருவாக்கலாம். \n"
+"\n"
+"நீங்கள் ஒன்று அல்லது அதற்கு மேற்பட்ட கருத்தரங்கு அறைகளை உருவாக்கி, பொருத்தமான சாதனங்களின் "
+"வகைக்கு ஏற்ப அவற்றை உள்ளமைக்கலாம் (எ.கா.: கருத்தரங்கு, பயிற்சி, மெய்நிகர் வகுப்பு, "
+"ஊடாடும் மாநாடு, முழுமையான, வட்ட மேசை, பொதுச் அவை, கூட்டு அல்லது சிந்தனை பட்டறைகள், "
+"அதிக எண்ணிக்கையிலான குழுக்கள் போன்றவை)."
+
+#: web/b3desk/templates/content.py:74
+msgid "Comment inviter les participants/ modérateurs"
+msgstr "பங்கேற்பாளர்கள்/மதிப்பீட்டாளர்களை எப்படி அழைப்பது"
+
+#: web/b3desk/templates/content.py:76
+msgid ""
+"L’organisateur qui a créé le séminaire peut partager le lien :\n"
+"« Participants » qu’ils soient de l’administration ou de l’extérieur "
+"(partenaires, prestataires, entreprises, citoyens…)\n"
+"« Organisateurs/modérateurs » qui géreront avec vous le séminaire."
+msgstr ""
+"கருத்தரங்கை உருவாக்கிய அமைப்பாளர் இணைப்பைப் பகிரலாம்:\n"
+"நிர்வாகத்திலிருந்தோ அல்லது வெளியில் இருந்தோ \"பங்கேற்பாளர்கள்\" (கூட்டாளர்கள், பணி "
+"வழங்குநர்கள், வணிகங்கள், குடிமக்கள் போன்றவை)\n"
+"உங்களுடன் கருத்தரங்கை நிர்வகிப்பவர்கள் \"அமைப்பாளர்கள்/மதிப்பீட்டாளர்கள்\"."
+
+#: web/b3desk/templates/content.py:82
+msgid "Rejoindre un Webinaire en appel téléphonique ?"
+msgstr "தொலைபேசி அழைப்பு மூலம் Webinar இல் சேரவா?"
+
+#: web/b3desk/templates/content.py:84
+msgid ""
+"Une fois dans le séminaire, il est possible d’utiliser aussi son téléphone "
+"fixe ou mobile pour suivre le séminaire.\n"
+"Les informations sont visibles dans le séminaire sur discussion publique. "
+"Vous pouvez transmettre ses informations composées du numéro d’appel et du "
+"code du séminaire :\n"
+"\n"
+"Pour rejoindre cette conférence par téléphone, composez-le :\n"
+"+33 1 XX XX XX XX\n"
+"Puis entrez le code d’accès XXXXX suivi de la touche #.\n"
+"Une fois dans la conférence, appuyez sur la touche « 0 » de votre téléphone "
+"afin d’activer ou de désactiver votre microphone."
+msgstr ""
+"கருத்தரங்கில் ஒருமுறை, கருத்தரங்கைப் பின்தொடர உங்கள் லேண்ட்லைன் அல்லது மொபைல் ஃபோனைப் "
+"பயன்படுத்தவும் முடியும். \n"
+"பொது விவாதம் குறித்த கருத்தரங்கில் செய்தி தெரியும். தொலைபேசி எண் மற்றும் கருத்தரங்கு "
+"குறியீட்டைக் கொண்ட அவர்களின் தகவலை நீங்கள் அனுப்பலாம்:\n"
+"\n"
+"தொலைபேசி மூலம் இந்த மாநாட்டில் சேர, டயல் செய்யுங்கள்:\n"
+"+33 1 XX XX XX XX\n"
+"பின்னர் அணுகல் குறியீட்டை உள்ளிடவும் XXXXX அடுத்து # விசையை உள்ளிடவும். \n"
+"மாநாட்டில் ஒருமுறை, உங்கள் மைக்ரோஃபோனை இயக்க அல்லது செயலிழக்கச் செய்ய, உங்கள் மொபைலில் "
+"உள்ள “0” விசையை அழுத்தவும்."
+
+#: web/b3desk/templates/content.py:94
+msgid "J'ai des perturbations audio ou vidéo ?"
+msgstr "எனக்கு ஆடியோ அல்லது வீடியோ தொந்தரவுகள் உள்ளதா?"
+
+#: web/b3desk/templates/content.py:96
+msgid ""
+"\n"
+"Pour l’audio, rapprochez-vous de votre borne wifi, ou/et coupez votre "
+"caméra\n"
+"Nous vous invitons à utiliser un casque pour une meilleure écoute et pour "
+"que les bruits de fond autour de vous ne perturbent pas les autres "
+"participants.\n"
+"\n"
+"Pour la vidéo, baisser la résolution de votre caméra lors de votre connexion "
+"sur le Webinaire\n"
+"\n"
+"La fonctionnalité partage d’écran est la plus consommatrice de bande "
+"passante devant la vidéo. Si vous êtes organisateur et que votre bande "
+"passante est faible, elle peut dégrader la qualité de votre séminaire.\n"
+"\n"
+"Pour utiliser moins de bande passante et profiter du service dans les "
+"meilleures conditions, avec beaucoup de participants, nous recommandons de "
+"vous connecter hors VPN.\n"
+msgstr ""
+"\n"
+"ஆடியோவிற்கு, உங்கள் வைஃபை டெர்மினலுக்கு அருகில் செல்லவும் அல்லது/மற்றும் உங்கள் கேமராவை "
+"ஆஃப் செய்யவும்\n"
+"உங்களைச் சுற்றியுள்ள பின்னணி இரைச்சல் மற்ற பங்கேற்பாளர்களைத் தொந்தரவு செய்யாமல் இருக்க, "
+"எட்ஃபோன்களை சிறப்பாகக் கேட்க உங்களை அழைக்கிறோம். \n"
+"\n"
+"வீடியோவிற்கு, Webinar உடன் இணைக்கும்போது உங்கள் கேமராவின் தெளிவுத்திறனைக் குறைக்கவும்\n"
+"\n"
+"ச்கிரீன் சேரிங் நற்பொருத்தம் வீடியோவை விட அதிக அலைவரிசையை பயன்படுத்துகிறது. நீங்கள் ஒரு "
+"அமைப்பாளராக இருந்து, உங்கள் அலைவரிசை குறைவாக இருந்தால், அது உங்கள் கருத்தரங்கின் தரத்தைக் "
+"குறைக்கலாம். \n"
+"\n"
+"குறைந்த அலைவரிசையைப் பயன்படுத்தவும், சிறந்த சூழ்நிலையில் பல பங்கேற்பாளர்களுடன் சேவையை "
+"அனுபவிக்கவும், VPNக்கு வெளியே இணைக்க பரிந்துரைக்கிறோம்.\n"
+
+#: web/b3desk/templates/content.py:109
+msgid "Besoin de contacter l'équipe du Webinaire de l’Etat ?"
+msgstr "மாநில வெபினார் குழுவை தொடர்பு கொள்ள வேண்டுமா?"
+
+#: web/b3desk/templates/content.py:110
+msgid "contact@webinaire.numerique.gouv.fr"
+msgstr "contact@webinaire.numerique.gouv.fr"
+
+#: web/b3desk/templates/content.py:114
+msgid "Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"
+msgstr "தேசிய கல்வி அமைச்சின் குழுவை தொடர்பு கொள்ள வேண்டுமா?"
+
+#: web/b3desk/templates/content.py:117
+msgid ""
+"Rendez-vous sur votre portail d'assistance académique https://"
+"www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur "
+"Apps.education.fr"
+msgstr ""
+"உங்கள் கல்வி உதவி போர்ட்டலுக்குச் செல்லவும் https://www.education.gouv.fr/la-"
+"messagerie-professionnelle-3446 அல்லது Apps.education.fr"
+
+#: web/b3desk/templates/faq.html:4
+msgid "FAQ - Modalités d'accès"
+msgstr "அடிக்கடி கேட்கப்படும் கேள்விகள் - அணுகல் விதிமுறைகள்"
+
+#: web/b3desk/templates/footer.html:4
+msgid ""
+"Service accessible suivant les politiques de sécurité de votre ministère."
+msgstr "உங்கள் துறையின் பாதுகாப்புக் கொள்கைகளின்படி அணுகக்கூடிய பணி."
+
+#: web/b3desk/templates/footer.html:5
+msgid ""
+"Si l'audio ou la vidéo ne fonctionne pas, veuillez ré-essayer en vous "
+"déconnectant de votre réseau internet professionnel RIE."
+msgstr ""
+"ஆடியோ அல்லது வீடியோ வேலை செய்யவில்லை என்றால், உங்கள் RIE தொழில்முறை இணைய நெட்வொர்க்கில் "
+"இருந்து துண்டித்து மீண்டும் முயற்சிக்கவும்."
+
+#: web/b3desk/templates/footer.html:6
+msgid "en savoir plus"
+msgstr "மேலும் அறிய"
+
+#: web/b3desk/templates/footer.html:20
+msgid ""
+"Service proposé par la Direction interministérielle du numérique et la "
+"Direction du numérique pour l'éducation"
+msgstr "இடைநிலை டிசிட்டல் இயக்குநரகம் மற்றும் கல்விக்கான டிசிட்டல் இயக்குநரகம் வழங்கும் பணி"
+
+#: web/b3desk/templates/footer.html:23
+msgid "Le code source est ouvert et les contributions sont bienvenues."
+msgstr "மூலக் குறியீடு திறக்கப்பட்டுள்ளது மற்றும் பங்களிப்புகள் வரவேற்கப்படுகின்றன."
+
+#: web/b3desk/templates/footer.html:24
+msgid "Voir le code source - nouvelle fenêtre"
+msgstr "மூலக் குறியீட்டைப் பார்க்கவும் - புதிய சாளரம்"
+
+#: web/b3desk/templates/footer.html:24
+msgid "Voir le code source"
+msgstr "மூலக் குறியீட்டைப் பார்க்கவும்"
+
+#: web/b3desk/templates/footer.html:27
+msgid ""
+"Ceci est une version de développement et ne doit en aucun cas être déployée "
+"dans des environnements de production."
+msgstr ""
+"இது ஒரு வளர்ச்சி வெளியீடு மற்றும் எந்த சூழ்நிலையிலும் விளைவாக்கம் சூழல்களில் "
+"பயன்படுத்தப்படக்கூடாது."
+
+#: web/b3desk/templates/footer.html:55
+msgid "Accessibilité : non conforme"
+msgstr "அணுகல்தன்மை: இணக்கமற்றது"
+
+#: web/b3desk/templates/footer.html:58
+#: web/b3desk/templates/footer/mentions_legales.html:5
+msgid "Mentions légales"
+msgstr "சட்ட அறிவிப்புகள்"
+
+#: web/b3desk/templates/footer.html:61
+msgid "Données personnelles et cookies"
+msgstr "தனிப்பட்ட தரவு மற்றும் குக்கீகள்"
+
+#: web/b3desk/templates/footer.html:64 web/b3desk/templates/footer/cgu.html:5
+msgid "Conditions générales d’utilisation"
+msgstr "பயன்பாட்டின் பொதுவான நிபந்தனைகள்"
+
+#: web/b3desk/templates/footer.html:68 web/b3desk/templates/footer/cgu.html:62
+#: web/b3desk/templates/footer/cgu.html:63
+msgid "Contact"
+msgstr "தொடர்பு"
+
+#: web/b3desk/templates/header-lasuite.html:13
+#: web/b3desk/templates/header-lasuite.html:14
+#, python-format
+msgid "Accueil - %(service_title)s"
+msgstr "Accueil - %(service_title)s"
+
+#: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
+#: web/b3desk/templates/meeting/files.html:57
+#: web/b3desk/templates/meeting/files.html:79
+#: web/b3desk/templates/meeting/files.html:152
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
+#: web/b3desk/templates/meeting/modals/delete.html:8
+#: web/b3desk/templates/meeting/modals/delete.html:9
+#: web/b3desk/templates/meeting/modals/invite.html:8
+#: web/b3desk/templates/meeting/modals/invite.html:9
+#: web/b3desk/templates/meeting/recordings.html:87
+#: web/b3desk/templates/meeting/recordings.html:88
+#: web/b3desk/templates/meeting/recordings.html:128
+#: web/b3desk/templates/meeting/recordings.html:129
+#: web/b3desk/templates/meeting/recordings.html:171
+#: web/b3desk/templates/meeting/recordings.html:172
+msgid "Fermer"
+msgstr "மூடு"
+
+#: web/b3desk/templates/jumbotron.html:9
+#: web/b3desk/templates/jumbotron.html:114
+#, python-format
+msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
+msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
+msgstr[0] "Actuellement, il ஒய் a <b>%(count)s</b> webinaire"
+msgstr[1] "தற்போது <b>%(count)s</b> webinars உள்ளன"
+
+#: web/b3desk/templates/jumbotron.html:14
+#: web/b3desk/templates/jumbotron.html:119
+#, python-format
+msgid "et <b>%(count)s</b> participant"
+msgid_plural "et <b>%(count)s</b> participants"
+msgstr[0] "மற்றும் <b>%(count)s</b> பங்கேற்பாளர்"
+msgstr[1] "மற்றும் <b>%(count)s</b> பங்கேற்பாளர்கள்"
+
+#: web/b3desk/templates/jumbotron.html:19
+#: web/b3desk/templates/jumbotron.html:124
+#, python-format
+msgid ""
+" sur une capacité moyenne pour la plateforme de %(max_participants)s "
+"participants."
+msgstr " %(max_participants)s பங்கேற்பாளர்களின் தளத்திற்கான சராசரி திறன்."
+
+#: web/b3desk/templates/jumbotron.html:35
+msgid "Ouvrir une nouvelle réunion temporaire"
+msgstr "புதிய தற்காலிக சந்திப்பைத் திறக்கவும்"
+
+#: web/b3desk/templates/jumbotron.html:37
+msgid "Lancer la réunion - nouvelle fenêtre"
+msgstr "சந்திப்பைத் தொடங்கவும் - புதிய சாளரம்"
+
+#: web/b3desk/templates/jumbotron.html:38
+msgid "Ouvrir une réunion temporaire"
+msgstr "தற்காலிக சந்திப்பைத் திறக்கவும்"
+
+#: web/b3desk/templates/jumbotron.html:68
+#: web/b3desk/templates/jumbotron.html:106
+msgid "Vous organisez régulièrement des réunions"
+msgstr "நீங்கள் அடிக்கடி கூட்டங்களை ஏற்பாடு செய்கிறீர்கள்"
+
+#: web/b3desk/templates/jumbotron.html:70
+#: web/b3desk/templates/jumbotron.html:107
+msgid ""
+"Vous êtes agent de l'État, créez un compte pour organiser et conserver vos "
+"réunions."
+msgstr ""
+"நீங்கள் ஒரு அரசாங்க அதிகாரி, உங்கள் கூட்டங்களை ஒழுங்கமைக்கவும் சேமிக்கவும் ஒரு கணக்கை "
+"உருவாக்கவும்."
+
+#: web/b3desk/templates/jumbotron.html:71
+#: web/b3desk/templates/jumbotron.html:108
+msgid "Se connecter ou créer un compte"
+msgstr "உள்நுழையவும் அல்லது கணக்கை உருவாக்கவும்"
+
+#: web/b3desk/templates/language-selector.html:6
+msgid "Sélectionner une langue"
+msgstr "ஒரு மொழியைத் தேர்ந்தெடுக்கவும்"
+
+#: web/b3desk/templates/tools.html:7
+msgid "Modalités d'accès"
+msgstr "அணுகல் விதிமுறைகள்"
+
+#: web/b3desk/templates/tools.html:24
+msgid "Ouvrir la page d'administration"
+msgstr "நிர்வாகி பக்கத்தைத் திறக்கவும்"
+
+#: web/b3desk/templates/admin/user_infos.html:81
+#: web/b3desk/templates/tools.html:25
+msgid "Admin"
+msgstr "நிர்வாகி"
+
+#: web/b3desk/templates/tools.html:33
+msgid "se déconnecter"
+msgstr "துண்டிக்கவும்"
+
+#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:52
+msgid "S’identifier"
+msgstr "அடையாளங்காட்டி"
+
+#: web/b3desk/templates/admin/home.html:21
+msgid "Liste des utilisateurs"
+msgstr "பயனர் பட்டியல்"
+
+#: web/b3desk/templates/admin/home.html:22
+msgid "Utilisateurs"
+msgstr "பயனர்கள்"
+
+#: web/b3desk/templates/admin/home.html:32
+msgid "Liste des réunions"
+msgstr "கூட்டங்களின் பட்டியல்"
+
+#: web/b3desk/templates/admin/home.html:33
+msgid "Réunions"
+msgstr "கூட்டங்கள்"
+
+#: web/b3desk/templates/admin/macros.html:3
+#: web/b3desk/templates/meeting/files.html:188
+#: web/b3desk/templates/meeting/files.html:191
+msgid "Oui"
+msgstr "ஓய்"
+
+#: web/b3desk/templates/admin/macros.html:5
+#: web/b3desk/templates/meeting/files.html:188
+#: web/b3desk/templates/meeting/files.html:191
+msgid "Non"
+msgstr "இல்லை"
+
+#: web/b3desk/templates/admin/meeting_infos.html:24
+#: web/b3desk/templates/meeting/form.html:56
+msgid "Modifier"
+msgstr "மாற்றியமைப்பவர்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:29
+msgid "Voir le propriétaire"
+msgstr "உரிமையாளரைக் காண்க"
+
+#: web/b3desk/templates/admin/meeting_infos.html:43
+#: web/b3desk/templates/admin/meeting_table.html:10
+#: web/b3desk/templates/admin/user_infos.html:33
+#: web/b3desk/templates/admin/user_table.html:10
+msgid "Identifiant"
+msgstr "அடையாளங்காட்டி"
+
+#: web/b3desk/templates/admin/meeting_infos.html:51
+#: web/b3desk/templates/admin/meeting_table.html:11
+#: web/b3desk/templates/admin/user_infos.html:41
+#: web/b3desk/templates/admin/user_table.html:11
+#: web/b3desk/templates/footer/donnees_personnelles.html:54
+msgid "Nom"
+msgstr "எண்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:59
+msgid "Propriétaire"
+msgstr "உரிமையாளர்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:67
+#: web/b3desk/templates/admin/meeting_table.html:34
+msgid "Réunion silencieuse (shadow_meeting)"
+msgstr "அமைதியான சந்திப்பு (நிழல்_சந்திப்பு)"
+
+#: web/b3desk/templates/admin/meeting_infos.html:75
+#: web/b3desk/templates/admin/user_infos.html:65
+msgid "Dernière connexion"
+msgstr "கடைசி இணைப்பு"
+
+#: web/b3desk/templates/admin/meeting_infos.html:83
+#: web/b3desk/templates/admin/user_infos.html:73
+msgid "Création"
+msgstr "உருவாக்கம்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:91
+msgid "Dernière modification"
+msgstr "கடைசி மாற்றம்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:99
+msgid "n° de téléphone"
+msgstr "தொலைபேசி எண்"
+
+#: web/b3desk/templates/admin/meeting_infos.html:115
+msgid "Code de connexion (visio_code)"
+msgstr "இணைப்பு குறியீடு (visio_code)"
+
+#: web/b3desk/templates/admin/meeting_table.html:12
+msgid "Visio-code"
+msgstr "விசியோ-குறியீடு"
+
+#: web/b3desk/templates/admin/meeting_table.html:13
+#: web/b3desk/templates/admin/user_table.html:14
+msgid "Consulter"
+msgstr "அறிவுரை செய்ய"
+
+#: web/b3desk/templates/admin/meeting_table.html:30
+#, python-format
+msgid "Éditer %(meeting_name)s"
+msgstr "எடிட்டர் %(meeting_name)s"
+
+#: web/b3desk/templates/admin/meetings.html:25
+msgid "Aucune réunion ne correspond à cette recherche."
+msgstr "இந்தத் தேடலுடன் எந்த சந்திப்புகளும் பொருந்தவில்லை."
+
+#: web/b3desk/templates/admin/meetings.html:32
+#, python-format
+msgid "%(count)s réunion correspondant aux critères"
+msgid_plural "%(count)s réunions correspondant aux critères"
+msgstr[0] "%(count)s சந்திப்பு அளவுகோல்களுடன் பொருந்துகிறது"
+msgstr[1] "%(count)s சந்திப்புகள் நிபந்தனைகளுடன் பொருந்துகின்றன"
+
+#: web/b3desk/templates/admin/meetings.html:38
+#, python-format
+msgid "%(count)s réunion"
+msgid_plural "%(count)s réunions"
+msgstr[0] "%(count)s ரீயூனியன்"
+msgstr[1] "%(count)s கூட்டங்கள்"
+
+#: web/b3desk/templates/admin/paging.html:7
+#: web/b3desk/templates/admin/paging.html:9
+msgid "Première page"
+msgstr "முதல் பக்கம்"
+
+#: web/b3desk/templates/admin/paging.html:14
+#: web/b3desk/templates/admin/paging.html:16
+msgid "Page précédente"
+msgstr "முந்தைய பக்கம்"
+
+#: web/b3desk/templates/admin/paging.html:30
+#: web/b3desk/templates/admin/paging.html:32
+msgid "Page suivante"
+msgstr "அடுத்த பக்கம்"
+
+#: web/b3desk/templates/admin/paging.html:37
+#: web/b3desk/templates/admin/paging.html:39
+msgid "Dernière page"
+msgstr "கடைசி பக்கம்"
+
+#: web/b3desk/templates/admin/user_infos.html:49
+#: web/b3desk/templates/admin/user_table.html:13
+msgid "Email"
+msgstr "மின்னஞ்சல்"
+
+#: web/b3desk/templates/admin/user_infos.html:57
+msgid "Alias"
+msgstr "மாற்றுப்பெயர்"
+
+#: web/b3desk/templates/admin/user_infos.html:89
+msgid "NC Locator"
+msgstr "NC லொக்கேட்டர்"
+
+#: web/b3desk/templates/admin/user_infos.html:97
+msgid "NC Login"
+msgstr "NC உள்நுழைவு"
+
+#: web/b3desk/templates/admin/user_infos.html:105
+msgid "NC Dernière connexion"
+msgstr "NC கடைசி இணைப்பு"
+
+#: web/b3desk/templates/admin/user_infos.html:119
+#, python-format
+msgid "Liste des réunions de %(fullname)s"
+msgstr "%(fullname)s கூட்டங்களின் பட்டியல்"
+
+#: web/b3desk/templates/admin/user_infos.html:123
+#, python-format
+msgid "%(fullname)s n'a pas créé de réunion."
+msgstr "%(fullname)s மீட்டிங்கை உருவாக்கவில்லை."
+
+#: web/b3desk/templates/admin/user_infos.html:126
+msgid "Réunions déléguées"
+msgstr "பிரதிநிதித்துவ கூட்டங்கள்"
+
+#: web/b3desk/templates/admin/user_table.html:12
+#: web/b3desk/templates/footer/donnees_personnelles.html:55
+msgid "Prénom"
+msgstr "முதல் பெயர்"
+
+#: web/b3desk/templates/admin/user_table.html:33
+#, python-format
+msgid "%(username)s infos"
+msgstr "%(username)s தகவல்கள்"
+
+#: web/b3desk/templates/admin/users.html:25
+msgid "Aucun utilisateur ne correspond à cette recherche."
+msgstr "இந்தத் தேடலுடன் எந்தப் பயனரும் பொருந்தவில்லை."
+
+#: web/b3desk/templates/admin/users.html:32
+#, python-format
+msgid "%(count)s utilisateur correspondant aux critères"
+msgid_plural "%(count)s utilisateurs correspondant aux critères"
+msgstr[0] "%(count)s பயனர் அளவுகோல்களுடன் பொருந்துகிறார்"
+msgstr[1] "%(count)s பயனர்கள் அளவுகோல்களுடன் பொருந்துகிறார்கள்"
+
+#: web/b3desk/templates/admin/users.html:38
+#, python-format
+msgid "%(count)s utilisateur"
+msgid_plural "%(count)s utilisateurs"
+msgstr[0] "%(count)s பயனர்"
+msgstr[1] "%(count)s பயனர்கள்"
+
+#: web/b3desk/templates/errors/400.html:7
+msgid "Erreur 400"
+msgstr "பிழை 400"
+
+#: web/b3desk/templates/errors/400.html:12
+#, python-format
+msgid ""
+"La requête que vous avez effectué est invalide. Vous pouvez <a "
+"href=\"%(index_url)s\">retourner à l’accueil</a>."
+msgstr ""
+"நீங்கள் செய்த கோரிக்கை தவறானது. நீங்கள் <a href=\"%(index_url)s\">வீட்டுக்குத் "
+"திரும்பலாம்</a>."
+
+#: web/b3desk/templates/errors/403.html:7
+msgid "Erreur 403"
+msgstr "பிழை 403"
+
+#: web/b3desk/templates/errors/403.html:8
+#, python-format
+msgid ""
+"Vous n’êtes pas autorisé à accéder cette page. Vous pouvez <a "
+"href=\"%(index_url)s\">retourner à l’accueil</a>."
+msgstr ""
+"இந்தப் பக்கத்தை அணுக உங்களுக்கு ஏற்பு இல்லை. நீங்கள் <a href=\"%(index_url)s\">வீட்டுக்குத் "
+"திரும்பலாம்</a>."
+
+#: web/b3desk/templates/errors/404.html:7
+msgid "Erreur 404"
+msgstr "பிழை 404"
+
+#: web/b3desk/templates/errors/404.html:8
+#, python-format
+msgid ""
+"Cette page n'existe pas. Vous pouvez <a href=\"%(index_url)s\">retourner à "
+"l’accueil</a>."
+msgstr "இந்தப் பக்கம் இல்லை. நீங்கள் <a href=\"%(index_url)s\">வீட்டுக்குத் திரும்பலாம்</a>."
+
+#: web/b3desk/templates/errors/500.html:7
+msgid "Erreur 500"
+msgstr "பிழை 500"
+
+#: web/b3desk/templates/errors/500.html:8
+msgid ""
+"Le serveur a rencontré une erreur interne, veuillez réessayer ultérieurement."
+msgstr "சேவையகம் அகப் பிழையை எதிர்கொண்டது, தயவுசெய்து பின்னர் மீண்டும் முயற்சிக்கவும்."
+
+#: web/b3desk/templates/errors/big-blue-button-error.html:7
+msgid "Erreur du service de visioconférence"
+msgstr "வீடியோ கான்பரன்சிங் பணி பிழை"
+
+#: web/b3desk/templates/errors/big-blue-button-error.html:8
+msgid ""
+"Service de visioconférence momentanément inaccessible, veuillez retenter "
+"ultérieurement."
+msgstr "வீடியோ கான்பரன்சிங் பணி தற்காலிகமாக கிடைக்கவில்லை, பிறகு முயற்சிக்கவும்."
+
+#: web/b3desk/templates/footer/accessibilite.html:5
+msgid "Accessibilité"
+msgstr "அணுகல்"
+
+#: web/b3desk/templates/footer/accessibilite.html:6
+msgid ""
+"Le site webinaire.numerique.gouv.fr est développé selon les recommendations "
+"du <a href=\"https://www.numerique.gouv.fr/publications/rgaa-accessibilite/"
+"\" target=\"_blank\"  rel=\"noopener noreferrer\" title=\"référentiel "
+"général d’amélioration d’accessibilité - nouvelle fenêtre\">référentiel "
+"général d’amélioration d’accessibilité</a> pour être accessible à tous les "
+"usagers quel que soit le matériel ou le logiciel utilisé pour naviguer sur "
+"internet."
+msgstr ""
+"webinar.numerique.gouv.fr தளமானது <a href=\"https://www.numerique.gouv.fr/"
+"publications/rgaa-accessibilite/\" target=\"_blank\" rel=\"noopener "
+"noreferrer\" title=\"noopener noreferrer\" இன் பரிந்துரைகளின்படி "
+"உருவாக்கப்பட்டுள்ளது. இணையத்தில் வழிசெலுத்துவதற்குப் பயன்படுத்தப்படும் வன்பொருள் அல்லது "
+"மென்பொருளைப் பொருட்படுத்தாமல் அனைத்து பயனர்களுக்கும்."
+
+#: web/b3desk/templates/footer/accessibilite.html:7
+msgid "Cependant, aucun audit formel n’a été effectué."
+msgstr "ஆனால், முறையான தணிக்கை எதுவும் மேற்கொள்ளப்படவில்லை."
+
+#: web/b3desk/templates/footer/accessibilite.html:9
+msgid "Droit à compensation"
+msgstr "இழப்பீடு பெறும் உரிமை"
+
+#: web/b3desk/templates/footer/accessibilite.html:10
+msgid ""
+"Dans l’attente d’une mise en conformité totale, vous pouvez obtenir une "
+"version accessible des documents ou des informations qui y seraient "
+"contenues en envoyant un courriel à contact@webinaire.numerique.gouv.fr en "
+"indiquant le nom du document concerné et/ou les informations que vous "
+"souhaiteriez obtenir. Les informations demandées vous seront transmises dans "
+"les plus bref délais."
+msgstr ""
+"முழு இணக்கம் நிலுவையில் உள்ளது, சம்பந்தப்பட்ட ஆவணத்தின் பெயர் மற்றும்/அல்லது நீங்கள் பெற "
+"விரும்பும் தகவலைக் குறிக்கும் மின்னஞ்சல் மூலம் contact@webinaire.numerique.gouv.fr "
+"க்கு மின்னஞ்சல் அனுப்புவதன் மூலம் அதில் உள்ள ஆவணங்கள் அல்லது தகவலின் அணுகக்கூடிய பதிப்பைப் "
+"பெறலாம். கோரப்பட்ட தகவல்கள் கூடிய விரைவில் உங்களுக்கு அனுப்பப்படும்."
+
+#: web/b3desk/templates/footer/accessibilite.html:12
+#: web/b3desk/templates/footer/mentions_legales.html:34
+msgid "Amélioration et contact"
+msgstr "முன்னேற்றம் மற்றும் தொடர்பு"
+
+#: web/b3desk/templates/footer/accessibilite.html:13
+msgid ""
+"Vous pouvez nous aider à améliorer l’accessibilité du site en nous signalant "
+"les problèmes éventuels que vous rencontrez. Pour ce faire, envoyez-nous un "
+"courriel à contact@webinaire.numerique.gouv.fr ."
+msgstr ""
+"நீங்கள் எதிர்கொள்ளும் ஏதேனும் சிக்கல்களை எங்களுக்குத் தெரிவிப்பதன் மூலம் தளத்தின் அணுகலை "
+"மேம்படுத்த எங்களுக்கு உதவலாம். இதைச் செய்ய, contact@webinaire.numerique.gouv.fr என்ற "
+"மின்னஞ்சல் முகவரிக்கு மின்னஞ்சல் அனுப்பவும்."
+
+#: web/b3desk/templates/footer/accessibilite.html:15
+msgid "Défenseur des droits"
+msgstr "உரிமைகளைப் பாதுகாப்பவர்"
+
+#: web/b3desk/templates/footer/accessibilite.html:16
+msgid ""
+"Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un "
+"contenu ou une fonctionnalité du site, que vous nous le signalez et que vous "
+"ne parvenez pas à obtenir une réponse rapide de notre part, vous êtes en "
+"droit de faire parvenir vos doléances ou une demande de saisine au Défenseur "
+"des droits. Plusieurs moyens sont à votre disposition :"
+msgstr ""
+"உள்ளடக்கம் அல்லது தளத்தின் செயல்பாடுகளை அணுகுவதிலிருந்து அணுகல்தன்மைக் குறைபாட்டை நீங்கள் "
+"கண்டால், அதை எங்களிடம் புகாரளித்து, எங்களிடமிருந்து விரைவான பதிலைப் பெற முடியாமல் "
+"போனால், உங்கள் புகார்களை அல்லது கோரிக்கையை உரிமைப் பாதுகாப்பாளருக்கு அனுப்ப உங்களுக்கு "
+"உரிமை உள்ளது. பல வழிகள் உங்கள் வசம் உள்ளன:"
+
+#: web/b3desk/templates/footer/accessibilite.html:17
+msgid ""
+"un <a href=\"https://www.defenseurdesdroits.fr/nous-contacter\" "
+"title=\"formulaire de contact - nouvelle fenêtre\" target=\"_blank\" "
+"rel=\"noopener noreferrer\" >formulaire de contact</a></li><li>la <a "
+"href=\"https://www.defenseurdesdroits.fr/fr/saisir/delegues\" title=\"liste "
+"des délégués de votre région - nouvelle fenêtre\" target=\"_blank\"  "
+"rel=\"noopener noreferrer\">liste des délégués de votre région</a> avec "
+"leurs informations de contact directs</li><li>un numéro de téléphone : le 09 "
+"69 39 00 00 du lundi au vendredi de 8h00 à 20h00 (coût d'un appel local)</"
+"li><li>une adresse postale dans l'<a href=\"https://lannuaire.service-"
+"public.fr/autorites-independantes/autorite-administrative-"
+"independante_195381\" title=\"annuaire de l'administration - nouvelle "
+"fenêtre\" target=\"_blank\" rel=\"noopener noreferrer\" >annuaire de "
+"l'administration</a>"
+msgstr ""
+"ஒரு <a href=\"https://www.defenseurdesdroits.fr/nous-contacter\" "
+"title=\"contact form - புதிய window\" target=\"_blank\" rel=\"noopener "
+"noreferrer\" >தொடர்புப் படிவம்</a></li><li><a href=\"https://"
+"www.defenseurdesdroits.fr/steg/saisirates சாளரம் of your region of புதிய "
+"title\" target=\"_blank\" rel=\"noopener noreferrer\">உங்கள் பிராந்தியத்தைச் "
+"சேர்ந்த பிரதிநிதிகளின் பட்டியல்</a> அவர்களின் நேரடி தொடர்புத் தகவலுடன்</li><li>ஒரு "
+"தொலைபேசி எண்: 09 69 39 00 00 திங்கள் முதல் வெள்ளி வரை காலை 8:00 மணி முதல் இரவு "
+"8:00 மணி வரை. (உள்ளூர் அழைப்பின் விலை)</li> <li> <a href=\"https://"
+"lannuaire.service-public.fr/autorites-independantes/autorite-administrative-"
+"independante_195381\" title=\"administration directory - புதிய window\" "
+"target=\"reflank\" rel=\"noerropen directory\" rel=\"noerropen\" "
+"rel=\"reflank\">இல் உள்ள அஞ்சல் முகவரி"
+
+#: web/b3desk/templates/footer/cgu.html:6
+#: web/b3desk/templates/footer/cgu.html:7
+msgid "Objet"
+msgstr "பொருள்"
+
+#: web/b3desk/templates/footer/cgu.html:8
+msgid ""
+"Les présentes conditions générales d’utilisation (CGU) ont pour objet de "
+"déterminer les conditions d’accès et les règles d’utilisation de VISIO-"
+"AGENTS (le Service) par ses Utilisateurs et Utilisatrices."
+msgstr ""
+"இந்த பொதுவான பயன்பாட்டு நிபந்தனைகளின் (CGU) நோக்கம் அதன் பயனர்களால் VISIO-AGENTS "
+"(சேவை) அணுகுவதற்கான நிபந்தனைகள் மற்றும் பயன்பாட்டு விதிகளை தீர்மானிப்பதாகும்."
+
+#: web/b3desk/templates/footer/cgu.html:9
+msgid ""
+"L’accès au Service est subordonné au respect des CGU. La Direction du "
+"numérique pour l’éducation (DNE) se réserve le droit de modifier ou de "
+"mettre à jour unilatéralement ces CGU afin de se conformer aux évolutions "
+"légales et techniques."
+msgstr ""
+"சேவைக்கான அணுகல் T&Cs உடன் இணங்குவதற்கு உட்பட்டது. டிசிட்டல் கல்வித் துறை (DNE) சட்ட "
+"மற்றும் தொழில்நுட்ப முன்னேற்றங்களுக்கு இணங்க இந்த T&Cகளை ஒருதலைப்பட்சமாக மாற்ற அல்லது "
+"புதுப்பிக்கும் உரிமையை கொண்டுள்ளது."
+
+#: web/b3desk/templates/footer/cgu.html:10
+msgid ""
+"Les utilisateurs doivent consulter régulièrement la dernière version des CGU "
+"disponible en permanence sur le site."
+msgstr ""
+"தளத்தில் நிரந்தரமாக கிடைக்கும் T&Cகளின் அண்மைக் கால பதிப்பை பயனர்கள் தவறாமல் பார்க்க "
+"வேண்டும்."
+
+#: web/b3desk/templates/footer/cgu.html:11
+#: web/b3desk/templates/footer/cgu.html:12
+msgid "Code de conduite et responsabilités des Utilisateurs"
+msgstr "நடத்தை விதிகள் மற்றும் பயனர்களின் பொறுப்புகள்"
+
+#: web/b3desk/templates/footer/cgu.html:13
+msgid ""
+"L’utilisation du Service ministériel VISIO-AGENTS est libre et gratuite pour "
+"les agents du ministère de l’Education Nationale et de la Jeunesse (MENJ). "
+"Les partenaires du service public voire le grand public (citoyen, "
+"entreprise, association) peuvent être invités à participer sous la "
+"responsabilité des agents du ministère."
+msgstr ""
+"VISIO-AGENTS அமைச்சர் சேவையின் பயன்பாடு இலவசம் மற்றும் தேசிய கல்வி மற்றும் இளைஞர் "
+"அமைச்சகத்தின் (MENJ) முகவர்களுக்கு இலவசம். பொது பணி பங்காளிகள் அல்லது பொது மக்கள் "
+"(குடிமக்கள், வணிகங்கள், சங்கங்கள்) கூட அமைச்சக முகவர்களின் பொறுப்பின் கீழ் பங்கேற்க "
+"அழைக்கப்படலாம்."
+
+#: web/b3desk/templates/footer/cgu.html:14
+msgid ""
+"L’Utilisateur ou l’Utilisatrice peut, s’il ou elle le souhaite, utiliser "
+"quelque pseudonyme qu’il lui plaira de choisir dans le respect des règles "
+"suivantes : sont interdits les pseudonymes relevant de l’insulte, de "
+"l’injure, évoquant des propos, situations ou pratiques obscènes, grossières, "
+"à caractère sexuel ou attentatoire à la dignité humaine ou aux bonnes mœurs. "
+"Sont également prohibés les pseudonymes pouvant entraîner un risque de "
+"confusion dans l’esprit du public quant à l’auteur du message ou à sa "
+"qualité ou qualification, ainsi que ceux faisant référence directement ou "
+"indirectement à un signe commercial protégé, que l’utilisation du pseudonyme "
+"soit ou non dénigrante."
+msgstr ""
+"பயனர் அவர் அல்லது அவள் விரும்பினால், பின்வரும் விதிகளுக்கு இணங்க அவர் அல்லது அவள் "
+"தேர்ந்தெடுக்கும் புனைப்பெயரைப் பயன்படுத்தலாம்: அவமதிப்பு, அவமதிப்பு, ஆபாசமான, பாலியல் "
+"அல்லது புண்படுத்தும் கருத்துகள், மனித கண்ணியம் அல்லது நல்ல ஒழுக்கத்தை புண்படுத்தும் "
+"சூழ்நிலைகள் அல்லது நடைமுறைகள் ஆகியவற்றை உள்ளடக்கிய புனைப்பெயர்கள் தடைசெய்யப்பட்டுள்ளன. "
+"செய்தியின் ஆசிரியர் அல்லது அதன் தகுதி அல்லது தகுதி குறித்து பொதுமக்களின் மனதில் "
+"குழப்பத்தை ஏற்படுத்தக்கூடிய புனைப்பெயர்கள், அதே போல் புனைப்பெயரை இழிவுபடுத்துகிறதா "
+"இல்லையா என்பதை நேரடியாகவோ அல்லது மறைமுகமாகவோ பாதுகாக்கப்பட்ட வணிக அடையாளமாக "
+"குறிப்பிடுவதும் தடைசெய்யப்பட்டுள்ளது."
+
+#: web/b3desk/templates/footer/cgu.html:15
+#: web/b3desk/templates/footer/cgu.html:16
+msgid "Description du Service"
+msgstr "சேவையின் விளக்கம்"
+
+#: web/b3desk/templates/footer/cgu.html:17
+msgid ""
+"Le Service regroupant VISIO-AGENTS et CLASSE VIRTUELLE est un outil de "
+"visioconférence en ligne proposé par la DNE, qui en assure le maintien en "
+"conditions opérationnelles et les évolutions."
+msgstr ""
+"VISIO-AGENTS மற்றும் VIRTUAL CLASSஐ ஒன்றிணைக்கும் சேவையானது DNE ஆல் வழங்கப்படும் "
+"நிகழ்நிலை வீடியோ கான்பரன்சிங் கருவியாகும், இது செயல்பாட்டு நிலைமைகள் மற்றும் வளர்ச்சிகளில் "
+"அதன் பராமரிப்பை உறுதி செய்கிறது."
+
+#: web/b3desk/templates/footer/cgu.html:18
+msgid ""
+"Toute utilisation des ressources de domaine de publication est subordonnée "
+"au respect des présentes conditions générales d’utilisation (CGU)."
+msgstr ""
+"வெளியீட்டு டொமைன் ஆதாரங்களின் எந்தவொரு பயன்பாடும் இந்த பொதுவான பயன்பாட்டு நிபந்தனைகளுக்கு "
+"(CGU) இணங்குவதற்கு உட்பட்டது."
+
+#: web/b3desk/templates/footer/cgu.html:19
+msgid ""
+"Le Service permet notamment la création d’espaces de discussion en ligne et "
+"a été conçu pour répondre aux besoins de communication virtuelle des agents "
+"du ministère de l’Éducation Nationale et de la Jeunesse et évolue au fil de "
+"l’eau, selon un cycle d’amélioration continue dans lequel les utilisateurs "
+"sont placés au centre de la démarche et de l’attention de l’équipe qui "
+"pilote le produit."
+msgstr ""
+"இந்தச் பணி குறிப்பாக நிகழ்நிலை கலந்துரையாடல் இடங்களை உருவாக்க அனுமதிக்கிறது மற்றும் "
+"தேசிய கல்வி மற்றும் இளைஞர் அமைச்சகத்தின் முகவர்களின் மெய்நிகர் தொடர்புத் தேவைகளைப் நிறைவு "
+"செய்ய வடிவமைக்கப்பட்டுள்ளது மற்றும் தொடர்ச்சியான முன்னேற்றத்தின் சுழற்சியின் படி, பயனர்கள் "
+"அணுகுமுறை மற்றும் தயாரிப்பை நிர்வகிக்கும் குழுவின் கவனத்தை மையமாகக் கொண்ட ஒரு "
+"சுழற்சியின் படி காலப்போக்கில் உருவாகிறது."
+
+#: web/b3desk/templates/footer/cgu.html:20
+msgid ""
+"Le Service VISIO-AGENTS est un logiciel libre basé sur un logiciel développé "
+"par la société Blindside Networks."
+msgstr ""
+"VISIO-AGENTS பணி என்பது Blindside Networks என்ற நிறுவனத்தால் உருவாக்கப்பட்ட "
+"மென்பொருளின் அடிப்படையிலான இலவச மென்பொருளாகும்."
+
+#: web/b3desk/templates/footer/cgu.html:21
+msgid ""
+"L’hébergement du Service et des données est réalisé chez l’entreprise "
+"Scaleway, validée offre Cloud Cercle 3."
+msgstr ""
+"சேவையும் தரவுகளும் ச்கேல்வே நிறுவனத்தால் வழங்கப்படுகின்றன, சரிபார்க்கப்பட்ட முகில் Circle "
+"3 சலுகை."
+
+#: web/b3desk/templates/footer/cgu.html:22
+msgid ""
+"La société française Arawa assure l’infogérance et la surveillance des "
+"infrastructures de la solution de visioconférence en heures ouvrées."
+msgstr ""
+"பிரெஞ்சு நிறுவனமான அராவா வேலை நேரத்தில் வீடியோ கான்பரன்சிங் தீர்வுக்கான அவுட்சோர்சிங் "
+"மற்றும் உள்கட்டமைப்பு கண்காணிப்பை வழங்குகிறது."
+
+#: web/b3desk/templates/footer/cgu.html:23
+msgid ""
+"L’équipe nationale du pôle FOAD assure l’exploitation de la solution de "
+"frontal de gestion des salons en heures ouvrées."
+msgstr ""
+"FOAD பிரிவின் தேசியக் குழு வேலை நேரத்தில் முன்-இறுதி வர்த்தக நியாயமான மேலாண்மை தீர்வின் "
+"செயல்பாட்டை உறுதி செய்கிறது."
+
+#: web/b3desk/templates/footer/cgu.html:24
+#: web/b3desk/templates/footer/cgu.html:25
+msgid "Accès et utilisation du Service"
+msgstr "சேவையின் அணுகல் மற்றும் பயன்பாடு"
+
+#: web/b3desk/templates/footer/cgu.html:26
+msgid "Accès au Service"
+msgstr "சேவைக்கான அணுகல்"
+
+#: web/b3desk/templates/footer/cgu.html:27
+msgid ""
+"Le Service est accessible depuis un navigateur récent connecté à Internet, "
+"quel que soit le terminal utilisé."
+msgstr ""
+"டெர்மினலைப் பொருட்படுத்தாமல், இணையத்துடன் இணைக்கப்பட்ட அண்மைக் கால உலாவியிலிருந்து சேவையை "
+"அணுகலாம்."
+
+#: web/b3desk/templates/footer/cgu.html:28
+msgid ""
+"Vous pouvez accéder à la page d’accueil du site en utilisant l’adresse : <a "
+"class=\"rf_link\" href=\"https://visio-agents.education.fr\" "
+"target=\"_blank\" rel=\"noopener\">https://visio-agents.education.fr</a> ou "
+"à votre service académique de Classe Virtuelle depuis votre portail <a "
+"class=\"rf_link\" href=\"https://apps.education.fr\" target=\"_blank\" "
+"rel=\"noopener\">https://apps.education.fr</a>."
+msgstr ""
+"<a class=\"rf_link\" href=\"https://visio-agents.education.fr\" "
+"target=\"_blank\" rel=\"noopener\">https://visio-agents.education.fr</a> "
+"அல்லது உங்கள் போர்ட்டலில் இருந்து உங்கள் மெய்நிகர் வகுப்பு கல்விச் சேவைக்கு <a "
+"class=\"rf_link\" href=\"rf_link\" முகப்புப் பக்கத்தை அணுகலாம். target=\"_blank\" "
+"rel=\"noopener\">https://apps.education.fr</a>."
+
+#: web/b3desk/templates/footer/cgu.html:29
+msgid ""
+"Le service est accessible 365 jours par an et 24 heures sur 24, sauf cas de "
+"force majeure, évènements hors de contrôle de la DNE et/ou de l’hébergeur et "
+"à l’exception d’opérations de maintenances ou d’incidents ne pouvant être "
+"traités par le support que lors des jours ouvrés, en heures ouvrées."
+msgstr ""
+"இந்தச் சேவையானது வருடத்தில் 365 நாட்களும் மற்றும் ஒரு நாளின் 24 மணிநேரமும் "
+"அணுகக்கூடியது, ஃபோர்ச் மேசூர், DNE மற்றும்/அல்லது ஓச்டின் கட்டுப்பாட்டிற்கு அப்பாற்பட்ட "
+"நிகழ்வுகள் மற்றும் பராமரிப்பு நடவடிக்கைகள் அல்லது சம்பவங்கள் தவிர, வேலை நாட்களில், வேலை "
+"நேரங்களில் மட்டுமே ஆதரவுடன் கையாள முடியும்."
+
+#: web/b3desk/templates/footer/cgu.html:30
+msgid ""
+"Les incidents ne seront traités par le support que lors de ses horaires "
+"d’ouvertures les jours ouvrés, en heures ouvrées."
+msgstr ""
+"வணிக நாட்களில், வணிக நேரத்தின் போது, அதன் திறந்திருக்கும் நேரங்களில் மட்டுமே சம்பவங்கள் "
+"ஆதரவின் மூலம் கையாளப்படும்."
+
+#: web/b3desk/templates/footer/cgu.html:31
+msgid "Utilisation du Service"
+msgstr "சேவையின் பயன்பாடு"
+
+#: web/b3desk/templates/footer/cgu.html:32
+msgid ""
+"Le Service est mis à disposition des agents publics du ministère de "
+"l’Éducation nationale et de la Jeunesse et de leurs collaborateurs pour un "
+"usage strictement professionnel."
+msgstr ""
+"தேசிய கல்வி மற்றும் இளைஞர் அமைச்சகத்தின் பொது அதிகாரிகள் மற்றும் அவர்களது "
+"ஒத்துழைப்பாளர்களுக்கு கண்டிப்பாக தொழில்முறை பயன்பாட்டிற்காக இந்த பணி கிடைக்கிறது."
+
+#: web/b3desk/templates/footer/cgu.html:33
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est responsable des données, contenus ou "
+"propos qu'il ou elle échange grâce au Service."
+msgstr ""
+"சேவையைப் பயன்படுத்தி அவர் அல்லது அவள் பரிமாறிக்கொள்ளும் தரவு, உள்ளடக்கம் அல்லது "
+"கருத்துக்களுக்குப் பயனர் பொறுப்பு."
+
+#: web/b3desk/templates/footer/cgu.html:34
+msgid ""
+"L'Utilisateur ou l’Utilisatrice ne partage pas en ligne et ni ne communique "
+"de contenus ou informations contraires aux dispositions légales et "
+"réglementaires en vigueur. Il ou elle veille notamment à ne jamais tenir de "
+"propos ou échanger de contenus insultants, diffamatoires ou indécents, ou "
+"qui porteraient atteinte aux droits des tiers, y compris leurs droits de "
+"propriété intellectuelle."
+msgstr ""
+"நடைமுறையில் உள்ள சட்ட மற்றும் ஒழுங்குமுறை விதிகளுக்கு முரணான உள்ளடக்கம் அல்லது தகவலைப் "
+"பயனர் ஆன்லைனில் பகிரவோ அல்லது தொடர்புகொள்ளவோ இல்லை. அவமதிக்கும், அவதூறான அல்லது "
+"அநாகரீகமான அல்லது மூன்றாம் தரப்பினரின் அறிவுசார் சொத்துரிமைகள் உட்பட அவர்களின் உரிமைகளை "
+"மீறும் வகையில் கருத்துகளை வெளியிடவோ அல்லது பரிமாற்றம் செய்யவோ கூடாது என்று அவர் "
+"குறிப்பாக உறுதியளிக்கிறார்."
+
+#: web/b3desk/templates/footer/cgu.html:35
+msgid ""
+"L’Utilisateur ou l’Utilisatrice doit être attentif à ce que ces usages "
+"demeurent raisonnables et ne mettent pas en péril la sécurité informatique "
+"du Service."
+msgstr ""
+"இந்த பயன்பாடுகள் நியாயமானவையாக இருப்பதையும், சேவையின் செய்தி தொழில்நுட்ப பாதுகாப்பை "
+"பாதிக்காதவாறும் பயனர் கவனமாக இருக்க வேண்டும்."
+
+#: web/b3desk/templates/footer/cgu.html:36
+msgid ""
+"L’Utilisateur ou l’Utilisatrice utilise le Service dans le respect du secret "
+"professionnel et fait preuve de discrétion professionnelle pour tous les "
+"faits, informations ou documents dont il ou elle a connaissance dans le "
+"cadre de l’utilisation du Service."
+msgstr ""
+"பயனர் தொழில்முறை இரகசியத்திற்கு இணங்க சேவையைப் பயன்படுத்துகிறார் மற்றும் சேவையைப் "
+"பயன்படுத்தும் சூழலில் அவர் அல்லது அவள் அறிந்த அனைத்து உண்மைகள், செய்தி அல்லது ஆவணங்களுக்கான "
+"தொழில்முறை விருப்பத்தைப் பயன்படுத்துகிறார்."
+
+#: web/b3desk/templates/footer/cgu.html:37
+msgid ""
+"Sauf preuve contraire, toute connexion au Service ou transmission de données "
+"effectuées à partir du compte d’un Utilisateur ou d’une Utilisatrice, sera "
+"réputée avoir été effectuée par ce dernier ou cette dernière."
+msgstr ""
+"வேறுவிதமாக நிரூபிக்கப்படாத வரை, சேவைக்கான எந்தவொரு தொடர்பும் அல்லது ஒரு பயனரின் "
+"கணக்கிலிருந்து செய்யப்பட்ட தரவு பரிமாற்றமும் பிந்தையவரால் செய்யப்பட்டதாகக் கருதப்படும்."
+
+#: web/b3desk/templates/footer/cgu.html:38
+msgid ""
+"Si l’Utilisateur ou l’Utilisatrice estime que son identité académique est "
+"compromise, il ou elle doit modifier son mot de passe sans délai."
+msgstr ""
+"பயனர் தனது கல்விசார் அடையாளம் வேறுபாடின்மை செய்யப்பட்டதாக நம்பினால், அவர் அல்லது அவள் "
+"தனது கடவுச்சொல்லை தாமதமின்றி மாற்ற வேண்டும்."
+
+#: web/b3desk/templates/footer/cgu.html:39
+msgid ""
+"En cas de compromission de son compte, l’Utilisateur ou l’Utilisatrice doit "
+"contacter l’équipe support :"
+msgstr ""
+"அவர்களின் கணக்கு வேறுபாடின்மை செய்யப்பட்டால், பயனர் ஆதரவுக் குழுவைத் தொடர்பு கொள்ள வேண்டும்:"
+
+#: web/b3desk/templates/footer/cgu.html:40
+msgid "Limitations d'utilisation du Service"
+msgstr "சேவையைப் பயன்படுத்துவதற்கான வரம்புகள்"
+
+#: web/b3desk/templates/footer/cgu.html:41
+msgid "Limitations d’utilisation du Service"
+msgstr "சேவையைப் பயன்படுத்துவதற்கான வரம்புகள்"
+
+#: web/b3desk/templates/footer/cgu.html:42
+msgid ""
+"Le Service est prévu pour le traitement et le partage de données sans "
+"sensibilité particulière."
+msgstr ""
+"குறிப்பிட்ட உணர்திறன் இல்லாமல் தரவை செயலாக்குவதற்கும் பகிர்வதற்கும் இந்த பணி "
+"வடிவமைக்கப்பட்டுள்ளது."
+
+#: web/b3desk/templates/footer/cgu.html:43
+msgid ""
+"Tout utilisateur ou utilisatrice qui constate la présence de contenus "
+"illicites, inappropriés ou contraires aux présentes conditions d’utilisation "
+"peut le signaler en s’adressant au support :"
+msgstr ""
+"இந்த பயன்பாட்டு நிபந்தனைகளுக்கு முரணான சட்டவிரோத, பொருத்தமற்ற உள்ளடக்கம் அல்லது உள்ளடக்கம் "
+"இருப்பதைக் கவனிக்கும் எந்தவொரு பயனரும் ஆதரவைத் தொடர்புகொள்வதன் மூலம் அதைப் புகாரளிக்கலாம்:"
+
+#: web/b3desk/templates/footer/cgu.html:44
+#: web/b3desk/templates/footer/cgu.html:45
+msgid "Disponibilité et sécurité du Service"
+msgstr "சேவையின் கிடைக்கும் தன்மை மற்றும் பாதுகாப்பு"
+
+#: web/b3desk/templates/footer/cgu.html:46
+msgid ""
+"La DNE s’engage à mettre en œuvre tous les moyens dont elle dispose pour "
+"assurer la bonne qualité et la fiabilité du Service."
+msgstr ""
+"சேவையின் நல்ல தகுதி மற்றும் நம்பகத்தன்மையை உறுதி செய்வதற்காக DNE அதன் வசம் உள்ள அனைத்து "
+"வழிகளையும் செயல்படுத்துகிறது."
+
+#: web/b3desk/templates/footer/cgu.html:47
+msgid ""
+"Le système bénéficie d’une supervision opérationnelle en heures ouvrées. Il "
+"peut malgré tout être sujet à des anomalies ou des erreurs pouvant avoir des "
+"impacts sur les performances ou la disponibilité du service. A ce titre, la "
+"DNE ne peut être tenue responsable des pertes et/ou préjudices, de quelque "
+"nature qu’ils soient, qui pourraient être causés à la suite d’un "
+"dysfonctionnement ou une indisponibilité du Service. De telles situations "
+"n'ouvriront droit à aucune compensation financière."
+msgstr ""
+"வேலை நேரத்தில் செயல்படும் மேற்பார்வையின் மூலம் கணினி பயனடைகிறது. இருப்பினும், இது "
+"சேவையின் செயல்திறன் அல்லது கிடைக்கும் தன்மையில் தாக்கத்தை ஏற்படுத்தக்கூடிய முரண்பாடுகள் "
+"அல்லது பிழைகளுக்கு உட்பட்டதாக இருக்கலாம். எனவே, சேவையின் செயலிழப்பு அல்லது "
+"கிடைக்காததால் ஏற்படும் இழப்புகள் மற்றும்/அல்லது சேதங்களுக்கு DNE பொறுப்பேற்க முடியாது. "
+"இத்தகைய சூழ்நிலைகள் உங்களுக்கு எந்தவிதமான பொருள் இழப்பீடும் அளிக்காது."
+
+#: web/b3desk/templates/footer/cgu.html:48
+#: web/b3desk/templates/footer/cgu.html:49
+#: web/b3desk/templates/footer/donnees_personnelles.html:5
+msgid "Données personnelles"
+msgstr "தனிப்பட்ட தரவு"
+
+#: web/b3desk/templates/footer/cgu.html:50
+msgid ""
+"L’utilisation du Service donne lieu à des traitements de données à caractère "
+"personnel et au dépôt de cookies conformément à la politique de protection "
+"des données personnelles et de gestion des cookies, accessible ici : <a "
+"class=\"rf_link\" href=\"https://projet.apps.education.fr/donnees-"
+"personnelles/#cloud\" target=\"_blank\" rel=\"noopener\">https://"
+"projet.apps.education.fr/donnees-personnelles/#cloud</a>"
+msgstr ""
+"இந்தச் சேவையின் பயன்பாடு தனிப்பட்ட தரவுப் பாதுகாப்பு மற்றும் குக்கீ மேலாண்மைக் கொள்கையின்படி "
+"தனிப்பட்ட தரவைச் செயலாக்குவதற்கும் குக்கீகளை வைப்பதற்கும் வழிவகுக்கிறது, இங்கே அணுகலாம்: "
+"<a class=\"rf_link\" href=\"https://projet.apps.education.fr/donnees-"
+"personnelles/#cloud\" target=\"_blank\" rel=\"noopener\">https://"
+"projet.apps.education.fr/donnees-personnelles/#cloud</a>"
+
+#: web/b3desk/templates/footer/cgu.html:51
+msgid ""
+"Les données personnelles transmises ne seront utilisées que pour assurer le "
+"fonctionnement du Service. Elles ne seront en aucun cas transmises à des "
+"tiers sans votre autorisation préalable, sauf exigences légales."
+msgstr ""
+"அனுப்பப்படும் தனிப்பட்ட தரவு சேவையின் செயல்பாட்டை உறுதிப்படுத்த மட்டுமே பயன்படுத்தப்படும். "
+"சட்டத்தின்படி தேவைப்படுவதைத் தவிர, உங்கள் முன் அனுமதியின்றி அவை எந்தச் சூழ்நிலையிலும் "
+"மூன்றாம் தரப்பினருக்கு அனுப்பப்படாது."
+
+#: web/b3desk/templates/footer/cgu.html:52
+msgid ""
+"Conformément à la législation les prestataires techniques sont tenus de "
+"conserver et de déférer à l’autorité judiciaire les informations de "
+"connections (log, IP, date/heure) permettant la poursuite de l’auteur d’une "
+"infraction. Toutes les informations nécessaires seront donc conservées pour "
+"la durée légale prévue. Elles seront détruites au terme du délai légal de "
+"conservation."
+msgstr ""
+"சட்டத்திற்கு இணங்க, தொழில்நுட்ப பணி வழங்குநர்கள் நீதித்துறை அதிகார இணைப்புத் தகவலை "
+"(பதிவு, ஐபி, தேதி/நேரம்) தக்கவைத்து, ஒரு குற்றத்தின் ஆசிரியரின் மீது வழக்குத் தொடர "
+"அனுமதிக்க வேண்டும். எனவே தேவையான அனைத்து தகவல்களும் சட்டப்பூர்வமாக வழங்கப்பட்ட காலத்திற்கு "
+"சேமிக்கப்படும். சட்டப்பூர்வ தக்கவைப்புக் காலத்தின் முடிவில் அவை அழிக்கப்படும்."
+
+#: web/b3desk/templates/footer/cgu.html:53
+msgid ""
+"Les données personnelles qui auraient été transmises par le biais d’un salon "
+"de visio-conférence (oralement, par le chat ou un document partagé) ne sont "
+"pas conservées au-delà de la fin du salon, sauf si un enregistrement a été "
+"réalisé (pour VISIO-AGENTS uniquement). Dans ce dernier cas, cet "
+"enregistrement est sous la responsabilité du propriétaire du salon, et le "
+"stockage de cette vidéo n’est assuré par le Service que pour une durée de 12 "
+"mois."
+msgstr ""
+"வீடியோ கான்ஃபரன்ச் அறை மூலம் (வாய்வழியாக, அரட்டை அல்லது பகிரப்பட்ட ஆவணம் மூலம்) "
+"அனுப்பப்பட்ட தனிப்பட்ட தரவு, பதிவு செய்யப்படாவிட்டால் (VISIO-ஏசென்ட்களுக்கு மட்டும்) "
+"அறையின் முடிவில் வைக்கப்படாது. பிந்தைய வழக்கில், இந்த பதிவு சலூன் உரிமையாளரின் "
+"பொறுப்பாகும், மேலும் இந்த வீடியோவின் சேமிப்பகம் 12 மாத காலத்திற்கு மட்டுமே சேவையால் "
+"உறுதி செய்யப்படுகிறது."
+
+#: web/b3desk/templates/footer/cgu.html:54
+msgid ""
+"Concernant le frontal proposé par le service, vous disposez d'un droit "
+"d'accès, de modification, de rectification et de suppression des données qui "
+"vous concernent (art. 34 de la loi « Informatique et Libertés » du 6 janvier "
+"1978). Vous pouvez, à tout moment, demander que vos contributions à cet "
+"espace soient supprimées. Les demandes concernant le droit d’accès, de "
+"modification et de rectification doivent être adressées par mail à "
+"l’adresse :"
+msgstr ""
+"பணி வழங்கும் முன்-முனையைப் பொறுத்தவரை, உங்களைப் பற்றிய தரவை அணுகவும், மாற்றவும், "
+"திருத்தவும் மற்றும் நீக்கவும் உங்களுக்கு உரிமை உள்ளது (கலை. சனவரி 6, 1978 இன் "
+"\"இன்ஃபர்மேடிக் எட் லிபர்டெச்\" சட்டத்தின் 34). இந்த ச்பேசிற்கான உங்கள் பங்களிப்புகளை "
+"நீக்குமாறு நீங்கள் எந்த நேரத்திலும் கோரலாம். அணுகல், திருத்தம் மற்றும் திருத்தம் ஆகியவற்றின் "
+"உரிமை தொடர்பான கோரிக்கைகள் மின்னஞ்சல் மூலம் முகவரிக்கு அனுப்பப்பட வேண்டும்:"
+
+#: web/b3desk/templates/footer/cgu.html:55
+#: web/b3desk/templates/footer/cgu.html:56
+msgid "Responsabilités"
+msgstr "பொறுப்புகள்"
+
+#: web/b3desk/templates/footer/cgu.html:57
+msgid ""
+"L’Utilisateur ou l’Utilisatrice s’engage, lors de l’utilisation qu’il fait "
+"du Service, à ne pas contrevenir aux dispositions législatives et "
+"réglementaires en vigueur, aux bons usages d’Internet et aux CGU."
+msgstr ""
+"சேவையைப் பயன்படுத்தும் போது, நடைமுறையில் உள்ள சட்ட மற்றும் ஒழுங்குமுறை விதிகள், "
+"இணையத்தின் நல்ல நடைமுறைகள் மற்றும் பொதுவான விதிமுறைகள் மற்றும் நிபந்தனைகளை மீறாமல் இருக்க "
+"பயனர் மேற்கொள்கிறார்."
+
+#: web/b3desk/templates/footer/cgu.html:58
+msgid ""
+"De manière générale, la DNE se dégage de toute responsabilité en cas "
+"d’utilisation non-conforme aux CGU du Service."
+msgstr ""
+"பொதுவாக, சேவையின் பொதுவான விதிமுறைகள் மற்றும் நிபந்தனைகளுக்கு இணங்காத பயன்பாட்டின் "
+"போது அனைத்துப் பொறுப்பையும் DNE மறுக்கிறது."
+
+#: web/b3desk/templates/footer/cgu.html:59
+msgid ""
+"La DNE se réserve le droit de suspendre ou de résilier l’accès au Service "
+"d’un Utilisateur ou d’une Utilisatrice en cas de violation des CGU."
+msgstr ""
+"டி&சிகளை மீறும் பட்சத்தில், சேவைக்கான பயனரின் அணுகலை இடைநிறுத்த அல்லது நிறுத்துவதற்கு "
+"DNEக்கு உரிமை உள்ளது."
+
+#: web/b3desk/templates/footer/cgu.html:60
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est responsable de tout préjudice matériel "
+"ou immatériel, direct et/ou indirect de quelque nature que ce soit causé en "
+"cas d’utilisation non-conforme aux CGU."
+msgstr ""
+"T&C களுக்கு இணங்காத பயன்பாட்டின் போது ஏற்படும் எந்தவொரு பொருள் அல்லது பொருளற்ற, நேரடி "
+"மற்றும்/அல்லது மறைமுக சேதத்திற்கும் பயனரே பொறுப்பு."
+
+#: web/b3desk/templates/footer/cgu.html:61
+msgid ""
+"L’Utilisateur ou l’Utilisatrice est informé que toute violation des "
+"stipulations des CGU est susceptible d’être signalée à son administration et "
+"d'entraîner des poursuites judiciaires et des sanctions à son encontre."
+msgstr ""
+"T&Cகளின் விதிமுறைகளை மீறினால், அவர்களின் நிர்வாகத்திற்கு குற்றச்சாட்டு அளிக்கப்படலாம் "
+"என்றும், அதன் விளைவாக அவர்களுக்கு எதிராக சட்ட நடவடிக்கைகள் மற்றும் தடைகள் விதிக்கப்படலாம் "
+"என்றும் பயனருக்குத் தெரிவிக்கப்பட்டுள்ளது."
+
+#: web/b3desk/templates/footer/cgu.html:64
+msgid ""
+"Pour toute question sur le Service, vous pouvez écrire à l’adresse mail :"
+msgstr "சேவையைப் பற்றிய ஏதேனும் கேள்விகளுக்கு, நீங்கள் மின்னஞ்சல் முகவரிக்கு எழுதலாம்:"
+
+#: web/b3desk/templates/footer/cgu.html:65
+msgid "Évolution des conditions d'utilisation"
+msgstr "பயன்பாட்டு நிலைமைகளின் பரிணாமம்"
+
+#: web/b3desk/templates/footer/cgu.html:66
+msgid "Évolution des conditions d’utilisation"
+msgstr "பயன்பாட்டு நிலைமைகளின் பரிணாமம்"
+
+#: web/b3desk/templates/footer/cgu.html:67
+msgid ""
+"Les termes des présentes conditions d’utilisation peuvent être amendés à "
+"tout moment, sans préavis, en fonction des modifications apportées à la page "
+"d’accueil, de l’évolution de la législation ou pour tout autre motif jugé "
+"nécessaire."
+msgstr ""
+"இந்த பயன்பாட்டு நிபந்தனைகளின் விதிமுறைகள் எந்த நேரத்திலும், எந்த முன்னறிவிப்புமின்றி, "
+"முகப்புப் பக்கத்தில் செய்யப்பட்ட மாற்றங்கள், சட்டத்தில் மாற்றங்கள் அல்லது வேறு ஏதேனும் "
+"காரணங்களுக்காக அவசியமாகக் கருதப்படும்."
+
+#: web/b3desk/templates/footer/cgu.html:68
+msgid "Textes de référence"
+msgstr "குறிப்பு நூல்கள்"
+
+#: web/b3desk/templates/footer/cgu.html:69
+msgid ""
+"Loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et "
+"aux libertés"
+msgstr "சனவரி 6, 1978 இன் சட்ட எண். 78-17 தரவு செயலாக்கம், கோப்புகள் மற்றும் சுதந்திரங்கள்"
+
+#: web/b3desk/templates/footer/cgu.html:70
+msgid ""
+"Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique"
+msgstr "டிசிட்டல் பொருளாதாரத்தின் மீதான நம்பிக்கைக்கான சட்டம் எண். 2004-575 சூன் 21, 2004"
+
+#: web/b3desk/templates/footer/cgu.html:71
+msgid ""
+"Ordonnance 2005-1516 du 8 décembre 2005 relative aux échanges électroniques "
+"entre les usagers et les autorités administratives et entre les autorités "
+"administratives et notamment ses articles 9 à 12."
+msgstr ""
+"டிசம்பர் 8, 2005 இன் கட்டளை 2005-1516 பயனர்களுக்கும் நிர்வாக அதிகாரிகளுக்கும் இடையேயான "
+"மின்னணு பரிமாற்றங்கள் மற்றும் நிர்வாக அதிகாரிகள் மற்றும் குறிப்பாக அதன் கட்டுரைகள் 9 முதல் "
+"12 வரை."
+
+#: web/b3desk/templates/footer/cgu.html:72
+msgid "Loi n° 2016-1321 du 7 octobre 2016 pour une République numérique"
+msgstr "டிசிட்டல் குடியரசிற்கான சட்டம் எண். 2016-1321 அக்டோபர் 7, 2016"
+
+#: web/b3desk/templates/footer/documentation.html:4
+msgid "Documentation"
+msgstr "ஆவணப்படுத்துதல்"
+
+#: web/b3desk/templates/footer/documentation.html:5
+msgid "Guides utilisateurs"
+msgstr "பயனர் வழிகாட்டிகள்"
+
+#: web/b3desk/templates/footer/documentation.html:9
+msgid "Présentation des nouveautés de la v2.4"
+msgstr "v2.4 இன் புதிய அம்சங்களின் விளக்கக்காட்சி"
+
+#: web/b3desk/templates/footer/documentation.html:14
+msgid "Créer une réunion improvisée"
+msgstr "உடனடி சந்திப்பை உருவாக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:15
+msgid "Participer à une réunion"
+msgstr "ஒரு கூட்டத்தில் கலந்து கொள்ளுங்கள்"
+
+#: web/b3desk/templates/footer/documentation.html:16
+msgid "Créer et parametrer une salle de réunion"
+msgstr "சந்திப்பு அறையை உருவாக்கி உள்ளமைக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:16
+msgid "Créer et paramétrer une salle de réunion "
+msgstr "சந்திப்பு அறையை உருவாக்கி உள்ளமைக்கவும் "
+
+#: web/b3desk/templates/footer/documentation.html:17
+msgid "Activer le matériel dans le navigateur"
+msgstr "உலாவியில் வன்பொருளை இயக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:18
+msgid "Gérer les utilisateurs"
+msgstr "பயனர்களை நிர்வகிக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:19
+msgid "Gérer les documents"
+msgstr "ஆவணங்களை நிர்வகிக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:20
+msgid "Gestion des réunions privées"
+msgstr "தனிப்பட்ட கூட்டங்களின் மேலாண்மை"
+
+#: web/b3desk/templates/footer/documentation.html:21
+msgid "Déléguer la création de réunion"
+msgstr "சார்பாளர் சந்திப்பு உருவாக்கம்"
+
+#: web/b3desk/templates/footer/documentation.html:22
+msgid "Enregistrer une réunion"
+msgstr "ஒரு சந்திப்பை பதிவு செய்யுங்கள்"
+
+#: web/b3desk/templates/footer/documentation.html:23
+msgid "Créer un sondage"
+msgstr "ஒரு கணக்கெடுப்பை உருவாக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:24
+msgid "Joindre une réunion par téléphone"
+msgstr "தொலைபேசி மூலம் சந்திப்பில் சேரவும்"
+
+#: web/b3desk/templates/footer/documentation.html:25
+msgid "Afficher le tableau de bord"
+msgstr "டாச்போர்டைக் காட்டு"
+
+#: web/b3desk/templates/footer/documentation.html:26
+msgid "Gérer la mise en page"
+msgstr "அமைப்பை நிர்வகிக்கவும்"
+
+#: web/b3desk/templates/footer/documentation.html:27
+msgid "Extension contrôle du volume"
+msgstr "தொகுதி கட்டுப்பாடு நீட்டிப்பு"
+
+#: web/b3desk/templates/footer/documentation.html:27
+msgid "Contrôle du volume"
+msgstr "தொகுதி கட்டுப்பாடு"
+
+#: web/b3desk/templates/footer/documentation.html:103
+msgid "Liste des serveurs BigBlueButton pour l'Éducation"
+msgstr "கல்விக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
+
+#: web/b3desk/templates/footer/documentation.html:104
+msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
+msgstr "மாநில வெபினாருக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
+
+#: web/b3desk/templates/footer/documentation.html:105
+msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
+msgstr "அனைத்து BigBlueButtonகளுக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:7
+msgid "Gestion des cookies"
+msgstr "குக்கீ மேலாண்மை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:8
+msgid "À propos des cookies / traceurs"
+msgstr "குக்கீகள்/டிராக்கர்கள் பற்றி"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:9
+msgid ""
+"Afin de permettre aux applications Web de fournir des services, des "
+"« cookies » (« traceurs » en français) peuvent être utilisés."
+msgstr ""
+"சேவைகளை வழங்க இணைய பயன்பாடுகளை இயக்க, \"குக்கீகள்\" (பிரெஞ்சு மொழியில் "
+"\"டிராக்கர்கள்\") பயன்படுத்தப்படலாம்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:11
+msgid "Qu’est-ce qu’un « cookie » ?"
+msgstr "\"குக்கீ\" என்றால் என்ன?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:12
+msgid ""
+"Un « cookie » est un fichier de taille limitée, généralement constitué de "
+"lettres et de chiffres, envoyé par le serveur internet au fichier cookie du "
+"navigateur situé sur le disque dur de votre ordinateur."
+msgstr ""
+"“குக்கீ” என்பது வரையறுக்கப்பட்ட அளவிலான கோப்பாகும், பொதுவாக எழுத்துகள் மற்றும் எண்களைக் "
+"கொண்டிருக்கும், உங்கள் கணினியின் வன்வட்டில் உள்ள உலாவி குக்கீ கோப்பிற்கு வலை சேவையகத்தால் "
+"அனுப்பப்படும்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:14
+msgid ""
+"Quels types de « cookies » sont utilisés par les services visio-agents/"
+"Classe Virtuelle/Webinaire de l’Etat ?"
+msgstr ""
+"மாநிலத்தின் வீடியோ முகவர்/விர்ச்சுவல் கிளாச்ரூம்/வெபினார் சேவைகளால் என்ன வகையான "
+"\"குக்கீகள்\" பயன்படுத்தப்படுகின்றன?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:15
+msgid ""
+"Les cookies servent à l’authentification sur les services visio-agents/"
+"Classe Virtuelle/Webinaire de l’Etat"
+msgstr ""
+"வீடியோ முகவர் சேவைகள்/விர்ச்சுவல் கிளாச்/ச்டேட் வெபினாரில் அங்கீகாரத்திற்காக குக்கீகள் "
+"பயன்படுத்தப்படுகின்றன."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:16
+msgid "Il n’y a pas de cookie de mesure d’audience"
+msgstr "பார்வையாளர்களை அளவிடும் குக்கீகள் இல்லை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:17
+msgid "Informations complémentaires sur les « cookies »"
+msgstr "\"குக்கீகள்\" பற்றிய கூடுதல் செய்தி"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:20
+msgid "Quelle sécurité pour vos données personnelles ?"
+msgstr "உங்கள் தனிப்பட்ட தரவு எவ்வளவு பாதுகாப்பானது?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:21
+msgid ""
+"Nous veillons à prendre les mesures physiques, techniques et "
+"organisationnelles appropriées pour garantir la sécurité et la "
+"confidentialité de vos données personnelles."
+msgstr ""
+"உங்களின் தனிப்பட்ட தரவின் பாதுகாப்பு மற்றும் ரகசியத்தன்மைக்கு பொறுப்பு அளிக்க தகுந்த உடல், "
+"தொழில்நுட்ப மற்றும் நிறுவன நடவடிக்கைகளை எடுப்பதை உறுதிசெய்கிறோம்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:23
+msgid "Politique de confidentialité"
+msgstr "தனியுரிமைக் கொள்கை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:24
+msgid ""
+"Dans le cadre de l’utilisation des services visio-agents/Classe Virtuelle/"
+"Webinaire de l’Etat, des données à caractère personnel vous concernant font "
+"l’objet d’un traitement par la DNE (visio-agents/Classe Virtuelle, \"nous\" "
+"par la suite dans ces cas) ou la DINum (Direction Interministérielle du "
+"Numérique pour le Webinaire de l’Etat, \"nous\" par la suite dans ce cas)."
+msgstr ""
+"visio-agents/Virtual Class/State Webinar சேவைகளின் பயன்பாட்டின் ஒரு பகுதியாக, "
+"உங்களைப் பற்றிய தனிப்பட்ட தரவு DNE (visio-agents/Virtual Class, \"நாங்கள்\" இனிமேல் "
+"இந்த நிகழ்வுகளில்) அல்லது DINum (மாநில வெபினாருக்கான இடைநிலை டிசிட்டல் இயக்குநரகம், "
+"\"நாங்கள்\" இந்த வழக்கில்) மூலம் செயலாக்கப்படும்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:25
+msgid ""
+"La présente politique décrit nos engagements en ce qui concerne le "
+"traitement de vos données, conformément au Règlement européen sur la "
+"protection des données (Règlement UE n° 2026/679 du 27 avril 2016, ci-après "
+"« RGPD ») et à la loi n° 78-17 du 6 janvier 1978 modifiée relative à "
+"l’informatique, aux fichiers et aux libertés (ci-après loi « Informatique et "
+"Libertés »)."
+msgstr ""
+"இந்தக் கொள்கை, ஐரோப்பிய தரவுப் பாதுகாப்பு ஒழுங்குமுறை (ஏப்ரல் 27, 2016 இன் EU "
+"ஒழுங்குமுறை எண். 2026/679, இனி “GDPR”) மற்றும் சனவரி 6, 1978 இன் சட்ட எண். 78-17 "
+"ஆகியவற்றின் படி, உங்கள் தரவைச் செயலாக்குவது தொடர்பான எங்கள் கடமைகளை விவரிக்கிறது. "
+"\"Informatique et Libertés\" சட்டம்)."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:27
+msgid "Quel est notre rôle ?"
+msgstr "நமது பங்கு என்ன?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:28
+msgid ""
+"Le Webinaire est un service en ligne proposé aux agents de l’Etat destiné à "
+"faciliter le travail à distance par l’organisation et la tenue de réunions, "
+"de conférences et de formations en ligne."
+msgstr ""
+"Webinar என்பது கூட்டங்கள், மாநாடுகள் மற்றும் நிகழ்நிலை பயிற்சிகளை ஒழுங்கமைத்து நடத்துவதன் "
+"மூலம் தொலைதூரத்தில் வேலை செய்வதை எளிதாக்கும் நோக்கத்துடன் அரசாங்க அதிகாரிகளுக்கு "
+"வழங்கப்படும் நிகழ்நிலை சேவையாகும்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:29
+msgid ""
+"La DINUM est responsable de traitement des informations traitées dans le "
+"cadre du Service et, à ce titre, s’engage à respecter les obligations "
+"inhérentes à ce traitement, notamment celles relevant de la loi n° 78-17 du "
+"6 janvier 1978 relative à l’informatique aux fichiers et aux libertés."
+msgstr ""
+"La DINUM est responsable de traitement des informations traitées dans le "
+"cadre du பணி et, à ce titre, s’engage à respecter les obligations inhérentes "
+"à ce traitement, notamment celles relevant de la loi n° 78-17 du 6 janvier "
+"1978 relative à l’informatique aux fichiers et aux libertés."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:30
+msgid ""
+"Visio-agents est un service en ligne proposé aux agents du ministère de "
+"l'Éducation Nationale destiné à faciliter le travail à distance par "
+"l’organisation et la tenue de réunions, de conférences et de formations en "
+"ligne."
+msgstr ""
+"Visio-agents என்பது தேசிய கல்வி அமைச்சகத்தின் முகவர்களுக்கு வழங்கப்படும் நிகழ்நிலை "
+"சேவையாகும், இது கூட்டங்கள், மாநாடுகள் மற்றும் நிகழ்நிலை பயிற்சிகளை ஒழுங்கமைத்து "
+"நடத்துவதன் மூலம் தொலைதூர வேலைகளை எளிதாக்கும் நோக்கத்துடன் உள்ளது."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:31
+msgid ""
+"Classe Virtuelle est un service en ligne proposé aux enseignants du "
+"ministère de l'Éducation Nationale destiné à la continuité pédagogique en "
+"cas d'impossibilité de rejoindre la classe."
+msgstr ""
+"மெய்நிகர் வகுப்பு என்பது தேசிய கல்வி அமைச்சகத்தின் ஆசிரியர்களுக்கு வழங்கப்படும் நிகழ்நிலை "
+"சேவையாகும்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:32
+msgid ""
+"La DNE est responsable de traitement des informations traitées dans le cadre "
+"des services visio-agents et Classe Virtuelle et, à ce titre, s’engage à "
+"respecter les obligations inhérentes à ce traitement, notamment celles "
+"relevant de la loi n° 78-17 du 6 janvier 1978 relative à l’informatique aux "
+"fichiers et aux libertés."
+msgstr ""
+"வீடியோ-ஏசென்ட் மற்றும் மெய்நிகர் வகுப்பு சேவைகளின் கட்டமைப்பிற்குள் செயலாக்கப்பட்ட தகவலைச் "
+"செயலாக்குவதற்கு DNE பொறுப்பாகும், மேலும், இந்தச் செயலாக்கத்தில் உள்ளார்ந்த கடமைகளை, "
+"குறிப்பாக சட்ட எண். சனவரி 6, 1978 இன் 78-17 தரவு செயலாக்கம், கோப்புகள் மற்றும் விடுதலை "
+"தொடர்பானது."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:33
+msgid ""
+"Les organisateurs qui procèdent aux invitations et à l’enregistrement des "
+"salons de visioconférence sont responsables des traitements ultérieurs "
+"qu’ils réalisent à partir de ces enregistrements. Il leur appartient de vous "
+"délivrer une information sur ces traitements."
+msgstr ""
+"அழைப்பிதழ்களை வெளியிடும் மற்றும் வீடியோ கான்பரன்ச் அறைகளை பதிவு செய்யும் அமைப்பாளர்கள் இந்த "
+"பதிவுகளிலிருந்து அவர்கள் மேற்கொள்ளும் அடுத்தடுத்த செயலாக்கத்திற்கு பொறுப்பாவார்கள். இந்த "
+"சிகிச்சைகள் பற்றிய தகவல்களை உங்களுக்கு வழங்குவது அவர்களின் பொறுப்பு."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:35
+msgid "Quels sont les traitements de données mis en œuvre ?"
+msgstr "என்ன தரவு செயலாக்கம் செயல்படுத்தப்படுகிறது?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:45
+msgid "Finalité du traitement"
+msgstr "செயலாக்கத்தின் நோக்கம்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:46
+msgid "Base légale du traitement"
+msgstr "செயலாக்கத்திற்கான சட்ட அடிப்படை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:47
+msgid "Catégorie de données personnelles traitées"
+msgstr "செயலாக்கப்பட்ட தனிப்பட்ட தரவுகளின் வகை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:48
+msgid "Durée de conservation"
+msgstr "அடுக்கு வாழ்க்கை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:51
+msgid "Gestion des comptes des organisateurs de webinaires"
+msgstr "Webinar அமைப்பாளர் கணக்கு மேலாண்மை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:52
+#: web/b3desk/templates/footer/donnees_personnelles.html:61
+#: web/b3desk/templates/footer/donnees_personnelles.html:67
+msgid "Article 6-1(e) RGPD : exécution d’une mission de service public"
+msgstr "கட்டுரை 6-1(e) GDPR: ஒரு பொது பணி பணியை நிறைவேற்றுதல்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:53
+msgid "Données d’identification :"
+msgstr "அடையாள தரவு:"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:56
+msgid "Adresse électronique"
+msgstr "மின்னஞ்சல் முகவரி"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:57
+msgid ""
+"Les données sont supprimées après une période de 12 mois d’inactivité du "
+"compte ou au moment de la désactivation du compte (1ère moe planifiée au "
+"plus tard en 12/22)."
+msgstr ""
+"கணக்கு செயலிழந்த 12 மாதங்களுக்குப் பிறகு அல்லது கணக்கை செயலிழக்கச் செய்யும் போது தரவு "
+"நீக்கப்படும் (1வது காலம் 12/22 க்குப் பிறகு திட்டமிடப்படவில்லை)."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:60
+msgid ""
+"Enregistrement des visio-conférences à des fins de partage et de rediffusion"
+msgstr "பகிர்தல் மற்றும் ரீப்ளே நோக்கங்களுக்காக வீடியோ மாநாடுகளை பதிவு செய்தல்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:62
+msgid "Enregistrement vidéo des visio-conférences"
+msgstr "வீடியோ மாநாடுகளின் வீடியோ பதிவு"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:63
+msgid ""
+"Les données d’enregistrement peuvent être supprimées à tout moment par "
+"l’organisateur. Elles sont automatiquement supprimées 12 mois après la date "
+"de la visio-conférences."
+msgstr ""
+"Les données d’enregistrement peuvent être supprimées à tout திருப்பம் par "
+"l’organisateur. Elles sont automatiquement supprimées 12 mois après la திகதி "
+"de la visio-conférences."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:66
+msgid "Outils de chat et de vote en ligne"
+msgstr "நிகழ்நிலை அரட்டை மற்றும் வாக்களிக்கும் கருவிகள்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:68
+msgid "Échanges écrits entre participants et résultats des votes en lignes"
+msgstr "பங்கேற்பாளர்களிடையே எழுத்துப் பரிமாற்றங்கள் மற்றும் நிகழ்நிலை வாக்குகளின் முடிவுகள்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:69
+msgid ""
+"Les données sont supprimées à l’issue de la session de visio-conférence."
+msgstr "வீடியோ கான்பரன்ச் அமர்வின் முடிவில் தரவு நீக்கப்படும்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:72
+msgid "Gestion de la sécurité de la visio-conférence"
+msgstr "வீடியோ கான்பரன்சிங் பாதுகாப்பு மேலாண்மை"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:73
+msgid ""
+"(Loi n° 2004-575 du 25 juin 2005 pour la confiance dans l’économie "
+"numérique, Décret n° 2021-1362 du 20 octobre 2021 relatif à la conservation "
+"des données permettant d’identifier toute personne ayant contribué à la "
+"création d’un contenu en ligne)"
+msgstr ""
+"(டிசிட்டல் பொருளாதாரத்தின் மீதான நம்பிக்கைக்கான சூன் 25, 2005 இன் சட்ட எண். 2004-575, "
+"அக்டோபர் 20, 2021 இன் ஆணை எண். 2021-1362, நிகழ்நிலை உள்ளடக்கத்தை உருவாக்குவதற்குப் "
+"பங்களித்த எந்தவொரு நபரையும் அடையாளம் காண அனுமதிக்கும் தரவுகளைப் பாதுகாப்பது தொடர்பானது)"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:74
+msgid "Données de connexion des utilisateurs du service (logs, adresse IP)"
+msgstr "பணி பயனர்களின் இணைப்புத் தரவு (பதிவுகள், IP முகவரி)"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:75
+msgid "12 mois"
+msgstr "12 மாதங்கள்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:79
+msgid "Quels sont les destinataires de vos données ?"
+msgstr "உங்கள் தரவைப் பெறுபவர்கள் யார்?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:80
+msgid ""
+"Les destinataires de vos données personnelles sont les agents et salariées "
+"dûment habilitées de la, respectivement, DNE ou DINUM et de nos sous-"
+"traitants qui interviennent pour l’hébergement, et l’infogérance du service."
+msgstr ""
+"உங்கள் தனிப்பட்ட தரவைப் பெறுபவர்கள் முறையே, DNE அல்லது DINUM மற்றும் சேவையின் ஓச்டிங் "
+"மற்றும் அவுட்சோர்சிங்கில் ஈடுபட்டுள்ள எங்கள் துணை ஒப்பந்ததாரர்களின் முறையாக அங்கீகரிக்கப்பட்ட "
+"முகவர்கள் மற்றும் பணியாளர்கள் ஆவர்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:81
+msgid ""
+"Nous nous sommes assurés de la mise en œuvre par nos sous-traitants de "
+"garanties adéquates et du respect de conditions strictes de confidentialité, "
+"d’usage et de protection des données."
+msgstr ""
+"எங்கள் துணை ஒப்பந்ததாரர்களால் போதுமான உத்தரவாதங்கள் மற்றும் இரகசியத்தன்மை, பயன்பாடு மற்றும் "
+"தரவு பாதுகாப்பு ஆகியவற்றின் கடுமையான நிபந்தனைகளுக்கு இணங்குவதை நாங்கள் உறுதி "
+"செய்துள்ளோம்."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:82
+msgid ""
+"Les données collectées sur la visio-conférence ne sont pas transférées en "
+"dehors de l’Union européenne."
+msgstr "வீடியோ மாநாட்டில் சேகரிக்கப்பட்ட தரவு ஐரோப்பிய ஒன்றியத்திற்கு வெளியே மாற்றப்படாது."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:83
+msgid "Quels sont vos droits ?"
+msgstr "உங்கள் உரிமைகள் என்ன?"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:84
+msgid ""
+"Vous disposez d’un droit d’accès et de rectification des données à caractère "
+"personnel qui vous concernent. Vous disposez également d’un droit "
+"d’opposition et de limitation du traitement de vos données."
+msgstr ""
+"உங்களைப் பற்றிய தனிப்பட்ட தரவை அணுகவும் திருத்தவும் உங்களுக்கு உரிமை உள்ளது. உங்கள் தரவைச் "
+"செயலாக்குவதை எதிர்க்கவும் கட்டுப்படுத்தவும் உங்களுக்கு உரிமை உள்ளது."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:85
+msgid ""
+"Pour exercer vos droits ou pour toute question sur le traitement de vos "
+"données, vous pouvez nous écrire, respectivement, aux adresses : "
+"contact@apps.education.fr ou contact@webinaire.numerique.gouv.fr."
+msgstr ""
+"உங்கள் உரிமைகளைப் பயன்படுத்த அல்லது உங்கள் தரவைச் செயலாக்குவது குறித்த ஏதேனும் "
+"கேள்விகளுக்கு, நீங்கள் முறையே எங்களுக்கு எழுதலாம்: contact@apps.education.fr அல்லது "
+"contact@webinaire.numerique.gouv.fr."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:86
+msgid ""
+"Vous pouvez également, dans le cas du Webinaire de l'État, contacter le "
+"délégué à la protection des données (DPD) des services du Premier Ministre :"
+msgstr ""
+"மாநில வெபினாரின் விசயத்தில், தலைமை அமைச்சர் அலுவலகத்தின் தரவு பாதுகாப்பு அதிகாரியை "
+"(DPD) நீங்கள் தொடர்பு கொள்ளலாம்:"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:87
+msgid "par mail à dpd@pm.gouv.fr"
+msgstr "மின்னஞ்சல் மூலம் dpd@pm.gouv.fr"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:88
+msgid "ou par courrier à l’adresse suivante :"
+msgstr "அல்லது பின்வரும் முகவரிக்கு அஞ்சல் மூலம்:"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:89
+msgid "Services du Premier Ministre"
+msgstr "தலைமை அமைச்சர் அலுவலகம்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:90
+msgid ""
+"À l’attention du délégué à la protection des données (DPD)</br>\n"
+"            56 rue de Varenne </br>\n"
+"            75007 Paris"
+msgstr ""
+"தரவு பாதுகாப்பு அதிகாரி (DPD)</br>யின் கவனத்திற்கு\n"
+"56 rue de Varenne </br>\n"
+"75007 பாரிச்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:93
+msgid ""
+"Si vous estimez, après nous avoir contactés, que vos droits Informatiques et "
+"Libertés ne sont pas respectés vous pouvez adresser une réclamation à la "
+"CNIL :"
+msgstr ""
+"எங்களைத் தொடர்பு கொண்ட பிறகு, உங்கள் செய்தி தொழில்நுட்ப உரிமைகள் மற்றும் சுதந்திரங்கள் "
+"மதிக்கப்படவில்லை என்று நீங்கள் நம்பினால், நீங்கள் CNIL க்கு குற்றச்சாட்டு அனுப்பலாம்:"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:94
+msgid ""
+"Commission nationale informatique et libertés </br>\n"
+"            3 place de Fontenoy – TSA 80715 – </br>\n"
+"            75334 PARIS CEDEX 07"
+msgstr ""
+"செய்தி தொழில்நுட்பம் மற்றும் சுதந்திரத்திற்கான தேசிய ஆணையம் </br>\n"
+"3 இடம் de Fontenoy – TSA 80715 – </br>\n"
+"75334 பாரிச் செடெக்ச் 07"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:98
+msgid ""
+"Les modalités de réclamation sont précisées sur le site de la CNIL : "
+"www.cnil.fr."
+msgstr "புகாரின் விதிமுறைகள் CNIL இணையதளத்தில் குறிப்பிடப்பட்டுள்ளன: www.cnil.fr."
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:100
+msgid ""
+"Contactez le Délégué à la protection des données pour les services Écoles/"
+"Colléges/Lycées/Agents"
+msgstr ""
+"பள்ளிகள்/கல்லூரிகள்/உயர்நிலைப் பள்ளிகள்/முகவர்கள் சேவைகளுக்கான தரவுப் பாதுகாப்பு "
+"அதிகாரியைத் தொடர்புகொள்ளவும்"
+
+#: web/b3desk/templates/footer/donnees_personnelles.html:101
+msgid ""
+"Pour ce faire, envoyez un courriel à <strong>dpd[chez]education.gouv.fr</"
+"strong>"
+msgstr ""
+"இதைச் செய்ய, <strong>dpd[chez]education.gouv.fr</strong>க்கு மின்னஞ்சல் அனுப்பவும்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:6
+msgid "Éditeur"
+msgstr "ஆசிரியர்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:7
+msgid ""
+"Ministère de l’Éducation nationale et de la jeunesse Direction du numérique "
+"pour l’éducation 110 rue Grenelle, 75007 Paris"
+msgstr ""
+"தேசிய கல்வி அமைச்சகம் மற்றும் இளைஞர்கள் கல்விக்கான டிசிட்டல் இயக்குநரகம் 110 rue "
+"Grenelle, 75007 பாரிச்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:7
+msgid "Directeur de publication"
+msgstr "வெளியீட்டு இயக்குனர்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:8
+msgid "Directeur de la publication"
+msgstr "வெளியீட்டு இயக்குனர்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:9
+msgid "M. Audran Le Baron, Directeur du numérique pour l’éducation"
+msgstr "திரு. ஆட்ரன் லு பரோன், கல்விக்கான டிசிட்டல் இயக்குநர்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:10
+msgid "Gestionnaire des statistiques"
+msgstr "புள்ளியியல் மேலாளர்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:11
+msgid "Il n’y a pas d’outil de mesure d’audience pour ce site."
+msgstr "இந்தத் தளத்திற்கு பார்வையாளர்களை அளவிடும் கருவி எதுவும் இல்லை."
+
+#: web/b3desk/templates/footer/mentions_legales.html:12
+msgid "Conception et gestion du site"
+msgstr "தள வடிவமைப்பு மற்றும் மேலாண்மை"
+
+#: web/b3desk/templates/footer/mentions_legales.html:13
+msgid ""
+"Le suivi éditorial, graphique et technique du site est assuré au quotidien "
+"par les équipes de la DINUM et du Pôle de compétence Identité du MENJS."
+msgstr ""
+"தளத்தின் தலையங்கம், வரைகலை மற்றும் தொழில்நுட்ப கண்காணிப்பு நாள்தோறும் அடிப்படையில் DINUM "
+"மற்றும் MENJS அடையாளத் திறன் மையத்தால் உறுதி செய்யப்படுகிறது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:14
+msgid "Droits de reproduction"
+msgstr "இனப்பெருக்க உரிமைகள்"
+
+#: web/b3desk/templates/footer/mentions_legales.html:15
+msgid ""
+"Conformément au droit public de la propriété intellectuelle et notamment "
+"selon l’article L122-5 du Code de la propriété intellectuelle, "
+"les ’’documents officiels’’ sont librement réutilisables."
+msgstr ""
+"பொது அறிவுசார் சொத்து சட்டத்தின்படி மற்றும் குறிப்பாக அறிவுசார் சொத்துக் குறியீட்டின் "
+"கட்டுரை L122-5 இன் படி, \"அதிகாரப்பூர்வ ஆவணங்கள்\" சுதந்திரமாக மீண்டும் "
+"பயன்படுத்தக்கூடியவை."
+
+#: web/b3desk/templates/footer/mentions_legales.html:16
+msgid ""
+"Cependant, le bon usage veut que la reprise de ces contenus de façon "
+"partielle ou intégrale mentionne clairement la source, et le cas échéant "
+"avec un lien vers le document original en ligne sur ce site."
+msgstr ""
+"இருப்பினும், நல்ல நடைமுறைக்கு, இந்த உள்ளடக்கத்தை பகுதியாகவோ அல்லது முழுமையாகவோ "
+"மறுஉருவாக்கம் செய்ய ஆதாரத்தை தெளிவாகக் குறிப்பிடுவது தேவை, மேலும் இந்த தளத்தில் "
+"ஆன்லைனில் அசல் ஆவணத்திற்கான இணைப்புடன் பொருத்தமானது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:17
+msgid ""
+"Toutes les infographies et vidéos réalisées par le service de communication "
+"de l’éditeur se trouvent sous « Licence Ouverte V2.0 » et sont librement "
+"réutilisables sous les conditions suivantes :"
+msgstr ""
+"வெளியீட்டாளரின் தகவல்தொடர்பு சேவையால் தயாரிக்கப்பட்ட அனைத்து இன்போ கிராபிக்ச் மற்றும் "
+"வீடியோக்கள் \"திறந்த உரிமம் V2.0\" இன் கீழ் உள்ளன, மேலும் அவை பின்வரும் நிபந்தனைகளின் கீழ் "
+"மீண்டும் பயன்படுத்தக்கூடியவை:"
+
+#: web/b3desk/templates/footer/mentions_legales.html:18
+msgid ""
+"Attribution : vous devez attribuer l’œuvre de la manière indiquée par "
+"l’auteur de l’œuvre ou le titulaire des droits (mais pas d’une manière qui "
+"suggérerait qu’ils vous approuvent, vous ou votre utilisation de l’œuvre)."
+msgstr ""
+"பண்புக்கூறு: படைப்பின் ஆசிரியர் அல்லது உரிமைகள் வைத்திருப்பவர் குறிப்பிடும் விதத்தில் நீங்கள் "
+"பணியைக் குறிப்பிட வேண்டும் (ஆனால் அவர்கள் உங்களை அல்லது உங்கள் வேலையைப் பயன்படுத்துவதை "
+"அவர்கள் அங்கீகரிக்கும் வகையில் அல்ல)."
+
+#: web/b3desk/templates/footer/mentions_legales.html:19
+msgid "Liens hypertextes pointant vers ce site :"
+msgstr "இந்த தளத்தை சுட்டிக்காட்டும் ஐப்பர்லிங்க்கள்:"
+
+#: web/b3desk/templates/footer/mentions_legales.html:20
+msgid ""
+"Tout site public ou privé est autorisé à établir, sans autorisation "
+"préalable, un lien (y compris profond) vers les informations diffusées par "
+"ce site de webinaire, Visio-ecoles/colleges/lycees/agents."
+msgstr ""
+"எந்தவொரு பொது அல்லது தனியார் தளமும், இந்த வெபினார் தளம், Visio-ecoles/colleges/"
+"lycees/agents மூலம் விநியோகிக்கப்படும் தகவலுக்கான இணைப்பை (ஆழமான இணைப்பு உட்பட) முன் "
+"ஏற்பு இல்லாமல் நிறுவ அங்கீகரிக்கப்பட்டுள்ளது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:21
+msgid ""
+"Pour les sites Internet, la reproduction, après autorisation, d’un contenu "
+"doit mentionner très clairement l’origine du document sous forme d’une "
+"adresse internet :"
+msgstr ""
+"வலைத்தளங்களைப் பொறுத்தவரை, அங்கீகாரத்திற்குப் பிறகு, உள்ளடக்கத்தின் மறுஉருவாக்கம், இணைய "
+"முகவரியின் வடிவத்தில் ஆவணத்தின் தோற்றத்தை மிகத் தெளிவாகக் குறிப்பிட வேண்டும்:"
+
+#: web/b3desk/templates/footer/mentions_legales.html:22
+msgid ""
+"La mise en place de “liens profonds” pointant directement sur le document "
+"souhaité devra être privilégiée par rapport à la reproduction de contenus."
+msgstr ""
+"விரும்பிய ஆவணத்தை நேரடியாகச் சுட்டிக்காட்டும் \"ஆழமான இணைப்புகளை\" நிறுவுவது "
+"உள்ளடக்கத்தின் மறுஉருவாக்கத்தை விட விரும்பத்தக்கதாக இருக்க வேண்டும்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:23
+msgid ""
+"En effet, dans ce cas, la mise en place de liens vers ce site  de Webinaire/"
+"Visio-ecoles/colleges/lycees/agents n’est conditionnée à aucun accord "
+"préalable. Cependant la mention explicite du site dans l’intitulé du lien "
+"est recommandée."
+msgstr ""
+"உண்மையில், இந்த வழக்கில், இந்த Webinar/Visio-பள்ளிகள்/கல்லூரிகள்/உயர்நிலைப் பள்ளிகள்/"
+"முகவர்கள் தளத்திற்கான இணைப்புகளை நிறுவுவது எந்த முன் ஒப்பந்தத்தின் மீதும் நிபந்தனையற்றது "
+"அல்ல. இருப்பினும், இணைப்புத் தலைப்பில் தளத்தின் வெளிப்படையான குறிப்பு "
+"பரிந்துரைக்கப்படுகிறது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:24
+msgid ""
+"Les sites qui font le choix de pointer vers ce site  de Webinaire, Visio-"
+"ecoles/colleges/lycees/agents engagent leur responsabilité dès lors qu’ils "
+"porteraient atteinte à l’image du site public."
+msgstr ""
+"இந்த Webinar தளத்தை சுட்டிக்காட்டும் தளங்கள், Visio-பள்ளிகள்/கல்லூரிகள்/உயர்நிலை பள்ளிகள்/"
+"முகவர்கள் பொது தளத்தின் படத்தை சேதப்படுத்தினால் அவர்கள் பொறுப்பாவார்கள்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:25
+msgid ""
+"Liens hypertextes proposés par ce site  de Webinaire, Visio-ecoles/colleges/"
+"lycees/agents :"
+msgstr ""
+"இந்த Webinar தளம் வழங்கும் ஐபர்டெக்ச்ட் இணைப்புகள், Visio-பள்ளிகள்/கல்லூரிகள்/உயர்நிலை "
+"பள்ளிகள்/முகவர்கள்:"
+
+#: web/b3desk/templates/footer/mentions_legales.html:26
+msgid ""
+"Les liens vers chaque service interministériel référencé dans le catalogue "
+"que proposé par de ce site. Leur présence engage l’éditeur et la gouvernance "
+"SIC interministérielle quant à leur contenu et ne vise qu’à faciliter "
+"l’accès, particulièrement pour les agents de l’Etat et du service public "
+"plus généralement, aux ressources numériques mises à disposition au plan "
+"interministériel."
+msgstr ""
+"இந்தத் தளம் வழங்கும் அட்டவணையில் குறிப்பிடப்பட்டுள்ள ஒவ்வொரு இடைநிலைச் சேவைக்கான இணைப்புகள். "
+"அவர்களின் இருப்பு வெளியீட்டாளர் மற்றும் இடைநிலை SIC ஆளுகையை அவர்களின் உள்ளடக்கத்திற்கு "
+"உறுதியளிக்கிறது மற்றும் இடைநிலை மட்டத்தில் கிடைக்கும் டிசிட்டல் ஆதாரங்களை அணுகுவதை "
+"எளிதாக்குகிறது, குறிப்பாக அரசு முகவர்கள் மற்றும் பொது சேவைகள்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:27
+msgid "Clause de responsabilité"
+msgstr "பொறுப்பு விதி"
+
+#: web/b3desk/templates/footer/mentions_legales.html:28
+msgid ""
+"Les informations proposées sur ce site le sont à titre de service rendu aux "
+"agents du service public, notamment aux agents des services de l’État."
+msgstr ""
+"இந்த தளத்தில் வழங்கப்படும் செய்தி பொது பணி முகவர்களுக்கு, குறிப்பாக மாநில பணி "
+"முகவர்களுக்கு வழங்கப்படும் சேவையாக வழங்கப்படுகிறது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:29
+msgid ""
+"Les informations et/ou documents disponibles sur ce site sont susceptibles "
+"d’être modifiés à tout moment, et peuvent faire l’objet de mises à jour pour "
+"faciliter l’accès aux ressources numériques."
+msgstr ""
+"இந்தத் தளத்தில் கிடைக்கும் செய்தி மற்றும்/அல்லது ஆவணங்கள் எந்த நேரத்திலும் மாற்றத்திற்கு "
+"உட்பட்டவை, மேலும் டிசிட்டல் ஆதாரங்களுக்கான அணுகலை எளிதாக்கும் புதுப்பிப்புகளுக்கு "
+"உட்பட்டிருக்கலாம்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:30
+msgid ""
+"Les informations et/ou documents accédés à partir de ce site relèvent de la "
+"responsabilité des porteurs de chaque service interministériel ainsi mis à "
+"disposition."
+msgstr ""
+"இந்தத் தளத்தில் இருந்து அணுகப்படும் செய்தி மற்றும்/அல்லது ஆவணங்கள் இவ்வாறு கிடைக்கப்பெறும் "
+"ஒவ்வொரு இடைநிலைச் சேவையையும் தாங்குபவர்களின் பொறுப்பாகும்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:31
+msgid ""
+"L’éditeur ne pourra en aucun cas être tenue responsable de tout dommage de "
+"quelque nature qu’il soit résultant de la mauvaise utilisation des "
+"ressources accessibles à partir de ce site."
+msgstr ""
+"இந்தத் தளத்திலிருந்து அணுகக்கூடிய ஆதாரங்களைத் தவறாகப் பயன்படுத்துவதன் விளைவாக ஏற்படும் "
+"எந்தவொரு சேதத்திற்கும் வெளியீட்டாளர் எந்தச் சூழ்நிலையிலும் பொறுப்பேற்க முடியாது."
+
+#: web/b3desk/templates/footer/mentions_legales.html:32
+msgid "Droit à la compensation"
+msgstr "இழப்பீடு பெறும் உரிமை"
+
+#: web/b3desk/templates/footer/mentions_legales.html:33
+msgid ""
+"Dans l’attente d’une mise en conformité totale d’un de ces services, vous "
+"pouvez obtenir une version accessible des documents ou des informations qui "
+"y seraient contenues en envoyant un courriel au contact indiqué sur la page "
+"d’accès du service en indiquant le nom du document concerné et/ou les "
+"informations que vous souhaiteriez obtenir. Les informations demandées vous "
+"seront transmises dans les plus brefs délais."
+msgstr ""
+"இந்தச் சேவைகளில் ஒன்றின் முழு இணக்கம் நிலுவையில் உள்ளது, சம்பந்தப்பட்ட ஆவணத்தின் பெயர் மற்றும்/"
+"அல்லது நீங்கள் பெற விரும்பும் தகவலைக் குறிக்கும் பணி அணுகல் பக்கத்தில் குறிப்பிடப்பட்டுள்ள "
+"தொடர்புக்கு மின்னஞ்சல் அனுப்புவதன் மூலம், அதில் உள்ள ஆவணங்கள் அல்லது தகவலின் அணுகக்கூடிய "
+"பதிப்பைப் பெறலாம். கோரப்பட்ட தகவல்கள் கூடிய விரைவில் உங்களுக்கு அனுப்பப்படும்."
+
+#: web/b3desk/templates/footer/mentions_legales.html:35
+msgid ""
+"Vous pouvez nous aider à améliorer l’accessibilité du site en nous signalant "
+"les problèmes éventuels que vous rencontrez. Pour ce faire, envoyez-nous un "
+"courriel à <strong>apps[chez]education.gouv.fr</strong>"
+msgstr ""
+"நீங்கள் எதிர்கொள்ளும் ஏதேனும் சிக்கல்களை எங்களுக்குத் தெரிவிப்பதன் மூலம் தளத்தின் அணுகலை "
+"மேம்படுத்த எங்களுக்கு உதவலாம். இதைச் செய்ய, <strong>apps[chez]education.gouv.fr</"
+"strong>க்கு மின்னஞ்சல் அனுப்பவும்"
+
+#: web/b3desk/templates/meeting/delegation-management.html:3
+#, python-format
+msgid "Délégation de la réunion %(meeting_name)s"
+msgstr "மீட்டிங் பிரதிநிதிகள் குழு %(meeting_name)s"
+
+#: web/b3desk/templates/meeting/delegation-management.html:8
+#: web/b3desk/templates/meeting/files.html:42
+#: web/b3desk/templates/meeting/files.html:221
+#: web/b3desk/templates/meeting/recordings.html:9
+#: web/b3desk/templates/meeting/recordings.html:210
+msgid "Retour à mes réunions"
+msgstr "எனது கூட்டங்களுக்குத் திரும்பு"
+
+#: web/b3desk/templates/meeting/delegation-management.html:11
+msgid " Ajouter des délégataires "
+msgstr " பிரதிநிதிகளைச் சேர்க்கவும் "
+
+#: web/b3desk/templates/meeting/delegation-management.html:16
+msgid "Ajouter l'utilisateur comme délégataire"
+msgstr "பயனரை பிரதிநிதியாகச் சேர்க்கவும்"
+
+#: web/b3desk/templates/meeting/delegation-management.html:36
+msgid "Supprimer le délégataire"
+msgstr "பிரதிநிதியை நீக்கு"
+
+#: web/b3desk/templates/meeting/end.html:5
+msgid ""
+"Cette réunion est actuellement en cours avec les anciens paramètres.<br>\n"
+"            Souhaitez-vous y mettre fin pour permettre la prise en compte "
+"immédiate de ces nouveaux paramètres ? Les éventuels participants seront "
+"déconnectés."
+msgstr ""
+"இந்த மீட்டிங் தற்போது பழைய அமைப்புகளுடன் இயங்குகிறது.<br>\n"
+"இந்த புதிய அளவுருக்களை உடனடியாக கணக்கில் எடுத்துக்கொள்ள அனுமதிக்க, அதற்கு முற்றுப்புள்ளி "
+"வைக்க விரும்புகிறீர்களா? பங்கேற்பாளர்கள் அனைவரும் துண்டிக்கப்படுவார்கள்."
+
+#: web/b3desk/templates/meeting/end.html:9
+#: web/b3desk/templates/meeting/files.html:160
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
+#: web/b3desk/templates/meeting/recordings.html:98
+#: web/b3desk/templates/meeting/recordings.html:145
+#, python-format
+msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
+msgstr "\"%(meeting_name)s\" உங்களுக்குச் சொந்தமில்லை"
+
+#: web/b3desk/templates/meeting/end.html:13
+msgid "Mettre fin à la réunion en cours"
+msgstr "தற்போதைய சந்திப்பை முடிக்கவும்"
+
+#: web/b3desk/templates/meeting/end.html:14
+msgid "Patienter jusqu'à la fin de la réunion"
+msgstr "கூட்டம் முடியும் வரை காத்திருங்கள்"
+
+#: web/b3desk/templates/meeting/file_picker.html:27
+msgid "Service temporairement indisponible"
+msgstr "பணி தற்காலிகமாக கிடைக்கவில்லை"
+
+#: web/b3desk/templates/meeting/file_picker.html:28
+msgid ""
+"Un problème technique empêche l'accès au service de fichiers. Veuillez "
+"réessayer dans quelques minutes."
+msgstr ""
+"ஒரு தொழில்நுட்ப சிக்கல் கோப்பு சேவையை அணுகுவதை தடுக்கிறது. சில நிமிடங்களில் மீண்டும் "
+"முயற்சிக்கவும்."
+
+#: web/b3desk/templates/meeting/files.html:39
+#, python-format
+msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
+msgstr "<em>%(meeting_name)s</em> உடன் தொடர்புடைய விளக்கக்காட்சிகளை நிர்வகித்தல்"
+
+#: web/b3desk/templates/meeting/files.html:47
+#: web/b3desk/templates/meeting/form.html:63
+msgid "Enregistrement impossible car certains champs sont mal renseignés."
+msgstr "சில புலங்கள் தவறாக நிரப்பப்பட்டதால் பதிவு செய்ய இயலாது."
+
+#: web/b3desk/templates/meeting/files.html:87
+msgid "Ajouter"
+msgstr "சேர்"
+
+#: web/b3desk/templates/meeting/files.html:100
+msgid "Vous pouvez ajouter un fichier :"
+msgstr "நீங்கள் ஒரு கோப்பைச் சேர்க்கலாம்:"
+
+#: web/b3desk/templates/meeting/files.html:103
+msgid "Nuage temporairement indisponible"
+msgstr "முகில் தற்காலிகமாக கிடைக்கவில்லை"
+
+#: web/b3desk/templates/meeting/files.html:104
+msgid ""
+"Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités "
+"sont momentanément désactivées. Veuillez réessayer dans quelques minutes."
+msgstr ""
+"ஒரு தொழில்நுட்ப சிக்கல் முகில் அணுகலை தடுக்கிறது. சில நற்பொருத்தங்கள் தற்காலிகமாக "
+"முடக்கப்பட்டுள்ளன. சில நிமிடங்களில் மீண்டும் முயற்சிக்கவும்."
+
+#: web/b3desk/templates/meeting/files.html:111
+msgid "depuis une URL"
+msgstr "ஒரு முகவரி இலிருந்து"
+
+#: web/b3desk/templates/meeting/files.html:114
+msgid "nuage"
+msgstr "முகில்"
+
+#: web/b3desk/templates/meeting/files.html:114
+msgid "depuis le Nuage"
+msgstr "மேகத்திலிருந்து"
+
+#: web/b3desk/templates/meeting/files.html:117
+msgid "téléversement"
+msgstr "பதிவேற்றம்"
+
+#: web/b3desk/templates/meeting/files.html:117
+msgid "par Téléversement"
+msgstr "பதிவேற்றம் மூலம்"
+
+#: web/b3desk/templates/meeting/files.html:132
+msgid "Vos fichiers associés sont :"
+msgstr "உங்களுடன் தொடர்புடைய கோப்புகள்:"
+
+#: web/b3desk/templates/meeting/files.html:136
+msgid "Téléchargeable"
+msgstr "பதிவிறக்கம் செய்யக்கூடியது"
+
+#: web/b3desk/templates/meeting/files.html:137
+msgid "Titre"
+msgstr "டைட்ரே"
+
+#: web/b3desk/templates/meeting/files.html:138
+msgid "Ajouté le"
+msgstr "சேர்க்கப்பட்டது"
+
+#: web/b3desk/templates/meeting/files.html:139
+#: web/b3desk/templates/meeting/files.html:156
+#: web/b3desk/templates/meeting/files.html:168
+#: web/b3desk/templates/meeting/files.html:198
+#: web/b3desk/templates/meeting/recordings.html:106
+#: web/b3desk/templates/meeting/row.html:59
+msgid "Supprimer"
+msgstr "நீக்கு"
+
+#: web/b3desk/templates/meeting/files.html:140
+#: web/b3desk/templates/meeting/files.html:202
+msgid "Télécharger"
+msgstr "பதிவிறக்கவும்"
+
+#: web/b3desk/templates/meeting/files.html:158
+#, python-format
+msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
+msgstr "<em>%(file_title)s</em> கோப்பை நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+
+#: web/b3desk/templates/meeting/files.html:171
+#: web/b3desk/templates/meeting/form.html:178
+#: web/b3desk/templates/meeting/form.html:180
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
+#: web/b3desk/templates/meeting/modals/delete.html:54
+#: web/b3desk/templates/meeting/recordings.html:109
+#: web/b3desk/templates/meeting/recordings.html:153
+msgid "Annuler"
+msgstr "ரத்து வெற்றி"
+
+#: web/b3desk/templates/meeting/files.html:213
+msgid ""
+"Aucun document de présentation n'est prévu pour cette réunion actuellement"
+msgstr "இந்தக் கூட்டத்திற்கு தற்போது எந்த விளக்க ஆவணங்களும் திட்டமிடப்படவில்லை"
+
+#: web/b3desk/templates/meeting/form.html:11
+#: web/b3desk/templates/meeting/form.html:13
+msgid "Activé"
+msgstr "இயக்கப்பட்டது"
+
+#: web/b3desk/templates/meeting/form.html:11
+#: web/b3desk/templates/meeting/form.html:13
+msgid "Désactivé"
+msgstr "முடக்கப்பட்டது"
+
+#: web/b3desk/templates/meeting/form.html:58
+msgid "Créer une réunion"
+msgstr "சந்திப்பை உருவாக்கவும்"
+
+#: web/b3desk/templates/meeting/form.html:74
+msgid "Accueil des participants"
+msgstr "வரவேற்பு பங்கேற்பாளர்கள்"
+
+#: web/b3desk/templates/meeting/form.html:92
+msgid "Conseils pour la mise en forme"
+msgstr "வடிவமைப்பதற்கான உதவிக்குறிப்புகள்"
+
+#: web/b3desk/templates/meeting/form.html:97
+#, python-format
+msgid "%%CONFNAME%% : affiche le nom de votre salle"
+msgstr "%%CONFNAME%%: உங்கள் அறையின் பெயரைக் காட்டுகிறது"
+
+#: web/b3desk/templates/meeting/form.html:107
+msgid "Interactions"
+msgstr "தொடர்புகள்"
+
+#: web/b3desk/templates/meeting/form.html:112
+msgid ""
+"Tous ces paramètres sont modifiables directement depuis la salle de réunion "
+"à tout moment."
+msgstr "இந்த அமைப்புகளை எந்த நேரத்திலும் சந்திப்பு அறையில் இருந்து நேரடியாக மாற்றலாம்."
+
+#: web/b3desk/templates/meeting/form.html:130
+msgid "Enregistrement"
+msgstr "பதிவு"
+
+#: web/b3desk/templates/meeting/form.html:135
+msgid ""
+"L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et "
+"le tchat public."
+msgstr "அறை பதிவு வீடியோ, ஆடியோ, ஒயிட்போர்டு மற்றும் பொது அரட்டை ஆகியவை அடங்கும்."
+
+#: web/b3desk/templates/meeting/form.html:148
+msgid "Paramètres avancés"
+msgstr "மேம்பட்ட அமைப்புகள்"
+
+#: web/b3desk/templates/meeting/form.html:173
+msgid "Enregistrer"
+msgstr "சேமிக்கவும்"
+
+#: web/b3desk/templates/meeting/form.html:175
+msgid "Créer la salle"
+msgstr "அறையை உருவாக்கவும்"
+
+#: web/b3desk/templates/meeting/join.html:4
+msgid "Rejoindre la réunion"
+msgstr "கூட்டத்தில் சேரவும்"
+
+#: web/b3desk/templates/meeting/join.html:14
+msgid "Votre nom"
+msgstr "உங்கள் பெயர்"
+
+#: web/b3desk/templates/meeting/join.html:15
+msgid "Vous pouvez également préciser votre service ou votre fonction."
+msgstr "உங்கள் துறை அல்லது செயல்பாட்டையும் குறிப்பிடலாம்."
+
+#: web/b3desk/templates/meeting/join.html:23
+msgid "Informations facultatives"
+msgstr "விருப்பத் செய்தி"
+
+#: web/b3desk/templates/meeting/join.html:24
+msgid "Si ce champ est rempli, il sera affiché dans BBB."
+msgstr "இந்த புலம் முடிந்தால், அது BBB இல் காட்டப்படும்."
+
+#: web/b3desk/templates/meeting/join.html:28
+msgid "Le nom affiché sera «"
+msgstr "காட்டப்படும் பெயர் \""
+
+#: web/b3desk/templates/meeting/join.html:28
+msgid "»."
+msgstr "»."
+
+#: web/b3desk/templates/meeting/join.html:33
+msgid "Rejoindre"
+msgstr "சேருங்கள்"
+
+#: web/b3desk/templates/meeting/join.html:40
+msgid "Vous êtes propriétaire de cette salle ?"
+msgstr "இந்த அறை உங்களுக்குச் சொந்தமா?"
+
+#: web/b3desk/templates/meeting/list.html:8
+#: web/b3desk/templates/meeting/list.html:30
+msgid "Créer une salle permanente"
+msgstr "நிரந்தர அறையை உருவாக்கவும்"
+
+#: web/b3desk/templates/meeting/list.html:18
+#, python-format
+msgid ""
+"Vous avez atteint la limite des %(max_meetings_per_user)s réunions. Pour "
+"pouvoir en créer davantage, veuillez supprimer des réunions inactives."
+msgstr ""
+"%(max_meetings_per_user)s சந்திப்புகளின் வரம்பை அடைந்துவிட்டீர்கள். மேலும் உருவாக்க, "
+"செயலற்ற மீட்டிங்குகளை நீக்கவும்."
+
+#: web/b3desk/templates/meeting/list.html:28
+msgid ""
+"Vous n'avez pas encore créé de salle de réunion permanente. Vous pouvez "
+"créer votre salle permanente ou accéder à une salle temporaire plus bas."
+msgstr ""
+"நீங்கள் இன்னும் நிரந்தர சந்திப்பு அறையை உருவாக்கவில்லை. உங்கள் நிரந்தர அறையை உருவாக்கலாம் "
+"அல்லது தற்காலிக அறையை மேலும் கீழே அணுகலாம்."
+
+#: web/b3desk/templates/meeting/list.html:33
+msgid ""
+"En créant une salle de réunion permanente, vous pouvez créer une base de "
+"documents permanente, choisir d'ajouter une salle d'attente, de bloquer les "
+"micros et les caméras ouverts ou fermés, d'afficher ou non les espaces de "
+"discussions privés et publiques, ou encore accéder aux enregistrements à la "
+"fin de votre réunion."
+msgstr ""
+"நிரந்தர சந்திப்பு அறையை உருவாக்குவதன் மூலம், நீங்கள் நிரந்தர தரவுத்தளத்தை உருவாக்கலாம், "
+"காத்திருப்பு அறையைச் சேர்க்கலாம், திறந்த அல்லது மூடிய மைக்ரோஃபோன்கள் மற்றும் கேமராக்களைத் "
+"தடுக்கலாம், தனிப்பட்ட மற்றும் பொது விவாத இடங்களைக் காட்டலாம் அல்லது காட்டக்கூடாது அல்லது "
+"உங்கள் சந்திப்பின் முடிவில் பதிவுகளை அணுகலாம்."
+
+#: web/b3desk/templates/meeting/list.html:38
+msgid "Trier par :"
+msgstr "வரிசைப்படுத்து:"
+
+#: web/b3desk/templates/meeting/list.html:45
+#: web/b3desk/templates/meeting/list.html:49
+msgid "Date"
+msgstr "திகதி"
+
+#: web/b3desk/templates/meeting/list.html:57
+#: web/b3desk/templates/meeting/list.html:61
+msgid "Alphabétique"
+msgstr "அகரவரிசைப்படி"
+
+#: web/b3desk/templates/meeting/list.html:68
+msgid "Favoris"
+msgstr "பிடித்தவை"
+
+#: web/b3desk/templates/meeting/list.html:85
+msgid "Ajouter aux favoris"
+msgstr "பிடித்தவைகளில் சேர்க்கவும்"
+
+#: web/b3desk/templates/meeting/list.html:86
+#: web/b3desk/templates/meeting/list.html:90
+msgid "Label bouton"
+msgstr "சிட்டை பூட்டன்"
+
+#: web/b3desk/templates/meeting/list.html:89
+msgid "Retirer des favoris"
+msgstr "பிடித்தவற்றிலிருந்து அகற்று"
+
+#: web/b3desk/templates/meeting/recordings.html:7
+#, python-format
+msgid "Enregistrements de <em>%(meeting_name)s"
+msgstr "பதிவுகள் <em>%(meeting_name)s"
+
+#: web/b3desk/templates/meeting/recordings.html:14
+msgid "Cette réunion est toujours en cours"
+msgstr "இந்த சந்திப்பு இன்னும் நடந்து கொண்டிருக்கிறது"
+
+#: web/b3desk/templates/meeting/recordings.html:15
+msgid ""
+"Si un enregistrement est en cours, il ne sera encodé qu'après la fin de la "
+"réunion"
+msgstr ""
+"ரெக்கார்டிங் செயல்பாட்டில் இருந்தால், சந்திப்பு முடியும் வரை அது குறியாக்கம் செய்யப்படாது"
+
+#: web/b3desk/templates/meeting/recordings.html:18
+msgid ""
+"Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre "
+"autant de temps que la durée de la réunion."
+msgstr "மீட்டிங் முடிந்த பிறகு, ரெக்கார்டிங்கை குறியாக்க மீட்டிங் காலம் வரை ஆகலாம்."
+
+#: web/b3desk/templates/meeting/recordings.html:19
+msgid ""
+"Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de "
+"plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté."
+msgstr ""
+"எந்த மதிப்பீட்டாளரும் மீட்டிங்கை முடிக்கவில்லை எனில், அனைத்துப் பயனர்களும் வெளியேறிய பிறகு, "
+"சில நிமிடங்கள் கூடுதல் நேரந்தவறுகை சேர்க்கப்படும்."
+
+#: web/b3desk/templates/meeting/recordings.html:20
+#, python-format
+msgid "Les enregistrements sont conservés pour une période de %(duration)s."
+msgstr "ரெக்கார்டிங்குகள் %(duration)s காலத்திற்கு சேமிக்கப்படும்."
+
+#: web/b3desk/templates/meeting/recordings.html:26
+msgid "Renommer l’enregistrement"
+msgstr "பதிவை மறுபெயரிடவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:30
+#, python-format
+msgid ""
+"\n"
+"                    Enregistré le %(start_date)s -\n"
+"                    Expire le %(expiration_date)s\n"
+"                "
+msgstr ""
+"\n"
+"                    %(start_date)s அன்று பதிவு செய்யப்பட்டது -\n"
+"%(expiration_date)s அன்று காலாவதியாகிறது\n"
+"                "
+
+#: web/b3desk/templates/meeting/recordings.html:38
+msgid "Visuels"
+msgstr "காட்சிகள்"
+
+#: web/b3desk/templates/meeting/recordings.html:39
+msgid "Actions"
+msgstr "செயல்கள்"
+
+#: web/b3desk/templates/meeting/recordings.html:58
+msgid "Voir l'enregistrement"
+msgstr "பதிவை பார்க்கவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:59
+#: web/b3desk/templates/meeting/recordings.html:194
+msgid "Copier le lien de l'enregistrement dans le presse-papiers"
+msgstr "இடைநிலைப்பலகைக்கு பதிவு இணைப்பை நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:62
+msgid "Voir l'enregistrement mp4"
+msgstr "mp4 பதிவைப் பார்க்கவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:64
+msgid "Partager l'enregistrement mp4"
+msgstr "mp4 பதிவைப் பகிரவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:69
+#, python-format
+msgid "Supprimer video de %(meeting_name)s"
+msgstr "சப்ரைமர் வீடியோ டி %(meeting_name)s"
+
+#: web/b3desk/templates/meeting/recordings.html:94
+#, python-format
+msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
+msgstr "சப்ரைமர் \"<en>%(பதிவு பெயர்) is</em>\" ?"
+
+#: web/b3desk/templates/meeting/recordings.html:96
+#, python-format
+msgid ""
+"Voulez-vous vraiment supprimer l'enregistrement <em>%(recording_name)s</em> "
+"de <em>%(meeting_name)s</em>&nbsp;?"
+msgstr ""
+"<em>%(recording_name)s</em> பதிவை <em>%(meeting_name)s</em> இலிருந்து "
+"நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+
+#: web/b3desk/templates/meeting/recordings.html:150
+msgid "Modifier le nom de l'enregistrement"
+msgstr "பதிவின் பெயரை மாற்றவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:150
+msgid "Renommer"
+msgstr "மறுபெயரிடவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:178
+#, python-format
+msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
+msgstr "\"<em>%(recording_name)s</em>\" இன் பதிவைப் பகிரவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:181
+msgid ""
+"Cet enregistrement est conservé temporairement sur ce service. Pour le "
+"mettre à disposition de manière pérenne, fournissez ce lien à des services "
+"dédiés à la diffusion"
+msgstr ""
+"இந்த பதிவு தற்காலிகமாக இந்த சேவையில் சேமிக்கப்பட்டுள்ளது. இது நிரந்தரமாக கிடைக்க, "
+"விநியோகத்திற்காக அர்ப்பணிக்கப்பட்ட சேவைகளுக்கு இந்த இணைப்பை வழங்கவும்"
+
+#: web/b3desk/templates/meeting/recordings.html:188
+msgid ""
+"En cas de diffusion publique, veillez préalablement à obtenir l'autorisation "
+"des participants."
+msgstr ""
+"பொது ஒளிபரப்பு நிகழ்வில், பங்கேற்பாளர்களிடமிருந்து முன்கூட்டியே இசைவு பெற வேண்டும்."
+
+#: web/b3desk/templates/meeting/row.html:5
+#: web/b3desk/templates/meeting/row.html:35
+#, python-format
+msgid "Lancer %(meeting_name)s - nouvelle fenêtre"
+msgstr "%(meeting_name)s - புதிய சாளரத்தை துவக்கவும்"
+
+#: web/b3desk/templates/meeting/row.html:7
+msgid "Envoyer un courriel aux modérateurs"
+msgstr "மின்னஞ்சல் மதிப்பீட்டாளர்கள்"
+
+#: web/b3desk/templates/meeting/row.html:9
+msgid "Copier le lien Modérateur dans le presse-papiers"
+msgstr "மதிப்பீட்டாளர் இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/row.html:13
+#, python-format
+msgid "Participer à %(meeting_name)s - nouvelle fenêtre"
+msgstr "%(meeting_name)s இல் பங்கேற்கவும் - புதிய சாளரம்"
+
+#: web/b3desk/templates/meeting/row.html:15
+msgid "Envoyer un courriel aux participants"
+msgstr "பங்கேற்பாளர்களுக்கு மின்னஞ்சல் அனுப்பவும்"
+
+#: web/b3desk/templates/meeting/row.html:17
+msgid "Copier le lien Participant dans le presse-papiers"
+msgstr "இடைநிலைப்பலகைக்கு பங்கேற்பாளர் இணைப்பை நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/row.html:20
+#: web/b3desk/templates/meeting/row.html:54
+#, python-format
+msgid "Modifier %(meeting_name)s"
+msgstr "மாற்றி %(meeting_name)s"
+
+#: web/b3desk/templates/meeting/row.html:22
+#: web/b3desk/templates/meeting/row.html:56
+#, python-format
+msgid "Fichiers associés à %(meeting_name)s"
+msgstr "%(meeting_name)s தொடர்பான கோப்புகள்"
+
+#: web/b3desk/templates/meeting/row.html:26
+#: web/b3desk/templates/meeting/row.html:27
+#: web/b3desk/templates/meeting/row.html:29
+#: web/b3desk/templates/meeting/row.html:60
+#, python-format
+msgid "Supprimer %(meeting_name)s"
+msgstr "சப்ரைமர் %(meeting_name)s"
+
+#: web/b3desk/templates/meeting/row.html:31
+msgid "Fermer la fenêtre modale"
+msgstr "மாதிரி சாளரத்தை மூடு"
+
+#: web/b3desk/templates/meeting/row.html:35
+msgid "Lancer"
+msgstr "லான்சர்"
+
+#: web/b3desk/templates/meeting/row.html:37
+msgid "Inviter"
+msgstr "அழைக்கவும்"
+
+#: web/b3desk/templates/meeting/row.html:40
+#, python-format
+msgid "Propriétaire : %(meeting_owner_name)s"
+msgstr "உரிமையாளர்: %(meeting_owner_name)s"
+
+#: web/b3desk/templates/meeting/row.html:45
+#: web/b3desk/templates/meeting/row.html:46
+#, python-format
+msgid "Gérer les délégations de %(meeting_name)s"
+msgstr "%(meeting_name)s பிரதிநிதிகளை நிர்வகிக்கவும்"
+
+#: web/b3desk/templates/meeting/row.html:50
+#: web/b3desk/templates/meeting/row.html:51
+#, python-format
+msgid "Voir les enregistrements de %(meeting_name)s"
+msgstr "%(meeting_name)s பதிவுகளைப் பார்க்கவும்"
+
+#: web/b3desk/templates/meeting/signin_links.html:3
+msgid "Code de connexion :"
+msgstr "உள்நுழைவு குறியீடு:"
+
+#: web/b3desk/templates/meeting/visio_code_form.html:3
+#: web/b3desk/templates/meeting/visio_code_form.html:5
+#: web/b3desk/templates/meeting/visio_code_form.html:7
+msgid "Saisir le code de connexion de votre réunion"
+msgstr "உங்கள் மீட்டிங் உள்நுழைவுக் குறியீட்டை உள்ளிடவும்"
+
+#: web/b3desk/templates/meeting/visio_code_form.html:10
+msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
+msgstr "சந்திப்பு அழைப்பிதழில் பெறப்பட்ட உள்நுழைவுக் குறியீட்டை நிரப்பவும்."
+
+#: web/b3desk/templates/meeting/visio_code_form.html:29
+msgid "Recopier le code de sécurité de cette image"
+msgstr "இந்தப் படத்திலிருந்து பாதுகாப்புக் குறியீட்டை நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/visio_code_form.html:31
+msgid "SAISIR LE CAPTCHA"
+msgstr "கேப்ட்சாவை உள்ளிடவும்"
+
+#: web/b3desk/templates/meeting/visio_code_form.html:38
+#: web/b3desk/templates/meeting/visio_code_form.html:39
+msgid "Connexion"
+msgstr "இணைப்பு"
+
+#: web/b3desk/templates/meeting/wait.html:7
+#, python-format
+msgid "Bonjour %(fullname)s, vous pourrez bientôt entrer"
+msgstr "வணக்கம் %(fullname)s, நீங்கள் விரைவில் நுழைய முடியும்"
+
+#: web/b3desk/templates/meeting/wait.html:18
+msgid ""
+"\n"
+"                        La salle de visio-conférence est en cours de "
+"création. Vous entrerez automatiquement dans la salle dès qu'elle sera "
+"opérationnelle.\n"
+"                    "
+msgstr ""
+"\n"
+"                        வீடியோ கான்பரன்ச் அறை உருவாக்கப்படுகிறது. அது செயல்பட "
+"ஆரம்பித்தவுடன் நீங்கள் தானாகவே அறைக்குள் நுழைவீர்கள்.\n"
+"                    "
+
+#: web/b3desk/templates/meeting/wait.html:22
+msgid ""
+"\n"
+"                        Votre hôte n’est pas encore arrivé. Vous entrerez "
+"automatiquement dans la salle de visio-conférence dès qu’il sera présent.\n"
+"                    "
+msgstr ""
+"\n"
+"                        உங்கள் புரவலன் இன்னும் வரவில்லை. அவர் இருந்தவுடன் நீங்கள் "
+"தானாகவே வீடியோ கான்ஃபரன்ச் அறைக்குள் நுழைவீர்கள்.\n"
+"                    "
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
+msgid "Bonjour"
+msgstr "போன்சர்"
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:3
+msgid "vous a nommé délégataire de la réunion"
+msgstr "உங்களை கூட்டத்தின் பிரதிநிதியாக நியமித்துள்ளார்"
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
+msgid ""
+"Vous pouvez dès à présent consulter et gérer l'édition, les enregistrements "
+"et les fichiers associés à cette réunion."
+msgstr ""
+"இந்த மீட்டிங்குடன் தொடர்புடைய திருத்துதல், ரெக்கார்டிங்குகள் மற்றும் கோப்புகளை நீங்கள் இப்போது "
+"பார்க்கலாம் மற்றும் நிர்வகிக்கலாம்."
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
+#, python-format
+msgid ""
+"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr "<a href=\"%(welcome_url)s\">உங்கள் ச்பேசுக்கு</a> செல்லவும்."
+
+#: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
+msgid "Rendez-vous simplement sur votre espace :"
+msgstr "உங்கள் இடத்திற்குச் செல்லவும்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:3
+#, python-format
+msgid "L'enregistrement de la réunion %(meeting_name)s est disponible."
+msgstr "%(meeting_name)s மீட்டிங் பதிவு கிடைக்கிறது."
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:8
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:6
+msgid "Nom :"
+msgstr "எண்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:10
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:8
+msgid "Date :"
+msgstr "தேதி:"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:12
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
+msgid "Formats disponibles :"
+msgstr "கிடைக்கக்கூடிய வடிவங்கள்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+msgid ""
+"Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
+msgstr "உங்கள் பதிவுகள் அனைத்தையும் நீங்கள் இதிலிருந்து காணலாம்"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+msgid "votre espace"
+msgstr "உங்கள் இடம்"
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:14
+msgid ""
+"Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
+"votre espace :"
+msgstr "உங்கள் ச்பேசிலிருந்து உங்கள் பதிவுகள் அனைத்தையும் நீங்கள் காணலாம்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:4
+msgid "Modérateur"
+msgstr "மதிப்பீட்டாளர்"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:6
+msgid "Participant"
+msgstr "பங்கேற்பாளர்"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:9
+msgid "À la réunion suivante :"
+msgstr "அடுத்த கூட்டத்தில்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:13
+msgid "Le lien pour s'y inscrire est le suivant :"
+msgstr "பதிவு செய்வதற்கான இணைப்பு பின்வருமாறு:"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:17
+msgid "Le mot de passe de cette réunion est :"
+msgstr "இந்த சந்திப்பிற்கான கடவுச்சொல்:"
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:25
+msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
+msgstr "அதை அணுக உங்கள் முழுப்பெயர் மற்றும் கடவுச்சொல்லை உள்ளிட வேண்டும்."
+
+#: web/b3desk/templates/meeting/mailto/mail_body.txt:27
+msgid "Bonne réunion."
+msgstr "நல்ல சந்திப்பு."
+
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:5
+#: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:3
+msgid "vous a retiré des délégataires de la réunion"
+msgstr "கூட்டப் பிரதிநிதிகளில் இருந்து உங்களை நீக்கியது"
+
+#: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
+msgid "Invitation à la réunion"
+msgstr "சந்திப்பு அழைப்பிதழ்"
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:16
+#, python-format
+msgid ""
+"Voulez-vous vraiment effectuer ces modifications en tant que délégataire de "
+"\"%(meeting_name)s\" ?"
+msgstr ""
+"\"%(meeting_name)s\" இன் பிரதிநிதியாக இந்த மாற்றங்களைச் செய்ய விரும்புகிறீர்களா?"
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:20
+msgid "La confirmation est définitive."
+msgstr "உறுதிப்படுத்தல் இறுதியானது."
+
+#: web/b3desk/templates/meeting/modals/delegate-confirmation.html:29
+msgid "Confirmer"
+msgstr "உறுதிப்படுத்தவும்"
+
+#: web/b3desk/templates/meeting/modals/delete.html:15
+#, python-format
+msgid "Supprimer \"<em>%(meeting_name)s</em>\" ?"
+msgstr "சப்ரைமர் \"<in>%(மீட்டிங் பெயர்)கள்</em>\" ?"
+
+#: web/b3desk/templates/meeting/modals/delete.html:17
+#, python-format
+msgid ""
+"Voulez-vous vraiment supprimer la réunion \"<em>%(meeting_name)s</em>\" ?"
+msgstr "\"<em>%(meeting_name)s</em>\" மீட்டிங்கை நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+
+#: web/b3desk/templates/meeting/modals/delete.html:22
+msgid "La suppression est définitive"
+msgstr "நீக்குதல் நிரந்தரமானது"
+
+#: web/b3desk/templates/meeting/modals/delete.html:24
+msgid ""
+"Si vous supprimez cette salle, tous les médias (documents importés et "
+"enregistrements) qui lui sont rattachés seront supprimés."
+msgstr ""
+"இந்த அறையை நீக்கினால், அதனுடன் இணைக்கப்பட்டுள்ள அனைத்து மீடியாவும் (இறக்குமதி செய்யப்பட்ட "
+"ஆவணங்கள் மற்றும் பதிவுகள்) நீக்கப்படும்."
+
+#: web/b3desk/templates/meeting/modals/delete.html:31
+msgid "La réunion a des délégataires"
+msgstr "கூட்டத்தில் பிரதிநிதிகள் உள்ளனர்"
+
+#: web/b3desk/templates/meeting/modals/delete.html:33
+#, python-format
+msgid "Vous ne pouvez supprimer %(meeting_name)s pour le moment."
+msgstr "இந்த நேரத்தில் நீங்கள் %(meeting_name)s ஐ நீக்க முடியாது."
+
+#: web/b3desk/templates/meeting/modals/delete.html:34
+msgid "Vous devez retirer tous les délégataires au préalable."
+msgstr "நீங்கள் முதலில் அனைத்து பிரதிநிதிகளையும் அகற்ற வேண்டும்."
+
+#: web/b3desk/templates/meeting/modals/delete.html:45
+#: web/b3desk/templates/meeting/modals/delete.html:49
+msgid "Supprimer la réunion"
+msgstr "சந்திப்பை நீக்கு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:15
+msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
+msgstr "உங்கள் சந்திப்பிற்கு பங்கேற்பாளர்களை அனுப்புவதன் மூலம் அவர்களை அழைக்கவும்:"
+
+#: web/b3desk/templates/meeting/modals/invite.html:17
+msgid "Avec droits modérateurs :"
+msgstr "மதிப்பாய்வு உரிமைகளுடன்:"
+
+#: web/b3desk/templates/meeting/modals/invite.html:22
+msgid "Le code de connexion"
+msgstr "இணைப்பு குறியீடு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:24
+msgid "NOUVEAU"
+msgstr "நோவியூ"
+
+#: web/b3desk/templates/meeting/modals/invite.html:28
+msgid "Copier le code de connexion dans le presse-papiers"
+msgstr "உள்நுழைவு குறியீட்டை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/modals/invite.html:37
+msgid "Le lien modérateur"
+msgstr "மதிப்பீட்டாளர் இணைப்பு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:44
+msgid "Copier le lien modérateur dans le presse-papiers"
+msgstr "மதிப்பீட்டாளர் இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/modals/invite.html:54
+msgid "Le lien SIP"
+msgstr "SIP இணைப்பு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:57
+msgid "Lien requis pour l'utilisation d'équipements SIP."
+msgstr "SIP சாதனங்களைப் பயன்படுத்த இணைப்பு தேவை."
+
+#: web/b3desk/templates/meeting/modals/invite.html:62
+msgid "Copier le lien SIP dans le presse-papiers"
+msgstr "SIP இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/modals/invite.html:69
+msgid "Avec droits restreints :"
+msgstr "கட்டுப்படுத்தப்பட்ட உரிமைகளுடன்:"
+
+#: web/b3desk/templates/meeting/modals/invite.html:74
+msgid "Le lien participant"
+msgstr "பங்கேற்பாளர் இணைப்பு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:81
+msgid "Copier le lien participant dans le presse-papiers"
+msgstr "இடைநிலைப்பலகைக்கு பங்கேற்பாளர் இணைப்பை நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+msgid "Le lien authentifié"
+msgstr "அங்கீகரிக்கப்பட்ட இணைப்பு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:90
+#, python-format
+msgid "via %(service_name)s"
+msgstr "%(service_name)s வழியாக"
+
+#: web/b3desk/templates/meeting/modals/invite.html:97
+msgid "Copier le lien participant authentifié dans le presse-papiers"
+msgstr "அங்கீகரிக்கப்பட்ட பங்கேற்பாளர் இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
+
+#: web/b3desk/templates/meeting/modals/invite.html:107
+msgid "Connexion par téléphone"
+msgstr "தொலைபேசி மூலம் இணைப்பு"
+
+#: web/b3desk/templates/meeting/modals/invite.html:110
+#, python-format
+msgid ""
+"n° de téléphone : %(bbb_dialnumber)s<br>\n"
+"                                            code PIN : %(voice_bridge)s"
+msgstr ""
+"n° de téléphone : %(bbb_dialnumber)s<br> \n"
+"குறியீடு PIN : %(voice_bridge)s"
+
+#: web/b3desk/templates/meeting/modals/invite.html:115
+msgid "Copier les informations dans le presse-papiers"
+msgstr "இடைநிலைப்பலகைக்கு தகவலை நகலெடுக்கவும்"
+
+#: web/b3desk/utils/__init__.py:100
+msgid "Présentation interactive"
+msgstr "ஊடாடும் விளக்கக்காட்சி"
+
+#: web/b3desk/utils/__init__.py:108
+msgid "Vidéo (téléchargement direct)"
+msgstr "வீடியோ (நேரடி பதிவிறக்கம்)"
+
+#: web/b3desk/utils/__init__.py:142
+#, python-brace-format
+msgid "Votre enregistrement pour {name}"
+msgstr "{name} க்கான உங்கள் பதிவு"
+
+#: web/b3desk/utils/__init__.py:264
+msgid ""
+"La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
+"sécuriser la connexion SIPMediaGW"
+msgstr ""
+"SIPMediaGW இணைப்பைப் பாதுகாக்க B3Desk அமைப்புகளில் தனிப்பட்ட விசை உள்ளமைக்கப்படவில்லை"

@@ -111,7 +111,7 @@ def home():
 @admin_needed
 def manage_users():
     """Display user list to manage users."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -140,7 +140,7 @@ def user_infos(user: User):
 @admin_needed
 def manage_meetings():
     """Display meeting list to manage meetings."""
-    form = MeetingSearchForm(request.args, meta={"csrf": False})
+    form = MeetingSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -216,20 +216,12 @@ def group_infos(group: Group):
     )
 
 
-@bp.route("/admin/groups", methods=["GET", "POST"])
+@bp.route("/admin/groups")
 @admin_needed
 def manage_groups():
     """Display group list to manage groups of admin page."""
-    form = GroupSearchForm(request.form)
-    if not request.form or not form.validate():
-        groups_page = get_groups_paginate(per_page=PER_PAGE, data=None)
-        return render_template(
-            "admin/groups.html",
-            groups_page=groups_page,
-            form=form,
-            data=None,
-        )
-    data = form.search.data.lower()
+    form = GroupSearchForm(request.args)
+    data = form.search.data.lower() if form.search.data else None
     groups_page = get_groups_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/groups.html",
@@ -301,11 +293,11 @@ def manage_group_members(group: Group):
     )
 
 
-@bp.route("/admin/manage-group-members/<group:group>/<user:member>")
+@bp.route("/admin/manage-group-members/<group:group>/<user:member>", methods=["POST"])
 @admin_needed
 def remove_member(group: Group, member: User):
-    """Display group members list and member removing admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    """Remove a member from the group."""
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
@@ -319,15 +311,7 @@ def remove_member(group: Group, member: User):
             group.id,
             group.name,
         )
-    members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
-    return render_template(
-        "admin/group_members.html",
-        group=group,
-        form=form,
-        members_page=members_page,
-        data=data,
-        add_members=False,
-    )
+    return redirect(url_for("admin.manage_group_members", group=group, search=data))
 
 
 @bp.route("/admin/delete-group/<group:group>")
@@ -340,10 +324,10 @@ def delete_group(group: Group):
     )
 
 
-@bp.route("/admin/confirm-delete-group/<group:group>")
+@bp.route("/admin/confirm-delete-group/<group:group>", methods=["POST"])
 @admin_needed
 def confirm_delete_group(group: Group):
-    """Display group deletion of admin page."""
+    """Delete a group."""
     db.session.delete(group)
     db.session.commit()
     flash(_("Le groupe a été supprimé"), "success")

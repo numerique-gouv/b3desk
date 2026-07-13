@@ -36,6 +36,7 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
+from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..session import user_needed
 
@@ -52,7 +53,6 @@ def edit_meeting_files(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
     form = MeetingFilesForm()
-    admin_mode = "admin_mode" in request.args or False
 
     if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
@@ -67,7 +67,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
-        admin_mode=admin_mode,
+        admin_mode=is_admin_mode(),
     )
 
 
