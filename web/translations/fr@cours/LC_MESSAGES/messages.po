@@ -261,6 +261,7 @@ msgid "Nom de l'enregistrement"
 msgstr ""
 
 #: web/b3desk/forms.py:276
+#: web/b3desk/forms.py:276
 msgid "Ajout d'utilisateur"
 msgstr ""
 
@@ -2711,26 +2712,32 @@ msgid "Désactivé"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:61
+#: web/b3desk/templates/meeting/form.html:61
 msgid "Créer une réunion"
 msgstr "Créer un cours"
 
+#: web/b3desk/templates/meeting/form.html:78
 #: web/b3desk/templates/meeting/form.html:78
 msgid "Accueil des participants"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:96
+#: web/b3desk/templates/meeting/form.html:96
 msgid "Conseils pour la mise en forme"
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:101
 #: web/b3desk/templates/meeting/form.html:101
 #, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:112
+#: web/b3desk/templates/meeting/form.html:112
 msgid "Interactions"
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:117
 #: web/b3desk/templates/meeting/form.html:117
 msgid ""
 "Tous ces paramètres sont modifiables directement depuis la salle de "
@@ -2744,11 +2751,13 @@ msgid "Enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:141
+#: web/b3desk/templates/meeting/form.html:141
 msgid ""
 "L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc"
 " et le tchat public."
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:158
 #: web/b3desk/templates/meeting/form.html:158
 msgid "Paramètres avancés"
 msgstr ""
