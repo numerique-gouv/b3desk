@@ -1,7 +1,7 @@
 """change meeting.id creation using uuid.
 
 Revision ID: c8d1764b3a93
-Revises: fd08854f3582
+Revises: a3a6e932b2ae
 Create Date: 2026-07-10 10:22:03.638104
 
 Downgrade is only safe if no meeting has been created since the upgrade:
@@ -21,7 +21,7 @@ from sqlalchemy.sql import update
 
 # revision identifiers, used by Alembic.
 revision = "c8d1764b3a93"
-down_revision = "fd08854f3582"
+down_revision = "a3a6e932b2ae"
 branch_labels = None
 depends_on = None
 
