@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
+{% block main %}
+    {% set segments = [
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_groups'), 'label': _('Groupes')},
+    ] %}
+    {% if group is none %}
+        {% set segments = segments + [{'href': url_for('admin.create_group'), 'label': _('Créer groupe')}] %}
+    {% else %}
+        {% set segments = segments + [
+        {'href': url_for('admin.group_infos', group=group), 'label': group.name},
+        {'href': url_for('admin.edit_group', group=group), 'label': _('Modifier') ~ ' ' ~ group.name},
+        ] %}
+    {% endif %}
+    {{ breadcrumb(segments) }}
+    {% if group is none %}
+        <h1 class="fr-h2">{% trans %}Créer un groupe{% endtrans %}</h1>
+        <form id="group-form" action="{{ url_for("admin.create_group") }}" method="post">
+            {% include 'admin/group_form_content.html'%}
+            <div class="fr-mt-4w">
+                <button type="submit" class="fr-btn">{% trans %}Créer le groupe{% endtrans %}</button>
+                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.manage_groups") }}">{% trans %}Annuler{% endtrans %}</a>
+            </div>
+        </form>
+    {% else %}
+        <h1 class="fr-h2">{% trans %}Modifier{% endtrans %} <em>{{group.name }}</em></h1>
+        <p>{% trans group_name=group.name, group_created=group.created_at, group_updated=group.updated_at %}{{ group_name }} a été créé le {{ group_created }} et modifié le {{ group_updated }}.{% endtrans %}</p>
+        <form id="group-form" action="{{ url_for("admin.edit_group", group=group) }}" method="post">
+            {% include 'admin/group_form_content.html'%}
+            <div class="fr-mt-4w">
+                <button type="submit" class="fr-btn fr-btn--primary">{% trans %}Enregistrer{% endtrans %}</button>
+                <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.group_infos", group=group) }}">{% trans %}Annuler{% endtrans %}</a>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

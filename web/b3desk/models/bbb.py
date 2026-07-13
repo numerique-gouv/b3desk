@@ -19,6 +19,7 @@ from xml.etree import ElementTree
 import requests
 from flask import current_app
 from flask import url_for
+from flask_babel import lazy_gettext as _
 
 from b3desk.tasks import background_upload
 
@@ -32,6 +33,28 @@ logger = logging.getLogger("bbb")
 def cache_key(func, caller, prepped, *args, **kwargs):
     """Generate a cache key based on the request URL."""
     return prepped.url
+
+
+def parse_ai_summary_playback(format_element):
+    """Build the ai-summary playback entry from the <urls> summary reports."""
+    playback = {}
+    root_url = format_element.find("url")
+    if root_url is not None and root_url.text:
+        playback["url"] = root_url.text
+
+    urls = format_element.find("urls")
+    if urls is None:
+        return playback
+
+    for url in urls.iter("url"):
+        if url.get("category") != "summary" or not url.text:
+            continue
+        report_type = url.get("type")
+        if report_type == "html":
+            playback["url"] = url.text
+        elif report_type in ("pdf", "md"):
+            playback[report_type] = url.text
+    return playback
 
 
 def caching_exclusion(func, caller, prepped, *args, **kwargs):
@@ -171,6 +194,8 @@ class BBB:
         meta_academy=None,
         analytics_callback_url=None,
         meta_bbb_recording_ready_url=None,
+        ai_summary=None,
+        file_sharing=None,
     ):
         """Create a new meeting.
 
@@ -239,8 +264,18 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
+        if not ai_summary:
+            params["meta_bbb-disable-recording-formats"] = "ai-summary"
 
-        if not current_app.config["FILE_SHARING"]:
+        if ai_summary:
+            params["bannerText"] = str(
+                _(
+                    "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+                )
+            )
+            params["bannerColor"] = "#202c7d"
+
+        if not file_sharing:
             request = self.bbb_request("create", params=params)
             return self.bbb_response(request)
 
@@ -321,6 +356,13 @@ class BBB:
 
                 for format in playback.iter("format"):
                     type = format.find("type").text
+
+                    if type == "ai-summary":
+                        summary = parse_ai_summary_playback(format)
+                        if summary.get("url"):
+                            data["playbacks"][type] = summary
+                        continue
+
                     if type not in ("presentation", "video"):
                         logger.warning(
                             "Unhandled recording playback format %r for recording %s",
@@ -348,7 +390,7 @@ class BBB:
                 result.append(data)
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
-        return result
+        return sorted(result, key=lambda x: x["start_date"], reverse=True)
 
     def update_recordings(self, recording_ids, metadata):
         """Update the recordings of a meeting.
