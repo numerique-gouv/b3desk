@@ -1,27 +1,13 @@
 {% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
 
 {% block main %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.add_group_members', group=group) }}">
-                        {% trans %}Ajouter des membres à{% endtrans %} {{ group.name }}
-                    </a>
-                </li>
-            </ol>
-        </div>
-    </nav>
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_groups'), 'label': _('Groupes')},
+    {'href': url_for('admin.group_infos', group=group), 'label': group.name},
+    {'href': url_for('admin.add_group_members', group=group), 'label': _('Ajouter des membres à') ~ ' ' ~ group.name},
+    ]) }}
     <h5 class="fr-h2">{% trans group_name=group.name %}Ajouter des membres à <em>{{ group_name }}</em>{% endtrans %}</h5>
     {% if not group.members %}
         <p>{% trans %}Ce groupe n'a pas encore de membre.{% endtrans %}</p>
