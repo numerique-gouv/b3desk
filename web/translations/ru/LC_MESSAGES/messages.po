@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-05 22:47+0200\n"
-"PO-Revision-Date: 2026-06-06 21:01+0000\n"
-"Last-Translator: Александр Косенков <akosenkov149@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/B3desk/b3desk/ru/"
-">\n"
+"PO-Revision-Date: 2026-07-15 21:01+0000\n"
+"Last-Translator: DatVex <kinorealme241@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/B3desk/b3desk/"
+"ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: web/b3desk/__init__.py:329 web/b3desk/endpoints/meeting_files.py:123
 #: web/b3desk/endpoints/meeting_files.py:182
@@ -49,441 +49,464 @@ msgid ""
 "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la "
 "réunion. L'organisateur ou le modérateur devra les accepter individuellement."
 msgstr ""
+"Помещать участников в зал ожидания при подключении к встрече. Организатор "
+"или модератор должен будет принимать их по отдельности."
 
 #: web/b3desk/forms.py:63
 msgid "Nom de la réunion"
-msgstr ""
+msgstr "Название встречи"
 
 #: web/b3desk/forms.py:66
 msgid ""
 "Vous ne pourrez plus changer ce titre une fois la salle créée. Ce nom est "
 "visible des participants"
 msgstr ""
+"Вы больше не сможете изменить это название после создания зала. Это название "
+"видно участникам."
 
 #: web/b3desk/forms.py:69
 msgid "Ma réunion"
-msgstr ""
+msgstr "Моя встреча"
 
 #: web/b3desk/forms.py:77 web/b3desk/templates/admin/meeting_infos.html:148
 msgid "Texte de bienvenue"
-msgstr ""
+msgstr "Приветственное сообщение"
 
 #: web/b3desk/forms.py:79
 msgid ""
 "Ce texte apparait comme message de bienvenue sur le tchat public. 150 "
 "caractères max."
 msgstr ""
+"Этот текст отображается как приветственное сообщение в публичном чате. "
+"Максимум 150 символов."
 
 #: web/b3desk/forms.py:82
 #, python-format
 msgid "Bienvenue dans cette réunion %(meeting_name)s."
-msgstr ""
+msgstr "Добро пожаловать на встречу «%(meeting_name)s»."
 
 #: web/b3desk/forms.py:89 web/b3desk/templates/admin/meeting_infos.html:123
 msgid "Nombre maximal de participants"
-msgstr ""
+msgstr "Максимальное количество участников"
 
 #: web/b3desk/forms.py:90
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
-msgstr ""
+msgstr "Ограничьте количество участников зала 350 людьми для большего комфорта."
 
 #: web/b3desk/forms.py:94 web/b3desk/templates/admin/meeting_infos.html:140
 msgid "Durée maximale (minutes)"
-msgstr ""
+msgstr "Максимальная продолжительность (минуты)"
 
 #: web/b3desk/forms.py:96
 msgid ""
 "A l'issue de cette durée la réunion stoppe automatiquement. 1h = 60, 2h = "
 "120, 3h = 180, 4h = 240."
 msgstr ""
+"По истечении этого времени встреча автоматически завершится. 1 ч = 60, 2 ч = "
+"120, 3 ч = 180, 4 ч = 240."
 
 #: web/b3desk/forms.py:113 web/b3desk/templates/admin/meeting_infos.html:179
 msgid "Caméras visibles par les modérateurs uniquement"
-msgstr ""
+msgstr "Камеры видны только модераторам"
 
 #: web/b3desk/forms.py:115
 msgid ""
 "Seuls vous et les modérateurs pouvez voir les caméras des autres "
 "participants quand cette option est activée."
 msgstr ""
+"Если этот параметр включён, только вы и модераторы можете видеть камеры "
+"других участников."
 
 #: web/b3desk/forms.py:120 web/b3desk/templates/admin/meeting_infos.html:187
 msgid "Participants muets à leur arrivée"
-msgstr ""
+msgstr "Выключать микрофоны участников при подключении"
 
 #: web/b3desk/forms.py:122
 msgid ""
 "Vous pouvez choisir de faire arriver les participants dans la salle avec "
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
+"Вы можете настроить подключение участников с выключенными микрофонами, чтобы "
+"начало встречи проходило спокойнее."
 
 #: web/b3desk/forms.py:127 web/b3desk/templates/admin/meeting_infos.html:195
 msgid "Caméras des participants"
-msgstr ""
+msgstr "Камеры участников"
 
 #: web/b3desk/forms.py:129
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture de la caméra des participants."
-msgstr ""
+msgstr "Вы можете разрешить или запретить участникам включать камеры."
 
 #: web/b3desk/forms.py:135 web/b3desk/templates/admin/meeting_infos.html:203
 msgid "Micros des participants"
-msgstr ""
+msgstr "Микрофоны участников"
 
 #: web/b3desk/forms.py:137
 msgid ""
 "Vous pouvez autoriser ou interdire l'ouverture du microphone des "
 "participants."
-msgstr ""
+msgstr "Вы можете разрешить или запретить участникам включать микрофоны."
 
 #: web/b3desk/forms.py:143 web/b3desk/templates/admin/meeting_infos.html:211
 msgid "Discussions privées"
-msgstr ""
+msgstr "Личные чаты"
 
 #: web/b3desk/forms.py:148 web/b3desk/templates/admin/meeting_infos.html:219
 msgid "Discussion publique (tchat)"
-msgstr ""
+msgstr "Публичный чат"
 
 #: web/b3desk/forms.py:153 web/b3desk/templates/admin/meeting_infos.html:227
 msgid "Prise de note collaborative"
-msgstr ""
+msgstr "Совместное ведение заметок"
 
 #: web/b3desk/forms.py:158 web/b3desk/templates/admin/meeting_infos.html:156
 msgid "Message à l'attention des modérateurs"
-msgstr ""
+msgstr "Сообщение для модераторов"
 
 #: web/b3desk/forms.py:159
 msgid "150 caractères max"
-msgstr ""
+msgstr "Максимум 150 символов"
 
 #: web/b3desk/forms.py:160 web/b3desk/models/meetings.py:338
 msgid "Bienvenue aux modérateurs"
-msgstr ""
+msgstr "Добро пожаловать, модераторы"
 
 #: web/b3desk/forms.py:164
 msgid "Le message est trop long"
-msgstr ""
+msgstr "Сообщение слишком длинное"
 
 #: web/b3desk/forms.py:171 web/b3desk/templates/admin/meeting_infos.html:131
 msgid "Url de redirection après la réunion"
-msgstr ""
+msgstr "URL перенаправления после встречи"
 
 #: web/b3desk/forms.py:178
 msgid "Renouveler le lien modérateur"
-msgstr ""
+msgstr "Обновить ссылку модератора"
 
 #: web/b3desk/forms.py:180 web/b3desk/forms.py:189
 msgid "Ce code vous permet si vous le changez de bloquer les anciens liens."
-msgstr ""
+msgstr "Изменение этого кода позволяет заблокировать старые ссылки."
 
 #: web/b3desk/forms.py:187
 msgid "Renouveler le lien participants"
-msgstr ""
+msgstr "Обновить ссылку участников"
 
 #: web/b3desk/forms.py:196 web/b3desk/templates/admin/meeting_infos.html:107
 msgid "PIN"
-msgstr ""
+msgstr "PIN-код"
 
 #: web/b3desk/forms.py:198
 msgid "Code PIN pour rejoindre la réunion par téléphone (9 chiffres)"
-msgstr ""
+msgstr "PIN-код для подключения к встрече по телефону (9 цифр)"
 
 #: web/b3desk/forms.py:204
 msgid "Entez un PIN de 9 chiffres"
-msgstr ""
+msgstr "Введите PIN-код из 9 цифр"
 
 #: web/b3desk/forms.py:208
 msgid "Le code PIN est composé de chiffres uniquement"
-msgstr ""
+msgstr "PIN-код должен состоять только из цифр"
 
 #: web/b3desk/forms.py:211
 msgid "Le premier chiffre doit être différent de 0"
-msgstr ""
+msgstr "Первая цифра не должна быть равна 0"
 
 #: web/b3desk/forms.py:217
 msgid "Code de connexion"
-msgstr ""
+msgstr "Код подключения"
 
 #: web/b3desk/forms.py:219
 #, python-format
 msgid "Code de connexion pour rejoindre la réunion %(sip)s"
-msgstr ""
+msgstr "Код подключения для участия во встрече %(sip)s"
 
 #: web/b3desk/forms.py:220
 msgid "(utilisé dans le lien SIP)"
-msgstr ""
+msgstr "(используется в SIP-ссылке)"
 
 #: web/b3desk/forms.py:234 web/b3desk/templates/admin/meeting_infos.html:172
 msgid "Enregistrement manuel"
-msgstr ""
+msgstr "Ручная запись"
 
 #: web/b3desk/forms.py:236
 msgid ""
 "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
-msgstr ""
+msgstr "Вы можете в любое время начать или остановить запись зала."
 
 #: web/b3desk/forms.py:241 web/b3desk/templates/admin/meeting_infos.html:164
 msgid "Enregistrement automatique"
-msgstr ""
+msgstr "Автоматическая запись"
 
 #: web/b3desk/forms.py:243
 msgid ""
 "L'enregistrement démarre automatiquement à l'ouverture de la salle et "
 "s'arrête à sa fermeture."
 msgstr ""
+"Запись автоматически начинается при открытии зала и останавливается при его "
+"закрытии."
 
 #: web/b3desk/forms.py:251
 msgid "Nom de l'enregistrement"
-msgstr ""
+msgstr "Название записи"
 
 #: web/b3desk/forms.py:257
 msgid "Ajout d'utilisateur"
-msgstr ""
+msgstr "Добавление пользователя"
 
 #: web/b3desk/forms.py:267 web/b3desk/templates/admin/users.html:19
 msgid "Rechercher un utilisateur"
-msgstr ""
+msgstr "Поиск пользователя"
 
 #: web/b3desk/forms.py:274 web/b3desk/templates/admin/meetings.html:19
 msgid "Rechercher une réunion"
-msgstr ""
+msgstr "Поиск встречи"
 
 #: web/b3desk/settings.py:660 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
-msgstr ""
+msgstr "Мои залы встреч"
 
 #: web/b3desk/settings.py:664
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
+"Приглашение на немедленную онлайн-встречу вебинара для государственных "
+"служащих"
 
 #: web/b3desk/settings.py:677
 msgid "Réunion improvisée"
-msgstr ""
+msgstr "Внеплановая встреча"
 
 #: web/b3desk/settings.py:680
 msgid " Lien Modérateur  "
-msgstr ""
+msgstr " Ссылка модератора  "
 
 #: web/b3desk/settings.py:683
 msgid " Lien Participant  "
-msgstr ""
+msgstr " Ссылка участника  "
 
 #: web/b3desk/settings.py:687
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, envoyez-"
 "lui l'un de ces liens :"
 msgstr ""
+"Добро пожаловать, модераторы. Чтобы пригласить кого-либо на эту встречу, "
+"отправьте ему одну из следующих ссылок:"
 
 #: web/b3desk/endpoints/join.py:68
 msgid "Aucune réunion ne correspond à ces paramètres"
-msgstr ""
+msgstr "Ни одна встреча не соответствует этим параметрам"
 
 #: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:147
 #: web/b3desk/endpoints/join.py:152 web/b3desk/endpoints/join.py:209
 #: web/b3desk/endpoints/join.py:217
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
-msgstr ""
+msgstr "Использованная вами ссылка-приглашение недействительна."
 
 #: web/b3desk/endpoints/join.py:184
 msgid "Lien invalide"
-msgstr ""
+msgstr "Недействительная ссылка"
 
 #: web/b3desk/endpoints/join.py:320
 msgid "Le captcha saisi est erroné"
-msgstr ""
+msgstr "Введён неправильный код CAPTCHA"
 
 #: web/b3desk/endpoints/join.py:325
 msgid "Le code de connexion saisi est erroné"
-msgstr ""
+msgstr "Введён неправильный код подключения"
 
 #: web/b3desk/endpoints/meeting_files.py:55
 msgid "Vous ne pouvez pas modifier cet élément"
-msgstr ""
+msgstr "Вы не можете изменить этот элемент"
 
 #: web/b3desk/endpoints/meeting_files.py:169
 #: web/b3desk/endpoints/meeting_files.py:250
 #, python-brace-format
 msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
+"Файл {title} слишком большой, его размер не должен превышать {max_size} МБ"
 
 #: web/b3desk/endpoints/meeting_files.py:212
 #: web/b3desk/endpoints/meeting_files.py:271
 #: web/b3desk/endpoints/meeting_files.py:318
 #: web/b3desk/endpoints/meeting_files.py:357
 msgid "Le fichier a déjà été mis en ligne"
-msgstr ""
+msgstr "Файл уже загружен"
 
 #: web/b3desk/endpoints/meeting_files.py:235
 #: web/b3desk/endpoints/meeting_files.py:242
 #, python-brace-format
 msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
-msgstr ""
+msgstr "Файл {title} недоступен, проверьте указанный URL"
 
 #: web/b3desk/endpoints/meeting_files.py:297
 #, python-brace-format
 msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
+"Файл {path} слишком большой, его размер не должен превышать {max_size} МБ"
 
 #: web/b3desk/endpoints/meeting_files.py:365
 msgid "Erreur lors de l'écriture du fichier sur le disque"
-msgstr ""
+msgstr "Ошибка записи файла на диск"
 
 #: web/b3desk/endpoints/meeting_files.py:378
 msgid "Type de fichier non autorisé"
-msgstr ""
+msgstr "Недопустимый тип файла"
 
 #: web/b3desk/endpoints/meeting_files.py:382
 msgid "Erreur de taille du fichier"
-msgstr ""
+msgstr "Ошибка размера файла"
 
 #: web/b3desk/endpoints/meeting_files.py:397
 msgid "Fichier introuvable"
-msgstr ""
+msgstr "Файл не найден"
 
 #: web/b3desk/endpoints/meeting_files.py:405
 #: web/b3desk/endpoints/meetings.py:314
 msgid "Vous ne pouvez pas supprimer cet élément"
-msgstr ""
+msgstr "Вы не можете удалить этот элемент"
 
 #: web/b3desk/endpoints/meeting_files.py:413
 msgid "Fichier supprimé avec succès"
-msgstr ""
+msgstr "Файл успешно удалён"
 
 #: web/b3desk/endpoints/meeting_files.py:437
 msgid "La réunion n'est pas en cours"
-msgstr ""
+msgstr "Встреча не проводится"
 
 #: web/b3desk/endpoints/meetings.py:109
 msgid "Enregistrement renommé"
-msgstr ""
+msgstr "Запись переименована"
 
 #: web/b3desk/endpoints/meetings.py:112
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
-msgstr ""
+msgstr "Не удалось изменить эту запись: {code}, {message}"
 
 #: web/b3desk/endpoints/meetings.py:128
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
-msgstr ""
+msgstr "У вас нет прав на создание новых встреч"
 
 #: web/b3desk/endpoints/meetings.py:147 web/b3desk/endpoints/meetings.py:205
 msgid "Le formulaire contient des erreurs"
-msgstr ""
+msgstr "Форма содержит ошибки"
 
 #: web/b3desk/endpoints/meetings.py:172
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
-msgstr ""
+msgstr "{meeting_name} успешно создана"
 
 #: web/b3desk/endpoints/meetings.py:238
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
-msgstr ""
+msgstr "Изменения в %(meeting_name)s применены"
 
 #: web/b3desk/endpoints/meetings.py:263
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
-msgstr ""
+msgstr "Встреча « %(meeting_name)s » завершена"
 
 #: web/b3desk/endpoints/meetings.py:298
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
-msgstr ""
+msgstr "Не удалось удалить видео этой встречи: {message}"
 
 #: web/b3desk/endpoints/meetings.py:304
 msgid "Élément supprimé"
-msgstr ""
+msgstr "Элемент удалён"
 
 #: web/b3desk/endpoints/meetings.py:312
 msgid "Vous devez retirer les délégataires"
-msgstr ""
+msgstr "Необходимо удалить делегатов"
 
 #: web/b3desk/endpoints/meetings.py:327
 msgid "Vidéo supprimée"
-msgstr ""
+msgstr "Видео удалено"
 
 #: web/b3desk/endpoints/meetings.py:338
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
-msgstr ""
+msgstr "Не удалось удалить это видео: %(code)s, %(message)s"
 
 #: web/b3desk/endpoints/meetings.py:387
 msgid "L'utilisateur recherché n'existe pas"
-msgstr ""
+msgstr "Искомый пользователь не существует"
 
 #: web/b3desk/endpoints/meetings.py:390
 msgid "L'utilisateur est déjà délégataire"
-msgstr ""
+msgstr "Пользователь уже является делегатом"
 
 #: web/b3desk/endpoints/meetings.py:393
 msgid "Cet utilisateur est le propriétaire"
-msgstr ""
+msgstr "Этот пользователь является владельцем"
 
 #: web/b3desk/endpoints/meetings.py:400
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
-msgstr ""
+msgstr "Для этой встречи больше нельзя назначить нового делегата"
 
 #: web/b3desk/endpoints/meetings.py:413
 msgid "L'utilisateur a été ajouté aux délégataires"
-msgstr ""
+msgstr "Пользователь добавлен в список делегатов"
 
 #: web/b3desk/endpoints/meetings.py:434
 msgid "L'utilisateur ne fait pas partie des délégataires"
-msgstr ""
+msgstr "Пользователь не является делегатом"
 
 #: web/b3desk/endpoints/meetings.py:441
 msgid "L'utilisateur a été retiré des délégataires"
-msgstr ""
+msgstr "Пользователь удалён из списка делегатов"
 
 #: web/b3desk/models/meetings.py:317 web/b3desk/models/meetings.py:324
 msgid "Ce code PIN est déjà utilisé"
-msgstr ""
+msgstr "Этот PIN-код уже используется"
 
 #: web/b3desk/models/meetings.py:331
 #, python-format
 msgid "la réunion de %(fullname)s"
-msgstr ""
+msgstr "встреча пользователя %(fullname)s"
 
 #: web/b3desk/models/meetings.py:333
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
-msgstr ""
+msgstr "Добро пожаловать на встречу пользователя %(fullname)s"
 
 #: web/b3desk/templates/brand.html:5
 msgid ""
 "République\n"
 "                    <br>Française"
 msgstr ""
+"Французская\n"
+"                    <br>Республика"
 
 #: web/b3desk/templates/brand.html:10 web/b3desk/templates/brand.html:11
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/header-lasuite.html:37
 #: web/b3desk/templates/tools.html:42 web/b3desk/templates/tools.html:44
 msgid "Les services de La Suite numérique"
-msgstr ""
+msgstr "Сервисы La Suite numérique"
 
 #: web/b3desk/templates/brand.html:25
 #, python-format
 msgid "Accueil - %(service_title)s - République Française"
-msgstr ""
+msgstr "Главная - %(service_title)s - Французская Республика"
 
 #: web/b3desk/templates/brand.html:37 web/b3desk/templates/footer.html:32
 msgid ""
 "L'instance est configurée en mode déboggage. Ne pas utiliser en production !"
 msgstr ""
+"Экземпляр настроен в режиме отладки. Не используйте его в рабочей среде!"
 
 #: web/b3desk/templates/brand.html:42 web/b3desk/templates/jumbotron.html:59
 #, python-format
 msgid "%(service_tagline)s"
-msgstr ""
+msgstr "%(service_tagline)s"
 
 #: web/b3desk/templates/content.py:6
 msgid "Quelles sont les conditions d’accès pour accéder aux services ?"
-msgstr ""
+msgstr "Каковы условия доступа к сервисам?"
 
 #: web/b3desk/templates/content.py:9
 msgid ""
@@ -520,10 +543,41 @@ msgid ""
 "12.2+)\n"
 "- Sur Android, utiliser le navigateur Chrome par défaut (Android 6.0+)\n"
 msgstr ""
+"Эта платформа предлагает комплексное и мощное решение, адаптированное для "
+"многих типов онлайн мероприятий, до 350 участников (семинары, тренинги, "
+"круглые столы, совместные воркшопы)\n"
+"\n"
+"Для кого?\n"
+"\n"
+"Доступ к этой услуге предназначен для государственных служащих и их "
+"собеседников (в соответствии с разрешенным доменным именем, запрос на "
+"contact@webinaire.numerique.gouv.fr) с рабочего места на объекте или "
+"удаленно, либо с личного или профессионального мобильного устройства.\n"
+"Доступ к Государственному Вебинару закрыт для местных органов власти, "
+"университетов и учебных заведений Министерства высшего образования.\n"
+"\n"
+"Каким способом?\n"
+"\n"
+"• На рабочем месте:\n"
+"С вашего рабочего компьютера с использованием рекомендуемых браузеров: Edge, "
+"Chromium, Chrome, а также Firefox для сферы национального образования\n"
+"\n"
+"• При удаленной работе:\n"
+"С вашего рабочего компьютера (VPN включен или выключен) рекомендуемыми "
+"браузерами являются: Edge, Chromium, Chrome, а также Firefox для "
+"национального образования или персонального компьютера (браузеры Edge, "
+"Chrome, Chromium, Firefox)\n"
+"\n"
+"• С ваших мобильных устройств:\n"
+" Мобильный телефон или планшет (без приложения, достаточно ссылки участника "
+"или модератора).\n"
+" На iOS для iPhone и iPad рекомендуется использовать браузер Safari (iOS "
+"12.2+)\n"
+" На Android используйте по умолчанию браузер Chrome (Android 6.0+)\n"
 
 #: web/b3desk/templates/content.py:32
 msgid "Quel est le matériel nécessaire ?"
-msgstr ""
+msgstr "Какое оборудование необходимо?"
 
 #: web/b3desk/templates/content.py:34
 msgid ""
@@ -546,10 +600,27 @@ msgid ""
 "sous Android ou iOS, la caméra et le micro sont activables suivant le "
 "contexte d’intervention."
 msgstr ""
+"Чтобы использовать инструмент Государственного Вебинара, вам достаточно "
+"иметь следующее оборудование:\n"
+"\n"
+"     компьютер, подключенный к Интернету\n"
+"     веб-браузер (скачивать и устанавливать приложение не нужно). "
+"Рекомендуется использовать последнюю версию Microsoft Edge (Chromium), "
+"Chromium или Google Chrome.\n"
+"     веб-камеру,\n"
+"     микрофон и динамики или, желательно, гарнитуру со встроенным "
+"микрофоном.\n"
+"     Государственный вебинар также работает на мобильных устройствах (без "
+"приложения). Браузер Safari рекомендуется для iPhone и iPad (iOS 12.2+). На "
+"Android по умолчанию используйте браузер Chrome (Android 6.0+)\n"
+"     Чтобы присоединиться к вебинару, вам нужно просто нажать на ссылку, "
+"отправленную организатором или модератором с вашего смартфона или планшета "
+"на базе Android или iOS. Камеру и микрофон можно активировать в зависимости "
+"от контекста выступления."
 
 #: web/b3desk/templates/content.py:46
 msgid "Puis-je utiliser mon smartphone ou ma tablette pour me connecter ?"
-msgstr ""
+msgstr "Можно ли подключиться со смартфона или планшета?"
 
 #: web/b3desk/templates/content.py:49
 msgid ""
@@ -558,10 +629,14 @@ msgid ""
 "iphone et ipad (IOS 12.2+) le navigateur Safari est recommandé. Sur Android, "
 "utiliser le navigateur chrome par défaut (Android 6.0+).\n"
 msgstr ""
+"Вебинар для государственных служащих также работает на мобильных устройствах "
+"по простой ссылке без приложения, размещённой на портале или в материалах "
+"семинара. На iPhone и iPad с iOS 12.2+ рекомендуется браузер Safari. На "
+"Android используйте браузер Chrome по умолчанию (Android 6.0+).\n"
 
 #: web/b3desk/templates/content.py:54
 msgid "Comment créer un séminaire ?"
-msgstr ""
+msgstr "Как создать семинар?"
 
 #: web/b3desk/templates/content.py:56
 msgid ""
@@ -577,10 +652,22 @@ msgid ""
 "Si votre nom de domaine n’est pas reconnu, et que vous pensez être éligible "
 "au service, envoyez un mail à contact@webinaire.numerique.gouv.fr\n"
 msgstr ""
+"Если вы являетесь государственным служащим, вы можете:\n"
+" Срочно создавать семинары, указав свою рабочую электронную почту на "
+".gouv.fr и в соответствии с разрешенными доменными именами.\n"
+" Создать учетную запись, чтобы создавать и настраивать семинары, которые вы "
+"сможете легко найти в своем личном кабинете, а также ссылки для подключения, "
+"повторы записей\n"
+" Для сотрудников MENJS необходимо использовать кнопку «HUB аутентификации "
+"Образование, Молодежь и Спорт».\n"
+"\n"
+"Если ваше доменное имя не распознается, и вы считаете, что имеете право на "
+"использование услуги, отправьте электронное письмо по адресу "
+"contact@webinaire.numerique.gouv.fr\n"
 
 #: web/b3desk/templates/content.py:66
 msgid "Comment créer un compte ?"
-msgstr ""
+msgstr "Как создать учётную запись?"
 
 #: web/b3desk/templates/content.py:68
 msgid ""
@@ -594,10 +681,19 @@ msgid ""
 "Assemblée générale, Ateliers collaboratifs ou d’idéation, Comités en grand "
 "nombre, …etc.)."
 msgstr ""
+"Если вы являетесь государственным служащим и регулярно проводите семинары, "
+"вы можете создать учётную запись, чтобы легко организовывать и сохранять "
+"настроенные под ваши задачи семинары.\n"
+"\n"
+"Вы можете создавать один или несколько залов семинаров и настраивать их в "
+"зависимости от формата мероприятия: семинар, обучение, виртуальный класс, "
+"интерактивная конференция, пленарное заседание, круглый стол, общее "
+"собрание, совместные мастер-классы или сессии генерации идей, большие "
+"совещания и т. д."
 
 #: web/b3desk/templates/content.py:74
 msgid "Comment inviter les participants/ modérateurs"
-msgstr ""
+msgstr "Как пригласить участников и модераторов"
 
 #: web/b3desk/templates/content.py:76
 msgid ""
@@ -606,10 +702,14 @@ msgid ""
 "(partenaires, prestataires, entreprises, citoyens…)\n"
 "« Organisateurs/modérateurs » qui géreront avec vous le séminaire."
 msgstr ""
+"Организатор, создавший семинар, может поделиться ссылкой:\n"
+"«Участники» независимо от того, представляют ли они администрацию или "
+"внешнюю среду (партнеры, поставщики услуг, компании, граждане)\n"
+"«Организаторы/модераторы», которые будут управлять семинаром вместе с вами."
 
 #: web/b3desk/templates/content.py:82
 msgid "Rejoindre un Webinaire en appel téléphonique ?"
-msgstr ""
+msgstr "Как подключиться к вебинару по телефону?"
 
 #: web/b3desk/templates/content.py:84
 msgid ""
@@ -625,10 +725,20 @@ msgid ""
 "Une fois dans la conférence, appuyez sur la touche « 0 » de votre téléphone "
 "afin d’activer ou de désactiver votre microphone."
 msgstr ""
+"Находясь на семинаре, также можно использовать стационарный или мобильный "
+"телефон для участия в нем.\n"
+"Информация видна внутри семинара в публичном обсуждении. Вы можете передать "
+"эти данные, состоящие из номера вызова и кода семинара:\n"
+"\n"
+"Чтобы присоединиться к этой конференции по телефону, наберите:\n"
+"+33 1 XX XX XX XX\n"
+"Затем введите код доступа XXXXX, а после нажмите клавишу #.\n"
+"Находясь на конференции, нажмите клавишу «0» на своем телефоне, чтобы "
+"включить или выключить микрофон."
 
 #: web/b3desk/templates/content.py:94
 msgid "J'ai des perturbations audio ou vidéo ?"
-msgstr ""
+msgstr "Возникают проблемы со звуком или видео?"
 
 #: web/b3desk/templates/content.py:96
 msgid ""
@@ -650,18 +760,33 @@ msgid ""
 "meilleures conditions, avec beaucoup de participants, nous recommandons de "
 "vous connecter hors VPN.\n"
 msgstr ""
+"\n"
+"Для улучшения звука пододвиньтесь ближе к точке Wi-Fi и/или отключите "
+"камеру\n"
+"Мы предлагаем вам использовать наушники для лучшего прослушивания, а также "
+"для того, чтобы фоновые шумы вокруг вас не мешали другим участникам.\n"
+"\n"
+"Для видео уменьшите разрешение вашей камеры при подключении к Вебинару\n"
+"\n"
+"Функция демонстрации экрана потребляет больше всего трафика по сравнению с "
+"видео. Если вы являетесь организатором и у вас низкая пропускная "
+"способность, это может ухудшить качество вашего семинара.\n"
+"\n"
+"Чтобы использовать меньше трафика и пользоваться услугой в лучших условиях с "
+"большим количеством участников, мы рекомендуем подключаться без "
+"использования VPN.\n"
 
 #: web/b3desk/templates/content.py:109
 msgid "Besoin de contacter l'équipe du Webinaire de l’Etat ?"
-msgstr ""
+msgstr "Нужно связаться с командой Государственного Вебинара?"
 
 #: web/b3desk/templates/content.py:110
 msgid "contact@webinaire.numerique.gouv.fr"
-msgstr ""
+msgstr "contact@webinaire.numerique.gouv.fr"
 
 #: web/b3desk/templates/content.py:114
 msgid "Besoin de contacter l'équipe du ministère de l'Éducation nationale ?"
-msgstr ""
+msgstr "Нужно связаться с командой Министерства национального образования?"
 
 #: web/b3desk/templates/content.py:117
 msgid ""
@@ -669,77 +794,86 @@ msgid ""
 "www.education.gouv.fr/la-messagerie-professionnelle-3446 ou sur "
 "Apps.education.fr"
 msgstr ""
+"Перейдите на портал академической поддержки: https://www.education.gouv.fr/"
+"la-messagerie-professionnelle-3446 или на Apps.education.fr"
 
 #: web/b3desk/templates/faq.html:4
 msgid "FAQ - Modalités d'accès"
-msgstr ""
+msgstr "Часто задаваемые вопросы: условия доступа"
 
 #: web/b3desk/templates/footer.html:4
 msgid ""
 "Service accessible suivant les politiques de sécurité de votre ministère."
 msgstr ""
+"Доступность сервиса зависит от политик безопасности вашего министерства."
 
 #: web/b3desk/templates/footer.html:5
 msgid ""
 "Si l'audio ou la vidéo ne fonctionne pas, veuillez ré-essayer en vous "
 "déconnectant de votre réseau internet professionnel RIE."
 msgstr ""
+"Если звук или видео не работают, попробуйте снова, отключившись от рабочей "
+"интернет-сети RIE."
 
 #: web/b3desk/templates/footer.html:6
 msgid "en savoir plus"
-msgstr ""
+msgstr "узнать больше"
 
 #: web/b3desk/templates/footer.html:20
 msgid ""
 "Service proposé par la Direction interministérielle du numérique et la "
 "Direction du numérique pour l'éducation"
 msgstr ""
+"Сервис предоставляется Межведомственным управлением цифровых технологий и "
+"Управлением цифровых технологий в сфере образования"
 
 #: web/b3desk/templates/footer.html:23
 msgid "Le code source est ouvert et les contributions sont bienvenues."
-msgstr ""
+msgstr "Исходный код открыт, и мы рады вашим предложениям и вкладу."
 
 #: web/b3desk/templates/footer.html:24
 msgid "Voir le code source - nouvelle fenêtre"
-msgstr ""
+msgstr "Посмотреть исходный код: новое окно"
 
 #: web/b3desk/templates/footer.html:24
 msgid "Voir le code source"
-msgstr ""
+msgstr "Посмотреть исходный код"
 
 #: web/b3desk/templates/footer.html:27
 msgid ""
 "Ceci est une version de développement et ne doit en aucun cas être déployée "
 "dans des environnements de production."
 msgstr ""
+"Это версия для разработки, и её ни в коем случае нельзя развёртывать в "
+"рабочей среде."
 
 #: web/b3desk/templates/footer.html:55
 msgid "Accessibilité : non conforme"
-msgstr ""
+msgstr "Доступность: не соответствует требованиям"
 
 #: web/b3desk/templates/footer.html:58
 #: web/b3desk/templates/footer/mentions_legales.html:5
 msgid "Mentions légales"
-msgstr ""
+msgstr "Правовая информация"
 
 #: web/b3desk/templates/footer.html:61
 msgid "Données personnelles et cookies"
-msgstr ""
+msgstr "Персональные данные и файлы cookie"
 
 #: web/b3desk/templates/footer.html:64 web/b3desk/templates/footer/cgu.html:5
 msgid "Conditions générales d’utilisation"
-msgstr ""
+msgstr "Общие условия использования"
 
 #: web/b3desk/templates/footer.html:68 web/b3desk/templates/footer/cgu.html:62
 #: web/b3desk/templates/footer/cgu.html:63
 msgid "Contact"
-msgstr ""
+msgstr "Контакты"
 
 #: web/b3desk/templates/header-lasuite.html:13
 #: web/b3desk/templates/header-lasuite.html:14
 #, python-format
 msgid "Accueil - %(service_title)s"
-msgstr ""
+msgstr "Главная - %(service_title)s"
 
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:57
@@ -758,23 +892,25 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:171
 #: web/b3desk/templates/meeting/recordings.html:172
 msgid "Fermer"
-msgstr ""
+msgstr "Закрыть"
 
 #: web/b3desk/templates/jumbotron.html:9
 #: web/b3desk/templates/jumbotron.html:114
 #, python-format
 msgid "Actuellement, il y a <b>%(count)s</b> webinaire"
 msgid_plural "Actuellement, il y a <b>%(count)s</b> webinaires"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Сейчас доступен <b>%(count)s</b> вебинар"
+msgstr[1] "Сейчас доступны <b>%(count)s</b> вебинара"
+msgstr[2] "Сейчас доступно <b>%(count)s</b> вебинаров"
 
 #: web/b3desk/templates/jumbotron.html:14
 #: web/b3desk/templates/jumbotron.html:119
 #, python-format
 msgid "et <b>%(count)s</b> participant"
 msgid_plural "et <b>%(count)s</b> participants"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "и <b>%(count)s</b> участник"
+msgstr[1] "и <b>%(count)s</b> участника"
+msgstr[2] "и <b>%(count)s</b> участников"
 
 #: web/b3desk/templates/jumbotron.html:19
 #: web/b3desk/templates/jumbotron.html:124
@@ -782,24 +918,24 @@ msgstr[1] ""
 msgid ""
 " sur une capacité moyenne pour la plateforme de %(max_participants)s "
 "participants."
-msgstr ""
+msgstr " при средней вместимости платформы %(max_participants)s участников."
 
 #: web/b3desk/templates/jumbotron.html:35
 msgid "Ouvrir une nouvelle réunion temporaire"
-msgstr ""
+msgstr "Открыть новую временную встречу"
 
 #: web/b3desk/templates/jumbotron.html:37
 msgid "Lancer la réunion - nouvelle fenêtre"
-msgstr ""
+msgstr "Начать встречу: новое окно"
 
 #: web/b3desk/templates/jumbotron.html:38
 msgid "Ouvrir une réunion temporaire"
-msgstr ""
+msgstr "Открыть временную встречу"
 
 #: web/b3desk/templates/jumbotron.html:68
 #: web/b3desk/templates/jumbotron.html:106
 msgid "Vous organisez régulièrement des réunions"
-msgstr ""
+msgstr "Вы регулярно организуете встречи"
 
 #: web/b3desk/templates/jumbotron.html:70
 #: web/b3desk/templates/jumbotron.html:107
@@ -807,80 +943,82 @@ msgid ""
 "Vous êtes agent de l'État, créez un compte pour organiser et conserver vos "
 "réunions."
 msgstr ""
+"Вы государственный служащий? Создайте учётную запись, чтобы организовывать и "
+"сохранять встречи."
 
 #: web/b3desk/templates/jumbotron.html:71
 #: web/b3desk/templates/jumbotron.html:108
 msgid "Se connecter ou créer un compte"
-msgstr ""
+msgstr "Войти или создать учётную запись"
 
 #: web/b3desk/templates/language-selector.html:6
 msgid "Sélectionner une langue"
-msgstr ""
+msgstr "Выбрать язык"
 
 #: web/b3desk/templates/tools.html:7
 msgid "Modalités d'accès"
-msgstr ""
+msgstr "Условия доступа"
 
 #: web/b3desk/templates/tools.html:24
 msgid "Ouvrir la page d'administration"
-msgstr ""
+msgstr "Открыть страницу администрирования"
 
 #: web/b3desk/templates/admin/user_infos.html:81
 #: web/b3desk/templates/tools.html:25
 msgid "Admin"
-msgstr ""
+msgstr "Администратор"
 
 #: web/b3desk/templates/tools.html:33
 msgid "se déconnecter"
-msgstr ""
+msgstr "выйти"
 
 #: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:52
 msgid "S’identifier"
-msgstr ""
+msgstr "Войти"
 
 #: web/b3desk/templates/admin/home.html:21
 msgid "Liste des utilisateurs"
-msgstr ""
+msgstr "Список пользователей"
 
 #: web/b3desk/templates/admin/home.html:22
 msgid "Utilisateurs"
-msgstr ""
+msgstr "Пользователи"
 
 #: web/b3desk/templates/admin/home.html:32
 msgid "Liste des réunions"
-msgstr ""
+msgstr "Список встреч"
 
 #: web/b3desk/templates/admin/home.html:33
 msgid "Réunions"
-msgstr ""
+msgstr "Встречи"
 
 #: web/b3desk/templates/admin/macros.html:3
 #: web/b3desk/templates/meeting/files.html:188
 #: web/b3desk/templates/meeting/files.html:191
 msgid "Oui"
-msgstr ""
+msgstr "Да"
 
 #: web/b3desk/templates/admin/macros.html:5
 #: web/b3desk/templates/meeting/files.html:188
 #: web/b3desk/templates/meeting/files.html:191
 msgid "Non"
-msgstr ""
+msgstr "Нет"
 
 #: web/b3desk/templates/admin/meeting_infos.html:24
 #: web/b3desk/templates/meeting/form.html:56
 msgid "Modifier"
-msgstr ""
+msgstr "Изменить"
 
 #: web/b3desk/templates/admin/meeting_infos.html:29
 msgid "Voir le propriétaire"
-msgstr ""
+msgstr "Посмотреть владельца"
 
 #: web/b3desk/templates/admin/meeting_infos.html:43
 #: web/b3desk/templates/admin/meeting_table.html:10
 #: web/b3desk/templates/admin/user_infos.html:33
 #: web/b3desk/templates/admin/user_table.html:10
 msgid "Identifiant"
-msgstr ""
+msgstr "Идентификатор"
 
 #: web/b3desk/templates/admin/meeting_infos.html:51
 #: web/b3desk/templates/admin/meeting_table.html:11
@@ -888,161 +1026,161 @@ msgstr ""
 #: web/b3desk/templates/admin/user_table.html:11
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
-msgstr ""
+msgstr "Название"
 
 #: web/b3desk/templates/admin/meeting_infos.html:59
 msgid "Propriétaire"
-msgstr ""
+msgstr "Владелец"
 
 #: web/b3desk/templates/admin/meeting_infos.html:67
 #: web/b3desk/templates/admin/meeting_table.html:34
 msgid "Réunion silencieuse (shadow_meeting)"
-msgstr ""
+msgstr "Тихая встреча (shadow_meeting)"
 
 #: web/b3desk/templates/admin/meeting_infos.html:75
 #: web/b3desk/templates/admin/user_infos.html:65
 msgid "Dernière connexion"
-msgstr ""
+msgstr "Последнее подключение"
 
 #: web/b3desk/templates/admin/meeting_infos.html:83
 #: web/b3desk/templates/admin/user_infos.html:73
 msgid "Création"
-msgstr ""
+msgstr "Создание"
 
 #: web/b3desk/templates/admin/meeting_infos.html:91
 msgid "Dernière modification"
-msgstr ""
+msgstr "Последнее изменение"
 
 #: web/b3desk/templates/admin/meeting_infos.html:99
 msgid "n° de téléphone"
-msgstr ""
+msgstr "номер телефона"
 
 #: web/b3desk/templates/admin/meeting_infos.html:115
 msgid "Code de connexion (visio_code)"
-msgstr ""
+msgstr "Код подключения (visio_code)"
 
 #: web/b3desk/templates/admin/meeting_table.html:12
 msgid "Visio-code"
-msgstr ""
+msgstr "Видеокод"
 
 #: web/b3desk/templates/admin/meeting_table.html:13
 #: web/b3desk/templates/admin/user_table.html:14
 msgid "Consulter"
-msgstr ""
+msgstr "Просмотреть"
 
 #: web/b3desk/templates/admin/meeting_table.html:30
 #, python-format
 msgid "Éditer %(meeting_name)s"
-msgstr ""
+msgstr "Изменить %(meeting_name)s"
 
 #: web/b3desk/templates/admin/meetings.html:25
 msgid "Aucune réunion ne correspond à cette recherche."
-msgstr ""
+msgstr "По этому запросу встречи не найдены."
 
 #: web/b3desk/templates/admin/meetings.html:32
 #, python-format
 msgid "%(count)s réunion correspondant aux critères"
 msgid_plural "%(count)s réunions correspondant aux critères"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s встреча соответствует критериям"
+msgstr[1] "%(count)s встречи соответствуют критериям"
+msgstr[2] "%(count)s встреч соответствуют критериям"
 
 #: web/b3desk/templates/admin/meetings.html:38
 #, python-format
 msgid "%(count)s réunion"
 msgid_plural "%(count)s réunions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s встреча"
+msgstr[1] "%(count)s встречи"
+msgstr[2] "%(count)s встреч"
 
 #: web/b3desk/templates/admin/paging.html:7
 #: web/b3desk/templates/admin/paging.html:9
 msgid "Première page"
-msgstr ""
+msgstr "Первая страница"
 
 #: web/b3desk/templates/admin/paging.html:14
 #: web/b3desk/templates/admin/paging.html:16
 msgid "Page précédente"
-msgstr ""
+msgstr "Предыдущая страница"
 
 #: web/b3desk/templates/admin/paging.html:30
 #: web/b3desk/templates/admin/paging.html:32
 msgid "Page suivante"
-msgstr ""
+msgstr "Следующая страница"
 
 #: web/b3desk/templates/admin/paging.html:37
 #: web/b3desk/templates/admin/paging.html:39
 msgid "Dernière page"
-msgstr ""
+msgstr "Последняя страница"
 
 #: web/b3desk/templates/admin/user_infos.html:49
 #: web/b3desk/templates/admin/user_table.html:13
 msgid "Email"
-msgstr ""
+msgstr "Электронная почта"
 
 #: web/b3desk/templates/admin/user_infos.html:57
 msgid "Alias"
-msgstr ""
+msgstr "Псевдоним"
 
 #: web/b3desk/templates/admin/user_infos.html:89
 msgid "NC Locator"
-msgstr ""
+msgstr "Локатор NC"
 
 #: web/b3desk/templates/admin/user_infos.html:97
 msgid "NC Login"
-msgstr ""
+msgstr "Логин NC"
 
 #: web/b3desk/templates/admin/user_infos.html:105
 msgid "NC Dernière connexion"
-msgstr ""
+msgstr "Последнее подключение NC"
 
 #: web/b3desk/templates/admin/user_infos.html:119
 #, python-format
 msgid "Liste des réunions de %(fullname)s"
-msgstr ""
+msgstr "Список встреч пользователя %(fullname)s"
 
 #: web/b3desk/templates/admin/user_infos.html:123
 #, python-format
 msgid "%(fullname)s n'a pas créé de réunion."
-msgstr ""
+msgstr "%(fullname)s не создал(а) ни одной встречи."
 
 #: web/b3desk/templates/admin/user_infos.html:126
 msgid "Réunions déléguées"
-msgstr ""
+msgstr "Встречи с делегированными правами"
 
 #: web/b3desk/templates/admin/user_table.html:12
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
-msgstr ""
+msgstr "Имя"
 
 #: web/b3desk/templates/admin/user_table.html:33
 #, python-format
 msgid "%(username)s infos"
-msgstr ""
+msgstr "Информация о %(username)s"
 
 #: web/b3desk/templates/admin/users.html:25
 msgid "Aucun utilisateur ne correspond à cette recherche."
-msgstr ""
+msgstr "По этому запросу пользователи не найдены."
 
 #: web/b3desk/templates/admin/users.html:32
 #, python-format
 msgid "%(count)s utilisateur correspondant aux critères"
 msgid_plural "%(count)s utilisateurs correspondant aux critères"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s пользователь соответствует критериям"
+msgstr[1] "%(count)s пользователя соответствуют критериям"
+msgstr[2] "%(count)s пользователей соответствуют критериям"
 
 #: web/b3desk/templates/admin/users.html:38
 #, python-format
 msgid "%(count)s utilisateur"
 msgid_plural "%(count)s utilisateurs"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s пользователь"
+msgstr[1] "%(count)s пользователя"
+msgstr[2] "%(count)s пользователей"
 
 #: web/b3desk/templates/errors/400.html:7
 msgid "Erreur 400"
-msgstr ""
+msgstr "Ошибка 400"
 
 #: web/b3desk/templates/errors/400.html:12
 #, python-format
@@ -1050,10 +1188,12 @@ msgid ""
 "La requête que vous avez effectué est invalide. Vous pouvez <a "
 "href=\"%(index_url)s\">retourner à l’accueil</a>."
 msgstr ""
+"Выполненный запрос недействителен. Вы можете <a href=\"%(index_url)s\">"
+"вернуться на главную страницу</a>."
 
 #: web/b3desk/templates/errors/403.html:7
 msgid "Erreur 403"
-msgstr ""
+msgstr "Ошибка 403"
 
 #: web/b3desk/templates/errors/403.html:8
 #, python-format
@@ -1061,10 +1201,12 @@ msgid ""
 "Vous n’êtes pas autorisé à accéder cette page. Vous pouvez <a "
 "href=\"%(index_url)s\">retourner à l’accueil</a>."
 msgstr ""
+"У вас нет доступа к этой странице. Вы можете <a href=\"%(index_url)s\">"
+"вернуться на главную страницу</a>."
 
 #: web/b3desk/templates/errors/404.html:7
 msgid "Erreur 404"
-msgstr ""
+msgstr "Ошибка 404"
 
 #: web/b3desk/templates/errors/404.html:8
 #, python-format
@@ -1072,29 +1214,31 @@ msgid ""
 "Cette page n'existe pas. Vous pouvez <a href=\"%(index_url)s\">retourner à "
 "l’accueil</a>."
 msgstr ""
+"Эта страница не существует. Вы можете <a href=\"%(index_url)s\">вернуться на "
+"главную страницу</a>."
 
 #: web/b3desk/templates/errors/500.html:7
 msgid "Erreur 500"
-msgstr ""
+msgstr "Ошибка 500"
 
 #: web/b3desk/templates/errors/500.html:8
 msgid ""
 "Le serveur a rencontré une erreur interne, veuillez réessayer ultérieurement."
-msgstr ""
+msgstr "На сервере произошла внутренняя ошибка. Повторите попытку позже."
 
 #: web/b3desk/templates/errors/big-blue-button-error.html:7
 msgid "Erreur du service de visioconférence"
-msgstr ""
+msgstr "Ошибка сервиса видеоконференций"
 
 #: web/b3desk/templates/errors/big-blue-button-error.html:8
 msgid ""
 "Service de visioconférence momentanément inaccessible, veuillez retenter "
 "ultérieurement."
-msgstr ""
+msgstr "Сервис видеоконференций временно недоступен. Повторите попытку позже."
 
 #: web/b3desk/templates/footer/accessibilite.html:5
 msgid "Accessibilité"
-msgstr ""
+msgstr "Доступность"
 
 #: web/b3desk/templates/footer/accessibilite.html:6
 msgid ""
@@ -1106,14 +1250,20 @@ msgid ""
 "usagers quel que soit le matériel ou le logiciel utilisé pour naviguer sur "
 "internet."
 msgstr ""
+"Сайт webinaire.numerique.gouv.fr разработан в соответствии с рекомендациями "
+"<a href=\"https://www.numerique.gouv.fr/publications/rgaa-accessibilite/\" "
+"target=\"_blank\" rel=\"noopener noreferrer\" title=\"общий стандарт "
+"улучшения доступности: новое окно\">общего стандарта улучшения доступности</"
+"a>, чтобы быть доступным всем пользователям независимо от используемого "
+"оборудования или программного обеспечения для работы в Интернете."
 
 #: web/b3desk/templates/footer/accessibilite.html:7
 msgid "Cependant, aucun audit formel n’a été effectué."
-msgstr ""
+msgstr "Однако формальный аудит не проводился."
 
 #: web/b3desk/templates/footer/accessibilite.html:9
 msgid "Droit à compensation"
-msgstr ""
+msgstr "Право на компенсацию"
 
 #: web/b3desk/templates/footer/accessibilite.html:10
 msgid ""
@@ -1124,11 +1274,16 @@ msgid ""
 "souhaiteriez obtenir. Les informations demandées vous seront transmises dans "
 "les plus bref délais."
 msgstr ""
+"До полного приведения сервиса в соответствие требованиям доступности вы "
+"можете получить доступную версию документов или содержащейся в них "
+"информации, отправив письмо на contact@webinaire.numerique.gouv.fr с "
+"указанием названия нужного документа и/или информации, которую вы хотите "
+"получить. Запрошенная информация будет предоставлена вам в кратчайшие сроки."
 
 #: web/b3desk/templates/footer/accessibilite.html:12
 #: web/b3desk/templates/footer/mentions_legales.html:34
 msgid "Amélioration et contact"
-msgstr ""
+msgstr "Улучшение сервиса и контакты"
 
 #: web/b3desk/templates/footer/accessibilite.html:13
 msgid ""
@@ -1136,10 +1291,12 @@ msgid ""
 "les problèmes éventuels que vous rencontrez. Pour ce faire, envoyez-nous un "
 "courriel à contact@webinaire.numerique.gouv.fr ."
 msgstr ""
+"Вы можете помочь нам улучшить доступность сайта, сообщив о возможных "
+"проблемах. Для этого отправьте письмо на contact@webinaire.numerique.gouv.fr."
 
 #: web/b3desk/templates/footer/accessibilite.html:15
 msgid "Défenseur des droits"
-msgstr ""
+msgstr "Защитник прав"
 
 #: web/b3desk/templates/footer/accessibilite.html:16
 msgid ""
@@ -1149,6 +1306,10 @@ msgid ""
 "droit de faire parvenir vos doléances ou une demande de saisine au Défenseur "
 "des droits. Plusieurs moyens sont à votre disposition :"
 msgstr ""
+"Если вы заметили недостаток доступности, препятствующий доступу к контенту "
+"или функционалу сайта, сообщили нам об этом и не смогли получить от нас "
+"оперативный ответ, вы имеете право направить свои жалобы или запрос на "
+"рассмотрение Защитнику прав. В вашем распоряжении несколько способов:"
 
 #: web/b3desk/templates/footer/accessibilite.html:17
 msgid ""
@@ -1166,11 +1327,23 @@ msgid ""
 "fenêtre\" target=\"_blank\" rel=\"noopener noreferrer\" >annuaire de "
 "l'administration</a>"
 msgstr ""
+"<a href=\"https://www.defenseurdesdroits.fr/nous-contacter\" "
+"title=\"контактная форма: новое окно\" target=\"_blank\" rel=\"noopener "
+"noreferrer\">контактная форма</a></li><li><a href=\"https://"
+"www.defenseurdesdroits.fr/fr/saisir/delegues\" title=\"список региональных "
+"делегатов: новое окно\" target=\"_blank\" rel=\"noopener noreferrer\">список "
+"делегатов вашего региона</a> с их контактными данными</li><li>телефон: 09 69 "
+"39 00 00 с понедельника по пятницу с 8:00 до 20:00 по местному времени</li>"
+"<li>почтовый адрес в <a href=\"https://lannuaire.service-public.fr/autorites-"
+"independantes/autorite-administrative-independante_195381\" "
+"title=\"справочник государственных учреждений: новое окно\" "
+"target=\"_blank\" rel=\"noopener noreferrer\">справочнике государственных "
+"учреждений</a>"
 
 #: web/b3desk/templates/footer/cgu.html:6
 #: web/b3desk/templates/footer/cgu.html:7
 msgid "Objet"
-msgstr ""
+msgstr "Назначение"
 
 #: web/b3desk/templates/footer/cgu.html:8
 msgid ""
@@ -1178,6 +1351,9 @@ msgid ""
 "déterminer les conditions d’accès et les règles d’utilisation de VISIO-"
 "AGENTS (le Service) par ses Utilisateurs et Utilisatrices."
 msgstr ""
+"Настоящие общие условия использования (ОУИ) определяют условия доступа и "
+"правила использования сервиса VISIO-AGENTS (далее «Сервис») его "
+"пользователями."
 
 #: web/b3desk/templates/footer/cgu.html:9
 msgid ""
@@ -1186,17 +1362,23 @@ msgid ""
 "mettre à jour unilatéralement ces CGU afin de se conformer aux évolutions "
 "légales et techniques."
 msgstr ""
+"Доступ к Сервису предоставляется при соблюдении ОУИ. Управление цифровых "
+"технологий в сфере образования (DNE) оставляет за собой право в "
+"одностороннем порядке изменять или обновлять настоящие ОУИ с учётом "
+"изменений в законодательстве и технологиях."
 
 #: web/b3desk/templates/footer/cgu.html:10
 msgid ""
 "Les utilisateurs doivent consulter régulièrement la dernière version des CGU "
 "disponible en permanence sur le site."
 msgstr ""
+"Пользователи должны регулярно проверять последнюю версию ОУИ, постоянно "
+"доступную на сайте."
 
 #: web/b3desk/templates/footer/cgu.html:11
 #: web/b3desk/templates/footer/cgu.html:12
 msgid "Code de conduite et responsabilités des Utilisateurs"
-msgstr ""
+msgstr "Правила поведения и ответственность пользователей"
 
 #: web/b3desk/templates/footer/cgu.html:13
 msgid ""
@@ -1206,6 +1388,11 @@ msgid ""
 "entreprise, association) peuvent être invités à participer sous la "
 "responsabilité des agents du ministère."
 msgstr ""
+"Использование министерского сервиса VISIO-AGENTS является бесплатным и "
+"свободным для сотрудников Министерства национального образования и молодёжи "
+"(MENJ). Партнёры государственных служб и даже широкая общественность "
+"(граждане, компании, ассоциации) могут приглашаться для участия под "
+"ответственность сотрудников министерства."
 
 #: web/b3desk/templates/footer/cgu.html:14
 msgid ""
@@ -1224,7 +1411,7 @@ msgstr ""
 #: web/b3desk/templates/footer/cgu.html:15
 #: web/b3desk/templates/footer/cgu.html:16
 msgid "Description du Service"
-msgstr ""
+msgstr "Описание Сервиса"
 
 #: web/b3desk/templates/footer/cgu.html:17
 msgid ""
@@ -1232,12 +1419,17 @@ msgid ""
 "visioconférence en ligne proposé par la DNE, qui en assure le maintien en "
 "conditions opérationnelles et les évolutions."
 msgstr ""
+"Сервис, объединяющий VISIO-AGENTS и CLASSE VIRTUELLE, является инструментом "
+"онлайн видеоконференций, предлагаемым DNE, которое обеспечивает его "
+"поддержание в рабочем состоянии и развитие."
 
 #: web/b3desk/templates/footer/cgu.html:18
 msgid ""
 "Toute utilisation des ressources de domaine de publication est subordonnée "
 "au respect des présentes conditions générales d’utilisation (CGU)."
 msgstr ""
+"Любое использование ресурсов домена публикации допускается только при "
+"соблюдении настоящих общих условий использования (ОУИ)."
 
 #: web/b3desk/templates/footer/cgu.html:19
 msgid ""
@@ -1248,45 +1440,60 @@ msgid ""
 "sont placés au centre de la démarche et de l’attention de l’équipe qui "
 "pilote le produit."
 msgstr ""
+"Сервис позволяет, в частности, создавать онлайн-пространства для общения. Он "
+"разработан для удовлетворения потребностей сотрудников Министерства "
+"национального образования и молодёжи в виртуальном взаимодействии и "
+"постоянно развивается в рамках непрерывного улучшения, где пользователи "
+"находятся в центре внимания команды, отвечающей за продукт."
 
 #: web/b3desk/templates/footer/cgu.html:20
 msgid ""
 "Le Service VISIO-AGENTS est un logiciel libre basé sur un logiciel développé "
 "par la société Blindside Networks."
 msgstr ""
+"Сервис VISIO-AGENTS является свободным программным обеспечением на основе "
+"продукта, разработанного компанией Blindside Networks."
 
 #: web/b3desk/templates/footer/cgu.html:21
 msgid ""
 "L’hébergement du Service et des données est réalisé chez l’entreprise "
 "Scaleway, validée offre Cloud Cercle 3."
 msgstr ""
+"Сервис и данные размещаются у компании Scaleway, имеющей подтверждённое "
+"предложение Cloud Cercle 3."
 
 #: web/b3desk/templates/footer/cgu.html:22
 msgid ""
 "La société française Arawa assure l’infogérance et la surveillance des "
 "infrastructures de la solution de visioconférence en heures ouvrées."
 msgstr ""
+"Французская компания Arawa обеспечивает администрирование и мониторинг "
+"инфраструктуры решения для видеоконференций в рабочее время."
 
 #: web/b3desk/templates/footer/cgu.html:23
 msgid ""
 "L’équipe nationale du pôle FOAD assure l’exploitation de la solution de "
 "frontal de gestion des salons en heures ouvrées."
 msgstr ""
+"Национальная команда подразделения FOAD обеспечивает эксплуатацию интерфейса "
+"управления залами в рабочее время."
 
 #: web/b3desk/templates/footer/cgu.html:24
 #: web/b3desk/templates/footer/cgu.html:25
 msgid "Accès et utilisation du Service"
-msgstr ""
+msgstr "Доступ к Сервису и его использование"
 
 #: web/b3desk/templates/footer/cgu.html:26
 msgid "Accès au Service"
-msgstr ""
+msgstr "Доступ к Сервису"
 
 #: web/b3desk/templates/footer/cgu.html:27
 msgid ""
 "Le Service est accessible depuis un navigateur récent connecté à Internet, "
 "quel que soit le terminal utilisé."
 msgstr ""
+"Доступ к Сервису осуществляется через современный браузер с подключением к "
+"Интернету независимо от используемого устройства."
 
 #: web/b3desk/templates/footer/cgu.html:28
 msgid ""
@@ -1297,6 +1504,12 @@ msgid ""
 "class=\"rf_link\" href=\"https://apps.education.fr\" target=\"_blank\" "
 "rel=\"noopener\">https://apps.education.fr</a>."
 msgstr ""
+"Вы можете открыть главную страницу сайта по адресу: <a class=\"rf_link\" "
+"href=\"https://visio-agents.education.fr\" target=\"_blank\" "
+"rel=\"noopener\">https://visio-agents.education.fr</a> или перейти к "
+"академическому сервису «Виртуальный класс» через портал <a class=\"rf_link\" "
+"href=\"https://apps.education.fr\" target=\"_blank\" rel=\"noopener\">"
+"https://apps.education.fr</a>."
 
 #: web/b3desk/templates/footer/cgu.html:29
 msgid ""
@@ -1305,16 +1518,21 @@ msgid ""
 "à l’exception d’opérations de maintenances ou d’incidents ne pouvant être "
 "traités par le support que lors des jours ouvrés, en heures ouvrées."
 msgstr ""
+"Сервис доступен 365 дней в году, 24 часа в сутки, за исключением форс-"
+"мажорных обстоятельств, событий, находящихся вне контроля DNE и/или хостинг-"
+"провайдера, а также технического обслуживания и инцидентов, которые служба "
+"поддержки может обработать только в рабочие дни и часы."
 
 #: web/b3desk/templates/footer/cgu.html:30
 msgid ""
 "Les incidents ne seront traités par le support que lors de ses horaires "
 "d’ouvertures les jours ouvrés, en heures ouvrées."
 msgstr ""
+"Служба поддержки обрабатывает инциденты только в рабочие дни и часы работы."
 
 #: web/b3desk/templates/footer/cgu.html:31
 msgid "Utilisation du Service"
-msgstr ""
+msgstr "Использование Сервиса"
 
 #: web/b3desk/templates/footer/cgu.html:32
 msgid ""
@@ -1322,12 +1540,17 @@ msgid ""
 "l’Éducation nationale et de la Jeunesse et de leurs collaborateurs pour un "
 "usage strictement professionnel."
 msgstr ""
+"Сервис предоставляется государственным служащим Министерства национального "
+"образования и молодёжи и их сотрудникам исключительно для профессионального "
+"использования."
 
 #: web/b3desk/templates/footer/cgu.html:33
 msgid ""
 "L’Utilisateur ou l’Utilisatrice est responsable des données, contenus ou "
 "propos qu'il ou elle échange grâce au Service."
 msgstr ""
+"Пользователь несёт ответственность за данные, содержимое и высказывания, "
+"которыми он обменивается с помощью Сервиса."
 
 #: web/b3desk/templates/footer/cgu.html:34
 msgid ""
@@ -1338,6 +1561,11 @@ msgid ""
 "qui porteraient atteinte aux droits des tiers, y compris leurs droits de "
 "propriété intellectuelle."
 msgstr ""
+"Пользователь не размещает в Интернете и не передаёт содержимое или "
+"информацию, противоречащие действующим законам и нормативным актам. В "
+"частности, он не должен высказываться или обмениваться содержимым, которое "
+"является оскорбительным, клеветническим или непристойным либо нарушает права "
+"третьих лиц, включая права интеллектуальной собственности."
 
 #: web/b3desk/templates/footer/cgu.html:35
 msgid ""
@@ -1345,6 +1573,8 @@ msgid ""
 "demeurent raisonnables et ne mettent pas en péril la sécurité informatique "
 "du Service."
 msgstr ""
+"Пользователь должен следить за тем, чтобы использование Сервиса оставалось "
+"разумным и не угрожало его информационной безопасности."
 
 #: web/b3desk/templates/footer/cgu.html:36
 msgid ""
@@ -1353,6 +1583,9 @@ msgid ""
 "faits, informations ou documents dont il ou elle a connaissance dans le "
 "cadre de l’utilisation du Service."
 msgstr ""
+"Пользователь использует Сервис с соблюдением профессиональной тайны и "
+"сохраняет профессиональную конфиденциальность в отношении любых фактов, "
+"сведений или документов, о которых он узнаёт при использовании Сервиса."
 
 #: web/b3desk/templates/footer/cgu.html:37
 msgid ""
@@ -1360,32 +1593,40 @@ msgid ""
 "effectuées à partir du compte d’un Utilisateur ou d’une Utilisatrice, sera "
 "réputée avoir été effectuée par ce dernier ou cette dernière."
 msgstr ""
+"Если не доказано обратное, считается, что любое подключение к Сервису или "
+"передача данных из учётной записи пользователя выполнены этим пользователем."
 
 #: web/b3desk/templates/footer/cgu.html:38
 msgid ""
 "Si l’Utilisateur ou l’Utilisatrice estime que son identité académique est "
 "compromise, il ou elle doit modifier son mot de passe sans délai."
 msgstr ""
+"Если пользователь считает, что его академическая учётная запись "
+"скомпрометирована, он должен незамедлительно изменить пароль."
 
 #: web/b3desk/templates/footer/cgu.html:39
 msgid ""
 "En cas de compromission de son compte, l’Utilisateur ou l’Utilisatrice doit "
 "contacter l’équipe support :"
 msgstr ""
+"В случае компрометации учетной записи Пользователь должен связаться со "
+"службой поддержки:"
 
 #: web/b3desk/templates/footer/cgu.html:40
 msgid "Limitations d'utilisation du Service"
-msgstr ""
+msgstr "Ограничения использования Сервиса"
 
 #: web/b3desk/templates/footer/cgu.html:41
 msgid "Limitations d’utilisation du Service"
-msgstr ""
+msgstr "Ограничения использования Сервиса"
 
 #: web/b3desk/templates/footer/cgu.html:42
 msgid ""
 "Le Service est prévu pour le traitement et le partage de données sans "
 "sensibilité particulière."
 msgstr ""
+"Сервис предназначен для обработки и обмена данными, не содержащими "
+"конфиденциальной информации особой категории."
 
 #: web/b3desk/templates/footer/cgu.html:43
 msgid ""
@@ -1393,17 +1634,22 @@ msgid ""
 "illicites, inappropriés ou contraires aux présentes conditions d’utilisation "
 "peut le signaler en s’adressant au support :"
 msgstr ""
+"Любой пользователь, заметивший присутствие незаконного, неуместного или "
+"противоречащего настоящим условиям использования контента, может сообщить об "
+"этом, обратившись в службу поддержки:"
 
 #: web/b3desk/templates/footer/cgu.html:44
 #: web/b3desk/templates/footer/cgu.html:45
 msgid "Disponibilité et sécurité du Service"
-msgstr ""
+msgstr "Доступность и безопасность Сервиса"
 
 #: web/b3desk/templates/footer/cgu.html:46
 msgid ""
 "La DNE s’engage à mettre en œuvre tous les moyens dont elle dispose pour "
 "assurer la bonne qualité et la fiabilité du Service."
 msgstr ""
+"DNE обязуется использовать все имеющиеся в её распоряжении средства для "
+"обеспечения качества и надёжности Сервиса."
 
 #: web/b3desk/templates/footer/cgu.html:47
 msgid ""
@@ -1415,12 +1661,18 @@ msgid ""
 "dysfonctionnement ou une indisponibilité du Service. De telles situations "
 "n'ouvriront droit à aucune compensation financière."
 msgstr ""
+"Система находится под эксплуатационным наблюдением в рабочие часы. Тем не "
+"менее в ней могут возникать неполадки или ошибки, влияющие на "
+"производительность или доступность Сервиса. В связи с этим DNE не несёт "
+"ответственности за убытки и/или ущерб любого характера, которые могут быть "
+"вызваны неисправностью или недоступностью Сервиса. Такие ситуации не дают "
+"права на финансовую компенсацию."
 
 #: web/b3desk/templates/footer/cgu.html:48
 #: web/b3desk/templates/footer/cgu.html:49
 #: web/b3desk/templates/footer/donnees_personnelles.html:5
 msgid "Données personnelles"
-msgstr ""
+msgstr "Персональные данные"
 
 #: web/b3desk/templates/footer/cgu.html:50
 msgid ""
@@ -1431,6 +1683,12 @@ msgid ""
 "personnelles/#cloud\" target=\"_blank\" rel=\"noopener\">https://"
 "projet.apps.education.fr/donnees-personnelles/#cloud</a>"
 msgstr ""
+"Использование Сервиса влечет за собой обработку персональных данных и "
+"размещение файлов cookie в соответствии с политикой защиты персональных "
+"данных и управления файлами cookie, доступной здесь: <a class=\"rf_link\" "
+"href=\"https://projet.apps.education.fr/donnees-personnelles/#cloud\" "
+"target=\"_blank\" rel=\"noopener\">https://projet.apps.education.fr/donnees-"
+"personnelles/#cloud</a>"
 
 #: web/b3desk/templates/footer/cgu.html:51
 msgid ""
@@ -1438,6 +1696,10 @@ msgid ""
 "fonctionnement du Service. Elles ne seront en aucun cas transmises à des "
 "tiers sans votre autorisation préalable, sauf exigences légales."
 msgstr ""
+"Переданные персональные данные будут использоваться только для обеспечения "
+"работы Сервиса. Они ни при каких обстоятельствах не будут переданы третьим "
+"лицам без вашего предварительного согласия, за исключением случаев, "
+"предусмотренных законом."
 
 #: web/b3desk/templates/footer/cgu.html:52
 msgid ""
@@ -1448,6 +1710,11 @@ msgid ""
 "la durée légale prévue. Elles seront détruites au terme du délai légal de "
 "conservation."
 msgstr ""
+"В соответствии с законодательством технические поставщики обязаны хранить и "
+"передавать судебным органам сведения о подключениях (журналы, IP-адрес, дата "
+"и время), позволяющие привлечь нарушителя к ответственности. Поэтому все "
+"необходимые сведения будут храниться в течение установленного законом срока "
+"и уничтожены по его истечении."
 
 #: web/b3desk/templates/footer/cgu.html:53
 msgid ""
@@ -1459,6 +1726,11 @@ msgid ""
 "stockage de cette vidéo n’est assuré par le Service que pour une durée de 12 "
 "mois."
 msgstr ""
+"Персональные данные, переданные во время видеоконференции устно, через чат "
+"или общий документ, не хранятся после завершения работы зала, если только не "
+"была выполнена запись (только для VISIO-AGENTS). В последнем случае за "
+"запись отвечает владелец зала, а Сервис хранит это видео только в течение 12 "
+"месяцев."
 
 #: web/b3desk/templates/footer/cgu.html:54
 msgid ""
@@ -1470,11 +1742,17 @@ msgid ""
 "modification et de rectification doivent être adressées par mail à "
 "l’adresse :"
 msgstr ""
+"Что касается интерфейса, предлагаемого сервисом, вы имеете право на доступ, "
+"изменение, исправление и удаление данных, которые вас касаются (ст. 34 "
+"закона «Информатика и свободы» от 6 января 1978 года). Вы можете в любой "
+"момент потребовать удаления вашего вклада в это пространство. Запросы "
+"касательно права на доступ, изменение и исправление должны направляться по "
+"электронной почте на адрес:"
 
 #: web/b3desk/templates/footer/cgu.html:55
 #: web/b3desk/templates/footer/cgu.html:56
 msgid "Responsabilités"
-msgstr ""
+msgstr "Ответственность"
 
 #: web/b3desk/templates/footer/cgu.html:57
 msgid ""
@@ -1482,18 +1760,24 @@ msgid ""
 "du Service, à ne pas contrevenir aux dispositions législatives et "
 "réglementaires en vigueur, aux bons usages d’Internet et aux CGU."
 msgstr ""
+"Пользователь обязуется при использовании Сервиса не нарушать действующие "
+"законы и нормативные акты, общепринятые правила пользования Интернетом и ОУИ."
 
 #: web/b3desk/templates/footer/cgu.html:58
 msgid ""
 "De manière générale, la DNE se dégage de toute responsabilité en cas "
 "d’utilisation non-conforme aux CGU du Service."
 msgstr ""
+"В целом DNE снимает с себя всякую ответственность в случае использования "
+"Сервиса с нарушением ОУИ."
 
 #: web/b3desk/templates/footer/cgu.html:59
 msgid ""
 "La DNE se réserve le droit de suspendre ou de résilier l’accès au Service "
 "d’un Utilisateur ou d’une Utilisatrice en cas de violation des CGU."
 msgstr ""
+"DNE оставляет за собой право приостановить или прекратить доступ "
+"пользователя к Сервису в случае нарушения ОУИ."
 
 #: web/b3desk/templates/footer/cgu.html:60
 msgid ""
@@ -1501,6 +1785,9 @@ msgid ""
 "ou immatériel, direct et/ou indirect de quelque nature que ce soit causé en "
 "cas d’utilisation non-conforme aux CGU."
 msgstr ""
+"Пользователь несёт ответственность за любой материальный или нематериальный, "
+"прямой и/или косвенный ущерб любого характера, причинённый в результате "
+"использования Сервиса с нарушением ОУИ."
 
 #: web/b3desk/templates/footer/cgu.html:61
 msgid ""
@@ -1508,19 +1795,23 @@ msgid ""
 "stipulations des CGU est susceptible d’être signalée à son administration et "
 "d'entraîner des poursuites judiciaires et des sanctions à son encontre."
 msgstr ""
+"Пользователь уведомлён, что любое нарушение положений ОУИ может быть "
+"сообщено его администрации и повлечь судебное преследование и санкции в "
+"отношении пользователя."
 
 #: web/b3desk/templates/footer/cgu.html:64
 msgid ""
 "Pour toute question sur le Service, vous pouvez écrire à l’adresse mail :"
 msgstr ""
+"По любым вопросам о Сервисе вы можете писать на адрес электронной почты:"
 
 #: web/b3desk/templates/footer/cgu.html:65
 msgid "Évolution des conditions d'utilisation"
-msgstr ""
+msgstr "Изменение условий использования"
 
 #: web/b3desk/templates/footer/cgu.html:66
 msgid "Évolution des conditions d’utilisation"
-msgstr ""
+msgstr "Изменение условий использования"
 
 #: web/b3desk/templates/footer/cgu.html:67
 msgid ""
@@ -1529,21 +1820,25 @@ msgid ""
 "d’accueil, de l’évolution de la législation ou pour tout autre motif jugé "
 "nécessaire."
 msgstr ""
+"Положения настоящих условий использования могут быть изменены в любое время "
+"без предварительного уведомления в связи с изменениями на главной странице, "
+"изменениями законодательства или по любой другой причине, признанной "
+"необходимой."
 
 #: web/b3desk/templates/footer/cgu.html:68
 msgid "Textes de référence"
-msgstr ""
+msgstr "Нормативные документы"
 
 #: web/b3desk/templates/footer/cgu.html:69
 msgid ""
 "Loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et "
 "aux libertés"
-msgstr ""
+msgstr "Закон № 78-17 от 6 января 1978 года об информатике, файлах и свободах"
 
 #: web/b3desk/templates/footer/cgu.html:70
 msgid ""
 "Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique"
-msgstr ""
+msgstr "Закон № 2004-575 от 21 июня 2004 года о доверии к цифровой экономике"
 
 #: web/b3desk/templates/footer/cgu.html:71
 msgid ""
@@ -1551,116 +1846,121 @@ msgid ""
 "entre les usagers et les autorités administratives et entre les autorités "
 "administratives et notamment ses articles 9 à 12."
 msgstr ""
+"Постановление № 2005-1516 от 8 декабря 2005 года об электронном обмене между "
+"пользователями и административными органами, а также между административными "
+"органами, в частности статьи 9–12."
 
 #: web/b3desk/templates/footer/cgu.html:72
 msgid "Loi n° 2016-1321 du 7 octobre 2016 pour une République numérique"
-msgstr ""
+msgstr "Закон № 2016-1321 от 7 октября 2016 года о цифровой Республике"
 
 #: web/b3desk/templates/footer/documentation.html:4
 msgid "Documentation"
-msgstr ""
+msgstr "Документация"
 
 #: web/b3desk/templates/footer/documentation.html:5
 msgid "Guides utilisateurs"
-msgstr ""
+msgstr "Руководства пользователя"
 
 #: web/b3desk/templates/footer/documentation.html:9
 msgid "Présentation des nouveautés de la v2.4"
-msgstr ""
+msgstr "Обзор новых возможностей версии 2.4"
 
 #: web/b3desk/templates/footer/documentation.html:14
 msgid "Créer une réunion improvisée"
-msgstr ""
+msgstr "Создать внеплановую встречу"
 
 #: web/b3desk/templates/footer/documentation.html:15
 msgid "Participer à une réunion"
-msgstr ""
+msgstr "Участвовать во встрече"
 
 #: web/b3desk/templates/footer/documentation.html:16
 msgid "Créer et parametrer une salle de réunion"
-msgstr ""
+msgstr "Создать и настроить зал встречи"
 
 #: web/b3desk/templates/footer/documentation.html:16
 msgid "Créer et paramétrer une salle de réunion "
-msgstr ""
+msgstr "Создать и настроить зал встречи "
 
 #: web/b3desk/templates/footer/documentation.html:17
 msgid "Activer le matériel dans le navigateur"
-msgstr ""
+msgstr "Включить оборудование в браузере"
 
 #: web/b3desk/templates/footer/documentation.html:18
 msgid "Gérer les utilisateurs"
-msgstr ""
+msgstr "Управлять пользователями"
 
 #: web/b3desk/templates/footer/documentation.html:19
 msgid "Gérer les documents"
-msgstr ""
+msgstr "Управлять документами"
 
 #: web/b3desk/templates/footer/documentation.html:20
 msgid "Gestion des réunions privées"
-msgstr ""
+msgstr "Управление личными встречами"
 
 #: web/b3desk/templates/footer/documentation.html:21
 msgid "Déléguer la création de réunion"
-msgstr ""
+msgstr "Делегировать создание встречи"
 
 #: web/b3desk/templates/footer/documentation.html:22
 msgid "Enregistrer une réunion"
-msgstr ""
+msgstr "Записать встречу"
 
 #: web/b3desk/templates/footer/documentation.html:23
 msgid "Créer un sondage"
-msgstr ""
+msgstr "Создать опрос"
 
 #: web/b3desk/templates/footer/documentation.html:24
 msgid "Joindre une réunion par téléphone"
-msgstr ""
+msgstr "Подключиться к встрече по телефону"
 
 #: web/b3desk/templates/footer/documentation.html:25
 msgid "Afficher le tableau de bord"
-msgstr ""
+msgstr "Показать панель управления"
 
 #: web/b3desk/templates/footer/documentation.html:26
 msgid "Gérer la mise en page"
-msgstr ""
+msgstr "Управлять макетом"
 
 #: web/b3desk/templates/footer/documentation.html:27
 msgid "Extension contrôle du volume"
-msgstr ""
+msgstr "Расширение для управления громкостью"
 
 #: web/b3desk/templates/footer/documentation.html:27
 msgid "Contrôle du volume"
-msgstr ""
+msgstr "Управление громкостью"
 
 #: web/b3desk/templates/footer/documentation.html:103
 msgid "Liste des serveurs BigBlueButton pour l'Éducation"
-msgstr ""
+msgstr "Список серверов BigBlueButton для сферы образования"
 
 #: web/b3desk/templates/footer/documentation.html:104
 msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
-msgstr ""
+msgstr "Список серверов BigBlueButton для вебинара для государственных служащих"
 
 #: web/b3desk/templates/footer/documentation.html:105
 msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
-msgstr ""
+msgstr "Список всех серверов BigBlueButton"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:7
 msgid "Gestion des cookies"
-msgstr ""
+msgstr "Управление файлами cookie"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:8
 msgid "À propos des cookies / traceurs"
-msgstr ""
+msgstr "О файлах cookie и трекерах"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:9
 msgid ""
 "Afin de permettre aux applications Web de fournir des services, des "
 "« cookies » (« traceurs » en français) peuvent être utilisés."
 msgstr ""
+"Чтобы веб приложения могли предоставлять услуги, могут использоваться файлы «"
+"cookie» («трекеры»)."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:11
 msgid "Qu’est-ce qu’un « cookie » ?"
-msgstr ""
+msgstr "Что такое файл «cookie»?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:12
 msgid ""
@@ -1668,30 +1968,37 @@ msgid ""
 "lettres et de chiffres, envoyé par le serveur internet au fichier cookie du "
 "navigateur situé sur le disque dur de votre ordinateur."
 msgstr ""
+"Файл «cookie» — это файл ограниченного размера, обычно состоящий из букв и "
+"цифр, отправляемый интернет сервером в файл cookie браузера, расположенный "
+"на жестком диске вашего компьютера."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:14
 msgid ""
 "Quels types de « cookies » sont utilisés par les services visio-agents/"
 "Classe Virtuelle/Webinaire de l’Etat ?"
 msgstr ""
+"Какие типы файлов «cookie» используются службами visio-agents/Classe "
+"Virtuelle/Webinaire de l’Etat?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:15
 msgid ""
 "Les cookies servent à l’authentification sur les services visio-agents/"
 "Classe Virtuelle/Webinaire de l’Etat"
 msgstr ""
+"Файлы cookie используются для аутентификации в сервисах visio-agents/«"
+"Виртуальный класс»/вебинаре для государственных служащих"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:16
 msgid "Il n’y a pas de cookie de mesure d’audience"
-msgstr ""
+msgstr "Файлы cookie для измерения посещаемости не используются"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:17
 msgid "Informations complémentaires sur les « cookies »"
-msgstr ""
+msgstr "Дополнительная информация о файлах «cookie»"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:20
 msgid "Quelle sécurité pour vos données personnelles ?"
-msgstr ""
+msgstr "Какова безопасность ваших персональных данных?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:21
 msgid ""
@@ -1699,10 +2006,12 @@ msgid ""
 "organisationnelles appropriées pour garantir la sécurité et la "
 "confidentialité de vos données personnelles."
 msgstr ""
+"Мы принимаем соответствующие физические, технические и организационные меры "
+"для обеспечения безопасности и конфиденциальности ваших персональных данных."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:23
 msgid "Politique de confidentialité"
-msgstr ""
+msgstr "Политика конфиденциальности"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:24
 msgid ""
@@ -1712,6 +2021,11 @@ msgid ""
 "par la suite dans ces cas) ou la DINum (Direction Interministérielle du "
 "Numérique pour le Webinaire de l’Etat, \"nous\" par la suite dans ce cas)."
 msgstr ""
+"В рамках использования сервисов visio-agents/«Виртуальный класс»/вебинара "
+"для государственных служащих персональные данные о вас обрабатываются DNE "
+"(для visio-agents/«Виртуального класса», далее в этих случаях «мы») или "
+"DINum (Межведомственное управление цифровых технологий для вебинара "
+"государственных служащих, далее в этом случае «мы»)."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:25
 msgid ""
@@ -1722,10 +2036,15 @@ msgid ""
 "l’informatique, aux fichiers et aux libertés (ci-après loi « Informatique et "
 "Libertés »)."
 msgstr ""
+"Настоящая политика описывает наши обязательства в отношении обработки ваших "
+"данных в соответствии с Европейским регламентом по защите данных (Регламент "
+"ЕС № 2026/679 от 27 апреля 2016 года, далее «RGPD») и измененным Законом № "
+"78-17 от 6 января 1978 года об информатике, файлах и свободах (далее закон «"
+"Информатика и свободы»)."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:27
 msgid "Quel est notre rôle ?"
-msgstr ""
+msgstr "Какова наша роль?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:28
 msgid ""
@@ -1733,6 +2052,9 @@ msgid ""
 "faciliter le travail à distance par l’organisation et la tenue de réunions, "
 "de conférences et de formations en ligne."
 msgstr ""
+"Вебинар — это онлайн-сервис для государственных служащих, предназначенный "
+"для облегчения удалённой работы посредством организации и проведения онлайн-"
+"встреч, конференций и обучений."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:29
 msgid ""
@@ -1741,6 +2063,10 @@ msgid ""
 "inhérentes à ce traitement, notamment celles relevant de la loi n° 78-17 du "
 "6 janvier 1978 relative à l’informatique aux fichiers et aux libertés."
 msgstr ""
+"DINUM является оператором обработки информации в рамках Сервиса и поэтому "
+"обязуется соблюдать обязательства, связанные с этой обработкой, в частности "
+"предусмотренные законом № 78-17 от 6 января 1978 года об информатике, файлах "
+"и свободах."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:30
 msgid ""
@@ -1749,6 +2075,9 @@ msgid ""
 "l’organisation et la tenue de réunions, de conférences et de formations en "
 "ligne."
 msgstr ""
+"Visio-agents — это онлайн-сервис для сотрудников Министерства национального "
+"образования, предназначенный для облегчения удалённой работы посредством "
+"организации и проведения онлайн-встреч, конференций и обучений."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:31
 msgid ""
@@ -1756,6 +2085,9 @@ msgid ""
 "ministère de l'Éducation Nationale destiné à la continuité pédagogique en "
 "cas d'impossibilité de rejoindre la classe."
 msgstr ""
+"«Виртуальный класс» — это онлайн-сервис для преподавателей Министерства "
+"национального образования, предназначенный для обеспечения непрерывности "
+"обучения в случае невозможности присутствовать на занятии."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:32
 msgid ""
@@ -1765,6 +2097,10 @@ msgid ""
 "relevant de la loi n° 78-17 du 6 janvier 1978 relative à l’informatique aux "
 "fichiers et aux libertés."
 msgstr ""
+"DNE является оператором обработки информации в рамках сервисов visio-agents "
+"и «Виртуальный класс» и поэтому обязуется соблюдать обязательства, связанные "
+"с этой обработкой, в частности предусмотренные законом № 78-17 от 6 января "
+"1978 года об информатике, файлах и свободах."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:33
 msgid ""
@@ -1773,44 +2109,47 @@ msgid ""
 "qu’ils réalisent à partir de ces enregistrements. Il leur appartient de vous "
 "délivrer une information sur ces traitements."
 msgstr ""
+"Организаторы, которые приглашают участников и записывают видеоконференции, "
+"несут ответственность за последующую обработку, выполняемую ими на основе "
+"этих записей. Они обязаны информировать вас об этой обработке."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:35
 msgid "Quels sont les traitements de données mis en œuvre ?"
-msgstr ""
+msgstr "Какие виды обработки данных выполняются?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:45
 msgid "Finalité du traitement"
-msgstr ""
+msgstr "Цель обработки"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:46
 msgid "Base légale du traitement"
-msgstr ""
+msgstr "Правовое основание обработки"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:47
 msgid "Catégorie de données personnelles traitées"
-msgstr ""
+msgstr "Категория обрабатываемых персональных данных"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:48
 msgid "Durée de conservation"
-msgstr ""
+msgstr "Срок хранения"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:51
 msgid "Gestion des comptes des organisateurs de webinaires"
-msgstr ""
+msgstr "Управление учётными записями организаторов вебинаров"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:52
 #: web/b3desk/templates/footer/donnees_personnelles.html:61
 #: web/b3desk/templates/footer/donnees_personnelles.html:67
 msgid "Article 6-1(e) RGPD : exécution d’une mission de service public"
-msgstr ""
+msgstr "Статья 6-1(e) RGPD: выполнение задач государственной службы"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:53
 msgid "Données d’identification :"
-msgstr ""
+msgstr "Идентификационные данные:"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:56
 msgid "Adresse électronique"
-msgstr ""
+msgstr "Адрес электронной почты"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:57
 msgid ""
@@ -1818,15 +2157,18 @@ msgid ""
 "compte ou au moment de la désactivation du compte (1ère moe planifiée au "
 "plus tard en 12/22)."
 msgstr ""
+"Данные удаляются после 12 месяцев бездействия учётной записи или при её "
+"деактивации (первое плановое техническое обслуживание — не позднее 12/22)."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:60
 msgid ""
 "Enregistrement des visio-conférences à des fins de partage et de rediffusion"
 msgstr ""
+"Запись видеоконференций для совместного использования и повторной трансляции"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:62
 msgid "Enregistrement vidéo des visio-conférences"
-msgstr ""
+msgstr "Видеозапись видеоконференций"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:63
 msgid ""
@@ -1834,23 +2176,25 @@ msgid ""
 "l’organisateur. Elles sont automatiquement supprimées 12 mois après la date "
 "de la visio-conférences."
 msgstr ""
+"Организатор может удалить записи в любое время. Они автоматически удаляются "
+"через 12 месяцев после даты видеоконференции."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:66
 msgid "Outils de chat et de vote en ligne"
-msgstr ""
+msgstr "Инструменты онлайн-чата и голосования"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:68
 msgid "Échanges écrits entre participants et résultats des votes en lignes"
-msgstr ""
+msgstr "Письменный обмен между участниками и результаты онлайн-голосований"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:69
 msgid ""
 "Les données sont supprimées à l’issue de la session de visio-conférence."
-msgstr ""
+msgstr "Данные удаляются после завершения видеоконференции."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:72
 msgid "Gestion de la sécurité de la visio-conférence"
-msgstr ""
+msgstr "Управление безопасностью видеоконференции"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:73
 msgid ""
@@ -1859,18 +2203,22 @@ msgid ""
 "des données permettant d’identifier toute personne ayant contribué à la "
 "création d’un contenu en ligne)"
 msgstr ""
+"(Закон № 2004-575 от 25 июня 2005 года о доверии к цифровой экономике, "
+"постановление № 2021-1362 от 20 октября 2021 года о хранении данных, "
+"позволяющих идентифицировать любое лицо, участвовавшее в создании онлайн-"
+"содержимого)"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:74
 msgid "Données de connexion des utilisateurs du service (logs, adresse IP)"
-msgstr ""
+msgstr "Данные о подключениях пользователей сервиса (журналы, IP-адрес)"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:75
 msgid "12 mois"
-msgstr ""
+msgstr "12 месяцев"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:79
 msgid "Quels sont les destinataires de vos données ?"
-msgstr ""
+msgstr "Кто является получателем ваших данных?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:80
 msgid ""
@@ -1878,6 +2226,9 @@ msgid ""
 "dûment habilitées de la, respectivement, DNE ou DINUM et de nos sous-"
 "traitants qui interviennent pour l’hébergement, et l’infogérance du service."
 msgstr ""
+"Получателями ваших персональных данных являются уполномоченные сотрудники "
+"DNE или DINUM соответственно, а также наши подрядчики, участвующие в "
+"размещении и администрировании сервиса."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:81
 msgid ""
@@ -1885,16 +2236,20 @@ msgid ""
 "garanties adéquates et du respect de conditions strictes de confidentialité, "
 "d’usage et de protection des données."
 msgstr ""
+"Мы убедились, что наши подрядчики применяют надлежащие гарантии и соблюдают "
+"строгие условия конфиденциальности, использования и защиты данных."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:82
 msgid ""
 "Les données collectées sur la visio-conférence ne sont pas transférées en "
 "dehors de l’Union européenne."
 msgstr ""
+"Данные, собранные во время видеоконференции, не передаются за пределы "
+"Европейского союза."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:83
 msgid "Quels sont vos droits ?"
-msgstr ""
+msgstr "Каковы ваши права?"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:84
 msgid ""
@@ -1902,6 +2257,9 @@ msgid ""
 "personnel qui vous concernent. Vous disposez également d’un droit "
 "d’opposition et de limitation du traitement de vos données."
 msgstr ""
+"Вы имеете право получать доступ к касающимся вас персональным данным и "
+"исправлять их. Вы также имеете право возражать против обработки данных и "
+"ограничивать её."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:85
 msgid ""
@@ -1909,24 +2267,29 @@ msgid ""
 "données, vous pouvez nous écrire, respectivement, aux adresses : "
 "contact@apps.education.fr ou contact@webinaire.numerique.gouv.fr."
 msgstr ""
+"Чтобы воспользоваться своими правами или задать вопрос об обработке данных, "
+"вы можете написать нам соответственно по адресам: contact@apps.education.fr "
+"или contact@webinaire.numerique.gouv.fr."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:86
 msgid ""
 "Vous pouvez également, dans le cas du Webinaire de l'État, contacter le "
 "délégué à la protection des données (DPD) des services du Premier Ministre :"
 msgstr ""
+"В случае вебинара для государственных служащих вы также можете обратиться к "
+"ответственному за защиту данных (DPD) служб премьер-министра:"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:87
 msgid "par mail à dpd@pm.gouv.fr"
-msgstr ""
+msgstr "по электронной почте: dpd@pm.gouv.fr"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:88
 msgid "ou par courrier à l’adresse suivante :"
-msgstr ""
+msgstr "или по почте по следующему адресу:"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:89
 msgid "Services du Premier Ministre"
-msgstr ""
+msgstr "Службы премьер-министра"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:90
 msgid ""
@@ -1934,6 +2297,9 @@ msgid ""
 "            56 rue de Varenne </br>\n"
 "            75007 Paris"
 msgstr ""
+"Вниманию ответственного за защиту данных (DPD)</br>\n"
+"            56 rue de Varenne </br>\n"
+"            75007 Paris"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:93
 msgid ""
@@ -1941,6 +2307,8 @@ msgid ""
 "Libertés ne sont pas respectés vous pouvez adresser une réclamation à la "
 "CNIL :"
 msgstr ""
+"Если после обращения к нам вы посчитаете, что ваши права в области "
+"информатики и свобод не соблюдаются, вы можете направить жалобу в CNIL:"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:94
 msgid ""
@@ -1948,68 +2316,81 @@ msgid ""
 "            3 place de Fontenoy – TSA 80715 – </br>\n"
 "            75334 PARIS CEDEX 07"
 msgstr ""
+"Национальная комиссия по информатике и свободам </br>\n"
+"            3 place de Fontenoy – TSA 80715 – </br>\n"
+"            75334 PARIS CEDEX 07"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:98
 msgid ""
 "Les modalités de réclamation sont précisées sur le site de la CNIL : "
 "www.cnil.fr."
-msgstr ""
+msgstr "Порядок подачи жалобы описан на сайте CNIL: www.cnil.fr."
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:100
 msgid ""
 "Contactez le Délégué à la protection des données pour les services Écoles/"
 "Colléges/Lycées/Agents"
 msgstr ""
+"Свяжитесь с ответственным за защиту данных для сервисов «Школы/колледжи/"
+"лицеи/сотрудники»"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:101
 msgid ""
 "Pour ce faire, envoyez un courriel à <strong>dpd[chez]education.gouv.fr</"
 "strong>"
 msgstr ""
+"Для этого отправьте письмо на адрес <strong>dpd[собака]education.gouv.fr</"
+"strong>"
 
 #: web/b3desk/templates/footer/mentions_legales.html:6
 msgid "Éditeur"
-msgstr ""
+msgstr "Издатель"
 
 #: web/b3desk/templates/footer/mentions_legales.html:7
 msgid ""
 "Ministère de l’Éducation nationale et de la jeunesse Direction du numérique "
 "pour l’éducation 110 rue Grenelle, 75007 Paris"
 msgstr ""
+"Министерство национального образования и молодёжи, Управление цифровых "
+"технологий в сфере образования, 110 rue Grenelle, 75007 Paris"
 
 #: web/b3desk/templates/footer/mentions_legales.html:7
 msgid "Directeur de publication"
-msgstr ""
+msgstr "Ответственный за публикацию"
 
 #: web/b3desk/templates/footer/mentions_legales.html:8
 msgid "Directeur de la publication"
-msgstr ""
+msgstr "Директор по публикациям"
 
 #: web/b3desk/templates/footer/mentions_legales.html:9
 msgid "M. Audran Le Baron, Directeur du numérique pour l’éducation"
 msgstr ""
+"г-н Одран Ле Барон, директор по цифровым технологиям в сфере образования"
 
 #: web/b3desk/templates/footer/mentions_legales.html:10
 msgid "Gestionnaire des statistiques"
-msgstr ""
+msgstr "Администратор статистики"
 
 #: web/b3desk/templates/footer/mentions_legales.html:11
 msgid "Il n’y a pas d’outil de mesure d’audience pour ce site."
-msgstr ""
+msgstr "На этом сайте нет инструмента для измерения посещаемости."
 
 #: web/b3desk/templates/footer/mentions_legales.html:12
 msgid "Conception et gestion du site"
-msgstr ""
+msgstr "Разработка и управление сайтом"
 
 #: web/b3desk/templates/footer/mentions_legales.html:13
 msgid ""
 "Le suivi éditorial, graphique et technique du site est assuré au quotidien "
 "par les équipes de la DINUM et du Pôle de compétence Identité du MENJS."
 msgstr ""
+"Ежедневное редакционное, графическое и техническое сопровождение сайта "
+"осуществляют команды DINUM и подразделения компетенций по идентификации "
+"MENJS."
 
 #: web/b3desk/templates/footer/mentions_legales.html:14
 msgid "Droits de reproduction"
-msgstr ""
+msgstr "Права на воспроизведение"
 
 #: web/b3desk/templates/footer/mentions_legales.html:15
 msgid ""
@@ -2017,6 +2398,9 @@ msgid ""
 "selon l’article L122-5 du Code de la propriété intellectuelle, "
 "les ’’documents officiels’’ sont librement réutilisables."
 msgstr ""
+"В соответствии с публичным правом интеллектуальной собственности, в "
+"частности со статьёй L122-5 Кодекса интеллектуальной собственности, «"
+"официальные документы» могут свободно использоваться повторно."
 
 #: web/b3desk/templates/footer/mentions_legales.html:16
 msgid ""
@@ -2024,6 +2408,9 @@ msgid ""
 "partielle ou intégrale mentionne clairement la source, et le cas échéant "
 "avec un lien vers le document original en ligne sur ce site."
 msgstr ""
+"Однако при частичном или полном использовании этих материалов принято явно "
+"указывать источник и, при необходимости, добавлять ссылку на оригинальный "
+"документ, размещённый на этом сайте."
 
 #: web/b3desk/templates/footer/mentions_legales.html:17
 msgid ""
@@ -2031,6 +2418,9 @@ msgid ""
 "de l’éditeur se trouvent sous « Licence Ouverte V2.0 » et sont librement "
 "réutilisables sous les conditions suivantes :"
 msgstr ""
+"Вся инфографика и видеоролики, созданные службой коммуникации издателя, "
+"находятся под лицензией «Licence Ouverte V2.0» и могут быть свободно "
+"использованы повторно при соблюдении следующих условий:"
 
 #: web/b3desk/templates/footer/mentions_legales.html:18
 msgid ""
@@ -2038,10 +2428,13 @@ msgid ""
 "l’auteur de l’œuvre ou le titulaire des droits (mais pas d’une manière qui "
 "suggérerait qu’ils vous approuvent, vous ou votre utilisation de l’œuvre)."
 msgstr ""
+"Атрибуция: вы должны указать авторство работы способом, указанным автором "
+"работы или правообладателем (но не способом, который бы предполагал, что они "
+"одобряют вас или ваше использование работы)."
 
 #: web/b3desk/templates/footer/mentions_legales.html:19
 msgid "Liens hypertextes pointant vers ce site :"
-msgstr ""
+msgstr "Гиперссылки, ведущие на этот сайт:"
 
 #: web/b3desk/templates/footer/mentions_legales.html:20
 msgid ""
@@ -2049,6 +2442,9 @@ msgid ""
 "préalable, un lien (y compris profond) vers les informations diffusées par "
 "ce site de webinaire, Visio-ecoles/colleges/lycees/agents."
 msgstr ""
+"Любой общедоступный или частный сайт может без предварительного разрешения "
+"размещать ссылку, в том числе прямую, на информацию, распространяемую этим "
+"сайтом вебинаров Visio-ecoles/colleges/lycees/agents."
 
 #: web/b3desk/templates/footer/mentions_legales.html:21
 msgid ""
@@ -2056,12 +2452,16 @@ msgid ""
 "doit mentionner très clairement l’origine du document sous forme d’une "
 "adresse internet :"
 msgstr ""
+"Для интернет сайтов воспроизведение контента после получения разрешения "
+"должно очень четко указывать происхождение документа в виде интернет адреса:"
 
 #: web/b3desk/templates/footer/mentions_legales.html:22
 msgid ""
 "La mise en place de “liens profonds” pointant directement sur le document "
 "souhaité devra être privilégiée par rapport à la reproduction de contenus."
 msgstr ""
+"Вместо воспроизведения содержимого следует отдавать предпочтение размещению «"
+"прямых ссылок», ведущих непосредственно на нужный документ."
 
 #: web/b3desk/templates/footer/mentions_legales.html:23
 msgid ""
@@ -2070,6 +2470,9 @@ msgid ""
 "préalable. Cependant la mention explicite du site dans l’intitulé du lien "
 "est recommandée."
 msgstr ""
+"В этом случае размещение ссылок на сайт вебинара Visio-ecoles/colleges/"
+"lycees/agents не требует предварительного согласия. Однако рекомендуется "
+"явно указывать сайт в названии ссылки."
 
 #: web/b3desk/templates/footer/mentions_legales.html:24
 msgid ""
@@ -2077,12 +2480,17 @@ msgid ""
 "ecoles/colleges/lycees/agents engagent leur responsabilité dès lors qu’ils "
 "porteraient atteinte à l’image du site public."
 msgstr ""
+"Сайты, размещающие ссылки на этот сайт вебинара Visio-ecoles/colleges/lycees/"
+"agents, несут ответственность, если такие ссылки наносят ущерб репутации "
+"государственного сайта."
 
 #: web/b3desk/templates/footer/mentions_legales.html:25
 msgid ""
 "Liens hypertextes proposés par ce site  de Webinaire, Visio-ecoles/colleges/"
 "lycees/agents :"
 msgstr ""
+"Гиперссылки, предлагаемые этим сайтом Webinaire, Visio-ecoles/colleges/"
+"lycees/agents:"
 
 #: web/b3desk/templates/footer/mentions_legales.html:26
 msgid ""
@@ -2093,16 +2501,24 @@ msgid ""
 "plus généralement, aux ressources numériques mises à disposition au plan "
 "interministériel."
 msgstr ""
+"Ссылки на каждый межведомственный сервис, представленный в каталоге этого "
+"сайта, размещаются для упрощения доступа, особенно для государственных "
+"служащих и работников государственного сектора в целом, к цифровым ресурсам, "
+"предоставляемым на межведомственном уровне. Их наличие возлагает на издателя "
+"и межведомственное управление SIC ответственность за содержание этих "
+"ресурсов."
 
 #: web/b3desk/templates/footer/mentions_legales.html:27
 msgid "Clause de responsabilité"
-msgstr ""
+msgstr "Оговорка об ответственности"
 
 #: web/b3desk/templates/footer/mentions_legales.html:28
 msgid ""
 "Les informations proposées sur ce site le sont à titre de service rendu aux "
 "agents du service public, notamment aux agents des services de l’État."
 msgstr ""
+"Информация на этом сайте предоставляется в качестве услуги государственным "
+"служащим, в частности сотрудникам государственных органов."
 
 #: web/b3desk/templates/footer/mentions_legales.html:29
 msgid ""
@@ -2110,6 +2526,8 @@ msgid ""
 "d’être modifiés à tout moment, et peuvent faire l’objet de mises à jour pour "
 "faciliter l’accès aux ressources numériques."
 msgstr ""
+"Информация и/или документы, доступные на этом сайте, могут быть изменены в "
+"любое время и обновляться для облегчения доступа к цифровым ресурсам."
 
 #: web/b3desk/templates/footer/mentions_legales.html:30
 msgid ""
@@ -2117,6 +2535,8 @@ msgid ""
 "responsabilité des porteurs de chaque service interministériel ainsi mis à "
 "disposition."
 msgstr ""
+"За информацию и/или документы, доступные через этот сайт, отвечают владельцы "
+"соответствующих межведомственных сервисов."
 
 #: web/b3desk/templates/footer/mentions_legales.html:31
 msgid ""
@@ -2124,10 +2544,13 @@ msgid ""
 "quelque nature qu’il soit résultant de la mauvaise utilisation des "
 "ressources accessibles à partir de ce site."
 msgstr ""
+"Издатель ни при каких обстоятельствах не несёт ответственности за ущерб "
+"любого характера, возникший в результате ненадлежащего использования "
+"ресурсов, доступных через этот сайт."
 
 #: web/b3desk/templates/footer/mentions_legales.html:32
 msgid "Droit à la compensation"
-msgstr ""
+msgstr "Право на компенсацию"
 
 #: web/b3desk/templates/footer/mentions_legales.html:33
 msgid ""
@@ -2138,6 +2561,12 @@ msgid ""
 "informations que vous souhaiteriez obtenir. Les informations demandées vous "
 "seront transmises dans les plus brefs délais."
 msgstr ""
+"До полного приведения одного из этих сервисов в соответствие требованиям "
+"доступности вы можете получить доступную версию документов или содержащейся "
+"в них информации, отправив письмо на контактный адрес, указанный на странице "
+"доступа к сервису. Укажите название нужного документа и/или информацию, "
+"которую хотите получить. Запрошенная информация будет предоставлена в "
+"кратчайшие сроки."
 
 #: web/b3desk/templates/footer/mentions_legales.html:35
 msgid ""
@@ -2145,11 +2574,14 @@ msgid ""
 "les problèmes éventuels que vous rencontrez. Pour ce faire, envoyez-nous un "
 "courriel à <strong>apps[chez]education.gouv.fr</strong>"
 msgstr ""
+"Вы можете помочь нам улучшить доступность сайта, сообщив о возможных "
+"проблемах. Для этого отправьте письмо на <strong>"
+"apps[собака]education.gouv.fr</strong>"
 
 #: web/b3desk/templates/meeting/delegation-management.html:3
 #, python-format
 msgid "Délégation de la réunion %(meeting_name)s"
-msgstr ""
+msgstr "Делегирование встречи %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/delegation-management.html:8
 #: web/b3desk/templates/meeting/files.html:42
@@ -2157,19 +2589,19 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:9
 #: web/b3desk/templates/meeting/recordings.html:210
 msgid "Retour à mes réunions"
-msgstr ""
+msgstr "Вернуться к моим встречам"
 
 #: web/b3desk/templates/meeting/delegation-management.html:11
 msgid " Ajouter des délégataires "
-msgstr ""
+msgstr " Добавить делегатов "
 
 #: web/b3desk/templates/meeting/delegation-management.html:16
 msgid "Ajouter l'utilisateur comme délégataire"
-msgstr ""
+msgstr "Добавить пользователя в качестве делегата"
 
 #: web/b3desk/templates/meeting/delegation-management.html:36
 msgid "Supprimer le délégataire"
-msgstr ""
+msgstr "Удалить делегата"
 
 #: web/b3desk/templates/meeting/end.html:5
 msgid ""
@@ -2178,6 +2610,9 @@ msgid ""
 "immédiate de ces nouveaux paramètres ? Les éventuels participants seront "
 "déconnectés."
 msgstr ""
+"Эта встреча проходит с использованием старых параметров.<br>\n"
+"            Хотите завершить её, чтобы новые параметры вступили в силу "
+"немедленно? Все участники будут отключены."
 
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:160
@@ -2186,89 +2621,94 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:145
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
-msgstr ""
+msgstr "Вы не являетесь владельцем «%(meeting_name)s»"
 
 #: web/b3desk/templates/meeting/end.html:13
 msgid "Mettre fin à la réunion en cours"
-msgstr ""
+msgstr "Завершить текущую встречу"
 
 #: web/b3desk/templates/meeting/end.html:14
 msgid "Patienter jusqu'à la fin de la réunion"
-msgstr ""
+msgstr "Дождаться окончания встречи"
 
 #: web/b3desk/templates/meeting/file_picker.html:27
 msgid "Service temporairement indisponible"
-msgstr ""
+msgstr "Сервис временно недоступен"
 
 #: web/b3desk/templates/meeting/file_picker.html:28
 msgid ""
 "Un problème technique empêche l'accès au service de fichiers. Veuillez "
 "réessayer dans quelques minutes."
 msgstr ""
+"Техническая проблема не позволяет получить доступ к файловому сервису. "
+"Повторите попытку через несколько минут."
 
 #: web/b3desk/templates/meeting/files.html:39
 #, python-format
 msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
-msgstr ""
+msgstr "Управление презентациями, связанными с <em>%(meeting_name)s</em>"
 
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/form.html:63
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
-msgstr ""
+msgstr "Невозможно сохранить данные: некоторые поля заполнены неправильно."
 
 #: web/b3desk/templates/meeting/files.html:87
 msgid "Ajouter"
-msgstr ""
+msgstr "Добавить"
 
 #: web/b3desk/templates/meeting/files.html:100
 msgid "Vous pouvez ajouter un fichier :"
-msgstr ""
+msgstr "Вы можете добавить файл:"
 
 #: web/b3desk/templates/meeting/files.html:103
 msgid "Nuage temporairement indisponible"
-msgstr ""
+msgstr "Облачное хранилище временно недоступно"
 
 #: web/b3desk/templates/meeting/files.html:104
 msgid ""
 "Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités "
 "sont momentanément désactivées. Veuillez réessayer dans quelques minutes."
 msgstr ""
+"Техническая проблема не позволяет получить доступ к облачному хранилищу. "
+"Некоторые функции временно отключены. Повторите попытку через несколько "
+"минут."
 
 #: web/b3desk/templates/meeting/files.html:111
 msgid "depuis une URL"
-msgstr ""
+msgstr "по URL"
 
 #: web/b3desk/templates/meeting/files.html:114
 msgid "nuage"
-msgstr ""
+msgstr "облачное хранилище"
 
 #: web/b3desk/templates/meeting/files.html:114
 msgid "depuis le Nuage"
-msgstr ""
+msgstr "из облачного хранилища"
 
 #: web/b3desk/templates/meeting/files.html:117
 msgid "téléversement"
-msgstr ""
+msgstr "загрузка"
 
 #: web/b3desk/templates/meeting/files.html:117
 msgid "par Téléversement"
-msgstr ""
+msgstr "с помощью загрузки"
 
 #: web/b3desk/templates/meeting/files.html:132
 msgid "Vos fichiers associés sont :"
-msgstr ""
+msgstr "Связанные с вами файлы:"
 
 #: web/b3desk/templates/meeting/files.html:136
 msgid "Téléchargeable"
-msgstr ""
+msgstr "Доступен для скачивания"
 
 #: web/b3desk/templates/meeting/files.html:137
 msgid "Titre"
-msgstr ""
+msgstr "Название"
 
 #: web/b3desk/templates/meeting/files.html:138
 msgid "Ajouté le"
-msgstr ""
+msgstr "Добавлен"
 
 #: web/b3desk/templates/meeting/files.html:139
 #: web/b3desk/templates/meeting/files.html:156
@@ -2277,17 +2717,17 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:106
 #: web/b3desk/templates/meeting/row.html:59
 msgid "Supprimer"
-msgstr ""
+msgstr "Удалить"
 
 #: web/b3desk/templates/meeting/files.html:140
 #: web/b3desk/templates/meeting/files.html:202
 msgid "Télécharger"
-msgstr ""
+msgstr "Скачать"
 
 #: web/b3desk/templates/meeting/files.html:158
 #, python-format
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
-msgstr ""
+msgstr "Вы действительно хотите удалить файл <em>%(file_title)s</em>?"
 
 #: web/b3desk/templates/meeting/files.html:171
 #: web/b3desk/templates/meeting/form.html:178
@@ -2297,103 +2737,105 @@ msgstr ""
 #: web/b3desk/templates/meeting/recordings.html:109
 #: web/b3desk/templates/meeting/recordings.html:153
 msgid "Annuler"
-msgstr ""
+msgstr "Отмена"
 
 #: web/b3desk/templates/meeting/files.html:213
 msgid ""
 "Aucun document de présentation n'est prévu pour cette réunion actuellement"
-msgstr ""
+msgstr "Для этой встречи пока не предусмотрено ни одной презентации"
 
 #: web/b3desk/templates/meeting/form.html:11
 #: web/b3desk/templates/meeting/form.html:13
 msgid "Activé"
-msgstr ""
+msgstr "Включено"
 
 #: web/b3desk/templates/meeting/form.html:11
 #: web/b3desk/templates/meeting/form.html:13
 msgid "Désactivé"
-msgstr ""
+msgstr "Отключено"
 
 #: web/b3desk/templates/meeting/form.html:58
 msgid "Créer une réunion"
-msgstr ""
+msgstr "Создать встречу"
 
 #: web/b3desk/templates/meeting/form.html:74
 msgid "Accueil des participants"
-msgstr ""
+msgstr "Приветствие участников"
 
 #: web/b3desk/templates/meeting/form.html:92
 msgid "Conseils pour la mise en forme"
-msgstr ""
+msgstr "Советы по форматированию"
 
 #: web/b3desk/templates/meeting/form.html:97
 #, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
-msgstr ""
+msgstr "%%CONFNAME%%: отображает название вашего зала"
 
 #: web/b3desk/templates/meeting/form.html:107
 msgid "Interactions"
-msgstr ""
+msgstr "Взаимодействие"
 
 #: web/b3desk/templates/meeting/form.html:112
 msgid ""
 "Tous ces paramètres sont modifiables directement depuis la salle de réunion "
 "à tout moment."
 msgstr ""
+"Все эти параметры можно изменить непосредственно из зала встречи в любое "
+"время."
 
 #: web/b3desk/templates/meeting/form.html:130
 msgid "Enregistrement"
-msgstr ""
+msgstr "Запись"
 
 #: web/b3desk/templates/meeting/form.html:135
 msgid ""
 "L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc et "
 "le tchat public."
-msgstr ""
+msgstr "Запись зала включает видео, аудио, доску и публичный чат."
 
 #: web/b3desk/templates/meeting/form.html:148
 msgid "Paramètres avancés"
-msgstr ""
+msgstr "Расширенные настройки"
 
 #: web/b3desk/templates/meeting/form.html:173
 msgid "Enregistrer"
-msgstr ""
+msgstr "Сохранить"
 
 #: web/b3desk/templates/meeting/form.html:175
 msgid "Créer la salle"
-msgstr ""
+msgstr "Создать зал"
 
 #: web/b3desk/templates/meeting/join.html:4
 msgid "Rejoindre la réunion"
-msgstr ""
+msgstr "Присоединиться к встрече"
 
 #: web/b3desk/templates/meeting/join.html:14
 msgid "Votre nom"
-msgstr ""
+msgstr "Ваше имя"
 
 #: web/b3desk/templates/meeting/join.html:15
 msgid "Vous pouvez également préciser votre service ou votre fonction."
-msgstr ""
+msgstr "Вы также можете указать подразделение или должность."
 
 #: web/b3desk/templates/meeting/join.html:23
 msgid "Informations facultatives"
-msgstr ""
+msgstr "Необязательная информация"
 
 #: web/b3desk/templates/meeting/join.html:24
 msgid "Si ce champ est rempli, il sera affiché dans BBB."
-msgstr ""
+msgstr "Если заполнить это поле, оно будет отображаться в BBB."
 
 #: web/b3desk/templates/meeting/join.html:28
 msgid "Le nom affiché sera «"
-msgstr ""
+msgstr "Отображаемое имя будет «"
 
 #: web/b3desk/templates/meeting/join.html:28
 msgid "»."
-msgstr ""
+msgstr "»."
 
 #: web/b3desk/templates/meeting/join.html:33
 msgid "Rejoindre"
-msgstr ""
+msgstr "Присоединиться"
 
 #: web/b3desk/templates/meeting/join.html:40
 msgid "Vous êtes propriétaire de cette salle ?"
@@ -2402,7 +2844,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/list.html:8
 #: web/b3desk/templates/meeting/list.html:30
 msgid "Créer une salle permanente"
-msgstr ""
+msgstr "Создать постоянный зал"
 
 #: web/b3desk/templates/meeting/list.html:18
 #, python-format
@@ -2410,12 +2852,16 @@ msgid ""
 "Vous avez atteint la limite des %(max_meetings_per_user)s réunions. Pour "
 "pouvoir en créer davantage, veuillez supprimer des réunions inactives."
 msgstr ""
+"Вы достигли лимита в %(max_meetings_per_user)s встреч. Чтобы создать новые "
+"встречи, удалите неактивные."
 
 #: web/b3desk/templates/meeting/list.html:28
 msgid ""
 "Vous n'avez pas encore créé de salle de réunion permanente. Vous pouvez "
 "créer votre salle permanente ou accéder à une salle temporaire plus bas."
 msgstr ""
+"Вы ещё не создали постоянный зал встреч. Вы можете создать постоянный зал "
+"или подключиться к временному залу ниже."
 
 #: web/b3desk/templates/meeting/list.html:33
 msgid ""
@@ -2425,73 +2871,83 @@ msgid ""
 "discussions privés et publiques, ou encore accéder aux enregistrements à la "
 "fin de votre réunion."
 msgstr ""
+"Создав постоянный зал встреч, вы можете создать постоянное хранилище "
+"документов, добавить зал ожидания, настроить состояние микрофонов и камер "
+"при подключении, включить или отключить личные и публичные чаты, а также "
+"получить доступ к записям после окончания встречи."
 
 #: web/b3desk/templates/meeting/list.html:38
 msgid "Trier par :"
-msgstr ""
+msgstr "Сортировать по:"
 
 #: web/b3desk/templates/meeting/list.html:45
 #: web/b3desk/templates/meeting/list.html:49
 msgid "Date"
-msgstr ""
+msgstr "Дате"
 
 #: web/b3desk/templates/meeting/list.html:57
 #: web/b3desk/templates/meeting/list.html:61
 msgid "Alphabétique"
-msgstr ""
+msgstr "Алфавиту"
 
 #: web/b3desk/templates/meeting/list.html:68
 msgid "Favoris"
-msgstr ""
+msgstr "Избранное"
 
 #: web/b3desk/templates/meeting/list.html:85
 msgid "Ajouter aux favoris"
-msgstr ""
+msgstr "Добавить в избранное"
 
 #: web/b3desk/templates/meeting/list.html:86
 #: web/b3desk/templates/meeting/list.html:90
 msgid "Label bouton"
-msgstr ""
+msgstr "Метка кнопки"
 
 #: web/b3desk/templates/meeting/list.html:89
 msgid "Retirer des favoris"
-msgstr ""
+msgstr "Удалить из избранного"
 
 #: web/b3desk/templates/meeting/recordings.html:7
 #, python-format
 msgid "Enregistrements de <em>%(meeting_name)s"
-msgstr ""
+msgstr "Записи встречи <em>%(meeting_name)s"
 
 #: web/b3desk/templates/meeting/recordings.html:14
 msgid "Cette réunion est toujours en cours"
-msgstr ""
+msgstr "Эта встреча всё ещё продолжается"
 
 #: web/b3desk/templates/meeting/recordings.html:15
 msgid ""
 "Si un enregistrement est en cours, il ne sera encodé qu'après la fin de la "
 "réunion"
 msgstr ""
+"Если запись выполняется, она будет закодирована только после окончания "
+"встречи"
 
 #: web/b3desk/templates/meeting/recordings.html:18
 msgid ""
 "Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre "
 "autant de temps que la durée de la réunion."
 msgstr ""
+"После окончания встречи кодирование записи может занять столько же времени, "
+"сколько длилась сама встреча."
 
 #: web/b3desk/templates/meeting/recordings.html:19
 msgid ""
 "Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de "
 "plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté."
 msgstr ""
+"Если ни один модератор не завершит встречу, после выхода всех пользователей "
+"может потребоваться ещё несколько минут."
 
 #: web/b3desk/templates/meeting/recordings.html:20
 #, python-format
 msgid "Les enregistrements sont conservés pour une période de %(duration)s."
-msgstr ""
+msgstr "Записи хранятся в течение %(duration)s."
 
 #: web/b3desk/templates/meeting/recordings.html:26
 msgid "Renommer l’enregistrement"
-msgstr ""
+msgstr "Переименовать запись"
 
 #: web/b3desk/templates/meeting/recordings.html:30
 #, python-format
@@ -2504,38 +2960,38 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:38
 msgid "Visuels"
-msgstr ""
+msgstr "Визуальные материалы"
 
 #: web/b3desk/templates/meeting/recordings.html:39
 msgid "Actions"
-msgstr ""
+msgstr "Действия"
 
 #: web/b3desk/templates/meeting/recordings.html:58
 msgid "Voir l'enregistrement"
-msgstr ""
+msgstr "Просмотреть запись"
 
 #: web/b3desk/templates/meeting/recordings.html:59
 #: web/b3desk/templates/meeting/recordings.html:194
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать ссылку на запись в буфер обмена"
 
 #: web/b3desk/templates/meeting/recordings.html:62
 msgid "Voir l'enregistrement mp4"
-msgstr ""
+msgstr "Просмотреть запись в формате MP4"
 
 #: web/b3desk/templates/meeting/recordings.html:64
 msgid "Partager l'enregistrement mp4"
-msgstr ""
+msgstr "Поделиться записью в формате MP4"
 
 #: web/b3desk/templates/meeting/recordings.html:69
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
-msgstr ""
+msgstr "Удалить видео встречи %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/recordings.html:94
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
-msgstr ""
+msgstr "Удалить «<em>%(recording_name)s</em>»?"
 
 #: web/b3desk/templates/meeting/recordings.html:96
 #, python-format
@@ -2543,19 +2999,21 @@ msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement <em>%(recording_name)s</em> "
 "de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
+"Вы действительно хотите удалить запись <em>%(recording_name)s</em> встречи "
+"<em>%(meeting_name)s</em>&nbsp;?"
 
 #: web/b3desk/templates/meeting/recordings.html:150
 msgid "Modifier le nom de l'enregistrement"
-msgstr ""
+msgstr "Изменить название записи"
 
 #: web/b3desk/templates/meeting/recordings.html:150
 msgid "Renommer"
-msgstr ""
+msgstr "Переименовать"
 
 #: web/b3desk/templates/meeting/recordings.html:178
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
-msgstr ""
+msgstr "Поделиться записью «<em>%(recording_name)s</em>»"
 
 #: web/b3desk/templates/meeting/recordings.html:181
 msgid ""
@@ -2563,51 +3021,55 @@ msgid ""
 "mettre à disposition de manière pérenne, fournissez ce lien à des services "
 "dédiés à la diffusion"
 msgstr ""
+"Эта запись временно хранится в данном сервисе. Чтобы сделать её доступной на "
+"постоянной основе, передайте эту ссылку специализированным сервисам "
+"распространения."
 
 #: web/b3desk/templates/meeting/recordings.html:188
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir l'autorisation "
 "des participants."
 msgstr ""
+"Перед публичным распространением обязательно получите разрешение участников."
 
 #: web/b3desk/templates/meeting/row.html:5
 #: web/b3desk/templates/meeting/row.html:35
 #, python-format
 msgid "Lancer %(meeting_name)s - nouvelle fenêtre"
-msgstr ""
+msgstr "Запустить %(meeting_name)s: новое окно"
 
 #: web/b3desk/templates/meeting/row.html:7
 msgid "Envoyer un courriel aux modérateurs"
-msgstr ""
+msgstr "Отправить письмо модераторам"
 
 #: web/b3desk/templates/meeting/row.html:9
 msgid "Copier le lien Modérateur dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать ссылку модератора в буфер обмена"
 
 #: web/b3desk/templates/meeting/row.html:13
 #, python-format
 msgid "Participer à %(meeting_name)s - nouvelle fenêtre"
-msgstr ""
+msgstr "Принять участие в %(meeting_name)s: новое окно"
 
 #: web/b3desk/templates/meeting/row.html:15
 msgid "Envoyer un courriel aux participants"
-msgstr ""
+msgstr "Отправить письмо участникам"
 
 #: web/b3desk/templates/meeting/row.html:17
 msgid "Copier le lien Participant dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать ссылку участника в буфер обмена"
 
 #: web/b3desk/templates/meeting/row.html:20
 #: web/b3desk/templates/meeting/row.html:54
 #, python-format
 msgid "Modifier %(meeting_name)s"
-msgstr ""
+msgstr "Изменить %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/row.html:22
 #: web/b3desk/templates/meeting/row.html:56
 #, python-format
 msgid "Fichiers associés à %(meeting_name)s"
-msgstr ""
+msgstr "Файлы, связанные с %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/row.html:26
 #: web/b3desk/templates/meeting/row.html:27
@@ -2615,36 +3077,36 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:60
 #, python-format
 msgid "Supprimer %(meeting_name)s"
-msgstr ""
+msgstr "Удалить %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/row.html:31
 msgid "Fermer la fenêtre modale"
-msgstr ""
+msgstr "Закрыть модальное окно"
 
 #: web/b3desk/templates/meeting/row.html:35
 msgid "Lancer"
-msgstr ""
+msgstr "Запустить"
 
 #: web/b3desk/templates/meeting/row.html:37
 msgid "Inviter"
-msgstr ""
+msgstr "Пригласить"
 
 #: web/b3desk/templates/meeting/row.html:40
 #, python-format
 msgid "Propriétaire : %(meeting_owner_name)s"
-msgstr ""
+msgstr "Владелец: %(meeting_owner_name)s"
 
 #: web/b3desk/templates/meeting/row.html:45
 #: web/b3desk/templates/meeting/row.html:46
 #, python-format
 msgid "Gérer les délégations de %(meeting_name)s"
-msgstr ""
+msgstr "Управлять делегированием %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/row.html:50
 #: web/b3desk/templates/meeting/row.html:51
 #, python-format
 msgid "Voir les enregistrements de %(meeting_name)s"
-msgstr ""
+msgstr "Просмотреть записи %(meeting_name)s"
 
 #: web/b3desk/templates/meeting/signin_links.html:3
 msgid "Code de connexion :"
@@ -2654,29 +3116,29 @@ msgstr ""
 #: web/b3desk/templates/meeting/visio_code_form.html:5
 #: web/b3desk/templates/meeting/visio_code_form.html:7
 msgid "Saisir le code de connexion de votre réunion"
-msgstr ""
+msgstr "Введите код подключения к встрече"
 
 #: web/b3desk/templates/meeting/visio_code_form.html:10
 msgid "Remplissez le code de connexion reçu dans l’invitation de la réunion."
-msgstr ""
+msgstr "Введите код подключения, полученный в приглашении на встречу."
 
 #: web/b3desk/templates/meeting/visio_code_form.html:29
 msgid "Recopier le code de sécurité de cette image"
-msgstr ""
+msgstr "Введите код безопасности с этого изображения"
 
 #: web/b3desk/templates/meeting/visio_code_form.html:31
 msgid "SAISIR LE CAPTCHA"
-msgstr ""
+msgstr "ВВЕДИТЕ CAPTCHA"
 
 #: web/b3desk/templates/meeting/visio_code_form.html:38
 #: web/b3desk/templates/meeting/visio_code_form.html:39
 msgid "Connexion"
-msgstr ""
+msgstr "Подключиться"
 
 #: web/b3desk/templates/meeting/wait.html:7
 #, python-format
 msgid "Bonjour %(fullname)s, vous pourrez bientôt entrer"
-msgstr ""
+msgstr "Здравствуйте, %(fullname)s, скоро вы сможете войти"
 
 #: web/b3desk/templates/meeting/wait.html:18
 msgid ""
@@ -2686,6 +3148,10 @@ msgid ""
 "opérationnelle.\n"
 "                    "
 msgstr ""
+"\n"
+"                        Зал видеоконференции создаётся. Вы автоматически "
+"войдёте в зал, как только он будет готов.\n"
+"                    "
 
 #: web/b3desk/templates/meeting/wait.html:22
 msgid ""
@@ -2694,6 +3160,10 @@ msgid ""
 "automatiquement dans la salle de visio-conférence dès qu’il sera présent.\n"
 "                    "
 msgstr ""
+"\n"
+"                        Организатор ещё не пришёл. Вы автоматически войдёте "
+"в зал видеоконференции, как только он подключится.\n"
+"                    "
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
@@ -2702,12 +3172,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
-msgstr ""
+msgstr "Здравствуйте"
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:5
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:3
 msgid "vous a nommé délégataire de la réunion"
-msgstr ""
+msgstr "назначил вас делегатом встречи"
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:8
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:5
@@ -2715,89 +3185,91 @@ msgid ""
 "Vous pouvez dès à présent consulter et gérer l'édition, les enregistrements "
 "et les fichiers associés à cette réunion."
 msgstr ""
+"Теперь вы можете просматривать и управлять настройками, записями и файлами, "
+"связанными с этой встречей."
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
 #, python-format
 msgid ""
 "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
-msgstr ""
+msgstr "Просто перейдите в <a href=\"%(welcome_url)s\">личный кабинет</a>."
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
 msgid "Rendez-vous simplement sur votre espace :"
-msgstr ""
+msgstr "Просто перейдите в личный кабинет:"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:5
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:3
 #, python-format
 msgid "L'enregistrement de la réunion %(meeting_name)s est disponible."
-msgstr ""
+msgstr "Запись встречи %(meeting_name)s доступна."
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:8
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:6
 msgid "Nom :"
-msgstr ""
+msgstr "Название:"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:10
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:8
 msgid "Date :"
-msgstr ""
+msgstr "Дата:"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:12
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:10
 msgid "Formats disponibles :"
-msgstr ""
+msgstr "Доступные форматы:"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
-msgstr ""
+msgstr "Вы также можете найти все свои записи в разделе"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
 msgid "votre espace"
-msgstr ""
+msgstr "личного кабинета"
 
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:14
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
-msgstr ""
+msgstr "Вы также можете найти все свои записи в личном кабинете:"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
 msgid "Modérateur"
-msgstr ""
+msgstr "Модератор"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:6
 msgid "Participant"
-msgstr ""
+msgstr "Участник"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:9
 msgid "À la réunion suivante :"
-msgstr ""
+msgstr "На следующую встречу:"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:13
 msgid "Le lien pour s'y inscrire est le suivant :"
-msgstr ""
+msgstr "Ссылка для подключения:"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:17
 msgid "Le mot de passe de cette réunion est :"
-msgstr ""
+msgstr "Пароль этой встречи:"
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:25
 msgid "Vous devez rentrer votre nom complet et le mot de passe pour y accéder."
-msgstr ""
+msgstr "Для доступа необходимо ввести полное имя и пароль."
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:27
 msgid "Bonne réunion."
-msgstr ""
+msgstr "Удачной встречи."
 
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:5
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:3
 msgid "vous a retiré des délégataires de la réunion"
-msgstr ""
+msgstr "удалил вас из списка делегатов встречи"
 
 #: web/b3desk/templates/meeting/mailto/mail_subject.txt:1
 msgid "Invitation à la réunion"
-msgstr ""
+msgstr "Приглашение на встречу"
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:16
 #, python-format
@@ -2805,122 +3277,127 @@ msgid ""
 "Voulez-vous vraiment effectuer ces modifications en tant que délégataire de "
 "\"%(meeting_name)s\" ?"
 msgstr ""
+"Вы действительно хотите внести эти изменения в качестве делегата «%"
+"(meeting_name)s»?"
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:20
 msgid "La confirmation est définitive."
-msgstr ""
+msgstr "Подтверждение является окончательным."
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:29
 msgid "Confirmer"
-msgstr ""
+msgstr "Подтвердить"
 
 #: web/b3desk/templates/meeting/modals/delete.html:15
 #, python-format
 msgid "Supprimer \"<em>%(meeting_name)s</em>\" ?"
-msgstr ""
+msgstr "Удалить «<em>%(meeting_name)s</em>»?"
 
 #: web/b3desk/templates/meeting/modals/delete.html:17
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer la réunion \"<em>%(meeting_name)s</em>\" ?"
-msgstr ""
+msgstr "Вы действительно хотите удалить встречу «<em>%(meeting_name)s</em>»?"
 
 #: web/b3desk/templates/meeting/modals/delete.html:22
 msgid "La suppression est définitive"
-msgstr ""
+msgstr "Удаление является окончательным"
 
 #: web/b3desk/templates/meeting/modals/delete.html:24
 msgid ""
 "Si vous supprimez cette salle, tous les médias (documents importés et "
 "enregistrements) qui lui sont rattachés seront supprimés."
 msgstr ""
+"Если вы удалите этот зал, все связанные с ним материалы, включая "
+"импортированные документы и записи, будут удалены."
 
 #: web/b3desk/templates/meeting/modals/delete.html:31
 msgid "La réunion a des délégataires"
-msgstr ""
+msgstr "У встречи есть делегаты"
 
 #: web/b3desk/templates/meeting/modals/delete.html:33
 #, python-format
 msgid "Vous ne pouvez supprimer %(meeting_name)s pour le moment."
-msgstr ""
+msgstr "Сейчас вы не можете удалить %(meeting_name)s."
 
 #: web/b3desk/templates/meeting/modals/delete.html:34
 msgid "Vous devez retirer tous les délégataires au préalable."
-msgstr ""
+msgstr "Сначала необходимо удалить всех делегатов."
 
 #: web/b3desk/templates/meeting/modals/delete.html:45
 #: web/b3desk/templates/meeting/modals/delete.html:49
 msgid "Supprimer la réunion"
-msgstr ""
+msgstr "Удалить встречу"
 
 #: web/b3desk/templates/meeting/modals/invite.html:15
 msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
 msgstr ""
+"Пригласите участников на встречу, отправив им один из следующих вариантов:"
 
 #: web/b3desk/templates/meeting/modals/invite.html:17
 msgid "Avec droits modérateurs :"
-msgstr ""
+msgstr "С правами модератора:"
 
 #: web/b3desk/templates/meeting/modals/invite.html:22
 msgid "Le code de connexion"
-msgstr ""
+msgstr "Код подключения"
 
 #: web/b3desk/templates/meeting/modals/invite.html:24
 msgid "NOUVEAU"
-msgstr ""
+msgstr "НОВЫЙ"
 
 #: web/b3desk/templates/meeting/modals/invite.html:28
 msgid "Copier le code de connexion dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать код подключения в буфер обмена"
 
 #: web/b3desk/templates/meeting/modals/invite.html:37
 msgid "Le lien modérateur"
-msgstr ""
+msgstr "Ссылка модератора"
 
 #: web/b3desk/templates/meeting/modals/invite.html:44
 msgid "Copier le lien modérateur dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать ссылку модератора в буфер обмена"
 
 #: web/b3desk/templates/meeting/modals/invite.html:54
 msgid "Le lien SIP"
-msgstr ""
+msgstr "SIP-ссылка"
 
 #: web/b3desk/templates/meeting/modals/invite.html:57
 msgid "Lien requis pour l'utilisation d'équipements SIP."
-msgstr ""
+msgstr "Ссылка необходима для использования SIP-оборудования."
 
 #: web/b3desk/templates/meeting/modals/invite.html:62
 msgid "Copier le lien SIP dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать SIP-ссылку в буфер обмена"
 
 #: web/b3desk/templates/meeting/modals/invite.html:69
 msgid "Avec droits restreints :"
-msgstr ""
+msgstr "С ограниченными правами:"
 
 #: web/b3desk/templates/meeting/modals/invite.html:74
 msgid "Le lien participant"
-msgstr ""
+msgstr "Ссылка участника"
 
 #: web/b3desk/templates/meeting/modals/invite.html:81
 msgid "Copier le lien participant dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать ссылку участника в буфер обмена"
 
 #: web/b3desk/templates/meeting/modals/invite.html:90
 msgid "Le lien authentifié"
-msgstr ""
+msgstr "Аутентифицированная ссылка"
 
 #: web/b3desk/templates/meeting/modals/invite.html:90
 #, python-format
 msgid "via %(service_name)s"
-msgstr ""
+msgstr "через %(service_name)s"
 
 #: web/b3desk/templates/meeting/modals/invite.html:97
 msgid "Copier le lien participant authentifié dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать аутентифицированную ссылку участника в буфер обмена"
 
 #: web/b3desk/templates/meeting/modals/invite.html:107
 msgid "Connexion par téléphone"
-msgstr ""
+msgstr "Подключение по телефону"
 
 #: web/b3desk/templates/meeting/modals/invite.html:110
 #, python-format
@@ -2931,23 +3408,25 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/modals/invite.html:115
 msgid "Copier les informations dans le presse-papiers"
-msgstr ""
+msgstr "Скопировать информацию в буфер обмена"
 
 #: web/b3desk/utils/__init__.py:100
 msgid "Présentation interactive"
-msgstr ""
+msgstr "Интерактивная презентация"
 
 #: web/b3desk/utils/__init__.py:108
 msgid "Vidéo (téléchargement direct)"
-msgstr ""
+msgstr "Видео (прямая загрузка)"
 
 #: web/b3desk/utils/__init__.py:142
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
-msgstr ""
+msgstr "Ваша запись: {name}"
 
 #: web/b3desk/utils/__init__.py:264
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
+"В настройках B3Desk не настроен закрытый ключ для защиты подключения "
+"SIPMediaGW"
