@@ -157,6 +157,8 @@ class Meeting(db.Model):
 
     _bbb = None
 
+    quick = False
+
     @property
     def bbb(self):
         """Return the BBB API interface for this meeting."""
@@ -173,32 +175,8 @@ class Meeting(db.Model):
 
     @property
     def meetingID(self):
-        """Return the unique BBB meeting identifier."""
-        if self.id is not None:
-            fid = f"meeting-persistent-{self.id}"
-        else:
-            fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
-
-    @property
-    def fake_id(self):
-        """Return the meeting ID or temporary fake ID for quick meetings."""
-        if self.id is not None:
-            return self.id
-        try:
-            return self._fake_id
-        except:
-            return None
-
-    @fake_id.setter
-    def fake_id(self, fake_value):
-        """Set the temporary fake ID for quick meetings."""
-        self._fake_id = fake_value
-
-    @fake_id.deleter
-    def fake_id(self):
-        """Delete the temporary fake ID."""
-        del self._fake_id
+        """Return the BBB-facing identifier for this persisted meeting."""
+        return self.bbb_meeting_id or self.id
 
     @property
     def get_all_delegates(self):
@@ -210,17 +188,6 @@ class Meeting(db.Model):
             )
             .all()
         )
-
-
-def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
-    """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
-    try:
-        id = bbb_meeting_id.split("-")[2]
-    except (IndexError, AttributeError):
-        return None
-    if not id.isdigit():
-        return None
-    return get_meeting_from_meeting_id(id)
 
 
 class PreviousVoiceBridge(db.Model):
@@ -244,33 +211,41 @@ def delete_old_voiceBridges():
     ).delete()
 
 
-def get_deterministic_password(meeting_fake_id, role):
+def get_deterministic_password(meeting_id, role):
     """Generate a deterministic password based on meeting ID and role."""
     signer = Signer(current_app.config["SECRET_KEY"])
     return (
-        signer.sign(f"{meeting_fake_id}-{role}")
+        signer.sign(f"{meeting_id}-{role}")
         .decode()
         .split(".")[-1][:PASSWORD_HASH_LENGTH]
     )
 
 
-def get_quick_meeting_from_fake_id(meeting_fake_id=None):
-    """Create a quick meeting instance for URL generation."""
-    if meeting_fake_id is None:
-        meeting_fake_id = get_random_alphanumeric_string(8)
-
+def get_quick_meeting_from_meeting_id(meeting_id=None):
+    """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
+    meeting_id = meeting_id or str(uuid.uuid4())
     meeting = Meeting(
-        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
+        id=meeting_id, attendeePW=get_deterministic_password(meeting_id, "attendee")
     )
-    meeting.fake_id = meeting_fake_id
+    meeting.quick = True
     return meeting
 
 
-def get_meeting_from_meeting_id(meeting_fake_id):
-    """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
-    if meeting_fake_id.isdigit():
-        return db.session.get(Meeting, meeting_fake_id)
-    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
+def get_meeting_from_meeting_id(meeting_id):
+    """Retrieve a persisted meeting by id, or build a quick (non-persisted) one if none exists."""
+    return db.session.get(Meeting, meeting_id) or get_quick_meeting_from_meeting_id(
+        meeting_id
+    )
+
+
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
+    """Retrieve a persisted Meeting from a BBB-side identifier (new UUID or legacy 'meeting-persistent-...' form)."""
+    return (
+        db.session.get(Meeting, bbb_meeting_id)
+        or db.session.query(Meeting)
+        .filter_by(bbb_meeting_id=bbb_meeting_id)
+        .one_or_none()
+    )
 
 
 def generate_random_pin():

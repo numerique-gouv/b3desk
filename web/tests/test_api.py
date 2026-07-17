@@ -1,5 +1,9 @@
 import datetime
 
+from b3desk.join import get_signin_url
+from b3desk.models.meetings import Meeting
+from b3desk.models.roles import Role
+
 
 def test_api_meetings_nominal(
     client_app,
@@ -11,6 +15,9 @@ def test_api_meetings_nominal(
     iam_token,
 ):
     """Test that API returns meetings list with correct format."""
+    attendee_url = get_signin_url(meeting, Role.attendee)
+    moderator_url = get_signin_url(meeting, Role.moderator)
+
     res = client_app.get(
         "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
     )
@@ -19,8 +26,8 @@ def test_api_meetings_nominal(
     assert res.json["meetings"][2]["name"] == "meeting"
     assert res.json["meetings"][0] == {
         "PIN": "111111111",
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": attendee_url,
+        "moderator_url": moderator_url,
         "name": "meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "911111111",
@@ -35,8 +42,8 @@ def test_api_meetings_nominal(
     )
 
     assert res.json["meetings"][0] == {
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": attendee_url,
+        "moderator_url": moderator_url,
         "name": "meeting",
         "visio_code": "911111111",
         "SIPMediaGW_url": "911111111@sip.test",
@@ -50,8 +57,8 @@ def test_api_meetings_nominal(
     )
 
     assert res.json["meetings"][0] == {
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/9120d7b37d540816e62bea4703bf0376b69297c5",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/09aa80a2801e126893b2ce209df71cb7281561eb",
+        "attendee_url": attendee_url,
+        "moderator_url": moderator_url,
         "name": "meeting",
         "visio_code": "911111111",
         "delegate": False,
@@ -163,8 +170,8 @@ def test_api_existing_shadow_meeting(
     assert res.json["shadow-meeting"][0] == {
         "PIN": "555555551",
         "SIPMediaGW_url": "511111111@sip.test",
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "attendee_url": get_signin_url(shadow_meeting, Role.attendee),
+        "moderator_url": get_signin_url(shadow_meeting, Role.moderator),
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -189,8 +196,8 @@ def test_api_existing_shadow_meeting_without_pin(
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
         "SIPMediaGW_url": "511111111@sip.test",
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "attendee_url": get_signin_url(shadow_meeting, Role.attendee),
+        "moderator_url": get_signin_url(shadow_meeting, Role.moderator),
         "name": "shadow meeting",
         "visio_code": "511111111",
     }
@@ -214,8 +221,8 @@ def test_api_existing_shadow_meeting_without_sip(
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
         "PIN": "555555551",
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "attendee_url": get_signin_url(shadow_meeting, Role.attendee),
+        "moderator_url": get_signin_url(shadow_meeting, Role.moderator),
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -240,8 +247,8 @@ def test_api_existing_shadow_meeting_without_pin_and_sip(
     )
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
-        "attendee_url": "http://b3desk.test/meeting/signin/invite/1/hash/b45d93a952b6cb17eaa0f43414f4d449dc81676a",
-        "moderator_url": "http://b3desk.test/meeting/signin/moderateur/1/hash/34dba08505b7ff48446ab9ca59a73e17d295c09f",
+        "attendee_url": get_signin_url(shadow_meeting, Role.attendee),
+        "moderator_url": get_signin_url(shadow_meeting, Role.moderator),
         "name": "shadow meeting",
         "visio_code": "511111111",
     }
@@ -260,12 +267,13 @@ def test_api_new_shadow_meeting(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
     assert (
-        "/meeting/signin/moderateur/2/hash/"
+        f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
     )
     assert (
-        "/meeting/signin/invite/2/hash/"
+        f"/meeting/signin/invite/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
@@ -290,12 +298,13 @@ def test_api_new_shadow_meeting_without_pin(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
     assert (
-        "/meeting/signin/moderateur/2/hash/"
+        f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
     )
     assert (
-        "/meeting/signin/invite/2/hash/"
+        f"/meeting/signin/invite/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
@@ -320,12 +329,13 @@ def test_api_new_shadow_meeting_without_sip(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
     assert (
-        "/meeting/signin/moderateur/2/hash/"
+        f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
     )
     assert (
-        "/meeting/signin/invite/2/hash/"
+        f"/meeting/signin/invite/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]
@@ -351,12 +361,13 @@ def test_api_new_shadow_meeting_without_pin_and_sip(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
+    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
     assert (
-        "/meeting/signin/moderateur/2/hash/"
+        f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
     )
     assert (
-        "/meeting/signin/invite/2/hash/"
+        f"/meeting/signin/invite/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["attendee_url"]
     )
     assert res.json["shadow-meeting"][0]["visio_code"]

@@ -34,7 +34,7 @@ from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import assign_unique_visio_code
-from b3desk.models.meetings import get_quick_meeting_from_fake_id
+from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
@@ -65,8 +65,8 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 @auth.oidc_auth("default")
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
-    meeting = get_quick_meeting_from_fake_id()
-    created = create_bbb_quick_meeting(meeting.fake_id, g.user)
+    meeting = get_quick_meeting_from_meeting_id()
+    created = create_bbb_quick_meeting(meeting.id, g.user)
     return redirect(
         get_join_url(
             meeting,

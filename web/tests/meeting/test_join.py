@@ -70,7 +70,7 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
         url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
     )
 
-    assert response.location == "/meeting/join/1/authenticated"
+    assert response.location == f"/meeting/join/{meeting.id}/authenticated"
 
 
 def test_auth_attendee_disabled(client_app, meeting):
@@ -95,7 +95,7 @@ def test_join_meeting_as_authenticated_attendee(
     url = f"/meeting/join/{meeting.id}/authenticated"
     response = client_app.get(url, status=302)
 
-    assert "/meeting/wait/1/hash/" in response.location
+    assert f"/meeting/wait/{meeting.id}/hash/" in response.location
     assert "Bob%20Dylan" in response.location
 
     response = response.follow()
@@ -123,7 +123,7 @@ def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     url = f"/meeting/join/{meeting.id}/authenticated"
     response = client_app.get(url, status=302)
 
-    assert "/meeting/wait/1/hash/" in response.location
+    assert f"/meeting/wait/{meeting.id}/hash/" in response.location
     assert "John%20Lennon" in response.location
 
     response = response.follow()
@@ -212,13 +212,13 @@ def test_join_meeting_as_role_with_no_user(
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting):
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
-    meeting_fake_id = meeting.fake_id
+    meeting_id = meeting.id
     hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
@@ -230,13 +230,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     """Test that empty fullname suffix is handled correctly."""
-    meeting_fake_id = meeting.fake_id
+    meeting_id = meeting.id
     hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         fullname=fullname,
         fullname_suffix="",

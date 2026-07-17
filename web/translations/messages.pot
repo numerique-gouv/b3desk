@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:352
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:327
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -347,21 +347,21 @@ msgstr ""
 msgid "Aucune réunion ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:147
-#: web/b3desk/endpoints/join.py:152 web/b3desk/endpoints/join.py:209
-#: web/b3desk/endpoints/join.py:217
+#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:145
+#: web/b3desk/endpoints/join.py:150 web/b3desk/endpoints/join.py:207
+#: web/b3desk/endpoints/join.py:215
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:184
+#: web/b3desk/endpoints/join.py:182
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:320
+#: web/b3desk/endpoints/join.py:316
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:325
+#: web/b3desk/endpoints/join.py:321
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
@@ -504,16 +504,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:331 web/b3desk/models/meetings.py:338
+#: web/b3desk/models/meetings.py:306 web/b3desk/models/meetings.py:313
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:345
+#: web/b3desk/models/meetings.py:320
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:347
+#: web/b3desk/models/meetings.py:322
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""

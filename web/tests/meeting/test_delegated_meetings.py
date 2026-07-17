@@ -79,7 +79,7 @@ def test_delegate_can_launch_delegated_meeting(
         f"/meeting/join/{meeting_1_user_2.id}/moderateur", status=302
     )
     assert (
-        "https://bbb.test/join?fullName=Alice+Cooper&meetingID=meeting-persistent-1"
+        f"https://bbb.test/join?fullName=Alice+Cooper&meetingID={meeting_1_user_2.id}"
         in response.location
     )
 

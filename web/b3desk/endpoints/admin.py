@@ -46,7 +46,7 @@ def get_meetings_paginate(per_page, data):
     if data:
         query = query.where(
             or_(
-                Meeting.id == int(data) if data.isdigit() else None,
+                Meeting.id == data,
                 Meeting.name.ilike(f"%{data}%"),
                 Meeting.visio_code == data,
             )
