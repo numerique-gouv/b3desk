@@ -1383,3 +1383,19 @@ def test_create_meeting_ai_summary_requires_recording(
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
     )
+
+
+def test_join_quick_meeting(
+    client_app,
+    authenticated_user,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    res = client_app.get("/meeting/quick", status=302)
+    assert "https://bbb.test/join?fullName=Alice+Cooper&meetingID=" in res.location
+    assert (
+        "creation result: {'returncode': 'SUCCESS', 'running': 'true', 'voiceBridge': '111111111', 'attendeePW': 'attendee', 'moderatorPW': 'moderator'}"
+        in caplog.text
+    )
