@@ -72,7 +72,6 @@ def quick_meeting():
             meeting,
             Role.moderator,
             g.user.fullname,
-            quick_meeting=True,
             waiting_room=not created,
         )
     )

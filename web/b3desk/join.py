@@ -51,7 +51,6 @@ def get_join_url(
     meeting_role: Role,
     fullname,
     fullname_suffix="",
-    quick_meeting=False,
     seconds_before_refresh=None,
     waiting_room=True,
 ):
@@ -66,10 +65,9 @@ def get_join_url(
             fullname=fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
         )
 
-    if meeting.id:
+    if not meeting.quick:
         meeting.last_connection_utc_datetime = datetime.now()
         db.session.add(meeting)
         db.session.commit()

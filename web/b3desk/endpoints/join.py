@@ -153,7 +153,6 @@ def waiting_meeting(
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", int(INITIAL_REFRESH_DELAY.total_seconds())
     )
-    quick_meeting = request.args.get("quick_meeting", False)
     current_app.logger.info(
         "%s is not running, new connection attempt in %s seconds",
         meeting.name,
@@ -167,7 +166,6 @@ def waiting_meeting(
         fullname=fullname,
         fullname_suffix=fullname_suffix,
         seconds_before_refresh=seconds_before_refresh,
-        quick_meeting=quick_meeting,
     )
 
 
@@ -199,9 +197,6 @@ def join_meeting():
         if seconds_before_refresh == 0
         else seconds_before_refresh
     )
-    quick_meeting = None
-    if "quick_meeting" in form:
-        quick_meeting = form["quick_meeting"].data
     meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
@@ -231,7 +226,6 @@ def join_meeting():
             fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
             waiting_room=waiting_room,
         )
     )

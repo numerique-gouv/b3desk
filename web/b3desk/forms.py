@@ -33,7 +33,6 @@ class JoinMeetingForm(FlaskForm):
     hash_ = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
-    quick_meeting = BooleanField()
 
 
 class ShowMeetingForm(Form):
