@@ -22,6 +22,7 @@ from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_file_hash
+from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
@@ -703,6 +704,23 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     )
 
 
+def test_create_and_join_quick_meeting(
+    client_app,
+    authenticated_user,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    """Test user can create and join a quick meeting."""
+    res = client_app.get("/meeting/quick", status=302)
+    assert "https://bbb.test/join?fullName=Alice+Cooper&meetingID=" in res.location
+    assert (
+        "creation result: {'returncode': 'SUCCESS', 'running': 'true', 'voiceBridge': '111111111', 'attendeePW': 'attendee', 'moderatorPW': 'moderator'}"
+        in caplog.text
+    )
+
+
 def test_create_quick_meeting(
     client_app, monkeypatch, user, mocker, bbb_response, mock_meeting_is_not_running
 ):
@@ -748,6 +766,23 @@ def test_create_quick_meeting(
         "presentationUploadExternalUrl": mock.ANY,
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
+
+
+def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
+    """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    moderator_hash = get_hash(quick_meeting, Role.moderator)
+
+    response = client_app.get(
+        f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
+    )
+    response.form["fullname"] = "Alice"
+    response = response.form.submit()
+
+    assert bbb_response.called
+    assert (
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join" in response.location
+    )
 
 
 def test_edit_files_meeting(client_app, authenticated_user, meeting, bbb_response):
@@ -1382,20 +1417,4 @@ def test_create_meeting_ai_summary_requires_recording(
     res = res.forms[0].submit()
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
-    )
-
-
-def test_join_quick_meeting(
-    client_app,
-    authenticated_user,
-    mocker,
-    bbb_response,
-    mock_meeting_is_not_running,
-    caplog,
-):
-    res = client_app.get("/meeting/quick", status=302)
-    assert "https://bbb.test/join?fullName=Alice+Cooper&meetingID=" in res.location
-    assert (
-        "creation result: {'returncode': 'SUCCESS', 'running': 'true', 'voiceBridge': '111111111', 'attendeePW': 'attendee', 'moderatorPW': 'moderator'}"
-        in caplog.text
     )
