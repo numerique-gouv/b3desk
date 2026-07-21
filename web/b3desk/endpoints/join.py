@@ -87,6 +87,7 @@ def signin_meeting(
         meeting_id=meeting_id,
         hash_=hash_,
         role=role,
+        meeting_name=meeting.name,
     )
 
 
@@ -166,6 +167,7 @@ def waiting_meeting(
         fullname=fullname,
         fullname_suffix=fullname_suffix,
         seconds_before_refresh=seconds_before_refresh,
+        meeting_name=meeting.name,
     )
 
 

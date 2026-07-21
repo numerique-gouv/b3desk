@@ -347,21 +347,21 @@ msgstr ""
 msgid "Aucune réunion ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:145
-#: web/b3desk/endpoints/join.py:150 web/b3desk/endpoints/join.py:202
-#: web/b3desk/endpoints/join.py:210
+#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:146
+#: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:204
+#: web/b3desk/endpoints/join.py:212
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:180
+#: web/b3desk/endpoints/join.py:182
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:310
+#: web/b3desk/endpoints/join.py:312
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:315
+#: web/b3desk/endpoints/join.py:317
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
@@ -905,7 +905,7 @@ msgstr ""
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:42 web/b3desk/templates/tools.html:52
+#: web/b3desk/templates/meeting/join.html:46 web/b3desk/templates/tools.html:52
 msgid "S’identifier"
 msgstr ""
 
@@ -2693,39 +2693,44 @@ msgstr ""
 msgid "Créer la salle"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:4
+#: web/b3desk/templates/meeting/join.html:5
+#, python-format
+msgid "Rejoindre la réunion <em>%(meeting_name)s</em>"
+msgstr ""
+
+#: web/b3desk/templates/meeting/join.html:7
 msgid "Rejoindre la réunion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:14
+#: web/b3desk/templates/meeting/join.html:18
 msgid "Votre nom"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:15
+#: web/b3desk/templates/meeting/join.html:19
 msgid "Vous pouvez également préciser votre service ou votre fonction."
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:23
+#: web/b3desk/templates/meeting/join.html:27
 msgid "Informations facultatives"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:24
+#: web/b3desk/templates/meeting/join.html:28
 msgid "Si ce champ est rempli, il sera affiché dans BBB."
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:28
+#: web/b3desk/templates/meeting/join.html:32
 msgid "Le nom affiché sera «"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:28
+#: web/b3desk/templates/meeting/join.html:32
 msgid "»."
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:33
+#: web/b3desk/templates/meeting/join.html:37
 msgid "Rejoindre"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:40
+#: web/b3desk/templates/meeting/join.html:44
 msgid "Vous êtes propriétaire de cette salle ?"
 msgstr ""
 
@@ -3040,10 +3045,15 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/wait.html:7
 #, python-format
+msgid "Réunion <em>%(meeting_name)s</em>"
+msgstr ""
+
+#: web/b3desk/templates/meeting/wait.html:10
+#, python-format
 msgid "Bonjour %(fullname)s, vous pourrez bientôt entrer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/wait.html:18
+#: web/b3desk/templates/meeting/wait.html:21
 msgid ""
 "\n"
 "                        La salle de visio-conférence est en cours de "
@@ -3052,7 +3062,7 @@ msgid ""
 "                    "
 msgstr ""
 
-#: web/b3desk/templates/meeting/wait.html:22
+#: web/b3desk/templates/meeting/wait.html:25
 msgid ""
 "\n"
 "                        Votre hôte n’est pas encore arrivé. Vous entrerez"
