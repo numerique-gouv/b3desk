@@ -129,6 +129,7 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
+    used_at = db.Column(db.DateTime)
 
     meeting = db.relationship("Meeting", back_populates="urls")
 
@@ -244,6 +245,14 @@ class Meeting(db.Model):
                     url=create_signin_url(self, role),
                 )
             )
+
+    def update_used_at_url(self, role):
+        meeting_url = MeetingUrls.query.filter(
+            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
+        ).one_or_none()
+        if meeting_url:
+            meeting_url.used_at = datetime.now()
+            db.session.commit()
 
 
 class PreviousVoiceBridge(db.Model):
