@@ -27,6 +27,7 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
+from .roles import Role
 from .users import User
 
 
@@ -108,6 +109,30 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
         )
 
 
+class BaseMeetingUrls:
+    def __init__(self, id=None, meeting_id=None, url=None, role=None, **kwargs):
+        self.id = id
+        self.meeting_id = meeting_id
+        self.url = url
+        self.role = role
+        super().__init__(**kwargs)
+
+
+class MeetingUrls(BaseMeetingUrls, db.Model):
+    __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
+    url = db.Column(db.String(4096))
+    role = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
+
+    meeting = db.relationship("Meeting", back_populates="urls")
+
+
 class Meeting(db.Model):
     id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid.uuid4()))
     # Legacy BBB meeting identifier ("meeting-persistent-{old_id}--{owner_hash}"),
@@ -121,6 +146,7 @@ class Meeting(db.Model):
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
     files = db.relationship("MeetingFiles", back_populates="meeting")
+    urls = db.relationship("MeetingUrls", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -188,6 +214,36 @@ class Meeting(db.Model):
             )
             .all()
         )
+
+    def url_for_role(self, role):
+        meeting_url = MeetingUrls.query.filter(
+            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
+        ).one_or_none()
+        return meeting_url.url if meeting_url else None
+
+    @property
+    def moderator_url(self):
+        return self.url_for_role(Role.moderator)
+
+    @property
+    def attendee_url(self):
+        return self.url_for_role(Role.attendee)
+
+    @property
+    def authenticated_url(self):
+        return self.url_for_role(Role.authenticated)
+
+    def create_urls(self):
+        from b3desk.join import create_signin_url
+
+        for role in Role:
+            db.session.add(
+                MeetingUrls(
+                    meeting_id=self.id,
+                    role=role.name,
+                    url=create_signin_url(self, role),
+                )
+            )
 
 
 class PreviousVoiceBridge(db.Model):
@@ -346,6 +402,7 @@ def create_and_save_shadow_meeting(user):
     )
     db.session.add(meeting)
     assign_unique_codes(meeting)
+    meeting.create_urls()
     db.session.commit()
     return meeting
 
@@ -372,6 +429,8 @@ def get_or_create_shadow_meeting(user):
 
 def save_voiceBridge_and_delete_meeting(meeting):
     """Archive a meeting's voice bridge and delete the meeting from the database."""
+    for meeting_url in meeting.urls:
+        db.session.delete(meeting_url)
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)

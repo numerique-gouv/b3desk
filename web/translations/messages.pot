@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:327
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:383
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -304,42 +304,42 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:172
+#: web/b3desk/endpoints/admin.py:167
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:187
+#: web/b3desk/endpoints/admin.py:182
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:231 web/b3desk/endpoints/meetings.py:150
+#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:149
 #: web/b3desk/endpoints/meetings.py:210
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:254
+#: web/b3desk/endpoints/admin.py:249
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:285
+#: web/b3desk/endpoints/admin.py:280
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:289
+#: web/b3desk/endpoints/admin.py:284
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:315
+#: web/b3desk/endpoints/admin.py:310
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:344
+#: web/b3desk/endpoints/admin.py:339
 msgid "L'utilisateur est déjà dans le groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:348
+#: web/b3desk/endpoints/admin.py:343
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
@@ -422,16 +422,16 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:112
+#: web/b3desk/endpoints/meetings.py:111
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:115
+#: web/b3desk/endpoints/meetings.py:114
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:131
+#: web/b3desk/endpoints/meetings.py:130
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
@@ -504,16 +504,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:306 web/b3desk/models/meetings.py:313
+#: web/b3desk/models/meetings.py:362 web/b3desk/models/meetings.py:369
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:320
+#: web/b3desk/models/meetings.py:376
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:322
+#: web/b3desk/models/meetings.py:378
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""

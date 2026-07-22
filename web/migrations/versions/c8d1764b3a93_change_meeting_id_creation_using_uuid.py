@@ -14,10 +14,13 @@ import hashlib
 
 import sqlalchemy as sa
 from alembic import op
+from b3desk.join import create_signin_url
+from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingUrls
+from b3desk.models.roles import Role
 from b3desk.utils import secret_key
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
-from sqlalchemy.sql import update
+from sqlalchemy.orm import joinedload
 
 # revision identifiers, used by Alembic.
 revision = "c8d1764b3a93"
@@ -108,30 +111,41 @@ def upgrade():
     if is_postgresql:
         _create_meeting_id_fks()
 
+    op.create_table(
+        "meeting_urls",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("meeting_id", sa.String(length=255), nullable=False),
+        sa.Column("url", sa.String(length=4096), nullable=True),
+        sa.Column("role", sa.String(length=255), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(["meeting_id"], ["meeting.id"]),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("meeting_id", "role"),
+    )
+
     bind = op.get_bind()
     session = Session(bind)
-    meeting = sa.table(
-        "meeting",
-        sa.column("id", sa.Integer),
-        sa.column("owner_id", sa.Integer),
-        sa.column("bbb_meeting_id", sa.String),
-    )
-    user = sa.table("user", sa.column("id", sa.Integer), sa.column("email", sa.Unicode))
 
-    for id, owner_id in session.execute(select(meeting.c.id, meeting.c.owner_id)):
-        owner_email = session.execute(
-            select(user.c.email).where(user.c.id == owner_id)
-        ).scalar()
-        session.execute(
-            update(meeting)
-            .where(meeting.c.id == id)
-            .values(bbb_meeting_id=bbb_meeting_id_creation(id, owner_email))
+    for meeting in session.query(Meeting).options(joinedload(Meeting.owner)):
+        meeting.bbb_meeting_id = bbb_meeting_id_creation(
+            meeting.id, meeting.owner.email
         )
+        for role in Role:
+            session.add(
+                MeetingUrls(
+                    meeting_id=meeting.id,
+                    role=role.name,
+                    url=create_signin_url(meeting, role),
+                )
+            )
     session.commit()
 
 
 def downgrade():
     is_postgresql = op.get_bind().dialect.name == "postgresql"
+
+    op.drop_table("meeting_urls")
 
     if is_postgresql:
         _drop_meeting_id_fks()

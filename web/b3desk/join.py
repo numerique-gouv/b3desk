@@ -78,7 +78,7 @@ def get_join_url(
     )
 
 
-def get_signin_url(meeting, meeting_role: Role):
+def create_signin_url(meeting, meeting_role: Role):
     """Generate the sign-in URL for a specific role."""
     return url_for(
         "join.signin_meeting",
@@ -111,11 +111,11 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
         ],
-        moderator_signin_url=get_signin_url(meeting, Role.moderator),
+        moderator_signin_url=meeting.moderator_url,
         attendee_link_introduction=current_app.config[
             "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
         ],
-        attendee_signin_url=get_signin_url(meeting, Role.attendee),
+        attendee_signin_url=meeting.attendee_url,
     )
     meta_bbb_recording_ready_url = get_recording_status_callback_url()
 

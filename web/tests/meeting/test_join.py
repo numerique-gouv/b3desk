@@ -1,8 +1,8 @@
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+from b3desk.join import create_signin_url
 from b3desk.join import get_hash
-from b3desk.join import get_signin_url
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -11,8 +11,8 @@ from joserfc.jwk import RSAKey
 
 def test_meeting_signin_links_are_accessible(client_app, meeting):
     """Test that moderator and attendee signin links generated for meetings are accessible."""
-    moderator_url = get_signin_url(meeting, Role.moderator)
-    attendee_url = get_signin_url(meeting, Role.attendee)
+    moderator_url = create_signin_url(meeting, Role.moderator)
+    attendee_url = create_signin_url(meeting, Role.attendee)
 
     response = client_app.get(moderator_url, status=200)
     assert response.template == "meeting/join.html"
