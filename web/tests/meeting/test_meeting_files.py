@@ -88,11 +88,6 @@ def test_add_dropzone_file(
         assert jpg_file_content == fd.read()
 
 
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
-
-
 def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):

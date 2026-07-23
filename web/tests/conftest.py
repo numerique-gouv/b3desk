@@ -1053,3 +1053,15 @@ def make_signed_parameters(app):
         return jwt.encode({"alg": "HS256"}, payload, key)
 
     return make
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    """Mock meeting.bbb.is_running() to return True."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)

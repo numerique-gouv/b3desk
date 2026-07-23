@@ -4,7 +4,6 @@ from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-import pytest
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
@@ -212,11 +211,6 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
     assert res.text.count("911111112") == 0
     assert res.text.count("911111113") == 0
     assert res.text.count("Aucune réunion ne correspond à cette recherche.") == 1
-
-
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_admin_can_edit_meeting_for_other_user(

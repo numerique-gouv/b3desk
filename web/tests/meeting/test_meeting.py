@@ -7,7 +7,6 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-import pytest
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_role
@@ -27,18 +26,6 @@ from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
 from flask import url_for
-
-
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    """Mock meeting.bbb.is_running() to return True."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
-
-
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    """Mock meeting.bbb.is_running() to return False."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
