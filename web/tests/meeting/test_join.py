@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 from b3desk.join import create_signin_url
 from b3desk.join import get_hash
-from b3desk.models import db
 from b3desk.models.meetings import MeetingUrls
 from b3desk.models.roles import Role
 from flask import url_for
@@ -75,14 +74,17 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
     assert response.location == f"/meeting/join/{meeting.id}/authenticated"
 
 
-def test_signin_meeting_updates_used_at_for_attendee_link(client_app, meeting):
-    """Visiting the attendee signin link must set used_at on the attendee MeetingUrls row."""
+def test_signin_meeting_updates_used_at_for_attendee_link(
+    client_app, meeting, mock_meeting_is_running
+):
+    """Test visiting the attendee signin link must set used_at on the attendee MeetingUrls row."""
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
     ).one_or_none()
     assert meeting_url.used_at is None
 
-    client_app.get(meeting_url.url, status=200)
+    res = client_app.get(meeting_url.url, status=200)
+    res.form.submit()
 
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
@@ -90,35 +92,55 @@ def test_signin_meeting_updates_used_at_for_attendee_link(client_app, meeting):
     assert meeting_url.used_at is not None
 
 
-def test_signin_meeting_updates_used_at_for_moderator_link(client_app, meeting):
-    """Visiting the moderator signin link must set used_at on the moderator MeetingUrls row."""
-    meeting_url = next(url for url in meeting.urls if url.role == Role.moderator.name)
+def test_signin_meeting_updates_used_at_for_moderator_link(
+    client_app, meeting, mock_meeting_is_running
+):
+    """Test visiting the moderator signin link must set used_at on the moderator MeetingUrls row."""
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
+    ).one_or_none()
     assert meeting_url.used_at is None
 
-    client_app.get(meeting_url.url, status=200)
+    res = client_app.get(meeting_url.url, status=200)
+    res.form.submit()
 
-    db.session.refresh(meeting_url)
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
+    ).one_or_none()
     assert meeting_url.used_at is not None
 
 
-def test_signin_meeting_updates_used_at_for_authenticated_link(client_app, meeting):
-    """Visiting the authenticated signin link must set used_at on the authenticated MeetingUrls row."""
-    meeting_url = next(
-        url for url in meeting.urls if url.role == Role.authenticated.name
-    )
+def test_signin_meeting_updates_used_at_for_authenticated_link(
+    client_app, meeting, mock_meeting_is_running, iam_server, iam_client
+):
+    """Test visiting the authenticated signin link must set used_at on the authenticated MeetingUrls row."""
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id,
+        MeetingUrls.role == Role.authenticated.name,
+    ).one_or_none()
     assert meeting_url.used_at is None
 
-    client_app.get(meeting_url.url, status=302)
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
 
-    db.session.refresh(meeting_url)
+    res = client_app.get(meeting_url.url, status=302)
+    res = client_app.get(res.location, status=302)
+    res = iam_server.test_client.get(res.location)
+    assert res.status_code == 302
+    res = client_app.get(res.headers["Location"], status=302, expect_errors=True)
+    res = res.follow(status=302).follow(status=200)
+    res.form.submit()
+
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id,
+        MeetingUrls.role == Role.authenticated.name,
+    ).one_or_none()
     assert meeting_url.used_at is not None
 
 
 def test_signin_meeting_with_invalid_hash_does_not_update_used_at(client_app, meeting):
-    """An invalid hash must not resolve a role, so no MeetingUrls row should be marked as used.
-
-    Covers the `if not role:` branch in join.signin_meeting.
-    """
+    """Test invalid hash must not resolve a role, so no MeetingUrls row should be marked as used."""
     response = client_app.get(
         f"/meeting/signin/{meeting.id}/hash/wrong-hash", status=302
     )

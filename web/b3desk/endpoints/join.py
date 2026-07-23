@@ -73,9 +73,6 @@ def signin_meeting(
 
     role = get_role(meeting, hash_, g.user)
 
-    if role:
-        meeting.update_used_at_url(role)
-
     if role == Role.authenticated:
         return redirect(
             url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)

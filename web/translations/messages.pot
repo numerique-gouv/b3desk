@@ -347,21 +347,21 @@ msgstr ""
 msgid "Aucune réunion ne correspond à ces paramètres"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:84 web/b3desk/endpoints/join.py:149
-#: web/b3desk/endpoints/join.py:154 web/b3desk/endpoints/join.py:207
-#: web/b3desk/endpoints/join.py:215
+#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:146
+#: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:204
+#: web/b3desk/endpoints/join.py:212
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:185
+#: web/b3desk/endpoints/join.py:182
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:315
+#: web/b3desk/endpoints/join.py:312
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:320
+#: web/b3desk/endpoints/join.py:317
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 

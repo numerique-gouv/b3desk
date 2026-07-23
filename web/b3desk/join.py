@@ -69,6 +69,7 @@ def get_join_url(
 
     if not meeting.quick:
         meeting.last_connection_utc_datetime = datetime.now()
+        meeting.update_used_at_url(meeting_role)
         db.session.add(meeting)
         db.session.commit()
 
