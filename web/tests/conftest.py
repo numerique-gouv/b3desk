@@ -71,6 +71,7 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
@@ -127,6 +128,7 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
