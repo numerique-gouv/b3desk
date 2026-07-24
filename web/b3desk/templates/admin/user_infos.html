@@ -107,11 +107,11 @@
             </div>
         </div>
     </div>
-    <h5>{% trans fullname = user.fullname %}Liste des réunions de {{ fullname }}{% endtrans %}</h5>
+    <h5>{% trans fullname = user.fullname %}Liste des réunions de <em>{{ fullname }}</em>{% endtrans %}</h5>
     {% if meetings %}
         {% include 'admin/meeting_table.html' %}
     {% else %}
-        <p>{% trans fullname = user.fullname %}{{ fullname }} n'a pas créé de réunion.{% endtrans %}</p>
+        <p>{% trans fullname = user.fullname %}<em>{{ fullname }}</em> n'a pas créé de réunion.{% endtrans %}</p>
     {% endif %}
     {% if delegated_meetings %}
         <h5>{% trans fullname = user.fullname %}Liste des réunions déléguées de {{ fullname }}{% endtrans %}</h5>

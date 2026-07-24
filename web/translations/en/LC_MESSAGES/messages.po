@@ -1329,12 +1329,12 @@ msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:121
 #, python-format
-msgid "Liste des réunions de %(fullname)s"
+msgid "Liste des réunions de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:125
 #, python-format
-msgid "%(fullname)s n'a pas créé de réunion."
+msgid "<em>%(fullname)s</em> n'a pas créé de réunion."
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:128
@@ -1361,7 +1361,26 @@ msgstr ""
 msgid "%(fullname)s n'appartient à aucun groupe."
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:12
+#: web/b3desk/templates/admin/user_infos.html:133
+#, python-format
+msgid "Droits de <em>%(fullname)s</em>"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_infos.html:174
+#, python-format
+msgid "Liste des groupes de <em>%(fullname)s</em>"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_infos.html:178
+#, python-format
+msgid "<em>%(fullname)s</em> n'appartient à aucun groupe."
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:11
+msgid "Sélectionner"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:15
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
 msgstr ""
@@ -1372,7 +1391,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:39
 #, python-format
-msgid "%(username)s infos"
+msgid "%(fullname)s est dans le groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:43
@@ -2508,7 +2527,7 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:3
 #, python-format
-msgid "Délégation de la réunion %(meeting_name)s"
+msgid "Délégation de la réunion <em>%(meeting_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:9

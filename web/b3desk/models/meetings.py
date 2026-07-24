@@ -203,6 +203,11 @@ class Meeting(db.Model):
             .all()
         )
 
+    def sync_ai_summary_authorisation(self):
+        self.ai_summary = self.ai_summary and self.owner.can_use_ai_summary
+        db.session.add(self)
+        db.session.commit()
+
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""

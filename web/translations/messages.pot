@@ -20,7 +20,7 @@ msgid "Le texte est trop long"
 msgstr ""
 
 #: web/b3desk/forms.py:53 web/b3desk/forms.py:108
-#: web/b3desk/templates/admin/meeting_infos.html:227
+#: web/b3desk/templates/admin/meeting_infos.html:233
 msgid "Salle d'attente"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Ma réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:79 web/b3desk/templates/admin/meeting_infos.html:131
+#: web/b3desk/forms.py:79 web/b3desk/templates/admin/meeting_infos.html:137
 msgid "Texte de bienvenue"
 msgstr ""
 
@@ -60,7 +60,7 @@ msgstr ""
 msgid "Bienvenue dans cette réunion %(meeting_name)s."
 msgstr ""
 
-#: web/b3desk/forms.py:91 web/b3desk/templates/admin/meeting_infos.html:106
+#: web/b3desk/forms.py:91 web/b3desk/templates/admin/meeting_infos.html:112
 msgid "Nombre maximal de participants"
 msgstr ""
 
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Limitez vos salons à 350 personnes pour plus de confort."
 msgstr ""
 
-#: web/b3desk/forms.py:96 web/b3desk/templates/admin/meeting_infos.html:123
+#: web/b3desk/forms.py:96 web/b3desk/templates/admin/meeting_infos.html:129
 msgid "Durée maximale (minutes)"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgid ""
 " 120, 3h = 180, 4h = 240."
 msgstr ""
 
-#: web/b3desk/forms.py:115 web/b3desk/templates/admin/meeting_infos.html:171
+#: web/b3desk/forms.py:115 web/b3desk/templates/admin/meeting_infos.html:177
 msgid "Caméras visibles par les modérateurs uniquement"
 msgstr ""
 
@@ -88,7 +88,7 @@ msgid ""
 "participants quand cette option est activée."
 msgstr ""
 
-#: web/b3desk/forms.py:122 web/b3desk/templates/admin/meeting_infos.html:179
+#: web/b3desk/forms.py:122 web/b3desk/templates/admin/meeting_infos.html:185
 msgid "Participants muets à leur arrivée"
 msgstr ""
 
@@ -98,7 +98,7 @@ msgid ""
 "leur micro fermé, pour un démarrage de réunion plus calme."
 msgstr ""
 
-#: web/b3desk/forms.py:129 web/b3desk/templates/admin/meeting_infos.html:187
+#: web/b3desk/forms.py:129 web/b3desk/templates/admin/meeting_infos.html:193
 msgid "Caméras des participants"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:137 web/b3desk/templates/admin/meeting_infos.html:195
+#: web/b3desk/forms.py:137 web/b3desk/templates/admin/meeting_infos.html:201
 msgid "Micros des participants"
 msgstr ""
 
@@ -118,19 +118,19 @@ msgid ""
 "participants."
 msgstr ""
 
-#: web/b3desk/forms.py:145 web/b3desk/templates/admin/meeting_infos.html:203
+#: web/b3desk/forms.py:145 web/b3desk/templates/admin/meeting_infos.html:209
 msgid "Discussions privées"
 msgstr ""
 
-#: web/b3desk/forms.py:150 web/b3desk/templates/admin/meeting_infos.html:211
+#: web/b3desk/forms.py:150 web/b3desk/templates/admin/meeting_infos.html:217
 msgid "Discussion publique (tchat)"
 msgstr ""
 
-#: web/b3desk/forms.py:155 web/b3desk/templates/admin/meeting_infos.html:219
+#: web/b3desk/forms.py:155 web/b3desk/templates/admin/meeting_infos.html:225
 msgid "Prise de note collaborative"
 msgstr ""
 
-#: web/b3desk/forms.py:160 web/b3desk/templates/admin/meeting_infos.html:139
+#: web/b3desk/forms.py:160 web/b3desk/templates/admin/meeting_infos.html:145
 msgid "Message à l'attention des modérateurs"
 msgstr ""
 
@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:344
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:349
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Le message est trop long"
 msgstr ""
 
-#: web/b3desk/forms.py:173 web/b3desk/templates/admin/meeting_infos.html:114
+#: web/b3desk/forms.py:173 web/b3desk/templates/admin/meeting_infos.html:120
 msgid "Url de redirection après la réunion"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Renouveler le lien participants"
 msgstr ""
 
-#: web/b3desk/forms.py:198 web/b3desk/templates/admin/meeting_infos.html:90
+#: web/b3desk/forms.py:198 web/b3desk/templates/admin/meeting_infos.html:96
 msgid "PIN"
 msgstr ""
 
@@ -195,7 +195,7 @@ msgstr ""
 msgid "(utilisé dans le lien SIP)"
 msgstr ""
 
-#: web/b3desk/forms.py:236 web/b3desk/templates/admin/meeting_infos.html:155
+#: web/b3desk/forms.py:236 web/b3desk/templates/admin/meeting_infos.html:161
 msgid "Enregistrement manuel"
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr ""
 msgid "Vous pouvez lancer ou arrêter à tout moment l'enregistrement de la salle."
 msgstr ""
 
-#: web/b3desk/forms.py:243 web/b3desk/templates/admin/meeting_infos.html:147
+#: web/b3desk/forms.py:243 web/b3desk/templates/admin/meeting_infos.html:153
 msgid "Enregistrement automatique"
 msgstr ""
 
@@ -213,9 +213,9 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:250 web/b3desk/forms.py:340
+#: web/b3desk/forms.py:250 web/b3desk/forms.py:351
 #: web/b3desk/templates/admin/group_infos.html:75
-#: web/b3desk/templates/admin/meeting_infos.html:163
+#: web/b3desk/templates/admin/meeting_infos.html:169
 msgid "Génération de résumé (IA)"
 msgstr ""
 
@@ -237,8 +237,7 @@ msgstr ""
 msgid "Ajout d'utilisateur"
 msgstr ""
 
-#: web/b3desk/forms.py:286
-#: web/b3desk/templates/admin/add_group_members_page.html:15
+#: web/b3desk/forms.py:286 web/b3desk/templates/admin/add_group_members.html:26
 #: web/b3desk/templates/admin/group_members.html:15
 #: web/b3desk/templates/admin/users.html:12
 msgid "Rechercher un utilisateur"
@@ -252,30 +251,34 @@ msgstr ""
 msgid "Rechercher un groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:314
+#: web/b3desk/forms.py:307
+msgid "Ajout de membre"
+msgstr ""
+
+#: web/b3desk/forms.py:325
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:316
+#: web/b3desk/forms.py:327
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:324 web/b3desk/templates/admin/group_infos.html:59
+#: web/b3desk/forms.py:335 web/b3desk/templates/admin/group_infos.html:59
 #: web/b3desk/templates/admin/user_infos.html:133
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:332 web/b3desk/templates/admin/group_infos.html:67
+#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:67
 #: web/b3desk/templates/admin/user_infos.html:141
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:350 web/b3desk/forms.py:355 web/b3desk/forms.py:360
-msgid "Activé par défaut"
+#: web/b3desk/forms.py:353 web/b3desk/forms.py:364 web/b3desk/forms.py:369
+msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:352 web/b3desk/forms.py:357 web/b3desk/forms.py:362
-msgid "Désactivé par défaut"
+#: web/b3desk/forms.py:362 web/b3desk/forms.py:367
+msgid "Activé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:669 web/b3desk/templates/meeting/list.html:4
@@ -304,43 +307,39 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:172
+#: web/b3desk/endpoints/admin.py:188
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:187
+#: web/b3desk/endpoints/admin.py:203
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:231 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/admin.py:247 web/b3desk/endpoints/meetings.py:151
 #: web/b3desk/endpoints/meetings.py:211
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:254
+#: web/b3desk/endpoints/admin.py:272
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:285
+#: web/b3desk/endpoints/admin.py:303
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:289
+#: web/b3desk/endpoints/admin.py:307
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:315
+#: web/b3desk/endpoints/admin.py:333
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:344
-msgid "L'utilisateur est déjà dans le groupe"
-msgstr ""
-
-#: web/b3desk/endpoints/admin.py:348
-msgid "L'utilisateur a été ajouté au groupe"
+#: web/b3desk/endpoints/admin.py:384
+msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:68
@@ -504,16 +503,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:323 web/b3desk/models/meetings.py:330
+#: web/b3desk/models/meetings.py:328 web/b3desk/models/meetings.py:335
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:337
+#: web/b3desk/models/meetings.py:342
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:339
+#: web/b3desk/models/meetings.py:344
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -822,12 +821,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
 #: web/b3desk/templates/meeting/modals/invite.html:9
-#: web/b3desk/templates/meeting/recordings.html:137
-#: web/b3desk/templates/meeting/recordings.html:138
-#: web/b3desk/templates/meeting/recordings.html:178
-#: web/b3desk/templates/meeting/recordings.html:179
-#: web/b3desk/templates/meeting/recordings.html:221
-#: web/b3desk/templates/meeting/recordings.html:222
+#: web/b3desk/templates/meeting/recordings.html:123
+#: web/b3desk/templates/meeting/recordings.html:124
+#: web/b3desk/templates/meeting/recordings.html:164
+#: web/b3desk/templates/meeting/recordings.html:165
+#: web/b3desk/templates/meeting/recordings.html:207
+#: web/b3desk/templates/meeting/recordings.html:208
 msgid "Fermer"
 msgstr ""
 
@@ -909,7 +908,7 @@ msgstr ""
 msgid "S’identifier"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:6
+#: web/b3desk/templates/admin/add_group_members.html:6
 #: web/b3desk/templates/admin/delete_group.html:6
 #: web/b3desk/templates/admin/group_form.html:6
 #: web/b3desk/templates/admin/group_infos.html:6
@@ -920,14 +919,14 @@ msgstr ""
 #: web/b3desk/templates/admin/meetings.html:6
 #: web/b3desk/templates/admin/user_infos.html:9
 #: web/b3desk/templates/admin/users.html:6
-#: web/b3desk/templates/meeting/delegation.html:13
-#: web/b3desk/templates/meeting/filesform.html:10
-#: web/b3desk/templates/meeting/recordings.html:13
-#: web/b3desk/templates/meeting/wizard.html:13
+#: web/b3desk/templates/meeting/delegation.html:10
+#: web/b3desk/templates/meeting/filesform.html:7
+#: web/b3desk/templates/meeting/recordings.html:10
+#: web/b3desk/templates/meeting/wizard.html:10
 msgid "Menu Admin"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:7
+#: web/b3desk/templates/admin/add_group_members.html:7
 #: web/b3desk/templates/admin/delete_group.html:7
 #: web/b3desk/templates/admin/group_form.html:7
 #: web/b3desk/templates/admin/group_infos.html:7
@@ -937,22 +936,21 @@ msgstr ""
 msgid "Groupes"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:9
+#: web/b3desk/templates/admin/add_group_members.html:9
 msgid "Ajouter des membres à"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:11
-#: web/b3desk/templates/admin/group_infos.html:23
+#: web/b3desk/templates/admin/add_group_members.html:11
 #, python-format
-msgid "Ajouter des membres à %(group_name)s"
+msgid "Ajouter des membres à <em>%(group_name)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:19
+#: web/b3desk/templates/admin/add_group_members.html:13
 #: web/b3desk/templates/admin/group_members.html:23
 msgid "Ce groupe n'a pas encore de membre."
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:22
+#: web/b3desk/templates/admin/add_group_members.html:16
 #: web/b3desk/templates/admin/group_members.html:27
 #, python-format
 msgid "%(count)s membre"
@@ -960,17 +958,17 @@ msgid_plural "%(count)s membres"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:32
+#: web/b3desk/templates/admin/add_group_members.html:32
 #: web/b3desk/templates/admin/users.html:18
 msgid "Aucun utilisateur ne correspond à cette recherche."
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:34
+#: web/b3desk/templates/admin/add_group_members.html:34
 #: web/b3desk/templates/admin/home.html:15
 msgid "Liste des utilisateurs"
 msgstr ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:40
+#: web/b3desk/templates/admin/add_group_members.html:40
 #: web/b3desk/templates/admin/users.html:25
 #, python-format
 msgid "%(count)s utilisateur correspondant aux critères"
@@ -978,7 +976,7 @@ msgid_plural "%(count)s utilisateurs correspondant aux critères"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members_page.html:46
+#: web/b3desk/templates/admin/add_group_members.html:46
 #: web/b3desk/templates/admin/users.html:31
 #, python-format
 msgid "%(count)s utilisateur"
@@ -986,14 +984,53 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
 
+#: web/b3desk/templates/admin/add_group_members.html:58
+msgid "Tout sélectionner"
+msgstr ""
+
+#: web/b3desk/templates/admin/add_group_members.html:61
+#, python-format
+msgid ""
+"\n"
+"                            Sélectionner %(count)s utilisateur "
+"correspondant aux critères et ne faisant pas partie du groupe\n"
+"                            "
+msgid_plural ""
+"\n"
+"                            Sélectionner %(count)s utilisateurs "
+"correpondants au critères et ne faisant pas partie du groupe\n"
+"                        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/add_group_members.html:67
+#, python-format
+msgid ""
+"\n"
+"                            Sélectionner %(count)s utilisateur ne faisant"
+" pas partie du groupe\n"
+"                            "
+msgid_plural ""
+"\n"
+"                            Sélectionner %(count)s utilisateurs ne "
+"faisant pas partie du groupe\n"
+"                        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/add_group_members.html:83
+#: web/b3desk/templates/admin/add_group_members.html:87
+msgid "Ajouter les utilisateurs sélectionnés"
+msgstr ""
+
 #: web/b3desk/templates/admin/delete_group.html:9
 #: web/b3desk/templates/admin/group_infos.html:29
-#: web/b3desk/templates/admin/user_table.html:16
+#: web/b3desk/templates/admin/user_table.html:19
 #: web/b3desk/templates/meeting/files.html:146
 #: web/b3desk/templates/meeting/files.html:163
 #: web/b3desk/templates/meeting/files.html:175
 #: web/b3desk/templates/meeting/files.html:205
-#: web/b3desk/templates/meeting/recordings.html:156
+#: web/b3desk/templates/meeting/recordings.html:142
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr ""
@@ -1019,8 +1056,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:159
-#: web/b3desk/templates/meeting/recordings.html:203
+#: web/b3desk/templates/meeting/recordings.html:145
+#: web/b3desk/templates/meeting/recordings.html:189
 msgid "Annuler"
 msgstr ""
 
@@ -1032,7 +1069,7 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:28
 #: web/b3desk/templates/admin/group_infos.html:14
 #: web/b3desk/templates/meeting/form.html:59
-#: web/b3desk/templates/meeting/wizard.html:23
+#: web/b3desk/templates/meeting/wizard.html:13
 msgid "Modifier"
 msgstr ""
 
@@ -1087,6 +1124,11 @@ msgstr ""
 msgid "Gérer les membres"
 msgstr ""
 
+#: web/b3desk/templates/admin/group_infos.html:23
+#, python-format
+msgid "Ajouter des membres à %(group_name)s"
+msgstr ""
+
 #: web/b3desk/templates/admin/group_infos.html:24
 msgid "Ajouter des membres"
 msgstr ""
@@ -1098,25 +1140,25 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:43
 #: web/b3desk/templates/admin/group_table.html:10
-#: web/b3desk/templates/admin/meeting_infos.html:26
+#: web/b3desk/templates/admin/meeting_infos.html:32
 #: web/b3desk/templates/admin/meeting_table.html:10
 #: web/b3desk/templates/admin/user_infos.html:24
-#: web/b3desk/templates/admin/user_table.html:10
+#: web/b3desk/templates/admin/user_table.html:13
 msgid "ID"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:51
 #: web/b3desk/templates/admin/group_table.html:11
-#: web/b3desk/templates/admin/meeting_infos.html:34
+#: web/b3desk/templates/admin/meeting_infos.html:40
 #: web/b3desk/templates/admin/meeting_table.html:11
 #: web/b3desk/templates/admin/user_infos.html:32
-#: web/b3desk/templates/admin/user_table.html:11
+#: web/b3desk/templates/admin/user_table.html:14
 #: web/b3desk/templates/footer/donnees_personnelles.html:54
 msgid "Nom"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:83
-#: web/b3desk/templates/admin/meeting_infos.html:66
+#: web/b3desk/templates/admin/meeting_infos.html:72
 #: web/b3desk/templates/admin/user_infos.html:64
 msgid "Création"
 msgstr ""
@@ -1139,7 +1181,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_table.html:12
 #: web/b3desk/templates/admin/meeting_table.html:13
-#: web/b3desk/templates/admin/user_table.html:14
+#: web/b3desk/templates/admin/user_table.html:17
 msgid "Consulter"
 msgstr ""
 
@@ -1182,10 +1224,10 @@ msgstr ""
 #: web/b3desk/templates/admin/home.html:27
 #: web/b3desk/templates/admin/meeting_infos.html:7
 #: web/b3desk/templates/admin/meetings.html:7
-#: web/b3desk/templates/meeting/delegation.html:16
-#: web/b3desk/templates/meeting/filesform.html:13
-#: web/b3desk/templates/meeting/recordings.html:16
-#: web/b3desk/templates/meeting/wizard.html:16
+#: web/b3desk/templates/meeting/delegation.html:11
+#: web/b3desk/templates/meeting/filesform.html:8
+#: web/b3desk/templates/meeting/recordings.html:11
+#: web/b3desk/templates/meeting/wizard.html:11
 msgid "Réunions"
 msgstr ""
 
@@ -1205,28 +1247,28 @@ msgstr ""
 msgid "Non"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:42
+#: web/b3desk/templates/admin/meeting_infos.html:48
 msgid "Propriétaire"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:50
+#: web/b3desk/templates/admin/meeting_infos.html:56
 msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:58
+#: web/b3desk/templates/admin/meeting_infos.html:64
 #: web/b3desk/templates/admin/user_infos.html:56
 msgid "Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:74
+#: web/b3desk/templates/admin/meeting_infos.html:80
 msgid "Dernière modification"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:82
+#: web/b3desk/templates/admin/meeting_infos.html:88
 msgid "n° de téléphone"
 msgstr ""
 
-#: web/b3desk/templates/admin/meeting_infos.html:98
+#: web/b3desk/templates/admin/meeting_infos.html:104
 msgid "Code de connexion (visio_code)"
 msgstr ""
 
@@ -1282,7 +1324,7 @@ msgid "Utilisateur"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:40
-#: web/b3desk/templates/admin/user_table.html:13
+#: web/b3desk/templates/admin/user_table.html:16
 msgid "Email"
 msgstr ""
 
@@ -1304,12 +1346,12 @@ msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:110
 #, python-format
-msgid "Liste des réunions de %(fullname)s"
+msgid "Liste des réunions de <em>%(fullname)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:114
 #, python-format
-msgid "%(fullname)s n'a pas créé de réunion."
+msgid "<em>%(fullname)s</em> n'a pas créé de réunion."
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:117
@@ -1336,30 +1378,33 @@ msgstr ""
 msgid "%(fullname)s n'appartient à aucun groupe."
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:12
+#: web/b3desk/templates/admin/user_table.html:11
+msgid "Sélectionner"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:15
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:19
-msgid "Ajouter au groupe"
+#: web/b3desk/templates/admin/user_table.html:29
+#, python-format
+msgid "%(fullname)s est dans le groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:39
+#: web/b3desk/templates/admin/user_table.html:29
+#: web/b3desk/templates/admin/user_table.html:31
+#, python-format
+msgid "Sélectionner %(fullname)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_table.html:49
 #, python-format
 msgid "%(username)s infos"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_table.html:45
+#: web/b3desk/templates/admin/user_table.html:55
 msgid "Supprimer le membre"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_table.html:54
-msgid "Ajouter le membre"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_table.html:57
-msgid "Déjà membre"
 msgstr ""
 
 #: web/b3desk/templates/errors/400.html:7
@@ -2483,22 +2528,26 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:3
 #, python-format
-msgid "Délégation de la réunion %(meeting_name)s"
+msgid "Délégation de la réunion <em>%(meeting_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:9
 #: web/b3desk/templates/meeting/files.html:43
 #: web/b3desk/templates/meeting/files.html:227
-#: web/b3desk/templates/meeting/recordings.html:34
-#: web/b3desk/templates/meeting/recordings.html:261
+#: web/b3desk/templates/meeting/files_previous_page.html:2
+#: web/b3desk/templates/meeting/recordings.html:20
+#: web/b3desk/templates/meeting/recordings.html:247
+#: web/b3desk/templates/meeting/recordings_previous_page.html:3
 msgid "Retour à mes réunions"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:14
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/files.html:231
-#: web/b3desk/templates/meeting/recordings.html:38
-#: web/b3desk/templates/meeting/recordings.html:265
+#: web/b3desk/templates/meeting/files_previous_page.html:6
+#: web/b3desk/templates/meeting/recordings.html:24
+#: web/b3desk/templates/meeting/recordings.html:251
+#: web/b3desk/templates/meeting/recordings_previous_page.html:7
 #, python-format
 msgid "Retour à l'administration de %(meeting_name)s "
 msgstr ""
@@ -2515,11 +2564,9 @@ msgstr ""
 msgid "Supprimer le délégataire"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation.html:23
-#: web/b3desk/templates/meeting/row.html:66
-#: web/b3desk/templates/meeting/row.html:67
-#, python-format
-msgid "Gérer les délégations de %(meeting_name)s"
+#: web/b3desk/templates/meeting/delegation.html:13
+#, python-brace-format
+msgid "Gérer les délégations de {meeting_name}"
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:5
@@ -2533,8 +2580,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:167
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:148
-#: web/b3desk/templates/meeting/recordings.html:195
+#: web/b3desk/templates/meeting/recordings.html:134
+#: web/b3desk/templates/meeting/recordings.html:181
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr ""
@@ -2631,11 +2678,9 @@ msgstr ""
 msgid "Aucun document de présentation n'est prévu pour cette réunion actuellement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/filesform.html:20
-#: web/b3desk/templates/meeting/row.html:22
-#: web/b3desk/templates/meeting/row.html:77
-#, python-format
-msgid "Fichiers associés à %(meeting_name)s"
+#: web/b3desk/templates/meeting/filesform.html:10
+#, python-brace-format
+msgid "Fichiers associés à {meeting_name}"
 msgstr ""
 
 #: web/b3desk/templates/meeting/form.html:11
@@ -2792,51 +2837,49 @@ msgstr ""
 msgid "Retirer des favoris"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:23
-#: web/b3desk/templates/meeting/row.html:71
-#: web/b3desk/templates/meeting/row.html:72
-#, python-format
-msgid "Voir les enregistrements de %(meeting_name)s"
+#: web/b3desk/templates/meeting/recordings.html:13
+#, python-brace-format
+msgid "Voir les enregistrements de {meeting_name}"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:30
+#: web/b3desk/templates/meeting/recordings.html:16
 #, python-format
 msgid "Enregistrements de <em>%(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:45
+#: web/b3desk/templates/meeting/recordings.html:31
 msgid "Cette réunion est toujours en cours"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:46
+#: web/b3desk/templates/meeting/recordings.html:32
 msgid ""
 "Si un enregistrement est en cours, il ne sera encodé qu'après la fin de "
 "la réunion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:49
+#: web/b3desk/templates/meeting/recordings.html:35
 msgid ""
 "Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre "
 "autant de temps que la durée de la réunion."
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:50
+#: web/b3desk/templates/meeting/recordings.html:36
 msgid ""
 "Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de "
 "plusieurs minutes s'ajoute après que tous les utilisateurs l'aient "
 "quitté."
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:51
+#: web/b3desk/templates/meeting/recordings.html:37
 #, python-format
 msgid "Les enregistrements sont conservés pour une période de %(duration)s."
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:57
+#: web/b3desk/templates/meeting/recordings.html:43
 msgid "Renommer l’enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:61
+#: web/b3desk/templates/meeting/recordings.html:47
 #, python-format
 msgid ""
 "\n"
@@ -2845,97 +2888,97 @@ msgid ""
 "                "
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:69
+#: web/b3desk/templates/meeting/recordings.html:55
 msgid "Visuels"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:70
+#: web/b3desk/templates/meeting/recordings.html:56
 msgid "Actions"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:89
+#: web/b3desk/templates/meeting/recordings.html:75
 msgid "Voir l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:90
-#: web/b3desk/templates/meeting/recordings.html:244
+#: web/b3desk/templates/meeting/recordings.html:76
+#: web/b3desk/templates/meeting/recordings.html:230
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:93
+#: web/b3desk/templates/meeting/recordings.html:79
 msgid "Voir l'enregistrement mp4"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:95
+#: web/b3desk/templates/meeting/recordings.html:81
 msgid "Partager l'enregistrement mp4"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:100
+#: web/b3desk/templates/meeting/recordings.html:86
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:109
+#: web/b3desk/templates/meeting/recordings.html:95
 msgid "Compte-rendu"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:99
 msgid "Ouvrir le compte-rendu HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:99
 msgid "HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:102
 msgid "Télécharger le compte-rendu PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:102
 msgid "PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:105
 msgid "Télécharger le compte-rendu Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:105
 msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:144
+#: web/b3desk/templates/meeting/recordings.html:130
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:146
+#: web/b3desk/templates/meeting/recordings.html:132
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
 "<em>%(recording_name)s</em> de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:186
 msgid "Modifier le nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:186
 msgid "Renommer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:228
+#: web/b3desk/templates/meeting/recordings.html:214
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:231
+#: web/b3desk/templates/meeting/recordings.html:217
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
 "services dédiés à la diffusion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:238
+#: web/b3desk/templates/meeting/recordings.html:224
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
@@ -2972,6 +3015,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:75
 #, python-format
 msgid "Modifier %(meeting_name)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/row.html:22
+#: web/b3desk/templates/meeting/row.html:77
+#, python-format
+msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/row.html:26
@@ -3014,6 +3063,18 @@ msgstr ""
 #: web/b3desk/templates/meeting/row.html:61
 #: web/b3desk/templates/meeting/row.html:62
 msgid "Réunion silencieuse"
+msgstr ""
+
+#: web/b3desk/templates/meeting/row.html:66
+#: web/b3desk/templates/meeting/row.html:67
+#, python-format
+msgid "Gérer les délégations de %(meeting_name)s"
+msgstr ""
+
+#: web/b3desk/templates/meeting/row.html:71
+#: web/b3desk/templates/meeting/row.html:72
+#, python-format
+msgid "Voir les enregistrements de %(meeting_name)s"
 msgstr ""
 
 #: web/b3desk/templates/meeting/signin_links.html:3

@@ -96,6 +96,8 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
 
+    meeting.sync_ai_summary_authorisation()
+
     bbb = BBB(meeting.meetingID)
     if bbb.is_running():
         return False
