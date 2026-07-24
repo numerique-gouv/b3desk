@@ -1,4 +1,4 @@
-"""change meeting.id creation using uuid.
+"""change meeting.id creation using uuid and save meeting urls.
 
 Revision ID: c8d1764b3a93
 Revises: a3a6e932b2ae
