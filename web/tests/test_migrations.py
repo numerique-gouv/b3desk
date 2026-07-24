@@ -6,7 +6,7 @@ from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from flask_migrate import downgrade
 from flask_migrate import upgrade
-from migrations.versions.c8d1764b3a93_change_meeting_id_creation_using_uuid import (
+from migrations.versions.c8d1764b3a93_change_meeting_id_creation_using_uuid_and_save_meeting_urls import (
     bbb_meeting_id_creation,
 )
 
