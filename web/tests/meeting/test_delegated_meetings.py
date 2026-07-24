@@ -79,7 +79,7 @@ def test_delegate_can_launch_delegated_meeting(
         f"/meeting/join/{meeting_1_user_2.id}/moderateur", status=302
     )
     assert (
-        "https://bbb.test/join?fullName=Alice+Cooper&meetingID=meeting-persistent-1"
+        f"https://bbb.test/join?fullName=Alice+Cooper&meetingID={meeting_1_user_2.id}"
         in response.location
     )
 
@@ -91,7 +91,7 @@ def test_delegate_can_see_records_of_delegated_meeting(
     bbb_response,
 ):
     """Test that delegate can see and manage records of a delegated meeting as owner."""
-    client_app.get("/meeting/recordings/1", status=200)
+    client_app.get(f"/meeting/recordings/{meeting_1_user_2.id}", status=200)
 
 
 def test_delegate_can_edit_delegated_meeting(
@@ -142,7 +142,7 @@ def test_owner_can_add_new_delegate(
 ):
     """Test that delegate can add a new delegate."""
     assert len(smtpd.messages) == 0
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()
@@ -167,7 +167,7 @@ def test_add_new_delegate_with_uppercase_email(
     smtpd,
 ):
     """Test that searching for a delegate with uppercase email works."""
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "Berenice@Domain.TLD"
     response = form.submit()
@@ -185,7 +185,7 @@ def test_add_new_delegate_with_wrong_email(
     bbb_response,
 ):
     """Test there is a flash message when adding a wrong email."""
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "wrong@domain.tld"
     response = form.submit()
@@ -205,7 +205,7 @@ def test_maximum_delegate_number_limit(
     """Test that owner cannot add a new delegate beyong the MAXIMUM_MEETING_DELEGATES."""
     assert len(smtpd.messages) == 0
     client_app.app.config["MAXIMUM_MEETING_DELEGATES"] = 1
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()
@@ -215,7 +215,7 @@ def test_maximum_delegate_number_limit(
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "charlie@domain.tld"
     response = form.submit()
@@ -235,7 +235,7 @@ def test_owner_cannot_add_himself_as_delegate(
     bbb_response,
 ):
     """Test that owner cannot add himself as delegate."""
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "alice@domain.tld"
     response = form.submit()
@@ -254,7 +254,7 @@ def test_add_delegate_who_is_already_delegate(
 ):
     """Test that there is a flash message when adding a delegate aready delegate."""
     assert len(smtpd.messages) == 0
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()
@@ -265,7 +265,7 @@ def test_add_delegate_who_is_already_delegate(
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
 
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()
@@ -286,7 +286,7 @@ def test_owner_can_remove_delegation(
 ):
     """Test that owner can remove delegation."""
     assert len(smtpd.messages) == 0
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()
@@ -296,7 +296,7 @@ def test_owner_can_remove_delegation(
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
-    response = client_app.get("/meeting/remove-delegation/1/2", status=302)
+    response = client_app.get(f"/meeting/remove-delegation/{meeting.id}/2", status=302)
     assert (
         "success",
         "L'utilisateur a été retiré des délégataires",
@@ -318,7 +318,7 @@ def test_flash_message_when_delete_wrong_delegation(
     user_2,
 ):
     """Test there is a flash message when owner delete a wrong delegation."""
-    response = client_app.get("/meeting/remove-delegation/1/2")
+    response = client_app.get(f"/meeting/remove-delegation/{meeting.id}/2")
     assert (
         "error",
         "L'utilisateur ne fait pas partie des délégataires",
@@ -329,7 +329,7 @@ def test_delegate_cannot_remove_delegation(
     client_app, authenticated_user, user, meeting_1_user_2, bbb_response, user_2
 ):
     """Test that delegate cannot remove delegation."""
-    client_app.get("/meeting/remove-delegation/1/1", status=403)
+    client_app.get(f"/meeting/remove-delegation/{meeting_1_user_2.id}/1", status=403)
     assert user in meeting_1_user_2.get_all_delegates
 
 
@@ -340,7 +340,7 @@ def test_delegate_cannot_access_delegation_page(
     bbb_response,
 ):
     """Test that delegate cannot access to the delegation page of a delegated meeting."""
-    client_app.get("/meeting/manage-delegation/1", status=403)
+    client_app.get(f"/meeting/manage-delegation/{meeting_1_user_2.id}", status=403)
 
 
 def test_smtp_error_when_sending_delegation_mail(
@@ -355,7 +355,7 @@ def test_smtp_error_when_sending_delegation_mail(
     """Test there is a log when cannot connect to smtp to send delegation mail."""
     client_app.app.config["SMTP_HOST"] = None
     assert len(smtpd.messages) == 0
-    response = client_app.get("/meeting/manage-delegation/1", status=200)
+    response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
     form["search"] = "berenice@domain.tld"
     response = form.submit()

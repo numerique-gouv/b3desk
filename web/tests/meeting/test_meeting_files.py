@@ -72,7 +72,7 @@ def test_add_dropzone_file(
 ):
     """Test uploading a file via dropzone chunked upload."""
     res = client_app.post(
-        "/meeting/files/1/upload",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -84,13 +84,8 @@ def test_add_dropzone_file(
 
     assert res.json["msg"] == "ok"
 
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
-
-
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
 def test_file_picker_called_by_bbb(
@@ -641,7 +636,7 @@ def test_add_dropzone_file_already_added(
 
     def dropzone_post(status):
         return client_app.post(
-            "/meeting/files/1/upload",
+            f"/meeting/files/{meeting.id}/upload",
             {
                 "dzchunkindex": 0,
                 "dzchunkbyteoffset": 0,
@@ -654,7 +649,7 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=200)
     assert res.json["msg"] == "ok"
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
 
     res = dropzone_post(status=409)

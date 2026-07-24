@@ -93,22 +93,6 @@ def test_unknown_meeting_returns_410(client_app, smtpd, make_signed_parameters):
     assert len(smtpd.messages) == 0
 
 
-def test_invalid_meeting_id_returns_410(
-    client_app, meeting, smtpd, bbb_recording, make_signed_parameters
-):
-    """Callback for a meeting with invalid structure id from bbb returns 410, no email sent."""
-    signed = make_signed_parameters(
-        {"meeting_id": str(meeting.id), "record_id": RECORD_ID}
-    )
-
-    client_app.post(
-        "/bbb-callback/recording_status",
-        {"signed_parameters": signed},
-        status=410,
-    )
-    assert len(smtpd.messages) == 0
-
-
 def test_non_digit_meeting_id_returns_410(client_app, smtpd, make_signed_parameters):
     """BBB-shaped meeting_id with non-digit id segment returns 410."""
     signed = make_signed_parameters(

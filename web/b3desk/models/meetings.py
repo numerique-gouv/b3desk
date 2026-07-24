@@ -13,6 +13,7 @@ from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
 
+import uuid6
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
@@ -26,6 +27,7 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
+from .roles import Role
 from .users import User
 
 
@@ -36,7 +38,9 @@ class AccessLevel(IntEnum):
 
 class MeetingAccess(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
+    meeting_id = db.Column(
+        db.String(255), db.ForeignKey("meeting.id"), primary_key=True
+    )
     level = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("User", backref="user_meeting_access")
@@ -46,7 +50,9 @@ class MeetingAccess(db.Model):
 favorite_table = db.Table(
     "favorite",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+    db.Column(
+        "meeting_id", db.String(255), db.ForeignKey("meeting.id"), primary_key=True
+    ),
 )
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
@@ -85,7 +91,7 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     title = db.Column(db.Unicode(4096))
     url = db.Column(db.Unicode(4096))
     nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
@@ -103,8 +109,36 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
         )
 
 
-class Meeting(db.Model):
+class BaseMeetingUrls:
+    def __init__(self, id=None, meeting_id=None, url=None, role=None, **kwargs):
+        self.id = id
+        self.meeting_id = meeting_id
+        self.url = url
+        self.role = role
+        super().__init__(**kwargs)
+
+
+class MeetingUrls(BaseMeetingUrls, db.Model):
+    __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
+
     id = db.Column(db.Integer, primary_key=True)
+    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
+    url = db.Column(db.String(4096))
+    role = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
+    used_at = db.Column(db.DateTime)
+
+    meeting = db.relationship("Meeting", back_populates="urls")
+
+
+class Meeting(db.Model):
+    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid6.uuid6()))
+    # Legacy BBB meeting identifier ("meeting-persistent-{old_id}--{owner_hash}"),
+    # kept stable across the switch of `id` from an incrementing Integer to a UUID.
+    bbb_meeting_id = db.Column(db.String(255))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
 
@@ -113,6 +147,7 @@ class Meeting(db.Model):
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
     files = db.relationship("MeetingFiles", back_populates="meeting")
+    urls = db.relationship("MeetingUrls", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -149,6 +184,8 @@ class Meeting(db.Model):
 
     _bbb = None
 
+    quick = False
+
     @property
     def bbb(self):
         """Return the BBB API interface for this meeting."""
@@ -165,32 +202,8 @@ class Meeting(db.Model):
 
     @property
     def meetingID(self):
-        """Return the unique BBB meeting identifier."""
-        if self.id is not None:
-            fid = f"meeting-persistent-{self.id}"
-        else:
-            fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
-
-    @property
-    def fake_id(self):
-        """Return the meeting ID or temporary fake ID for quick meetings."""
-        if self.id is not None:
-            return self.id
-        try:
-            return self._fake_id
-        except:
-            return None
-
-    @fake_id.setter
-    def fake_id(self, fake_value):
-        """Set the temporary fake ID for quick meetings."""
-        self._fake_id = fake_value
-
-    @fake_id.deleter
-    def fake_id(self):
-        """Delete the temporary fake ID."""
-        del self._fake_id
+        """Return the BBB-facing identifier for this persisted meeting."""
+        return self.bbb_meeting_id or self.id
 
     @property
     def get_all_delegates(self):
@@ -203,16 +216,43 @@ class Meeting(db.Model):
             .all()
         )
 
+    def url_for_role(self, role):
+        meeting_url = MeetingUrls.query.filter(
+            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
+        ).one_or_none()
+        return meeting_url.url if meeting_url else None
 
-def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
-    """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
-    try:
-        id = bbb_meeting_id.split("-")[2]
-    except (IndexError, AttributeError):
-        return None
-    if not id.isdigit():
-        return None
-    return get_meeting_from_meeting_id(id)
+    @property
+    def moderator_url(self):
+        return self.url_for_role(Role.moderator)
+
+    @property
+    def attendee_url(self):
+        return self.url_for_role(Role.attendee)
+
+    @property
+    def authenticated_url(self):
+        return self.url_for_role(Role.authenticated)
+
+    def create_urls(self):
+        from b3desk.join import create_signin_url
+
+        for role in Role:
+            db.session.add(
+                MeetingUrls(
+                    meeting_id=self.id,
+                    role=role.name,
+                    url=create_signin_url(self, role),
+                )
+            )
+
+    def update_used_at_url(self, role):
+        meeting_url = MeetingUrls.query.filter(
+            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
+        ).one_or_none()
+        if meeting_url:
+            meeting_url.used_at = datetime.now()
+            db.session.commit()
 
 
 class PreviousVoiceBridge(db.Model):
@@ -236,33 +276,41 @@ def delete_old_voiceBridges():
     ).delete()
 
 
-def get_deterministic_password(meeting_fake_id, role):
+def get_deterministic_password(meeting_id, role):
     """Generate a deterministic password based on meeting ID and role."""
     signer = Signer(current_app.config["SECRET_KEY"])
     return (
-        signer.sign(f"{meeting_fake_id}-{role}")
+        signer.sign(f"{meeting_id}-{role}")
         .decode()
         .split(".")[-1][:PASSWORD_HASH_LENGTH]
     )
 
 
-def get_quick_meeting_from_fake_id(meeting_fake_id=None):
-    """Create a quick meeting instance for URL generation."""
-    if meeting_fake_id is None:
-        meeting_fake_id = get_random_alphanumeric_string(8)
-
+def get_quick_meeting_from_meeting_id(meeting_id=None):
+    """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
+    meeting_id = meeting_id or str(uuid6.uuid6())
     meeting = Meeting(
-        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
+        id=meeting_id, attendeePW=get_deterministic_password(meeting_id, "attendee")
     )
-    meeting.fake_id = meeting_fake_id
+    meeting.quick = True
     return meeting
 
 
-def get_meeting_from_meeting_id(meeting_fake_id):
-    """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
-    if meeting_fake_id.isdigit():
-        return db.session.get(Meeting, meeting_fake_id)
-    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
+def get_meeting_from_meeting_id(meeting_id):
+    """Retrieve a persisted meeting by id, or build a quick (non-persisted) one if none exists."""
+    return db.session.get(Meeting, meeting_id) or get_quick_meeting_from_meeting_id(
+        meeting_id
+    )
+
+
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
+    """Retrieve a persisted Meeting from a BBB-side identifier (new UUID or legacy 'meeting-persistent-...' form)."""
+    return (
+        db.session.get(Meeting, bbb_meeting_id)
+        or db.session.query(Meeting)
+        .filter_by(bbb_meeting_id=bbb_meeting_id)
+        .one_or_none()
+    )
 
 
 def generate_random_pin():
@@ -363,6 +411,7 @@ def create_and_save_shadow_meeting(user):
     )
     db.session.add(meeting)
     assign_unique_codes(meeting)
+    meeting.create_urls()
     db.session.commit()
     return meeting
 
@@ -379,7 +428,7 @@ def get_or_create_shadow_meeting(user):
     if len(shadow_meetings) > 1:
         for shadow_meeting in shadow_meetings:
             if shadow_meeting is not shadow_meetings[0]:
-                save_voiceBridge_and_delete_meeting(shadow_meeting)
+                clean_db_and_delete_meeting(shadow_meeting)
     return (
         create_and_save_shadow_meeting(user)
         if not shadow_meetings
@@ -387,13 +436,33 @@ def get_or_create_shadow_meeting(user):
     )
 
 
-def save_voiceBridge_and_delete_meeting(meeting):
-    """Archive a meeting's voice bridge and delete the meeting from the database."""
+def clean_db_and_delete_meeting(meeting):
+    if meeting.get_all_delegates:
+        return _("Vous devez retirer les délégataires"), "error"
+
+    if not meeting.is_shadow:
+        from .bbb import BBB
+
+        data = BBB(meeting.meetingID).delete_all_recordings()
+        if data and not BBB.success(data):
+            return (
+                _(
+                    "Impossible de supprimer les vidéos de cette réunion : {message}"
+                ).format(message=data.get("message", "")),
+                "error",
+            )
+        for meeting_file in meeting.files:
+            db.session.delete(meeting_file)
+
+    for meeting_url in meeting.urls:
+        db.session.delete(meeting_url)
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
+
+    return _("Élément supprimé"), "success"
 
 
 def delete_all_old_shadow_meetings():
@@ -407,7 +476,7 @@ def delete_all_old_shadow_meetings():
     ]
 
     for shadow_meeting in old_shadow_meetings:
-        save_voiceBridge_and_delete_meeting(shadow_meeting)
+        clean_db_and_delete_meeting(shadow_meeting)
 
 
 def visio_code_exists(code):
@@ -477,3 +546,11 @@ def get_meeting_by_visio_code(visio_code):
     return (
         db.session.query(Meeting).filter(Meeting.visio_code == visio_code).one_or_none()
     )
+
+
+def remove_delegate_from_db(meeting, delegate):
+    access = MeetingAccess.query.filter_by(
+        user_id=delegate.id, meeting_id=meeting.id
+    ).one()
+    db.session.delete(access)
+    db.session.commit()

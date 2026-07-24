@@ -27,15 +27,15 @@ from b3desk.forms import RecordingForm
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_join_url
-from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.bbb import BBB
 from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import assign_unique_visio_code
-from b3desk.models.meetings import get_quick_meeting_from_fake_id
-from b3desk.models.meetings import save_voiceBridge_and_delete_meeting
+from b3desk.models.meetings import clean_db_and_delete_meeting
+from b3desk.models.meetings import get_quick_meeting_from_meeting_id
+from b3desk.models.meetings import remove_delegate_from_db
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 from b3desk.models.users import User
@@ -51,7 +51,7 @@ bp = Blueprint("meetings", __name__)
 
 def meeting_mailto_params(meeting: Meeting, role: Role):
     """Generate mailto URL parameters for sharing meeting invitation links."""
-    signin_url = get_signin_url(meeting, role)
+    signin_url = meeting.url_for_role(role)
     return render_template(
         "meeting/mailto/mail_href.txt",
         meeting=meeting,
@@ -65,14 +65,13 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 @auth.oidc_auth("default")
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
-    meeting = get_quick_meeting_from_fake_id()
-    created = create_bbb_quick_meeting(meeting.fake_id, g.user)
+    meeting = get_quick_meeting_from_meeting_id()
+    created = create_bbb_quick_meeting(meeting.id, g.user)
     return redirect(
         get_join_url(
             meeting,
             Role.moderator,
             g.user.fullname,
-            quick_meeting=True,
             waiting_room=not created,
         )
     )
@@ -165,6 +164,7 @@ def new_meeting():
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)
+    meeting.create_urls()
     db.session.commit()
     current_app.logger.info(
         "Meeting %s %s was created by %s",
@@ -298,29 +298,15 @@ def delete_meeting():
             abort(403)
 
         if meeting.owner_id == g.user.id or g.user.admin:
-            if not meeting.get_all_delegates:
-                for meeting_file in meeting.files:
-                    db.session.delete(meeting_file)
-
-                data = BBB(meeting.meetingID).delete_all_recordings()
-                if data and not BBB.success(data):
-                    flash(
-                        _(
-                            "Impossible de supprimer les vidéos de cette réunion : {message}"
-                        ).format(message=data.get("message", "")),
-                        "error",
-                    )
-                else:
-                    save_voiceBridge_and_delete_meeting(meeting)
-                    flash(_("Élément supprimé"), "success")
-                    current_app.logger.info(
-                        "Meeting %s %s was deleted by %s",
-                        meeting.name,
-                        meeting.id,
-                        g.user.email,
-                    )
-            else:
-                flash(_("Vous devez retirer les délégataires"), "error")
+            message, category = clean_db_and_delete_meeting(meeting)
+            flash(message, category)
+            if category == "success":
+                current_app.logger.info(
+                    "Meeting %s %s was deleted by %s",
+                    meeting.name,
+                    meeting.id,
+                    g.user.email,
+                )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
     return redirect(url_for("public.welcome" if not is_admin_mode() else "admin.home"))
@@ -449,11 +435,7 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:
         flash(_("L'utilisateur ne fait pas partie des délégataires"), "error")
     else:
-        access = MeetingAccess.query.filter_by(
-            user_id=delegate.id, meeting_id=meeting.id
-        ).one()
-        db.session.delete(access)
-        db.session.commit()
+        remove_delegate_from_db(meeting, delegate)
         flash(_("L'utilisateur a été retiré des délégataires"), "success")
         send_delegation_mail(meeting, delegate, new_delegation=False)
         current_app.logger.info(

@@ -51,7 +51,6 @@ def get_join_url(
     meeting_role: Role,
     fullname,
     fullname_suffix="",
-    quick_meeting=False,
     seconds_before_refresh=None,
     waiting_room=True,
 ):
@@ -61,16 +60,16 @@ def get_join_url(
     if waiting_room and not BBB(meeting.meetingID).is_running():
         return url_for(
             "join.waiting_meeting",
-            meeting_fake_id=meeting.fake_id,
+            meeting_id=meeting.id,
             hash_=get_hash(meeting, meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
         )
 
-    if meeting.id:
+    if not meeting.quick:
         meeting.last_connection_utc_datetime = datetime.now()
+        meeting.update_used_at_url(meeting_role)
         db.session.add(meeting)
         db.session.commit()
 
@@ -80,11 +79,11 @@ def get_join_url(
     )
 
 
-def get_signin_url(meeting, meeting_role: Role):
+def create_signin_url(meeting, meeting_role: Role):
     """Generate the sign-in URL for a specific role."""
     return url_for(
         "join.signin_meeting",
-        meeting_fake_id=meeting.fake_id,
+        meeting_id=meeting.id,
         hash_=get_hash(meeting, meeting_role),
         role=meeting_role,
         _external=True,
@@ -113,11 +112,11 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
         ],
-        moderator_signin_url=get_signin_url(meeting, Role.moderator),
+        moderator_signin_url=meeting.moderator_url,
         attendee_link_introduction=current_app.config[
             "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
         ],
-        attendee_signin_url=get_signin_url(meeting, Role.attendee),
+        attendee_signin_url=meeting.attendee_url,
     )
     meta_bbb_recording_ready_url = get_recording_status_callback_url()
 
@@ -188,23 +187,22 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     return True
 
 
-def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
+def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
     """Create a BBB room for a quick meeting."""
     from b3desk.models.bbb import BBB
     from b3desk.models.meetings import get_deterministic_password
     from b3desk.models.meetings import pin_generation
 
-    meeting_id = f"meeting-vanish-{fake_id}--"
     name = str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    moderator_pw = get_deterministic_password(fake_id, "moderator")
-    attendee_pw = get_deterministic_password(fake_id, "attendee")
+    moderator_pw = get_deterministic_password(meeting_id, "moderator")
+    attendee_pw = get_deterministic_password(meeting_id, "attendee")
     meta_academy = user.mail_domain if user and user.mail_domain else None
 
     bbb = BBB(meeting_id)
     if bbb.is_running():
         return False
 
-    current_app.logger.info("Request BBB quick room creation %s %s", name, fake_id)
+    current_app.logger.info("Request BBB quick room creation %s %s", name, meeting_id)
 
     voice_bridge = (
         pin_generation() if current_app.config["ENABLE_PIN_MANAGEMENT"] else None
@@ -216,7 +214,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
 
     moderator_signin_url = url_for(
         "join.signin_meeting",
-        meeting_fake_id=fake_id,
+        meeting_id=meeting_id,
         hash_=compute_hash(Role.moderator),
         role=Role.moderator,
         _external=True,
@@ -224,7 +222,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     )
     attendee_signin_url = url_for(
         "join.signin_meeting",
-        meeting_fake_id=fake_id,
+        meeting_id=meeting_id,
         hash_=compute_hash(Role.attendee),
         role=Role.attendee,
         _external=True,

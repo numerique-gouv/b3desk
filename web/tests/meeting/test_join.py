@@ -1,8 +1,9 @@
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+from b3desk.join import create_signin_url
 from b3desk.join import get_hash
-from b3desk.join import get_signin_url
+from b3desk.models.meetings import MeetingUrls
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -11,8 +12,8 @@ from joserfc.jwk import RSAKey
 
 def test_meeting_signin_links_are_accessible(client_app, meeting):
     """Test that moderator and attendee signin links generated for meetings are accessible."""
-    moderator_url = get_signin_url(meeting, Role.moderator)
-    attendee_url = get_signin_url(meeting, Role.attendee)
+    moderator_url = create_signin_url(meeting, Role.moderator)
+    attendee_url = create_signin_url(meeting, Role.attendee)
 
     response = client_app.get(moderator_url, status=200)
     assert response.template == "meeting/join.html"
@@ -70,7 +71,86 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
         url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
     )
 
-    assert response.location == "/meeting/join/1/authenticated"
+    assert response.location == f"/meeting/join/{meeting.id}/authenticated"
+
+
+def test_signin_meeting_updates_used_at_for_attendee_link(
+    client_app, meeting, mock_meeting_is_running
+):
+    """Test visiting the attendee signin link must set used_at on the attendee MeetingUrls row."""
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
+    ).one_or_none()
+    assert meeting_url.used_at is None
+
+    res = client_app.get(meeting_url.url, status=200)
+    res.form.submit()
+
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
+    ).one_or_none()
+    assert meeting_url.used_at is not None
+
+
+def test_signin_meeting_updates_used_at_for_moderator_link(
+    client_app, meeting, mock_meeting_is_running
+):
+    """Test visiting the moderator signin link must set used_at on the moderator MeetingUrls row."""
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
+    ).one_or_none()
+    assert meeting_url.used_at is None
+
+    res = client_app.get(meeting_url.url, status=200)
+    res.form.submit()
+
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
+    ).one_or_none()
+    assert meeting_url.used_at is not None
+
+
+def test_signin_meeting_updates_used_at_for_authenticated_link(
+    client_app, meeting, mock_meeting_is_running, iam_server, iam_client
+):
+    """Test visiting the authenticated signin link must set used_at on the authenticated MeetingUrls row."""
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id,
+        MeetingUrls.role == Role.authenticated.name,
+    ).one_or_none()
+    assert meeting_url.used_at is None
+
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    res = client_app.get(meeting_url.url, status=302)
+    res = client_app.get(res.location, status=302)
+    res = iam_server.test_client.get(res.location)
+    assert res.status_code == 302
+    res = client_app.get(res.headers["Location"], status=302, expect_errors=True)
+    res = res.follow(status=302).follow(status=200)
+    res.form.submit()
+
+    meeting_url = MeetingUrls.query.filter(
+        MeetingUrls.meeting_id == meeting.id,
+        MeetingUrls.role == Role.authenticated.name,
+    ).one_or_none()
+    assert meeting_url.used_at is not None
+
+
+def test_signin_meeting_with_invalid_hash_does_not_update_used_at(client_app, meeting):
+    """Test invalid hash must not resolve a role, so no MeetingUrls row should be marked as used."""
+    response = client_app.get(
+        f"/meeting/signin/{meeting.id}/hash/wrong-hash", status=302
+    )
+
+    assert response.location == "/"
+    assert (
+        "error",
+        "Le lien d'invitation que vous avez utilisé est invalide.",
+    ) in response.flashes
+    assert all(url.used_at is None for url in meeting.urls)
 
 
 def test_auth_attendee_disabled(client_app, meeting):
@@ -95,7 +175,7 @@ def test_join_meeting_as_authenticated_attendee(
     url = f"/meeting/join/{meeting.id}/authenticated"
     response = client_app.get(url, status=302)
 
-    assert "/meeting/wait/1/hash/" in response.location
+    assert f"/meeting/wait/{meeting.id}/hash/" in response.location
     assert "Bob%20Dylan" in response.location
 
     response = response.follow()
@@ -123,7 +203,7 @@ def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     url = f"/meeting/join/{meeting.id}/authenticated"
     response = client_app.get(url, status=302)
 
-    assert "/meeting/wait/1/hash/" in response.location
+    assert f"/meeting/wait/{meeting.id}/hash/" in response.location
     assert "John%20Lennon" in response.location
 
     response = response.follow()
@@ -212,13 +292,13 @@ def test_join_meeting_as_role_with_no_user(
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting):
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
-    meeting_fake_id = meeting.fake_id
+    meeting_id = meeting.id
     hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
@@ -230,13 +310,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     """Test that empty fullname suffix is handled correctly."""
-    meeting_fake_id = meeting.fake_id
+    meeting_id = meeting.id
     hash_ = get_hash(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         fullname=fullname,
         fullname_suffix="",
@@ -362,7 +442,7 @@ def test_rasing_time_before_refresh_in_waiting_meeting(
     """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
     mocker.patch("requests.Session.send", return_value=Response)
 
-    response = client_app.get("/meeting/join/1/moderateur")
+    response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     response = client_app.get(response.location)
     assert response.form["seconds_before_refresh"].value == "10"
     response = response.form.submit()
@@ -378,7 +458,7 @@ def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
     mocker.patch("requests.Session.send", return_value=Response)
 
     def increase_waiting_time(previous_waiting_time="10"):
-        response = client_app.get("/meeting/join/1/moderateur")
+        response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
         response = client_app.get(response.location)
         response.form["seconds_before_refresh"].value = previous_waiting_time
         response = response.form.submit()

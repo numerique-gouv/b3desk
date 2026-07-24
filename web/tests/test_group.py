@@ -1,4 +1,3 @@
-import pytest
 from b3desk.commands import bp
 from b3desk.join import create_bbb_meeting
 
@@ -288,12 +287,6 @@ def test_can_use_ai_summary_falls_back_to_config_when_group_has_none(
     client_app.app.config["ENABLE_AI_SUMMARY"] = True
     user.groups.append(group_3)  # group_3: enable_ai_summary=None
     assert user.can_use_ai_summary is True
-
-
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    """Mock meeting.bbb.is_running() to return False."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_meeting_with_ai_summary_but_owner_lost_authorisation(

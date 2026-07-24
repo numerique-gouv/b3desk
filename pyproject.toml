@@ -35,6 +35,7 @@ dependencies = [
     "sqlalchemy>=1.4.31,<2.0.0",
     "sqlalchemy-json>=0.7.0,<0.8.0",
     "sqlalchemy-utils>=0.41.1,<0.50.0",
+    "uuid6>=2025.0.1",
     "webdavclient3==3.14.6",
 ]
 

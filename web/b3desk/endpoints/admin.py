@@ -14,11 +14,9 @@ from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
 from b3desk.forms import UserSearchForm
-from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
-from b3desk.models.roles import Role
 from b3desk.models.users import User
 
 from ..session import admin_needed
@@ -46,7 +44,7 @@ def get_meetings_paginate(per_page, data):
     if data:
         query = query.where(
             or_(
-                Meeting.id == int(data) if data.isdigit() else None,
+                Meeting.id == data,
                 Meeting.name.ilike(f"%{data}%"),
                 Meeting.visio_code == data,
             )
@@ -140,9 +138,6 @@ def manage_meetings():
 @admin_needed
 def meeting_infos(meeting: Meeting):
     """Display meeting infos of admin page."""
-    meeting.moderator_url = get_signin_url(meeting, Role.moderator)
-    meeting.attendee_url = get_signin_url(meeting, Role.attendee)
-    meeting.authenticated_url = get_signin_url(meeting, Role.authenticated)
     return render_template(
         "admin/meeting_infos.html",
         admin_mode=True,

@@ -93,3 +93,9 @@ docker compose -f docker-compose.yml -f docker-compose.preprod.yml up
 ```
 
 Le fichier `run_webserver.sh` est lancé par le `Dockerfile` et migre la base de données automatiquement. Ces docker-compose de production et preproduction peuvent donc être utilisés pour une primo-installation, ou sur une instance existante.
+
+### Migrations non réversibles
+
+- `c8d1764b3a93`: remplacement de l'identifiant entier `meeting.id` par un UUID.
+Si une réunion a été créée après cette migration, le downgrade échoue, l'UUID ne pouvant pas être reconverti en entier.
+De plus, si la réunion a déjà été démarrée sur BBB, la salle existe sous le meetingID(UUID) côté serveur BBB. Changer l'`id` en entier côté B3Desk casserait donc la correspondance avec cette salle, qui deviendrait orpheline (le nouvel entier ne correspondrait plus à rien côté BBB).

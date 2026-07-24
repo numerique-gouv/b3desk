@@ -407,6 +407,9 @@ def meeting(client_app, user):
     meeting.favorite_of.append(user)
     db.session.commit()
 
+    meeting.create_urls()
+    db.session.commit()
+
     yield meeting
 
 
@@ -429,6 +432,9 @@ def meeting_2(client_app, user):
     meeting.favorite_of.append(user)
     db.session.commit()
 
+    meeting.create_urls()
+    db.session.commit()
+
     yield meeting
 
 
@@ -447,6 +453,9 @@ def meeting_3(client_app, user):
         visio_code="911111113",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -469,6 +478,9 @@ def meeting_1_user_2(client_app, user, user_2):
         visio_code="922222222",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     access = MeetingAccess(
@@ -499,6 +511,9 @@ def meeting_2_user_2(client_app, user_2):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_urls()
+    db.session.commit()
+
     yield meeting
 
 
@@ -519,6 +534,9 @@ def meeting_1_user_3(client_app, user, user_3):
         visio_code="933333333",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     access = MeetingAccess(
@@ -549,6 +567,9 @@ def shadow_meeting(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_urls()
+    db.session.commit()
+
     yield meeting
 
 
@@ -569,6 +590,9 @@ def shadow_meeting_2(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_urls()
+    db.session.commit()
+
     yield meeting
 
 
@@ -587,6 +611,9 @@ def shadow_meeting_3(client_app, user):
         visio_code="511111113",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -1026,3 +1053,15 @@ def make_signed_parameters(app):
         return jwt.encode({"alg": "HS256"}, payload, key)
 
     return make
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    """Mock meeting.bbb.is_running() to return True."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)

@@ -46,22 +46,22 @@ MAXIMUM_REFRESH_DELAY = timedelta(seconds=60)
 # mix up invitation links.
 # https://github.com/numerique-gouv/b3desk/issues/93
 @bp.route(
-    "/meeting/signin/<role:role>/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>"
+    "/meeting/signin/<role:role>/<meeting_id>/creator/<user:creator>/hash/<hash_>"
 )
-@bp.route("/meeting/signin/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>")
+@bp.route("/meeting/signin/<meeting_id>/creator/<user:creator>/hash/<hash_>")
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
-@bp.route("/meeting/signin/<role:role>/<meeting_fake_id>/hash/<hash_>")
-@bp.route("/meeting/signin/<meeting_fake_id>/hash/<hash_>")
+@bp.route("/meeting/signin/<role:role>/<meeting_id>/hash/<hash_>")
+@bp.route("/meeting/signin/<meeting_id>/hash/<hash_>")
 def signin_meeting(
-    meeting_fake_id, hash_, creator: User | None = None, role: Role | None = None
+    meeting_id, hash_, creator: User | None = None, role: Role | None = None
 ):
     """Get users in the meeting.
 
     - Unauthenticated users are display a name choosing form 'join.html'
     - Authenticated users are redirected to 'waiting_meeting'
     """
-    meeting = get_meeting_from_meeting_id(meeting_fake_id)
+    meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
         flash(
             _(
@@ -75,7 +75,7 @@ def signin_meeting(
 
     if role == Role.authenticated:
         return redirect(
-            url_for("join.join_meeting_as_authenticated", meeting_id=meeting_fake_id)
+            url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
         )
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
@@ -84,7 +84,7 @@ def signin_meeting(
 
     return render_template(
         "meeting/join.html",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         role=role,
         meeting_name=meeting.name,
@@ -93,57 +93,55 @@ def signin_meeting(
 
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
-@bp.route("/meeting/auth/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>")
-@bp.route("/meeting/auth/<meeting_fake_id>/hash/<hash_>")
+@bp.route("/meeting/auth/<meeting_id>/creator/<user:creator>/hash/<hash_>")
+@bp.route("/meeting/auth/<meeting_id>/hash/<hash_>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def authenticate_then_signin_meeting(
-    meeting_fake_id, hash_, creator: User | None = None
-):
+def authenticate_then_signin_meeting(meeting_id, hash_, creator: User | None = None):
     """Authenticate user via OIDC then redirect to meeting signin page."""
     return redirect(
         url_for(
             "join.signin_meeting",
-            meeting_fake_id=meeting_fake_id,
+            meeting_id=meeting_id,
             hash_=hash_,
         )
     )
 
 
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/hash/<hash_>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_fake_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 def waiting_meeting(
-    meeting_fake_id, hash_, creator: User | None = None, fullname="", fullname_suffix=""
+    meeting_id, hash_, creator: User | None = None, fullname="", fullname_suffix=""
 ):
     """Display a page until the BBB meeting is created.
 
     The page wait a few seconds, then redirect to 'join_meeting'.
     """
-    meeting = get_meeting_from_meeting_id(meeting_fake_id)
+    meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
@@ -156,7 +154,6 @@ def waiting_meeting(
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", int(INITIAL_REFRESH_DELAY.total_seconds())
     )
-    quick_meeting = request.args.get("quick_meeting", False)
     current_app.logger.info(
         "%s is not running, new connection attempt in %s seconds",
         meeting.name,
@@ -164,13 +161,12 @@ def waiting_meeting(
     )
     return render_template(
         "meeting/wait.html",
-        meeting_fake_id=meeting_fake_id,
+        meeting_id=meeting_id,
         hash_=hash_,
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
         seconds_before_refresh=seconds_before_refresh,
-        quick_meeting=quick_meeting,
         meeting_name=meeting.name,
     )
 
@@ -187,7 +183,7 @@ def join_meeting():
         return redirect(url_for("public.index"))
 
     fullname = form["fullname"].data
-    meeting_fake_id = form["meeting_fake_id"].data
+    meeting_id = form["meeting_id"].data
     hash_ = form["hash_"].data
     seconds_before_refresh = None
     if (
@@ -203,10 +199,7 @@ def join_meeting():
         if seconds_before_refresh == 0
         else seconds_before_refresh
     )
-    quick_meeting = None
-    if "quick_meeting" in form:
-        quick_meeting = form["quick_meeting"].data
-    meeting = get_meeting_from_meeting_id(meeting_fake_id)
+    meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
@@ -220,8 +213,8 @@ def join_meeting():
         return redirect(url_for("public.index"))
 
     if role == Role.moderator:
-        if meeting.id is None:
-            created = create_bbb_quick_meeting(meeting.fake_id, g.user)
+        if meeting.quick:
+            created = create_bbb_quick_meeting(meeting.id, g.user)
         else:
             created = create_bbb_meeting(meeting, g.user)
         waiting_room = not created
@@ -235,14 +228,13 @@ def join_meeting():
             fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
             waiting_room=waiting_room,
         )
     )
 
 
-# Cannot use a flask converter here because sometimes 'meeting_id' is a 'fake_id'
-@bp.route("/meeting/join/<int:meeting_id>/authenticated")
+# Cannot use a flask converter here because the meeting may not be persisted yet
+@bp.route("/meeting/join/<meeting_id>/authenticated")
 @check_oidc_connection(auth)
 @auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
@@ -255,7 +247,7 @@ def join_meeting_as_authenticated(meeting_id):
     return redirect(
         url_for(
             "join.waiting_meeting",
-            meeting_fake_id=meeting_id,
+            meeting_id=meeting_id,
             hash_=get_hash(meeting, role),
             fullname=fullname,
             seconds_before_refresh=0,  # Authenticated user must go through the waiting room, but attempts a connection without delay.
@@ -300,9 +292,7 @@ def join_waiting_meeting_from_sip(visio_code):
         abort(404)
 
     hash_ = get_hash(meeting, role=Role.moderator)
-    return signin_meeting(
-        meeting_fake_id=str(meeting.id), hash_=hash_, role=Role.moderator
-    )
+    return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
 
 
 @bp.route("/meeting/visio_code", methods=["POST"])
@@ -330,9 +320,7 @@ def visio_code_connection():
 
     visio_code_attempt_counter_reset()
     hash_ = get_hash(meeting, role=Role.moderator)
-    return signin_meeting(
-        meeting_fake_id=str(meeting.id), hash_=hash_, role=Role.moderator
-    )
+    return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
 
 
 @bp.route("/meeting/visio_code_form", methods=["POST"])
