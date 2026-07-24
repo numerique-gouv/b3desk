@@ -428,7 +428,7 @@ def get_or_create_shadow_meeting(user):
     if len(shadow_meetings) > 1:
         for shadow_meeting in shadow_meetings:
             if shadow_meeting is not shadow_meetings[0]:
-                save_voiceBridge_and_delete_meeting(shadow_meeting)
+                clean_db_and_delete_meeting(shadow_meeting)
     return (
         create_and_save_shadow_meeting(user)
         if not shadow_meetings
@@ -436,8 +436,24 @@ def get_or_create_shadow_meeting(user):
     )
 
 
-def save_voiceBridge_and_delete_meeting(meeting):
-    """Archive a meeting's voice bridge and delete the meeting from the database."""
+def clean_db_and_delete_meeting(meeting):
+    if meeting.get_all_delegates:
+        return _("Vous devez retirer les délégataires"), "error"
+
+    if not meeting.is_shadow:
+        from .bbb import BBB
+
+        data = BBB(meeting.meetingID).delete_all_recordings()
+        if data and not BBB.success(data):
+            return (
+                _(
+                    "Impossible de supprimer les vidéos de cette réunion : {message}"
+                ).format(message=data.get("message", "")),
+                "error",
+            )
+        for meeting_file in meeting.files:
+            db.session.delete(meeting_file)
+
     for meeting_url in meeting.urls:
         db.session.delete(meeting_url)
     previous_voiceBridge = PreviousVoiceBridge()
@@ -445,6 +461,8 @@ def save_voiceBridge_and_delete_meeting(meeting):
     db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
+
+    return _("Élément supprimé"), "success"
 
 
 def delete_all_old_shadow_meetings():
@@ -458,7 +476,7 @@ def delete_all_old_shadow_meetings():
     ]
 
     for shadow_meeting in old_shadow_meetings:
-        save_voiceBridge_and_delete_meeting(shadow_meeting)
+        clean_db_and_delete_meeting(shadow_meeting)
 
 
 def visio_code_exists(code):
@@ -528,3 +546,11 @@ def get_meeting_by_visio_code(visio_code):
     return (
         db.session.query(Meeting).filter(Meeting.visio_code == visio_code).one_or_none()
     )
+
+
+def remove_delegate_from_db(meeting, delegate):
+    access = MeetingAccess.query.filter_by(
+        user_id=delegate.id, meeting_id=meeting.id
+    ).one()
+    db.session.delete(access)
+    db.session.commit()
