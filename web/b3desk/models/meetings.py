@@ -9,11 +9,11 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import random
-import uuid
 from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
 
+import uuid6
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
@@ -135,7 +135,7 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
 
 
 class Meeting(db.Model):
-    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid6.uuid6()))
     # Legacy BBB meeting identifier ("meeting-persistent-{old_id}--{owner_hash}"),
     # kept stable across the switch of `id` from an incrementing Integer to a UUID.
     bbb_meeting_id = db.Column(db.String(255))
@@ -288,7 +288,7 @@ def get_deterministic_password(meeting_id, role):
 
 def get_quick_meeting_from_meeting_id(meeting_id=None):
     """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
-    meeting_id = meeting_id or str(uuid.uuid4())
+    meeting_id = meeting_id or str(uuid6.uuid6())
     meeting = Meeting(
         id=meeting_id, attendeePW=get_deterministic_password(meeting_id, "attendee")
     )
