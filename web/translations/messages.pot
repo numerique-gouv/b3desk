@@ -213,7 +213,7 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:250 web/b3desk/forms.py:351
+#: web/b3desk/forms.py:250 web/b3desk/forms.py:350
 #: web/b3desk/templates/admin/group_infos.html:75
 #: web/b3desk/templates/admin/meeting_infos.html:169
 msgid "Génération de résumé (IA)"
@@ -255,29 +255,29 @@ msgstr ""
 msgid "Ajout de membre"
 msgstr ""
 
-#: web/b3desk/forms.py:325
+#: web/b3desk/forms.py:324
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:327
+#: web/b3desk/forms.py:326
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:335 web/b3desk/templates/admin/group_infos.html:59
+#: web/b3desk/forms.py:334 web/b3desk/templates/admin/group_infos.html:59
 #: web/b3desk/templates/admin/user_infos.html:133
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:343 web/b3desk/templates/admin/group_infos.html:67
+#: web/b3desk/forms.py:342 web/b3desk/templates/admin/group_infos.html:67
 #: web/b3desk/templates/admin/user_infos.html:141
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:353 web/b3desk/forms.py:364 web/b3desk/forms.py:369
+#: web/b3desk/forms.py:352 web/b3desk/forms.py:363 web/b3desk/forms.py:368
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:362 web/b3desk/forms.py:367
+#: web/b3desk/forms.py:361 web/b3desk/forms.py:366
 msgid "Activé par défaut"
 msgstr ""
 
@@ -321,24 +321,24 @@ msgstr ""
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:272
+#: web/b3desk/endpoints/admin.py:270
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:303
+#: web/b3desk/endpoints/admin.py:301
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:307
+#: web/b3desk/endpoints/admin.py:305
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:333
+#: web/b3desk/endpoints/admin.py:331
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:384
+#: web/b3desk/endpoints/admin.py:382
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 

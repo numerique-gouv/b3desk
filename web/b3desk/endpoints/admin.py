@@ -251,8 +251,6 @@ def edit_group(group: Group):
             group=group,
         )
 
-    del form.id
-
     updated_data = {
         key: form.data[key]
         for key in form.data
@@ -280,7 +278,7 @@ def edit_group(group: Group):
 @admin_needed
 def manage_group_members(group: Group):
     """Display group members list and member addition of admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
     return render_template(
