@@ -1,6 +1,7 @@
 import pytest
 from b3desk.commands import bp
 from b3desk.join import create_bbb_meeting
+from b3desk.models import db
 
 
 def test_add_group_members_displays_users(
@@ -29,6 +30,25 @@ def test_add_group_members_filters_by_search(
     res = client_app.get(
         f"/admin/add-group-members/{group.id}?search={user.email}", status=200
     )
+    assert user.email in res.text
+    assert user_2.email not in res.text
+
+
+def test_add_group_members_excludes_existing_members(
+    cli_runner,
+    client_app,
+    user,
+    user_2,
+    group,
+    authenticated_user,
+):
+    """Test that users already in the group don't appear in the add members list."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    user_2.groups.append(group)
+    db.session.commit()
+
+    res = client_app.get(f"/admin/add-group-members/{group.id}", status=200)
+
     assert user.email in res.text
     assert user_2.email not in res.text
 

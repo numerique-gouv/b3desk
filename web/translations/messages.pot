@@ -307,38 +307,38 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:188
+#: web/b3desk/endpoints/admin.py:198
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:203
+#: web/b3desk/endpoints/admin.py:213
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:247 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/admin.py:257 web/b3desk/endpoints/meetings.py:151
 #: web/b3desk/endpoints/meetings.py:211
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:270
+#: web/b3desk/endpoints/admin.py:280
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:301
+#: web/b3desk/endpoints/admin.py:311
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:305
+#: web/b3desk/endpoints/admin.py:315
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:331
+#: web/b3desk/endpoints/admin.py:341
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:382
+#: web/b3desk/endpoints/admin.py:394
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
@@ -1385,11 +1385,6 @@ msgstr ""
 #: web/b3desk/templates/admin/user_table.html:15
 #: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Prénom"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_table.html:29
-#, python-format
-msgid "%(fullname)s est dans le groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:29

@@ -82,7 +82,7 @@ def get_users_paginate(per_page, data=None):
     return db.paginate(query, per_page=per_page)
 
 
-def get_all_users_not_in_group(group, data=None):
+def query_all_users_not_in_group(group, data=None):
     query = (
         db.select(User).where(~User.groups.contains(group)).order_by(User.created_at)
     )
@@ -95,7 +95,17 @@ def get_all_users_not_in_group(group, data=None):
                 User.email.ilike(f"%{data}%"),
             )
         )
+    return query
+
+
+def get_all_users_not_in_group(group, data=None):
+    query = query_all_users_not_in_group(group, data)
     return db.session.execute(query).scalars().all()
+
+
+def get_all_users_not_in_group_paginate(per_page, group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.paginate(query, per_page=per_page)
 
 
 @bp.route("/admin/home")
@@ -370,7 +380,9 @@ def add_group_members(group: Group):
         )
 
     selected_users = get_all_users_not_in_group(group, data)
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
+    users_page = get_all_users_not_in_group_paginate(
+        per_page=PER_PAGE, group=group, data=data
+    )
 
     if request.method == "POST":
         user_ids = request.form.getlist("user_ids")
