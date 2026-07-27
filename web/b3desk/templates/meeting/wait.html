@@ -3,6 +3,9 @@
 {% block main %}
     <div class="fr-mt-4w fr-grid-row fr-grid-row--center">
         <div class="fr-col-sm-12 fr-col-md-10 fr-col-lg-8 connected">
+            {% if meeting_name %}
+                <h5 class="fr-h5">{% trans %}Réunion <em>{{ meeting_name }}</em>{% endtrans %}</h1>
+            {% endif %}
             <h5 class="fr-h5">
                 {% trans %}Bonjour {{ fullname }}, vous pourrez bientôt entrer{% endtrans %}
             </h5>

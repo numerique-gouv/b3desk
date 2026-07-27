@@ -952,7 +952,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_CLIENT_SECRET: str | None = None
-    """ Piste Oauth client_secret
+    """Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
@@ -966,7 +966,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_API_URL: str | None = "https://oauth.piste.gouv.fr/api"
-    """ PISTE OAUTH APU url
+    """PISTE OAUTH APU url
 
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
@@ -978,7 +978,7 @@ class MainSettings(BaseSettings):
     """
 
     MAXIMUM_MEETING_DELEGATES: int | None = 15
-    """ Maximum meeting delegates
+    """Maximum meeting delegates
 
     Maximum number of delegates for one meeting
     """
