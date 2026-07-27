@@ -344,7 +344,7 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     mock_meeting_is_not_running,
     bbb_response,
 ):
-    """Test when owner loses ai-summary authorization, ai_summary is disabled on their meetings before launch."""
+    """When the owner loses ai-summary authorisation, launching the meeting keeps the stored preference while ai_summary_enabled reflects the loss."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
@@ -352,8 +352,9 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     meeting.ai_summary = True
     client_app.post("/admin/manage-group-members/1/1", status=302)
     create_bbb_meeting(meeting, meeting.owner)
-    assert meeting.ai_summary is False
     assert user.can_use_ai_summary is False
+    assert meeting.ai_summary is True
+    assert meeting.ai_summary_enabled is False
 
 
 def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
