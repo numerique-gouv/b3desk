@@ -14,7 +14,7 @@ from b3desk.nextcloud import is_nextcloud_available
 def get_hash(meeting, role: Role, hash_from_string=False):
     """Generate a hash for meeting access verification based on role."""
     name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    s = f"{meeting.meetingID}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
+    s = f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
@@ -57,7 +57,7 @@ def get_join_url(
     """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
     from b3desk.models.bbb import BBB
 
-    if waiting_room and not BBB(meeting.meetingID).is_running():
+    if waiting_room and not BBB(meeting.bbb_meeting_id).is_running():
         return url_for(
             "join.waiting_meeting",
             meeting_id=meeting.id,
@@ -75,7 +75,9 @@ def get_join_url(
 
     nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
     return (
-        BBB(meeting.meetingID).prepare_request_to_join_bbb(meeting_role, nickname).url
+        BBB(meeting.bbb_meeting_id)
+        .prepare_request_to_join_bbb(meeting_role, nickname)
+        .url
     )
 
 
@@ -95,7 +97,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     if bbb.is_running():
         return False
 
@@ -148,7 +150,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         guest_policy=meeting.guestPolicy,
         presentation_upload_external_url=url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         presentation_upload_external_description=current_app.config[
@@ -165,7 +167,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     )
 
     current_app.logger.info(
-        "BBB room %s creation result: %s", meeting.meetingID, result
+        "BBB room %s creation result: %s", meeting.bbb_meeting_id, result
     )
 
     if not BBB.success(result):

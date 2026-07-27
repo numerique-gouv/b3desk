@@ -30,7 +30,7 @@ def test_is_running(meeting, mocker):
 
     assert send.call_count == 0
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     assert bbb.is_running()
     assert send.call_count == 1
 
@@ -157,7 +157,7 @@ def test_get_recordings(meeting, mocker):
 
     assert send.call_count == 0
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
@@ -242,7 +242,7 @@ def test_invalid_xml_response(meeting, mocker, caplog):
 
     mocker.patch("requests.Session.send", return_value=Response)
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):
         bbb.is_running()
     assert "BBB API XML parse error" in caplog.text
@@ -258,7 +258,7 @@ def test_missing_returncode_response(meeting, mocker, caplog):
 
     mocker.patch("requests.Session.send", return_value=Response)
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):
         bbb.is_running()
     assert "BBB API response missing returncode" in caplog.text
