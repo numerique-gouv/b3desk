@@ -19,9 +19,7 @@ def _mock_recording(mocker, playbacks):
         return_value=[
             {
                 "playbacks": playbacks,
-                "start_date": datetime.datetime(
-                    2026, 1, 1, tzinfo=datetime.timezone.utc
-                ),
+                "start_date": datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC),
                 "name": "x",
             }
         ],

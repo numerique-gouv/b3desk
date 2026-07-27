@@ -102,7 +102,7 @@ def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user
     iam_token = iam_server.random_token(
         client=iam_client,
         subject=iam_user,
-        issue_date=datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc),
+        issue_date=datetime.datetime(2000, 1, 1, tzinfo=datetime.UTC),
     )
 
     client_app.get(

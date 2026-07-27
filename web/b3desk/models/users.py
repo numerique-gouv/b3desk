@@ -9,9 +9,9 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
+from datetime import UTC
 from datetime import date
 from datetime import datetime
-from datetime import timezone
 
 from flask import current_app
 
@@ -42,7 +42,7 @@ def get_or_create_user(user_info):
             given_name=given_name,
             family_name=family_name,
             preferred_username=preferred_username,
-            last_connection_utc_datetime=datetime.now(timezone.utc),
+            last_connection_utc_datetime=datetime.now(UTC),
         )
         update_user_nc_credentials(user)
         db.session.add(user)
@@ -67,7 +67,7 @@ def get_or_create_user(user_info):
             not user.last_connection_utc_datetime
             or user.last_connection_utc_datetime.date() < date.today()
         ):
-            user.last_connection_utc_datetime = datetime.now(timezone.utc)
+            user.last_connection_utc_datetime = datetime.now(UTC)
             user_has_changed = True
 
         if user_has_changed:
