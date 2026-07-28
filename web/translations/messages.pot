@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:384
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:383
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -491,32 +491,32 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:363 web/b3desk/models/meetings.py:370
+#: web/b3desk/models/meetings.py:362 web/b3desk/models/meetings.py:369
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:377
+#: web/b3desk/models/meetings.py:376
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:379
+#: web/b3desk/models/meetings.py:378
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:436
+#: web/b3desk/models/meetings.py:435
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:445
+#: web/b3desk/models/meetings.py:444
 #, python-brace-format
 msgid ""
 "Impossible de supprimer les vidéos de cette réunion {meeting_id}: "
 "{message}"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:460
+#: web/b3desk/models/meetings.py:459
 msgid "Élément supprimé"
 msgstr ""
 
@@ -3346,27 +3346,27 @@ msgid ""
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:55
+#: web/b3desk/utils/mailing.py:59
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:63
+#: web/b3desk/utils/mailing.py:67
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:69
+#: web/b3desk/utils/mailing.py:73
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:71
+#: web/b3desk/utils/mailing.py:75
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:73
+#: web/b3desk/utils/mailing.py:77
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:104
+#: web/b3desk/utils/mailing.py:108
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""

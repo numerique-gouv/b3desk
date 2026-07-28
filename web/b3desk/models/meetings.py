@@ -25,14 +25,13 @@ from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 
 from . import db
 from .roles import Role
 from .users import User
-
-DELAY_FOR_FIRST_EMAIL = 30
-DELAY_FOR_SECOND_EMAIL = 15
-DELAY_FOR_THIRD_EMAIL = 1
 
 
 class AccessLevel(IntEnum):

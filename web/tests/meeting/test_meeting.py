@@ -11,9 +11,6 @@ from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_role
 from b3desk.models import db
-from b3desk.models.meetings import DELAY_FOR_FIRST_EMAIL
-from b3desk.models.meetings import DELAY_FOR_SECOND_EMAIL
-from b3desk.models.meetings import DELAY_FOR_THIRD_EMAIL
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -31,6 +28,9 @@ from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
 from b3desk.tasks import delete_old_meetings
 from b3desk.tasks import inform_owner_before_meeting_deletion
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 from flask import url_for
 
 

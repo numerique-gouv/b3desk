@@ -8,6 +8,10 @@ from flask import url_for
 from flask_babel import format_datetime
 from flask_babel import lazy_gettext as _
 
+DELAY_FOR_FIRST_EMAIL = 30
+DELAY_FOR_SECOND_EMAIL = 15
+DELAY_FOR_THIRD_EMAIL = 1
+
 
 def make_smtp():
     return {
