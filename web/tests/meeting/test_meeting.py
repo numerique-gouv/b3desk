@@ -765,7 +765,6 @@ def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
     """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
     quick_meeting = get_quick_meeting_from_meeting_id()
     moderator_hash = get_hash(quick_meeting, Role.moderator)
-    print(quick_meeting.id)
     response = client_app.get(
         f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
     )
