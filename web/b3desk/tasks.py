@@ -11,6 +11,8 @@ from b3desk.models import db
 from b3desk.models.meetings import clean_db_and_delete_meeting
 from b3desk.models.meetings import get_inactive_meetings_to_delete
 from b3desk.models.meetings import get_inactive_meetings_to_inform
+from b3desk.models.users import clean_db_and_delete_user
+from b3desk.models.users import get_inactive_users_to_delete
 from b3desk.utils.mailing import send_available_recording_notification_mail
 from b3desk.utils.mailing import send_mail_before_meeting_deletion
 
@@ -21,13 +23,17 @@ celery = Celery("tasks")
 celery.conf.broker_url = f"redis://{REDIS_URL}"
 celery.conf.result_backend = f"redis://{REDIS_URL}"
 celery.conf.beat_schedule = {
-    "delete-old-meetings-every-day-at-5-am": {
+    "delete-old-meetings-every-day-at-3-am": {
         "task": "delete-old-meetings",
-        "schedule": crontab(minute=00, hour=5),
+        "schedule": crontab(minute=00, hour=3),
     },
-    "inform-owner-before-meeting-deletion-every-day-at-4-30-am": {
+    "inform-owner-before-meeting-deletion-every-day-at-4-am": {
         "task": "inform-owner-before-meeting-deletion",
-        "schedule": crontab(minute=30, hour=4),
+        "schedule": crontab(minute=00, hour=4),
+    },
+    "delete-old-users-every-day-at-3-30-am": {
+        "task": "delete-old-users",
+        "schedule": crontab(minute=30, hour=3),
     },
 }
 
@@ -181,7 +187,7 @@ def delete_old_meetings():
 @celery.task(name="inform-owner-before-meeting-deletion")
 def inform_owner_before_meeting_deletion():
     """Celery cron task to inform meeting owner before meeting deletion."""
-    logger.info("Celery cron task: inform-owner-before-meeting-deletion started")
+    logger.info("Celery cron task: inform_owner_before_meeting_deletion started")
     from b3desk import create_app
 
     app = create_app()
@@ -201,4 +207,30 @@ def inform_owner_before_meeting_deletion():
                 meeting.name,
                 delay,
             )
-        logger.info("Celery cron task: inform-owner-before-meeting-deletion ended")
+        logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
+
+
+@celery.task(name="delete-old-users")
+def delete_old_users():
+    """Celery cron task to delete expired meetings from database."""
+    logger.info("Celery cron task: delete_old_users started")
+    from b3desk import create_app
+
+    app = create_app()
+    with app.app_context():
+        users_to_delete = get_inactive_users_to_delete()
+
+        if users_to_delete:
+            logger.info(
+                "Celery cron task: %d expired user accounts to delete",
+                len(users_to_delete),
+            )
+        for user in users_to_delete:
+            if clean_db_and_delete_user(user):
+                logger.info(
+                    "Celery cron task: user %s, id %s, email %s, deleted",
+                    user.fullname,
+                    user.id,
+                    user.email,
+                )
+        logger.info("Celery cron task: delete_old_users ended")

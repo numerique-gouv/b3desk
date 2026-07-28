@@ -1,8 +1,11 @@
+import datetime
 from datetime import date
+from unittest import mock
 
 import pytest
 import requests
 from b3desk.models import db
+from b3desk.models.meetings import MeetingFiles
 from b3desk.models.users import User
 from b3desk.models.users import get_or_create_user
 from b3desk.nextcloud import NoUserFound
@@ -10,6 +13,7 @@ from b3desk.nextcloud import TooManyUsers
 from b3desk.nextcloud import get_secondary_identity_provider_id_from_email
 from b3desk.nextcloud import get_user_nc_credentials
 from b3desk.nextcloud import make_nextcloud_credentials_request
+from b3desk.tasks import delete_old_users
 from time_machine import travel
 
 
@@ -210,3 +214,44 @@ def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(
     assert (
         f"Cannot contact NC {client_app.app.config['NC_LOGIN_API_URL']}, returning error {ncresponse['error']}"
     ) in caplog.text
+
+
+def test_delete_old_users(
+    app,
+    client_app,
+    user,
+    user_2,
+    meeting,
+    meeting_1_user_2,
+    group,
+    time_machine,
+    bbb_getRecordings_response,
+):
+    group.members.append(user)
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    user_2.created_at = datetime.datetime(2025, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2025, 1, 1)
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_1_user_2.id,
+        owner=user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    meeting_file_id = meeting_file.id
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_users()
+
+    assert not db.session.get(User, 1)
+    assert db.session.get(User, 2)
+    assert MeetingFiles.query.filter_by(id=meeting_file_id).first() is None

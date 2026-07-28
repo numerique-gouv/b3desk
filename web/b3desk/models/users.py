@@ -12,8 +12,10 @@ import hashlib
 from datetime import UTC
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 
 from flask import current_app
+from sqlalchemy import or_
 
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
@@ -176,3 +178,56 @@ class User(db.Model):
         if all(group.enable_ai_summary is False for group in self.groups):
             return False
         return current_app.config["ENABLE_AI_SUMMARY"]
+
+
+def get_inactive_users_to_delete():
+    from b3desk.models.meetings import Meeting
+
+    account_cutoff = datetime.now() - timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+    meeting_cutoff = datetime.now() - timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+    has_recently_used_meeting = (
+        db.session.query(Meeting.id)
+        .filter(
+            Meeting.owner_id == User.id,
+            or_(
+                Meeting.last_connection_utc_datetime >= meeting_cutoff,
+                (Meeting.last_connection_utc_datetime.is_(None))
+                & (Meeting.created_at >= meeting_cutoff),
+            ),
+        )
+        .exists()
+    )
+    return (
+        db.session.query(User)
+        .filter(
+            or_(
+                User.last_connection_utc_datetime < account_cutoff,
+                (User.last_connection_utc_datetime.is_(None))
+                & (User.created_at < account_cutoff),
+            )
+        )
+        .filter(~has_recently_used_meeting)
+        .all()
+    )
+
+
+def clean_db_and_delete_user(user):
+    from b3desk.models.meetings import MeetingFiles
+    from b3desk.models.meetings import clean_db_and_delete_meeting
+
+    for meeting in user.meetings:
+        clean_db_and_delete_meeting(meeting)
+
+    for meeting_file in MeetingFiles.query.filter_by(owner_id=user.id):
+        db.session.delete(meeting_file)
+
+    for access in user.user_meeting_access:
+        db.session.delete(access)
+
+    db.session.delete(user)
+    db.session.commit()
+    return not db.session.get(User, user.id)
