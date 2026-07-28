@@ -11,6 +11,9 @@ from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_role
 from b3desk.models import db
+from b3desk.models.meetings import DELAY_FOR_FIRST_EMAIL
+from b3desk.models.meetings import DELAY_FOR_SECOND_EMAIL
+from b3desk.models.meetings import DELAY_FOR_THIRD_EMAIL
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -19,14 +22,15 @@ from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import get_inactive_meetings_to_inform
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_file_hash
-from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
 from b3desk.tasks import delete_old_meetings
+from b3desk.tasks import inform_owner_before_meeting_deletion
 from flask import url_for
 
 
@@ -1413,20 +1417,132 @@ def test_delete_old_meetings(
     app,
     client_app,
     time_machine,
-    meeting,
-    meeting_2,
-    meeting_3,
-    shadow_meeting,
-    shadow_meeting_2,
-    shadow_meeting_3,
+    meeting_1_user_2,
     user,
+    user_2,
     bbb_getRecordings_response,
 ):
-    """Test that old shadow meetings are deleted except the most recent one."""
+    """Test that old shadow meetings are deleted."""
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
     time_machine.move_to(datetime.datetime(2025, 6, 1))
     with mock.patch("b3desk.create_app", return_value=client_app.app):
         delete_old_meetings()
     voiceBridges = get_all_previous_voiceBridges()
-    assert voiceBridges == ["111111111", "111111112", "555555552", "555555553"]
-    assert user.meetings == [meeting_3, shadow_meeting]
-    assert get_or_create_shadow_meeting(user) == shadow_meeting
+
+    assert voiceBridges == ["222222222"]
+    assert user.meetings == []
+
+
+def test_delete_old_meetings_but_not_recent_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    user,
+    bbb_getRecordings_response,
+):
+    """Test that old shadow meetings are deleted except the most recent one."""
+    meeting.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_2.created_at = datetime.datetime(2024, 1, 1)
+    db.session.commit()
+    meeting_2_voicebridge = meeting_2.voiceBridge
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == [meeting_2_voicebridge]
+    assert user.meetings == [meeting]
+
+
+def test_delete_old_meetings_never_used_but_not_recent_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    user,
+    bbb_getRecordings_response,
+):
+    """Test that old shadow meetings never used are deleted except the most recent one."""
+    meeting.last_connection_utc_datetime = None
+    meeting.created_at = datetime.datetime(2025, 1, 1)
+    meeting_2.last_connection_utc_datetime = None
+    meeting_2.created_at = datetime.datetime(2024, 1, 1)
+    db.session.commit()
+    meeting_2_voicebridge = meeting_2.voiceBridge
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == [meeting_2_voicebridge]
+    assert user.meetings == [meeting]
+
+
+def test_inform_owner_before_meeting_deletion(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    meeting_3,
+    user,
+    smtpd,
+):
+    """Test owner's meeting receveive a mail before meeting deletion."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    third_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    )
+    second_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_SECOND_EMAIL)
+    )
+    first_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    )
+    print(third_mail_date)
+    print(test_date - third_mail_date)
+    print(second_mail_date)
+    print(test_date - second_mail_date)
+    print(first_mail_date)
+    print(test_date - first_mail_date)
+
+    meeting.last_connection_utc_datetime = third_mail_date
+    meeting.created_at = third_mail_date
+    meeting_2.last_connection_utc_datetime = second_mail_date
+    meeting_2.created_at = second_mail_date
+    meeting_3.last_connection_utc_datetime = first_mail_date
+    meeting_3.created_at = first_mail_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_owner_before_meeting_deletion()
+        meetings_to_inform = get_inactive_meetings_to_inform()
+    assert meetings_to_inform == [
+        (meeting_3, DELAY_FOR_FIRST_EMAIL),
+        (meeting_2, DELAY_FOR_SECOND_EMAIL),
+        (meeting, DELAY_FOR_THIRD_EMAIL),
+    ]
+    assert len(smtpd.messages) == 3
