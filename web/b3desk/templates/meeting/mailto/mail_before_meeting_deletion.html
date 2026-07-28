@@ -2,7 +2,7 @@
     {% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
     <br/>
     <br/>
-    {% trans %}La réunion {{ meeting.name }} sera supprimée définitivement {% if delay==1 %}dans 24h{% else %}dans {{ delay }} jours{% endif %}.{% endtrans %}
+    {% trans meeting_name=meeting.name %}La réunion {{ meeting_name }} sera supprimée définitivement {% endtrans %}{% if delay==1 %}{% trans %}dans 24h{% endtrans %}{% else %}{% trans %}dans {{ delay }} jours{% endtrans %}{% endif %}.
     <br/>
     <br/>
     {% trans %}Vous pouvez empêcher cette suppression en utilisant cette réunion.{% endtrans %}

@@ -3077,6 +3077,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
@@ -3136,6 +3138,36 @@ msgstr ""
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#, python-format
+msgid "La réunion %(meeting_name)s sera supprimée définitivement "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+msgid "dans 24h"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#, python-format
+msgid "dans %(delay)s jours"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:5
+msgid "Vous pouvez empêcher cette suppression en utilisant cette réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
+#, python-format
+msgid ""
+"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"et lancez la réunion."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
