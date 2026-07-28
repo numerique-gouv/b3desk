@@ -1539,3 +1539,58 @@ def test_inform_owner_before_meeting_deletion(
         (meeting, DELAY_FOR_THIRD_EMAIL),
     ]
     assert len(smtpd.messages) == 3
+
+
+def test_inform_owner_before_meeting_deletion_for_unused_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    meeting_3,
+    user,
+    smtpd,
+):
+    """Test owner's meeting receveive a mail before meeting deletion."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    third_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    )
+    second_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_SECOND_EMAIL)
+    )
+    first_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    )
+
+    meeting.last_connection_utc_datetime = None
+    meeting.created_at = third_mail_date
+    meeting_2.last_connection_utc_datetime = None
+    meeting_2.created_at = second_mail_date
+    meeting_3.last_connection_utc_datetime = None
+    meeting_3.created_at = first_mail_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_owner_before_meeting_deletion()
+        meetings_to_inform = get_inactive_meetings_to_inform()
+    assert meetings_to_inform == [
+        (meeting_3, DELAY_FOR_FIRST_EMAIL),
+        (meeting_2, DELAY_FOR_SECOND_EMAIL),
+        (meeting, DELAY_FOR_THIRD_EMAIL),
+    ]
+    assert len(smtpd.messages) == 3
