@@ -331,7 +331,7 @@ def test_create_no_file(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -361,7 +361,7 @@ def test_create_no_file(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -474,7 +474,7 @@ def test_create_with_only_a_default_file(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -504,7 +504,7 @@ def test_create_with_only_a_default_file(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -586,7 +586,7 @@ def test_create_with_files(
     }
 
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -616,7 +616,7 @@ def test_create_with_files(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -738,7 +738,7 @@ def test_create_quick_meeting(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     assert bbb_params == {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "Séminaire improvisé",
         "attendeePW": expected_attendee_pw,
         "moderatorPW": expected_moderator_pw,
@@ -761,7 +761,7 @@ def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
     """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
     quick_meeting = get_quick_meeting_from_meeting_id()
     moderator_hash = get_hash(quick_meeting, Role.moderator)
-
+    print(quick_meeting.id)
     response = client_app.get(
         f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
     )
@@ -843,7 +843,7 @@ def test_meeting_link_retrocompatibility(meeting):
     """
     # Simulate a meeting migrated from the old integer-id scheme: its BBB-facing
     # identifier is preserved verbatim in `bbb_meeting_id`, exactly as the
-    # `c8d1764b3a93` migration backfills it for pre-existing rows.
+    # `407ab7a9b1ab` migration backfills it for pre-existing rows.
     meeting.bbb_meeting_id = f"meeting-persistent-42--{meeting.owner.hash}"
 
     old_hashed_moderator_meeting = hashlib.sha1(

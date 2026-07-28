@@ -8,6 +8,8 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
+import uuid
+
 from flask import Blueprint
 from flask import abort
 from flask import current_app
@@ -105,7 +107,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
     if not form.validate():
         abort(403)
 
-    result = BBB(meeting.meetingID).update_recordings(
+    result = BBB(meeting.bbb_meeting_id).update_recordings(
         recording_ids=[recording_id], metadata={"name": form.data["name"]}
     )
     if BBB.success(result):
@@ -157,6 +159,7 @@ def new_meeting():
         )
 
     meeting = Meeting()
+    meeting.bbb_meeting_id = str(uuid.uuid7())
     meeting.owner = g.user
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
@@ -247,7 +250,7 @@ def edit_meeting(meeting: Meeting, user: User):
         "success",
     )
 
-    if BBB(meeting.meetingID).is_running():
+    if BBB(meeting.bbb_meeting_id).is_running():
         return render_template(
             "meeting/end.html",
             meeting=meeting,
@@ -265,7 +268,7 @@ def edit_meeting(meeting: Meeting, user: User):
 @meeting_access_required(AccessLevel.DELEGATE)
 def end_meeting(meeting: Meeting, user: User):
     """End the meeting on BBB."""
-    data = BBB(meeting.meetingID).end()
+    data = BBB(meeting.bbb_meeting_id).end()
     if BBB.success(data):
         flash(
             _("Réunion « %(meeting_name)s » terminée", meeting_name=meeting.name),
@@ -319,7 +322,7 @@ def delete_meeting():
 def delete_video_meeting(meeting: Meeting, user: User):
     """Delete a specific recording from a meeting."""
     recordID = request.form["recordID"]
-    data = BBB(meeting.meetingID).delete_recordings(recordID)
+    data = BBB(meeting.bbb_meeting_id).delete_recordings(recordID)
     if BBB.success(data):
         flash(_("Vidéo supprimée"), "success")
         current_app.logger.info(

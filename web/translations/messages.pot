@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:396
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:384
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -313,8 +313,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:150
-#: web/b3desk/endpoints/meetings.py:211
+#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:152
+#: web/b3desk/endpoints/meetings.py:214
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -410,7 +410,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:410
-#: web/b3desk/endpoints/meetings.py:311
+#: web/b3desk/endpoints/meetings.py:314
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -422,68 +422,68 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:112
+#: web/b3desk/endpoints/meetings.py:114
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:115
+#: web/b3desk/endpoints/meetings.py:117
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:131
+#: web/b3desk/endpoints/meetings.py:133
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:176
+#: web/b3desk/endpoints/meetings.py:179
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:246
+#: web/b3desk/endpoints/meetings.py:249
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:271
+#: web/b3desk/endpoints/meetings.py:274
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:324
+#: web/b3desk/endpoints/meetings.py:327
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:335
+#: web/b3desk/endpoints/meetings.py:338
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:388
+#: web/b3desk/endpoints/meetings.py:391
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:391
+#: web/b3desk/endpoints/meetings.py:394
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:394
+#: web/b3desk/endpoints/meetings.py:397
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:401
+#: web/b3desk/endpoints/meetings.py:404
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:414
+#: web/b3desk/endpoints/meetings.py:417
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:436
+#: web/b3desk/endpoints/meetings.py:439
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:439
+#: web/b3desk/endpoints/meetings.py:442
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -491,32 +491,32 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:375 web/b3desk/models/meetings.py:382
+#: web/b3desk/models/meetings.py:363 web/b3desk/models/meetings.py:370
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:389
+#: web/b3desk/models/meetings.py:377
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:391
+#: web/b3desk/models/meetings.py:379
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:448
+#: web/b3desk/models/meetings.py:436
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:457
+#: web/b3desk/models/meetings.py:445
 #, python-brace-format
 msgid ""
 "Impossible de supprimer les vidéos de cette réunion {meeting_id}: "
 "{message}"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:472
+#: web/b3desk/models/meetings.py:460
 msgid "Élément supprimé"
 msgstr ""
 

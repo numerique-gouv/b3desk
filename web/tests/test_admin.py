@@ -583,7 +583,7 @@ def test_admin_can_delete_recordings(
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(other_meeting.meetingID).get_recordings()
+    recordings = BBB(other_meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -635,7 +635,7 @@ def test_admin_can_open_recordings_page(
         )
         == 2
     )
-    assert len(BBB(other_meeting.meetingID).get_recordings()) == 2
+    assert len(BBB(other_meeting.bbb_meeting_id).get_recordings()) == 2
 
 
 def test_admin_can_read_meeting_infos(

@@ -9,11 +9,11 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import random
+import uuid
 from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
 
-import uuid6
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
@@ -42,9 +42,7 @@ class AccessLevel(IntEnum):
 
 class MeetingAccess(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(
-        db.String(255), db.ForeignKey("meeting.id"), primary_key=True
-    )
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     level = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("User", backref="user_meeting_access")
@@ -54,9 +52,7 @@ class MeetingAccess(db.Model):
 favorite_table = db.Table(
     "favorite",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column(
-        "meeting_id", db.String(255), db.ForeignKey("meeting.id"), primary_key=True
-    ),
+    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
 )
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
@@ -95,7 +91,7 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
     title = db.Column(db.Unicode(4096))
     url = db.Column(db.Unicode(4096))
     nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_downloadable = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.Date)
@@ -126,7 +122,7 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
     __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
 
     id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.String(255), db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     url = db.Column(db.String(4096))
     role = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
@@ -139,9 +135,7 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
 
 
 class Meeting(db.Model):
-    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid6.uuid6()))
-    # Legacy BBB meeting identifier ("meeting-persistent-{old_id}--{owner_hash}"),
-    # kept stable across the switch of `id` from an incrementing Integer to a UUID.
+    id = db.Column(db.Integer, primary_key=True)
     bbb_meeting_id = db.Column(db.String(255))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
@@ -196,18 +190,13 @@ class Meeting(db.Model):
         from .bbb import BBB
 
         if not self._bbb:
-            self._bbb = BBB(self.meetingID)
+            self._bbb = BBB(self.bbb_meeting_id)
         return self._bbb
 
     @property
     def ai_summary_enabled(self):
         """Whether the AI summary recording format is expected for this meeting."""
         return bool(self.ai_summary) and self.owner.can_use_ai_summary
-
-    @property
-    def meetingID(self):
-        """Return the BBB-facing identifier for this persisted meeting."""
-        return self.bbb_meeting_id or self.id
 
     @property
     def get_all_delegates(self):
@@ -292,9 +281,11 @@ def get_deterministic_password(meeting_id, role):
 
 def get_quick_meeting_from_meeting_id(meeting_id=None):
     """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
-    meeting_id = meeting_id or str(uuid6.uuid6())
+    meeting_id = meeting_id or str(uuid.uuid7())
     meeting = Meeting(
-        id=meeting_id, attendeePW=get_deterministic_password(meeting_id, "attendee")
+        id=meeting_id,
+        bbb_meeting_id=meeting_id,
+        attendeePW=get_deterministic_password(meeting_id, "attendee"),
     )
     meeting.quick = True
     return meeting
@@ -302,18 +293,15 @@ def get_quick_meeting_from_meeting_id(meeting_id=None):
 
 def get_meeting_from_meeting_id(meeting_id):
     """Retrieve a persisted meeting by id, or build a quick (non-persisted) one if none exists."""
-    return db.session.get(Meeting, meeting_id) or get_quick_meeting_from_meeting_id(
-        meeting_id
-    )
+    if meeting_id.isdigit():
+        return db.session.get(Meeting, meeting_id)
+    return get_quick_meeting_from_meeting_id(meeting_id)
 
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a persisted Meeting from a BBB-side identifier (new UUID or legacy 'meeting-persistent-...' form)."""
     return (
-        db.session.get(Meeting, bbb_meeting_id)
-        or db.session.query(Meeting)
-        .filter_by(bbb_meeting_id=bbb_meeting_id)
-        .one_or_none()
+        db.session.query(Meeting).filter_by(bbb_meeting_id=bbb_meeting_id).one_or_none()
     )
 
 
@@ -450,7 +438,7 @@ def clean_db_and_delete_meeting(meeting, celery_cron=False):
     if not meeting.is_shadow:
         from .bbb import BBB
 
-        data = BBB(meeting.meetingID).delete_all_recordings()
+        data = BBB(meeting.bbb_meeting_id).delete_all_recordings()
         if data and not BBB.success(data):
             return (
                 _(

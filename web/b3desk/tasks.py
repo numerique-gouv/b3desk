@@ -109,7 +109,7 @@ def send_recording_notification(
         cache.get(recording_min_reached_key(bbb_recording_id))
     )
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     recordings = BBB.get_recordings.uncached(bbb, bbb_recording_id=bbb_recording_id)
     if not recordings:
         logger.warning(
