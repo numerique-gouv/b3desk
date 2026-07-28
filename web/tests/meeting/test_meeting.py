@@ -1520,12 +1520,6 @@ def test_inform_owner_before_meeting_deletion(
         )
         + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
     )
-    print(third_mail_date)
-    print(test_date - third_mail_date)
-    print(second_mail_date)
-    print(test_date - second_mail_date)
-    print(first_mail_date)
-    print(test_date - first_mail_date)
 
     meeting.last_connection_utc_datetime = third_mail_date
     meeting.created_at = third_mail_date
