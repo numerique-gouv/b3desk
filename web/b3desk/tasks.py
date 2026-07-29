@@ -287,5 +287,6 @@ def inform_user_before_account_deletion():
                 user.fullname,
                 user.id,
                 user.email,
+                delay,
             )
         logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
