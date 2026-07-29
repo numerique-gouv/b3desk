@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
@@ -356,7 +357,11 @@ def add_users_in_group(selected_users, group, ids=False):
             "%s became member of group %s %s", user.email, group.id, group.name
         )
     flash(
-        _(f"{len(added_users)} membre(s) ajouté(s) au groupe"),
+        ngettext(
+            "%(num)s membre ajouté au groupe",
+            "%(num)s membres ajoutés au groupe",
+            len(added_users),
+        ),
         "success",
     )
 

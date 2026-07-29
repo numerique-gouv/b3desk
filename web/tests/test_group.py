@@ -298,7 +298,7 @@ def test_admin_can_add_multiple_users_at_once_in_a_group(
     res = client_app.post(
         "/admin/add-group-members/1", {"user_ids": [1, 2, 3]}, status=302
     )
-    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
+    assert ("success", "3 membres ajoutés au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
@@ -321,7 +321,7 @@ def test_admin_can_add_multiple_users_filtered_with_search(
     res = client_app.post(
         "/admin/add-group-members/1?search=%40ladomain.tld&select_all=1"
     )
-    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
+    assert ("success", "3 membres ajoutés au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text

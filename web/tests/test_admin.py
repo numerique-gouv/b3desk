@@ -331,7 +331,7 @@ def test_admin_can_add_member_in_group(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     assert len(group.members) == 1
-    assert ("success", "1 membre(s) ajouté(s) au groupe") in res.flashes
+    assert ("success", "1 membre ajouté au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "1 membre" in res.follow().text
 
@@ -343,7 +343,7 @@ def test_admin_cannot_add_member_already_in_group(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    assert ("success", "0 membre(s) ajouté(s) au groupe") in res.flashes
+    assert ("success", "0 membres ajoutés au groupe") in res.flashes
     assert len(group.members) == 1
     assert "1 membre" in res.follow().text
 
