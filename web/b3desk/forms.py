@@ -236,8 +236,8 @@ class MeetingForm(FlaskForm):
         default=False,
     )
 
-    hidePresentationOnJoin = BooleanField(
-        label=_("Cacher la présentation à l'ouverture"),
+    showPresentationOnJoin = BooleanField(
+        label=_("Présentation affichée à l'ouverture"),
         default=False,
     )
 

@@ -204,7 +204,7 @@ msgid "Chat affiché à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:240
-msgid "Cacher la présentation à l'ouverture"
+msgid "Présentation affichée à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:245

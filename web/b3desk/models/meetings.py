@@ -139,7 +139,7 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
-    hidePresentationOnJoin = db.Column(db.Boolean, unique=False, default=True)
+    showPresentationOnJoin = db.Column(db.Boolean, unique=False, default=True)
     showParticipantsOnLogin = db.Column(db.Boolean, unique=False, default=True)
     showPublicChatOnLogin = db.Column(db.Boolean, unique=False, default=True)
     showSessionDetailsOnJoin = db.Column(db.Boolean, unique=False, default=True)

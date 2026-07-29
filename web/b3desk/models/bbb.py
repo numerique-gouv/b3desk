@@ -407,7 +407,7 @@ class BBB:
         self,
         meeting_role,
         fullname,
-        hide_presentation_on_join=None,
+        show_presentation_on_join=None,
         show_participants_on_login=None,
         show_public_chat_on_login=None,
         show_session_details_on_join=None,
@@ -429,10 +429,11 @@ class BBB:
         elif meeting_role == Role.moderator:
             params["role"] = "moderator"
 
-        if hide_presentation_on_join is not None:
-            params["userdata-bbb_hide_presentation_on_join"] = str(
-                hide_presentation_on_join
-            ).lower()
+        if show_presentation_on_join is not None:
+            if show_presentation_on_join is True:
+                params["userdata-bbb_hide_presentation_on_join"] = "false"
+            elif show_presentation_on_join is False:
+                params["userdata-bbb_hide_presentation_on_join"] = "true"
         if show_participants_on_login is not None:
             params["userdata-bbb_show_participants_on_login"] = str(
                 show_participants_on_login
