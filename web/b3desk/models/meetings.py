@@ -195,7 +195,7 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat: Mapped[bool | None] = mapped_column(default=True)
     lockSettingsDisablePublicChat: Mapped[bool | None] = mapped_column(default=True)
     lockSettingsDisableNote: Mapped[bool | None] = mapped_column(default=True)
-    hidePresentationOnJoin: Mapped[bool | None] = mapped_column(default=True)
+    showPresentationOnJoin: Mapped[bool | None] = mapped_column(default=True)
     showParticipantsOnLogin: Mapped[bool | None] = mapped_column(default=True)
     showPublicChatOnLogin: Mapped[bool | None] = mapped_column(default=True)
     showSessionDetailsOnJoin: Mapped[bool | None] = mapped_column(default=False)
