@@ -11,6 +11,12 @@ const restrictSelectionToCheckedRows = () => {
     }
 }
 
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", () => {
+        selectAllCheckbox.form.submit();
+    })
+}
+
 memberCheckboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
         if (!checkbox.checked) {

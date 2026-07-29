@@ -54,7 +54,7 @@
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
             <input type="hidden" name="page" value="{{ page_obj.page }}">
             <div class="fr-checkbox-group fr-checkbox-group--sm">
-                <input id="select-all-users" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="checkbox-messages" onchange="this.form.submit()">
+                <input id="select-all-users" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="checkbox-messages">
                 <label class="fr-label" for="select-all-users">
                     {% if data %}
                         {% trans count=page_obj.total %}
