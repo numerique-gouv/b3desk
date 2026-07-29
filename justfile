@@ -6,7 +6,7 @@ translation-extract:
     uv run pybabel extract --omit-header --mapping-file pyproject.toml --output-file web/translations/messages.pot --keywords lazy_gettext web
 
 translation-update:
-    uv run pybabel update --input-file web/translations/messages.pot --output-dir web/translations
+    uv run pybabel update --input-file web/translations/messages.pot --output-dir web/translations --no-fuzzy-matching
 
 translation-compile:
     uv run pybabel compile --directory web/translations
