@@ -109,6 +109,14 @@ def get_all_users_not_in_group_paginate(per_page, group, data=None):
     return db.paginate(query, per_page=per_page)
 
 
+def get_users_by_ids(user_ids):
+    ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]
+    if not ids:
+        return []
+    query = db.select(User).where(User.id.in_(ids))
+    return db.session.execute(query).scalars().all()
+
+
 @bp.route("/admin/home")
 @admin_needed
 def home():
@@ -344,11 +352,10 @@ def confirm_delete_group(group: Group):
     return redirect(url_for("admin.manage_groups"))
 
 
-def add_users_in_group(selected_users, group, ids=False):
+def add_users_in_group(users, group):
     added_users = []
-    for user in selected_users:
-        user = db.session.get(User, int(user)) if ids else user
-        if user and user not in group.members:
+    for user in users:
+        if user not in group.members:
             group.members.append(user)
             added_users.append(user)
     db.session.commit()
@@ -375,17 +382,18 @@ def add_group_members(group: Group):
     search = request.values.get("search")
     data = search.lower() if search else None
 
-    selected_users = get_all_users_not_in_group(group, data)
     users_page = get_all_users_not_in_group_paginate(
         per_page=PER_PAGE, group=group, data=data
     )
 
     if request.method == "POST":
-        user_ids = request.form.getlist("user_ids")
-        if select_all and selected_users:
-            add_users_in_group(selected_users, group)
-        elif user_ids:
-            add_users_in_group(user_ids, group, ids=True)
+        users = (
+            get_all_users_not_in_group(group, data)
+            if select_all
+            else get_users_by_ids(request.form.getlist("user_ids"))
+        )
+        if users:
+            add_users_in_group(users, group)
         else:
             flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
         return redirect(
@@ -405,6 +413,5 @@ def add_group_members(group: Group):
         users_page=users_page,
         data=data,
         add_members=True,
-        selected_users=selected_users,
         select_all=select_all,
     )

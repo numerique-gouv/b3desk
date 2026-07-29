@@ -58,13 +58,13 @@
                 <input id="select-all-users" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="{% trans %}Tout sélectionner{% endtrans %}" onchange="this.form.submit()">
                 <label class="fr-label" for="select-all-users">
                     {% if data %}
-                        {% trans count=selected_users | length %}
+                        {% trans count=page_obj.total %}
                             Sélectionner {{ count }} utilisateur correspondant aux critères et ne faisant pas partie du groupe
                             {% pluralize %}
                             Sélectionner {{ count }} utilisateurs correpondants au critères et ne faisant pas partie du groupe
                         {% endtrans %}
                     {% else %}
-                        {% trans count=selected_users | length %}
+                        {% trans count=page_obj.total %}
                             Sélectionner {{ count }} utilisateur ne faisant pas partie du groupe
                             {% pluralize %}
                             Sélectionner {{ count }} utilisateurs ne faisant pas partie du groupe

@@ -313,6 +313,18 @@ def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
     assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
 
 
+def test_non_numeric_user_id_is_ignored(
+    cli_runner, client_app, user, group, authenticated_user
+):
+    """Test a malformed user id does not raise a server error."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.post(
+        "/admin/add-group-members/1", {"user_ids": ["oops"]}, status=302
+    )
+    assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
+    assert not group.members
+
+
 def test_admin_can_add_multiple_users_filtered_with_search(
     cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
 ):
