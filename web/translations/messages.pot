@@ -3079,6 +3079,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:2
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
@@ -3097,6 +3099,8 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:14
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
@@ -3148,11 +3152,15 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
 msgid "dans 24h"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
 #, python-format
 msgid "dans %(delay)s jours"
 msgstr ""
@@ -3168,6 +3176,21 @@ msgstr ""
 msgid ""
 "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
 "et lancez la réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+msgid "Votre compte est inactif et sera supprimé "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:5
+msgid "Vos salles de réunion et vos fichiers associés seront supprimés également."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:7
+msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4

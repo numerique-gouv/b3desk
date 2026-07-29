@@ -233,4 +233,11 @@ def delete_old_users():
                     user.id,
                     user.email,
                 )
+            else:
+                logger.error(
+                    "Celery cron task: user not deleted: %s, id %s, email %s",
+                    user.fullname,
+                    user.id,
+                    user.email,
+                )
         logger.info("Celery cron task: delete_old_users ended")
