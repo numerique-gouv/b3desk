@@ -157,7 +157,11 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
+<<<<<<< HEAD
 #: web/b3desk/forms.py:211 web/b3desk/models/meetings.py:461
+=======
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:348
+>>>>>>> e0022813 (feat: add bbb display parameters in meeting model)
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -578,16 +582,28 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
+<<<<<<< HEAD
 #: web/b3desk/models/meetings.py:440 web/b3desk/models/meetings.py:447
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
 #: web/b3desk/models/meetings.py:454
+=======
+#: web/b3desk/models/meetings.py:327 web/b3desk/models/meetings.py:334
+msgid "Ce code PIN est déjà utilisé"
+msgstr ""
+
+#: web/b3desk/models/meetings.py:341
+>>>>>>> e0022813 (feat: add bbb display parameters in meeting model)
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
+<<<<<<< HEAD
 #: web/b3desk/models/meetings.py:456
+=======
+#: web/b3desk/models/meetings.py:343
+>>>>>>> e0022813 (feat: add bbb display parameters in meeting model)
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
