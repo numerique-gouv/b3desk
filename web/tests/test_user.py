@@ -7,6 +7,7 @@ import requests
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.users import User
+from b3desk.models.users import get_inactive_users_to_inform
 from b3desk.models.users import get_or_create_user
 from b3desk.nextcloud import NoUserFound
 from b3desk.nextcloud import TooManyUsers
@@ -14,6 +15,10 @@ from b3desk.nextcloud import get_secondary_identity_provider_id_from_email
 from b3desk.nextcloud import get_user_nc_credentials
 from b3desk.nextcloud import make_nextcloud_credentials_request
 from b3desk.tasks import delete_old_users
+from b3desk.tasks import inform_user_before_account_deletion
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 from time_machine import travel
 
 
@@ -255,3 +260,100 @@ def test_delete_old_users(
     assert not db.session.get(User, 1)
     assert db.session.get(User, 2)
     assert MeetingFiles.query.filter_by(id=meeting_file_id).first() is None
+
+
+def test_inform_user_before_account_deletion(
+    app,
+    client_app,
+    time_machine,
+    user,
+    user_2,
+    user_3,
+    smtpd,
+):
+    """Test user receives a mail before account deletion."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    third_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    )
+    second_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_SECOND_EMAIL)
+    )
+    first_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    )
+
+    user.last_connection_utc_datetime = third_mail_date
+    user.created_at = third_mail_date
+    user_2.last_connection_utc_datetime = second_mail_date
+    user_2.created_at = second_mail_date
+    user_3.last_connection_utc_datetime = first_mail_date
+    user_3.created_at = first_mail_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_user_before_account_deletion()
+        users_to_inform = get_inactive_users_to_inform()
+    assert users_to_inform == [
+        (user_3, DELAY_FOR_FIRST_EMAIL),
+        (user_2, DELAY_FOR_SECOND_EMAIL),
+        (user, DELAY_FOR_THIRD_EMAIL),
+    ]
+    assert len(smtpd.messages) == 3
+
+
+def test_inform_user_before_account_deletion_with_recently_used_meeting(
+    app,
+    client_app,
+    time_machine,
+    user,
+    user_2,
+    meeting,
+    smtpd,
+):
+    """A recently used meeting postpones a user's account-deletion reminder."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    first_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    )
+    long_inactive_date = test_date - datetime.timedelta(
+        days=2 * client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+
+    # user's own activity is long expired, but their meeting was used recently
+    user.last_connection_utc_datetime = long_inactive_date
+    user.created_at = long_inactive_date
+    meeting.last_connection_utc_datetime = first_mail_date
+    meeting.created_at = first_mail_date
+
+    # user_2 has the same expired activity but no meeting to keep it alive
+    user_2.last_connection_utc_datetime = long_inactive_date
+    user_2.created_at = long_inactive_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_user_before_account_deletion()
+        users_to_inform = get_inactive_users_to_inform()
+
+    assert users_to_inform == [(user, DELAY_FOR_FIRST_EMAIL)]
+    assert len(smtpd.messages) == 1

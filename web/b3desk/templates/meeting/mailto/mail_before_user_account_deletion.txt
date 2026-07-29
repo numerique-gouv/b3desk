@@ -1,0 +1,9 @@
+{% trans %}Bonjour{% endtrans %} {{ user.fullname }},
+
+{% trans %}Votre compte est inactif et sera supprimé {% endtrans %}{% if delay==1 %}{% trans %}dans 24h{% endtrans %}{% else %}{% trans %}dans {{ delay }} jours{% endtrans %}{% endif %}.
+
+{% trans %}Vos salles de réunion et vos fichiers associés seront supprimés également.{% endtrans %}
+
+{% trans %}Vous pouvez empêcher cette suppression en vous connectant à votre compte.{% endtrans %}
+
+{% trans %}Rendez vous simplement sur <a href="{{ welcome_url }}">votre espace</a>.{% endtrans %}

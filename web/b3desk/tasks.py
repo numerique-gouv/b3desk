@@ -13,8 +13,10 @@ from b3desk.models.meetings import get_inactive_meetings_to_delete
 from b3desk.models.meetings import get_inactive_meetings_to_inform
 from b3desk.models.users import clean_db_and_delete_user
 from b3desk.models.users import get_inactive_users_to_delete
+from b3desk.models.users import get_inactive_users_to_inform
 from b3desk.utils.mailing import send_available_recording_notification_mail
 from b3desk.utils.mailing import send_mail_before_meeting_deletion
+from b3desk.utils.mailing import send_mail_before_user_deletion
 
 REDIS_URL = os.environ.get("REDIS_URL")
 DEBUG = os.environ.get("FLASK_DEBUG")
@@ -27,13 +29,17 @@ celery.conf.beat_schedule = {
         "task": "delete-old-meetings",
         "schedule": crontab(minute=00, hour=3),
     },
+    "delete-old-users-every-day-at-3-30-am": {
+        "task": "delete-old-users",
+        "schedule": crontab(minute=30, hour=3),
+    },
     "inform-owner-before-meeting-deletion-every-day-at-4-am": {
         "task": "inform-owner-before-meeting-deletion",
         "schedule": crontab(minute=00, hour=4),
     },
-    "delete-old-users-every-day-at-3-30-am": {
-        "task": "delete-old-users",
-        "schedule": crontab(minute=30, hour=3),
+    "inform-user-before-account-deletion-every-day-at-4-30-am": {
+        "task": "inform-user-before-account-deletion",
+        "schedule": crontab(minute=30, hour=4),
     },
 }
 
@@ -254,3 +260,32 @@ def delete_old_users():
                     user.email,
                 )
         logger.info("Celery cron task: delete_old_users ended")
+
+
+@celery.task(name="inform-user-before-account-deletion")
+def inform_user_before_account_deletion():
+    """Celery cron task to inform user before account deletion."""
+    logger.info("Celery cron task: inform_user_before_account_deletion started")
+    from b3desk import create_app
+
+    app = create_app()
+    with app.app_context():
+        users_to_inform = get_inactive_users_to_inform()
+
+        if users_to_inform:
+            logger.info(
+                "Celery cron task: %d users account expire soon", len(users_to_inform)
+            )
+        else:
+            logger.info(
+                "Celery cron task: no action required",
+            )
+        for user, delay in users_to_inform:
+            send_mail_before_user_deletion(user, delay)
+            logger.info(
+                "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
+                user.fullname,
+                user.id,
+                user.email,
+            )
+        logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")

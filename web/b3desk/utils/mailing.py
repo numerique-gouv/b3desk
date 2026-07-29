@@ -132,6 +132,25 @@ def send_mail_before_meeting_deletion(meeting, delay):
     send_email(msg, text, html, smtp)
 
 
+def send_mail_before_user_deletion(user, delay):
+    """Send email to inform the user that his account will be deleted in `delay` days."""
+    smtp = make_smtp()
+    msg = EmailMessage()
+    body_file = "mail_before_user_account_deletion"
+    context = {
+        "user": user,
+        "delay": delay,
+        "welcome_url": url_for("public.welcome", _external=True),
+    }
+    text = render_template(f"meeting/mailto/{body_file}.txt", **context)
+    html = render_template(f"meeting/mailto/{body_file}.html", **context)
+    msg["Subject"] = str(_(f"Information avant suppression : {user.fullname}"))
+    msg["From"] = smtp["from_email"]
+    msg["To"] = user.email
+
+    send_email(msg, text, html, smtp)
+
+
 def send_email(msg, text, html, smtp):
     msg.set_content(text)
     msg.add_alternative(html, subtype="html")

@@ -15,10 +15,15 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import current_app
+from sqlalchemy import case
+from sqlalchemy import func
 from sqlalchemy import or_
 
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 
 from . import db
 
@@ -231,3 +236,45 @@ def clean_db_and_delete_user(user):
     db.session.delete(user)
     db.session.commit()
     return not db.session.get(User, user.id)
+
+
+def get_inactive_users_to_inform():
+    from b3desk.models.meetings import Meeting
+
+    today = datetime.now().date()
+    account_inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+
+    meeting_activity = (
+        db.session.query(
+            Meeting.owner_id.label("owner_id"),
+            func.max(
+                func.coalesce(Meeting.last_connection_utc_datetime, Meeting.created_at)
+            ).label("last_activity"),
+        )
+        .group_by(Meeting.owner_id)
+        .subquery()
+    )
+
+    account_activity = func.coalesce(User.last_connection_utc_datetime, User.created_at)
+    last_activity = func.coalesce(meeting_activity.c.last_activity, account_activity)
+    effective_activity = case(
+        (account_activity >= last_activity, account_activity),
+        else_=last_activity,
+    )
+
+    users = []
+    for delay in (DELAY_FOR_FIRST_EMAIL, DELAY_FOR_SECOND_EMAIL, DELAY_FOR_THIRD_EMAIL):
+        target_date = today + timedelta(days=delay) - account_inactivity_period
+        day_start = datetime(target_date.year, target_date.month, target_date.day)
+        day_end = day_start + timedelta(days=1)
+        matching_users = (
+            db.session.query(User)
+            .outerjoin(meeting_activity, meeting_activity.c.owner_id == User.id)
+            .filter(effective_activity >= day_start, effective_activity < day_end)
+            .all()
+        )
+        users += [(user, delay) for user in matching_users]
+
+    return users
