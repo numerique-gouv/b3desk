@@ -7,11 +7,8 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
-from b3desk.models.roles import Role
-
 from .. import auth
 from .. import cache
-from ..join import get_signin_url
 from ..session import has_user_session
 from ..session import should_display_captcha
 from ..templates.content import FAQ_CONTENT
@@ -108,15 +105,10 @@ def welcome():
             getattr(m, order_key).lower()
             if isinstance(getattr(m, order_key), str)
             else getattr(m, order_key),
-            m.id,
+            m.created_at,
         ),
         reverse=reverse_order,
     )
-
-    for meeting in meetings:
-        meeting.moderator_url = get_signin_url(meeting, Role.moderator)
-        meeting.attendee_url = get_signin_url(meeting, Role.attendee)
-        meeting.authenticated_url = get_signin_url(meeting, Role.authenticated)
 
     return render_template(
         "welcome.html",
@@ -127,13 +119,13 @@ def welcome():
         meeting_mailto_params=meeting_mailto_params,
         mailto=current_app.config["MAILTO_LINKS"],
         quick_meeting=current_app.config["QUICK_MEETING"],
-        file_sharing=current_app.config["FILE_SHARING"],
         clipboard=current_app.config["CLIPBOARD"],
         meetings=meetings,
         reverse_order=reverse_order,
         order_key=order_key,
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
+        admin_mode=False,
     )
 
 

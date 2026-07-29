@@ -11,6 +11,7 @@ from wtforms import IntegerField
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
+from wtforms import ValidationError
 from wtforms import validators
 
 from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
@@ -28,11 +29,10 @@ MAX_MEETING_DURATION = timedelta(minutes=999)
 
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
-    meeting_fake_id = StringField()
+    meeting_id = StringField()
     hash_ = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
-    quick_meeting = BooleanField()
 
 
 class ShowMeetingForm(Form):
@@ -58,7 +58,7 @@ class MeetingFilesForm(FlaskForm):
 
 
 class MeetingForm(FlaskForm):
-    id = IntegerField()
+    id = StringField()
     name = StringField(
         label=_(
             "Nom de la réunion",
@@ -245,6 +245,23 @@ class MeetingWithRecordForm(MeetingForm):
         ),
         default=False,
     )
+    ai_summary = BooleanField(
+        label=_("Génération de résumé (IA)"),
+        description=_(
+            "La génération de résumé est basée sur l'audio de l'enregistrement."
+        ),
+        default=True,
+    )
+
+    def validate_ai_summary(self, field):
+        if field.data and not (
+            self.allowStartStopRecording.data or self.autoStartRecording.data
+        ):
+            raise ValidationError(
+                _(
+                    "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+                )
+            )
 
 
 class RecordingForm(FlaskForm):
@@ -286,3 +303,71 @@ class TransferMeetingOwnership(FlaskForm):
         validators=[validators.DataRequired()],
         choices=[],
     )
+
+
+class GroupSearchForm(FlaskForm):
+    search = StringField(
+        label=_("Rechercher un groupe"),
+        render_kw={"placeholder": "Saisir l'une des informations du tableau"},
+    )
+
+
+def nullable_bool(value):
+    if value in (None, "", "None"):
+        return None
+    return value in (True, "True")
+
+
+class GroupForm(FlaskForm):
+    name = StringField(
+        label=_(
+            "Nom du groupe",
+        ),
+        description=_("doit être unique"),
+        validators=[
+            validators.DataRequired(),
+            validators.length(max=MAX_MEETING_NAME_LENGTH),
+        ],
+    )
+    enable_sip = SelectField(
+        label=_(
+            "SIP",
+        ),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        coerce=nullable_bool,
+        default="None",
+    )
+    enable_file_sharing = SelectField(
+        label=_(
+            "Ajout de document",
+        ),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        coerce=nullable_bool,
+        default="None",
+    )
+    enable_ai_summary = SelectField(
+        label=_(
+            "Génération de résumé (IA)",
+        ),
+        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        coerce=nullable_bool,
+        default="None",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.enable_sip.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_SIP"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_file_sharing.description = (
+            _("Activé par défaut")
+            if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_ai_summary.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_AI_SUMMARY"]
+            else _("Désactivé par défaut")
+        )

@@ -10,16 +10,18 @@
             <div class="fr-collapse" id="breadcrumb-1">
                 <ol class="fr-breadcrumb__list">
                     <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
                     </li>
                     <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">Réunions</a>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_meetings') }}">{% trans %}Réunions{% endtrans %}</a>
                     </li>
                     <li>
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.meeting_infos', meeting=meeting) }}">{{ meeting.name }}</a>
                     </li>
                     <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('meetings.edit_meeting', meeting=meeting, admin_mode=admin_mode) }}">Modifier {{ meeting.name }}</a>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('meetings.edit_meeting', meeting=meeting, admin_mode=admin_mode or None) }}">
+                            {% trans %}Modifier{% endtrans %} {{ meeting.name }}
+                        </a>
                     </li>
                 </ol>
             </div>

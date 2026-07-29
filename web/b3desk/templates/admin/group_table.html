@@ -1,0 +1,36 @@
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12">
+        <div class="fr-table fr-table--no-caption" id="groups-component">
+            <div class="fr-table__wrapper ">
+                <div class="fr-table__container">
+                    <div class="fr-table__content">
+                        <table id="groups">
+                            <thead class="">
+                                <tr class="">
+                                    <th class="fr-col fr-cell--center">{% trans %}ID{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                {% for group in groups %}
+                                    <tr class="">
+                                        <td class="fr-col fr-cell--center">
+                                            {{ group.id }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
+                                            {{ group.name }}
+                                        </td>
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("admin.group_infos", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans group_name=group.name %}Éditer {{ group_name }}{% endtrans %}"></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

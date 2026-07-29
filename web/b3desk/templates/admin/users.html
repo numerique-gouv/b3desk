@@ -1,18 +1,11 @@
 {% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
 {% block main %}
-    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
-        <div class="fr-collapse" id="breadcrumb-1">
-            <ol class="fr-breadcrumb__list">
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">Menu Admin</a>
-                </li>
-                <li>
-                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_users') }}">Utilisateurs</a>
-                </li>
-            </ol>
-        </div>
-    </nav>
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_users'), 'label': _('Utilisateurs')},
+    ]) }}
     <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}

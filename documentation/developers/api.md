@@ -42,6 +42,7 @@ Voici les principales valeur par défaut d'un meeting 'silencieux' :
 + moderatorOnlyMessage= Bienvenue aux modérateurs
 + record= False
 + autoStartRecording= False
++ ai_summary= False
 + allowStartStopRecording= False
 + lockSettingsDisableMic= False
 + lockSettingsDisablePrivateChat= False

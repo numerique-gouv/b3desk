@@ -7,6 +7,9 @@ services:
       keycloak:
         condition: service_healthy
     entrypoint: ["flask", "run", "--host=0.0.0.0"]
+    networks:
+      - default
+      - bbb-shared
     volumes:
       - /tmp/download/:/tmp/download/  # same target as TMP_DOWNLOAD_DIR
       - /tmp/b3desk/:/tmp/b3desk/  # same target as UPLOAD_DIR
@@ -17,6 +20,9 @@ services:
     hostname: worker.localhost
     environment:
       - FLASK_DEBUG=1
+    networks:
+      - default
+      - bbb-shared
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
     volumes:
@@ -116,3 +122,9 @@ services:
       ports:
         - 1025:1025
         - 8025:8025
+
+networks:
+  # Shared with a standalone BigBlueButton container so web/worker keep reaching
+  # it across `docker compose down`. Must be created once: `docker network create bbb-shared`.
+  bbb-shared:
+    external: true

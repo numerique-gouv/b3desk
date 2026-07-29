@@ -46,26 +46,24 @@ echo "audioBridge=livekit" | sudo tee -a /etc/bigbluebutton/bbb-web.properties
 sudo systemctl restart bbb-web nginx
 
 # DEB
-sudo apt install debhelper po-debconf -y || true
+wget -O /tmp/bbb-record-ai-summary_0.1.15_all.deb \
+  https://github.com/bigbluebutton/bbb-record-ai-summary/releases/download/v0.1.15/bbb-record-ai-summary_0.1.15_all.deb
 
-wget -O /tmp/bbb-record-ai-summary-ai-summary-new-format.zip https://bigbluebutton.nyc3.digitaloceanspaces.com/bbb-record-ai-summary-ai-summary-new-format.zip
-cd /tmp
-unzip -o bbb-record-ai-summary-ai-summary-new-format.zip
-cd /tmp/bbb-record-ai-summary-ai-summary-new-format/
-sudo ./build.sh
+sudo apt install /tmp/bbb-record-ai-summary_0.1.15_all.deb -y
 
-cd ..
-sudo apt install ./bbb-record-ai-summary_0.1.0_all.deb -y || true
+sudo chown -R bigbluebutton:bigbluebutton /var/bigbluebutton/recording/process/ai-summary
 
 sudo touch /etc/bigbluebutton/ai-summary.yml
 sudo yq eval ".llm.provider = \"$AI_PROVIDER\"" -i /etc/bigbluebutton/ai-summary.yml
 sudo yq eval "$LLM_API_KEY_PATH = \"$AI_API_KEY\"" -i /etc/bigbluebutton/ai-summary.yml
-sudo yq eval '.llm.language = "en"' -i /etc/bigbluebutton/ai-summary.yml
+sudo yq eval '.llm.language = "fr"' -i /etc/bigbluebutton/ai-summary.yml
+sudo yq eval '.locale = "fr"' -i /etc/bigbluebutton/ai-summary.yml
 
 sudo touch /etc/bigbluebutton/post-archive-transcription.yml
-sudo yq eval '.language = "en"' -i /etc/bigbluebutton/post-archive-transcription.yml
+sudo yq eval '.language = "fr"' -i /etc/bigbluebutton/post-archive-transcription.yml
 if [[ -n "$TRANSCRIPTION_PROVIDER" ]]; then
   sudo yq eval ".${TRANSCRIPTION_PROVIDER}.api_key = \"$AI_API_KEY\"" -i /etc/bigbluebutton/post-archive-transcription.yml
+  sudo yq eval ".transcriber_path = \"/usr/local/bigbluebutton/core/lib/transcription/${TRANSCRIPTION_PROVIDER}_whisper.rb\"" -i /etc/bigbluebutton/post-archive-transcription.yml
 else
   echo "Skipping transcription API key setup for provider '$AI_PROVIDER' because no matching transcription backend is available."
 fi

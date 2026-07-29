@@ -14,7 +14,7 @@ from b3desk.nextcloud import is_nextcloud_available
 def get_hash(meeting, role: Role, hash_from_string=False):
     """Generate a hash for meeting access verification based on role."""
     name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    s = f"{meeting.meetingID}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
+    s = f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{name}|{role.name if hash_from_string else role}"
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
@@ -51,40 +51,41 @@ def get_join_url(
     meeting_role: Role,
     fullname,
     fullname_suffix="",
-    quick_meeting=False,
     seconds_before_refresh=None,
     waiting_room=True,
 ):
     """Return the URL of the BBB meeting URL if available, and the URL of the b3desk 'waiting_meeting' if it is not ready."""
     from b3desk.models.bbb import BBB
 
-    if waiting_room and not BBB(meeting.meetingID).is_running():
+    if waiting_room and not BBB(meeting.bbb_meeting_id).is_running():
         return url_for(
             "join.waiting_meeting",
-            meeting_fake_id=meeting.fake_id,
+            meeting_id=meeting.id,
             hash_=get_hash(meeting, meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
-            quick_meeting=quick_meeting,
         )
 
-    if meeting.id:
+    if not meeting.quick:
         meeting.last_connection_utc_datetime = datetime.now()
+        meeting.update_used_at_url(meeting_role)
         db.session.add(meeting)
         db.session.commit()
 
     nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
     return (
-        BBB(meeting.meetingID).prepare_request_to_join_bbb(meeting_role, nickname).url
+        BBB(meeting.bbb_meeting_id)
+        .prepare_request_to_join_bbb(meeting_role, nickname)
+        .url
     )
 
 
-def get_signin_url(meeting, meeting_role: Role):
+def create_signin_url(meeting, meeting_role: Role):
     """Generate the sign-in URL for a specific role."""
     return url_for(
         "join.signin_meeting",
-        meeting_fake_id=meeting.fake_id,
+        meeting_id=meeting.id,
         hash_=get_hash(meeting, meeting_role),
         role=meeting_role,
         _external=True,
@@ -96,7 +97,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a persistent meeting."""
     from b3desk.models.bbb import BBB
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     if bbb.is_running():
         return False
 
@@ -113,11 +114,11 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         moderator_link_introduction=current_app.config[
             "QUICK_MEETING_MODERATOR_LINK_INTRODUCTION"
         ],
-        moderator_signin_url=get_signin_url(meeting, Role.moderator),
+        moderator_signin_url=meeting.moderator_url,
         attendee_link_introduction=current_app.config[
             "QUICK_MEETING_ATTENDEE_LINK_INTRODUCTION"
         ],
-        attendee_signin_url=get_signin_url(meeting, Role.attendee),
+        attendee_signin_url=meeting.attendee_url,
     )
     meta_bbb_recording_ready_url = get_recording_status_callback_url()
 
@@ -149,7 +150,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         guest_policy=meeting.guestPolicy,
         presentation_upload_external_url=url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         presentation_upload_external_description=current_app.config[
@@ -161,10 +162,12 @@ def create_bbb_meeting(meeting, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
         meta_bbb_recording_ready_url=meta_bbb_recording_ready_url,
+        ai_summary=meeting.ai_summary_enabled,
+        file_sharing=meeting.owner.can_use_file_sharing,
     )
 
     current_app.logger.info(
-        "BBB room %s creation result: %s", meeting.meetingID, result
+        "BBB room %s creation result: %s", meeting.bbb_meeting_id, result
     )
 
     if not BBB.success(result):
@@ -186,23 +189,22 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     return True
 
 
-def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
+def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
     """Create a BBB room for a quick meeting."""
     from b3desk.models.bbb import BBB
     from b3desk.models.meetings import get_deterministic_password
     from b3desk.models.meetings import pin_generation
 
-    meeting_id = f"meeting-vanish-{fake_id}--"
     name = str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    moderator_pw = get_deterministic_password(fake_id, "moderator")
-    attendee_pw = get_deterministic_password(fake_id, "attendee")
+    moderator_pw = get_deterministic_password(meeting_id, "moderator")
+    attendee_pw = get_deterministic_password(meeting_id, "attendee")
     meta_academy = user.mail_domain if user and user.mail_domain else None
 
     bbb = BBB(meeting_id)
     if bbb.is_running():
         return False
 
-    current_app.logger.info("Request BBB quick room creation %s %s", name, fake_id)
+    current_app.logger.info("Request BBB quick room creation %s %s", name, meeting_id)
 
     voice_bridge = (
         pin_generation() if current_app.config["ENABLE_PIN_MANAGEMENT"] else None
@@ -214,7 +216,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
 
     moderator_signin_url = url_for(
         "join.signin_meeting",
-        meeting_fake_id=fake_id,
+        meeting_id=meeting_id,
         hash_=compute_hash(Role.moderator),
         role=Role.moderator,
         _external=True,
@@ -222,7 +224,7 @@ def create_bbb_quick_meeting(fake_id: str, user=None) -> bool:
     )
     attendee_signin_url = url_for(
         "join.signin_meeting",
-        meeting_fake_id=fake_id,
+        meeting_id=meeting_id,
         hash_=compute_hash(Role.attendee),
         role=Role.attendee,
         _external=True,
