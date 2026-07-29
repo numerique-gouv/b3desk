@@ -302,16 +302,6 @@ class GroupSearchForm(FlaskForm):
     )
 
 
-class MemberSearchForm(FlaskForm):
-    search = EmailField(
-        label=_("Ajout de membre"),
-        render_kw={
-            "placeholder": "Saisir l'e-mail de l'utilisateur (ex: nom@exemple.fr)"
-        },
-        validators=[validators.DataRequired()],
-    )
-
-
 def nullable_bool(value):
     if value in (None, "", "None"):
         return None
@@ -349,7 +339,6 @@ class GroupForm(FlaskForm):
         label=_(
             "Génération de résumé (IA)",
         ),
-        description=_("Désactivé par défaut"),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
@@ -365,5 +354,10 @@ class GroupForm(FlaskForm):
         self.enable_file_sharing.description = (
             _("Activé par défaut")
             if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_ai_summary.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_AI_SUMMARY"]
             else _("Désactivé par défaut")
         )

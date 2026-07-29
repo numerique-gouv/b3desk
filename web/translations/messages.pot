@@ -213,7 +213,7 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:250 web/b3desk/forms.py:350
+#: web/b3desk/forms.py:250 web/b3desk/forms.py:340
 #: web/b3desk/templates/admin/group_infos.html:75
 #: web/b3desk/templates/admin/meeting_infos.html:163
 msgid "Génération de résumé (IA)"
@@ -251,34 +251,30 @@ msgstr ""
 msgid "Rechercher un groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:307
-msgid "Ajout de membre"
-msgstr ""
-
-#: web/b3desk/forms.py:324
+#: web/b3desk/forms.py:314
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:326
+#: web/b3desk/forms.py:316
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:334 web/b3desk/templates/admin/group_infos.html:59
+#: web/b3desk/forms.py:324 web/b3desk/templates/admin/group_infos.html:59
 #: web/b3desk/templates/admin/user_infos.html:133
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:342 web/b3desk/templates/admin/group_infos.html:67
+#: web/b3desk/forms.py:332 web/b3desk/templates/admin/group_infos.html:67
 #: web/b3desk/templates/admin/user_infos.html:141
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:352 web/b3desk/forms.py:363 web/b3desk/forms.py:368
-msgid "Désactivé par défaut"
+#: web/b3desk/forms.py:350 web/b3desk/forms.py:355 web/b3desk/forms.py:360
+msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:361 web/b3desk/forms.py:366
-msgid "Activé par défaut"
+#: web/b3desk/forms.py:352 web/b3desk/forms.py:357 web/b3desk/forms.py:362
+msgid "Désactivé par défaut"
 msgstr ""
 
 #: web/b3desk/settings.py:669 web/b3desk/templates/meeting/list.html:4
