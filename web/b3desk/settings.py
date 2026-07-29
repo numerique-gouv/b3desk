@@ -259,6 +259,12 @@ class MainSettings(BaseSettings):
     BABEL_DEFAULT_LOCALE: str = "fr"
     """La langue utilisée par défaut lorsque l’utilisateur n’en a pas choisi."""
 
+    BABEL_DEFAULT_TIMEZONE: str = "Europe/Paris"
+    """Le fuseau horaire utilisé pour l’affichage des dates et heures.
+
+    Plus d'infos sur https://data.iana.org/time-zones/tzdb-2021a/zone1970.tab
+    """
+
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 
@@ -989,7 +995,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_CLIENT_SECRET: str | None = None
-    """ Piste Oauth client_secret
+    """Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
@@ -1003,7 +1009,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_API_URL: str | None = "https://oauth.piste.gouv.fr/api"
-    """ PISTE OAUTH APU url
+    """PISTE OAUTH APU url
 
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
@@ -1015,7 +1021,7 @@ class MainSettings(BaseSettings):
     """
 
     MAXIMUM_MEETING_DELEGATES: int | None = 15
-    """ Maximum meeting delegates
+    """Maximum meeting delegates
 
     Maximum number of delegates for one meeting
     """
