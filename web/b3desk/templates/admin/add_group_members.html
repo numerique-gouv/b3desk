@@ -55,8 +55,8 @@
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
             <input type="hidden" name="page" value="{{ page_obj.page }}">
             <div class="fr-checkbox-group fr-checkbox-group--sm">
-                <input id="checkbox" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="{% trans %}Tout sélectionner{% endtrans %}" onchange="this.form.submit()">
-                <label class="fr-label" for="checkbox">
+                <input id="select-all-users" type="checkbox" {% if select_all %}checked{% endif %} name="select_all" value="1" aria-describedby="{% trans %}Tout sélectionner{% endtrans %}" onchange="this.form.submit()">
+                <label class="fr-label" for="select-all-users">
                     {% if data %}
                         {% trans count=selected_users | length %}
                             Sélectionner {{ count }} utilisateur correspondant aux critères et ne faisant pas partie du groupe
@@ -78,7 +78,7 @@
         <form method="post" action="{{ url_for('admin.add_group_members', group=group) }}">
             {% include 'meeting/csrf.html' %}
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
-            {% if select_all %}<input type="hidden" name="select_all" value="1">{% endif %}
+            {% if select_all %}<input id="select-all-scope" type="hidden" name="select_all" value="1">{% endif %}
             <div class="fr-grid-row fr-grid-row--center fr-mt-2w">
                 <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
             </div>
@@ -90,4 +90,8 @@
         <br>
         {% include 'admin/paging.html' %}
     {% endif %}
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/group-members.js')}}"></script>
 {% endblock %}
