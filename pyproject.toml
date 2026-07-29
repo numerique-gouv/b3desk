@@ -82,6 +82,7 @@ doc = [
 
 [tool.pytest.ini_options]
 testpaths = "web"
+log_level = "INFO"
 markers = [
     "secure: cloud auth responds with a https url",
     "no_scheme: cloud auth responds without any scheme for url",
