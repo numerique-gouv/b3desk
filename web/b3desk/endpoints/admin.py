@@ -371,18 +371,9 @@ def add_users_in_group(selected_users, group, ids=False):
 def add_group_members(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args, meta={"csrf": False})
-    select_all = (
-        bool(request.values.get("select_all"))
-        if request.values.get("select_all")
-        else False
-    )
-
-    if request.method == "GET":
-        data = form.search.data.lower() if form.search.data else None
-    else:
-        data = (
-            request.form.get("search").lower() if request.form.get("search") else None
-        )
+    select_all = bool(request.values.get("select_all"))
+    search = request.values.get("search")
+    data = search.lower() if search else None
 
     selected_users = get_all_users_not_in_group(group, data)
     users_page = get_all_users_not_in_group_paginate(

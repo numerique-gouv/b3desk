@@ -341,7 +341,7 @@ msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:399
+#: web/b3desk/endpoints/admin.py:390
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 

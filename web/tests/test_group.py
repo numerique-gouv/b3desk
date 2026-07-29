@@ -316,15 +316,14 @@ def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
 def test_admin_can_add_multiple_users_filtered_with_search(
     cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
 ):
-    """Test admin can add multiple users filtered with search."""
+    """Test admin adds every user matching the search, and only those."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post(
-        "/admin/add-group-members/1?search=%40ladomain.tld&select_all=1"
+        "/admin/add-group-members/1", {"search": "ber", "select_all": "1"}, status=302
     )
-    assert ("success", "3 membres ajoutés au groupe") in res.flashes
-    assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert ("success", "1 membre ajouté au groupe") in res.flashes
+    assert [member.email for member in group.members] == ["berenice@domain.tld"]
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
-    assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
 
 
 def test_can_use_ai_summary_returns_true_when_group_enables_it(client_app, user, group):
