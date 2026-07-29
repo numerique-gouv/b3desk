@@ -172,6 +172,11 @@ def delete_old_meetings():
                 "Celery cron task: %d expired meetings to delete",
                 len(meetings_to_delete),
             )
+        else:
+            logger.info(
+                "Celery cron task: no action required",
+            )
+
         for meeting in meetings_to_delete:
             _, category = clean_db_and_delete_meeting(meeting, celery_cron=True)
             if category == "success":
@@ -197,6 +202,10 @@ def inform_owner_before_meeting_deletion():
         if meetings_to_inform:
             logger.info(
                 "Celery cron task: %d meetings expire soon", len(meetings_to_inform)
+            )
+        else:
+            logger.info(
+                "Celery cron task: no action required",
             )
         for meeting, delay in meetings_to_inform:
             send_mail_before_meeting_deletion(meeting, delay)
@@ -224,6 +233,10 @@ def delete_old_users():
             logger.info(
                 "Celery cron task: %d expired user accounts to delete",
                 len(users_to_delete),
+            )
+        else:
+            logger.info(
+                "Celery cron task: no action required",
             )
         for user in users_to_delete:
             if clean_db_and_delete_user(user):
