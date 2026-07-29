@@ -377,7 +377,7 @@ def add_users_in_group(users, group):
 @admin_needed
 def add_group_members(group: Group):
     """Display non member users list to add members."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     select_all = bool(request.values.get("select_all"))
     search = request.values.get("search")
     data = search.lower() if search else None
@@ -408,7 +408,6 @@ def add_group_members(group: Group):
     return render_template(
         "admin/add_group_members.html",
         group=group,
-        search=data,
         form=form,
         users_page=users_page,
         data=data,

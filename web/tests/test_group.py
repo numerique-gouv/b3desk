@@ -381,6 +381,7 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
     assert user.can_use_ai_summary is True
     meeting.ai_summary = True
+    assert meeting.ai_summary_enabled is True
     client_app.post("/admin/manage-group-members/1/1", status=302)
     create_bbb_meeting(meeting, meeting.owner)
     assert user.can_use_ai_summary is False

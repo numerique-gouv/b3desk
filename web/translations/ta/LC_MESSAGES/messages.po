@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 10:55+0200\n"
+"POT-Creation-Date: 2026-07-29 11:48+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -347,45 +347,45 @@ msgstr ""
 "மதிப்பீட்டாளர்களை வரவேற்கிறோம். இந்தக் கூட்டத்திற்கு யாரையாவது அழைக்க, "
 "பின்வரும் இணைப்புகளில் ஒன்றை அவர்களுக்கு அனுப்பவும்:"
 
-#: web/b3desk/endpoints/admin.py:199
+#: web/b3desk/endpoints/admin.py:207
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:214
+#: web/b3desk/endpoints/admin.py:222
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:258 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/admin.py:266 web/b3desk/endpoints/meetings.py:151
 #: web/b3desk/endpoints/meetings.py:211
 msgid "Le formulaire contient des erreurs"
 msgstr "படிவத்தில் பிழைகள் உள்ளன"
 
-#: web/b3desk/endpoints/admin.py:281
+#: web/b3desk/endpoints/admin.py:289
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:312
+#: web/b3desk/endpoints/admin.py:320
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:316
+#: web/b3desk/endpoints/admin.py:324
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:342
+#: web/b3desk/endpoints/admin.py:350
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:361
+#: web/b3desk/endpoints/admin.py:368
 #, python-format
 msgid "%(num)s membre ajouté au groupe"
 msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:399
+#: web/b3desk/endpoints/admin.py:398
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
@@ -1156,11 +1156,7 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] "%(count)s பயனர்"
 msgstr[1] "%(count)s பயனர்கள்"
 
-#: web/b3desk/templates/admin/add_group_members.html:58
-msgid "Tout sélectionner"
-msgstr ""
-
-#: web/b3desk/templates/admin/add_group_members.html:61
+#: web/b3desk/templates/admin/add_group_members.html:60
 #, python-format
 msgid ""
 "\n"
@@ -1170,12 +1166,12 @@ msgid ""
 msgid_plural ""
 "\n"
 "                            Sélectionner %(count)s utilisateurs "
-"correpondants au critères et ne faisant pas partie du groupe\n"
+"correspondants aux critères et ne faisant pas partie du groupe\n"
 "                        "
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:67
+#: web/b3desk/templates/admin/add_group_members.html:66
 #, python-format
 msgid ""
 "\n"
@@ -1190,8 +1186,8 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:83
-#: web/b3desk/templates/admin/add_group_members.html:87
+#: web/b3desk/templates/admin/add_group_members.html:82
+#: web/b3desk/templates/admin/add_group_members.html:86
 msgid "Ajouter les utilisateurs sélectionnés"
 msgstr ""
 
@@ -1559,7 +1555,6 @@ msgstr ""
 msgid "Prénom"
 msgstr "முதல் பெயர்"
 
-#: web/b3desk/templates/admin/user_table.html:29
 #: web/b3desk/templates/admin/user_table.html:31
 #, python-format
 msgid "Sélectionner %(fullname)s"
@@ -3982,4 +3977,7 @@ msgstr ""
 
 #~ msgid "Délégation de la réunion %(meeting_name)s"
 #~ msgstr "மீட்டிங் பிரதிநிதிகள் குழு %(meeting_name)s"
+
+#~ msgid "Tout sélectionner"
+#~ msgstr ""
 

@@ -987,11 +987,7 @@ msgid_plural "%(count)s utilisateurs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:58
-msgid "Tout sélectionner"
-msgstr ""
-
-#: web/b3desk/templates/admin/add_group_members.html:61
+#: web/b3desk/templates/admin/add_group_members.html:60
 #, python-format
 msgid ""
 "\n"
@@ -1001,12 +997,12 @@ msgid ""
 msgid_plural ""
 "\n"
 "                            Sélectionner %(count)s utilisateurs "
-"correpondants au critères et ne faisant pas partie du groupe\n"
+"correspondants aux critères et ne faisant pas partie du groupe\n"
 "                        "
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:67
+#: web/b3desk/templates/admin/add_group_members.html:66
 #, python-format
 msgid ""
 "\n"
@@ -1021,8 +1017,8 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/add_group_members.html:83
-#: web/b3desk/templates/admin/add_group_members.html:87
+#: web/b3desk/templates/admin/add_group_members.html:82
+#: web/b3desk/templates/admin/add_group_members.html:86
 msgid "Ajouter les utilisateurs sélectionnés"
 msgstr ""
 
