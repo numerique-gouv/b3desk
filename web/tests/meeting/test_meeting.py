@@ -1594,3 +1594,17 @@ def test_inform_owner_before_meeting_deletion_for_unused_meetings(
         (meeting, DELAY_FOR_THIRD_EMAIL),
     ]
     assert len(smtpd.messages) == 3
+
+
+def test_delete_old_meetings_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no meeting to delete."""
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_meetings()
+    assert "Celery cron task: no action required" in caplog.text
+
+
+def test_inform_owner_before_meeting_deletion_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no meeting to inform."""
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_owner_before_meeting_deletion()
+    assert "Celery cron task: no action required" in caplog.text

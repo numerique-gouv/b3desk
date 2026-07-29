@@ -262,6 +262,36 @@ def test_delete_old_users(
     assert MeetingFiles.query.filter_by(id=meeting_file_id).first() is None
 
 
+def test_delete_old_users_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no user to delete."""
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_users()
+    assert "Celery cron task: no action required" in caplog.text
+
+
+def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog):
+    """Test the cron task logs an error when a user could not be deleted."""
+    user.last_connection_utc_datetime = datetime.datetime(2000, 1, 1)
+    user.created_at = datetime.datetime(2000, 1, 1)
+    db.session.commit()
+    mocker.patch("b3desk.tasks.clean_db_and_delete_user", return_value=False)
+
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        delete_old_users()
+
+    assert (
+        f"Celery cron task: user not deleted: {user.fullname}, id {user.id}, email {user.email}"
+        in caplog.text
+    )
+
+
+def test_inform_user_before_account_deletion_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no user to inform."""
+    with mock.patch("b3desk.create_app", return_value=client_app.app):
+        inform_user_before_account_deletion()
+    assert "Celery cron task: no action required" in caplog.text
+
+
 def test_inform_user_before_account_deletion(
     app,
     client_app,
