@@ -65,6 +65,34 @@ header.rf-header {
   box-shadow: none;
 }
 
+#display-options {
+  padding: .5rem;
+  background-color: var(--background-alt-grey);
+  border-radius: .5rem;
+  width: 100%;
+}
+
+.fr-toggle__list.toggle-no-border li {
+  margin-bottom: 0px;
+}
+
+.toggle-no-border li div {
+  box-shadow: none;
+  padding-bottom: 0px;
+}
+
+#display-options .toggle-no-border .fr-toggle__label::before {
+  content:" ";
+  margin-bottom: 0px;
+  margin-right: .5rem;
+}
+
+.toggle-no-border li div label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  line-height: 1rem;
+}
+
 /* */
 #jumbotron {
   background-color: #f9f8f6;
