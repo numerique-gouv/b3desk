@@ -7,7 +7,7 @@
                         <table id="meetings">
                             <thead class="">
                                 <tr class="">
-                                    <th class="fr-col fr-cell--center">{% trans %}Identifiant{% endtrans %}</th>
+                                    <th class="fr-col fr-cell--center">{% trans %}ID{% endtrans %}</th>
                                     <th class="fr-col fr-cell--center">{% trans %}Nom{% endtrans %}</th>
                                     <th class="fr-col fr-cell--center">{% trans %}Visio-code{% endtrans %}</th>
                                     <th class="fr-col fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
@@ -19,21 +19,15 @@
                                         <td class="fr-col fr-cell--center">
                                             {{ meeting.id }}
                                         </td>
-                                        <td class="fr-col fr-cell--center">
+                                        <td class="fr-col fr-cell--center fr-cell--multiline">
                                             {{ meeting.name }}
                                         </td>
                                         <td class="fr-col fr-cell--center">
                                             {{ meeting.visio_code }}
                                         </td>
-                                        {% if not meeting.is_shadow %}
-                                            <td class="fr-col fr-cell--center">
-                                                <a href="{{ url_for("admin.meeting_infos",  meeting=meeting) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans meeting_name=meeting.name %}Éditer {{ meeting_name }}{% endtrans %}"></a>
-                                            </td>
-                                        {% else %}
-                                            <td class="fr-col fr-cell--center">
-                                                {% trans %}Réunion silencieuse (shadow_meeting){% endtrans %}
-                                            </td>
-                                        {% endif %}
+                                        <td class="fr-col fr-cell--center">
+                                            <a href="{{ url_for("admin.meeting_infos",  meeting=meeting) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans meeting_name=meeting.name %}Éditer {{ meeting_name }}{% endtrans %}"></a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

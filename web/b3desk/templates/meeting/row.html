@@ -18,7 +18,7 @@
         </div>
         <div class="fr-col">
             <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}"><span class="fr-fi-edit-line"></span></a>
-            {% if config.get("FILE_SHARING") %}
+            {% if meeting.owner.can_use_file_sharing %}
                 <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-tag" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}"><span class="fr-fi-file-pdf-line"></span></a>
             {% endif %}
             <a href="#"
@@ -31,34 +31,56 @@
                data-modal-close-title="{% trans %}Fermer la fenêtre modale{% endtrans %}"><span class="fr-fi-delete-line"></span></a>
         </div>
     {% else %}
-        <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6">
+        <div class="fr-col-xs-7 fr-col-sm-7 fr-col-lg-7">
             <a href="{{ url_for("join.join_meeting_as_role", meeting=meeting, role=Role.moderator) }}" target="_blank" rel="noopener" class="fr-btn fr-btn--primary" title="{% trans meeting_name=meeting.name %}Lancer {{ meeting_name }} - nouvelle fenêtre{% endtrans %}">{% trans %}Lancer{% endtrans %}</a>
             <button class="fr-btn fr-btn--secondary"  data-fr-opened="false" aria-controls="share-{{ meeting.id }}">
                 {% trans %}Inviter{% endtrans %}
             </button>
-            {% if meeting in g.user.get_all_delegated_meetings %}
+            {% if admin_mode %}
+                <a href="{{ url_for('admin.user_infos', user=meeting.owner) }}" class="fr-btn fr-btn--secondary fr-btn--icon-left">
+                    {% trans %}Voir le propriétaire{% endtrans %}
+                </a>
+            {% elif meeting in g.user.get_all_delegated_meetings %}
                 <i class="fr-icon-parent-fill delegated-icon" aria-hidden="true" title="{% trans meeting_owner_name=meeting.owner.fullname %}Propriétaire : {{ meeting_owner_name }}{% endtrans %}"></i>
             {% endif %}
         </div>
-        <div class="fr-col-xs-6 fr-col-sm-6 fr-col-lg-6 btn-actions">
-            {% if meeting in g.user.meetings %}
-                <a href="{{ url_for("meetings.manage_delegation", meeting=meeting) }}" class="fr-btn {% if not meeting.get_all_delegates %}fr-btn--secondary{% endif %} fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
-                    {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
-                </a>
-            {% endif %}
-            {% if config.get("RECORDING") %}
-                <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
-                    {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
-                </a>
-            {% endif %}
-            <a href="{{ url_for("meetings.edit_meeting", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}</a>
-            {% if config.get("FILE_SHARING") %}
-                <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}</a>
-            {% endif %}
-            {% if meeting in g.user.meetings %}
-                <button class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer{% endtrans %}"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
-                    {% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}
+        <div class="fr-col-xs-5 fr-col-sm-5 fr-col-lg-5 btn-actions">
+            {% if admin_mode and meeting.is_shadow %}
+                <button class="fr-btn fr-btn--secondary fr-icon-user-setting-line" title="{% trans %}Réunion silencieuse{% endtrans %}" aria-label="{% trans %}Réunion silencieuse{% endtrans %}" disabled="">
+                    {% trans %}Réunion silencieuse{% endtrans %}
                 </button>
+                <button class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans %}Réunion silencieuse{% endtrans %}" aria-label="{% trans %}Réunion silencieuse{% endtrans %}" disabled="">
+                    {% trans %}Réunion silencieuse{% endtrans %}
+                </button>
+                <button class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans %}Réunion silencieuse{% endtrans %}" aria-label="{% trans %}Réunion silencieuse{% endtrans %}" disabled="">
+                    {% trans %}Réunion silencieuse{% endtrans %}
+                </button>
+                <button class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans %}Réunion silencieuse{% endtrans %}" aria-label="{% trans %}Réunion silencieuse{% endtrans %}" disabled="">
+                    {% trans %}Réunion silencieuse{% endtrans %}
+                </button>
+                <button class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Réunion silencieuse{% endtrans %}" aria-label="{% trans %}Réunion silencieuse{% endtrans %}" disabled="">
+                    {% trans %}Réunion silencieuse{% endtrans %}
+                </button>
+            {% else %}
+                {% if meeting in g.user.meetings or admin_mode %}
+                    <a href="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn {% if not meeting.get_all_delegates %}fr-btn--secondary{% endif %} fr-icon-user-setting-line" title="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}">
+                        {% trans meeting_name=meeting.name %}Gérer les délégations de {{ meeting_name }}{% endtrans %}
+                    </a>
+                {% endif %}
+                {% if config.get("RECORDING") %}
+                    <a href="{{ url_for("meetings.show_meeting_recording", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn fr-btn--secondary fr-icon-play-line" title="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}">
+                        {% trans meeting_name=meeting.name %}Voir les enregistrements de {{ meeting_name }}{% endtrans %}
+                    </a>
+                {% endif %}
+                <a href="{{ url_for("meetings.edit_meeting", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn fr-btn--secondary fr-icon-edit-line" title="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Modifier {{ meeting_name }}{% endtrans %}</a>
+                {% if meeting.owner.can_use_file_sharing %}
+                    <a href="{{ url_for("meeting_files.edit_meeting_files", meeting=meeting, admin_mode=admin_mode or None) }}" class="fr-btn fr-btn--secondary fr-icon-file-pdf-line" title="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}" aria-label="{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}">{% trans meeting_name=meeting.name %}Fichiers associés à {{ meeting_name }}{% endtrans %}</a>
+                {% endif %}
+                {% if meeting in g.user.meetings or admin_mode %}
+                    <button class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer{% endtrans %}"  data-fr-opened="false" aria-controls="delete-{{ meeting.id }}">
+                        {% trans meeting_name=meeting.name %}Supprimer {{ meeting_name }}{% endtrans %}
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
     {% endif %}

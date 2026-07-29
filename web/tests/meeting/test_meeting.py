@@ -7,7 +7,6 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-import pytest
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_hash_legacy
@@ -23,22 +22,11 @@ from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_file_hash
+from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
 from flask import url_for
-
-
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    """Mock meeting.bbb.is_running() to return True."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
-
-
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    """Mock meeting.bbb.is_running() to return False."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
@@ -102,7 +90,8 @@ def test_save_new_meeting(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    meeting = meetings[0]
 
     assert meeting.owner_id == 1
     assert meeting.name == "Mon meeting de test"
@@ -139,7 +128,7 @@ def test_save_existing_meeting_not_running(
     """Test that existing meeting can be updated when not running."""
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
     res.forms[0]["maxParticipants"] = 5
@@ -163,8 +152,9 @@ def test_save_existing_meeting_not_running(
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    assert len(Meeting.query.all()) == 1
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
 
     assert meeting.owner_id == 1
     assert meeting.name == "meeting"  # Name can not be edited
@@ -187,8 +177,9 @@ def test_save_existing_meeting_not_running(
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
     assert meeting.voiceBridge == "123456789"
+    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}"
     assert (
-        "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        f"Meeting meeting {meeting.id} was updated by alice@domain.tld. Updated fields : {data}\n"
         in caplog.text
     )
 
@@ -200,7 +191,7 @@ def test_save_existing_meeting_running(
     mocker.patch("b3desk.models.bbb.BBB.end", return_value={"returncode": "SUCCESS"})
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
 
     res = res.forms[0].submit()
@@ -208,8 +199,9 @@ def test_save_existing_meeting_running(
     assert "Vous n'êtes pas propriétaire" not in res
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    assert len(Meeting.query.all()) == 1
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
 
     res = res.forms[0].submit()
@@ -248,7 +240,9 @@ def test_save_no_recording_by_default(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
     assert meeting.record is True
     assert meeting.autoStartRecording is False
     assert meeting.allowStartStopRecording is True
@@ -277,13 +271,19 @@ def test_save_meeting_in_no_recording_environment(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    assert len(Meeting.query.all()) == 1
-    meeting = db.session.get(Meeting, 1)
-    assert meeting.record is False
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    assert meetings[0].record is False
 
 
 def test_create_no_file(
-    client_app, meeting, mocker, bbb_response, mock_meeting_is_not_running
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
 ):
     """Tests the BBB meeting creation request.
 
@@ -318,7 +318,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.meta_disable_recording_ai_summary = True
+    meeting.ai_summary = False
     create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
@@ -330,7 +330,7 @@ def test_create_no_file(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -342,7 +342,7 @@ def test_create_no_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="{meeting.moderator_url}" target="_blank">{meeting.moderator_url}</a><br />\n\n Lien Participant   : <a href="{meeting.attendee_url}" target="_blank">{meeting.attendee_url}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -360,7 +360,7 @@ def test_create_no_file(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -371,6 +371,37 @@ def test_create_no_file(
     assert bbb_params == body
 
     assert not mocked_background_upload.called
+
+
+def test_create_ai_summary_adds_banner(
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
+):
+    """AI summary enabled adds the banner and keeps the ai-summary format."""
+    from b3desk.join import create_bbb_meeting
+
+    meeting.ai_summary = True
+    assert meeting.ai_summary_enabled
+
+    create_bbb_meeting(meeting, meeting.owner)
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+
+    assert (
+        bbb_params["bannerText"]
+        == "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+    )
+    assert bbb_params["bannerColor"] == "#202c7d"
+    assert "meta_bbb-disable-recording-formats" not in bbb_params
 
 
 def test_create_with_only_a_default_file(
@@ -420,7 +451,7 @@ def test_create_with_only_a_default_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
-    meeting.meta_disable_recording_ai_summary = True
+    meeting.ai_summary = False
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -442,7 +473,7 @@ def test_create_with_only_a_default_file(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -454,7 +485,7 @@ def test_create_with_only_a_default_file(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="{meeting.moderator_url}" target="_blank">{meeting.moderator_url}</a><br />\n\n Lien Participant   : <a href="{meeting.attendee_url}" target="_blank">{meeting.attendee_url}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -472,7 +503,7 @@ def test_create_with_only_a_default_file(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -554,7 +585,7 @@ def test_create_with_files(
     }
 
     body = {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
@@ -566,7 +597,7 @@ def test_create_with_files(
         "logoutURL": "https://log.out",
         "record": "true",
         "duration": "60",
-        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{get_hash(meeting, Role.moderator)}</a><br />\n\n Lien Participant   : <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{get_hash(meeting, Role.attendee)}</a>',
+        "moderatorOnlyMessage": f'Welcome moderators!<br />\n\n    Code de connexion : {meeting.visio_code}<br />\n\n Lien Modérateur   : <a href="{meeting.moderator_url}" target="_blank">{meeting.moderator_url}</a><br />\n\n Lien Participant   : <a href="{meeting.attendee_url}" target="_blank">{meeting.attendee_url}</a>',
         "autoStartRecording": "false",
         "allowStartStopRecording": "true",
         "webcamsOnlyForModerator": "false",
@@ -584,7 +615,7 @@ def test_create_with_files(
         ],
         "presentationUploadExternalUrl": url_for(
             "meeting_files.file_picker",
-            bbb_meeting_id=meeting.meetingID,
+            bbb_meeting_id=meeting.bbb_meeting_id,
             _external=True,
         ),
         "voiceBridge": "111111111",
@@ -617,7 +648,9 @@ def test_create_without_logout_url_gets_default(
     res = res.forms[0].submit()
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
 
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
     assert meeting
     assert meeting.logoutUrl == app.config["MEETING_LOGOUT_URL"]
 
@@ -635,13 +668,14 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    assert len(Meeting.query.all()) == 1
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
 
     create_bbb_meeting(meeting, meeting.owner)
 
@@ -658,24 +692,41 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     )
 
 
+def test_create_and_join_quick_meeting(
+    client_app,
+    authenticated_user,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    caplog,
+):
+    """Test user can create and join a quick meeting."""
+    res = client_app.get("/meeting/quick", status=302)
+    assert "https://bbb.test/join?fullName=Alice+Cooper&meetingID=" in res.location
+    assert (
+        "creation result: {'returncode': 'SUCCESS', 'running': 'true', 'voiceBridge': '111111111', 'attendeePW': 'attendee', 'moderatorPW': 'moderator'}"
+        in caplog.text
+    )
+
+
 def test_create_quick_meeting(
     client_app, monkeypatch, user, mocker, bbb_response, mock_meeting_is_not_running
 ):
     """Test that quick meeting is created with correct default parameters."""
-    from b3desk.endpoints.meetings import get_quick_meeting_from_fake_id
+    from b3desk.endpoints.meetings import get_quick_meeting_from_meeting_id
     from b3desk.join import create_bbb_quick_meeting
     from b3desk.models.meetings import get_deterministic_password
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     monkeypatch.setattr("b3desk.models.users.User.id", 1)
     monkeypatch.setattr("b3desk.models.users.User.hash", "hash")
-    meeting = get_quick_meeting_from_fake_id()
+    meeting = get_quick_meeting_from_meeting_id()
 
-    expected_attendee_pw = get_deterministic_password(meeting.fake_id, "attendee")
-    expected_moderator_pw = get_deterministic_password(meeting.fake_id, "moderator")
+    expected_attendee_pw = get_deterministic_password(meeting.id, "attendee")
+    expected_moderator_pw = get_deterministic_password(meeting.id, "moderator")
     expected_moderator_hash = get_hash(meeting, Role.moderator)
     expected_attendee_hash = get_hash(meeting, Role.attendee)
-    create_bbb_quick_meeting(meeting.fake_id, user)
+    create_bbb_quick_meeting(meeting.id, user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -686,7 +737,7 @@ def test_create_quick_meeting(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     assert bbb_params == {
-        "meetingID": meeting.meetingID,
+        "meetingID": meeting.bbb_meeting_id,
         "name": "Séminaire improvisé",
         "attendeePW": expected_attendee_pw,
         "moderatorPW": expected_moderator_pw,
@@ -695,13 +746,30 @@ def test_create_quick_meeting(
         "meetingKeepEvents": "true",
         "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
         "meta_academy": "domain.tld",
-        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur  \u00a0: <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{expected_moderator_hash}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.fake_id}/hash/{expected_moderator_hash}</a><br />\n\n Lien Participant  \u00a0: <a href="http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{expected_attendee_hash}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.fake_id}/hash/{expected_attendee_hash}</a>',
+        "moderatorOnlyMessage": f'Bienvenue aux modérateurs. Pour inviter quelqu\'un à ce séminaire, envoyez-lui l\'un de ces liens :<br />\n\n Lien Modérateur  \u00a0: <a href="http://b3desk.test/meeting/signin/moderateur/{meeting.id}/hash/{expected_moderator_hash}" target="_blank">http://b3desk.test/meeting/signin/moderateur/{meeting.id}/hash/{expected_moderator_hash}</a><br />\n\n Lien Participant  \u00a0: <a href="http://b3desk.test/meeting/signin/invite/{meeting.id}/hash/{expected_attendee_hash}" target="_blank">http://b3desk.test/meeting/signin/invite/{meeting.id}/hash/{expected_attendee_hash}</a>',
         "voiceBridge": mock.ANY,
         "guestPolicy": "ALWAYS_ACCEPT",
         "checksum": mock.ANY,
         "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "presentationUploadExternalUrl": mock.ANY,
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
+
+
+def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
+    """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    moderator_hash = get_hash(quick_meeting, Role.moderator)
+    response = client_app.get(
+        f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
+    )
+    response.form["fullname"] = "Alice"
+    response = response.form.submit()
+
+    assert bbb_response.called
+    assert (
+        f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join" in response.location
+    )
 
 
 def test_edit_files_meeting(client_app, authenticated_user, meeting, bbb_response):
@@ -771,30 +839,35 @@ def test_meeting_link_retrocompatibility(meeting):
 
     https://github.com/numerique-gouv/b3desk/issues/128
     """
+    # Simulate a meeting migrated from the old integer-id scheme: its BBB-facing
+    # identifier is preserved verbatim in `bbb_meeting_id`, exactly as the
+    # `407ab7a9b1ab` migration backfills it for pre-existing rows.
+    meeting.bbb_meeting_id = f"meeting-persistent-42--{meeting.owner.hash}"
+
     old_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|moderator".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|moderator".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
     new_hashed_moderator_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.moderator}".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.moderator}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
 
     old_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|attendee".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|attendee".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
     new_hashed_attendee_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.attendee}".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.attendee}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
 
     old_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|authenticated".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|authenticated".encode()
     ).hexdigest()
     assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
     new_hashed_authenticated_meeting = hashlib.sha1(
-        f"meeting-persistent-{meeting.id}--{meeting.owner.hash}|attendee|meeting|{Role.authenticated}".encode()
+        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.authenticated}".encode()
     ).hexdigest()
     assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
 
@@ -1068,6 +1141,26 @@ def test_edit_meeting_without_change_anything(client_app, meeting, authenticated
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
+def test_edit_meeting_preserves_ai_summary_when_owner_unauthorised(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """Editing a meeting must keep the stored ai_summary preference when the owner has lost authorisation and the field is hidden."""
+    meeting.ai_summary = True
+    db.session.commit()
+    client_app.app.config["ENABLE_AI_SUMMARY"] = False
+    assert meeting.owner.can_use_ai_summary is False
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
+    assert "ai_summary" not in res.forms[0].fields
+
+    res.forms[0]["name"] = "Titre modifié"
+    res.forms[0].submit()
+
+    db.session.refresh(meeting)
+    assert meeting.ai_summary is True
+    assert meeting.ai_summary_enabled is False
+
+
 def test_delete_old_voiceBridges_with_form(
     time_machine,
     client_app,
@@ -1088,9 +1181,9 @@ def test_delete_old_voiceBridges_with_form(
     res.forms[0]["voiceBridge"] = "999999999"
     res = res.forms[0].submit()
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
-
+    meeting = db.session.query(Meeting).scalar()
     res = client_app.get("/").follow()
-    res = client_app.post("/meeting/delete", {"id": "1"})
+    res = client_app.post("/meeting/delete", {"id": {meeting.id}})
     assert ("success", "Élément supprimé") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
@@ -1155,7 +1248,7 @@ def test_get_forbidden_pins(
         ].sort()
     )
 
-    assert sorted(get_forbidden_pins(1)) == sorted(
+    assert sorted(get_forbidden_pins(meeting.id)) == sorted(
         [
             meeting_2.voiceBridge,
             meeting_3.voiceBridge,
@@ -1253,7 +1346,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     """Test that existing meeting can be updated when not running."""
     assert len(Meeting.query.all()) == 1
 
-    res = client_app.get("/meeting/edit/1")
+    res = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
     res.forms[0]["maxParticipants"] = 5
@@ -1281,8 +1374,9 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
         "delegated meeting modifications prises en compte",
     ) in res.flashes
 
-    assert len(Meeting.query.all()) == 1
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
 
     assert meeting.owner_id == 2
     assert meeting.name == "delegated meeting"  # Name can not be edited
@@ -1306,8 +1400,9 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
+    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}"
     assert (
-        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        f"Meeting delegated meeting {meeting.id} was updated by alice@domain.tld. Updated fields : {data}\n"
         in caplog.text
     )
 
@@ -1333,7 +1428,7 @@ def test_create_meeting_ai_summary_requires_recording(
     res = client_app.get("/meeting/new")
     res.forms[0]["name"] = "Mon meeting de test"
     res.forms[0]["allowStartStopRecording"] = False
-    res.forms[0]["meta_disable_recording_ai_summary"] = "on"
+    res.forms[0]["ai_summary"] = "on"
     res = res.forms[0].submit()
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."

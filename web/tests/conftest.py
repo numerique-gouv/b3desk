@@ -71,6 +71,7 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
@@ -127,6 +128,7 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
@@ -400,9 +402,15 @@ def meeting(client_app, user):
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
     meeting.favorite_of.append(user)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -422,9 +430,15 @@ def meeting_2(client_app, user):
         voiceBridge="111111112",
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
     meeting.favorite_of.append(user)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -443,8 +457,14 @@ def meeting_3(client_app, user):
         attendeePW="attendee",
         voiceBridge="111111113",
         visio_code="911111113",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -465,8 +485,76 @@ def meeting_1_user_2(client_app, user, user_2):
         attendeePW="attendee",
         voiceBridge="222222222",
         visio_code="922222222",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
+    db.session.commit()
+
+    access = MeetingAccess(
+        user_id=user.id,
+        meeting_id=meeting.id,
+        level=AccessLevel.DELEGATE,
+    )
+    db.session.add(access)
+    db.session.commit()
+
+    yield meeting
+
+
+@pytest.fixture
+def meeting_2_user_2(client_app, user_2):
+    from b3desk.models.meetings import Meeting
+
+    meeting = Meeting(
+        owner=user_2,
+        name="meeting 2 user 2",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="222222221",
+        visio_code="922222221",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
+    )
+    db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
+    db.session.commit()
+
+    yield meeting
+
+
+@pytest.fixture
+def meeting_1_user_3(client_app, user, user_3):
+    from b3desk.models.meetings import AccessLevel
+    from b3desk.models.meetings import Meeting
+    from b3desk.models.meetings import MeetingAccess
+
+    meeting = Meeting(
+        owner=user_3,
+        name="delegated meeting",
+        maxParticipants=99,
+        duration=999,
+        moderatorPW="moderator",
+        attendeePW="attendee",
+        voiceBridge="333333333",
+        visio_code="933333333",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
+    )
+    db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     access = MeetingAccess(
@@ -493,8 +581,14 @@ def shadow_meeting(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -513,8 +607,14 @@ def shadow_meeting_2(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -533,8 +633,14 @@ def shadow_meeting_3(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
+        bbb_meeting_id=str(
+            uuid.uuid7(),
+        ),
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_urls()
     db.session.commit()
 
     yield meeting
@@ -584,6 +690,54 @@ def user_3(client_app, iam_user_3):
     db.session.commit()
 
     yield user_3
+
+
+@pytest.fixture
+def group(client_app):
+    from b3desk.models.groups import Group
+
+    group = Group(
+        name="Group 1",
+        enable_sip=True,
+        enable_file_sharing=True,
+        enable_ai_summary=True,
+    )
+    db.session.add(group)
+    db.session.commit()
+
+    yield group
+
+
+@pytest.fixture
+def group_2(client_app):
+    from b3desk.models.groups import Group
+
+    group_2 = Group(
+        name="Group 2",
+        enable_sip=False,
+        enable_file_sharing=False,
+        enable_ai_summary=False,
+    )
+    db.session.add(group_2)
+    db.session.commit()
+
+    yield group_2
+
+
+@pytest.fixture
+def group_3(client_app):
+    from b3desk.models.groups import Group
+
+    group_3 = Group(
+        name="Group 3",
+        enable_sip=None,
+        enable_file_sharing=None,
+        enable_ai_summary=None,
+    )
+    db.session.add(group_3)
+    db.session.commit()
+
+    yield group_3
 
 
 @pytest.fixture
@@ -671,6 +825,131 @@ def bbb_response(mocker):
     class Response:
         content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge><attendeePW>attendee</attendeePW><moderatorPW>moderator</moderatorPW></response>"""
         status_code = 200
+        text = ""
+
+    yield mocker.patch("requests.Session.send", return_value=Response)
+
+
+@pytest.fixture
+def bbb_getRecordings_response(mocker):
+    """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
+
+    class Response:
+        """https://docs.bigbluebutton.org/dev/api.html#getrecordings."""
+
+        content = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <recordings>
+    <recording>
+      <recordID>ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</recordID>
+      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
+      <internalMeetingID>ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</internalMeetingID>
+      <name>Fred's Room</name>
+      <isBreakout>false</isBreakout>
+      <published>true</published>
+      <state>published</state>
+      <startTime>1530718721124</startTime>
+      <endTime>1530718810456</endTime>
+      <participants>3</participants>
+      <rawSize>951067</rawSize>
+      <metadata>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
+        <isBreakout>false</isBreakout>
+        <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
+        <meetingName>Fred's Room</meetingName>
+      </metadata>
+      <breakout>
+        <parentId>unknown</parentId>
+        <sequence>0</sequence>
+        <freeJoin>false</freeJoin>
+      </breakout>
+      <size>1104836</size>
+      <playback>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</url>
+          <processingTime>7177</processingTime>
+          <length>0</length>
+          <size>1104836</size>
+          <preview>
+            <images>
+              <image alt="Welcome to" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-2.png</image>
+              <image alt="(this slide left blank for use as a whiteboard)" height="136" width="176">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-3.png</image>
+            </images>
+          </preview>
+        </format>
+        <format>
+          <type>video</type>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+          <size>1104836</size>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
+      </playback>
+    </recording>
+    <recording>
+      <recordID>ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</recordID>
+      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
+      <internalMeetingID>ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</internalMeetingID>
+      <name>Fred's Room</name>
+      <isBreakout>false</isBreakout>
+      <published>true</published>
+      <state>published</state>
+      <startTime>1530278898111</startTime>
+      <endTime>1530281194326</endTime>
+      <participants>7</participants>
+      <rawSize>381530</rawSize>
+      <metadata>
+        <name>Recording title hand written</name>
+        <meetingName>Fred's Room</meetingName>
+        <meetingId>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingId>
+        <analytics-callback-url>https://bbb-analytics.test</analytics-callback-url>
+        <isBreakout>false</isBreakout>
+      </metadata>
+      <breakout>
+        <parentId>unknown</parentId>
+        <sequence>0</sequence>
+        <freeJoin>false</freeJoin>
+      </breakout>
+      <playback>
+        <format>
+          <type>podcast</type>
+          <url>https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/audio.ogg</url>
+          <processingTime>0</processingTime>
+          <length>33</length>
+        </format>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111</url>
+          <processingTime>139458</processingTime>
+          <length>33</length>
+          <preview>
+            <images>
+              <image width="176" height="136" alt="Welcome to">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-1.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-2.png</image>
+              <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
+            </images>
+          </preview>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
+      </playback>
+    </recording>
+  </recordings>
+</response>
+"""
         text = ""
 
     yield mocker.patch("requests.Session.send", return_value=Response)
@@ -783,7 +1062,7 @@ def bbb_recording(mocker):
                     }
                 },
                 "start_date": datetime.datetime(
-                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.timezone.utc
+                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.UTC
                 ),
                 "name": "",
             }
@@ -801,3 +1080,15 @@ def make_signed_parameters(app):
         return jwt.encode({"alg": "HS256"}, payload, key)
 
     return make
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    """Mock meeting.bbb.is_running() to return True."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)

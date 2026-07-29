@@ -259,6 +259,12 @@ class MainSettings(BaseSettings):
     BABEL_DEFAULT_LOCALE: str = "fr"
     """La langue utilisée par défaut lorsque l’utilisateur n’en a pas choisi."""
 
+    BABEL_DEFAULT_TIMEZONE: str = "Europe/Paris"
+    """Le fuseau horaire utilisé pour l’affichage des dates et heures.
+
+    Plus d'infos sur https://data.iana.org/time-zones/tzdb-2021a/zone1970.tab
+    """
+
     MAX_MEETINGS_PER_USER: int = 50
     """Le nombre maximum de séminaires que peut créer un utilisateur."""
 

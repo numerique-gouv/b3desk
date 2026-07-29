@@ -1,10 +1,10 @@
 import datetime
-from datetime import timezone
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 from xml.etree import ElementTree
 
 import pytest
+from b3desk.commands import bp
 
 
 @pytest.fixture
@@ -64,6 +64,12 @@ def bbb_getRecordings_response(mocker):
           <length>0</length>
           <size>1104836</size>
         </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
+        </format>
       </playback>
     </recording>
     <recording>
@@ -109,6 +115,12 @@ def bbb_getRecordings_response(mocker):
               <image width="176" height="136" alt="(this slide left blank for use as a whiteboard)">https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530278898120/thumbnails/thumb-3.png</image>
             </images>
           </preview>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
+          <processingTime>0</processingTime>
+          <length>0</length>
         </format>
       </playback>
     </recording>
@@ -210,13 +222,13 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
     assert first_recording["participants"] == 3
     playbacks = first_recording["playbacks"]
-    assert len(playbacks) == 2
+    assert len(playbacks) == 3
     assert (
         playbacks["presentation"]["url"]
         == "https://bbb.test/playback/presentation/2.0/playback.html?meetingId=ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
@@ -224,6 +236,10 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     assert (
         playbacks["video"]["url"]
         == "https://bbb.test/podcast/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/meeting.mp4"
+    )
+    assert (
+        playbacks["ai-summary"]["url"]
+        == "https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/ai-summary.html"
     )
 
     assert playbacks["video"]["images"] == []
@@ -234,7 +250,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
         == "https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png"
     )
     assert first_recording["start_date"] == datetime.datetime(
-        2018, 7, 4, 15, 38, 41, tzinfo=timezone.utc
+        2018, 7, 4, 15, 38, 41, tzinfo=datetime.UTC
     )
     second_recording = recordings[1]
     assert second_recording["recordID"] != first_recording["recordID"]
@@ -250,7 +266,7 @@ def test_get_recordings_with_missing_recordID(
     """Test that exception is caught when recordID is missing."""
     from b3desk.models.bbb import BBB
 
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert isinstance(recordings, list)
     assert len(recordings) == 0
@@ -287,7 +303,7 @@ def test_delete_recordings(
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -360,7 +376,7 @@ def test_open_recordings_page(
         )
         == 2
     )
-    assert len(BBB(meeting.meetingID).get_recordings()) == 2
+    assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
 
 
 def test_parse_ai_summary_playback():
@@ -412,7 +428,7 @@ def test_get_recordings_ai_summary(mocker, meeting, bbb_getRecordings_ai_summary
     """ai-summary playback exposes the summary HTML/PDF/Markdown URLs from <urls>."""
     from b3desk.models.bbb import BBB
 
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 1
     summary = recordings[0]["playbacks"]["ai-summary"]
@@ -444,16 +460,19 @@ def test_build_recording_links_ai_summary():
 
 
 def test_open_recordings_page_ai_summary(
+    cli_runner,
     client_app,
     authenticated_user,
     mocker,
     meeting,
     bbb_response,
     bbb_getRecordings_ai_summary,
+    group,
 ):
     """The recordings page shows the ai-summary report links (HTML/PDF/Markdown)."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    response = client_app.post("/admin/add-group-members/1/1", status=302)
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
     html = response.body.decode("utf-8")
 
