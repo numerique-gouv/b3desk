@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:344
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:383
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -343,19 +343,19 @@ msgstr ""
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/docs.py:85
+#: web/b3desk/endpoints/docs.py:113
 msgid "La connexion à Docs a échoué."
 msgstr ""
 
-#: web/b3desk/endpoints/docs.py:90
+#: web/b3desk/endpoints/docs.py:119
 msgid "Aucun compte rendu à enregistrer dans Docs."
 msgstr ""
 
-#: web/b3desk/endpoints/docs.py:98
+#: web/b3desk/endpoints/docs.py:135
 msgid "L’enregistrement du compte rendu dans Docs a échoué."
 msgstr ""
 
-#: web/b3desk/endpoints/docs.py:101
+#: web/b3desk/endpoints/docs.py:147
 msgid "Le compte rendu a été enregistré dans Docs."
 msgstr ""
 
@@ -520,16 +520,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:323 web/b3desk/models/meetings.py:330
+#: web/b3desk/models/meetings.py:362 web/b3desk/models/meetings.py:369
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:337
+#: web/b3desk/models/meetings.py:376
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:339
+#: web/b3desk/models/meetings.py:378
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -838,12 +838,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
 #: web/b3desk/templates/meeting/modals/invite.html:9
-#: web/b3desk/templates/meeting/recordings.html:143
-#: web/b3desk/templates/meeting/recordings.html:144
-#: web/b3desk/templates/meeting/recordings.html:184
-#: web/b3desk/templates/meeting/recordings.html:185
-#: web/b3desk/templates/meeting/recordings.html:227
-#: web/b3desk/templates/meeting/recordings.html:228
+#: web/b3desk/templates/meeting/recordings.html:148
+#: web/b3desk/templates/meeting/recordings.html:149
+#: web/b3desk/templates/meeting/recordings.html:189
+#: web/b3desk/templates/meeting/recordings.html:190
+#: web/b3desk/templates/meeting/recordings.html:232
+#: web/b3desk/templates/meeting/recordings.html:233
 msgid "Fermer"
 msgstr ""
 
@@ -1009,7 +1009,7 @@ msgstr[1] ""
 #: web/b3desk/templates/meeting/files.html:163
 #: web/b3desk/templates/meeting/files.html:175
 #: web/b3desk/templates/meeting/files.html:205
-#: web/b3desk/templates/meeting/recordings.html:162
+#: web/b3desk/templates/meeting/recordings.html:167
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr ""
@@ -1035,8 +1035,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:165
-#: web/b3desk/templates/meeting/recordings.html:209
+#: web/b3desk/templates/meeting/recordings.html:170
+#: web/b3desk/templates/meeting/recordings.html:214
 msgid "Annuler"
 msgstr ""
 
@@ -2506,7 +2506,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:43
 #: web/b3desk/templates/meeting/files.html:227
 #: web/b3desk/templates/meeting/recordings.html:34
-#: web/b3desk/templates/meeting/recordings.html:267
+#: web/b3desk/templates/meeting/recordings.html:272
 msgid "Retour à mes réunions"
 msgstr ""
 
@@ -2514,7 +2514,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/files.html:231
 #: web/b3desk/templates/meeting/recordings.html:38
-#: web/b3desk/templates/meeting/recordings.html:271
+#: web/b3desk/templates/meeting/recordings.html:276
 #, python-format
 msgid "Retour à l'administration de %(meeting_name)s "
 msgstr ""
@@ -2549,8 +2549,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:167
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:154
-#: web/b3desk/templates/meeting/recordings.html:201
+#: web/b3desk/templates/meeting/recordings.html:159
+#: web/b3desk/templates/meeting/recordings.html:206
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr ""
@@ -2874,7 +2874,7 @@ msgid "Voir l'enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:90
-#: web/b3desk/templates/meeting/recordings.html:250
+#: web/b3desk/templates/meeting/recordings.html:255
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
@@ -2919,47 +2919,55 @@ msgstr ""
 msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:123
+#: web/b3desk/templates/meeting/recordings.html:124
+msgid "Ouvrir le compte-rendu dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:124
+msgid "Ouvrir dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:127
 msgid "Enregistrer le compte-rendu dans Docs"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:123
+#: web/b3desk/templates/meeting/recordings.html:127
 msgid "Enregistrer dans Docs"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:150
+#: web/b3desk/templates/meeting/recordings.html:155
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:152
+#: web/b3desk/templates/meeting/recordings.html:157
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
 "<em>%(recording_name)s</em> de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:206
+#: web/b3desk/templates/meeting/recordings.html:211
 msgid "Modifier le nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:206
+#: web/b3desk/templates/meeting/recordings.html:211
 msgid "Renommer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:234
+#: web/b3desk/templates/meeting/recordings.html:239
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:237
+#: web/b3desk/templates/meeting/recordings.html:242
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
 "services dédiés à la diffusion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:244
+#: web/b3desk/templates/meeting/recordings.html:249
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
