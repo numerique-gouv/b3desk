@@ -36,6 +36,39 @@
         <p>{% trans %}Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre autant de temps que la durée de la réunion.{% endtrans %}</p>
         <p>{% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}</p>
         <p>{% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}</p>
+
+        <div class="fr-table">
+            <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                    <div class="fr-table__content">
+                        <table>
+                            <caption>{% trans %}Historique de{% endtrans %} {{ meeting.name }}</caption>
+                            <thead>
+                                <tr>
+                                    <th>Date de la session</th>
+                                    <th>Enregistrement </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for recording in meeting.bbb.get_recordings() %}
+                                    <tr>
+                                        <td>{{ recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') }}</td>
+                                        <td>{{ recording.name or recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') }}</td>
+                                        <td>
+                                            <a class="fr-btn fr-btn--secondary fr-icon-download-line" href="#">
+                                                {% trans %}Télécharger l'enregistrement{% endtrans %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% for recording in meeting.bbb.get_recordings() %}
             {% set recording_name = recording.name or recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') %}
             <h3 class="fr-h3">
