@@ -16,6 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    const participantsToggle = document.getElementById("showParticipantsOnLogin");
+    const chatToggle = document.getElementById("showPublicChatOnLogin");
+    if (!participantsToggle || !chatToggle) {
+        return;
+    }
+
+    const syncChatToggle = () => {
+        chatToggle.disabled = !participantsToggle.checked;
+        if (!participantsToggle.checked) {
+            chatToggle.checked = false;
+        }
+    };
+
+    syncChatToggle();
+    participantsToggle.addEventListener("change", syncChatToggle);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
     const needConfirm = document.getElementsByClassName("need-confirm");
     const modal = document.querySelector("#delegate-confirmation");
     const form = document.getElementById("meeting-form");
