@@ -41,7 +41,7 @@ class AccessLevel(IntEnum):
 
 class MeetingAccess(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
     level = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("User", backref="user_meeting_access")
@@ -128,14 +128,13 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    used_at = db.Column(db.DateTime)
 
     meeting = db.relationship("Meeting", back_populates="urls")
 
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bbb_meeting_id = db.Column(db.String(255))
+    bbb_meeting_id = db.Column(db.String(255), default=lambda: str(uuid.uuid7()))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
 
@@ -237,14 +236,6 @@ class Meeting(db.Model):
                     url=create_signin_url(self, role),
                 )
             )
-
-    def update_used_at_url(self, role):
-        meeting_url = MeetingUrls.query.filter(
-            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
-        ).one_or_none()
-        if meeting_url:
-            meeting_url.used_at = datetime.now()
-            db.session.commit()
 
 
 class PreviousVoiceBridge(db.Model):
@@ -432,19 +423,14 @@ def clean_db_and_delete_meeting(meeting, celery_cron=False):
         for delegate in meeting.get_all_delegates:
             remove_delegate_from_db(meeting, delegate)
     if meeting.get_all_delegates:
-        return _("Vous devez retirer les délégataires"), "error"
+        return False, None
 
     if not meeting.is_shadow:
         from .bbb import BBB
 
         data = BBB(meeting.bbb_meeting_id).delete_all_recordings()
         if data and not BBB.success(data):
-            return (
-                _(
-                    "Impossible de supprimer les vidéos de cette réunion {meeting_id}: {message}"
-                ).format(meeting_id=meeting.id, message=data.get("message", "")),
-                "error",
-            )
+            return False, data
         for meeting_file in meeting.files:
             db.session.delete(meeting_file)
 

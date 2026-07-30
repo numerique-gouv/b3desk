@@ -8,7 +8,6 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import uuid
 
 from flask import Blueprint
 from flask import abort
@@ -159,11 +158,11 @@ def new_meeting():
         )
 
     meeting = Meeting()
-    meeting.bbb_meeting_id = str(uuid.uuid7())
     meeting.owner = g.user
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
+
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)
@@ -301,14 +300,23 @@ def delete_meeting():
             abort(403)
 
         if meeting.owner_id == g.user.id or g.user.admin:
-            message, category = clean_db_and_delete_meeting(meeting)
-            flash(message, category)
-            if category == "success":
+            success, data = clean_db_and_delete_meeting(meeting)
+            if success:
+                flash(_("Élément supprimé"), "success")
                 current_app.logger.info(
                     "Meeting %s %s was deleted by %s",
                     meeting.name,
                     meeting.id,
                     g.user.email,
+                )
+            elif data is None:
+                flash(_("Vous devez retirer les délégataires"), "error")
+            else:
+                flash(
+                    _(
+                        "Impossible de supprimer les vidéos de cette réunion {meeting_id}: {message}"
+                    ).format(meeting_id=meeting.id, message=data.get("message", "")),
+                    "error",
                 )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")

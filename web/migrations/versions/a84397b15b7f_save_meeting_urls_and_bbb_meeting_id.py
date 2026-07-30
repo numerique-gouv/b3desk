@@ -39,7 +39,6 @@ def upgrade():
         sa.Column("role", sa.String(length=255), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
-        sa.Column("used_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["meeting_id"],
             ["meeting.id"],

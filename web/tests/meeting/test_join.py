@@ -74,14 +74,14 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
     assert response.location == f"/meeting/join/{meeting.id}/authenticated"
 
 
-def test_signin_meeting_updates_used_at_for_attendee_link(
+def test_signin_meeting_updates_last_connection_for_attendee_link(
     client_app, meeting, mock_meeting_is_running
 ):
-    """Test visiting the attendee signin link must set used_at on the attendee MeetingUrls row."""
+    """Test visiting the attendee signin link must set meeting.last_connection."""
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
     ).one_or_none()
-    assert meeting_url.used_at is None
+    last_use = meeting.last_connection_utc_datetime
 
     res = client_app.get(meeting_url.url, status=200)
     res.form.submit()
@@ -89,17 +89,17 @@ def test_signin_meeting_updates_used_at_for_attendee_link(
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
     ).one_or_none()
-    assert meeting_url.used_at is not None
+    assert last_use is not meeting.last_connection_utc_datetime
 
 
-def test_signin_meeting_updates_used_at_for_moderator_link(
+def test_signin_meeting_updates_last_connection_for_moderator_link(
     client_app, meeting, mock_meeting_is_running
 ):
-    """Test visiting the moderator signin link must set used_at on the moderator MeetingUrls row."""
+    """Test visiting the moderator signin link must set meeting.last_connection."""
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
     ).one_or_none()
-    assert meeting_url.used_at is None
+    last_use = meeting.last_connection_utc_datetime
 
     res = client_app.get(meeting_url.url, status=200)
     res.form.submit()
@@ -107,18 +107,18 @@ def test_signin_meeting_updates_used_at_for_moderator_link(
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
     ).one_or_none()
-    assert meeting_url.used_at is not None
+    assert last_use is not meeting.last_connection_utc_datetime
 
 
-def test_signin_meeting_updates_used_at_for_authenticated_link(
+def test_signin_meeting_updates_last_connection_for_authenticated_link(
     client_app, meeting, mock_meeting_is_running, iam_server, iam_client
 ):
-    """Test visiting the authenticated signin link must set used_at on the authenticated MeetingUrls row."""
+    """Test visiting the authenticated signin link must set meeting.last_connection."""
     meeting_url = MeetingUrls.query.filter(
         MeetingUrls.meeting_id == meeting.id,
         MeetingUrls.role == Role.authenticated.name,
     ).one_or_none()
-    assert meeting_url.used_at is None
+    last_use = meeting.last_connection_utc_datetime
 
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
@@ -136,11 +136,14 @@ def test_signin_meeting_updates_used_at_for_authenticated_link(
         MeetingUrls.meeting_id == meeting.id,
         MeetingUrls.role == Role.authenticated.name,
     ).one_or_none()
-    assert meeting_url.used_at is not None
+    assert last_use is not meeting.last_connection_utc_datetime
 
 
-def test_signin_meeting_with_invalid_hash_does_not_update_used_at(client_app, meeting):
+def test_signin_meeting_with_invalid_hash_does_not_update_last_connection(
+    client_app, meeting
+):
     """Test invalid hash must not resolve a role, so no MeetingUrls row should be marked as used."""
+    last_use = meeting.last_connection_utc_datetime
     response = client_app.get(
         f"/meeting/signin/{meeting.id}/hash/wrong-hash", status=302
     )
@@ -150,7 +153,7 @@ def test_signin_meeting_with_invalid_hash_does_not_update_used_at(client_app, me
         "error",
         "Le lien d'invitation que vous avez utilisé est invalide.",
     ) in response.flashes
-    assert all(url.used_at is None for url in meeting.urls)
+    assert last_use == meeting.last_connection_utc_datetime
 
 
 def test_auth_attendee_disabled(client_app, meeting):

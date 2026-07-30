@@ -58,7 +58,7 @@ class MeetingFilesForm(FlaskForm):
 
 
 class MeetingForm(FlaskForm):
-    id = StringField()
+    id = IntegerField()
     name = StringField(
         label=_(
             "Nom de la réunion",
