@@ -228,22 +228,22 @@ class MeetingForm(FlaskForm):
 
     showParticipantsOnLogin = BooleanField(
         label=_("Liste des participants visible"),
-        default=False,
+        default=True,
     )
 
     showPublicChatOnLogin = BooleanField(
         label=_("Chat affiché à l'ouverture"),
-        default=False,
+        default=True,
     )
 
     showPresentationOnJoin = BooleanField(
         label=_("Présentation affichée à l'ouverture"),
-        default=False,
+        default=True,
     )
 
     showSessionDetailsOnJoin = BooleanField(
         label=_("Informations affichés à l'ouverture"),
-        default=False,
+        default=True,
     )
 
     def __init__(self, *args, **kwargs):
