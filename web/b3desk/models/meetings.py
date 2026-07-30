@@ -426,19 +426,14 @@ def get_or_create_shadow_meeting(user):
 
 def clean_db_and_delete_meeting(meeting):
     if meeting.get_all_delegates:
-        return _("Vous devez retirer les délégataires"), "error"
+        return False, None
 
     if not meeting.is_shadow:
         from .bbb import BBB
 
         data = BBB(meeting.bbb_meeting_id).delete_all_recordings()
         if data and not BBB.success(data):
-            return (
-                _(
-                    "Impossible de supprimer les vidéos de cette réunion : {message}"
-                ).format(message=data.get("message", "")),
-                "error",
-            )
+            return False, data
         for meeting_file in meeting.files:
             db.session.delete(meeting_file)
 
@@ -450,7 +445,7 @@ def clean_db_and_delete_meeting(meeting):
     db.session.delete(meeting)
     db.session.commit()
 
-    return _("Élément supprimé"), "success"
+    return True, None
 
 
 def delete_all_old_shadow_meetings():

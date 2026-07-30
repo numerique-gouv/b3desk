@@ -410,7 +410,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:410
-#: web/b3desk/endpoints/meetings.py:313
+#: web/b3desk/endpoints/meetings.py:322
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -450,40 +450,53 @@ msgstr ""
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:326
+#: web/b3desk/endpoints/meetings.py:305
+msgid "Élément supprimé"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:313
+msgid "Vous devez retirer les délégataires"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:317
+#, python-brace-format
+msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:335
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:337
+#: web/b3desk/endpoints/meetings.py:346
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:390
+#: web/b3desk/endpoints/meetings.py:399
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:393
+#: web/b3desk/endpoints/meetings.py:402
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:396
+#: web/b3desk/endpoints/meetings.py:405
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:403
+#: web/b3desk/endpoints/meetings.py:412
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:416
+#: web/b3desk/endpoints/meetings.py:425
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:438
+#: web/b3desk/endpoints/meetings.py:447
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:441
+#: web/b3desk/endpoints/meetings.py:450
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -503,19 +516,6 @@ msgstr ""
 #: web/b3desk/models/meetings.py:375
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
-msgstr ""
-
-#: web/b3desk/models/meetings.py:429
-msgid "Vous devez retirer les délégataires"
-msgstr ""
-
-#: web/b3desk/models/meetings.py:438
-#, python-brace-format
-msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
-msgstr ""
-
-#: web/b3desk/models/meetings.py:453
-msgid "Élément supprimé"
 msgstr ""
 
 #: web/b3desk/templates/brand.html:5

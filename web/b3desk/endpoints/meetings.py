@@ -300,14 +300,23 @@ def delete_meeting():
             abort(403)
 
         if meeting.owner_id == g.user.id or g.user.admin:
-            message, category = clean_db_and_delete_meeting(meeting)
-            flash(message, category)
-            if category == "success":
+            success, data = clean_db_and_delete_meeting(meeting)
+            if success:
+                flash(_("Élément supprimé"), "success")
                 current_app.logger.info(
                     "Meeting %s %s was deleted by %s",
                     meeting.name,
                     meeting.id,
                     g.user.email,
+                )
+            elif data is None:
+                flash(_("Vous devez retirer les délégataires"), "error")
+            else:
+                flash(
+                    _(
+                        "Impossible de supprimer les vidéos de cette réunion : {message}"
+                    ).format(message=data.get("message", "")),
+                    "error",
                 )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
