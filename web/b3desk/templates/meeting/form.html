@@ -1,6 +1,7 @@
 {% block js %}
   <script>
     window.visioCodeUrl = "{{ url_for('meetings.get_available_visio_code') }}";
+    window.previewImagesBaseUrl = "{{ url_for('static', filename='images/preview/') }}";
   </script>
   <script src="{{ url_for('static', filename='js/meeting-form.js')}}"></script>
 {% endblock %}
@@ -204,8 +205,7 @@
         </p>
         <div class="fr-badge fr-badge--success fr-badge--sm">Mise à jour en temps réel</div>
         <div>
-          <img src="/img/image.jpg" class="fr-responsive-img" alt="[À MODIFIER | vide ou texte alternatif de l’image]" />
-        <!-- L’alternative de l’image (attribut alt) doit toujours être présent, sa valeur peut-être vide ou non selon votre contexte -->
+          <img id="meeting-preview-image" src="" class="fr-responsive-img" alt="{% trans %}Aperçu de la salle selon les options d'affichage sélectionnées{% endtrans %}" />
         </div>
         <ul class="fr-toggle__list toggle-no-border fr-pt-1w">
           {{ render_field(form.showPresentationOnJoin) }}

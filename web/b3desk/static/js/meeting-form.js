@@ -16,21 +16,39 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    const presentationToggle = document.getElementById("showPresentationOnJoin");
     const participantsToggle = document.getElementById("showParticipantsOnLogin");
     const chatToggle = document.getElementById("showPublicChatOnLogin");
-    if (!participantsToggle || !chatToggle) {
+    const infoToggle = document.getElementById("showSessionDetailsOnJoin");
+    const previewImage = document.getElementById("meeting-preview-image");
+    if (!presentationToggle || !participantsToggle || !chatToggle || !infoToggle) {
         return;
     }
+
+    const updatePreviewImage = () => {
+        if (!previewImage) {
+            return;
+        }
+        const presentationPart = presentationToggle.checked ? "Presentation" : "nopresentation";
+        const participantsPart = participantsToggle.checked ? "participants" : "noparticipants";
+        const chatPart = chatToggle.checked ? "chat" : "nochat";
+        const infoPart = infoToggle.checked ? "info" : "noinfo";
+        previewImage.src = `${window.previewImagesBaseUrl}BBB-${presentationPart}-${participantsPart}-${chatPart}-${infoPart}.webp`;
+    };
 
     const syncChatToggle = () => {
         chatToggle.disabled = !participantsToggle.checked;
         if (!participantsToggle.checked) {
             chatToggle.checked = false;
         }
+        updatePreviewImage();
     };
 
     syncChatToggle();
     participantsToggle.addEventListener("change", syncChatToggle);
+    [presentationToggle, chatToggle, infoToggle].forEach((toggle) => {
+        toggle.addEventListener("change", updatePreviewImage);
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {

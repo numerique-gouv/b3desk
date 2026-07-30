@@ -1031,8 +1031,8 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:24
 #: web/b3desk/templates/admin/group_form.html:34
 #: web/b3desk/templates/meeting/files.html:178
-#: web/b3desk/templates/meeting/form.html:189
-#: web/b3desk/templates/meeting/form.html:191
+#: web/b3desk/templates/meeting/form.html:190
+#: web/b3desk/templates/meeting/form.html:192
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
 #: web/b3desk/templates/meeting/recordings.html:159
@@ -1047,7 +1047,7 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:14
 #: web/b3desk/templates/admin/group_form.html:28
 #: web/b3desk/templates/admin/group_infos.html:14
-#: web/b3desk/templates/meeting/form.html:60
+#: web/b3desk/templates/meeting/form.html:61
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr ""
@@ -1068,7 +1068,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/admin/group_form.html:33
-#: web/b3desk/templates/meeting/form.html:184
+#: web/b3desk/templates/meeting/form.html:185
 msgid "Enregistrer"
 msgstr ""
 
@@ -1083,7 +1083,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_form_content.html:53
 #: web/b3desk/templates/meeting/files.html:54
-#: web/b3desk/templates/meeting/form.html:67
+#: web/b3desk/templates/meeting/form.html:68
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
 msgstr ""
 
@@ -2654,67 +2654,71 @@ msgstr ""
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:12
-#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:13
+#: web/b3desk/templates/meeting/form.html:15
 msgid "Activé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:12
-#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:13
+#: web/b3desk/templates/meeting/form.html:15
 msgid "Désactivé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:62
+#: web/b3desk/templates/meeting/form.html:63
 msgid "Créer une réunion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:79
+#: web/b3desk/templates/meeting/form.html:80
 msgid "Accueil des participants"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:97
+#: web/b3desk/templates/meeting/form.html:98
 msgid "Conseils pour la mise en forme"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:102
+#: web/b3desk/templates/meeting/form.html:103
 #, python-format
 msgid "%%CONFNAME%% : affiche le nom de votre salle"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:113
+#: web/b3desk/templates/meeting/form.html:114
 msgid "Interactions"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:118
+#: web/b3desk/templates/meeting/form.html:119
 msgid ""
 "Tous ces paramètres sont modifiables directement depuis la salle de "
 "réunion à tout moment."
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:137
+#: web/b3desk/templates/meeting/form.html:138
 msgid "Enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:142
+#: web/b3desk/templates/meeting/form.html:143
 msgid ""
 "L'enregistrement de la salle comprend la vidéo, l'audio, le tableau blanc"
 " et le tchat public."
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:159
+#: web/b3desk/templates/meeting/form.html:160
 msgid "Paramètres avancés"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:186
+#: web/b3desk/templates/meeting/form.html:187
 msgid "Créer la salle"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:199
+#: web/b3desk/templates/meeting/form.html:200
 msgid "Aperçu en direct"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:203
+#: web/b3desk/templates/meeting/form.html:204
 msgid "Prévisualisation de votre salle"
+msgstr ""
+
+#: web/b3desk/templates/meeting/form.html:208
+msgid "Aperçu de la salle selon les options d'affichage sélectionnées"
 msgstr ""
 
 #: web/b3desk/templates/meeting/join.html:5
