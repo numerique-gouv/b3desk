@@ -132,7 +132,7 @@ class MeetingUrls(BaseMeetingUrls, db.Model):
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bbb_meeting_id = db.Column(db.String(255))
+    bbb_meeting_id = db.Column(db.String(255), default=lambda: str(uuid.uuid7()))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
 

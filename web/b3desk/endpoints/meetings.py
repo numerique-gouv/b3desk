@@ -8,7 +8,6 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import uuid
 
 from flask import Blueprint
 from flask import abort
@@ -159,11 +158,11 @@ def new_meeting():
         )
 
     meeting = Meeting()
-    meeting.bbb_meeting_id = str(uuid.uuid7())
     meeting.owner = g.user
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
+
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)

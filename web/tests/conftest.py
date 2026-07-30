@@ -402,9 +402,6 @@ def meeting(client_app, user):
         voiceBridge="111111111",
         last_connection_utc_datetime=datetime.datetime(2023, 1, 1),
         visio_code="911111111",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     meeting.favorite_of.append(user)
@@ -430,9 +427,6 @@ def meeting_2(client_app, user):
         voiceBridge="111111112",
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="911111112",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     meeting.favorite_of.append(user)
@@ -457,9 +451,6 @@ def meeting_3(client_app, user):
         attendeePW="attendee",
         voiceBridge="111111113",
         visio_code="911111113",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -485,9 +476,6 @@ def meeting_1_user_2(client_app, user, user_2):
         attendeePW="attendee",
         voiceBridge="222222222",
         visio_code="922222222",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -519,9 +507,6 @@ def meeting_2_user_2(client_app, user_2):
         attendeePW="attendee",
         voiceBridge="222222221",
         visio_code="922222221",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -547,9 +532,6 @@ def meeting_1_user_3(client_app, user, user_3):
         attendeePW="attendee",
         voiceBridge="333333333",
         visio_code="933333333",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -581,9 +563,6 @@ def shadow_meeting(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2025, 1, 1),
         visio_code="511111111",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -607,9 +586,6 @@ def shadow_meeting_2(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2020, 1, 1),
         visio_code="511111112",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
@@ -633,9 +609,6 @@ def shadow_meeting_3(client_app, user):
         is_shadow=True,
         last_connection_utc_datetime=datetime.datetime(2024, 1, 1),
         visio_code="511111113",
-        bbb_meeting_id=str(
-            uuid.uuid7(),
-        ),
     )
     db.session.add(meeting)
     db.session.commit()
