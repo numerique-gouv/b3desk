@@ -38,7 +38,7 @@ class AccessLevel(IntEnum):
 
 class MeetingAccess(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
     level = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("User", backref="user_meeting_access")
