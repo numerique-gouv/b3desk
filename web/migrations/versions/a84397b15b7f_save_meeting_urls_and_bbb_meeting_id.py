@@ -50,6 +50,9 @@ def upgrade():
         batch_op.add_column(
             sa.Column("bbb_meeting_id", sa.String(length=255), nullable=True)
         )
+        batch_op.create_unique_constraint(
+            "uq_meeting_bbb_meeting_id", ["bbb_meeting_id"]
+        )
 
     bind = op.get_bind()
     session = Session(bind)

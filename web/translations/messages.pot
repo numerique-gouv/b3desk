@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:371
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:373
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -504,16 +504,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:350 web/b3desk/models/meetings.py:357
+#: web/b3desk/models/meetings.py:352 web/b3desk/models/meetings.py:359
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:364
+#: web/b3desk/models/meetings.py:366
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:366
+#: web/b3desk/models/meetings.py:368
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
