@@ -29,17 +29,17 @@ def get_meeting_secret_key(meeting, role: Role) -> str:
     return meeting_secret_key.secret_key if meeting_secret_key else None
 
 
-def get_role(meeting, hashed_role, user=None) -> Role | None:
+def get_role(meeting, secret_key, user=None) -> Role | None:
     """Determine the meeting role based on hash and user."""
     if meeting.owner and meeting.owner == user:
         return Role.moderator
 
     if meeting.quick:
-        if hashed_role == get_quick_meeting_secret_key(meeting, Role.attendee):
+        if secret_key == get_quick_meeting_secret_key(meeting, Role.attendee):
             return Role.attendee
-        if hashed_role == get_quick_meeting_secret_key(meeting, Role.moderator):
+        if secret_key == get_quick_meeting_secret_key(meeting, Role.moderator):
             return Role.moderator
-        if hashed_role == get_quick_meeting_secret_key(meeting, Role.authenticated):
+        if secret_key == get_quick_meeting_secret_key(meeting, Role.authenticated):
             return (
                 Role.authenticated
                 if current_app.config["OIDC_ATTENDEE_ENABLED"]
@@ -50,14 +50,14 @@ def get_role(meeting, hashed_role, user=None) -> Role | None:
     from b3desk.models.meetings import MeetingSecretKey
 
     meeting_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, secret_key=hashed_role
+        meeting_id=meeting.id, secret_key=secret_key
     ).one_or_none()
     if not meeting_secret_key:
         meeting_secret_key = next(
             (
                 msk
                 for msk in MeetingSecretKey.query.filter_by(meeting_id=meeting.id)
-                if hashed_role in msk.legacy_secret_keys
+                if secret_key in msk.legacy_secret_keys
             ),
             None,
         )
@@ -84,7 +84,7 @@ def get_join_url(
         return url_for(
             "join.waiting_meeting",
             meeting_id=meeting.id,
-            hash_=get_meeting_secret_key(meeting, meeting_role),
+            secret_key=get_meeting_secret_key(meeting, meeting_role),
             fullname=fullname,
             fullname_suffix=fullname_suffix,
             seconds_before_refresh=seconds_before_refresh,
@@ -108,7 +108,7 @@ def create_signin_url(meeting, meeting_role: Role, secret_key: str):
     return url_for(
         "join.signin_meeting",
         meeting_id=meeting.id,
-        hash_=secret_key,
+        secret_key=secret_key,
         role=meeting_role,
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
@@ -232,14 +232,14 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
         pin_generation() if current_app.config["ENABLE_PIN_MANAGEMENT"] else None
     )
 
-    def compute_hash(role: Role) -> str:
+    def compute_secret_key(role: Role) -> str:
         s = f"{meeting_id}|{attendee_pw}|{name}|{role}"
         return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
     moderator_signin_url = url_for(
         "join.signin_meeting",
         meeting_id=meeting_id,
-        hash_=compute_hash(Role.moderator),
+        secret_key=compute_secret_key(Role.moderator),
         role=Role.moderator,
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
@@ -247,7 +247,7 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
     attendee_signin_url = url_for(
         "join.signin_meeting",
         meeting_id=meeting_id,
-        hash_=compute_hash(Role.attendee),
+        secret_key=compute_secret_key(Role.attendee),
         role=Role.attendee,
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
