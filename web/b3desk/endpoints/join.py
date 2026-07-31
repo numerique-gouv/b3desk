@@ -15,8 +15,8 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMeetingForm
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
-from b3desk.join import get_hash
 from b3desk.join import get_join_url
+from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import AccessLevel
@@ -248,7 +248,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "join.waiting_meeting",
             meeting_id=meeting_id,
-            hash_=get_hash(meeting, role),
+            hash_=get_meeting_secret_key(meeting, role),
             fullname=fullname,
             seconds_before_refresh=0,  # Authenticated user must go through the waiting room, but attempts a connection without delay.
         )
@@ -291,7 +291,7 @@ def join_waiting_meeting_from_sip(visio_code):
         )
         abort(404)
 
-    hash_ = get_hash(meeting, role=Role.moderator)
+    hash_ = get_meeting_secret_key(meeting, role=Role.moderator)
     return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
 
 
@@ -319,7 +319,7 @@ def visio_code_connection():
         return redirect(url_for("public.home"))
 
     visio_code_attempt_counter_reset()
-    hash_ = get_hash(meeting, role=Role.moderator)
+    hash_ = get_meeting_secret_key(meeting, role=Role.moderator)
     return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
 
 

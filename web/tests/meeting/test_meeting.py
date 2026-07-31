@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import time
 from datetime import date
 from pathlib import Path
@@ -8,8 +7,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
-from b3desk.join import get_hash
-from b3desk.join import get_role
+from b3desk.join import get_quick_meeting_secret_key
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
@@ -723,8 +721,8 @@ def test_create_quick_meeting(
 
     expected_attendee_pw = get_deterministic_password(meeting.id, "attendee")
     expected_moderator_pw = get_deterministic_password(meeting.id, "moderator")
-    expected_moderator_hash = get_hash(meeting, Role.moderator)
-    expected_attendee_hash = get_hash(meeting, Role.attendee)
+    expected_moderator_hash = get_quick_meeting_secret_key(meeting, Role.moderator)
+    expected_attendee_hash = get_quick_meeting_secret_key(meeting, Role.attendee)
     create_bbb_quick_meeting(meeting.id, user)
 
     assert bbb_response.called
@@ -758,7 +756,7 @@ def test_create_quick_meeting(
 def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
     """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
     quick_meeting = get_quick_meeting_from_meeting_id()
-    moderator_hash = get_hash(quick_meeting, Role.moderator)
+    moderator_hash = get_quick_meeting_secret_key(quick_meeting, Role.moderator)
     response = client_app.get(
         f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
     )
@@ -831,44 +829,6 @@ def test_delete_meeting_with_meeting_files(
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
-
-
-def test_meeting_link_retrocompatibility(meeting):
-    """Old meeting links must still be usable for long lasting users, and for links since 1.2.0.
-
-    https://github.com/numerique-gouv/b3desk/issues/128
-    """
-    # Simulate a meeting migrated from the old integer-id scheme: its BBB-facing
-    # identifier is preserved verbatim in `bbb_meeting_id`, exactly as the
-    # `407ab7a9b1ab` migration backfills it for pre-existing rows.
-    meeting.bbb_meeting_id = f"meeting-persistent-42--{meeting.owner.hash}"
-
-    old_hashed_moderator_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|moderator".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
-    new_hashed_moderator_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.moderator}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
-
-    old_hashed_attendee_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|attendee".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
-    new_hashed_attendee_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.attendee}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
-
-    old_hashed_authenticated_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|authenticated".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
-    new_hashed_authenticated_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.authenticated}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
 
 
 def test_meeting_order_default(

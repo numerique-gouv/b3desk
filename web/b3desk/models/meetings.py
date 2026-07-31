@@ -105,28 +105,32 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
         )
 
 
-class BaseMeetingUrls:
-    def __init__(self, id=None, meeting_id=None, url=None, role=None, **kwargs):
+class BaseMeetingSecretKey:
+    def __init__(self, id=None, meeting_id=None, role=None, **kwargs):
         self.id = id
         self.meeting_id = meeting_id
-        self.url = url
         self.role = role
         super().__init__(**kwargs)
 
 
-class MeetingUrls(BaseMeetingUrls, db.Model):
+class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
 
     id = db.Column(db.Integer, primary_key=True)
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-    url = db.Column(db.String(4096))
     role = db.Column(db.String(255))
+    secret_key = db.Column(
+        db.String(255), unique=True, default=lambda: str(uuid.uuid7())
+    )
+    legacy_secret_keys: list[str] = db.Column(
+        db.JSON, nullable=False, default=list
+    )  # old sha1-hash schemes
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
 
-    meeting = db.relationship("Meeting", back_populates="urls")
+    meeting = db.relationship("Meeting", back_populates="secret_keys")
 
 
 class Meeting(db.Model):
@@ -142,7 +146,7 @@ class Meeting(db.Model):
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
     files = db.relationship("MeetingFiles", back_populates="meeting")
-    urls = db.relationship("MeetingUrls", back_populates="meeting")
+    secret_keys = db.relationship("MeetingSecretKey", back_populates="meeting")
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -207,10 +211,14 @@ class Meeting(db.Model):
         )
 
     def url_for_role(self, role):
-        meeting_url = MeetingUrls.query.filter(
-            MeetingUrls.meeting_id == self.id, MeetingUrls.role == role.name
+        from b3desk.join import create_signin_url
+
+        meeting_secret_key = MeetingSecretKey.query.filter(
+            MeetingSecretKey.meeting_id == self.id, MeetingSecretKey.role == role.name
         ).one_or_none()
-        return meeting_url.url if meeting_url else None
+        if not meeting_secret_key:
+            return None
+        return create_signin_url(self, role, meeting_secret_key.secret_key)
 
     @property
     def moderator_url(self):
@@ -225,16 +233,8 @@ class Meeting(db.Model):
         return self.url_for_role(Role.authenticated)
 
     def create_urls(self):
-        from b3desk.join import create_signin_url
-
         for role in Role:
-            db.session.add(
-                MeetingUrls(
-                    meeting_id=self.id,
-                    role=role.name,
-                    url=create_signin_url(self, role),
-                )
-            )
+            db.session.add(MeetingSecretKey(meeting_id=self.id, role=role.name))
 
 
 class PreviousVoiceBridge(db.Model):
@@ -430,8 +430,8 @@ def clean_db_and_delete_meeting(meeting):
         for meeting_file in meeting.files:
             db.session.delete(meeting_file)
 
-    for meeting_url in meeting.urls:
-        db.session.delete(meeting_url)
+    for meeting_secret_key in meeting.secret_keys:
+        db.session.delete(meeting_secret_key)
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)
