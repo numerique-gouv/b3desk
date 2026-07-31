@@ -15,8 +15,8 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMeetingForm
 from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
-from b3desk.join import get_hash
 from b3desk.join import get_join_url
+from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import AccessLevel
@@ -46,15 +46,15 @@ MAXIMUM_REFRESH_DELAY = timedelta(seconds=60)
 # mix up invitation links.
 # https://github.com/numerique-gouv/b3desk/issues/93
 @bp.route(
-    "/meeting/signin/<role:role>/<meeting_id>/creator/<user:creator>/hash/<hash_>"
+    "/meeting/signin/<role:role>/<meeting_id>/creator/<user:creator>/hash/<secret_key>"
 )
-@bp.route("/meeting/signin/<meeting_id>/creator/<user:creator>/hash/<hash_>")
+@bp.route("/meeting/signin/<meeting_id>/creator/<user:creator>/hash/<secret_key>")
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
-@bp.route("/meeting/signin/<role:role>/<meeting_id>/hash/<hash_>")
-@bp.route("/meeting/signin/<meeting_id>/hash/<hash_>")
+@bp.route("/meeting/signin/<role:role>/<meeting_id>/hash/<secret_key>")
+@bp.route("/meeting/signin/<meeting_id>/hash/<secret_key>")
 def signin_meeting(
-    meeting_id, hash_, creator: User | None = None, role: Role | None = None
+    meeting_id, secret_key, creator: User | None = None, role: Role | None = None
 ):
     """Get users in the meeting.
 
@@ -71,7 +71,7 @@ def signin_meeting(
         )
         return redirect(url_for("public.index"))
 
-    role = get_role(meeting, hash_, g.user)
+    role = get_role(meeting, secret_key, g.user)
 
     if role == Role.authenticated:
         return redirect(
@@ -85,7 +85,7 @@ def signin_meeting(
     return render_template(
         "meeting/join.html",
         meeting_id=meeting_id,
-        hash_=hash_,
+        secret_key=secret_key,
         role=role,
         meeting_name=meeting.name,
     )
@@ -93,49 +93,51 @@ def signin_meeting(
 
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
-@bp.route("/meeting/auth/<meeting_id>/creator/<user:creator>/hash/<hash_>")
-@bp.route("/meeting/auth/<meeting_id>/hash/<hash_>")
+@bp.route("/meeting/auth/<meeting_id>/creator/<user:creator>/hash/<secret_key>")
+@bp.route("/meeting/auth/<meeting_id>/hash/<secret_key>")
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def authenticate_then_signin_meeting(meeting_id, hash_, creator: User | None = None):
+def authenticate_then_signin_meeting(
+    meeting_id, secret_key, creator: User | None = None
+):
     """Authenticate user via OIDC then redirect to meeting signin page."""
     return redirect(
         url_for(
             "join.signin_meeting",
             meeting_id=meeting_id,
-            hash_=hash_,
+            secret_key=secret_key,
         )
     )
 
 
 @bp.route(
-    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<secret_key>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<secret_key>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<secret_key>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/creator/<user:creator>/hash/<secret_key>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 # creator is optional, but this is keeped for compatibility reasons
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
 @bp.route(
-    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/hash/<secret_key>/fullname/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/",
+    "/meeting/wait/<meeting_id>/hash/<secret_key>/fullname/<path:fullname>/fullname_suffix/",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/hash/<secret_key>/fullname/fullname_suffix/<path:fullname_suffix>",
 )
 @bp.route(
-    "/meeting/wait/<meeting_id>/hash/<hash_>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
+    "/meeting/wait/<meeting_id>/hash/<secret_key>/fullname/<path:fullname>/fullname_suffix/<path:fullname_suffix>",
 )
 def waiting_meeting(
-    meeting_id, hash_, creator: User | None = None, fullname="", fullname_suffix=""
+    meeting_id, secret_key, creator: User | None = None, fullname="", fullname_suffix=""
 ):
     """Display a page until the BBB meeting is created.
 
@@ -146,7 +148,7 @@ def waiting_meeting(
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    role = get_role(meeting, hash_, g.user)
+    role = get_role(meeting, secret_key, g.user)
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
@@ -162,7 +164,7 @@ def waiting_meeting(
     return render_template(
         "meeting/wait.html",
         meeting_id=meeting_id,
-        hash_=hash_,
+        secret_key=secret_key,
         role=role,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
@@ -184,7 +186,7 @@ def join_meeting():
 
     fullname = form["fullname"].data
     meeting_id = form["meeting_id"].data
-    hash_ = form["hash_"].data
+    secret_key = form["secret_key"].data
     seconds_before_refresh = None
     if (
         "seconds_before_refresh" in form
@@ -204,7 +206,7 @@ def join_meeting():
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
-    role = get_role(meeting, hash_, g.user)
+    role = get_role(meeting, secret_key, g.user)
     fullname_suffix = form["fullname_suffix"].data
     if role == Role.authenticated:
         fullname = get_authenticated_attendee_fullname()
@@ -248,7 +250,7 @@ def join_meeting_as_authenticated(meeting_id):
         url_for(
             "join.waiting_meeting",
             meeting_id=meeting_id,
-            hash_=get_hash(meeting, role),
+            secret_key=get_meeting_secret_key(meeting, role),
             fullname=fullname,
             seconds_before_refresh=0,  # Authenticated user must go through the waiting room, but attempts a connection without delay.
         )
@@ -291,8 +293,10 @@ def join_waiting_meeting_from_sip(visio_code):
         )
         abort(404)
 
-    hash_ = get_hash(meeting, role=Role.moderator)
-    return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
+    secret_key = get_meeting_secret_key(meeting, role=Role.moderator)
+    return signin_meeting(
+        meeting_id=str(meeting.id), secret_key=secret_key, role=Role.moderator
+    )
 
 
 @bp.route("/meeting/visio_code", methods=["POST"])
@@ -319,8 +323,10 @@ def visio_code_connection():
         return redirect(url_for("public.home"))
 
     visio_code_attempt_counter_reset()
-    hash_ = get_hash(meeting, role=Role.moderator)
-    return signin_meeting(meeting_id=str(meeting.id), hash_=hash_, role=Role.moderator)
+    secret_key = get_meeting_secret_key(meeting, role=Role.moderator)
+    return signin_meeting(
+        meeting_id=str(meeting.id), secret_key=secret_key, role=Role.moderator
+    )
 
 
 @bp.route("/meeting/visio_code_form", methods=["POST"])

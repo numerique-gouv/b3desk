@@ -8,7 +8,6 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import uuid
 
 from flask import Blueprint
 from flask import abort
@@ -160,11 +159,11 @@ def new_meeting():
         )
 
     meeting = Meeting()
-    meeting.bbb_meeting_id = str(uuid.uuid7())
     meeting.owner = g.user
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
     )
+
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)
@@ -238,6 +237,23 @@ def edit_meeting(meeting: Meeting, user: User):
     db.session.add(meeting)
     if not meeting.visio_code:
         assign_unique_visio_code(meeting)
+    if "moderatorPW" in updated_data:
+        meeting.renew_secret_key(Role.moderator)
+        current_app.logger.info(
+            "Meeting %s %s: moderatorPW changed by %s, moderator secret key renewed",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
+    if "attendeePW" in updated_data:
+        meeting.renew_secret_key(Role.attendee)
+        meeting.renew_secret_key(Role.authenticated)
+        current_app.logger.info(
+            "Meeting %s %s: attendeePW changed by %s, attendee and authenticated secret keys renewed",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
     db.session.commit()
     current_app.logger.info(
         "Meeting %s %s was updated by %s. Updated fields : %s",
@@ -302,14 +318,23 @@ def delete_meeting():
             abort(403)
 
         if meeting.owner_id == g.user.id or g.user.admin:
-            message, category = clean_db_and_delete_meeting(meeting)
-            flash(message, category)
-            if category == "success":
+            success, data = clean_db_and_delete_meeting(meeting)
+            if success:
+                flash(_("Élément supprimé"), "success")
                 current_app.logger.info(
                     "Meeting %s %s was deleted by %s",
                     meeting.name,
                     meeting.id,
                     g.user.email,
+                )
+            elif data is None:
+                flash(_("Vous devez retirer les délégataires"), "error")
+            else:
+                flash(
+                    _(
+                        "Impossible de supprimer les vidéos de cette réunion : {message}"
+                    ).format(message=data.get("message", "")),
+                    "error",
                 )
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
