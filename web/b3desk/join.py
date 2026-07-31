@@ -189,7 +189,9 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     )
 
     current_app.logger.info(
-        "BBB room %s creation result: %s", meeting.bbb_meeting_id, result
+        "BBB persistent meeting room %s creation result: %s",
+        meeting.bbb_meeting_id,
+        result,
     )
 
     if not BBB.success(result):
@@ -290,6 +292,8 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
         ],
     )
 
-    current_app.logger.info("BBB room %s creation result: %s", meeting_id, result)
+    current_app.logger.info(
+        "BBB vanish meeting room %s creation result: %s", meeting_id, result
+    )
 
     return BBB.success(result)
