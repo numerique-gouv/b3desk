@@ -184,6 +184,123 @@ def test_save_existing_meeting_not_running(
     )
 
 
+def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing moderatorPW must renew only the moderator secret key, clearing its legacy hashes."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    moderator_secret_key.legacy_secret_keys = ["old-moderator-hash"]
+    db.session.commit()
+
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["moderatorPW"] = "NewModeratorPW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert moderator_secret_key.secret_key != previous_moderator_secret
+    assert moderator_secret_key.legacy_secret_keys == []
+    assert attendee_secret_key.secret_key == previous_attendee_secret
+    assert authenticated_secret_key.secret_key == previous_authenticated_secret
+    assert (
+        f"Meeting meeting {meeting.id}: moderatorPW changed by alice@domain.tld, moderator secret key renewed"
+        in caplog.text
+    )
+
+
+def test_edit_meeting_attendeePW_change_renews_attendee_and_authenticated_secret_keys(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing attendeePW must renew the attendee and authenticated secret keys, clearing their legacy hashes, but not moderator's."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    attendee_secret_key.legacy_secret_keys = ["old-attendee-hash"]
+    authenticated_secret_key.legacy_secret_keys = ["old-authenticated-hash"]
+    db.session.commit()
+
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["attendeePW"] = "NewAttendeePW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert attendee_secret_key.secret_key != previous_attendee_secret
+    assert attendee_secret_key.legacy_secret_keys == []
+    assert authenticated_secret_key.secret_key != previous_authenticated_secret
+    assert authenticated_secret_key.legacy_secret_keys == []
+    assert moderator_secret_key.secret_key == previous_moderator_secret
+    assert (
+        f"Meeting meeting {meeting.id}: attendeePW changed by alice@domain.tld, attendee and authenticated secret keys renewed"
+        in caplog.text
+    )
+
+
+def test_edit_meeting_changing_both_passwords_renews_all_secret_keys(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing both moderatorPW and attendeePW must renew every role's secret key."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["moderatorPW"] = "NewModeratorPW1"
+    res.forms[0]["attendeePW"] = "NewAttendeePW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert moderator_secret_key.secret_key != previous_moderator_secret
+    assert attendee_secret_key.secret_key != previous_attendee_secret
+    assert authenticated_secret_key.secret_key != previous_authenticated_secret
+    assert (
+        f"Meeting meeting {meeting.id}: moderatorPW changed by alice@domain.tld, moderator secret key renewed"
+        in caplog.text
+    )
+    assert (
+        f"Meeting meeting {meeting.id}: attendeePW changed by alice@domain.tld, attendee and authenticated secret keys renewed"
+        in caplog.text
+    )
+
+
 def test_save_existing_meeting_running(
     mocker, client_app, authenticated_user, meeting, mock_meeting_is_running
 ):

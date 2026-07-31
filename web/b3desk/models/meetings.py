@@ -236,6 +236,14 @@ class Meeting(db.Model):
         for role in Role:
             db.session.add(MeetingSecretKey(meeting_id=self.id, role=role.name))
 
+    def renew_secret_key(self, role):
+        """Regenerate a role's secret key, invalidating its previous signin link."""
+        meeting_secret_key = MeetingSecretKey.query.filter_by(
+            meeting_id=self.id, role=role.name
+        ).one()
+        meeting_secret_key.secret_key = str(uuid.uuid7())
+        meeting_secret_key.legacy_secret_keys = []
+
 
 class PreviousVoiceBridge(db.Model):
     id = db.Column(db.Integer, primary_key=True)

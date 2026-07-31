@@ -236,6 +236,23 @@ def edit_meeting(meeting: Meeting, user: User):
     db.session.add(meeting)
     if not meeting.visio_code:
         assign_unique_visio_code(meeting)
+    if "moderatorPW" in updated_data:
+        meeting.renew_secret_key(Role.moderator)
+        current_app.logger.info(
+            "Meeting %s %s: moderatorPW changed by %s, moderator secret key renewed",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
+    if "attendeePW" in updated_data:
+        meeting.renew_secret_key(Role.attendee)
+        meeting.renew_secret_key(Role.authenticated)
+        current_app.logger.info(
+            "Meeting %s %s: attendeePW changed by %s, attendee and authenticated secret keys renewed",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
     db.session.commit()
     current_app.logger.info(
         "Meeting %s %s was updated by %s. Updated fields : %s",
