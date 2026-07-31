@@ -1,8 +1,6 @@
 import datetime
 
-from b3desk.join import create_signin_url
 from b3desk.models.meetings import Meeting
-from b3desk.models.roles import Role
 
 
 def test_api_meetings_nominal(
@@ -15,8 +13,8 @@ def test_api_meetings_nominal(
     iam_token,
 ):
     """Test that API returns meetings list with correct format."""
-    attendee_url = create_signin_url(meeting, Role.attendee)
-    moderator_url = create_signin_url(meeting, Role.moderator)
+    attendee_url = meeting.attendee_url
+    moderator_url = meeting.moderator_url
 
     res = client_app.get(
         "/api/meetings", headers={"Authorization": f"Bearer {iam_token.access_token}"}
@@ -170,8 +168,8 @@ def test_api_existing_shadow_meeting(
     assert res.json["shadow-meeting"][0] == {
         "PIN": "555555551",
         "SIPMediaGW_url": "511111111@sip.test",
-        "attendee_url": create_signin_url(shadow_meeting, Role.attendee),
-        "moderator_url": create_signin_url(shadow_meeting, Role.moderator),
+        "attendee_url": shadow_meeting.attendee_url,
+        "moderator_url": shadow_meeting.moderator_url,
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -196,8 +194,8 @@ def test_api_existing_shadow_meeting_without_pin(
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
         "SIPMediaGW_url": "511111111@sip.test",
-        "attendee_url": create_signin_url(shadow_meeting, Role.attendee),
-        "moderator_url": create_signin_url(shadow_meeting, Role.moderator),
+        "attendee_url": shadow_meeting.attendee_url,
+        "moderator_url": shadow_meeting.moderator_url,
         "name": "shadow meeting",
         "visio_code": "511111111",
     }
@@ -221,8 +219,8 @@ def test_api_existing_shadow_meeting_without_sip(
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
         "PIN": "555555551",
-        "attendee_url": create_signin_url(shadow_meeting, Role.attendee),
-        "moderator_url": create_signin_url(shadow_meeting, Role.moderator),
+        "attendee_url": shadow_meeting.attendee_url,
+        "moderator_url": shadow_meeting.moderator_url,
         "name": "shadow meeting",
         "phone_number": "+33bbbphonenumber",
         "visio_code": "511111111",
@@ -247,8 +245,8 @@ def test_api_existing_shadow_meeting_without_pin_and_sip(
     )
     assert len(res.json["shadow-meeting"]) == 1
     assert res.json["shadow-meeting"][0] == {
-        "attendee_url": create_signin_url(shadow_meeting, Role.attendee),
-        "moderator_url": create_signin_url(shadow_meeting, Role.moderator),
+        "attendee_url": shadow_meeting.attendee_url,
+        "moderator_url": shadow_meeting.moderator_url,
         "name": "shadow meeting",
         "visio_code": "511111111",
     }

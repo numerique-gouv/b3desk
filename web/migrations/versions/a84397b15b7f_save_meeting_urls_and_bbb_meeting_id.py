@@ -1,4 +1,4 @@
-"""save meeting urls and bbb_meeting_id.
+"""save meeting secret keys and bbb_meeting_id.
 
 Revision ID: a84397b15b7f
 Revises: a3a6e932b2ae
@@ -10,11 +10,11 @@ import hashlib
 
 import sqlalchemy as sa
 from alembic import op
-from b3desk.join import create_signin_url
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import MeetingUrls
+from b3desk.models.meetings import MeetingSecretKey
 from b3desk.models.roles import Role
 from b3desk.utils import secret_key
+from flask import current_app
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 
@@ -30,13 +30,21 @@ def bbb_meeting_id_creation(id, owner_email):
     return f"meeting-persistent-{id}--{hash_}"
 
 
+def build_legacy_hash(meeting, role, use_role_name):
+    name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
+    role_str = role.name if use_role_name else role
+    s = f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{name}|{role_str}"
+    return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
 def upgrade():
     op.create_table(
-        "meeting_urls",
+        "meeting_secret_key",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("meeting_id", sa.Integer(), nullable=False),
-        sa.Column("url", sa.String(length=4096), nullable=True),
         sa.Column("role", sa.String(length=255), nullable=True),
+        sa.Column("secret_key", sa.String(length=255), nullable=True),
+        sa.Column("legacy_secret_keys", sa.JSON(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -45,10 +53,14 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("meeting_id", "role"),
+        sa.UniqueConstraint("secret_key"),
     )
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column("bbb_meeting_id", sa.String(length=255), nullable=True)
+        )
+        batch_op.create_unique_constraint(
+            "uq_meeting_bbb_meeting_id", ["bbb_meeting_id"]
         )
 
     bind = op.get_bind()
@@ -60,10 +72,13 @@ def upgrade():
         )
         for role in Role:
             session.add(
-                MeetingUrls(
+                MeetingSecretKey(
                     meeting_id=meeting.id,
                     role=role.name,
-                    url=create_signin_url(meeting, role),
+                    legacy_secret_keys=[
+                        build_legacy_hash(meeting, role, use_role_name=False),
+                        build_legacy_hash(meeting, role, use_role_name=True),
+                    ],
                 )
             )
     session.commit()
@@ -73,4 +88,4 @@ def downgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.drop_column("bbb_meeting_id")
 
-    op.drop_table("meeting_urls")
+    op.drop_table("meeting_secret_key")

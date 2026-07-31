@@ -1,9 +1,7 @@
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-from b3desk.join import create_signin_url
-from b3desk.join import get_hash
-from b3desk.models.meetings import MeetingUrls
+from b3desk.join import get_meeting_secret_key
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -12,8 +10,8 @@ from joserfc.jwk import RSAKey
 
 def test_meeting_signin_links_are_accessible(client_app, meeting):
     """Test that moderator and attendee signin links generated for meetings are accessible."""
-    moderator_url = create_signin_url(meeting, Role.moderator)
-    attendee_url = create_signin_url(meeting, Role.attendee)
+    moderator_url = meeting.moderator_url
+    attendee_url = meeting.attendee_url
 
     response = client_app.get(moderator_url, status=200)
     assert response.template == "meeting/join.html"
@@ -26,7 +24,7 @@ def test_meeting_signin_links_are_accessible(client_app, meeting):
 
 def test_signin_meeting(client_app, meeting, user, bbb_response):
     """Test that attendee can sign in to meeting."""
-    meeting_hash = get_hash(meeting, Role.attendee)
+    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -50,7 +48,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
     bbb_response,
 ):
     """If the meeting owner are authenticated, they must be automatically promoted moderator in the meeting when clicking on an attendee link."""
-    meeting_hash = get_hash(meeting, Role.attendee)
+    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
 
     response = client_app.get(
@@ -64,7 +62,7 @@ def test_attendee_link_moderator_promotion_for_meeting_owner_already_authenticat
 
 def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
     """Test that authenticated attendee is redirected to join endpoint."""
-    meeting_hash = get_hash(meeting, Role.authenticated)
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -78,17 +76,11 @@ def test_signin_meeting_updates_last_connection_for_attendee_link(
     client_app, meeting, mock_meeting_is_running
 ):
     """Test visiting the attendee signin link must set meeting.last_connection."""
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
-    ).one_or_none()
     last_use = meeting.last_connection_utc_datetime
 
-    res = client_app.get(meeting_url.url, status=200)
+    res = client_app.get(meeting.attendee_url, status=200)
     res.form.submit()
 
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.attendee.name
-    ).one_or_none()
     assert last_use is not meeting.last_connection_utc_datetime
 
 
@@ -96,17 +88,11 @@ def test_signin_meeting_updates_last_connection_for_moderator_link(
     client_app, meeting, mock_meeting_is_running
 ):
     """Test visiting the moderator signin link must set meeting.last_connection."""
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
-    ).one_or_none()
     last_use = meeting.last_connection_utc_datetime
 
-    res = client_app.get(meeting_url.url, status=200)
+    res = client_app.get(meeting.moderator_url, status=200)
     res.form.submit()
 
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id, MeetingUrls.role == Role.moderator.name
-    ).one_or_none()
     assert last_use is not meeting.last_connection_utc_datetime
 
 
@@ -114,17 +100,13 @@ def test_signin_meeting_updates_last_connection_for_authenticated_link(
     client_app, meeting, mock_meeting_is_running, iam_server, iam_client
 ):
     """Test visiting the authenticated signin link must set meeting.last_connection."""
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id,
-        MeetingUrls.role == Role.authenticated.name,
-    ).one_or_none()
     last_use = meeting.last_connection_utc_datetime
 
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
 
-    res = client_app.get(meeting_url.url, status=302)
+    res = client_app.get(meeting.authenticated_url, status=302)
     res = client_app.get(res.location, status=302)
     res = iam_server.test_client.get(res.location)
     assert res.status_code == 302
@@ -132,17 +114,13 @@ def test_signin_meeting_updates_last_connection_for_authenticated_link(
     res = res.follow(status=302).follow(status=200)
     res.form.submit()
 
-    meeting_url = MeetingUrls.query.filter(
-        MeetingUrls.meeting_id == meeting.id,
-        MeetingUrls.role == Role.authenticated.name,
-    ).one_or_none()
     assert last_use is not meeting.last_connection_utc_datetime
 
 
 def test_signin_meeting_with_invalid_hash_does_not_update_last_connection(
     client_app, meeting
 ):
-    """Test invalid hash must not resolve a role, so no MeetingUrls row should be marked as used."""
+    """Test invalid hash must not resolve a role, so no MeetingSecretKey row should be marked as used."""
     last_use = meeting.last_connection_utc_datetime
     response = client_app.get(
         f"/meeting/signin/{meeting.id}/hash/wrong-hash", status=302
@@ -162,7 +140,7 @@ def test_auth_attendee_disabled(client_app, meeting):
     https://github.com/numerique-gouv/b3desk/issues/9
     """
     client_app.app.config["OIDC_ATTENDEE_ENABLED"] = False
-    meeting_hash = get_hash(meeting, Role.authenticated)
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
 
     url = f"/meeting/signin/{meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -246,7 +224,7 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
 
 def test_join_meeting(client_app, meeting, bbb_response):
     """Test that guest can join meeting with custom fullname."""
-    meeting_hash = get_hash(meeting, Role.attendee)
+    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
     response = client_app.get(f"/meeting/signin/{meeting.id}/hash/{meeting_hash}")
     response.form["fullname"] = "Bob"
     response = response.form.submit()
@@ -296,13 +274,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
     """Test that fullname with slash is handled correctly in waiting page."""
     fullname_suffix = "Service EN"
     meeting_id = meeting.id
-    hash_ = get_hash(meeting, Role.attendee)
+    secret_key = get_meeting_secret_key(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
         meeting_id=meeting_id,
-        hash_=hash_,
+        secret_key=secret_key,
         fullname=fullname,
         fullname_suffix=fullname_suffix,
     )
@@ -314,13 +292,13 @@ def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting)
 def test_waiting_meeting_with_empty_fullname_suffix(client_app, meeting):
     """Test that empty fullname suffix is handled correctly."""
     meeting_id = meeting.id
-    hash_ = get_hash(meeting, Role.attendee)
+    secret_key = get_meeting_secret_key(meeting, Role.attendee)
     fullname = "Alice/Cooper"
 
     waiting_meeting_url = url_for(
         "join.waiting_meeting",
         meeting_id=meeting_id,
-        hash_=hash_,
+        secret_key=secret_key,
         fullname=fullname,
         fullname_suffix="",
     )

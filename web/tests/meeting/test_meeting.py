@@ -8,12 +8,14 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
-from b3desk.join import get_hash
+from b3desk.join import get_meeting_secret_key
+from b3desk.join import get_quick_meeting_secret_key
 from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import MeetingSecretKey
 from b3desk.models.meetings import assign_unique_voice_bridge
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
@@ -185,6 +187,123 @@ def test_save_existing_meeting_not_running(
     data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}"
     assert (
         f"Meeting meeting {meeting.id} was updated by alice@domain.tld. Updated fields : {data}\n"
+        in caplog.text
+    )
+
+
+def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing moderatorPW must renew only the moderator secret key, clearing its legacy hashes."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    moderator_secret_key.legacy_secret_keys = ["old-moderator-hash"]
+    db.session.commit()
+
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["moderatorPW"] = "NewModeratorPW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert moderator_secret_key.secret_key != previous_moderator_secret
+    assert moderator_secret_key.legacy_secret_keys == []
+    assert attendee_secret_key.secret_key == previous_attendee_secret
+    assert authenticated_secret_key.secret_key == previous_authenticated_secret
+    assert (
+        f"Meeting meeting {meeting.id}: moderatorPW changed by alice@domain.tld, moderator secret key renewed"
+        in caplog.text
+    )
+
+
+def test_edit_meeting_attendeePW_change_renews_attendee_and_authenticated_secret_keys(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing attendeePW must renew the attendee and authenticated secret keys, clearing their legacy hashes, but not moderator's."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    attendee_secret_key.legacy_secret_keys = ["old-attendee-hash"]
+    authenticated_secret_key.legacy_secret_keys = ["old-authenticated-hash"]
+    db.session.commit()
+
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["attendeePW"] = "NewAttendeePW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert attendee_secret_key.secret_key != previous_attendee_secret
+    assert attendee_secret_key.legacy_secret_keys == []
+    assert authenticated_secret_key.secret_key != previous_authenticated_secret
+    assert authenticated_secret_key.legacy_secret_keys == []
+    assert moderator_secret_key.secret_key == previous_moderator_secret
+    assert (
+        f"Meeting meeting {meeting.id}: attendeePW changed by alice@domain.tld, attendee and authenticated secret keys renewed"
+        in caplog.text
+    )
+
+
+def test_edit_meeting_changing_both_passwords_renews_all_secret_keys(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
+):
+    """Changing both moderatorPW and attendeePW must renew every role's secret key."""
+    moderator_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.moderator.name
+    ).one()
+    attendee_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).one()
+    authenticated_secret_key = MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.authenticated.name
+    ).one()
+    previous_moderator_secret = moderator_secret_key.secret_key
+    previous_attendee_secret = attendee_secret_key.secret_key
+    previous_authenticated_secret = authenticated_secret_key.secret_key
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["moderatorPW"] = "NewModeratorPW1"
+    res.forms[0]["attendeePW"] = "NewAttendeePW1"
+    res.forms[0].submit()
+
+    db.session.refresh(moderator_secret_key)
+    db.session.refresh(attendee_secret_key)
+    db.session.refresh(authenticated_secret_key)
+
+    assert moderator_secret_key.secret_key != previous_moderator_secret
+    assert attendee_secret_key.secret_key != previous_attendee_secret
+    assert authenticated_secret_key.secret_key != previous_authenticated_secret
+    assert (
+        f"Meeting meeting {meeting.id}: moderatorPW changed by alice@domain.tld, moderator secret key renewed"
+        in caplog.text
+    )
+    assert (
+        f"Meeting meeting {meeting.id}: attendeePW changed by alice@domain.tld, attendee and authenticated secret keys renewed"
         in caplog.text
     )
 
@@ -729,8 +848,8 @@ def test_create_quick_meeting(
 
     expected_attendee_pw = get_deterministic_password(meeting.id, "attendee")
     expected_moderator_pw = get_deterministic_password(meeting.id, "moderator")
-    expected_moderator_hash = get_hash(meeting, Role.moderator)
-    expected_attendee_hash = get_hash(meeting, Role.attendee)
+    expected_moderator_hash = get_quick_meeting_secret_key(meeting, Role.moderator)
+    expected_attendee_hash = get_quick_meeting_secret_key(meeting, Role.attendee)
     create_bbb_quick_meeting(meeting.id, user)
 
     assert bbb_response.called
@@ -764,7 +883,7 @@ def test_create_quick_meeting(
 def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
     """Test moderator joining a non-existent meeting creates a quick BBB meeting."""
     quick_meeting = get_quick_meeting_from_meeting_id()
-    moderator_hash = get_hash(quick_meeting, Role.moderator)
+    moderator_hash = get_quick_meeting_secret_key(quick_meeting, Role.moderator)
     response = client_app.get(
         f"/meeting/signin/{quick_meeting.id}/hash/{moderator_hash}"
     )
@@ -840,41 +959,27 @@ def test_delete_meeting_with_meeting_files(
 
 
 def test_meeting_link_retrocompatibility(meeting):
-    """Old meeting links must still be usable for long lasting users, and for links since 1.2.0.
+    """Links from meetings migrated from the old hash scheme must stay usable."""
+    for role in Role:
+        meeting_secret_key = MeetingSecretKey.query.filter_by(
+            meeting_id=meeting.id, role=role.name
+        ).one()
+        role_interpolated_raw = hashlib.sha1(
+            f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{meeting.name}|{role}".encode()
+        ).hexdigest()
+        role_interpolated_as_name = hashlib.sha1(
+            f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{meeting.name}|{role.name}".encode()
+        ).hexdigest()
+        meeting_secret_key.legacy_secret_keys = [
+            role_interpolated_raw,
+            role_interpolated_as_name,
+        ]
+        db.session.commit()
 
-    https://github.com/numerique-gouv/b3desk/issues/128
-    """
-    # Simulate a meeting migrated from the old integer-id scheme: its BBB-facing
-    # identifier is preserved verbatim in `bbb_meeting_id`, exactly as the
-    # `407ab7a9b1ab` migration backfills it for pre-existing rows.
-    meeting.bbb_meeting_id = f"meeting-persistent-42--{meeting.owner.hash}"
+        assert get_role(meeting, role_interpolated_raw) == role
+        assert get_role(meeting, role_interpolated_as_name) == role
 
-    old_hashed_moderator_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|moderator".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_moderator_meeting) == Role.moderator
-    new_hashed_moderator_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.moderator}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_moderator_meeting) == Role.moderator
-
-    old_hashed_attendee_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|attendee".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_attendee_meeting) == Role.attendee
-    new_hashed_attendee_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.attendee}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_attendee_meeting) == Role.attendee
-
-    old_hashed_authenticated_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|authenticated".encode()
-    ).hexdigest()
-    assert get_role(meeting, old_hashed_authenticated_meeting) == Role.authenticated
-    new_hashed_authenticated_meeting = hashlib.sha1(
-        f"{meeting.bbb_meeting_id}|attendee|meeting|{Role.authenticated}".encode()
-    ).hexdigest()
-    assert get_role(meeting, new_hashed_authenticated_meeting) == Role.authenticated
+    assert get_role(meeting, "some-hash-never-generated-for-this-meeting") is None
 
 
 def test_meeting_order_default(
@@ -1410,6 +1515,54 @@ def test_create_meeting_ai_summary_requires_recording(
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
     )
+
+
+def test_get_meeting_secret_key_for_quick_meeting(client_app):
+    """get_meeting_secret_key must compute the hash directly for quick meetings."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    assert get_meeting_secret_key(
+        quick_meeting, Role.moderator
+    ) == get_quick_meeting_secret_key(quick_meeting, Role.moderator)
+
+
+def test_get_role_for_quick_meeting_attendee(client_app):
+    """get_role must resolve the attendee secret key of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    attendee_secret_key = get_quick_meeting_secret_key(quick_meeting, Role.attendee)
+    assert get_role(quick_meeting, attendee_secret_key) == Role.attendee
+
+
+def test_get_role_for_quick_meeting_authenticated(client_app):
+    """get_role must resolve the authenticated secret key of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    authenticated_secret_key = get_quick_meeting_secret_key(
+        quick_meeting, Role.authenticated
+    )
+    assert get_role(quick_meeting, authenticated_secret_key) == Role.authenticated
+
+
+def test_get_role_for_quick_meeting_invalid_secret_key(client_app):
+    """get_role must return None for a secret key matching no role of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    assert get_role(quick_meeting, "invalid-secret-key") is None
+
+
+def test_url_for_role_returns_none_without_secret_key(client_app, meeting):
+    """url_for_role must return None if no MeetingSecretKey row exists for the role."""
+    MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).delete()
+    db.session.commit()
+
+    assert meeting.url_for_role(Role.attendee) is None
+
+
+def test_create_meeting_route(client_app, authenticated_user, meeting, bbb_response):
+    """The create_meeting route must create the BBB room and redirect to welcome."""
+    response = client_app.get(f"/meeting/create/{meeting.id}", status=302)
+
+    assert bbb_response.called
+    assert response.location == url_for("public.welcome")
 
 
 def test_delete_old_meetings(
