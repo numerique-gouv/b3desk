@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import time
 from datetime import date
 from pathlib import Path
@@ -8,10 +9,12 @@ from urllib.parse import urlparse
 
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_quick_meeting_secret_key
+from b3desk.join import get_role
 from b3desk.models import db
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
+from b3desk.models.meetings import MeetingSecretKey
 from b3desk.models.meetings import assign_unique_voice_bridge
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
@@ -829,6 +832,30 @@ def test_delete_meeting_with_meeting_files(
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
+
+
+def test_meeting_link_retrocompatibility(meeting):
+    """Links from meetings migrated from the old hash scheme must stay usable."""
+    for role in Role:
+        meeting_secret_key = MeetingSecretKey.query.filter_by(
+            meeting_id=meeting.id, role=role.name
+        ).one()
+        role_interpolated_raw = hashlib.sha1(
+            f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{meeting.name}|{role}".encode()
+        ).hexdigest()
+        role_interpolated_as_name = hashlib.sha1(
+            f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{meeting.name}|{role.name}".encode()
+        ).hexdigest()
+        meeting_secret_key.legacy_secret_keys = [
+            role_interpolated_raw,
+            role_interpolated_as_name,
+        ]
+        db.session.commit()
+
+        assert get_role(meeting, role_interpolated_raw) == role
+        assert get_role(meeting, role_interpolated_as_name) == role
+
+    assert get_role(meeting, "some-hash-never-generated-for-this-meeting") is None
 
 
 def test_meeting_order_default(
