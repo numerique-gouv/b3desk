@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-24 18:43+0200\n"
+"POT-Creation-Date: 2026-07-31 16:21+0200\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@cours\n"
@@ -165,7 +165,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:397
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:384
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -345,8 +345,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:150
-#: web/b3desk/endpoints/meetings.py:211
+#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:151
+#: web/b3desk/endpoints/meetings.py:213
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -379,21 +379,21 @@ msgstr ""
 msgid "Aucune réunion ne correspond à ces paramètres"
 msgstr "Aucun cours ne correspond à ces paramètres"
 
-#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:146
-#: web/b3desk/endpoints/join.py:151 web/b3desk/endpoints/join.py:204
-#: web/b3desk/endpoints/join.py:212
+#: web/b3desk/endpoints/join.py:81 web/b3desk/endpoints/join.py:148
+#: web/b3desk/endpoints/join.py:153 web/b3desk/endpoints/join.py:206
+#: web/b3desk/endpoints/join.py:214
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:182
+#: web/b3desk/endpoints/join.py:184
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:312
+#: web/b3desk/endpoints/join.py:316
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:317
+#: web/b3desk/endpoints/join.py:321
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:410
-#: web/b3desk/endpoints/meetings.py:311
+#: web/b3desk/endpoints/meetings.py:339
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -454,68 +454,83 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr "Le cours n'est pas en cours"
 
-#: web/b3desk/endpoints/meetings.py:112
+#: web/b3desk/endpoints/meetings.py:113
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:115
+#: web/b3desk/endpoints/meetings.py:116
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:131
+#: web/b3desk/endpoints/meetings.py:132
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr "Vous n'avez pas le droit de créer de nouveaux cours"
 
-#: web/b3desk/endpoints/meetings.py:176
+#: web/b3desk/endpoints/meetings.py:178
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:246
+#: web/b3desk/endpoints/meetings.py:265
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:271
+#: web/b3desk/endpoints/meetings.py:290
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr "Cours « %(meeting_name)s » terminé"
 
-#: web/b3desk/endpoints/meetings.py:324
+#: web/b3desk/endpoints/meetings.py:322 web/b3desk/models/meetings.py:455
+msgid "Élément supprimé"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:330
+msgid "Vous devez retirer les délégataires"
+msgstr ""
+
+#: web/b3desk/endpoints/meetings.py:334
+#, fuzzy, python-brace-format
+msgid ""
+"Impossible de supprimer les vidéos de cette réunion {meeting_id}: "
+"{message}"
+msgstr "Impossible de supprimer les vidéos de ce cours : {message}"
+
+#: web/b3desk/endpoints/meetings.py:352
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:335
+#: web/b3desk/endpoints/meetings.py:363
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:388
+#: web/b3desk/endpoints/meetings.py:416
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:391
+#: web/b3desk/endpoints/meetings.py:419
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:394
+#: web/b3desk/endpoints/meetings.py:422
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:401
+#: web/b3desk/endpoints/meetings.py:429
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:414
+#: web/b3desk/endpoints/meetings.py:442
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:436
+#: web/b3desk/endpoints/meetings.py:464
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:439
+#: web/b3desk/endpoints/meetings.py:467
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -523,34 +538,19 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:376 web/b3desk/models/meetings.py:383
+#: web/b3desk/models/meetings.py:363 web/b3desk/models/meetings.py:370
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:390
+#: web/b3desk/models/meetings.py:377
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr "le cours de %(fullname)s"
 
-#: web/b3desk/models/meetings.py:392
+#: web/b3desk/models/meetings.py:379
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr "Bienvenue dans le cours de %(fullname)s"
-
-#: web/b3desk/models/meetings.py:449
-msgid "Vous devez retirer les délégataires"
-msgstr ""
-
-#: web/b3desk/models/meetings.py:458
-#, fuzzy, python-brace-format
-msgid ""
-"Impossible de supprimer les vidéos de cette réunion {meeting_id}: "
-"{message}"
-msgstr "Impossible de supprimer les vidéos de ce cours : {message}"
-
-#: web/b3desk/models/meetings.py:473
-msgid "Élément supprimé"
-msgstr ""
 
 #: web/b3desk/templates/brand.html:5
 msgid ""
@@ -3160,6 +3160,10 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
@@ -3179,6 +3183,8 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:14
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
@@ -3220,6 +3226,55 @@ msgstr ""
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#, fuzzy, python-format
+msgid "La réunion %(meeting_name)s sera supprimée définitivement "
+msgstr "Cours « %(meeting_name)s » terminé"
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+msgid "dans 24h"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+#, python-format
+msgid "dans %(delay)s jours"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:5
+msgid "Vous pouvez empêcher cette suppression en utilisant cette réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
+#, python-format
+msgid ""
+"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"et lancez la réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+msgid "Votre compte est inactif et sera supprimé "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:5
+msgid "Vos salles de réunion et vos fichiers associés seront supprimés également."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:7
+msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -3398,27 +3453,27 @@ msgid ""
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:55
+#: web/b3desk/utils/mailing.py:59
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:63
+#: web/b3desk/utils/mailing.py:67
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:69
+#: web/b3desk/utils/mailing.py:73
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:71
+#: web/b3desk/utils/mailing.py:75
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:73
+#: web/b3desk/utils/mailing.py:77
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:104
+#: web/b3desk/utils/mailing.py:108
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
