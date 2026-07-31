@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
+from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_quick_meeting_secret_key
 from b3desk.join import get_role
 from b3desk.models import db
@@ -1508,3 +1509,51 @@ def test_create_meeting_ai_summary_requires_recording(
     res.mustcontain(
         "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
     )
+
+
+def test_get_meeting_secret_key_for_quick_meeting(client_app):
+    """get_meeting_secret_key must compute the hash directly for quick meetings."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    assert get_meeting_secret_key(
+        quick_meeting, Role.moderator
+    ) == get_quick_meeting_secret_key(quick_meeting, Role.moderator)
+
+
+def test_get_role_for_quick_meeting_attendee(client_app):
+    """get_role must resolve the attendee secret key of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    attendee_secret_key = get_quick_meeting_secret_key(quick_meeting, Role.attendee)
+    assert get_role(quick_meeting, attendee_secret_key) == Role.attendee
+
+
+def test_get_role_for_quick_meeting_authenticated(client_app):
+    """get_role must resolve the authenticated secret key of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    authenticated_secret_key = get_quick_meeting_secret_key(
+        quick_meeting, Role.authenticated
+    )
+    assert get_role(quick_meeting, authenticated_secret_key) == Role.authenticated
+
+
+def test_get_role_for_quick_meeting_invalid_secret_key(client_app):
+    """get_role must return None for a secret key matching no role of a quick meeting."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    assert get_role(quick_meeting, "invalid-secret-key") is None
+
+
+def test_url_for_role_returns_none_without_secret_key(client_app, meeting):
+    """url_for_role must return None if no MeetingSecretKey row exists for the role."""
+    MeetingSecretKey.query.filter_by(
+        meeting_id=meeting.id, role=Role.attendee.name
+    ).delete()
+    db.session.commit()
+
+    assert meeting.url_for_role(Role.attendee) is None
+
+
+def test_create_meeting_route(client_app, authenticated_user, meeting, bbb_response):
+    """The create_meeting route must create the BBB room and redirect to welcome."""
+    response = client_app.get(f"/meeting/create/{meeting.id}", status=302)
+
+    assert bbb_response.called
+    assert response.location == url_for("public.welcome")
