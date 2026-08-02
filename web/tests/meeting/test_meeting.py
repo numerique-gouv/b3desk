@@ -187,7 +187,7 @@ def test_save_existing_meeting_not_running(
     assert meeting.allowStartStopRecording is True
     assert meeting.voiceBridge == "123456789"
     assert (
-        "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        "Meeting meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789', 'showParticipantsOnLogin': False, 'showPublicChatOnLogin': False, 'showPresentationOnJoin': False, 'showSessionDetailsOnJoin': False}\n"
         in caplog.text
     )
 
@@ -1336,7 +1336,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
     assert (
-        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}\n"
+        "Meeting delegated meeting 1 was updated by alice@domain.tld. Updated fields : {'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789', 'showParticipantsOnLogin': False, 'showPublicChatOnLogin': False, 'showPresentationOnJoin': False, 'showSessionDetailsOnJoin': False}\n"
         in caplog.text
     )
 
