@@ -146,6 +146,16 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     meeting: Mapped[Meeting] = relationship(back_populates="secret_keys")
 
 
+class MeetingSession(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    started_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    ended_at = db.Column(db.DateTime)
+    recording_id = db.Column(db.Unicode(250))
+
+    meeting = db.relationship("Meeting", back_populates="sessions")
+
+
 class Meeting(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     bbb_meeting_id: Mapped[str] = mapped_column(
@@ -163,9 +173,16 @@ class Meeting(db.Model):
         back_populates="meeting", cascade="all, delete-orphan"
     )
     meeting_access: Mapped[list[MeetingAccess]] = relationship(back_populates="meeting")
+
     last_connection_utc_datetime: Mapped[datetime | None]
     is_shadow: Mapped[bool | None] = mapped_column(default=False)
     visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
+    
+    sessions = db.relationship(
+        "MeetingSession",
+        back_populates="meeting",
+        order_by="MeetingSession.started_at.desc()",
+    )
 
     # BBB params
     name: Mapped[str | None] = mapped_column(Unicode(150))
@@ -518,6 +535,8 @@ def clean_db_and_delete_meeting(meeting):
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)
+    for session in meeting.sessions:
+        db.session.delete(session)
     db.session.delete(meeting)
     db.session.commit()
 

@@ -578,16 +578,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:440 web/b3desk/models/meetings.py:447
+#: web/b3desk/models/meetings.py:338 web/b3desk/models/meetings.py:345
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:454
+#: web/b3desk/models/meetings.py:352
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:456
+#: web/b3desk/models/meetings.py:354
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
