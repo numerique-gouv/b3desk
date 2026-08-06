@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from flask import Blueprint
 from flask import current_app
@@ -11,6 +12,8 @@ from joserfc.jwk import OctKey
 
 from b3desk import cache
 from b3desk import csrf
+from b3desk.models import db
+from b3desk.models.meetings import MeetingSession
 from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
 from b3desk.tasks import RECORDING_CACHE_TTL
 from b3desk.tasks import recording_notified_key
@@ -29,6 +32,54 @@ def get_recording_status_callback_url():
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
     )
+
+
+def get_meeting_ended_callback_url(bbb_meeting_id):
+    """Get the URL of the callback used by BBB to notify that a meeting ended."""
+    return url_for(
+        "bbb-callback.meeting_ended",
+        meetingID=bbb_meeting_id,
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+
+
+@csrf.exempt
+@bp.route("/bbb-callback/meeting_ended", methods=["GET"])
+def meeting_ended():
+    """Handle BBB's end-of-meeting callback (``meta_endCallbackUrl``)."""
+    bbb_meeting_id = request.args.get("meetingID")
+    if not bbb_meeting_id:
+        logger.error("Missing 'meetingID' in meeting_ended callback")
+        return "", 410
+
+    meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
+    if not meeting:
+        logger.error("No meeting found for meetingID=%r", bbb_meeting_id)
+        return "", 410
+
+    session = (
+        MeetingSession.query.filter_by(meeting_id=meeting.id, ended_at=None)
+        .order_by(MeetingSession.started_at.desc())
+        .first()
+    )
+    if session:
+        session.ended_at = datetime.now()
+        db.session.commit()
+        logger.info(
+            "Meeting ended callback received for meeting %s (meetingID=%s)",
+            meeting.name,
+            bbb_meeting_id,
+        )
+    else:
+        logger.warning(
+            "Meeting ended callback received for meeting %s (meetingID=%s) "
+            "but no open session found",
+            meeting.name,
+            bbb_meeting_id,
+        )
+
+    return "", 200
 
 
 @csrf.exempt
@@ -75,6 +126,15 @@ def recording_status():
     meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
     if not meeting:
         return "", 410
+
+    session = (
+        MeetingSession.query.filter_by(meeting_id=meeting.id, recording_id=None)
+        .order_by(MeetingSession.started_at.desc())
+        .first()
+    )
+    if session:
+        session.recording_id = bbb_recording_id
+        db.session.commit()
 
     if cache.get(recording_notified_key(bbb_recording_id)):
         logger.info(
