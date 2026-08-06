@@ -153,6 +153,12 @@ class MeetingSession(db.Model):
     ended_at = db.Column(db.DateTime)
     recording_id = db.Column(db.Unicode(250))
 
+    @property
+    def duration(self):
+        if not self.ended_at:
+            return None
+        return self.ended_at - self.started_at
+
     meeting = db.relationship("Meeting", back_populates="sessions")
 
 
