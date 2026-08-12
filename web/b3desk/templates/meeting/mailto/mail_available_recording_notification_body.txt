@@ -11,4 +11,7 @@
 {% for link in recording_links -%}
 - {{ link.label }} : {{ link.url }}
 {% endfor %}
+{% if config.get("DOCS_ENABLED") -%}
+{% trans %}Vous pouvez enregistrer le compte rendu dans Docs depuis la page des enregistrements :{% endtrans %} {{ recordings_url }}
+{% endif -%}
 {% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis votre espace :{% endtrans %} {{ welcome_url }}

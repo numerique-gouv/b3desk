@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:330 web/b3desk/endpoints/meeting_files.py:127
+#: web/b3desk/__init__.py:332 web/b3desk/endpoints/meeting_files.py:127
 #: web/b3desk/endpoints/meeting_files.py:186
 #: web/b3desk/endpoints/meeting_files.py:291
 #: web/b3desk/endpoints/meeting_files.py:482
@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:344
+#: web/b3desk/forms.py:162 web/b3desk/models/meetings.py:383
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -278,27 +278,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:669 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:712 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:673
+#: web/b3desk/settings.py:716
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:686
+#: web/b3desk/settings.py:729
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:689
+#: web/b3desk/settings.py:732
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:692
+#: web/b3desk/settings.py:735
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:696
+#: web/b3desk/settings.py:739
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -341,6 +341,22 @@ msgstr ""
 
 #: web/b3desk/endpoints/admin.py:348
 msgid "L'utilisateur a été ajouté au groupe"
+msgstr ""
+
+#: web/b3desk/endpoints/docs.py:113
+msgid "La connexion à Docs a échoué."
+msgstr ""
+
+#: web/b3desk/endpoints/docs.py:119
+msgid "Aucun compte rendu à enregistrer dans Docs."
+msgstr ""
+
+#: web/b3desk/endpoints/docs.py:135
+msgid "L’enregistrement du compte rendu dans Docs a échoué."
+msgstr ""
+
+#: web/b3desk/endpoints/docs.py:147
+msgid "Le compte rendu a été enregistré dans Docs."
 msgstr ""
 
 #: web/b3desk/endpoints/join.py:68
@@ -504,16 +520,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:323 web/b3desk/models/meetings.py:330
+#: web/b3desk/models/meetings.py:362 web/b3desk/models/meetings.py:369
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:337
+#: web/b3desk/models/meetings.py:376
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:339
+#: web/b3desk/models/meetings.py:378
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -822,12 +838,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:8
 #: web/b3desk/templates/meeting/modals/invite.html:9
-#: web/b3desk/templates/meeting/recordings.html:137
-#: web/b3desk/templates/meeting/recordings.html:138
-#: web/b3desk/templates/meeting/recordings.html:178
-#: web/b3desk/templates/meeting/recordings.html:179
-#: web/b3desk/templates/meeting/recordings.html:221
-#: web/b3desk/templates/meeting/recordings.html:222
+#: web/b3desk/templates/meeting/recordings.html:148
+#: web/b3desk/templates/meeting/recordings.html:149
+#: web/b3desk/templates/meeting/recordings.html:189
+#: web/b3desk/templates/meeting/recordings.html:190
+#: web/b3desk/templates/meeting/recordings.html:232
+#: web/b3desk/templates/meeting/recordings.html:233
 msgid "Fermer"
 msgstr ""
 
@@ -993,7 +1009,7 @@ msgstr[1] ""
 #: web/b3desk/templates/meeting/files.html:163
 #: web/b3desk/templates/meeting/files.html:175
 #: web/b3desk/templates/meeting/files.html:205
-#: web/b3desk/templates/meeting/recordings.html:156
+#: web/b3desk/templates/meeting/recordings.html:167
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr ""
@@ -1019,8 +1035,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:159
-#: web/b3desk/templates/meeting/recordings.html:203
+#: web/b3desk/templates/meeting/recordings.html:170
+#: web/b3desk/templates/meeting/recordings.html:214
 msgid "Annuler"
 msgstr ""
 
@@ -2490,7 +2506,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:43
 #: web/b3desk/templates/meeting/files.html:227
 #: web/b3desk/templates/meeting/recordings.html:34
-#: web/b3desk/templates/meeting/recordings.html:261
+#: web/b3desk/templates/meeting/recordings.html:272
 msgid "Retour à mes réunions"
 msgstr ""
 
@@ -2498,7 +2514,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/files.html:231
 #: web/b3desk/templates/meeting/recordings.html:38
-#: web/b3desk/templates/meeting/recordings.html:265
+#: web/b3desk/templates/meeting/recordings.html:276
 #, python-format
 msgid "Retour à l'administration de %(meeting_name)s "
 msgstr ""
@@ -2533,8 +2549,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/end.html:9
 #: web/b3desk/templates/meeting/files.html:167
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:148
-#: web/b3desk/templates/meeting/recordings.html:195
+#: web/b3desk/templates/meeting/recordings.html:159
+#: web/b3desk/templates/meeting/recordings.html:206
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr ""
@@ -2858,7 +2874,7 @@ msgid "Voir l'enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/recordings.html:90
-#: web/b3desk/templates/meeting/recordings.html:244
+#: web/b3desk/templates/meeting/recordings.html:255
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
@@ -2903,39 +2919,55 @@ msgstr ""
 msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:144
+#: web/b3desk/templates/meeting/recordings.html:124
+msgid "Ouvrir le compte-rendu dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:124
+msgid "Ouvrir dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:127
+msgid "Enregistrer le compte-rendu dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:127
+msgid "Enregistrer dans Docs"
+msgstr ""
+
+#: web/b3desk/templates/meeting/recordings.html:155
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:146
+#: web/b3desk/templates/meeting/recordings.html:157
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
 "<em>%(recording_name)s</em> de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:211
 msgid "Modifier le nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:211
 msgid "Renommer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:228
+#: web/b3desk/templates/meeting/recordings.html:239
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:231
+#: web/b3desk/templates/meeting/recordings.html:242
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
 "services dédiés à la diffusion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:238
+#: web/b3desk/templates/meeting/recordings.html:249
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
@@ -3122,15 +3154,29 @@ msgstr ""
 msgid "Formats disponibles :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:20
+msgid "Vous pouvez enregistrer le compte rendu dans Docs depuis"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:20
+msgid "la page des enregistrements"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:23
 msgid "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:19
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:23
 msgid "votre espace"
 msgstr ""
 
-#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:14
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:15
+msgid ""
+"Vous pouvez enregistrer le compte rendu dans Docs depuis la page des "
+"enregistrements :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:17
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
@@ -3326,12 +3372,12 @@ msgstr ""
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:149
+#: web/b3desk/utils/__init__.py:152
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:271
+#: web/b3desk/utils/__init__.py:274
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

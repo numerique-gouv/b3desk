@@ -16,6 +16,10 @@
             {% endfor %}
         </ul>
 
+        {% if config.get("DOCS_ENABLED") %}
+            <p>{% trans %}Vous pouvez enregistrer le compte rendu dans Docs depuis{% endtrans %} <a href="{{ recordings_url }}">{% trans %}la page des enregistrements{% endtrans %}</a>.</p>
+        {% endif %}
+
         <p>{% trans %}Vous pouvez également retrouver l'ensemble de vos enregistrements depuis{% endtrans %} <a href="{{ welcome_url }}">{% trans %}votre espace{% endtrans %}</a>.</p>
     </body>
 </html>

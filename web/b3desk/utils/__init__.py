@@ -142,6 +142,9 @@ def send_available_recording_notification_mail(
             datetime.fromisoformat(recording_start), format="medium"
         ),
         "welcome_url": url_for("public.welcome", _external=True),
+        "recordings_url": url_for(
+            "meetings.show_meeting_recording", meeting=meeting, _external=True
+        ),
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)

@@ -143,6 +143,9 @@ class Meeting(db.Model):
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
+    docs_document_id = db.Column(db.Unicode(50))
+    """Identifier of the Docs document gathering this meeting recording summaries."""
+
     favorite_of = db.relationship(
         "User", secondary=favorite_table, back_populates="favorites"
     )
@@ -202,6 +205,42 @@ class Meeting(db.Model):
             )
             .all()
         )
+
+    def docs_document_id_for_recording(self, recording_id):
+        """Return the Docs document holding a recording summary, if it was exported."""
+        for recording_document in self.recording_documents:
+            if recording_document.recording_id == recording_id:
+                return recording_document.document_id
+        return None
+
+    def docs_document_url_for_recording(self, recording_id):
+        """Return where to read a recording summary in Docs, if it was exported."""
+        from ..docs import document_url
+
+        document_id = self.docs_document_id_for_recording(recording_id)
+        return document_url(document_id) if document_id else None
+
+
+class RecordingDocument(db.Model):
+    """Association between a BBB recording summary and the Docs document holding it."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    recording_id = db.Column(db.Unicode(100), nullable=False)
+    document_id = db.Column(db.Unicode(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+    meeting = db.relationship(
+        "Meeting",
+        backref=db.backref(
+            "recording_documents",
+            cascade="all, delete-orphan",
+            cascade_backrefs=False,
+        ),
+        cascade_backrefs=False,
+    )
+
+    __table_args__ = (db.UniqueConstraint("meeting_id", "recording_id"),)
 
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):

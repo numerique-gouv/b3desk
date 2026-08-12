@@ -165,56 +165,6 @@ def bbb_getRecordings_missing_recordID(mocker):
     yield mocker.patch("requests.Session.send", return_value=Response)
 
 
-@pytest.fixture
-def bbb_getRecordings_ai_summary(mocker):
-    """Fixture providing a getRecordings response that includes an ai-summary format."""
-
-    class Response:
-        content = """
-<response>
-  <returncode>SUCCESS</returncode>
-  <recordings>
-    <recording>
-      <recordID>rec-ai-1</recordID>
-      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
-      <internalMeetingID>rec-ai-1</internalMeetingID>
-      <name>Meeting with summary</name>
-      <startTime>1530718721124</startTime>
-      <endTime>1530718810456</endTime>
-      <participants>2</participants>
-      <metadata>
-        <name>Meeting with summary</name>
-      </metadata>
-      <playback>
-        <format>
-          <type>presentation</type>
-          <url>https://bbb.test/playback/presentation/2.3/rec-ai-1</url>
-          <length>0</length>
-        </format>
-        <format>
-          <type>ai-summary</type>
-          <url>https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
-          <length>0</length>
-          <size>38610</size>
-          <urls>
-            <url type="pdf" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf</url>
-            <url type="md" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.md</url>
-            <url type="html" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
-            <url type="json" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.json</url>
-            <url type="json" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.json</url>
-            <url type="vtt" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.vtt</url>
-          </urls>
-        </format>
-      </playback>
-    </recording>
-  </recordings>
-</response>
-"""
-        text = ""
-
-    yield mocker.patch("requests.Session.send", return_value=Response)
-
-
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     """Test that recordings are retrieved and parsed correctly from BBB."""
     from b3desk.models.bbb import BBB

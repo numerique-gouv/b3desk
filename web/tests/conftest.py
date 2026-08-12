@@ -349,6 +349,18 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "ENABLE_AI_SUMMARY": True,
     }
 
+    if "docs" in request.keywords:
+        configuration.update(
+            {
+                "DOCS_ENABLED": True,
+                "DOCS_ISSUER": iam_server.url,
+                "DOCS_CLIENT_ID": iam_client.client_id,
+                "DOCS_CLIENT_SECRET": iam_client.client_secret,
+                "DOCS_REDIRECT_URI": "http://b3desk.test/docs_callback",
+                "DOCS_API_URL": "https://docs.test",
+            }
+        )
+
     if "smtpd" in request.fixturenames:
         smtpd = request.getfixturevalue("smtpd")
         smtpd.config.use_starttls = True
@@ -786,6 +798,7 @@ def bbb_getRecordings_response(mocker):
         content = """
 <response>
   <returncode>SUCCESS</returncode>
+  <running>false</running>
   <recordings>
     <recording>
       <recordID>ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124</recordID>
@@ -890,6 +903,57 @@ def bbb_getRecordings_response(mocker):
           <url>https://bbb.test/playback/ai-summary/ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111/ai-summary.html</url>
           <processingTime>0</processingTime>
           <length>0</length>
+        </format>
+      </playback>
+    </recording>
+  </recordings>
+</response>
+"""
+        text = ""
+
+    yield mocker.patch("requests.Session.send", return_value=Response)
+
+
+@pytest.fixture
+def bbb_getRecordings_ai_summary(mocker):
+    """Fixture providing a getRecordings response that includes an ai-summary format."""
+
+    class Response:
+        content = """
+<response>
+  <returncode>SUCCESS</returncode>
+  <running>false</running>
+  <recordings>
+    <recording>
+      <recordID>rec-ai-1</recordID>
+      <meetingID>c637ba21adcd0191f48f5c4bf23fab0f96ed5c18</meetingID>
+      <internalMeetingID>rec-ai-1</internalMeetingID>
+      <name>Meeting with summary</name>
+      <startTime>1530718721124</startTime>
+      <endTime>1530718810456</endTime>
+      <participants>2</participants>
+      <metadata>
+        <name>Meeting with summary</name>
+      </metadata>
+      <playback>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/presentation/2.3/rec-ai-1</url>
+          <length>0</length>
+        </format>
+        <format>
+          <type>ai-summary</type>
+          <url>https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
+          <length>0</length>
+          <size>38610</size>
+          <urls>
+            <url type="pdf" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf</url>
+            <url type="md" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.md</url>
+            <url type="html" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.html</url>
+            <url type="json" category="summary">https://bbb.test/ai-summary/rec-ai-1/ai-summary.json</url>
+            <url type="json" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.json</url>
+            <url type="vtt" category="transcription">https://bbb.test/ai-summary/rec-ai-1/transcription.vtt</url>
+          </urls>
         </format>
       </playback>
     </recording>
