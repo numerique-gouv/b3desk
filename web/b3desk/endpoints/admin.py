@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
@@ -80,6 +81,40 @@ def get_users_paginate(per_page, data=None):
             )
         )
     return db.paginate(query, per_page=per_page)
+
+
+def query_all_users_not_in_group(group, data=None):
+    query = (
+        db.select(User).where(~User.groups.contains(group)).order_by(User.created_at)
+    )
+    if data:
+        query = query.where(
+            or_(
+                User.id == int(data) if data.isdigit() else None,
+                User.given_name.ilike(f"%{data}%"),
+                User.family_name.ilike(f"%{data}%"),
+                User.email.ilike(f"%{data}%"),
+            )
+        )
+    return query
+
+
+def get_all_users_not_in_group(group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.session.execute(query).scalars().all()
+
+
+def get_all_users_not_in_group_paginate(per_page, group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.paginate(query, per_page=per_page)
+
+
+def get_users_by_ids(user_ids):
+    ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]
+    if not ids:
+        return []
+    query = db.select(User).where(User.id.in_(ids))
+    return db.session.execute(query).scalars().all()
 
 
 @bp.route("/admin/home")
@@ -317,39 +352,65 @@ def confirm_delete_group(group: Group):
     return redirect(url_for("admin.manage_groups"))
 
 
-@bp.route("/admin/add-group-members/<group:group>")
+def add_users_in_group(users, group):
+    added_users = []
+    for user in users:
+        if user not in group.members:
+            group.members.append(user)
+            added_users.append(user)
+    db.session.commit()
+    for user in added_users:
+        current_app.logger.info(
+            "%s became member of group %s %s", user.email, group.id, group.name
+        )
+    flash(
+        ngettext(
+            "%(num)s membre ajouté au groupe",
+            "%(num)s membres ajoutés au groupe",
+            len(added_users),
+        ),
+        "success",
+    )
+
+
+@bp.route("/admin/add-group-members/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def add_group_members_page(group: Group):
+def add_group_members(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args)
-    data = form.search.data.lower() if form.search.data else None
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
+    select_all = bool(request.values.get("select_all"))
+    search = request.values.get("search")
+    data = search.lower() if search else None
+
+    users_page = get_all_users_not_in_group_paginate(
+        per_page=PER_PAGE, group=group, data=data
+    )
+
+    if request.method == "POST":
+        users = (
+            get_all_users_not_in_group(group, data)
+            if select_all
+            else get_users_by_ids(request.form.getlist("user_ids"))
+        )
+        if users:
+            add_users_in_group(users, group)
+        else:
+            flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
+        return redirect(
+            url_for(
+                "admin.add_group_members",
+                group=group,
+                search=data,
+                select_all=1 if select_all else None,
+            )
+        )
+
     return render_template(
-        "admin/add_group_members_page.html",
+        "admin/add_group_members.html",
         group=group,
         form=form,
         users_page=users_page,
         data=data,
         add_members=True,
+        select_all=select_all,
     )
-
-
-@bp.route("/admin/add-group-members/<group:group>/<user:user>", methods=["POST"])
-@admin_needed
-def add_group_members(group: Group, user: User):
-    """Add a member to the group."""
-    form = UserSearchForm(request.args)
-    data = form.search.data.lower() if form.search.data else None
-    if user in group.members:
-        flash(_("L'utilisateur est déjà dans le groupe"), "error")
-    else:
-        group.members.append(user)
-        db.session.commit()
-        flash(_("L'utilisateur a été ajouté au groupe"), "success")
-        current_app.logger.info(
-            "%s became member of group %s %s",
-            user.email,
-            group.id,
-            group.name,
-        )
-    return redirect(url_for("admin.add_group_members_page", group=group, search=data))

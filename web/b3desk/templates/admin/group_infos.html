@@ -20,7 +20,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ url_for("admin.add_group_members_page", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-user-add-line" title="{% trans group_name=group.name %}Ajouter des membres à {{ group_name }}{% endtrans %}">
+            <a href="{{ url_for("admin.add_group_members", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-user-add-line" title="{% trans group_name=group.name %}Ajouter des membres à {{ group_name }}{% endtrans %}">
                 {% trans %}Ajouter des membres{% endtrans %}
             </a>
         </li>
