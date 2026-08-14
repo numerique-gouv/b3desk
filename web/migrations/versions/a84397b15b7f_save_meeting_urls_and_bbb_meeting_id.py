@@ -14,7 +14,6 @@ import sqlalchemy as sa
 from alembic import op
 from b3desk.models.meetings import Meeting
 from flask import current_app
-from sqlalchemy.orm import Session
 from sqlalchemy.sql import bindparam
 from sqlalchemy.sql import insert
 from sqlalchemy.sql import select
@@ -27,6 +26,7 @@ branch_labels = None
 depends_on = None
 
 ROLES = ("attendee", "moderator", "authenticated")
+BATCH_SIZE = 5000
 
 
 def legacy_bbb_meeting_id(meeting_id, owner_email, app_secret_key):
@@ -92,43 +92,48 @@ def upgrade():
         sa.column("updated_at", sa.DateTime),
     )
 
-    session = Session(op.get_bind())
+    connection = op.get_bind()
     now = datetime.now()
-    meeting_values = []
-    secret_key_values = []
-    for meeting_id, name, attendee_pw, owner_email in session.execute(
-        select(
-            meeting.c.id, meeting.c.name, meeting.c.attendeePW, user.c.email
-        ).select_from(meeting.outerjoin(user, meeting.c.owner_id == user.c.id))
-    ):
-        bbb_meeting_id = legacy_bbb_meeting_id(
-            meeting_id, owner_email, current_app.config["SECRET_KEY"]
-        )
-        name = name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-        meeting_values.append({"_id": meeting_id, "_bbb_meeting_id": bbb_meeting_id})
-        secret_key_values.extend(
-            {
-                "meeting_id": meeting_id,
-                "role": role,
-                "secret_key": str(uuid.uuid7()),
-                "legacy_secret_keys": legacy_secret_keys(
-                    bbb_meeting_id, attendee_pw, name, role
-                ),
-                "created_at": now,
-                "updated_at": now,
-            }
-            for role in ROLES
-        )
+    last_id = 0
+    while rows := connection.execute(
+        select(meeting.c.id, meeting.c.name, meeting.c.attendeePW, user.c.email)
+        .select_from(meeting.outerjoin(user, meeting.c.owner_id == user.c.id))
+        .where(meeting.c.id > last_id)
+        .order_by(meeting.c.id)
+        .limit(BATCH_SIZE)
+    ).all():
+        meeting_values = []
+        secret_key_values = []
+        for meeting_id, name, attendee_pw, owner_email in rows:
+            bbb_meeting_id = legacy_bbb_meeting_id(
+                meeting_id, owner_email, current_app.config["SECRET_KEY"]
+            )
+            name = name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
+            meeting_values.append(
+                {"_id": meeting_id, "_bbb_meeting_id": bbb_meeting_id}
+            )
+            secret_key_values.extend(
+                {
+                    "meeting_id": meeting_id,
+                    "role": role,
+                    "secret_key": str(uuid.uuid7()),
+                    "legacy_secret_keys": legacy_secret_keys(
+                        bbb_meeting_id, attendee_pw, name, role
+                    ),
+                    "created_at": now,
+                    "updated_at": now,
+                }
+                for role in ROLES
+            )
 
-    if meeting_values:
-        session.execute(
+        connection.execute(
             update(meeting)
             .where(meeting.c.id == bindparam("_id"))
             .values(bbb_meeting_id=bindparam("_bbb_meeting_id")),
             meeting_values,
         )
-        session.execute(insert(meeting_secret_key), secret_key_values)
-        session.commit()
+        connection.execute(insert(meeting_secret_key), secret_key_values)
+        last_id = rows[-1][0]
 
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.alter_column(
