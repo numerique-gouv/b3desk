@@ -410,7 +410,7 @@ def manage_delegation(meeting: Meeting, user: User):
         )
 
     data = form.search.data.lower()
-    new_delegate = db.session.query(User).filter(User.email == data).first()
+    new_delegate = User.get_user_by_email(data)
 
     if new_delegate is None:
         flash(_("L'utilisateur recherché n'existe pas"), "error")

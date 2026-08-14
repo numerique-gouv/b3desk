@@ -91,7 +91,7 @@ def test_save_new_meeting(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     meeting = meetings[0]
 
     assert meeting.owner_id == 1
@@ -127,7 +127,7 @@ def test_save_existing_meeting_not_running(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):
     """Test that existing meeting can be updated when not running."""
-    assert len(Meeting.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 1
 
     res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["name"] = "Mon meeting de test"
@@ -153,7 +153,7 @@ def test_save_existing_meeting_not_running(
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
 
@@ -189,14 +189,23 @@ def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):
     """Changing moderatorPW must renew only the moderator secret key, clearing its legacy hashes."""
-    moderator_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.moderator.name
+    moderator_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.moderator.name,
+        )
     ).one()
-    attendee_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.attendee.name
+    attendee_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.attendee.name,
+        )
     ).one()
-    authenticated_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.authenticated.name
+    authenticated_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.authenticated.name,
+        )
     ).one()
     moderator_secret_key.legacy_secret_keys = ["old-moderator-hash"]
     db.session.commit()
@@ -227,14 +236,23 @@ def test_edit_meeting_attendeePW_change_renews_attendee_and_authenticated_secret
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):
     """Changing attendeePW must renew the attendee and authenticated secret keys, clearing their legacy hashes, but not moderator's."""
-    moderator_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.moderator.name
+    moderator_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.moderator.name,
+        )
     ).one()
-    attendee_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.attendee.name
+    attendee_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.attendee.name,
+        )
     ).one()
-    authenticated_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.authenticated.name
+    authenticated_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.authenticated.name,
+        )
     ).one()
     attendee_secret_key.legacy_secret_keys = ["old-attendee-hash"]
     authenticated_secret_key.legacy_secret_keys = ["old-authenticated-hash"]
@@ -267,14 +285,23 @@ def test_edit_meeting_changing_both_passwords_renews_all_secret_keys(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):
     """Changing both moderatorPW and attendeePW must renew every role's secret key."""
-    moderator_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.moderator.name
+    moderator_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.moderator.name,
+        )
     ).one()
-    attendee_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.attendee.name
+    attendee_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.attendee.name,
+        )
     ).one()
-    authenticated_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.authenticated.name
+    authenticated_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.authenticated.name,
+        )
     ).one()
     previous_moderator_secret = moderator_secret_key.secret_key
     previous_attendee_secret = attendee_secret_key.secret_key
@@ -307,7 +334,7 @@ def test_save_existing_meeting_running(
 ):
     """Test that existing meeting can be updated and ended when running."""
     mocker.patch("b3desk.models.bbb.BBB.end", return_value={"returncode": "SUCCESS"})
-    assert len(Meeting.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 1
 
     res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["welcome"] = "Bienvenue dans mon meeting de test"
@@ -317,7 +344,7 @@ def test_save_existing_meeting_running(
     assert "Vous n'êtes pas propriétaire" not in res
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
     assert meeting.welcome == "Bienvenue dans mon meeting de test"
@@ -338,7 +365,7 @@ def test_save_moderatorOnlyMessage_too_long(
     res.mustcontain("Le formulaire contient des erreurs")
     res.mustcontain(moderator_only_message)
     res.mustcontain("Le message est trop long")
-    assert not Meeting.query.all()
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
 
 
 def test_save_no_recording_by_default(
@@ -358,7 +385,7 @@ def test_save_no_recording_by_default(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
     assert meeting.record is True
@@ -370,7 +397,7 @@ def test_save_meeting_in_no_recording_environment(
     client_app, authenticated_user, mock_meeting_is_not_running
 ):
     """Test that meeting can be created when recording is disabled globally."""
-    assert len(Meeting.query.all()) == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     client_app.app.config["RECORDING"] = False
 
     res = client_app.get("/meeting/new")
@@ -389,7 +416,7 @@ def test_save_meeting_in_no_recording_environment(
         "Mon meeting de test a bien été créé(e)",
     ) in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     assert meetings[0].record is False
 
@@ -766,7 +793,7 @@ def test_create_without_logout_url_gets_default(
     res = res.forms[0].submit()
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
     assert meeting
@@ -784,14 +811,14 @@ def test_save_existing_meeting_gets_default_logoutUrl(
     """Test that empty logout URL gets replaced with default."""
     from b3desk.join import create_bbb_meeting
 
-    assert len(Meeting.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 1
 
     res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
 
@@ -923,12 +950,16 @@ def test_deactivated_meeting_files_cannot_edit(
 
 def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     """Test that meeting can be deleted, its secret keys are removed and voiceBridge is archived."""
-    assert MeetingSecretKey.query.count() == len(Role)
+    assert db.session.scalar(
+        db.select(db.func.count()).select_from(MeetingSecretKey)
+    ) == len(Role)
 
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
-    assert len(Meeting.query.all()) == 0
-    assert MeetingSecretKey.query.count() == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
+    assert (
+        db.session.scalar(db.select(db.func.count()).select_from(MeetingSecretKey)) == 0
+    )
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
@@ -949,8 +980,8 @@ def test_delete_meeting_with_meeting_files(
     db.session.commit()
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
-    assert len(Meeting.query.all()) == 0
-    assert MeetingFiles.query.count() == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 0
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
@@ -959,8 +990,11 @@ def test_delete_meeting_with_meeting_files(
 def test_meeting_link_retrocompatibility(meeting):
     """Links from meetings migrated from the old hash scheme must stay usable."""
     for role in Role:
-        meeting_secret_key = MeetingSecretKey.query.filter_by(
-            meeting_id=meeting.id, role=role.name
+        meeting_secret_key = db.session.scalars(
+            db.select(MeetingSecretKey).where(
+                MeetingSecretKey.meeting_id == meeting.id,
+                MeetingSecretKey.role == role.name,
+            )
         ).one()
         role_interpolated_raw = hashlib.sha1(
             f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{meeting.name}|{role}".encode()
@@ -1198,7 +1232,7 @@ def test_create_meeting_with_wrong_PIN(
 
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
-    assert len(Meeting.query.all()) == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
@@ -1278,7 +1312,7 @@ def test_delete_old_voiceBridges_with_form(
     res.forms[0]["voiceBridge"] = "999999999"
     res = res.forms[0].submit()
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
-    meeting = db.session.query(Meeting).scalar()
+    meeting = db.session.scalar(db.select(Meeting))
     res = client_app.get("/").follow()
     res = client_app.post("/meeting/delete", {"id": {meeting.id}})
     assert ("success", "Élément supprimé") in res.flashes
@@ -1441,7 +1475,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     caplog,
 ):
     """Test that existing meeting can be updated when not running."""
-    assert len(Meeting.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 1
 
     res = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}")
     res.forms[0]["name"] = "Mon meeting de test"
@@ -1471,7 +1505,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
         "delegated meeting modifications prises en compte",
     ) in res.flashes
 
-    meetings = Meeting.query.all()
+    meetings = db.session.scalars(db.select(Meeting)).all()
     assert len(meetings) == 1
     meeting = meetings[0]
 
@@ -1564,9 +1598,12 @@ def test_get_role_for_quick_meeting_invalid_secret_key(client_app):
 
 def test_url_for_role_returns_none_without_secret_key(client_app, meeting):
     """url_for_role must return None if no MeetingSecretKey row exists for the role."""
-    MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=Role.attendee.name
-    ).delete()
+    db.session.execute(
+        db.delete(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == Role.attendee.name,
+        )
+    )
     db.session.commit()
 
     assert meeting.url_for_role(Role.attendee) is None

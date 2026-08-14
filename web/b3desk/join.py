@@ -23,8 +23,11 @@ def get_meeting_secret_key(meeting, role: Role) -> str:
 
     from b3desk.models.meetings import MeetingSecretKey
 
-    meeting_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=role.name
+    meeting_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == role.name,
+        )
     ).one_or_none()
     return meeting_secret_key.secret_key if meeting_secret_key else None
 
@@ -49,14 +52,21 @@ def get_role(meeting, secret_key, user=None) -> Role | None:
 
     from b3desk.models.meetings import MeetingSecretKey
 
-    meeting_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, secret_key=secret_key
+    meeting_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.secret_key == secret_key,
+        )
     ).one_or_none()
     if not meeting_secret_key:
         meeting_secret_key = next(
             (
                 msk
-                for msk in MeetingSecretKey.query.filter_by(meeting_id=meeting.id)
+                for msk in db.session.scalars(
+                    db.select(MeetingSecretKey).where(
+                        MeetingSecretKey.meeting_id == meeting.id
+                    )
+                )
                 if secret_key in msk.legacy_secret_keys
             ),
             None,

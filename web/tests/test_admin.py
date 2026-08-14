@@ -282,7 +282,7 @@ def test_admin_cannot_create_group_with_existing_name(
     res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert "Ce nom est déjà utilisé." in res.text
-    assert len(Group.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Group)) == 1
 
 
 def test_admin_can_display_groups(
@@ -517,7 +517,7 @@ def test_admin_can_delete_meeting_file(
 
     assert response.status_int == 200
     assert response.json["id"] == meeting_file.id
-    assert not MeetingFiles.query.all()
+    assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 0
 
 
 def test_admin_can_update_recording_name(

@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import random
 import uuid
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
@@ -18,8 +19,19 @@ from flask import current_app
 from flask_babel import lazy_gettext as _
 from itsdangerous import Signer
 from itsdangerous import URLSafeSerializer
+from sqlalchemy import JSON
+from sqlalchemy import Column
+from sqlalchemy import Date
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy import Unicode
+from sqlalchemy import UnicodeText
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import StringEncryptedType
 from wtforms import ValidationError
 
@@ -37,18 +49,18 @@ class AccessLevel(IntEnum):
 
 
 class MeetingAccess(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), primary_key=True)
-    level = db.Column(db.Integer, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("meeting.id"), primary_key=True)
+    level: Mapped[int]
 
-    user = db.relationship("User", backref="user_meeting_access")
-    meeting = db.relationship("Meeting", backref="meeting_access")
+    user: Mapped[User] = relationship(back_populates="user_meeting_access")
+    meeting: Mapped[Meeting] = relationship(back_populates="meeting_access")
 
 
 favorite_table = db.Table(
     "favorite",
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("meeting_id", db.Integer, db.ForeignKey("meeting.id"), primary_key=True),
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("meeting_id", ForeignKey("meeting.id"), primary_key=True),
 )
 
 MODERATOR_ONLY_MESSAGE_MAXLENGTH = 150
@@ -83,17 +95,17 @@ class BaseMeetingFiles:
 
 
 class MeetingFiles(BaseMeetingFiles, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(4096))
-    url = db.Column(db.Unicode(4096))
-    nc_path = db.Column(db.Unicode(4096))
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    is_downloadable = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.Date)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str | None] = mapped_column(Unicode(4096))
+    url: Mapped[str | None] = mapped_column(Unicode(4096))
+    nc_path: Mapped[str | None] = mapped_column(Unicode(4096))
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("meeting.id"))
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"))
+    is_downloadable: Mapped[bool | None] = mapped_column(default=False)
+    created_at: Mapped[date | None] = mapped_column(Date)
 
-    meeting = db.relationship("Meeting", back_populates="files")
-    owner = db.relationship("User", foreign_keys=[owner_id])
+    meeting: Mapped[Meeting] = relationship(back_populates="files")
+    owner: Mapped[User | None] = relationship(foreign_keys=[owner_id])
 
     @property
     def short_title(self):
@@ -114,77 +126,84 @@ class BaseMeetingSecretKey:
 
 
 class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
-    __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
+    __table_args__ = (UniqueConstraint("meeting_id", "role"),)
 
-    id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(
-        db.Integer, db.ForeignKey("meeting.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[int] = mapped_column(primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(
+        ForeignKey("meeting.id", ondelete="CASCADE")
     )
-    role = db.Column(db.String(255))
-    secret_key = db.Column(
-        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
+    role: Mapped[str | None] = mapped_column(String(255))
+    secret_key: Mapped[str] = mapped_column(
+        String(255), unique=True, default=lambda: str(uuid.uuid7())
     )
-    legacy_secret_keys: list[str] = db.Column(
-        db.JSON, nullable=False, default=list
+    legacy_secret_keys: Mapped[list[str]] = mapped_column(
+        JSON, default=list
     )  # old sha1-hash schemes
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.now, onupdate=datetime.now
     )
 
-    meeting = db.relationship("Meeting", back_populates="secret_keys")
+    meeting: Mapped[Meeting] = relationship(back_populates="secret_keys")
 
 
 class Meeting(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    bbb_meeting_id = db.Column(
-        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
+    id: Mapped[int] = mapped_column(primary_key=True)
+    bbb_meeting_id: Mapped[str] = mapped_column(
+        String(255), unique=True, default=lambda: str(uuid.uuid7())
     )
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    owner = db.relationship("User")
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    owner: Mapped[User] = relationship(back_populates="meetings")
 
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.now, onupdate=datetime.now
     )
-    files = db.relationship(
-        "MeetingFiles", back_populates="meeting", cascade="all, delete-orphan"
+    files: Mapped[list[MeetingFiles]] = relationship(
+        back_populates="meeting", cascade="all, delete-orphan"
     )
-    secret_keys = db.relationship(
-        "MeetingSecretKey", back_populates="meeting", cascade="all, delete-orphan"
+    secret_keys: Mapped[list[MeetingSecretKey]] = relationship(
+        back_populates="meeting", cascade="all, delete-orphan"
     )
-    last_connection_utc_datetime = db.Column(db.DateTime)
-    is_shadow = db.Column(db.Boolean, unique=False, default=False)
-    visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
+    meeting_access: Mapped[list[MeetingAccess]] = relationship(back_populates="meeting")
+    last_connection_utc_datetime: Mapped[datetime | None]
+    is_shadow: Mapped[bool | None] = mapped_column(default=False)
+    visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
 
     # BBB params
-    name = db.Column(db.Unicode(150))
-    attendeePW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
-    moderatorPW = db.Column(StringEncryptedType(db.Unicode(50), secret_key()))
-    welcome = db.Column(db.UnicodeText())
-    dialNumber = db.Column(db.Unicode(50))
-    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
-    maxParticipants = db.Column(db.Integer)
-    logoutUrl = db.Column(db.Unicode(250))
-    record = db.Column(db.Boolean, unique=False, default=True)
-    duration = db.Column(db.Integer)
-    moderatorOnlyMessage = db.Column(db.Unicode(MODERATOR_ONLY_MESSAGE_MAXLENGTH))
-    autoStartRecording = db.Column(db.Boolean, unique=False, default=True)
-    allowStartStopRecording = db.Column(db.Boolean, unique=False, default=True)
-    webcamsOnlyForModerator = db.Column(db.Boolean, unique=False, default=True)
-    muteOnStart = db.Column(db.Boolean, unique=False, default=True)
-    lockSettingsDisableCam = db.Column(db.Boolean, unique=False, default=True)
-    lockSettingsDisableMic = db.Column(db.Boolean, unique=False, default=True)
-    allowModsToUnmuteUsers = db.Column(db.Boolean, unique=False, default=False)
-    lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
-    lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
-    lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
-    ai_summary = db.Column(db.Boolean, unique=False, default=False, nullable=False)
-    guestPolicy = db.Column(db.Boolean, unique=False, default=True)
-    logo = db.Column(db.Unicode(200))
+    name: Mapped[str | None] = mapped_column(Unicode(150))
+    attendeePW: Mapped[str | None] = mapped_column(
+        StringEncryptedType(Unicode(50), secret_key())
+    )
+    moderatorPW: Mapped[str | None] = mapped_column(
+        StringEncryptedType(Unicode(50), secret_key())
+    )
+    welcome: Mapped[str | None] = mapped_column(UnicodeText())
+    dialNumber: Mapped[str | None] = mapped_column(Unicode(50))
+    voiceBridge: Mapped[str] = mapped_column(Unicode(50), unique=True)
+    maxParticipants: Mapped[int | None]
+    logoutUrl: Mapped[str | None] = mapped_column(Unicode(250))
+    record: Mapped[bool | None] = mapped_column(default=True)
+    duration: Mapped[int | None]
+    moderatorOnlyMessage: Mapped[str | None] = mapped_column(
+        Unicode(MODERATOR_ONLY_MESSAGE_MAXLENGTH)
+    )
+    autoStartRecording: Mapped[bool | None] = mapped_column(default=True)
+    allowStartStopRecording: Mapped[bool | None] = mapped_column(default=True)
+    webcamsOnlyForModerator: Mapped[bool | None] = mapped_column(default=True)
+    muteOnStart: Mapped[bool | None] = mapped_column(default=True)
+    lockSettingsDisableCam: Mapped[bool | None] = mapped_column(default=True)
+    lockSettingsDisableMic: Mapped[bool | None] = mapped_column(default=True)
+    allowModsToUnmuteUsers: Mapped[bool | None] = mapped_column(default=False)
+    lockSettingsDisablePrivateChat: Mapped[bool | None] = mapped_column(default=True)
+    lockSettingsDisablePublicChat: Mapped[bool | None] = mapped_column(default=True)
+    lockSettingsDisableNote: Mapped[bool | None] = mapped_column(default=True)
+    ai_summary: Mapped[bool] = mapped_column(default=False)
+    guestPolicy: Mapped[bool | None] = mapped_column(default=True)
+    logo: Mapped[str | None] = mapped_column(Unicode(200))
 
-    favorite_of = db.relationship(
-        "User", secondary=favorite_table, back_populates="favorites"
+    favorite_of: Mapped[list[User]] = relationship(
+        secondary=favorite_table, back_populates="favorites"
     )
 
     _bbb = None
@@ -207,14 +226,14 @@ class Meeting(db.Model):
 
     @property
     def get_all_delegates(self):
-        return (
-            User.query.join(MeetingAccess)
-            .filter(
+        return db.session.scalars(
+            db.select(User)
+            .join(MeetingAccess)
+            .where(
                 MeetingAccess.meeting_id == self.id,
                 MeetingAccess.level == AccessLevel.DELEGATE,
             )
-            .all()
-        )
+        ).all()
 
     def url_for_role(self, role):
         from b3desk.join import create_signin_url
@@ -249,32 +268,34 @@ class Meeting(db.Model):
 
     def renew_secret_key(self, role):
         """Regenerate a role's secret key, invalidating its previous signin link."""
-        meeting_secret_key = MeetingSecretKey.query.filter_by(
-            meeting_id=self.id, role=role.name
+        meeting_secret_key = db.session.scalars(
+            db.select(MeetingSecretKey).where(
+                MeetingSecretKey.meeting_id == self.id,
+                MeetingSecretKey.role == role.name,
+            )
         ).one()
         meeting_secret_key.secret_key = str(uuid.uuid7())
         meeting_secret_key.legacy_secret_keys = []
 
 
 class PreviousVoiceBridge(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    voiceBridge = db.Column(db.Unicode(50), unique=True, nullable=False)
-    archived_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    voiceBridge: Mapped[str] = mapped_column(Unicode(50), unique=True)
+    archived_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 def get_all_previous_voiceBridges():
     """Retrieve all archived voice bridge codes."""
-    return [
-        voiceBridge[0]
-        for voiceBridge in db.session.query(PreviousVoiceBridge.voiceBridge)
-    ]
+    return list(db.session.scalars(db.select(PreviousVoiceBridge.voiceBridge)))
 
 
 def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
-    db.session.query(PreviousVoiceBridge).filter(
-        PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
-    ).delete()
+    db.session.execute(
+        db.delete(PreviousVoiceBridge).where(
+            PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
+        )
+    )
 
 
 def get_deterministic_password(meeting_id, role):
@@ -322,9 +343,9 @@ def get_meeting_from_meeting_id(meeting_id):
 
 def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
     """Retrieve a persisted Meeting from a BBB-side identifier (new UUID or legacy 'meeting-persistent-...' form)."""
-    return (
-        db.session.query(Meeting).filter_by(bbb_meeting_id=bbb_meeting_id).one_or_none()
-    )
+    return db.session.scalars(
+        db.select(Meeting).where(Meeting.bbb_meeting_id == bbb_meeting_id)
+    ).one_or_none()
 
 
 def generate_random_pin():
@@ -334,14 +355,16 @@ def generate_random_pin():
 
 def pin_exists(pin):
     """Check if a PIN already exists in meetings or archived voice bridges."""
-    return db.session.query(
-        or_(
-            db.session.query(Meeting).filter(Meeting.voiceBridge == pin).exists(),
-            db.session.query(PreviousVoiceBridge)
-            .filter(PreviousVoiceBridge.voiceBridge == pin)
-            .exists(),
+    return db.session.scalar(
+        db.select(
+            or_(
+                db.select(Meeting).where(Meeting.voiceBridge == pin).exists(),
+                db.select(PreviousVoiceBridge)
+                .where(PreviousVoiceBridge.voiceBridge == pin)
+                .exists(),
+            )
         )
-    ).scalar()
+    )
 
 
 def pin_generation():
@@ -360,35 +383,35 @@ def get_forbidden_pins(edited_meeting_id=None):
     """Retrieve all voice bridge PINs that are already in use or archived."""
     previous_pins = get_all_previous_voiceBridges()
 
-    existing_meeting_voiceBridges = db.session.query(Meeting.voiceBridge)
+    existing_meeting_voiceBridges = db.select(Meeting.voiceBridge)
 
     if edited_meeting_id:
-        existing_meeting_voiceBridges = existing_meeting_voiceBridges.filter(
+        existing_meeting_voiceBridges = existing_meeting_voiceBridges.where(
             Meeting.id != edited_meeting_id
         )
 
-    return [
-        voiceBridge[0] for voiceBridge in existing_meeting_voiceBridges
-    ] + previous_pins
+    return list(db.session.scalars(existing_meeting_voiceBridges)) + previous_pins
 
 
 def pin_is_unique_validator(form, field):
     """Validate that a PIN is unique and not already in use."""
     pin = field.data
     # Check if PIN exists in archived voice bridges
-    archived_exists = db.session.query(
-        db.session.query(PreviousVoiceBridge)
-        .filter(PreviousVoiceBridge.voiceBridge == pin)
-        .exists()
-    ).scalar()
+    archived_exists = db.session.scalar(
+        db.select(
+            db.select(PreviousVoiceBridge)
+            .where(PreviousVoiceBridge.voiceBridge == pin)
+            .exists()
+        )
+    )
     if archived_exists:
         raise ValidationError(_("Ce code PIN est déjà utilisé"))
 
     # Check if PIN exists in other meetings (excluding current meeting if editing)
-    query = db.session.query(Meeting).filter(Meeting.voiceBridge == pin)
+    query = db.select(Meeting).where(Meeting.voiceBridge == pin)
     if form.id.data:
-        query = query.filter(Meeting.id != form.id.data)
-    if db.session.query(query.exists()).scalar():
+        query = query.where(Meeting.id != form.id.data)
+    if db.session.scalar(db.select(query.exists())):
         raise ValidationError(_("Ce code PIN est déjà utilisé"))
 
 
@@ -432,13 +455,12 @@ def create_and_save_shadow_meeting(user):
 
 def get_or_create_shadow_meeting(user):
     """Retrieve the user's shadow meeting or create one if it doesn't exist."""
-    shadow_meetings = [
-        shadow_meeting
-        for shadow_meeting in db.session.query(Meeting).filter(
+    shadow_meetings = db.session.scalars(
+        db.select(Meeting).where(
             Meeting.is_shadow,
             Meeting.owner_id == user.id,
         )
-    ]
+    ).all()
     if len(shadow_meetings) > 1:
         for shadow_meeting in shadow_meetings:
             if shadow_meeting is not shadow_meetings[0]:
@@ -472,13 +494,12 @@ def clean_db_and_delete_meeting(meeting):
 
 def delete_all_old_shadow_meetings():
     """Delete all shadow meetings not used in the past year."""
-    old_shadow_meetings = [
-        shadow_meeting
-        for shadow_meeting in db.session.query(Meeting).filter(
+    old_shadow_meetings = db.session.scalars(
+        db.select(Meeting).where(
             Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
             Meeting.is_shadow,
         )
-    ]
+    ).all()
 
     for shadow_meeting in old_shadow_meetings:
         clean_db_and_delete_meeting(shadow_meeting)
@@ -486,9 +507,9 @@ def delete_all_old_shadow_meetings():
 
 def visio_code_exists(code):
     """Check if a visio code already exists."""
-    return db.session.query(
-        db.session.query(Meeting).filter(Meeting.visio_code == code).exists()
-    ).scalar()
+    return db.session.scalar(
+        db.select(db.select(Meeting).where(Meeting.visio_code == code).exists())
+    )
 
 
 def unique_visio_code_generation():
@@ -548,14 +569,17 @@ def assign_unique_codes(meeting):
 
 def get_meeting_by_visio_code(visio_code):
     """Retrieve a meeting by its visio code."""
-    return (
-        db.session.query(Meeting).filter(Meeting.visio_code == visio_code).one_or_none()
-    )
+    return db.session.scalars(
+        db.select(Meeting).where(Meeting.visio_code == visio_code)
+    ).one_or_none()
 
 
 def remove_delegate_from_db(meeting, delegate):
-    access = MeetingAccess.query.filter_by(
-        user_id=delegate.id, meeting_id=meeting.id
+    access = db.session.scalars(
+        db.select(MeetingAccess).where(
+            MeetingAccess.user_id == delegate.id,
+            MeetingAccess.meeting_id == meeting.id,
+        )
     ).one()
     db.session.delete(access)
     db.session.commit()
