@@ -188,9 +188,7 @@ def model_converter(model):
             return str(instance.id) if instance.id else None
 
         def to_python(self, identifier):
-            instance = (
-                db.session.query(model).filter(model.id == identifier).one_or_none()
-            )
+            instance = db.session.get(model, identifier)
             if self.required and not instance:
                 abort(404)
 

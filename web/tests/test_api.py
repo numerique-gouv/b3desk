@@ -1,5 +1,6 @@
 import datetime
 
+from b3desk.models import db
 from b3desk.models.meetings import Meeting
 
 
@@ -265,7 +266,9 @@ def test_api_new_shadow_meeting(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
-    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
+    new_shadow_meeting = db.session.scalars(
+        db.select(Meeting).where(Meeting.is_shadow.is_(True))
+    ).one()
     assert (
         f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
@@ -296,7 +299,9 @@ def test_api_new_shadow_meeting_without_pin(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
-    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
+    new_shadow_meeting = db.session.scalars(
+        db.select(Meeting).where(Meeting.is_shadow.is_(True))
+    ).one()
     assert (
         f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
@@ -327,7 +332,9 @@ def test_api_new_shadow_meeting_without_sip(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
-    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
+    new_shadow_meeting = db.session.scalars(
+        db.select(Meeting).where(Meeting.is_shadow.is_(True))
+    ).one()
     assert (
         f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]
@@ -359,7 +366,9 @@ def test_api_new_shadow_meeting_without_pin_and_sip(
     )
     assert res.json["shadow-meeting"]
     assert res.json["shadow-meeting"][0]["name"] == "le séminaire de Alice Cooper"
-    new_shadow_meeting = Meeting.query.filter_by(is_shadow=True).one()
+    new_shadow_meeting = db.session.scalars(
+        db.select(Meeting).where(Meeting.is_shadow.is_(True))
+    ).one()
     assert (
         f"/meeting/signin/moderateur/{new_shadow_meeting.id}/hash/"
         in res.json["shadow-meeting"][0]["moderator_url"]

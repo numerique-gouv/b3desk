@@ -9,5 +9,11 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
-db = SQLAlchemy()
+
+class Model(DeclarativeBase):
+    """Declarative base shared by every B3Desk model."""
+
+
+db = SQLAlchemy(model_class=Model)
