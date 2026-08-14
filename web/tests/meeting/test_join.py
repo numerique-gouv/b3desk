@@ -164,6 +164,15 @@ def test_join_meeting_as_authenticated_attendee(
     assert response.form["fullname"].value == "Bob Dylan"
 
 
+def test_join_meeting_as_authenticated_attendee_with_quick_meeting_id(
+    client_app, authenticated_attendee
+):
+    """Quick meetings are not persisted, so their identifier reaches no meeting."""
+    client_app.get(
+        "/meeting/join/0198f4f2-1234-7abc-8def-0123456789ab/authenticated", status=404
+    )
+
+
 def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     """The user names coming from the identity provider might be uppercase. In such cases b3desk should correct the display.
 

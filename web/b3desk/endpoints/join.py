@@ -243,6 +243,8 @@ def join_meeting_as_authenticated(meeting_id):
     """Join a meeting with authenticated attendee role using OIDC."""
     # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
     # We should look if we can delete it.
+    if not meeting_id.isdigit():
+        abort(404)
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
