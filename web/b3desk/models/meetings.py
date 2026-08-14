@@ -9,6 +9,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import random
+import uuid
 from datetime import datetime
 from datetime import timedelta
 from enum import IntEnum
@@ -26,6 +27,7 @@ from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
 
 from . import db
+from .roles import Role
 from .users import User
 
 
@@ -103,8 +105,41 @@ class MeetingFiles(BaseMeetingFiles, db.Model):
         )
 
 
+class BaseMeetingSecretKey:
+    def __init__(self, id=None, meeting_id=None, role=None, **kwargs):
+        self.id = id
+        self.meeting_id = meeting_id
+        self.role = role
+        super().__init__(**kwargs)
+
+
+class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
+    __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    meeting_id = db.Column(
+        db.Integer, db.ForeignKey("meeting.id", ondelete="CASCADE"), nullable=False
+    )
+    role = db.Column(db.String(255))
+    secret_key = db.Column(
+        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
+    )
+    legacy_secret_keys: list[str] = db.Column(
+        db.JSON, nullable=False, default=list
+    )  # old sha1-hash schemes
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
+
+    meeting = db.relationship("Meeting", back_populates="secret_keys")
+
+
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    bbb_meeting_id = db.Column(
+        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
+    )
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")
 
@@ -112,7 +147,12 @@ class Meeting(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    files = db.relationship("MeetingFiles", back_populates="meeting")
+    files = db.relationship(
+        "MeetingFiles", back_populates="meeting", cascade="all, delete-orphan"
+    )
+    secret_keys = db.relationship(
+        "MeetingSecretKey", back_populates="meeting", cascade="all, delete-orphan"
+    )
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -149,48 +189,21 @@ class Meeting(db.Model):
 
     _bbb = None
 
+    quick = False
+
     @property
     def bbb(self):
         """Return the BBB API interface for this meeting."""
         from .bbb import BBB
 
         if not self._bbb:
-            self._bbb = BBB(self.meetingID)
+            self._bbb = BBB(self.bbb_meeting_id)
         return self._bbb
 
     @property
     def ai_summary_enabled(self):
         """Whether the AI summary recording format is expected for this meeting."""
         return bool(self.ai_summary) and self.owner.can_use_ai_summary
-
-    @property
-    def meetingID(self):
-        """Return the unique BBB meeting identifier."""
-        if self.id is not None:
-            fid = f"meeting-persistent-{self.id}"
-        else:
-            fid = f"meeting-vanish-{self.fake_id}"
-        return "{}--{}".format(fid, self.owner.hash if self.owner else "")
-
-    @property
-    def fake_id(self):
-        """Return the meeting ID or temporary fake ID for quick meetings."""
-        if self.id is not None:
-            return self.id
-        try:
-            return self._fake_id
-        except:
-            return None
-
-    @fake_id.setter
-    def fake_id(self, fake_value):
-        """Set the temporary fake ID for quick meetings."""
-        self._fake_id = fake_value
-
-    @fake_id.deleter
-    def fake_id(self):
-        """Delete the temporary fake ID."""
-        del self._fake_id
 
     @property
     def get_all_delegates(self):
@@ -203,16 +216,44 @@ class Meeting(db.Model):
             .all()
         )
 
+    def url_for_role(self, role):
+        from b3desk.join import create_signin_url
 
-def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
-    """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
-    try:
-        id = bbb_meeting_id.split("-")[2]
-    except (IndexError, AttributeError):
-        return None
-    if not id.isdigit():
-        return None
-    return get_meeting_from_meeting_id(id)
+        meeting_secret_key = next(
+            (
+                secret_key
+                for secret_key in self.secret_keys
+                if secret_key.role == role.name
+            ),
+            None,
+        )
+        if not meeting_secret_key:
+            return None
+        return create_signin_url(self, role, meeting_secret_key.secret_key)
+
+    @property
+    def moderator_url(self):
+        return self.url_for_role(Role.moderator)
+
+    @property
+    def attendee_url(self):
+        return self.url_for_role(Role.attendee)
+
+    @property
+    def authenticated_url(self):
+        return self.url_for_role(Role.authenticated)
+
+    def create_secret_keys(self):
+        for role in Role:
+            db.session.add(MeetingSecretKey(meeting_id=self.id, role=role.name))
+
+    def renew_secret_key(self, role):
+        """Regenerate a role's secret key, invalidating its previous signin link."""
+        meeting_secret_key = MeetingSecretKey.query.filter_by(
+            meeting_id=self.id, role=role.name
+        ).one()
+        meeting_secret_key.secret_key = str(uuid.uuid7())
+        meeting_secret_key.legacy_secret_keys = []
 
 
 class PreviousVoiceBridge(db.Model):
@@ -236,33 +277,54 @@ def delete_old_voiceBridges():
     ).delete()
 
 
-def get_deterministic_password(meeting_fake_id, role):
+def get_deterministic_password(meeting_id, role):
     """Generate a deterministic password based on meeting ID and role."""
     signer = Signer(current_app.config["SECRET_KEY"])
     return (
-        signer.sign(f"{meeting_fake_id}-{role}")
+        signer.sign(f"{meeting_id}-{role}")
         .decode()
         .split(".")[-1][:PASSWORD_HASH_LENGTH]
     )
 
 
-def get_quick_meeting_from_fake_id(meeting_fake_id=None):
-    """Create a quick meeting instance for URL generation."""
-    if meeting_fake_id is None:
-        meeting_fake_id = get_random_alphanumeric_string(8)
+def get_quick_meeting_bbb_meeting_id(meeting_id):
+    """Return the BBB room identifier of a quick meeting."""
+    # Quick meetings used to be identified by a random string, and their BBB
+    # room by the 'meeting-vanish-{id}--' form that the signin link hashes were
+    # built upon. Rebuilding that form keeps the rooms and the links emitted
+    # before the UUID identifiers reachable, until they all expire.
+    # To be removed in version 1.8.
+    try:
+        uuid.UUID(meeting_id)
+    except ValueError:
+        return f"meeting-vanish-{meeting_id}--"
+    return meeting_id
 
+
+def get_quick_meeting_from_meeting_id(meeting_id=None):
+    """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
+    meeting_id = meeting_id or str(uuid.uuid7())
     meeting = Meeting(
-        attendeePW=get_deterministic_password(meeting_fake_id, "attendee")
+        id=meeting_id,
+        bbb_meeting_id=get_quick_meeting_bbb_meeting_id(meeting_id),
+        attendeePW=get_deterministic_password(meeting_id, "attendee"),
     )
-    meeting.fake_id = meeting_fake_id
+    meeting.quick = True
     return meeting
 
 
-def get_meeting_from_meeting_id(meeting_fake_id):
-    """Retrieve a meeting by ID or create a quick meeting if it doesn't exist."""
-    if meeting_fake_id.isdigit():
-        return db.session.get(Meeting, meeting_fake_id)
-    return get_quick_meeting_from_fake_id(meeting_fake_id=meeting_fake_id)
+def get_meeting_from_meeting_id(meeting_id):
+    """Retrieve a persisted meeting by id, or build a quick (non-persisted) one if none exists."""
+    if meeting_id.isdigit():
+        return db.session.get(Meeting, meeting_id)
+    return get_quick_meeting_from_meeting_id(meeting_id)
+
+
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
+    """Retrieve a persisted Meeting from a BBB-side identifier (new UUID or legacy 'meeting-persistent-...' form)."""
+    return (
+        db.session.query(Meeting).filter_by(bbb_meeting_id=bbb_meeting_id).one_or_none()
+    )
 
 
 def generate_random_pin():
@@ -363,6 +425,7 @@ def create_and_save_shadow_meeting(user):
     )
     db.session.add(meeting)
     assign_unique_codes(meeting)
+    meeting.create_secret_keys()
     db.session.commit()
     return meeting
 
@@ -379,7 +442,7 @@ def get_or_create_shadow_meeting(user):
     if len(shadow_meetings) > 1:
         for shadow_meeting in shadow_meetings:
             if shadow_meeting is not shadow_meetings[0]:
-                save_voiceBridge_and_delete_meeting(shadow_meeting)
+                clean_db_and_delete_meeting(shadow_meeting)
     return (
         create_and_save_shadow_meeting(user)
         if not shadow_meetings
@@ -387,13 +450,24 @@ def get_or_create_shadow_meeting(user):
     )
 
 
-def save_voiceBridge_and_delete_meeting(meeting):
-    """Archive a meeting's voice bridge and delete the meeting from the database."""
+def clean_db_and_delete_meeting(meeting):
+    if meeting.get_all_delegates:
+        return False, None
+
+    if not meeting.is_shadow:
+        from .bbb import BBB
+
+        data = BBB(meeting.bbb_meeting_id).delete_all_recordings()
+        if data and not BBB.success(data):
+            return False, data
+
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)
     db.session.delete(meeting)
     db.session.commit()
+
+    return True, None
 
 
 def delete_all_old_shadow_meetings():
@@ -407,7 +481,7 @@ def delete_all_old_shadow_meetings():
     ]
 
     for shadow_meeting in old_shadow_meetings:
-        save_voiceBridge_and_delete_meeting(shadow_meeting)
+        clean_db_and_delete_meeting(shadow_meeting)
 
 
 def visio_code_exists(code):
@@ -477,3 +551,11 @@ def get_meeting_by_visio_code(visio_code):
     return (
         db.session.query(Meeting).filter(Meeting.visio_code == visio_code).one_or_none()
     )
+
+
+def remove_delegate_from_db(meeting, delegate):
+    access = MeetingAccess.query.filter_by(
+        user_id=delegate.id, meeting_id=meeting.id
+    ).one()
+    db.session.delete(access)
+    db.session.commit()

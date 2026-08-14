@@ -29,11 +29,10 @@ MAX_MEETING_DURATION = timedelta(minutes=999)
 
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
-    meeting_fake_id = StringField()
-    hash_ = StringField()
+    meeting_id = StringField()
+    secret_key = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
-    quick_meeting = BooleanField()
 
 
 class ShowMeetingForm(Form):

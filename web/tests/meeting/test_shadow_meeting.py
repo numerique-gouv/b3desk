@@ -1,7 +1,6 @@
 import datetime
 
-from b3desk.join import get_hash
-from b3desk.models import db
+from b3desk.join import get_meeting_secret_key
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import delete_all_old_shadow_meetings
 from b3desk.models.meetings import get_all_previous_voiceBridges
@@ -92,7 +91,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
         content = CREATE_RESPONSE
         text = ""
 
-    meeting_hash = get_hash(shadow_meeting, Role.moderator)
+    meeting_hash = get_meeting_secret_key(shadow_meeting, Role.moderator)
     previous_connection = shadow_meeting.last_connection_utc_datetime
 
     url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
@@ -106,7 +105,9 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
     response.form.submit()
 
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
     assert previous_connection != meeting.last_connection_utc_datetime
     assert (
         meeting.last_connection_utc_datetime.date() == datetime.datetime.today().date()
@@ -122,7 +123,7 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
         content = CREATE_RESPONSE
         text = ""
 
-    meeting_hash = get_hash(shadow_meeting, Role.attendee)
+    meeting_hash = get_meeting_secret_key(shadow_meeting, Role.attendee)
 
     url = f"/meeting/signin/{shadow_meeting.id}/hash/{meeting_hash}"
     response = client_app.get(
@@ -136,35 +137,37 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
 
     response = response.form.submit()
 
-    meeting = db.session.get(Meeting, 1)
+    meetings = Meeting.query.all()
+    assert len(meetings) == 1
+    meeting = meetings[0]
     assert meeting.last_connection_utc_datetime == datetime.datetime(2025, 1, 1)
 
 
 def test_user_cannot_edit_delegates_for_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.get("/meeting/manage-delegation/1", status=403)
+    client_app.get(f"/meeting/manage-delegation/{shadow_meeting.id}", status=403)
 
 
 def test_user_cannot_read_records_page_for_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.get("/meeting/recordings/1", status=403)
+    client_app.get(f"/meeting/recordings/{shadow_meeting.id}", status=403)
 
 
 def test_user_cannot_edit_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.get("/meeting/edit/1", status=403)
+    client_app.get(f"/meeting/edit/{shadow_meeting.id}", status=403)
 
 
 def test_user_cannot_read_files_page_for_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.get("/meeting/files/1", status=403)
+    client_app.get(f"/meeting/files/{shadow_meeting.id}", status=403)
 
 
 def test_user_cannot_delete_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.post("/meeting/delete", {"id": "1"}, status=403)
+    client_app.post("/meeting/delete", {"id": shadow_meeting.id}, status=403)
