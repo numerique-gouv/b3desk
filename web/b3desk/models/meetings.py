@@ -117,7 +117,9 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     __table_args__ = (db.UniqueConstraint("meeting_id", "role"),)
 
     id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
+    meeting_id = db.Column(
+        db.Integer, db.ForeignKey("meeting.id", ondelete="CASCADE"), nullable=False
+    )
     role = db.Column(db.String(255))
     secret_key = db.Column(
         db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
@@ -145,8 +147,12 @@ class Meeting(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
     )
-    files = db.relationship("MeetingFiles", back_populates="meeting")
-    secret_keys = db.relationship("MeetingSecretKey", back_populates="meeting")
+    files = db.relationship(
+        "MeetingFiles", back_populates="meeting", cascade="all, delete-orphan"
+    )
+    secret_keys = db.relationship(
+        "MeetingSecretKey", back_populates="meeting", cascade="all, delete-orphan"
+    )
     last_connection_utc_datetime = db.Column(db.DateTime)
     is_shadow = db.Column(db.Boolean, unique=False, default=False)
     visio_code = db.Column(db.Unicode(50), unique=True, nullable=False)
@@ -454,11 +460,7 @@ def clean_db_and_delete_meeting(meeting):
         data = BBB(meeting.bbb_meeting_id).delete_all_recordings()
         if data and not BBB.success(data):
             return False, data
-        for meeting_file in meeting.files:
-            db.session.delete(meeting_file)
 
-    for meeting_secret_key in meeting.secret_keys:
-        db.session.delete(meeting_secret_key)
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)

@@ -62,6 +62,7 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["meeting_id"],
             ["meeting.id"],
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("meeting_id", "role"),

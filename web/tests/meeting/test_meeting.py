@@ -922,10 +922,13 @@ def test_deactivated_meeting_files_cannot_edit(
 
 
 def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
-    """Test that meeting can be deleted and voiceBridge is archived."""
+    """Test that meeting can be deleted, its secret keys are removed and voiceBridge is archived."""
+    assert MeetingSecretKey.query.count() == len(Role)
+
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
+    assert MeetingSecretKey.query.count() == 0
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
@@ -934,7 +937,7 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
 def test_delete_meeting_with_meeting_files(
     client_app, authenticated_user, meeting, bbb_response
 ):
-    """Test that meeting can be deleted even if there is meeting files."""
+    """Test that meeting can be deleted even if there is meeting files, and that the files are deleted too."""
     meeting_file = MeetingFiles(
         url="https://example.com/doc.pdf",
         title="doc.pdf",
@@ -947,6 +950,7 @@ def test_delete_meeting_with_meeting_files(
     res = client_app.post("/meeting/delete", {"id": meeting.id})
     assert ("success", "Élément supprimé") in res.flashes
     assert len(Meeting.query.all()) == 0
+    assert MeetingFiles.query.count() == 0
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
