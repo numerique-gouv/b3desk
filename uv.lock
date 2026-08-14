@@ -148,6 +148,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "canaille" },
     { name = "coverage" },
     { name = "diff-cover" },
     { name = "faker" },
@@ -208,6 +209,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "canaille", specifier = ">=0.2.0,<0.3.0" },
     { name = "coverage", specifier = ">=7.2.2,<8.0.0" },
     { name = "diff-cover", specifier = ">=9.7.2" },
     { name = "faker", specifier = ">=40.1.2" },
