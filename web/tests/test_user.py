@@ -259,7 +259,9 @@ def test_delete_old_users(
 
     assert not db.session.get(User, 1)
     assert db.session.get(User, 2)
-    assert MeetingFiles.query.filter_by(id=meeting_file_id).first() is None
+    assert not db.session.scalars(
+        db.select(MeetingFiles).where(MeetingFiles.id == meeting_file_id)
+    ).first()
 
 
 def test_delete_old_users_no_action(app, client_app, caplog):

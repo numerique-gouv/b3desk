@@ -416,7 +416,7 @@ def meeting(client_app, user):
     meeting.favorite_of.append(user)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -441,7 +441,7 @@ def meeting_2(client_app, user):
     meeting.favorite_of.append(user)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -464,7 +464,7 @@ def meeting_3(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -489,7 +489,7 @@ def meeting_1_user_2(client_app, user, user_2):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     access = MeetingAccess(
@@ -520,7 +520,7 @@ def meeting_2_user_2(client_app, user_2):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -545,7 +545,7 @@ def meeting_1_user_3(client_app, user, user_3):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     access = MeetingAccess(
@@ -576,7 +576,7 @@ def shadow_meeting(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -599,7 +599,7 @@ def shadow_meeting_2(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -622,7 +622,7 @@ def shadow_meeting_3(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting

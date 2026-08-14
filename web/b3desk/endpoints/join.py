@@ -63,12 +63,7 @@ def signin_meeting(
     """
     meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
-        flash(
-            _(
-                "Aucune réunion ne correspond à ces paramètres",
-            ),
-            "success",
-        )
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
     role = get_role(meeting, secret_key, g.user)
@@ -216,7 +211,7 @@ def join_meeting():
 
     if role == Role.moderator:
         if meeting.quick:
-            created = create_bbb_quick_meeting(meeting.id, g.user)
+            created = create_bbb_quick_meeting(meeting, g.user)
         else:
             created = create_bbb_meeting(meeting, g.user)
         waiting_room = not created
@@ -243,6 +238,8 @@ def join_meeting_as_authenticated(meeting_id):
     """Join a meeting with authenticated attendee role using OIDC."""
     # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
     # We should look if we can delete it.
+    if not meeting_id.isdigit():
+        abort(404)
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()

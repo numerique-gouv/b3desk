@@ -13,11 +13,16 @@ from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from flask import current_app
+from sqlalchemy import Unicode
 from sqlalchemy import case
 from sqlalchemy import func
 from sqlalchemy import or_
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
@@ -26,6 +31,11 @@ from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
 from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 
 from . import db
+
+if TYPE_CHECKING:
+    from .groups import Group
+    from .meetings import Meeting
+    from .meetings import MeetingAccess
 
 
 def get_or_create_user(user_info):
@@ -85,28 +95,28 @@ def get_or_create_user(user_info):
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.Unicode(255), unique=True)
-    given_name = db.Column(db.Unicode(50))
-    family_name = db.Column(db.Unicode(50))
-    preferred_username = db.Column(db.Unicode(255), nullable=True)
-    nc_locator = db.Column(db.Unicode(255))
-    nc_login = db.Column(db.Unicode(255))
-    nc_token = db.Column(db.Unicode(255))
-    nc_last_auto_enroll = db.Column(db.DateTime)
-    last_connection_utc_datetime = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    admin = db.Column(db.Boolean, default=False, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str | None] = mapped_column(Unicode(255), unique=True)
+    given_name: Mapped[str | None] = mapped_column(Unicode(50))
+    family_name: Mapped[str | None] = mapped_column(Unicode(50))
+    preferred_username: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_locator: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_login: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_token: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_last_auto_enroll: Mapped[datetime | None]
+    last_connection_utc_datetime: Mapped[datetime | None]
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    admin: Mapped[bool] = mapped_column(default=False)
 
-    meetings = db.relationship("Meeting", back_populates="owner")
-    favorites = db.relationship(
-        "Meeting", secondary="favorite", back_populates="favorite_of"
+    meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
+    favorites: Mapped[list[Meeting]] = relationship(
+        secondary="favorite", back_populates="favorite_of"
     )
-    groups = db.relationship(
-        "Group",
-        secondary="group_member",
-        back_populates="members",
-        cascade_backrefs=False,
+    groups: Mapped[list[Group]] = relationship(
+        secondary="group_member", back_populates="members"
+    )
+    user_meeting_access: Mapped[list[MeetingAccess]] = relationship(
+        back_populates="user"
     )
 
     @property
@@ -141,18 +151,18 @@ class User(db.Model):
         from b3desk.models.meetings import Meeting
         from b3desk.models.meetings import MeetingAccess
 
-        return (
-            Meeting.query.join(MeetingAccess)
-            .filter(
+        return db.session.scalars(
+            db.select(Meeting)
+            .join(MeetingAccess)
+            .where(
                 MeetingAccess.user_id == self.id,
                 MeetingAccess.level == AccessLevel.DELEGATE,
             )
-            .all()
-        )
+        ).all()
 
     @classmethod
     def get_user_by_email(cls, email):
-        return db.session.query(User).filter(User.email == email).first()
+        return db.session.scalars(db.select(cls).where(cls.email == email)).first()
 
     @property
     def can_use_file_sharing(self):
@@ -195,8 +205,8 @@ def get_inactive_users_to_delete():
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
     )
     has_recently_used_meeting = (
-        db.session.query(Meeting.id)
-        .filter(
+        db.select(Meeting.id)
+        .where(
             Meeting.owner_id == User.id,
             or_(
                 Meeting.last_connection_utc_datetime >= meeting_cutoff,
@@ -206,18 +216,16 @@ def get_inactive_users_to_delete():
         )
         .exists()
     )
-    return (
-        db.session.query(User)
-        .filter(
+    return db.session.scalars(
+        db.select(User).where(
             or_(
                 User.last_connection_utc_datetime < account_cutoff,
                 (User.last_connection_utc_datetime.is_(None))
                 & (User.created_at < account_cutoff),
-            )
+            ),
+            ~has_recently_used_meeting,
         )
-        .filter(~has_recently_used_meeting)
-        .all()
-    )
+    ).all()
 
 
 def clean_db_and_delete_user(user):
@@ -227,7 +235,9 @@ def clean_db_and_delete_user(user):
     for meeting in user.meetings:
         clean_db_and_delete_meeting(meeting)
 
-    for meeting_file in MeetingFiles.query.filter_by(owner_id=user.id):
+    for meeting_file in db.session.scalars(
+        db.select(MeetingFiles).where(MeetingFiles.owner_id == user.id)
+    ):
         db.session.delete(meeting_file)
 
     for access in user.user_meeting_access:
@@ -247,7 +257,7 @@ def get_inactive_users_to_inform():
     )
 
     meeting_activity = (
-        db.session.query(
+        db.select(
             Meeting.owner_id.label("owner_id"),
             func.max(
                 func.coalesce(Meeting.last_connection_utc_datetime, Meeting.created_at)
@@ -269,12 +279,11 @@ def get_inactive_users_to_inform():
         target_date = today + timedelta(days=delay) - account_inactivity_period
         day_start = datetime(target_date.year, target_date.month, target_date.day)
         day_end = day_start + timedelta(days=1)
-        matching_users = (
-            db.session.query(User)
+        matching_users = db.session.scalars(
+            db.select(User)
             .outerjoin(meeting_activity, meeting_activity.c.owner_id == User.id)
-            .filter(effective_activity >= day_start, effective_activity < day_end)
-            .all()
-        )
+            .where(effective_activity >= day_start, effective_activity < day_end)
+        ).all()
         users += [(user, delay) for user in matching_users]
 
     return users

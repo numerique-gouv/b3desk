@@ -23,8 +23,11 @@ def get_meeting_secret_key(meeting, role: Role) -> str:
 
     from b3desk.models.meetings import MeetingSecretKey
 
-    meeting_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, role=role.name
+    meeting_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.role == role.name,
+        )
     ).one_or_none()
     return meeting_secret_key.secret_key if meeting_secret_key else None
 
@@ -49,14 +52,21 @@ def get_role(meeting, secret_key, user=None) -> Role | None:
 
     from b3desk.models.meetings import MeetingSecretKey
 
-    meeting_secret_key = MeetingSecretKey.query.filter_by(
-        meeting_id=meeting.id, secret_key=secret_key
+    meeting_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(
+            MeetingSecretKey.meeting_id == meeting.id,
+            MeetingSecretKey.secret_key == secret_key,
+        )
     ).one_or_none()
     if not meeting_secret_key:
         meeting_secret_key = next(
             (
                 msk
-                for msk in MeetingSecretKey.query.filter_by(meeting_id=meeting.id)
+                for msk in db.session.scalars(
+                    db.select(MeetingSecretKey).where(
+                        MeetingSecretKey.meeting_id == meeting.id
+                    )
+                )
                 if secret_key in msk.legacy_secret_keys
             ),
             None,
@@ -213,46 +223,31 @@ def create_bbb_meeting(meeting, user=None) -> bool:
     return True
 
 
-def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
+def create_bbb_quick_meeting(meeting, user=None) -> bool:
     """Create a BBB room for a quick meeting."""
     from b3desk.models.bbb import BBB
     from b3desk.models.meetings import get_deterministic_password
     from b3desk.models.meetings import pin_generation
 
     name = str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    moderator_pw = get_deterministic_password(meeting_id, "moderator")
-    attendee_pw = get_deterministic_password(meeting_id, "attendee")
+    moderator_pw = get_deterministic_password(meeting.id, "moderator")
     meta_academy = user.mail_domain if user and user.mail_domain else None
 
-    bbb = BBB(meeting_id)
+    bbb = BBB(meeting.bbb_meeting_id)
     if bbb.is_running():
         return False
 
-    current_app.logger.info("Request BBB quick room creation %s %s", name, meeting_id)
+    current_app.logger.info("Request BBB quick room creation %s %s", name, meeting.id)
 
     voice_bridge = (
         pin_generation() if current_app.config["ENABLE_PIN_MANAGEMENT"] else None
     )
 
-    def compute_secret_key(role: Role) -> str:
-        s = f"{meeting_id}|{attendee_pw}|{name}|{role}"
-        return hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-    moderator_signin_url = url_for(
-        "join.signin_meeting",
-        meeting_id=meeting_id,
-        secret_key=compute_secret_key(Role.moderator),
-        role=Role.moderator,
-        _external=True,
-        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    moderator_signin_url = create_signin_url(
+        meeting, Role.moderator, get_quick_meeting_secret_key(meeting, Role.moderator)
     )
-    attendee_signin_url = url_for(
-        "join.signin_meeting",
-        meeting_id=meeting_id,
-        secret_key=compute_secret_key(Role.attendee),
-        role=Role.attendee,
-        _external=True,
-        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    attendee_signin_url = create_signin_url(
+        meeting, Role.attendee, get_quick_meeting_secret_key(meeting, Role.attendee)
     )
     moderator_only_message = render_template(
         "meeting/signin_links.html",
@@ -274,7 +269,7 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
 
     result = bbb.create(
         name=name,
-        attendee_pw=attendee_pw,
+        attendee_pw=meeting.attendeePW,
         moderator_pw=moderator_pw,
         moderator_only_message=moderator_only_message,
         duration=current_app.config["DEFAULT_MEETING_DURATION"],
@@ -285,7 +280,9 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
             "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
         ],
         presentation_upload_external_url=url_for(
-            "meeting_files.file_picker", bbb_meeting_id=meeting_id, _external=True
+            "meeting_files.file_picker",
+            bbb_meeting_id=meeting.bbb_meeting_id,
+            _external=True,
         ),
         presentation_upload_external_description=current_app.config[
             "EXTERNAL_UPLOAD_DESCRIPTION"
@@ -293,7 +290,7 @@ def create_bbb_quick_meeting(meeting_id: str, user=None) -> bool:
     )
 
     current_app.logger.info(
-        "BBB vanish meeting room %s creation result: %s", meeting_id, result
+        "BBB vanish meeting room %s creation result: %s", meeting.bbb_meeting_id, result
     )
 
     return BBB.success(result)
