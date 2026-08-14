@@ -240,3 +240,52 @@ def test_meeting_locale_variant_takes_precedence_over_legacy(configuration):
         config_obj = MainSettings.model_validate(configuration)
 
     assert config_obj.MEETING_LOCALE_VARIANT == MeetingLocaleVariant.COURS
+
+
+def test_postgresql_scheme_is_routed_to_psycopg3(configuration):
+    """Le schéma postgresql:// hérité est réécrit vers le pilote psycopg 3."""
+    configuration["SQLALCHEMY_DATABASE_URI"] = (
+        "postgresql://user:password@localhost:5432/bbb_visio"
+    )
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        config_obj = MainSettings.model_validate(configuration)
+
+    assert (
+        config_obj.SQLALCHEMY_DATABASE_URI
+        == "postgresql+psycopg://user:password@localhost:5432/bbb_visio"
+    )
+
+
+def test_postgresql_scheme_emits_deprecation_warning(configuration):
+    """Le schéma postgresql:// hérité émet un DeprecationWarning."""
+    configuration["SQLALCHEMY_DATABASE_URI"] = (
+        "postgresql://user:password@localhost:5432/bbb_visio"
+    )
+
+    with pytest.warns(DeprecationWarning, match="postgresql:// est déprécié"):
+        MainSettings.model_validate(configuration)
+
+
+def test_psycopg3_scheme_is_left_untouched(configuration):
+    """Un URI postgresql+psycopg:// explicite passe tel quel, sans avertissement."""
+    uri = "postgresql+psycopg://user:password@localhost:5432/bbb_visio"
+    configuration["SQLALCHEMY_DATABASE_URI"] = uri
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        config_obj = MainSettings.model_validate(configuration)
+
+    assert uri == config_obj.SQLALCHEMY_DATABASE_URI
+
+
+def test_sqlite_scheme_is_left_untouched(configuration):
+    """Un URI sqlite:// passe tel quel, sans avertissement."""
+    configuration["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/b3desk.db"
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        config_obj = MainSettings.model_validate(configuration)
+
+    assert config_obj.SQLALCHEMY_DATABASE_URI == "sqlite:////tmp/b3desk.db"

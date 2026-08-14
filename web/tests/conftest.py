@@ -118,7 +118,7 @@ def postgresql_template_db(postgresql_proc):
     cursor.close()
     conn.close()
 
-    uri = f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{template_dbname}"
+    uri = f"postgresql+psycopg://{proc_info.user}@{proc_info.host}:{proc_info.port}/{template_dbname}"
 
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
@@ -185,9 +185,7 @@ def postgresql_db(postgresql_proc, postgresql_template_db):
     cursor.close()
     conn.close()
 
-    uri = (
-        f"postgresql://{proc_info.user}@{proc_info.host}:{proc_info.port}/{test_dbname}"
-    )
+    uri = f"postgresql+psycopg://{proc_info.user}@{proc_info.host}:{proc_info.port}/{test_dbname}"
 
     yield uri
 
