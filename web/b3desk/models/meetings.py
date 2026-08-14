@@ -213,9 +213,14 @@ class Meeting(db.Model):
     def url_for_role(self, role):
         from b3desk.join import create_signin_url
 
-        meeting_secret_key = MeetingSecretKey.query.filter(
-            MeetingSecretKey.meeting_id == self.id, MeetingSecretKey.role == role.name
-        ).one_or_none()
+        meeting_secret_key = next(
+            (
+                secret_key
+                for secret_key in self.secret_keys
+                if secret_key.role == role.name
+            ),
+            None,
+        )
         if not meeting_secret_key:
             return None
         return create_signin_url(self, role, meeting_secret_key.secret_key)
