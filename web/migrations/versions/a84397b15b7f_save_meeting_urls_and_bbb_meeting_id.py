@@ -7,16 +7,18 @@ Create Date: 2026-07-27 13:43:31.892476
 """
 
 import hashlib
+import uuid
+from datetime import datetime
 
 import sqlalchemy as sa
 from alembic import op
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import MeetingSecretKey
-from b3desk.models.roles import Role
-from b3desk.utils import secret_key
 from flask import current_app
 from sqlalchemy.orm import Session
-from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import bindparam
+from sqlalchemy.sql import insert
+from sqlalchemy.sql import select
+from sqlalchemy.sql import update
 
 # revision identifiers, used by Alembic.
 revision = "a84397b15b7f"
@@ -24,17 +26,27 @@ down_revision = "a3a6e932b2ae"
 branch_labels = None
 depends_on = None
 
-
-def bbb_meeting_id_creation(id, owner_email):
-    hash_ = hashlib.sha1(f"{owner_email}|{secret_key()}".encode()).hexdigest()
-    return f"meeting-persistent-{id}--{hash_}"
+ROLES = ("attendee", "moderator", "authenticated")
 
 
-def build_legacy_hash(meeting, role, use_role_name):
-    name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
-    role_str = role.name if use_role_name else role
-    s = f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{name}|{role_str}"
-    return hashlib.sha1(s.encode("utf-8")).hexdigest()
+def legacy_bbb_meeting_id(meeting_id, owner_email, app_secret_key):
+    """Rebuild the BBB meeting id the previous code computed on the fly."""
+    owner_hash = (
+        hashlib.sha1(f"{owner_email}|{app_secret_key}".encode()).hexdigest()
+        if owner_email
+        else ""
+    )
+    return f"meeting-persistent-{meeting_id}--{owner_hash}"
+
+
+def legacy_secret_keys(bbb_meeting_id, attendee_pw, name, role):
+    """Rebuild the hashes of the signin links already handed out, in both role spellings."""
+    return [
+        hashlib.sha1(
+            f"{bbb_meeting_id}|{attendee_pw}|{name}|{spelling}".encode()
+        ).hexdigest()
+        for spelling in (f"Role.{role}", role)
+    ]
 
 
 def upgrade():
@@ -63,24 +75,63 @@ def upgrade():
             "uq_meeting_bbb_meeting_id", ["bbb_meeting_id"]
         )
 
-    bind = op.get_bind()
-    session = Session(bind)
+    meeting = sa.table(
+        "meeting",
+        sa.column("id", sa.Integer),
+        sa.column("name", sa.Unicode),
+        sa.column("attendeePW", Meeting.__table__.c.attendeePW.type),
+        sa.column("owner_id", sa.Integer),
+        sa.column("bbb_meeting_id", sa.String),
+    )
+    user = sa.table("user", sa.column("id", sa.Integer), sa.column("email", sa.String))
+    meeting_secret_key = sa.table(
+        "meeting_secret_key",
+        sa.column("meeting_id", sa.Integer),
+        sa.column("role", sa.String),
+        sa.column("secret_key", sa.String),
+        sa.column("legacy_secret_keys", sa.JSON),
+        sa.column("created_at", sa.DateTime),
+        sa.column("updated_at", sa.DateTime),
+    )
 
-    for meeting in session.query(Meeting).options(joinedload(Meeting.owner)):
-        meeting.bbb_meeting_id = bbb_meeting_id_creation(
-            meeting.id, meeting.owner.email
+    session = Session(op.get_bind())
+    now = datetime.now()
+    meeting_values = []
+    secret_key_values = []
+    for meeting_id, name, attendee_pw, owner_email in session.execute(
+        select(
+            meeting.c.id, meeting.c.name, meeting.c.attendeePW, user.c.email
+        ).select_from(meeting.outerjoin(user, meeting.c.owner_id == user.c.id))
+    ):
+        bbb_meeting_id = legacy_bbb_meeting_id(
+            meeting_id, owner_email, current_app.config["SECRET_KEY"]
         )
-        for role in Role:
-            session.add(
-                MeetingSecretKey(
-                    meeting_id=meeting.id,
-                    role=role.name,
-                    legacy_secret_keys=[
-                        build_legacy_hash(meeting, role, use_role_name=False),
-                        build_legacy_hash(meeting, role, use_role_name=True),
-                    ],
-                )
-            )
+        name = name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
+        meeting_values.append({"_id": meeting_id, "_bbb_meeting_id": bbb_meeting_id})
+        secret_key_values.extend(
+            {
+                "meeting_id": meeting_id,
+                "role": role,
+                "secret_key": str(uuid.uuid7()),
+                "legacy_secret_keys": legacy_secret_keys(
+                    bbb_meeting_id, attendee_pw, name, role
+                ),
+                "created_at": now,
+                "updated_at": now,
+            }
+            for role in ROLES
+        )
+
+    if not meeting_values:
+        return
+
+    session.execute(
+        update(meeting)
+        .where(meeting.c.id == bindparam("_id"))
+        .values(bbb_meeting_id=bindparam("_bbb_meeting_id")),
+        meeting_values,
+    )
+    session.execute(insert(meeting_secret_key), secret_key_values)
     session.commit()
 
 
