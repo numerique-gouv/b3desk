@@ -232,7 +232,7 @@ class Meeting(db.Model):
     def authenticated_url(self):
         return self.url_for_role(Role.authenticated)
 
-    def create_urls(self):
+    def create_secret_keys(self):
         for role in Role:
             db.session.add(MeetingSecretKey(meeting_id=self.id, role=role.name))
 
@@ -414,7 +414,7 @@ def create_and_save_shadow_meeting(user):
     )
     db.session.add(meeting)
     assign_unique_codes(meeting)
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
     return meeting
 

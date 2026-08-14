@@ -166,7 +166,7 @@ def new_meeting():
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
     current_app.logger.info(
         "Meeting %s %s was created by %s",

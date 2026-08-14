@@ -109,7 +109,7 @@ def generate_meetings(faker, users, count):
         )
         db.session.add(meeting)
         assign_unique_codes(meeting)
-        meeting.create_urls()
+        meeting.create_secret_keys()
         meetings.append(meeting)
     db.session.commit()
     return meetings
