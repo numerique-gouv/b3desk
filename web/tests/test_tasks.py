@@ -19,9 +19,7 @@ def _mock_recording(mocker, playbacks):
         return_value=[
             {
                 "playbacks": playbacks,
-                "start_date": datetime.datetime(
-                    2026, 1, 1, tzinfo=datetime.timezone.utc
-                ),
+                "start_date": datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC),
                 "name": "x",
             }
         ],
@@ -31,7 +29,7 @@ def _mock_recording(mocker, playbacks):
 def test_meeting_deleted(client_app, smtpd):
     """If the meeting is deleted before the task runs, skip mailing silently."""
     send_recording_notification(
-        meeting_id=99999, bbb_recording_id="unknown", is_min_deadline=True
+        meeting_id="99999", bbb_recording_id="unknown", is_min_deadline=True
     )
     assert len(smtpd.messages) == 0
 

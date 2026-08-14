@@ -1,7 +1,7 @@
 import json
+from datetime import UTC
 from datetime import date
 from datetime import datetime
-from datetime import timezone
 from pathlib import Path
 
 import pytest
@@ -72,7 +72,7 @@ def test_add_dropzone_file(
 ):
     """Test uploading a file via dropzone chunked upload."""
     res = client_app.post(
-        "/meeting/files/1/upload",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -84,19 +84,14 @@ def test_add_dropzone_file(
 
     assert res.json["msg"] == "ok"
 
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
-
-
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
 def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
-    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.meetingID)
+    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.bbb_meeting_id)
     response = client_app.get(url)
     assert "meeting/file_picker.html" in vars(response)["contexts"]
 
@@ -106,7 +101,7 @@ def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     url = url_for(
-        "meeting_files.file_picker_callback", bbb_meeting_id=meeting.meetingID
+        "meeting_files.file_picker_callback", bbb_meeting_id=meeting.bbb_meeting_id
     )
     client_app.post(
         url,
@@ -567,7 +562,7 @@ def test_add_url_file_sqlalchemy_error(
     meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
     meeting.owner.nc_token = nextcloud_credentials["nctoken"]
     meeting.owner.nc_last_auto_enroll = datetime.now()
-    meeting.owner.last_connection_utc_datetime = datetime.now(timezone.utc)
+    meeting.owner.last_connection_utc_datetime = datetime.now(UTC)
     db.session.add(meeting.owner)
     db.session.commit()
 
@@ -626,7 +621,7 @@ def test_file_picker_meeting_not_running(
     """Test file picker redirects when meeting is not running."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
-    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.meetingID)
+    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.bbb_meeting_id)
     response = client_app.get(url, status=302)
 
     assert any(
@@ -641,7 +636,7 @@ def test_add_dropzone_file_already_added(
 
     def dropzone_post(status):
         return client_app.post(
-            "/meeting/files/1/upload",
+            f"/meeting/files/{meeting.id}/upload",
             {
                 "dzchunkindex": 0,
                 "dzchunkbyteoffset": 0,
@@ -654,7 +649,7 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=200)
     assert res.json["msg"] == "ok"
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
 
     res = dropzone_post(status=409)

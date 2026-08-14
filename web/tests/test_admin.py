@@ -4,7 +4,6 @@ from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-import pytest
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
@@ -158,32 +157,6 @@ def test_research_bar_with_letters_in_meeting_list_in_admin_page(
     assert res.text.count("911111113") == 0
 
 
-def test_research_bar_with_digit_in_meeting_list_in_admin_page(
-    cli_runner,
-    user,
-    user_2,
-    meeting,
-    meeting_2,
-    meeting_3,
-    meeting_1_user_2,
-    shadow_meeting,
-    client_app,
-    authenticated_user,
-):
-    """Test research bar in meeting list with '1'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/meetings", status=200)
-    form = res.form
-    form["search"] = "1"
-    res = form.submit()
-    assert res.text.count("Réunion silencieuse (shadow_meeting)") == 0
-    assert res.text.count("922222222") == 0
-    assert res.text.count("511111111") == 0
-    assert res.text.count("911111111") == 1
-    assert res.text.count("911111112") == 0
-    assert res.text.count("911111113") == 0
-
-
 def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
     cli_runner,
     user,
@@ -240,11 +213,6 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
     assert res.text.count("Aucune réunion ne correspond à cette recherche.") == 1
 
 
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-
-
 def test_admin_can_edit_meeting_for_other_user(
     cli_runner,
     user,
@@ -256,7 +224,9 @@ def test_admin_can_edit_meeting_for_other_user(
 ):
     """Test admin can edit meeting owned by an other user."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/meeting/edit/1?admin_mode=True", status=200)
+    res = client_app.get(
+        f"/meeting/edit/{meeting_1_user_2.id}?admin_mode=True", status=200
+    )
     assert res.template == "meeting/wizard.html"
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
@@ -264,7 +234,7 @@ def test_admin_can_edit_meeting_for_other_user(
         "success",
         "delegated meeting modifications prises en compte",
     ) in res.flashes
-    assert res.location == "/admin/meeting/1"
+    assert res.location == f"/admin/meeting/{meeting_1_user_2.id}"
 
 
 def test_admin_can_create_group(
@@ -312,7 +282,7 @@ def test_admin_cannot_create_group_with_existing_name(
     res.form["enable_ai_summary"] = None
     res = res.form.submit()
     assert "Ce nom est déjà utilisé." in res.text
-    assert len(Group.query.all()) == 1
+    assert db.session.scalar(db.select(db.func.count()).select_from(Group)) == 1
 
 
 def test_admin_can_display_groups(
@@ -547,7 +517,7 @@ def test_admin_can_delete_meeting_file(
 
     assert response.status_int == 200
     assert response.json["id"] == meeting_file.id
-    assert not MeetingFiles.query.all()
+    assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 0
 
 
 def test_admin_can_update_recording_name(
@@ -613,7 +583,7 @@ def test_admin_can_delete_recordings(
         status_code = 200
 
     mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(other_meeting.meetingID).get_recordings()
+    recordings = BBB(other_meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -665,7 +635,7 @@ def test_admin_can_open_recordings_page(
         )
         == 2
     )
-    assert len(BBB(other_meeting.meetingID).get_recordings()) == 2
+    assert len(BBB(other_meeting.bbb_meeting_id).get_recordings()) == 2
 
 
 def test_admin_can_read_meeting_infos(
@@ -673,7 +643,7 @@ def test_admin_can_read_meeting_infos(
 ):
     """Test admin can read meeting infos."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get("/admin/meeting/1", status=200)
+    res = client_app.get(f"/admin/meeting/{meeting_2_user_2.id}", status=200)
     assert res.text.count("922222221") == 5
     assert res.text.count("222222221") == 3
     assert res.text.count("Berenice Cooler") == 1

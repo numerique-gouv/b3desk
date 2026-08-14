@@ -30,7 +30,7 @@ def test_is_running(meeting, mocker):
 
     assert send.call_count == 0
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     assert bbb.is_running()
     assert send.call_count == 1
 
@@ -157,7 +157,7 @@ def test_get_recordings(meeting, mocker):
 
     assert send.call_count == 0
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     recordings = bbb.get_recordings()
     assert len(recordings) == 2
     assert send.call_count == 1
@@ -216,7 +216,7 @@ def test_timeout_bbb_request(client_app, mocker, authenticated_user, meeting, ca
     mocker.patch(
         "requests.Session.send", side_effect=requests.Timeout("timeout message")
     )
-    client_app.get("/meeting/join/1/moderateur")
+    client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     assert "BBB API timeout error timeout message" in caplog.text
 
 
@@ -228,7 +228,7 @@ def test_timeout_bbb_get_recordings_request(
     )
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
-    client_app.get("/meeting/recordings/1")
+    client_app.get(f"/meeting/recordings/{meeting.id}")
     assert "BBB API timeout error timeout message" in caplog.text
 
 
@@ -242,7 +242,7 @@ def test_invalid_xml_response(meeting, mocker, caplog):
 
     mocker.patch("requests.Session.send", return_value=Response)
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):
         bbb.is_running()
     assert "BBB API XML parse error" in caplog.text
@@ -258,7 +258,7 @@ def test_missing_returncode_response(meeting, mocker, caplog):
 
     mocker.patch("requests.Session.send", return_value=Response)
 
-    bbb = BBB(meeting.meetingID)
+    bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):
         bbb.is_running()
     assert "BBB API response missing returncode" in caplog.text

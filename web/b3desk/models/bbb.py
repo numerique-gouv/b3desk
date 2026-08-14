@@ -10,9 +10,9 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 import logging
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from urllib.parse import urlparse
 from xml.etree import ElementTree
 
@@ -343,10 +343,10 @@ class BBB:
                 data["name"] = name.text if name is not None else None
                 data["participants"] = int(recording.find("participants").text)
                 data["start_date"] = datetime.fromtimestamp(
-                    int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
+                    int(recording.find("startTime").text) / 1000.0, tz=UTC
                 ).replace(microsecond=0)
                 data["end_date"] = datetime.fromtimestamp(
-                    int(recording.find("endTime").text) / 1000.0, tz=timezone.utc
+                    int(recording.find("endTime").text) / 1000.0, tz=UTC
                 ).replace(microsecond=0)
 
                 data["playbacks"] = {}

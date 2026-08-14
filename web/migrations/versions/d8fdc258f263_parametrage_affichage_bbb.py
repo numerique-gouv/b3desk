@@ -1,7 +1,7 @@
 """Parametrage affichage bbb.
 
 Revision ID: d8fdc258f263
-Revises: a3a6e932b2ae
+Revises: a3203f74e042
 Create Date: 2026-07-24 13:01:45.610029
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "d8fdc258f263"
-down_revision = "a3a6e932b2ae"
+down_revision = "a3203f74e042"
 branch_labels = None
 depends_on = None
 
