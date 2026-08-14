@@ -63,12 +63,7 @@ def signin_meeting(
     """
     meeting = get_meeting_from_meeting_id(meeting_id)
     if meeting is None:
-        flash(
-            _(
-                "Aucune réunion ne correspond à ces paramètres",
-            ),
-            "success",
-        )
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
     role = get_role(meeting, secret_key, g.user)
