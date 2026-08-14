@@ -844,7 +844,7 @@ def test_create_quick_meeting(
     expected_moderator_pw = get_deterministic_password(meeting.id, "moderator")
     expected_moderator_hash = get_quick_meeting_secret_key(meeting, Role.moderator)
     expected_attendee_hash = get_quick_meeting_secret_key(meeting, Role.attendee)
-    create_bbb_quick_meeting(meeting.id, user)
+    create_bbb_quick_meeting(meeting, user)
 
     assert bbb_response.called
     bbb_url = bbb_response.call_args.args[0].url
@@ -972,6 +972,23 @@ def test_meeting_link_retrocompatibility(meeting):
 
         assert get_role(meeting, role_interpolated_raw) == role
         assert get_role(meeting, role_interpolated_as_name) == role
+
+    assert get_role(meeting, "some-hash-never-generated-for-this-meeting") is None
+
+
+def test_quick_meeting_link_retrocompatibility(client_app):
+    """Links handed out before quick meetings had UUID identifiers must stay usable."""
+    legacy_id = "abcd1234"
+    meeting = get_quick_meeting_from_meeting_id(legacy_id)
+    name = str(client_app.app.config["QUICK_MEETING_DEFAULT_NAME"])
+
+    assert meeting.bbb_meeting_id == f"meeting-vanish-{legacy_id}--"
+
+    for role in Role:
+        legacy_secret_key = hashlib.sha1(
+            f"meeting-vanish-{legacy_id}--|{meeting.attendeePW}|{name}|{role}".encode()
+        ).hexdigest()
+        assert get_role(meeting, legacy_secret_key) == role
 
     assert get_role(meeting, "some-hash-never-generated-for-this-meeting") is None
 

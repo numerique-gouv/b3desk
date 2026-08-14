@@ -67,7 +67,7 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     meeting = get_quick_meeting_from_meeting_id()
-    created = create_bbb_quick_meeting(meeting.id, g.user)
+    created = create_bbb_quick_meeting(meeting, g.user)
     return redirect(
         get_join_url(
             meeting,

@@ -276,12 +276,26 @@ def get_deterministic_password(meeting_id, role):
     )
 
 
+def get_quick_meeting_bbb_meeting_id(meeting_id):
+    """Return the BBB room identifier of a quick meeting."""
+    # Quick meetings used to be identified by a random string, and their BBB
+    # room by the 'meeting-vanish-{id}--' form that the signin link hashes were
+    # built upon. Rebuilding that form keeps the rooms and the links emitted
+    # before the UUID identifiers reachable, until they all expire.
+    # To be removed in version 1.8.
+    try:
+        uuid.UUID(meeting_id)
+    except ValueError:
+        return f"meeting-vanish-{meeting_id}--"
+    return meeting_id
+
+
 def get_quick_meeting_from_meeting_id(meeting_id=None):
     """Build a non-persisted quick meeting identified by meeting_id (or a fresh random one)."""
     meeting_id = meeting_id or str(uuid.uuid7())
     meeting = Meeting(
         id=meeting_id,
-        bbb_meeting_id=meeting_id,
+        bbb_meeting_id=get_quick_meeting_bbb_meeting_id(meeting_id),
         attendeePW=get_deterministic_password(meeting_id, "attendee"),
     )
     meeting.quick = True

@@ -216,7 +216,7 @@ def join_meeting():
 
     if role == Role.moderator:
         if meeting.quick:
-            created = create_bbb_quick_meeting(meeting.id, g.user)
+            created = create_bbb_quick_meeting(meeting, g.user)
         else:
             created = create_bbb_meeting(meeting, g.user)
         waiting_room = not created
