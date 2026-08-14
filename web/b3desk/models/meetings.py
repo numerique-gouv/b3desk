@@ -120,7 +120,7 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     role = db.Column(db.String(255))
     secret_key = db.Column(
-        db.String(255), unique=True, default=lambda: str(uuid.uuid7())
+        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
     )
     legacy_secret_keys: list[str] = db.Column(
         db.JSON, nullable=False, default=list
@@ -136,7 +136,7 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bbb_meeting_id = db.Column(
-        db.String(255), unique=True, default=lambda: str(uuid.uuid7())
+        db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid7())
     )
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User")

@@ -55,7 +55,7 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("meeting_id", sa.Integer(), nullable=False),
         sa.Column("role", sa.String(length=255), nullable=True),
-        sa.Column("secret_key", sa.String(length=255), nullable=True),
+        sa.Column("secret_key", sa.String(length=255), nullable=False),
         sa.Column("legacy_secret_keys", sa.JSON(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
@@ -70,9 +70,6 @@ def upgrade():
     with op.batch_alter_table("meeting", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column("bbb_meeting_id", sa.String(length=255), nullable=True)
-        )
-        batch_op.create_unique_constraint(
-            "uq_meeting_bbb_meeting_id", ["bbb_meeting_id"]
         )
 
     meeting = sa.table(
@@ -122,17 +119,23 @@ def upgrade():
             for role in ROLES
         )
 
-    if not meeting_values:
-        return
+    if meeting_values:
+        session.execute(
+            update(meeting)
+            .where(meeting.c.id == bindparam("_id"))
+            .values(bbb_meeting_id=bindparam("_bbb_meeting_id")),
+            meeting_values,
+        )
+        session.execute(insert(meeting_secret_key), secret_key_values)
+        session.commit()
 
-    session.execute(
-        update(meeting)
-        .where(meeting.c.id == bindparam("_id"))
-        .values(bbb_meeting_id=bindparam("_bbb_meeting_id")),
-        meeting_values,
-    )
-    session.execute(insert(meeting_secret_key), secret_key_values)
-    session.commit()
+    with op.batch_alter_table("meeting", schema=None) as batch_op:
+        batch_op.alter_column(
+            "bbb_meeting_id", existing_type=sa.String(length=255), nullable=False
+        )
+        batch_op.create_unique_constraint(
+            "uq_meeting_bbb_meeting_id", ["bbb_meeting_id"]
+        )
 
 
 def downgrade():
