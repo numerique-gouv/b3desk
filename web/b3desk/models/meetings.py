@@ -176,10 +176,10 @@ class Meeting(db.Model):
     # BBB params
     name: Mapped[str | None] = mapped_column(Unicode(150))
     attendeePW: Mapped[str | None] = mapped_column(
-        StringEncryptedType(Unicode(50), secret_key())
+        StringEncryptedType(Unicode(50), secret_key)
     )
     moderatorPW: Mapped[str | None] = mapped_column(
-        StringEncryptedType(Unicode(50), secret_key())
+        StringEncryptedType(Unicode(50), secret_key)
     )
     welcome: Mapped[str | None] = mapped_column(UnicodeText())
     dialNumber: Mapped[str | None] = mapped_column(Unicode(50))
