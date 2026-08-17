@@ -40,7 +40,7 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

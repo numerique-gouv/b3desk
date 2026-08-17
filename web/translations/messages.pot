@@ -2508,7 +2508,7 @@ msgid "Ajouter l'utilisateur comme délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:43
-msgid "Supprimer le délégataire"
+msgid "Retirer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation.html:23
