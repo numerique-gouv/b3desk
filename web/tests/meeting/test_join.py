@@ -134,6 +134,19 @@ def test_signin_meeting_with_invalid_hash_does_not_update_last_connection(
     assert last_use == meeting.last_connection_utc_datetime
 
 
+def test_signin_meeting_with_unknown_meeting_id(client_app, meeting):
+    """An unknown meeting must answer like an invalid secret key, so that meeting identifiers cannot be enumerated."""
+    response = client_app.get(
+        f"/meeting/signin/{meeting.id + 1}/hash/wrong-hash", status=302
+    )
+
+    assert response.location == "/"
+    assert (
+        "error",
+        "Le lien d'invitation que vous avez utilisé est invalide.",
+    ) in response.flashes
+
+
 def test_auth_attendee_disabled(client_app, meeting):
     """If attendee authentication service is temporarily disabled, we should skip the attendee authentication step.
 
@@ -162,6 +175,15 @@ def test_join_meeting_as_authenticated_attendee(
     response = response.follow()
 
     assert response.form["fullname"].value == "Bob Dylan"
+
+
+def test_join_meeting_as_authenticated_attendee_with_quick_meeting_id(
+    client_app, authenticated_attendee
+):
+    """Quick meetings are not persisted, so their identifier reaches no meeting."""
+    client_app.get(
+        "/meeting/join/0198f4f2-1234-7abc-8def-0123456789ab/authenticated", status=404
+    )
 
 
 def test_fix_authenticated_attendee_name_case(client_app, meeting, user):

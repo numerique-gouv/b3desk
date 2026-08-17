@@ -68,7 +68,7 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     meeting = get_quick_meeting_from_meeting_id()
-    created = create_bbb_quick_meeting(meeting.id, g.user)
+    created = create_bbb_quick_meeting(meeting, g.user)
     return redirect(
         get_join_url(
             meeting,
@@ -167,7 +167,7 @@ def new_meeting():
     form.populate_obj(meeting)
     db.session.add(meeting)
     assign_unique_visio_code(meeting)
-    meeting.create_urls()
+    meeting.create_secret_keys()
     db.session.commit()
     current_app.logger.info(
         "Meeting %s %s was created by %s",
@@ -411,7 +411,7 @@ def manage_delegation(meeting: Meeting, user: User):
         )
 
     data = form.search.data.lower()
-    new_delegate = db.session.query(User).filter(User.email == data).first()
+    new_delegate = User.get_user_by_email(data)
 
     if new_delegate is None:
         flash(_("L'utilisateur recherché n'existe pas"), "error")

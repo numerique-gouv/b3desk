@@ -637,14 +637,6 @@ class MainSettings(BaseSettings):
     Par exemple ``postgresql://user:password@localhost:5432/bbb_visio``
     """
 
-    # TODO: delete as this is the default in flask-sqlalchemy 3?
-    SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-    """Traçage des évènements de modification des modèles dans SQLAlchemy.
-
-    Plus d’informations sur
-    https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/track-modifications/
-    """
-
     MEETING_LOCALE_VARIANT: MeetingLocaleVariant = MeetingLocaleVariant.REUNION
     """Variante de locale pour le vocabulaire des réunions.
 
@@ -952,7 +944,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_CLIENT_SECRET: str | None = None
-    """ Piste Oauth client_secret
+    """Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
@@ -966,7 +958,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_API_URL: str | None = "https://oauth.piste.gouv.fr/api"
-    """ PISTE OAUTH APU url
+    """PISTE OAUTH APU url
 
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
@@ -978,7 +970,7 @@ class MainSettings(BaseSettings):
     """
 
     MAXIMUM_MEETING_DELEGATES: int | None = 15
-    """ Maximum meeting delegates
+    """Maximum meeting delegates
 
     Maximum number of delegates for one meeting
     """
