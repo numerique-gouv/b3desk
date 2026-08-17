@@ -25,7 +25,7 @@
                     <div class="fr-modal__footer">
                         <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                             <li>
-                                <a class="fr-btn fr-btn--delete" href="{{ url_for("meetings.transfert_meeting_ownership", meeting=meeting, delegate=delegate) }}">
+                                <a class="fr-btn fr-btn--delete" href="{{ url_for("meetings.transfert_meeting_ownership", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}">
                                     {% trans %}Confirmer{% endtrans %}
                                 </a>
                             </li>

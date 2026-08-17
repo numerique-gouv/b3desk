@@ -535,4 +535,13 @@ def transfert_meeting_ownership(meeting: Meeting, user: User, delegate: User):
     )
     send_delegation_mail(meeting, previous_owner, new_delegation=True)
     send_new_owner_mail(meeting, new_owner, previous_owner)
-    return redirect(url_for("public.welcome"))
+    return (
+        redirect(url_for("public.welcome"))
+        if not is_admin_mode()
+        else redirect(
+            url_for(
+                "admin.meeting_infos",
+                meeting=meeting,
+            )
+        )
+    )
