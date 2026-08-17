@@ -41,7 +41,7 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}"></a>
                                             </td>
                                             <td class="fr-col--xs fr-cell--center">
                                                 <button class="fr-btn fr-icon-share-forward-line fr-btn--delete" data-fr-opened="false" aria-controls="transfert-ownership-confirmation-{{ delegate.id }}" title="{% trans meeting_name=meeting.name %}Transférer {{ meeting_name }}{% endtrans %}"></button>
