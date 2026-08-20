@@ -78,21 +78,46 @@ def quick_meeting():
     )
 
 
-@bp.route("/meeting/recordings/<meeting:meeting>")
+@bp.route("/meeting/history/<meeting:meeting>")
 @login_required
 @meeting_access_required(AccessLevel.DELEGATE)
-def show_meeting_recording(meeting: Meeting, user: User):
-    """Display the list of recordings for a meeting."""
+def show_meeting_session(meeting: Meeting, user: User):
+    """Display the list of sessions and recordings for a meeting."""
     if meeting.is_shadow:
         abort(403)
     form = RecordingForm()
+    recordings = meeting.bbb.get_recordings()
+    recordings_by_id = {recording["recordID"]: recording for recording in recordings}
+    session_recording_ids = {
+        session.recording_id for session in meeting.sessions if session.recording_id
+    }
+    sessions = [
+        {
+            "started_at": session.started_at,
+            "ended_at": session.ended_at,
+            "recording": recordings_by_id.get(session.recording_id),
+            "duration": session.duration,
+        }
+        for session in meeting.sessions
+    ] + [
+        {
+            "started_at": recording["start_date"].replace(tzinfo=None),
+            "ended_at": recording["end_date"].replace(tzinfo=None),
+            "recording": recording,
+            "duration": recording["end_date"] - recording["start_date"],
+        }
+        for recording in recordings
+        if recording["recordID"] not in session_recording_ids
+    ]
+    sessions.sort(key=lambda session: session["started_at"], reverse=True)
     return render_template(
-        "meeting/recordings.html",
+        "meeting/history.html",
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
         form=form,
         delete_recording_form=DeleteRecordingForm(),
         admin_mode=is_admin_mode(),
+        sessions=sessions,
     )
 
 
@@ -123,7 +148,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
             ),
             "error",
         )
-    return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
+    return redirect(url_for("meetings.show_meeting_session", meeting=meeting))
 
 
 @bp.route("/meeting/new", methods=["GET", "POST"])
@@ -365,7 +390,7 @@ def delete_video_meeting(meeting: Meeting, user: User):
             ),
             "error",
         )
-    return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
+    return redirect(url_for("meetings.show_meeting_session", meeting=meeting))
 
 
 @bp.route("/meeting/<meeting:meeting>/favorite", methods=["POST"])

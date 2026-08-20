@@ -1,0 +1,350 @@
+{% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
+{% from 'admin/macros.html' import breadcrumb %}
+
+{% block jumbotron %}
+{% endblock %}
+
+{% block main %}
+    {% if admin_mode %}
+        {{ breadcrumb([
+        {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+        {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
+        {'href': url_for('admin.meeting_infos', meeting=meeting), 'label': meeting.name},
+        {'href': url_for('meetings.show_meeting_recording', meeting=meeting, admin_mode=admin_mode or None), 'label': _('Voir les enregistrements de {meeting_name}').format(meeting_name=meeting.name)},
+        ]) }}
+    {% endif %}
+    <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Historique de <em>{{meeting_name }}{% endtrans %}</em></h1>
+
+    <div class="fr-mt-4w">
+        {% if not admin_mode %}
+            <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% else %}
+            <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans meeting_name=meeting.name %}Retour à l'administration de {{ meeting_name }} {% endtrans %}
+            </a>
+        {% endif %}
+    </div>
+    <div class="recording-list">
+        {% if meeting.bbb.is_running() %}
+            <div class="fr-notice fr-notice--info fr-mt-4w">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p>
+                            <span class="fr-notice__title">
+                                <p>
+                                    {% trans %}Cette réunion est toujours en cours{% endtrans %}.
+                                    {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin de la réunion{% endtrans %}.
+                                </p>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="fr-notice fr-notice--info fr-mt-4w">
+            <div class="fr-container">
+                <div class="fr-notice__body">
+                    <p>
+                        <span class="fr-notice__title">
+                            <p>
+                                {% trans %}Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre autant de temps que la durée de la réunion.{% endtrans %}<br>
+                                {% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}<br>
+                                {% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}
+                            </p>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-table">
+            <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                    <div class="fr-table__content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nom de la session<br>Date de la session</th>
+                                    <th>Durée</th>
+                                    <th>Enregistrement</th>
+                                    <th>Visuels</th>
+                                    {% if config["ENABLE_AI_SUMMARY"] %}
+                                        <th>Compte-rendu</th>
+                                    {% endif %}
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in sessions %}
+                                    {% set video = session.recording.playbacks.get("video") if session.recording else None %}
+                                    {% set presentation = session.recording.playbacks.get("presentation") if session.recording else None %}
+                                    <tr>
+                                        <td>
+                                            {% if session.recording and session.recording.name %}<strong>{{ session.recording.name }}</strong><br>{% endif %}
+                                            {{ session.started_at|datetimeformat('yyyy-MM-dd HH:mm:ss') }}
+                                        </td>
+                                        <td>
+                                            {% if not session.ended_at %}
+                                                {% trans %}En cours{% endtrans %}
+                                            {% elif session.duration %}
+                                                {{ session.duration|timedeltaformat }}
+                                            {% else %}
+                                                {% trans %}Donnée non disponible{% endtrans %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if not session.ended_at %}
+                                                <p class="fr-badge fr-badge--sm fr-badge--info">
+                                                    {% trans %}Session en cours{% endtrans %}
+                                                </p>
+                                            {% elif session.recording %}
+                                                <p class="fr-badge fr-badge--sm fr-badge--success">
+                                                    {% trans start_date=session.recording.start_date|datetimeformat, expiration_date=(session.recording.end_date+config["RECORDING_DURATION"])|dateformat %}
+                                                        {{ start_date }}<br>
+                                                        Expire le {{ expiration_date }}
+                                                    {% endtrans %}
+                                                </p>
+                                            {% else %}
+                                                <p class="fr-badge fr-badge--sm fr-badge--info">
+                                                    {% trans %}Pas d'enregistrement{% endtrans %}
+                                                </p>
+                                            {% endif %}
+
+                                        </td>
+                                        <td style="vertical-align: middle">
+                                            {% set playback = presentation %}
+                                            {% if playback and playback.images %}
+                                                <button class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-image-line" data-fr-opened="false" aria-controls="images-{{ session.recording.recordID }}" title="{% trans %}Voir les visuels{% endtrans %}">
+                                                    {% trans %}Voir les visuels{% endtrans %}
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                        {% if config["ENABLE_AI_SUMMARY"] %}
+                                            <td style="vertical-align: middle">
+                                                {% set ai_summary = session.recording.playbacks.get("ai-summary") if session.recording else None %}
+                                                {% if ai_summary %}
+                                                    <div class="fr-grid-row fr-grid-row--gutters btn-actions ">
+                                                        {% if "url" in ai_summary %}
+                                                            <a class="fr-btn fr-btn--sm fr-btn--primary" target="_blank" rel="noopener" href="{{ ai_summary.url }}" title="{% trans %}Ouvrir le compte-rendu HTML{% endtrans %}">{% trans %}HTML{% endtrans %}</a>
+                                                        {% endif %}
+                                                        {% if "pdf" in ai_summary %}
+                                                            <a class="fr-btn fr-btn--sm fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.pdf }}" title="{% trans %}Télécharger le compte-rendu PDF{% endtrans %}">{% trans %}PDF{% endtrans %}</a>
+                                                        {% endif %}
+                                                        {% if "md" in ai_summary %}
+                                                            <a class="fr-btn fr-btn--sm fr-btn--secondary fr-ml-1v" target="_blank" rel="noopener" href="{{ ai_summary.md }}" title="{% trans %}Télécharger le compte-rendu Markdown{% endtrans %}">{% trans %}Markdown{% endtrans %}</a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        <td>
+                                            {% set playback = presentation %}
+                                            {% if playback %}
+                                                <div class="">
+                                                    <div class="fr-grid-row fr-grid-row--start fr-mb-1v">
+                                                        <a class="fr-btn fr-btn--sm fr-btn--primary" target="_blank" rel="noopener" href="{{ playback.url }}" title="{% trans %}Voir l'enregistrement{% endtrans %}"><span class="fr-icon-play-line"></span></a>
+                                                        <button type="button" class="btn-copy fr-btn--sm fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line" id="meeting-{{ meeting.id }}-recording-link-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-link-copy', '{{ playback.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                                        </button>
+                                                    </div>
+
+                                                    {% set video = session.recording.playbacks.get("video") if session.recording else None %}
+                                                    {% if video %}
+                                                        <div class="fr-grid-row fr-grid-row--start fr-my-1v">
+                                                            <a class="fr-btn fr-btn--sm fr-btn--primary" target="_blank" rel="noopener" href="{{ video.url }}" title="{% trans %}Voir l'enregistrement mp4{% endtrans %}"><span class="fr-icon-film-line"></span></a>
+                                                            {% if video.get("direct_link") %}
+                                                                <button class="fr-btn fr-btn--sm fr-btn--primary fr-ml-1v fr-icon-links-line" data-fr-opened="false" aria-controls="share-video-{{ session.recording.recordID }}" title="{% trans %}Partager l'enregistrement mp4{% endtrans %}">
+                                                                </button>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="fr-grid-row fr-grid-row--start fr-mt-1v">
+                                                        <button class="fr-btn fr-btn--sm fr-btn--sm fr-btn--secondary fr-icon-edit-line" data-fr-opened="false" aria-controls="rename-video-{{ session.recording.recordID }}" title="{% trans %}Renommer l’enregistrement{% endtrans %}">
+                                                            {% trans %}Renommer l’enregistrement{% endtrans %}
+                                                        </button>
+                                                        <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-delete-line fr-ml-2w"  data-fr-opened="false" aria-controls="delete-video-{{ session.recording.recordID }}">
+                                                            {% trans meeting_name=meeting.name %}Supprimer video de {{ meeting_name }}{% endtrans %}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% for session in sessions if session.recording %}
+            {% set recording = session.recording %}
+            {% set recording_name = recording.name or recording.start_date|datetimeformat('yyyy-MM-dd HH:mm:ss') %}
+            {% set presentation = recording.playbacks.get("presentation") %}
+
+    <!-- Visuels -->
+            {% if presentation and presentation.images %}
+                <dialog id="images-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="images-{{ recording.recordID }}-title">
+                    <div class="fr-container fr-container--fluid fr-container-md">
+                        <div class="fr-grid-row fr-grid-row--center">
+                            <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
+                                <div class="fr-modal__body">
+                                    <div class="fr-modal__header">
+                                        <button class="fr-btn--close fr-btn" aria-controls="images-{{ recording.recordID }}" title="{% trans %}Fermer{% endtrans %}">
+                                            {% trans %}Fermer{% endtrans %}
+                                        </button>
+                                    </div>
+                                    <div class="fr-modal__content">
+                                        <h1 id="images-{{ recording.recordID }}-title" class="fr-modal__title">
+                                            <span class="" aria-hidden="true"></span>
+                                            {% trans %}Visuels de "<em>{{ recording_name }}</em>"{% endtrans %}
+                                        </h1>
+                                        <div class="fr-grid-row fr-grid-row--gutters">
+                                            {% for i in presentation.images %}
+                                                <div class="fr-col-6 fr-col-md-4">
+                                                    <img alt="{{ i.alt }}" title="{{ i.alt }}" src="{{ i.url }}" style="max-width: 100%;"/>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </dialog>
+            {% endif %}
+
+    <!-- Supprimer video -->
+
+            <dialog id="delete-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="delete-video-{{ recording.recordID }}-title">
+                <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button class="fr-btn--close fr-btn" aria-controls="delete-video-{{ recording.recordID }}" title="{% trans %}Fermer{% endtrans %}">
+                                        {% trans %}Fermer{% endtrans %}
+                                    </button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    <h1 id="delete-video-{{ recording.recordID }}-title" class="fr-modal__title">
+                                        <span class="" aria-hidden="true"></span>
+                                        {% trans %}Supprimer "<em>{{ recording_name }}</em>" ?{% endtrans %}
+                                    </h1>
+                                    <p>{% trans meeting_name=meeting.name %}Voulez-vous vraiment supprimer l'enregistrement <em>{{ recording_name }}</em> de <em>{{ meeting_name }}</em>&nbsp;?{% endtrans %}</p>
+                                    {% if meeting in g.user.get_all_delegated_meetings %}
+                                        <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                    {% endif %}
+                                </div>
+                                <div class="fr-modal__footer">
+                                    {% call form_tag(delete_recording_form, action=url_for("meetings.delete_video_meeting", meeting=meeting), method="POST", class="delete") %}
+                                        {{ delete_recording_form.recordID(value=recording.recordID, id=False) }}
+                                        <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                            <li>
+                                                {{ delete_recording_form.confirm(label=_("Supprimer"), id=False, class_="fr-btn fr-btn--primary") }}
+                                            </li>
+                                            <li>
+                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="delete-video-{{ recording.recordID }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
+                                            </li>
+                                        </ul>
+                                    {% endcall %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+
+    <!-- Renommer video -->
+            <dialog id="rename-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="rename-video-{{ recording.recordID }}-title">
+                <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button class="fr-btn--close fr-btn" aria-controls="rename-video-{{ recording.recordID }}" title="{% trans %}Fermer{% endtrans %}">
+                                        {% trans %}Fermer{% endtrans %}
+                                    </button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    {% call form_tag(form, method="POST", action=url_for('meetings.update_recording_name', meeting=meeting, recording_id=recording.recordID)) %}
+                                        {{ form.name(value=recording_name) }}
+                                        {% if meeting in g.user.get_all_delegated_meetings %}
+                                            <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                        {% endif %}
+                                        <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
+                                            <li>
+                                                {{ form.rename(id="update-recording-" ~ recording.recordID, class_="fr-btn fr-btn--primary fr-mt-1w", title=_("Modifier le nom de l'enregistrement")) }}
+                                            </li>
+                                            <li>
+                                                <button type="reset" class="fr-btn fr-btn--secondary" aria-controls="rename-video-{{ recording.recordID }}" title="{% trans %}Annuler{% endtrans %}">{% trans %}Annuler{% endtrans %}</button>
+                                            </li>
+                                        </ul>
+                                    {% endcall %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+
+    <!-- Partager la video -->
+            <dialog id="share-video-{{ recording.recordID }}" class="fr-modal" role="dialog" aria-labelledby="share-video-{{ recording.recordID }}-title">
+                <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button class="fr-btn--close fr-btn" aria-controls="share-video-{{ recording.recordID }}" title="{% trans %}Fermer{% endtrans %}">
+                                        {% trans %}Fermer{% endtrans %}
+                                    </button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    <h1 id="share-video-{{ recording.recordID }}-title" class="fr-modal__title">
+                                        <span class="" aria-hidden="true"></span>
+                                        {% trans %}Partager l'enregistrement de "<em>{{ recording_name }}</em>"{% endtrans %}
+                                    </h1>
+                                    <p>
+                                        {% trans %}Cet enregistrement est conservé temporairement sur ce service. Pour le mettre à disposition de manière pérenne, fournissez ce lien à des services dédiés à la diffusion{% endtrans %}
+                                        {%- if config["VIDEO_STREAMING_LINKS"] -%}
+                                            {%- for service, link in config["VIDEO_STREAMING_LINKS"].items() -%}
+                                                {{ " tels que " if loop.first else ", " if not loop.last else " ou " }}<a href="{{link}}">{{service}}</a>
+                                            {%- endfor -%}
+                                        {%- endif -%}
+                                        .
+                                        {% trans %}En cas de diffusion publique, veillez préalablement à obtenir l'autorisation des participants.{% endtrans %}
+                                    </p>
+                                    {% if recording.playbacks.get("video") %}
+                                        {% if recording.playbacks.video.get("direct_link") %}
+                                            <div class="fr-grid-row fr-grid-row--center">
+                                                <input class="fr-input fr-col-9" type="text" readonly value="{{ recording.playbacks.video.direct_link }}">
+                                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-recording-media-copy" data-copy-text="{{ recording.playbacks.video.direct_link }}" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                                    <span></span>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+
+        {% endfor %}
+    </div>
+    <div class="fr-mt-4w">
+        {% if not admin_mode %}
+            <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
+        {% else %}
+            <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
+                <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
+                {% trans meeting_name=meeting.name %}Retour à l'administration de {{ meeting_name }} {% endtrans %}
+            </a>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/copy-in-clipboard.js') }}"></script>
+{% endblock %}
