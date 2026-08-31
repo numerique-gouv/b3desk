@@ -54,14 +54,14 @@ def test_add_and_remove_favorite_delegated_meeting(
         meeting,
     ]
     response = client_app.post(
-        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
         {"id": meeting_1_user_2.id},
     ).follow()
     assert response.context["meetings"] == [meeting_1_user_2, meeting_2, meeting]
     assert authenticated_user in meeting_1_user_2.favorite_of
 
     response = client_app.post(
-        "/meeting/favorite?order-key=created_at&reverse-order=true&favorite-filter=true",
+        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
         {"id": meeting_1_user_2.id},
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]

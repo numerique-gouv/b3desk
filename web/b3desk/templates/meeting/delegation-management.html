@@ -16,7 +16,7 @@
         {% endif %}
     </div>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
-    <form class="fr-search-bar" id="delegationSearchForm", name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}" method="post">
+    <form class="fr-search-bar" id="delegationSearchForm" name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
@@ -40,7 +40,7 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate) }}"></a>
+                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
