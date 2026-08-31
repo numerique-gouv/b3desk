@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 11:47+0200\n"
+"POT-Creation-Date: 2026-08-31 15:46+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -174,7 +174,7 @@ msgstr "மதிப்பீட்டாளர்களுக்கு செ�
 msgid "150 caractères max"
 msgstr "அதிகபட்சம் 150 எழுத்துகள்"
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:395
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:429
 msgid "Bienvenue aux modérateurs"
 msgstr "மதிப்பீட்டாளர்களை வரவேற்கிறோம்"
 
@@ -320,27 +320,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:669 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:661 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr "எனது சந்திப்பு அறைகள்"
 
-#: web/b3desk/settings.py:673
+#: web/b3desk/settings.py:665
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr "மாநில வெபினாரின் உடனடி நிகழ்நிலை கூட்டத்திற்கான அழைப்பு"
 
-#: web/b3desk/settings.py:686
+#: web/b3desk/settings.py:678
 msgid "Réunion improvisée"
 msgstr "திடீர் சந்திப்பு"
 
-#: web/b3desk/settings.py:689
+#: web/b3desk/settings.py:681
 msgid " Lien Modérateur  "
 msgstr " மதிப்பீட்டாளர் இணைப்பு  "
 
-#: web/b3desk/settings.py:692
+#: web/b3desk/settings.py:684
 msgid " Lien Participant  "
 msgstr " லீன் பங்கேற்பாளர்  "
 
-#: web/b3desk/settings.py:696
+#: web/b3desk/settings.py:688
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -387,21 +387,21 @@ msgstr ""
 msgid "L'utilisateur a été ajouté au groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:78
-#: web/b3desk/endpoints/join.py:145 web/b3desk/endpoints/join.py:150
-#: web/b3desk/endpoints/join.py:203 web/b3desk/endpoints/join.py:211
+#: web/b3desk/endpoints/join.py:66 web/b3desk/endpoints/join.py:76
+#: web/b3desk/endpoints/join.py:143 web/b3desk/endpoints/join.py:148
+#: web/b3desk/endpoints/join.py:201 web/b3desk/endpoints/join.py:209
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr "நீங்கள் பயன்படுத்திய அழைப்பு இணைப்பு தவறானது."
 
-#: web/b3desk/endpoints/join.py:181
+#: web/b3desk/endpoints/join.py:179
 msgid "Lien invalide"
 msgstr "தவறான இணைப்பு"
 
-#: web/b3desk/endpoints/join.py:315
+#: web/b3desk/endpoints/join.py:313
 msgid "Le captcha saisi est erroné"
 msgstr "உள்ளிட்ட கேப்ட்சா தவறானது"
 
-#: web/b3desk/endpoints/join.py:320
+#: web/b3desk/endpoints/join.py:318
 msgid "Le code de connexion saisi est erroné"
 msgstr "உள்ளிட்ட இணைப்புக் குறியீடு தவறானது"
 
@@ -544,16 +544,16 @@ msgstr "பிரதிநிதிகளில் இருந்து பய�
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:374 web/b3desk/models/meetings.py:381
+#: web/b3desk/models/meetings.py:408 web/b3desk/models/meetings.py:415
 msgid "Ce code PIN est déjà utilisé"
 msgstr "இந்த பின் ஏற்கனவே பயன்பாட்டில் உள்ளது"
 
-#: web/b3desk/models/meetings.py:388
+#: web/b3desk/models/meetings.py:422
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr "%(fullname)s சந்திப்பு"
 
-#: web/b3desk/models/meetings.py:390
+#: web/b3desk/models/meetings.py:424
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr "%(fullname)s மீட்டிங்குக்கு வரவேற்கிறோம்"
@@ -978,19 +978,19 @@ msgstr "Accueil - %(service_title)s"
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:64
 #: web/b3desk/templates/meeting/files.html:86
-#: web/b3desk/templates/meeting/files.html:159
+#: web/b3desk/templates/meeting/files.html:140
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
-#: web/b3desk/templates/meeting/modals/invite.html:8
-#: web/b3desk/templates/meeting/modals/invite.html:9
-#: web/b3desk/templates/meeting/recordings.html:137
-#: web/b3desk/templates/meeting/recordings.html:138
-#: web/b3desk/templates/meeting/recordings.html:178
-#: web/b3desk/templates/meeting/recordings.html:179
-#: web/b3desk/templates/meeting/recordings.html:221
-#: web/b3desk/templates/meeting/recordings.html:222
+#: web/b3desk/templates/meeting/modals/invite.html:11
+#: web/b3desk/templates/meeting/modals/invite.html:12
+#: web/b3desk/templates/meeting/recordings.html:139
+#: web/b3desk/templates/meeting/recordings.html:140
+#: web/b3desk/templates/meeting/recordings.html:180
+#: web/b3desk/templates/meeting/recordings.html:181
+#: web/b3desk/templates/meeting/recordings.html:223
+#: web/b3desk/templates/meeting/recordings.html:224
 msgid "Fermer"
 msgstr "மூடு"
 
@@ -1154,11 +1154,11 @@ msgstr[1] "%(count)s பயனர்கள்"
 #: web/b3desk/templates/admin/delete_group.html:9
 #: web/b3desk/templates/admin/group_infos.html:29
 #: web/b3desk/templates/admin/user_table.html:16
-#: web/b3desk/templates/meeting/files.html:146
-#: web/b3desk/templates/meeting/files.html:163
-#: web/b3desk/templates/meeting/files.html:175
+#: web/b3desk/templates/meeting/files.html:144
+#: web/b3desk/templates/meeting/files.html:156
+#: web/b3desk/templates/meeting/files.html:184
 #: web/b3desk/templates/meeting/files.html:205
-#: web/b3desk/templates/meeting/recordings.html:156
+#: web/b3desk/templates/meeting/recordings.html:158
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr "நீக்கு"
@@ -1179,13 +1179,13 @@ msgstr ""
 #: web/b3desk/templates/admin/delete_group.html:23
 #: web/b3desk/templates/admin/group_form.html:24
 #: web/b3desk/templates/admin/group_form.html:34
-#: web/b3desk/templates/meeting/files.html:178
+#: web/b3desk/templates/meeting/files.html:159
 #: web/b3desk/templates/meeting/form.html:188
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:159
-#: web/b3desk/templates/meeting/recordings.html:203
+#: web/b3desk/templates/meeting/recordings.html:161
+#: web/b3desk/templates/meeting/recordings.html:205
 msgid "Annuler"
 msgstr "ரத்து வெற்றி"
 
@@ -2310,15 +2310,15 @@ msgstr "தொகுதி கட்டுப்பாடு நீட்டி�
 msgid "Contrôle du volume"
 msgstr "தொகுதி கட்டுப்பாடு"
 
-#: web/b3desk/templates/footer/documentation.html:103
+#: web/b3desk/templates/footer/documentation.html:100
 msgid "Liste des serveurs BigBlueButton pour l'Éducation"
 msgstr "கல்விக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
 
-#: web/b3desk/templates/footer/documentation.html:104
+#: web/b3desk/templates/footer/documentation.html:101
 msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
 msgstr "மாநில வெபினாருக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
 
-#: web/b3desk/templates/footer/documentation.html:105
+#: web/b3desk/templates/footer/documentation.html:102
 msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
 msgstr "அனைத்து BigBlueButtonகளுக்கான BigBlueButton சேவையகங்களின் பட்டியல்"
 
@@ -2682,12 +2682,12 @@ msgstr "தலைமை அமைச்சர் அலுவலகம்"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:90
 msgid ""
-"À l’attention du délégué à la protection des données (DPD)</br>\n"
-"            56 rue de Varenne </br>\n"
+"À l’attention du délégué à la protection des données (DPD)<br>\n"
+"            56 rue de Varenne <br>\n"
 "            75007 Paris"
 msgstr ""
-"தரவு பாதுகாப்பு அதிகாரி (DPD)</br>யின் கவனத்திற்கு\n"
-"56 rue de Varenne </br>\n"
+"தரவு பாதுகாப்பு அதிகாரி (DPD)<br>யின் கவனத்திற்கு\n"
+"56 rue de Varenne <br>\n"
 "75007 பாரிச்"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:93
@@ -2702,12 +2702,12 @@ msgstr ""
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:94
 msgid ""
-"Commission nationale informatique et libertés </br>\n"
-"            3 place de Fontenoy – TSA 80715 – </br>\n"
+"Commission nationale informatique et libertés <br>\n"
+"            3 place de Fontenoy – TSA 80715 – <br>\n"
 "            75334 PARIS CEDEX 07"
 msgstr ""
-"செய்தி தொழில்நுட்பம் மற்றும் சுதந்திரத்திற்கான தேசிய ஆணையம் </br>\n"
-"3 இடம் de Fontenoy – TSA 80715 – </br>\n"
+"செய்தி தொழில்நுட்பம் மற்றும் சுதந்திரத்திற்கான தேசிய ஆணையம் <br>\n"
+"3 இடம் de Fontenoy – TSA 80715 – <br>\n"
 "75334 பாரிச் செடெக்ச் 07"
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:98
@@ -2986,7 +2986,7 @@ msgstr "மீட்டிங் பிரதிநிதிகள் குழ�
 #: web/b3desk/templates/meeting/files.html:43
 #: web/b3desk/templates/meeting/files.html:227
 #: web/b3desk/templates/meeting/recordings.html:34
-#: web/b3desk/templates/meeting/recordings.html:261
+#: web/b3desk/templates/meeting/recordings.html:263
 msgid "Retour à mes réunions"
 msgstr "எனது கூட்டங்களுக்குத் திரும்பு"
 
@@ -2994,7 +2994,7 @@ msgstr "எனது கூட்டங்களுக்குத் திர�
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/files.html:231
 #: web/b3desk/templates/meeting/recordings.html:38
-#: web/b3desk/templates/meeting/recordings.html:265
+#: web/b3desk/templates/meeting/recordings.html:267
 #, python-format
 msgid "Retour à l'administration de %(meeting_name)s "
 msgstr ""
@@ -3031,10 +3031,10 @@ msgstr ""
 "துண்டிக்கப்படுவார்கள்."
 
 #: web/b3desk/templates/meeting/end.html:9
-#: web/b3desk/templates/meeting/files.html:167
+#: web/b3desk/templates/meeting/files.html:148
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:148
-#: web/b3desk/templates/meeting/recordings.html:195
+#: web/b3desk/templates/meeting/recordings.html:150
+#: web/b3desk/templates/meeting/recordings.html:197
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr "\"%(meeting_name)s\" உங்களுக்குச் சொந்தமில்லை"
@@ -3068,15 +3068,15 @@ msgstr "<em>%(meeting_name)s</em> உடன் தொடர்புடைய �
 msgid "Ajouter"
 msgstr "சேர்"
 
-#: web/b3desk/templates/meeting/files.html:107
+#: web/b3desk/templates/meeting/files.html:105
 msgid "Vous pouvez ajouter un fichier :"
 msgstr "நீங்கள் ஒரு கோப்பைச் சேர்க்கலாம்:"
 
-#: web/b3desk/templates/meeting/files.html:110
+#: web/b3desk/templates/meeting/files.html:108
 msgid "Nuage temporairement indisponible"
 msgstr "முகில் தற்காலிகமாக கிடைக்கவில்லை"
 
-#: web/b3desk/templates/meeting/files.html:111
+#: web/b3desk/templates/meeting/files.html:109
 msgid ""
 "Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités"
 " sont momentanément désactivées. Veuillez réessayer dans quelques "
@@ -3085,51 +3085,51 @@ msgstr ""
 "ஒரு தொழில்நுட்ப சிக்கல் முகில் அணுகலை தடுக்கிறது. சில நற்பொருத்தங்கள் "
 "தற்காலிகமாக முடக்கப்பட்டுள்ளன. சில நிமிடங்களில் மீண்டும் முயற்சிக்கவும்."
 
-#: web/b3desk/templates/meeting/files.html:118
+#: web/b3desk/templates/meeting/files.html:116
 msgid "depuis une URL"
 msgstr "ஒரு முகவரி இலிருந்து"
 
-#: web/b3desk/templates/meeting/files.html:121
+#: web/b3desk/templates/meeting/files.html:119
 msgid "nuage"
 msgstr "முகில்"
 
-#: web/b3desk/templates/meeting/files.html:121
+#: web/b3desk/templates/meeting/files.html:119
 msgid "depuis le Nuage"
 msgstr "மேகத்திலிருந்து"
 
-#: web/b3desk/templates/meeting/files.html:124
+#: web/b3desk/templates/meeting/files.html:122
 msgid "téléversement"
 msgstr "பதிவேற்றம்"
 
-#: web/b3desk/templates/meeting/files.html:124
+#: web/b3desk/templates/meeting/files.html:122
 msgid "par Téléversement"
 msgstr "பதிவேற்றம் மூலம்"
 
-#: web/b3desk/templates/meeting/files.html:139
-msgid "Vos fichiers associés sont :"
-msgstr "உங்களுடன் தொடர்புடைய கோப்புகள்:"
-
-#: web/b3desk/templates/meeting/files.html:143
-msgid "Téléchargeable"
-msgstr "பதிவிறக்கம் செய்யக்கூடியது"
-
-#: web/b3desk/templates/meeting/files.html:144
-msgid "Titre"
-msgstr "டைட்ரே"
-
-#: web/b3desk/templates/meeting/files.html:145
-msgid "Ajouté le"
-msgstr "சேர்க்கப்பட்டது"
-
-#: web/b3desk/templates/meeting/files.html:147
-#: web/b3desk/templates/meeting/files.html:209
-msgid "Télécharger"
-msgstr "பதிவிறக்கவும்"
-
-#: web/b3desk/templates/meeting/files.html:165
+#: web/b3desk/templates/meeting/files.html:146
 #, python-format
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr "<em>%(file_title)s</em> கோப்பை நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+
+#: web/b3desk/templates/meeting/files.html:177
+msgid "Vos fichiers associés sont :"
+msgstr "உங்களுடன் தொடர்புடைய கோப்புகள்:"
+
+#: web/b3desk/templates/meeting/files.html:181
+msgid "Téléchargeable"
+msgstr "பதிவிறக்கம் செய்யக்கூடியது"
+
+#: web/b3desk/templates/meeting/files.html:182
+msgid "Titre"
+msgstr "டைட்ரே"
+
+#: web/b3desk/templates/meeting/files.html:183
+msgid "Ajouté le"
+msgstr "சேர்க்கப்பட்டது"
+
+#: web/b3desk/templates/meeting/files.html:185
+#: web/b3desk/templates/meeting/files.html:209
+msgid "Télécharger"
+msgstr "பதிவிறக்கவும்"
 
 #: web/b3desk/templates/meeting/files.html:220
 msgid "Aucun document de présentation n'est prévu pour cette réunion actuellement"
@@ -3371,70 +3371,70 @@ msgstr ""
 "%(expiration_date)s அன்று காலாவதியாகிறது\n"
 "                "
 
-#: web/b3desk/templates/meeting/recordings.html:69
+#: web/b3desk/templates/meeting/recordings.html:70
 msgid "Visuels"
 msgstr "காட்சிகள்"
 
-#: web/b3desk/templates/meeting/recordings.html:70
+#: web/b3desk/templates/meeting/recordings.html:71
 msgid "Actions"
 msgstr "செயல்கள்"
 
-#: web/b3desk/templates/meeting/recordings.html:89
+#: web/b3desk/templates/meeting/recordings.html:91
 msgid "Voir l'enregistrement"
 msgstr "பதிவை பார்க்கவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:90
-#: web/b3desk/templates/meeting/recordings.html:244
+#: web/b3desk/templates/meeting/recordings.html:92
+#: web/b3desk/templates/meeting/recordings.html:246
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr "இடைநிலைப்பலகைக்கு பதிவு இணைப்பை நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:93
+#: web/b3desk/templates/meeting/recordings.html:95
 msgid "Voir l'enregistrement mp4"
 msgstr "mp4 பதிவைப் பார்க்கவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:95
+#: web/b3desk/templates/meeting/recordings.html:97
 msgid "Partager l'enregistrement mp4"
 msgstr "mp4 பதிவைப் பகிரவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:100
+#: web/b3desk/templates/meeting/recordings.html:102
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
 msgstr "சப்ரைமர் வீடியோ டி %(meeting_name)s"
 
-#: web/b3desk/templates/meeting/recordings.html:109
+#: web/b3desk/templates/meeting/recordings.html:111
 msgid "Compte-rendu"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:115
 msgid "Ouvrir le compte-rendu HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:115
 msgid "HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:118
 msgid "Télécharger le compte-rendu PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:118
 msgid "PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:121
 msgid "Télécharger le compte-rendu Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:121
 msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:144
+#: web/b3desk/templates/meeting/recordings.html:146
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr "சப்ரைமர் \"<en>%(பதிவு பெயர்) is</em>\" ?"
 
-#: web/b3desk/templates/meeting/recordings.html:146
+#: web/b3desk/templates/meeting/recordings.html:148
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
@@ -3443,20 +3443,20 @@ msgstr ""
 "<em>%(recording_name)s</em> பதிவை <em>%(meeting_name)s</em> இலிருந்து "
 "நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:202
 msgid "Modifier le nom de l'enregistrement"
 msgstr "பதிவின் பெயரை மாற்றவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:202
 msgid "Renommer"
 msgstr "மறுபெயரிடவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:228
+#: web/b3desk/templates/meeting/recordings.html:230
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr "\"<em>%(recording_name)s</em>\" இன் பதிவைப் பகிரவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:231
+#: web/b3desk/templates/meeting/recordings.html:233
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
@@ -3466,7 +3466,7 @@ msgstr ""
 "கிடைக்க, விநியோகத்திற்காக அர்ப்பணிக்கப்பட்ட சேவைகளுக்கு இந்த இணைப்பை "
 "வழங்கவும்"
 
-#: web/b3desk/templates/meeting/recordings.html:238
+#: web/b3desk/templates/meeting/recordings.html:240
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
@@ -3775,76 +3775,76 @@ msgstr "நீங்கள் முதலில் அனைத்து பி
 msgid "Supprimer la réunion"
 msgstr "சந்திப்பை நீக்கு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:15
+#: web/b3desk/templates/meeting/modals/invite.html:18
 msgid "Invitez des participants à votre réunion en leur envoyant, au choix :"
 msgstr "உங்கள் சந்திப்பிற்கு பங்கேற்பாளர்களை அனுப்புவதன் மூலம் அவர்களை அழைக்கவும்:"
 
-#: web/b3desk/templates/meeting/modals/invite.html:17
+#: web/b3desk/templates/meeting/modals/invite.html:20
 msgid "Avec droits modérateurs :"
 msgstr "மதிப்பாய்வு உரிமைகளுடன்:"
 
-#: web/b3desk/templates/meeting/modals/invite.html:22
+#: web/b3desk/templates/meeting/modals/invite.html:25
 msgid "Le code de connexion"
 msgstr "இணைப்பு குறியீடு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:24
+#: web/b3desk/templates/meeting/modals/invite.html:27
 msgid "NOUVEAU"
 msgstr "நோவியூ"
 
-#: web/b3desk/templates/meeting/modals/invite.html:28
+#: web/b3desk/templates/meeting/modals/invite.html:31
 msgid "Copier le code de connexion dans le presse-papiers"
 msgstr "உள்நுழைவு குறியீட்டை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/modals/invite.html:37
+#: web/b3desk/templates/meeting/modals/invite.html:40
 msgid "Le lien modérateur"
 msgstr "மதிப்பீட்டாளர் இணைப்பு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:44
+#: web/b3desk/templates/meeting/modals/invite.html:47
 msgid "Copier le lien modérateur dans le presse-papiers"
 msgstr "மதிப்பீட்டாளர் இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/modals/invite.html:54
+#: web/b3desk/templates/meeting/modals/invite.html:57
 msgid "Le lien SIP"
 msgstr "SIP இணைப்பு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:57
+#: web/b3desk/templates/meeting/modals/invite.html:60
 msgid "Lien requis pour l'utilisation d'équipements SIP."
 msgstr "SIP சாதனங்களைப் பயன்படுத்த இணைப்பு தேவை."
 
-#: web/b3desk/templates/meeting/modals/invite.html:62
+#: web/b3desk/templates/meeting/modals/invite.html:65
 msgid "Copier le lien SIP dans le presse-papiers"
 msgstr "SIP இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/modals/invite.html:69
+#: web/b3desk/templates/meeting/modals/invite.html:72
 msgid "Avec droits restreints :"
 msgstr "கட்டுப்படுத்தப்பட்ட உரிமைகளுடன்:"
 
-#: web/b3desk/templates/meeting/modals/invite.html:74
+#: web/b3desk/templates/meeting/modals/invite.html:77
 msgid "Le lien participant"
 msgstr "பங்கேற்பாளர் இணைப்பு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:81
+#: web/b3desk/templates/meeting/modals/invite.html:84
 msgid "Copier le lien participant dans le presse-papiers"
 msgstr "இடைநிலைப்பலகைக்கு பங்கேற்பாளர் இணைப்பை நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/modals/invite.html:90
+#: web/b3desk/templates/meeting/modals/invite.html:93
 msgid "Le lien authentifié"
 msgstr "அங்கீகரிக்கப்பட்ட இணைப்பு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:90
+#: web/b3desk/templates/meeting/modals/invite.html:93
 #, python-format
 msgid "via %(service_name)s"
 msgstr "%(service_name)s வழியாக"
 
-#: web/b3desk/templates/meeting/modals/invite.html:97
+#: web/b3desk/templates/meeting/modals/invite.html:100
 msgid "Copier le lien participant authentifié dans le presse-papiers"
 msgstr "அங்கீகரிக்கப்பட்ட பங்கேற்பாளர் இணைப்பை இடைநிலைப்பலகைக்கு நகலெடுக்கவும்"
 
-#: web/b3desk/templates/meeting/modals/invite.html:107
+#: web/b3desk/templates/meeting/modals/invite.html:110
 msgid "Connexion par téléphone"
 msgstr "தொலைபேசி மூலம் இணைப்பு"
 
-#: web/b3desk/templates/meeting/modals/invite.html:110
+#: web/b3desk/templates/meeting/modals/invite.html:113
 #, python-format
 msgid ""
 "n° de téléphone : %(bbb_dialnumber)s<br>\n"
@@ -3853,7 +3853,7 @@ msgstr ""
 "n° de téléphone : %(bbb_dialnumber)s<br> \n"
 "குறியீடு PIN : %(voice_bridge)s"
 
-#: web/b3desk/templates/meeting/modals/invite.html:115
+#: web/b3desk/templates/meeting/modals/invite.html:118
 msgid "Copier les informations dans le presse-papiers"
 msgstr "இடைநிலைப்பலகைக்கு தகவலை நகலெடுக்கவும்"
 
@@ -3882,7 +3882,7 @@ msgstr ""
 msgid "Votre enregistrement pour {name}"
 msgstr "{name} க்கான உங்கள் பதிவு"
 
-#: web/b3desk/utils/__init__.py:271
+#: web/b3desk/utils/__init__.py:269
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

@@ -6,7 +6,7 @@
     {'href': url_for('admin.home'), 'label': _('Menu Admin')},
     {'href': url_for('admin.manage_users'), 'label': _('Utilisateurs')},
     ]) }}
-    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
+    <form class="fr-search-bar" id="userSearchForm" name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
