@@ -7,13 +7,6 @@
 {% endif %}
 
 {% call form_tag(form, id="meeting-form", method="POST") %}
-{% block js %}
-  <script>
-    window.visioCodeUrl = "{{ url_for('meetings.get_available_visio_code') }}";
-    window.previewImagesBaseUrl = "{{ url_for('static', filename='images/preview/') }}";
-  </script>
-  <script src="{{ url_for('static', filename='js/meeting-form.js')}}"></script>
-{% endblock %}
 <div class="fr-grid-row fr-grid-row--gutters">
   <div class="fr-col-8">
       {% if form.errors %}
@@ -157,7 +150,7 @@
         <img id="meeting-preview-image" src="" class="fr-responsive-img" alt="{% trans %}Aperçu de la salle selon les options d'affichage sélectionnées{% endtrans %}" />
       </div>
       <ul class="fr-toggle__list toggle-no-border fr-pt-1w">
-        {{ form.hidePresentationOnJoin() }}
+        {{ form.showPresentationOnJoin() }}
         {{ form.showParticipantsOnLogin() }}
         {{ form.showPublicChatOnLogin() }}
         {{ form.showSessionDetailsOnJoin() }}
@@ -168,5 +161,8 @@
 {% endcall %}
 
 {% block js %}
+  <script>
+    window.previewImagesBaseUrl = "{{ url_for('static', filename='images/preview/') }}";
+  </script>
   <script src="{{ url_for('static', filename='js/meeting-form.js')}}" data-visio-code-url="{{ url_for('meetings.get_available_visio_code') }}"></script>
 {% endblock %}
