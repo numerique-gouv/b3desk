@@ -6266,3 +6266,6 @@ msgstr ""
 #~ msgid "Supprimer le délégataire"
 #~ msgstr ""
 
+#~ msgid "Informations affichés à l'ouverture"
+#~ msgstr ""
+
