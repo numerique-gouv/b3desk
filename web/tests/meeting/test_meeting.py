@@ -178,11 +178,31 @@ def test_save_existing_meeting_not_running(
     assert meeting.autoStartRecording is True
     assert meeting.allowStartStopRecording is True
     assert meeting.voiceBridge == "123456789"
-    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789', 'showParticipantsOnLogin': False, 'showPublicChatOnLogin': False, 'showPresentationOnJoin': False, 'showSessionDetailsOnJoin': False}"
+    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}"
     assert (
         f"Meeting meeting {meeting.id} was updated by alice@domain.tld. Updated fields : {data}\n"
         in caplog.text
     )
+
+
+def test_save_existing_meeting_display_options(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """Test that the BBB display options are read from the form and persisted."""
+    assert meeting.showPresentationOnJoin is True
+    assert meeting.showSessionDetailsOnJoin is True
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["showPresentationOnJoin"] = False
+    res.forms[0]["showSessionDetailsOnJoin"] = False
+    res = res.forms[0].submit()
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+    meeting = db.session.scalars(db.select(Meeting)).one()
+    assert meeting.showPresentationOnJoin is False
+    assert meeting.showParticipantsOnLogin is True
+    assert meeting.showPublicChatOnLogin is True
+    assert meeting.showSessionDetailsOnJoin is False
 
 
 def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
@@ -1531,7 +1551,7 @@ def test_delegate_can_save_existing_delegated_meeting_not_running(
     assert meeting.allowStartStopRecording is True
     if client_app.app.config["ENABLE_PIN_MANAGEMENT"]:
         assert meeting.voiceBridge == "123456789"
-    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789', 'showParticipantsOnLogin': False, 'showPublicChatOnLogin': False, 'showPresentationOnJoin': False, 'showSessionDetailsOnJoin': False}"
+    data = "{'welcome': 'Bienvenue dans mon meeting de test', 'maxParticipants': 5, 'duration': 60, 'moderatorOnlyMessage': 'Bienvenue aux modérateurs', 'logoutUrl': 'https://log.out', 'moderatorPW': 'Motdepasse1', 'attendeePW': 'Motdepasse2', 'voiceBridge': '123456789'}"
     assert (
         f"Meeting delegated meeting {meeting.id} was updated by alice@domain.tld. Updated fields : {data}\n"
         in caplog.text

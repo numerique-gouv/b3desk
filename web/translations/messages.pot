@@ -1043,7 +1043,7 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:14
 #: web/b3desk/templates/admin/group_form.html:28
 #: web/b3desk/templates/admin/group_infos.html:14
-#: web/b3desk/templates/meeting/form.html:61
+#: web/b3desk/templates/meeting/form.html:62
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr ""
@@ -2650,17 +2650,17 @@ msgstr ""
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Activé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Désactivé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:63
+#: web/b3desk/templates/meeting/form.html:64
 msgid "Créer une réunion"
 msgstr ""
 

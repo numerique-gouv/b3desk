@@ -5,65 +5,65 @@
   </script>
   <script src="{{ url_for('static', filename='js/meeting-form.js')}}"></script>
 {% endblock %}
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-8">
-    {% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
-      {% if field.type == "BooleanField" %}
-        <li>
-          <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="{% trans %}Activé{% endtrans %}" data-fr-unchecked-label="{% trans %}Désactivé{% endtrans %}">
-            {{ field(value="on", class_="fr-toggle__input")}}
-            {{ field.label(class_="fr-toggle__label", data_fr_checked_label=_("Activé"), data_fr_unchecked_label=_("Désactivé")) }}
-            <p class="fr-hint-text">{{ field.description }}</p>
-            {% for error in field.errors %}
-              <p class="fr-error-text">{{ error }}</p>
-            {% endfor %}
-          </div>
-        </li>
-      {% else %}
-        <div class="fr-col-12 fr-py-0">
-          <div class="fr-input-group fr-py-2w">
-            {{ field.label(class_="fr-label") }}
-            <p class="fr-hint-text">{{ field.description }}</p>
-            {% if field.errors %}
+<form id="meeting-form" method="POST">
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-8">
+      {% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
+        {% if field.type == "BooleanField" %}
+          <li>
+            <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="{% trans %}Activé{% endtrans %}" data-fr-unchecked-label="{% trans %}Désactivé{% endtrans %}">
+              {{ field(value="on", class_="fr-toggle__input")}}
+              {{ field.label(class_="fr-toggle__label", data_fr_checked_label=_("Activé"), data_fr_unchecked_label=_("Désactivé")) }}
+              <p class="fr-hint-text">{{ field.description }}</p>
               {% for error in field.errors %}
                 <p class="fr-error-text">{{ error }}</p>
               {% endfor %}
-            {% endif %}
-            {% if generate_button %}
-              <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-6">
-                  {{ field(class_="fr-input") }}
+            </div>
+          </li>
+        {% else %}
+          <div class="fr-col-12 fr-py-0">
+            <div class="fr-input-group fr-py-2w">
+              {{ field.label(class_="fr-label") }}
+              <p class="fr-hint-text">{{ field.description }}</p>
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <p class="fr-error-text">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if generate_button %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                  <div class="fr-col-6">
+                    {{ field(class_="fr-input") }}
+                  </div>
+                  <div class="fr-col-2">
+                    <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+                  </div>
                 </div>
-                <div class="fr-col-2">
-                  <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
+              {% elif reset_visio_code_button %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                  <div class="fr-col-6">
+                    {{ field(class_="fr-input") }}
+                  </div>
+                  <div class="fr-col-2">
+                    <button type="button" class="fr-btn fr-btn--secondary visio-code-button" data-field-name="{{ field.name }}">
+                      <i class="ri-refresh-fill" data-field-name="{{ field.name }}"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            {% elif reset_visio_code_button %}
-              <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-6">
-                  {{ field(class_="fr-input") }}
-                </div>
-                <div class="fr-col-2">
-                  <button type="button" class="fr-btn fr-btn--secondary visio-code-button" data-field-name="{{ field.name }}">
-                    <i class="ri-refresh-fill" data-field-name="{{ field.name }}"></i>
-                  </button>
-                </div>
-              </div>
-            {% else %}
-              {{ field(class_="fr-input", **kwargs) }}
-            {% endif %}
+              {% else %}
+                {{ field(class_="fr-input", **kwargs) }}
+              {% endif %}
+            </div>
           </div>
-        </div>
+        {% endif %}
+      {% endmacro %}
+
+      {% if meeting is not none %}
+        <h1 class="fr-h2">{% trans %}Modifier{% endtrans %} <em>{{meeting.name }}</em></h1>
+      {% else %}
+        <h1 class="fr-h2">{% trans %}Créer une réunion{% endtrans %}</h1>
       {% endif %}
-    {% endmacro %}
 
-    {% if meeting is not none %}
-      <h1 class="fr-h2">{% trans %}Modifier{% endtrans %} <em>{{meeting.name }}</em></h1>
-    {% else %}
-      <h1 class="fr-h2">{% trans %}Créer une réunion{% endtrans %}</h1>
-    {% endif %}
-
-    <form id="meeting-form" method="POST">
       {% if form.errors %}
         <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
       {% endif %}
