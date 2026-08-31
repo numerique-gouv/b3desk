@@ -4080,3 +4080,6 @@ msgstr ""
 #~ msgid "Supprimer le délégataire"
 #~ msgstr "பிரதிநிதியை நீக்கு"
 
+#~ msgid "Informations affichés à l'ouverture"
+#~ msgstr ""
+
