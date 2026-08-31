@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-31 16:26+0200\n"
+"POT-Creation-Date: 2026-08-31 17:28+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -246,7 +246,7 @@ msgid "Présentation affichée à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:244
-msgid "Informations affichés à l'ouverture"
+msgid "Informations affichées à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:255 web/b3desk/templates/admin/meeting_infos.html:155
@@ -1212,7 +1212,7 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:14
 #: web/b3desk/templates/admin/group_form.html:28
 #: web/b3desk/templates/admin/group_infos.html:14
-#: web/b3desk/templates/meeting/form.html:61
+#: web/b3desk/templates/meeting/form.html:62
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr "மாற்றியமைப்பவர்"
@@ -3158,17 +3158,17 @@ msgstr "இந்தக் கூட்டத்திற்கு தற்ப�
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr "%(meeting_name)s தொடர்பான கோப்புகள்"
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Activé"
 msgstr "இயக்கப்பட்டது"
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Désactivé"
 msgstr "முடக்கப்பட்டது"
 
-#: web/b3desk/templates/meeting/form.html:63
+#: web/b3desk/templates/meeting/form.html:64
 msgid "Créer une réunion"
 msgstr "சந்திப்பை உருவாக்கவும்"
 
@@ -3929,4 +3929,7 @@ msgstr ""
 
 #~ msgid "Supprimer le délégataire"
 #~ msgstr "பிரதிநிதியை நீக்கு"
+
+#~ msgid "Informations affichés à l'ouverture"
+#~ msgstr ""
 

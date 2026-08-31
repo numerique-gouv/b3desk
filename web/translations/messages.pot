@@ -208,7 +208,7 @@ msgid "Présentation affichée à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:244
-msgid "Informations affichés à l'ouverture"
+msgid "Informations affichées à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:255 web/b3desk/templates/admin/meeting_infos.html:155

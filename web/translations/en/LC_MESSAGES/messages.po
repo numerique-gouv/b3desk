@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-31 16:26+0200\n"
+"POT-Creation-Date: 2026-08-31 17:28+0200\n"
 "PO-Revision-Date: 2026-05-05 10:03+0000\n"
 "Last-Translator: Éloi Rivard <eloi.rivard@nubla.fr>\n"
 "Language: en\n"
@@ -229,7 +229,7 @@ msgid "Présentation affichée à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:244
-msgid "Informations affichés à l'ouverture"
+msgid "Informations affichées à l'ouverture"
 msgstr ""
 
 #: web/b3desk/forms.py:255 web/b3desk/templates/admin/meeting_infos.html:155
@@ -1065,7 +1065,7 @@ msgstr ""
 #: web/b3desk/templates/admin/group_form.html:14
 #: web/b3desk/templates/admin/group_form.html:28
 #: web/b3desk/templates/admin/group_infos.html:14
-#: web/b3desk/templates/meeting/form.html:61
+#: web/b3desk/templates/meeting/form.html:62
 #: web/b3desk/templates/meeting/wizard.html:23
 msgid "Modifier"
 msgstr ""
@@ -2672,17 +2672,17 @@ msgstr ""
 msgid "Fichiers associés à %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Activé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:13
-#: web/b3desk/templates/meeting/form.html:15
+#: web/b3desk/templates/meeting/form.html:14
+#: web/b3desk/templates/meeting/form.html:16
 msgid "Désactivé"
 msgstr ""
 
-#: web/b3desk/templates/meeting/form.html:63
+#: web/b3desk/templates/meeting/form.html:64
 msgid "Créer une réunion"
 msgstr ""
 
@@ -7406,5 +7406,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Supprimer le délégataire"
+#~ msgstr ""
+
+#~ msgid "Informations affichés à l'ouverture"
 #~ msgstr ""
 

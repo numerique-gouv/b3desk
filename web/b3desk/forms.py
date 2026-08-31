@@ -241,7 +241,7 @@ class MeetingForm(FlaskForm):
     )
 
     showSessionDetailsOnJoin = BooleanField(
-        label=_("Informations affichés à l'ouverture"),
+        label=_("Informations affichées à l'ouverture"),
         default=True,
     )
 
