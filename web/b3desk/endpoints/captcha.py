@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import requests
 from flask import Blueprint
+from flask import Response
 from flask import current_app
 from flask import request
 
@@ -63,7 +64,10 @@ def captcha_proxy():
         captcha_error(message)
         return {"success": False}, response.status_code
 
-    return response.content if dict(request.args)["get"] == "sound" else response.json()
+    if dict(request.args)["get"] == "sound":
+        return Response(response.content, content_type="audio/wav")
+
+    return response.json()
 
 
 def captcha_validation(captcha_uuid, captcha_code):

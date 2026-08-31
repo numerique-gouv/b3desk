@@ -16,12 +16,13 @@ from b3desk.models import db
 from flask import Flask
 from flask_migrate import Migrate
 from flask_migrate import upgrade
-from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
 from joserfc.jwk import RSAKey
 from pytest_lazy_fixtures import lf
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
+
+from tests.html_validation import ValidatingTestApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
@@ -385,7 +386,7 @@ def app(configuration, jinja_cache_directory):
 @pytest.fixture
 def client_app(app):
     with app.test_request_context():
-        yield TestApp(app)
+        yield ValidatingTestApp(app)
 
 
 @pytest.fixture
