@@ -523,32 +523,32 @@ msgstr ""
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:362
+#: web/b3desk/endpoints/meetings.py:388
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:414
+#: web/b3desk/endpoints/meetings.py:441
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:417
+#: web/b3desk/endpoints/meetings.py:444
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:420
+#: web/b3desk/endpoints/meetings.py:447
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:427
+#: web/b3desk/endpoints/meetings.py:454
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:440
+#: web/b3desk/endpoints/meetings.py:467
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:464
+#: web/b3desk/endpoints/meetings.py:489
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
@@ -578,16 +578,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:344 web/b3desk/models/meetings.py:351
+#: web/b3desk/models/meetings.py:431 web/b3desk/models/meetings.py:438
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:358
+#: web/b3desk/models/meetings.py:445
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:360
+#: web/b3desk/models/meetings.py:447
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -889,7 +889,7 @@ msgstr ""
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:64
 #: web/b3desk/templates/meeting/files.html:86
-#: web/b3desk/templates/meeting/files.html:159
+#: web/b3desk/templates/meeting/files.html:140
 #: web/b3desk/templates/meeting/history.html:208
 #: web/b3desk/templates/meeting/history.html:209
 #: web/b3desk/templates/meeting/history.html:240
@@ -901,8 +901,8 @@ msgstr ""
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
-#: web/b3desk/templates/meeting/modals/invite.html:8
-#: web/b3desk/templates/meeting/modals/invite.html:9
+#: web/b3desk/templates/meeting/modals/invite.html:11
+#: web/b3desk/templates/meeting/modals/invite.html:12
 msgid "Fermer"
 msgstr ""
 
@@ -2680,7 +2680,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:9
-#: web/b3desk/templates/meeting/files.html:167
+#: web/b3desk/templates/meeting/files.html:148
 #: web/b3desk/templates/meeting/history.html:251
 #: web/b3desk/templates/meeting/history.html:298
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
