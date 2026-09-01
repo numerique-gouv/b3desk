@@ -2713,6 +2713,10 @@ msgstr ""
 msgid "Prévisualisation de votre salle"
 msgstr ""
 
+#: web/b3desk/templates/meeting/form.html:206
+msgid "Mise à jour en temps réel"
+msgstr ""
+
 #: web/b3desk/templates/meeting/form.html:208
 msgid "Aperçu de la salle selon les options d'affichage sélectionnées"
 msgstr ""
