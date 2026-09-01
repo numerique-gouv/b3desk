@@ -153,7 +153,7 @@ def test_user_cannot_edit_delegates_for_shadow_meeting(
 def test_user_cannot_read_records_page_for_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.get("/meeting/history/{shadow_meeting.id}", status=403)
+    client_app.get(f"/meeting/history/{shadow_meeting.id}", status=403)
 
 
 def test_user_cannot_edit_shadow_meeting(
