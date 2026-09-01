@@ -515,6 +515,43 @@ def test_open_recordings_page(
     assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
 
 
+def test_open_recordings_page_includes_orphan_recordings(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Recordings with no matching MeetingSession (e.g. predating session tracking) get their own row, without duplicating recordings that already have one."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    linked_recording_id = "ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
+    orphan_recording_id = "ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111"
+
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 4, 15, 38, 41),
+        ended_at=datetime.datetime(2018, 7, 4, 15, 40, 0),
+        recording_id=linked_recording_id,
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    sessions = response.context["sessions"]
+    recording_ids = [s["recording"]["recordID"] for s in sessions]
+    assert recording_ids == [linked_recording_id, orphan_recording_id]
+    assert len(recording_ids) == len(set(recording_ids))
+
+
+# todo test that multiple meetings with same start and end date are not merged and displayed on the correct page
+
+
 def test_parse_ai_summary_playback():
     """The ai-summary playback keeps the summary HTML/PDF/Markdown URLs from <urls>."""
     from b3desk.models.bbb import parse_ai_summary_playback
