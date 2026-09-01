@@ -278,27 +278,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:661 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:681 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:665
+#: web/b3desk/settings.py:685
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:678
+#: web/b3desk/settings.py:698
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:681
+#: web/b3desk/settings.py:701
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:684
+#: web/b3desk/settings.py:704
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:688
+#: web/b3desk/settings.py:708
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"

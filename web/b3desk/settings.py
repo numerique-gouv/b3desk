@@ -634,8 +634,28 @@ class MainSettings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
     """URI de configuration de la base de données.
 
-    Par exemple ``postgresql://user:password@localhost:5432/bbb_visio``
+    Par exemple ``postgresql+psycopg://user:password@localhost:5432/bbb_visio``
+
+    Le schéma ``postgresql://`` est déprécié : SQLAlchemy le résout vers
+    psycopg2, qui n’est plus une dépendance de B3Desk. Il est réécrit vers
+    ``postgresql+psycopg://`` au chargement de la configuration.
     """
+
+    @field_validator("SQLALCHEMY_DATABASE_URI")
+    @classmethod
+    def _migrate_psycopg2_scheme(cls, value):
+        """Route the deprecated ``postgresql://`` scheme to the psycopg 3 driver."""
+        prefix = "postgresql://"
+        if not value.startswith(prefix):
+            return value
+
+        warnings.warn(
+            "Le schéma postgresql:// est déprécié car il résout vers psycopg2, "
+            "utiliser postgresql+psycopg:// à la place",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return f"postgresql+psycopg://{value.removeprefix(prefix)}"
 
     MEETING_LOCALE_VARIANT: MeetingLocaleVariant = MeetingLocaleVariant.REUNION
     """Variante de locale pour le vocabulaire des réunions.
