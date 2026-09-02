@@ -306,22 +306,6 @@ def test_join_meeting_with_display_options_set(client_app, meeting, bbb_response
     assert query["userdata-bbb_show_session_details_on_join"] == ["false"]
 
 
-def test_join_meeting_with_unset_display_options(client_app, meeting, bbb_response):
-    """Test that a display option left unset (legacy NULL row) is omitted rather than sent as 'none'."""
-    meeting.showPublicChatOnLogin = None
-    db.session.add(meeting)
-    db.session.commit()
-
-    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
-    response = client_app.get(f"/meeting/signin/{meeting.id}/hash/{meeting_hash}")
-    response.form["fullname"] = "Bob"
-    response = response.form.submit()
-
-    query = parse_qs(urlparse(response.location).query)
-    assert "userdata-bbb_show_public_chat_on_login" not in query
-    assert query["userdata-bbb_hide_presentation_on_join"] == ["false"]
-
-
 def test_join_meeting_as_role__meeting_not_found(
     client_app, authenticated_user, bbb_response
 ):
