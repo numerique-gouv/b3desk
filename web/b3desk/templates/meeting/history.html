@@ -31,13 +31,9 @@
             <div class="fr-notice fr-notice--info fr-mt-4w">
                 <div class="fr-container">
                     <div class="fr-notice__body">
-                        <p>
-                            <span class="fr-notice__title">
-                                <p>
-                                    {% trans %}Cette réunion est toujours en cours{% endtrans %}.
-                                    {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin de la réunion{% endtrans %}.
-                                </p>
-                            </span>
+                        <p class="fr-notice__title">
+                            {% trans %}Cette réunion est toujours en cours{% endtrans %}.
+                            {% trans %}Si un enregistrement est en cours, il ne sera encodé qu'après la fin de la réunion{% endtrans %}.
                         </p>
                     </div>
                 </div>
@@ -46,14 +42,10 @@
         <div class="fr-notice fr-notice--info fr-mt-4w">
             <div class="fr-container">
                 <div class="fr-notice__body">
-                    <p>
-                        <span class="fr-notice__title">
-                            <p>
-                                {% trans %}Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre autant de temps que la durée de la réunion.{% endtrans %}<br>
-                                {% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}<br>
-                                {% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}
-                            </p>
-                        </span>
+                    <p class="fr-notice__title">
+                        {% trans %}Après la fin d'une réunion, l'encodage de l'enregistrement peut prendre autant de temps que la durée de la réunion.{% endtrans %}<br>
+                        {% trans %}Si aucun modérateur ne met fin à la réunion, un délai supplémentaire de plusieurs minutes s'ajoute après que tous les utilisateurs l'aient quitté.{% endtrans %}<br>
+                        {% trans duration=config["RECORDING_DURATION"]|timedeltaformat %}Les enregistrements sont conservés pour une période de {{ duration }}.{% endtrans %}
                     </p>
                 </div>
             </div>

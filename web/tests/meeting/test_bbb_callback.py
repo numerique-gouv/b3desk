@@ -1,4 +1,8 @@
+import datetime
+
 from b3desk import cache
+from b3desk.models import db
+from b3desk.models.meetings import MeetingSession
 from b3desk.tasks import recording_scheduled_key
 from joserfc import jwt
 from joserfc.jwk import OctKey
@@ -148,6 +152,49 @@ def test_callback_acknowledges_even_when_bbb_has_no_recording_yet(
         status=200,
     )
     assert len(smtpd.messages) == 0
+
+
+def test_second_format_callback_does_not_leak_recording_to_earlier_session(
+    client_app, meeting, bbb_recording, make_signed_parameters
+):
+    """A later callback for the same recording (e.g. a second format) must not reassign the recording to an earlier, unrecorded session."""
+    earlier_session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2023, 1, 1, 10, 0, 0),
+        ended_at=datetime.datetime(2023, 1, 1, 10, 30, 0),
+    )
+    later_session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2023, 1, 1, 11, 0, 0),
+        ended_at=datetime.datetime(2023, 1, 1, 11, 30, 0),
+    )
+    db.session.add_all([earlier_session, later_session])
+    db.session.commit()
+
+    signed = make_signed_parameters(
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID}
+    )
+
+    # First callback (e.g. presentation format) matches the most recent
+    # session that has no recording yet.
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=200,
+    )
+    # A second callback for the same recording (e.g. video/ai-summary format)
+    # must be a no-op regarding session matching, not fall back to the older
+    # session that never had a recording.
+    client_app.post(
+        "/bbb-callback/recording_status",
+        {"signed_parameters": signed},
+        status=200,
+    )
+
+    db.session.refresh(earlier_session)
+    db.session.refresh(later_session)
+    assert later_session.recording_id == RECORD_ID
+    assert earlier_session.recording_id is None
 
 
 def test_subsequent_callback_triggers_recheck(

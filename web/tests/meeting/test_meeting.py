@@ -7,7 +7,6 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-import pytest
 from b3desk.endpoints.bbb_callback import get_meeting_ended_callback_url
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_meeting_secret_key
@@ -530,7 +529,7 @@ def test_create_no_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.meetingID),
+        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
@@ -674,7 +673,7 @@ def test_create_with_only_a_default_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.meetingID),
+        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
@@ -787,7 +786,7 @@ def test_create_with_files(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.meetingID),
+        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 

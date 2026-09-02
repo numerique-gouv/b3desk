@@ -170,7 +170,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         attendee_signin_url=meeting.attendee_url,
     )
     meta_bbb_recording_ready_url = get_recording_status_callback_url()
-    meta_end_callback_url = get_meeting_ended_callback_url(meeting.meetingID)
+    meta_end_callback_url = get_meeting_ended_callback_url(meeting.bbb_meeting_id)
 
     meta_academy = user.mail_domain if user and user.mail_domain else None
 

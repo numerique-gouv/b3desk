@@ -127,14 +127,18 @@ def recording_status():
     if not meeting:
         return "", 410
 
-    session = (
-        MeetingSession.query.filter_by(meeting_id=meeting.id, recording_id=None)
-        .order_by(MeetingSession.started_at.desc())
-        .first()
-    )
-    if session:
-        session.recording_id = bbb_recording_id
-        db.session.commit()
+    already_matched = MeetingSession.query.filter_by(
+        meeting_id=meeting.id, recording_id=bbb_recording_id
+    ).first()
+    if not already_matched:
+        session = (
+            MeetingSession.query.filter_by(meeting_id=meeting.id, recording_id=None)
+            .order_by(MeetingSession.started_at.desc())
+            .first()
+        )
+        if session:
+            session.recording_id = bbb_recording_id
+            db.session.commit()
 
     if cache.get(recording_notified_key(bbb_recording_id)):
         logger.info(
