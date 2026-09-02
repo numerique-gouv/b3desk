@@ -46,6 +46,7 @@ from .. import auth
 from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..utils import send_delegation_mail
+from ..utils import send_new_owner_mail
 
 bp = Blueprint("meetings", __name__)
 
@@ -477,5 +478,43 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
             "meetings.manage_delegation",
             meeting=meeting,
             admin_mode=is_admin_mode() or None,
+        )
+    )
+
+
+@bp.route(
+    "/meeting/transfert-meeting-ownership/<meeting:meeting>/<user:delegate>",
+    methods=["POST"],
+)
+@check_oidc_connection(auth)
+@auth.oidc_auth("default")
+@meeting_access_required()
+def transfert_meeting_ownership(meeting: Meeting, user: User, delegate: User):
+    """Transfert meeting ownership to a meeting delegate."""
+    new_owner = delegate
+    previous_owner = meeting.owner
+    if new_owner is None or new_owner not in meeting.get_all_delegates:
+        abort(404)
+
+    meeting.transfer_ownership(previous_owner, new_owner)
+
+    flash(
+        _(
+            "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s",
+            owner_name=new_owner.fullname,
+            meeting_name=meeting.name,
+        ),
+        "success",
+    )
+    send_delegation_mail(meeting, previous_owner, new_delegation=True)
+    send_new_owner_mail(meeting, new_owner, previous_owner)
+    return (
+        redirect(url_for("public.welcome"))
+        if not is_admin_mode()
+        else redirect(
+            url_for(
+                "admin.meeting_infos",
+                meeting=meeting,
+            )
         )
     )

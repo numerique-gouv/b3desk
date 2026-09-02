@@ -233,6 +233,7 @@ class Meeting(db.Model):
                 MeetingAccess.meeting_id == self.id,
                 MeetingAccess.level == AccessLevel.DELEGATE,
             )
+            .order_by(User.family_name, User.given_name)
         ).all()
 
     def url_for_role(self, role):
@@ -276,6 +277,40 @@ class Meeting(db.Model):
         ).one()
         meeting_secret_key.secret_key = str(uuid.uuid7())
         meeting_secret_key.legacy_secret_keys = []
+
+    def transfer_ownership(self, previous_owner, new_owner):
+        self.owner = new_owner
+        self.owner_id = new_owner.id
+        new_access = MeetingAccess(
+            meeting_id=self.id,
+            user_id=previous_owner.id,
+            level=AccessLevel.DELEGATE,
+        )
+        removed_access = MeetingAccess.query.filter_by(
+            user_id=new_owner.id, meeting_id=self.id
+        ).one()
+        db.session.add(new_access)
+        db.session.delete(removed_access)
+        db.session.commit()
+        current_app.logger.info(
+            "Meeting %s %s have a new owner : %s %s",
+            self.id,
+            self.name,
+            new_owner.id,
+            new_owner.fullname,
+        )
+        current_app.logger.info(
+            "%s became delegate of meeting %s %s",
+            previous_owner.email,
+            self.id,
+            self.name,
+        )
+        current_app.logger.info(
+            "%s removed from delegates of meeting %s %s",
+            new_owner.email,
+            self.id,
+            self.name,
+        )
 
 
 class PreviousVoiceBridge(db.Model):

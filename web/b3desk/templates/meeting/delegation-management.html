@@ -31,8 +31,9 @@
                             <table id="delegation">
                                 <thead class="">
                                     <tr class="">
-                                        <th class="fr-col--lg fr-cell--center"> Liste des délégataires </th>
-                                        <th class="fr-col--xs fr-cell--center"> {{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }} </th>
+                                        <th class="fr-col--lg fr-cell--center">{% trans %}Liste des délégataires{% endtrans %} ({{ meeting.get_all_delegates|length }}/{{ config.get("MAXIMUM_MEETING_DELEGATES") }})</th>
+                                        <th class="fr-col--xs fr-cell--center">{% trans %}Retirer{% endtrans %}</th>
+                                        <th class="fr-col--xs fr-cell--center">{% trans %}Transférer{% endtrans %}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="">
@@ -41,6 +42,9 @@
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
                                                 <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}" href="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}"></a>
+                                            </td>
+                                            <td class="fr-col--xs fr-cell--center">
+                                                <button class="fr-btn fr-icon-share-forward-line fr-btn--delete" data-fr-opened="false" aria-controls="transfert-ownership-confirmation-{{ delegate.id }}" title="{% trans meeting_name=meeting.name %}Transférer {{ meeting_name }}{% endtrans %}"></button>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -53,3 +57,6 @@
         </div>
     </div>
 </div>
+{% for delegate in meeting.get_all_delegates %}
+    {% include 'meeting/modals/transfert-ownership-confirmation.html' %}
+{% endfor %}
