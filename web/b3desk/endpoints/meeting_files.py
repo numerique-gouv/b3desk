@@ -77,18 +77,22 @@ def edit_meeting_files(meeting: Meeting, user: User):
 @meeting_access_required(AccessLevel.DELEGATE)
 def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or file upload."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {"msg": _("Requête invalide")}, 400
 
-    if data["from"] == "nextcloud":
-        return add_meeting_file_nextcloud(data["value"], meeting.id)
+    origin = data.get("from")
+    value = data.get("value")
+    if origin not in ("nextcloud", "URL", "upload") or not isinstance(value, str):
+        return {"msg": "no file provided"}, 400
 
-    if data["from"] == "URL":
-        return add_meeting_file_URL(data["value"], meeting.id)
+    if origin == "nextcloud":
+        return add_meeting_file_nextcloud(value, meeting.id)
 
-    if data["from"] == "upload":
-        return add_meeting_file_from_upload(secure_filename(data["value"]), meeting.id)
+    if origin == "URL":
+        return add_meeting_file_URL(value, meeting.id)
 
-    return {"msg": "no file provided"}, 400
+    return add_meeting_file_from_upload(secure_filename(value), meeting.id)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
@@ -148,7 +152,10 @@ def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     if meeting_file.meeting_id != meeting.id:
         abort(404)
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not isinstance(data.get("value"), bool):
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_file.is_downloadable = data["value"]
     db.session.add(meeting_file)
     db.session.commit()
@@ -166,6 +173,9 @@ def add_meeting_file_from_upload(title, meeting_id):
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
     upload_path = upload_chunk_dir / f"{g.user.id}-{meeting_id}-{title}"
+    if not upload_path.is_file():
+        return {"msg": _("Aucun fichier téléversé pour ce nom")}, 400
+
     metadata = upload_path.stat()
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
@@ -394,11 +404,18 @@ def upload_file_chunks(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     """Delete a meeting file."""
-    data = request.get_json()
-    meeting_file_id = data["id"]
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {"msg": _("Requête invalide")}, 400
+
+    try:
+        meeting_file_id = int(data["id"])
+    except KeyError, TypeError, ValueError:
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_file = db.session.get(MeetingFiles, meeting_file_id)
     if meeting_file is None:
-        return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
+        return {"id": meeting_file_id, "msg": _("Fichier introuvable")}, 404
 
     if (
         meeting_file.meeting.owner_id != g.user.id
@@ -455,7 +472,12 @@ def file_picker_callback(user: User, bbb_meeting_id: str):
     This is called by the Nextcloud file picker when users select a document.
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
-    filenames = request.get_json()
+    filenames = request.get_json(silent=True)
+    if not isinstance(filenames, list) or not all(
+        isinstance(filename, str) for filename in filenames
+    ):
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_files = [
         create_external_meeting_file(filename, g.user) for filename in filenames
     ]
