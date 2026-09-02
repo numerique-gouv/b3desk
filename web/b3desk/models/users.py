@@ -250,7 +250,7 @@ def clean_db_and_delete_user(user, force=False):
 def get_inactive_users_to_inform():
     from b3desk.models.meetings import Meeting
 
-    today = datetime.now().date()
+    today = datetime.now(UTC).date()
     account_inactivity_period = timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
