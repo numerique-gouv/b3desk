@@ -482,7 +482,10 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
     )
 
 
-@bp.route("/meeting/transfert-meeting-ownership/<meeting:meeting>/<user:delegate>")
+@bp.route(
+    "/meeting/transfert-meeting-ownership/<meeting:meeting>/<user:delegate>",
+    methods=["POST"],
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_access_required()

@@ -206,7 +206,8 @@ def test_maximum_delegate_number_limit(
     assert len(smtpd.messages) == 0
     client_app.app.config["MAXIMUM_MEETING_DELEGATES"] = 1
     response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
-    form = response.form
+    forms = response.forms
+    form = forms[0]
     form["search"] = "berenice@domain.tld"
     response = form.submit()
     assert (
@@ -216,7 +217,8 @@ def test_maximum_delegate_number_limit(
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
     response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
-    form = response.form
+    forms = response.forms
+    form = forms[0]
     form["search"] = "charlie@domain.tld"
     response = form.submit()
     assert (
@@ -255,7 +257,8 @@ def test_add_delegate_who_is_already_delegate(
     """Test that there is a flash message when adding a delegate aready delegate."""
     assert len(smtpd.messages) == 0
     response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
-    form = response.form
+    forms = response.forms
+    form = forms[0]
     form["search"] = "berenice@domain.tld"
     response = form.submit()
     assert (
@@ -266,7 +269,8 @@ def test_add_delegate_who_is_already_delegate(
     assert len(smtpd.messages) == 1
 
     response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
-    form = response.form
+    forms = response.forms
+    form = forms[0]
     form["search"] = "berenice@domain.tld"
     response = form.submit()
     assert ("warning", "L'utilisateur est déjà délégataire") in response.flashes
@@ -288,6 +292,9 @@ def test_owner_can_remove_delegation(
     assert len(smtpd.messages) == 0
     response = client_app.get(f"/meeting/manage-delegation/{meeting.id}", status=200)
     form = response.form
+    print(form)
+    forms = response.forms
+    print(forms)
     form["search"] = "berenice@domain.tld"
     response = form.submit()
     assert (

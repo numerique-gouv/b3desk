@@ -16,7 +16,7 @@ def test_owner_can_transfer_ownership_to_delegate(
     )
     db.session.add(new_access)
     db.session.commit()
-    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=302)
+    client_app.post("/meeting/transfert-meeting-ownership/1/2", status=302)
     assert meeting.owner is user_2
     assert user in meeting.get_all_delegates
     assert len(smtpd.messages) == 2
@@ -33,7 +33,7 @@ def test_new_owner_is_not_delegate_display_404(
     client_app, authenticated_user, meeting, user_2
 ):
     """Test form displays message if form is empty."""
-    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=404)
+    client_app.post("/meeting/transfert-meeting-ownership/1/2", status=404)
 
 
 def test_transfer_ownership_preserves_shared_invitation_links(
@@ -59,7 +59,7 @@ def test_transfer_ownership_preserves_shared_invitation_links(
     previous_moderator_url = meeting.moderator_url
     previous_attendee_url = meeting.attendee_url
 
-    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=302)
+    client_app.post("/meeting/transfert-meeting-ownership/1/2", status=302)
 
     db.session.refresh(moderator_secret_key)
     db.session.refresh(attendee_secret_key)
@@ -84,7 +84,7 @@ def test_transfer_ownership_preserves_previous_owners_recordings_access(
     db.session.add(new_access)
     db.session.commit()
 
-    client_app.get("/meeting/transfert-meeting-ownership/1/2", status=302)
+    client_app.post("/meeting/transfert-meeting-ownership/1/2", status=302)
 
     client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
 

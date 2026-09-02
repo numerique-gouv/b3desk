@@ -506,7 +506,7 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:500
+#: web/b3desk/endpoints/meetings.py:503
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
@@ -1032,7 +1032,7 @@ msgstr ""
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:33
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:34
 #: web/b3desk/templates/meeting/recordings.html:161
 #: web/b3desk/templates/meeting/recordings.html:205
 msgid "Annuler"
@@ -3233,7 +3233,7 @@ msgid "La confirmation est définitive."
 msgstr ""
 
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:29
-#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:29
+#: web/b3desk/templates/meeting/modals/transfert-ownership-confirmation.html:30
 msgid "Confirmer"
 msgstr ""
 
