@@ -185,6 +185,26 @@ def test_save_existing_meeting_not_running(
     )
 
 
+def test_save_existing_meeting_display_options(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """Test that the BBB display options are read from the form and persisted."""
+    assert meeting.showPresentationOnJoin is True
+    assert meeting.showSessionDetailsOnJoin is True
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["showPresentationOnJoin"] = False
+    res.forms[0]["showSessionDetailsOnJoin"] = False
+    res = res.forms[0].submit()
+    assert ("success", "meeting modifications prises en compte") in res.flashes
+
+    meeting = db.session.scalars(db.select(Meeting)).one()
+    assert meeting.showPresentationOnJoin is False
+    assert meeting.showParticipantsOnLogin is True
+    assert meeting.showPublicChatOnLogin is True
+    assert meeting.showSessionDetailsOnJoin is False
+
+
 def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):

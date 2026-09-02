@@ -2,6 +2,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.join import get_meeting_secret_key
+from b3desk.models import db
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -268,6 +269,41 @@ def test_join_meeting_as_role(client_app, authenticated_user, meeting, bbb_respo
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join?fullName={fullname}"
         in response.location
     )
+
+
+def test_join_meeting_sends_display_options_to_bbb(client_app, meeting, bbb_response):
+    """Test that the meeting's default display options are sent as userdata- params to BBB on join."""
+    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
+    response = client_app.get(f"/meeting/signin/{meeting.id}/hash/{meeting_hash}")
+    response.form["fullname"] = "Bob"
+    response = response.form.submit()
+
+    query = parse_qs(urlparse(response.location).query)
+    assert query["userdata-bbb_hide_presentation_on_join"] == ["false"]
+    assert query["userdata-bbb_show_participants_on_login"] == ["true"]
+    assert query["userdata-bbb_show_public_chat_on_login"] == ["true"]
+    assert query["userdata-bbb_show_session_details_on_join"] == ["true"]
+
+
+def test_join_meeting_with_display_options_set(client_app, meeting, bbb_response):
+    """Test that set display options are sent as to BBB on join."""
+    meeting.showPresentationOnJoin = False
+    meeting.showParticipantsOnLogin = False
+    meeting.showPublicChatOnLogin = False
+    meeting.showSessionDetailsOnJoin = False
+    db.session.add(meeting)
+    db.session.commit()
+
+    meeting_hash = get_meeting_secret_key(meeting, Role.attendee)
+    response = client_app.get(f"/meeting/signin/{meeting.id}/hash/{meeting_hash}")
+    response.form["fullname"] = "Bob"
+    response = response.form.submit()
+
+    query = parse_qs(urlparse(response.location).query)
+    assert query["userdata-bbb_hide_presentation_on_join"] == ["true"]
+    assert query["userdata-bbb_show_participants_on_login"] == ["false"]
+    assert query["userdata-bbb_show_public_chat_on_login"] == ["false"]
+    assert query["userdata-bbb_show_session_details_on_join"] == ["false"]
 
 
 def test_join_meeting_as_role__meeting_not_found(

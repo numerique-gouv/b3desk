@@ -225,6 +225,26 @@ class MeetingForm(FlaskForm):
         render_kw={"readonly": True},
     )
 
+    showParticipantsOnLogin = BooleanField(
+        label=_("Liste des participants visible"),
+        default=True,
+    )
+
+    showPublicChatOnLogin = BooleanField(
+        label=_("Chat affiché à l'ouverture"),
+        default=True,
+    )
+
+    showPresentationOnJoin = BooleanField(
+        label=_("Présentation affichée à l'ouverture"),
+        default=True,
+    )
+
+    showSessionDetailsOnJoin = BooleanField(
+        label=_("Informations affichées à l'ouverture"),
+        default=True,
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logoutUrl.default = current_app.config["MEETING_LOGOUT_URL"]

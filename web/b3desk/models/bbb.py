@@ -403,7 +403,15 @@ class BBB:
         )
         return self.bbb_response(request)
 
-    def prepare_request_to_join_bbb(self, meeting_role, fullname):
+    def prepare_request_to_join_bbb(
+        self,
+        meeting_role,
+        fullname,
+        show_presentation_on_join=None,
+        show_participants_on_login=None,
+        show_public_chat_on_login=None,
+        show_session_details_on_join=None,
+    ):
         """Join a BBB meeting.
 
         https://docs.bigbluebutton.org/dev/api.html#join
@@ -420,6 +428,24 @@ class BBB:
             params["role"] = "viewer"
         elif meeting_role == Role.moderator:
             params["role"] = "moderator"
+
+        if show_presentation_on_join is not None:
+            if show_presentation_on_join is True:
+                params["userdata-bbb_hide_presentation_on_join"] = "false"
+            elif show_presentation_on_join is False:
+                params["userdata-bbb_hide_presentation_on_join"] = "true"
+        if show_participants_on_login is not None:
+            params["userdata-bbb_show_participants_on_login"] = str(
+                show_participants_on_login
+            ).lower()
+        if show_public_chat_on_login is not None:
+            params["userdata-bbb_show_public_chat_on_login"] = str(
+                show_public_chat_on_login
+            ).lower()
+        if show_session_details_on_join is not None:
+            params["userdata-bbb_show_session_details_on_join"] = str(
+                show_session_details_on_join
+            ).lower()
 
         return self.bbb_request("join", params=params)
 

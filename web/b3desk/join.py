@@ -108,7 +108,14 @@ def get_join_url(
     nickname = f"{fullname} - {fullname_suffix}" if fullname_suffix else fullname
     return (
         BBB(meeting.bbb_meeting_id)
-        .prepare_request_to_join_bbb(meeting_role, nickname)
+        .prepare_request_to_join_bbb(
+            meeting_role,
+            nickname,
+            show_presentation_on_join=meeting.showPresentationOnJoin,
+            show_participants_on_login=meeting.showParticipantsOnLogin,
+            show_public_chat_on_login=meeting.showPublicChatOnLogin,
+            show_session_details_on_join=meeting.showSessionDetailsOnJoin,
+        )
         .url
     )
 
