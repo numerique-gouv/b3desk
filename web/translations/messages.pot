@@ -3172,7 +3172,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
-msgid "Rendez-vous simplement sur votre espace et lancez la réunion :"
+msgid "Rendez vous simplement sur votre espace et lancez la réunion :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
@@ -3188,6 +3188,10 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:11
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:7
 msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
+msgid "Rendez vous simplement sur votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
