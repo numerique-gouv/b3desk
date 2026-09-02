@@ -1,13 +1,24 @@
-"""Point d'entrée du worker Celery.
+"""Point d'entrée des services Celery.
 
-Construit l'application Flask (et donc applique ``ContextTask`` sur
-l'instance Celery) avant que le worker n'accepte des tâches.
-Utilisé via ``celery --app b3desk.celery_worker.celery worker``.
+Construit l'application Flask, qui instancie et configure l'application Celery,
+puis expose cette dernière. Utilisé via ``celery --app b3desk.celery_worker
+worker`` et ``celery --app b3desk.celery_worker beat``.
 """
 
+from celery.signals import worker_process_init
+
 from b3desk import create_app
-from b3desk.tasks import celery
+from b3desk.models import db
 
 flask_app = create_app()
+celery_app = flask_app.extensions["celery"]
 
-__all__ = ["celery", "flask_app"]
+
+@worker_process_init.connect
+def reset_database_pool(**kwargs):
+    """Give each forked worker process its own connection pool."""
+    with flask_app.app_context():
+        db.engine.dispose(close=False)
+
+
+__all__ = ["celery_app", "flask_app"]
