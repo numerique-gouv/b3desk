@@ -294,17 +294,6 @@ class MeetingSearchForm(FlaskForm):
     )
 
 
-class TransferMeetingOwnership(FlaskForm):
-    select = SelectField(
-        label=_("Sélectionner un délégataire"),
-        description=_(
-            "Transférer la propriété d'une réunion est action définitive. Vous deviendrez délégataire de cette réunion."
-        ),
-        validators=[validators.DataRequired()],
-        choices=[],
-    )
-
-
 class GroupSearchForm(FlaskForm):
     search = StringField(
         label=_("Rechercher un groupe"),

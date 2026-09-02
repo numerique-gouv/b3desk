@@ -213,7 +213,7 @@ msgid ""
 "s'arrête à sa fermeture."
 msgstr ""
 
-#: web/b3desk/forms.py:249 web/b3desk/forms.py:350
+#: web/b3desk/forms.py:249 web/b3desk/forms.py:339
 #: web/b3desk/templates/admin/group_infos.html:75
 #: web/b3desk/templates/admin/meeting_infos.html:163
 msgid "Génération de résumé (IA)"
@@ -248,43 +248,33 @@ msgstr ""
 msgid "Rechercher une réunion"
 msgstr ""
 
-#: web/b3desk/forms.py:299
-msgid "Sélectionner un délégataire"
-msgstr ""
-
-#: web/b3desk/forms.py:301
-msgid ""
-"Transférer la propriété d'une réunion est action définitive. Vous "
-"deviendrez délégataire de cette réunion."
-msgstr ""
-
-#: web/b3desk/forms.py:310 web/b3desk/templates/admin/groups.html:18
+#: web/b3desk/forms.py:299 web/b3desk/templates/admin/groups.html:18
 msgid "Rechercher un groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:324
+#: web/b3desk/forms.py:313
 msgid "Nom du groupe"
 msgstr ""
 
-#: web/b3desk/forms.py:326
+#: web/b3desk/forms.py:315
 msgid "doit être unique"
 msgstr ""
 
-#: web/b3desk/forms.py:334 web/b3desk/templates/admin/group_infos.html:59
+#: web/b3desk/forms.py:323 web/b3desk/templates/admin/group_infos.html:59
 #: web/b3desk/templates/admin/user_infos.html:133
 msgid "SIP"
 msgstr ""
 
-#: web/b3desk/forms.py:342 web/b3desk/templates/admin/group_infos.html:67
+#: web/b3desk/forms.py:331 web/b3desk/templates/admin/group_infos.html:67
 #: web/b3desk/templates/admin/user_infos.html:141
 msgid "Ajout de document"
 msgstr ""
 
-#: web/b3desk/forms.py:360 web/b3desk/forms.py:365 web/b3desk/forms.py:370
+#: web/b3desk/forms.py:349 web/b3desk/forms.py:354 web/b3desk/forms.py:359
 msgid "Activé par défaut"
 msgstr ""
 
-#: web/b3desk/forms.py:362 web/b3desk/forms.py:367 web/b3desk/forms.py:372
+#: web/b3desk/forms.py:351 web/b3desk/forms.py:356 web/b3desk/forms.py:361
 msgid "Désactivé par défaut"
 msgstr ""
 
