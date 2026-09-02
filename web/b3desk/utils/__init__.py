@@ -104,7 +104,7 @@ def send_new_owner_mail(meeting, new_owner, previous_owner):
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
-    msg["Subject"] = str(_(f"Transfert de {meeting.name}"))
+    msg["Subject"] = _("Transfert de {meeting_name}").format(meeting_name=meeting.name)
     msg["From"] = smtp["from_email"]
     msg["To"] = new_owner.email
 

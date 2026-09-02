@@ -3371,6 +3371,11 @@ msgstr ""
 msgid "Vous deviendrez délégataire de cette réunion."
 msgstr ""
 
+#: web/b3desk/utils/__init__.py:107
+#, python-brace-format
+msgid "Transfert de {meeting_name}"
+msgstr ""
+
 #: web/b3desk/utils/__init__.py:120
 msgid "Présentation interactive"
 msgstr ""
