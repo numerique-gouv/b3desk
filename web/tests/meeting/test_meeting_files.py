@@ -1210,3 +1210,44 @@ def test_file_picker_callback_with_invalid_payload(
     )
 
     assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_invalid_metadata(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that non numeric chunk metadata is rejected with a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": "not-a-number",
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_csrf_enabled(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that the chunk form validates the token Dropzone sends along."""
+    client_app.app.config["WTF_CSRF_ENABLED"] = True
+    page = client_app.get(url_for("meeting_files.edit_meeting_files", meeting=meeting))
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "csrf_token": page.forms["upload-form"]["csrf_token"].value,
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    assert response.json["msg"] == "ok"

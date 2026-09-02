@@ -22,6 +22,7 @@ from sqlalchemy import exc
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
+from b3desk.forms import ChunkUploadForm
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
 from b3desk.models.bbb import BBB
@@ -357,13 +358,17 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 @meeting_access_required(AccessLevel.DELEGATE)
 def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
+    form = ChunkUploadForm()
+    if not form.validate() or "dropzoneFiles" not in request.files:
+        return {"msg": _("Requête invalide")}, 400
+
     file = request.files["dropzoneFiles"]
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
     save_path = upload_chunk_dir / secure_filename(
         f"{user.id}-{meeting.id}-{file.filename}"
     )
-    current_chunk = int(request.form["dzchunkindex"])
+    current_chunk = form.dzchunkindex.data
 
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
@@ -372,13 +377,13 @@ def upload_file_chunks(meeting: Meeting, user: User):
 
     try:
         with save_path.open("ab") as f:
-            f.seek(int(request.form["dzchunkbyteoffset"]))
+            f.seek(form.dzchunkbyteoffset.data)
             f.write(file.stream.read())
 
     except OSError:
         return {"msg": _("Erreur lors de l'écriture du fichier sur le disque")}, 500
 
-    total_chunks = int(request.form["dztotalchunkcount"])
+    total_chunks = form.dztotalchunkcount.data
 
     if current_chunk + 1 == total_chunks:
         # This was the last chunk, the file should be complete and the size we expect
@@ -391,7 +396,7 @@ def upload_file_chunks(meeting: Meeting, user: User):
             save_path.unlink()
             return {"msg": _("Type de fichier non autorisé")}, 400
 
-        if save_path.stat().st_size != int(request.form["dztotalfilesize"]):
+        if save_path.stat().st_size != form.dztotalfilesize.data:
             save_path.unlink()
             return {"msg": _("Erreur de taille du fichier")}, 400
 
@@ -410,7 +415,7 @@ def delete_meeting_file():
 
     try:
         meeting_file_id = int(data["id"])
-    except KeyError, TypeError, ValueError:
+    except (KeyError, TypeError, ValueError):
         return {"msg": _("Requête invalide")}, 400
 
     meeting_file = db.session.get(MeetingFiles, meeting_file_id)
