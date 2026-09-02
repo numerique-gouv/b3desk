@@ -106,7 +106,11 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
     if not form.validate():
         abort(403)
 
-    result = BBB(meeting.bbb_meeting_id).update_recordings(
+    bbb = BBB(meeting.bbb_meeting_id)
+    if not bbb.get_recording(recording_id):
+        abort(404)
+
+    result = bbb.update_recordings(
         recording_ids=[recording_id], metadata={"name": form.data["name"]}
     )
     if BBB.success(result):
@@ -350,7 +354,11 @@ def delete_meeting(meeting: Meeting, user: User):
 def delete_video_meeting(meeting: Meeting, user: User):
     """Delete a specific recording from a meeting."""
     recordID = request.form["recordID"]
-    data = BBB(meeting.bbb_meeting_id).delete_recordings(recordID)
+    bbb = BBB(meeting.bbb_meeting_id)
+    if not bbb.get_recording(recordID):
+        abort(404)
+
+    data = bbb.delete_recordings(recordID)
     if BBB.success(data):
         flash(_("Vidéo supprimée"), "success")
         current_app.logger.info(

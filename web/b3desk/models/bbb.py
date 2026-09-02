@@ -393,6 +393,21 @@ class BBB:
             logger.error(exception)
         return sorted(result, key=lambda x: x["start_date"], reverse=True)
 
+    def get_recording(self, recording_id):
+        """Return this meeting recording matching the identifier, if any.
+
+        BBB recording identifiers are global, so callers must use this to check
+        that a user submitted identifier really belongs to the meeting at hand.
+        """
+        return next(
+            (
+                recording
+                for recording in self.get_recordings()
+                if recording["recordID"] == recording_id
+            ),
+            None,
+        )
+
     def update_recordings(self, recording_ids, metadata):
         """Update the recordings of a meeting.
 
