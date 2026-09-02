@@ -1,10 +1,10 @@
 import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
-from xml.etree import ElementTree
 
 import pytest
 from b3desk.commands import bp
+from defusedxml import ElementTree
 
 
 @pytest.fixture

@@ -14,9 +14,10 @@ from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from urllib.parse import urlparse
-from xml.etree import ElementTree
 
 import requests
+from defusedxml import ElementTree
+from defusedxml.common import DefusedXmlException
 from flask import current_app
 from flask import url_for
 from flask_babel import lazy_gettext as _
@@ -113,7 +114,7 @@ class BBB:
 
         try:
             root = ElementTree.fromstring(response.content)
-        except ElementTree.ParseError as err:
+        except (ElementTree.ParseError, DefusedXmlException) as err:
             logger.warning("BBB API XML parse error %s", err)
             raise BigBlueButtonUnavailable() from err
 
