@@ -463,7 +463,7 @@ def setup_oidc(app):
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
-def create_app(test_config=None):
+def create_app(test_config=None, authentication=True):
     """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
     setup_configuration(app, test_config)
@@ -479,7 +479,8 @@ def create_app(test_config=None):
         setup_flask(app)
         setup_error_pages(app)
         setup_endpoints(app)
-        setup_oidc(app)
+        if authentication:
+            setup_oidc(app)
         setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover

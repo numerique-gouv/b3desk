@@ -10,7 +10,7 @@ from celery.signals import worker_process_init
 from b3desk import create_app
 from b3desk.models import db
 
-flask_app = create_app()
+flask_app = create_app(authentication=False)
 celery_app = flask_app.extensions["celery"]
 
 
