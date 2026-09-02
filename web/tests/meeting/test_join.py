@@ -536,3 +536,15 @@ def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mo
         "shouldDisplayCaptcha": False,
         "captchaCode": False,
     }
+
+
+def test_visio_code_connection_with_missing_fields(client_app, meeting):
+    """Test that a partial visio code form is treated as a wrong code."""
+    response = client_app.post("/meeting/visio_code", params={"visio_code1": "911"})
+    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+
+
+def test_visio_code_form_validation_with_missing_fields(client_app, meeting):
+    """Test that a partial visio code form does not raise an error."""
+    response = client_app.post("/meeting/visio_code_form", params={})
+    assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
