@@ -490,7 +490,7 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
 @auth.oidc_auth("default")
 @meeting_access_required()
 def transfert_meeting_ownership(meeting: Meeting, user: User, delegate: User):
-    """Display the page for manage meeting delegation."""
+    """Transfert meeting ownership to a meeting delegate."""
     new_owner = delegate
     previous_owner = meeting.owner
     if new_owner is None or new_owner not in meeting.get_all_delegates:
