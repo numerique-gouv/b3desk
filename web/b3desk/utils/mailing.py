@@ -127,7 +127,9 @@ def send_mail_before_meeting_deletion(meeting, delay):
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
-    msg["Subject"] = str(_(f"Information avant suppression : {meeting.name}"))
+    msg["Subject"] = _("Information avant suppression : {meeting_name}").format(
+        meeting_name=meeting.name
+    )
     msg["From"] = smtp["from_email"]
     msg["To"] = meeting.owner.email
 
