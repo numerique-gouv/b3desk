@@ -489,42 +489,12 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
 def transfert_meeting_ownership(meeting: Meeting, user: User, delegate: User):
     """Display the page for manage meeting delegation."""
     new_owner = delegate
+    previous_owner = meeting.owner
     if new_owner is None or new_owner not in meeting.get_all_delegates:
         abort(404)
 
-    previous_owner = meeting.owner
-    meeting.owner = new_owner
-    meeting.owner_id = new_owner.id
-    new_access = MeetingAccess(
-        meeting_id=meeting.id,
-        user_id=previous_owner.id,
-        level=AccessLevel.DELEGATE,
-    )
-    removed_access = MeetingAccess.query.filter_by(
-        user_id=new_owner.id, meeting_id=meeting.id
-    ).one()
-    db.session.add(new_access)
-    db.session.delete(removed_access)
-    db.session.commit()
-    current_app.logger.info(
-        "Meeting %s %s have a new owner : %s %s",
-        meeting.id,
-        meeting.name,
-        new_owner.id,
-        new_owner.fullname,
-    )
-    current_app.logger.info(
-        "%s became delegate of meeting %s %s",
-        previous_owner.email,
-        meeting.id,
-        meeting.name,
-    )
-    current_app.logger.info(
-        "%s removed from delegates of meeting %s %s",
-        new_owner.email,
-        meeting.id,
-        meeting.name,
-    )
+    meeting.transfer_ownership(previous_owner, new_owner)
+
     flash(
         _(
             "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s",
