@@ -64,7 +64,7 @@ def captcha_proxy():
         captcha_error(message)
         return {"success": False}, response.status_code
 
-    if dict(request.args)["get"] == "sound":
+    if request.args.get("get") == "sound":
         return Response(response.content, content_type="audio/wav")
 
     return response.json()
