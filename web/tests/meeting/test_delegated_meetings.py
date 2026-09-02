@@ -54,15 +54,13 @@ def test_add_and_remove_favorite_delegated_meeting(
         meeting,
     ]
     response = client_app.post(
-        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
-        {"id": meeting_1_user_2.id},
+        f"/meeting/{meeting_1_user_2.id}/favorite?order_key=created_at&reverse_order=true&favorite_filter=true"
     ).follow()
     assert response.context["meetings"] == [meeting_1_user_2, meeting_2, meeting]
     assert authenticated_user in meeting_1_user_2.favorite_of
 
     response = client_app.post(
-        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
-        {"id": meeting_1_user_2.id},
+        f"/meeting/{meeting_1_user_2.id}/favorite?order_key=created_at&reverse_order=true&favorite_filter=true"
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
     assert authenticated_user not in meeting_1_user_2.favorite_of
@@ -127,7 +125,7 @@ def test_delegate_cannot_delete_meeting(
     bbb_response,
 ):
     """Test that delegate cannot delete a delegated meeting."""
-    response = client_app.post("/meeting/delete", {"id": meeting_1_user_2.id})
+    response = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
     assert ("error", "Vous ne pouvez pas supprimer cet élément") in response.flashes
 
 
@@ -413,5 +411,5 @@ def test_owner_cannot_delete_meeting_if_meeting_has_delegate(
     bbb_response,
 ):
     """Test delegate can not delete a meeting having delegate."""
-    response = client_app.post("/meeting/delete", {"id": meeting_1_user_2.id})
+    response = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
     assert ("error", "Vous devez retirer les délégataires") in response.flashes

@@ -304,40 +304,43 @@ def create_meeting(meeting: Meeting, user: User):
     return redirect(url_for("public.welcome"))
 
 
-@bp.route("/meeting/delete", methods=["POST", "GET"])
+@bp.route("/meeting/<meeting:meeting>/delete", methods=["POST"])
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def delete_meeting():
+@meeting_access_required(AccessLevel.DELEGATE)
+def delete_meeting(meeting: Meeting, user: User):
     """Delete a meeting and all its associated files and recordings."""
-    if request.method == "POST":
-        meeting_id = request.form["id"]
-        meeting = db.session.get(Meeting, meeting_id)
+    redirection = redirect(
+        url_for("public.welcome" if not is_admin_mode() else "admin.home")
+    )
 
-        if meeting.is_shadow:
-            abort(403)
+    if meeting.is_shadow:
+        abort(403)
 
-        if meeting.owner_id == g.user.id or g.user.admin:
-            success, data = clean_db_and_delete_meeting(meeting)
-            if success:
-                flash(_("Élément supprimé"), "success")
-                current_app.logger.info(
-                    "Meeting %s %s was deleted by %s",
-                    meeting.name,
-                    meeting.id,
-                    g.user.email,
-                )
-            elif data is None:
-                flash(_("Vous devez retirer les délégataires"), "error")
-            else:
-                flash(
-                    _(
-                        "Impossible de supprimer les vidéos de cette réunion : {message}"
-                    ).format(message=data.get("message", "")),
-                    "error",
-                )
-        else:
-            flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect(url_for("public.welcome" if not is_admin_mode() else "admin.home"))
+    if meeting.owner_id != user.id and not user.admin:
+        flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
+        return redirection
+
+    success, data = clean_db_and_delete_meeting(meeting)
+    if success:
+        flash(_("Élément supprimé"), "success")
+        current_app.logger.info(
+            "Meeting %s %s was deleted by %s",
+            meeting.name,
+            meeting.id,
+            user.email,
+        )
+    elif data is None:
+        flash(_("Vous devez retirer les délégataires"), "error")
+    else:
+        flash(
+            _("Impossible de supprimer les vidéos de cette réunion : {message}").format(
+                message=data.get("message", "")
+            ),
+            "error",
+        )
+
+    return redirection
 
 
 @bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
@@ -369,16 +372,16 @@ def delete_video_meeting(meeting: Meeting, user: User):
     return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
-@bp.route("/meeting/favorite", methods=["POST"])
+@bp.route("/meeting/<meeting:meeting>/favorite", methods=["POST"])
+@check_oidc_connection(auth)
 @auth.oidc_auth("default")
-def meeting_favorite():
+@meeting_access_required(AccessLevel.DELEGATE)
+def meeting_favorite(meeting: Meeting, user: User):
     """Toggle the favorite status of a meeting."""
-    meeting_id = request.form["id"]
-    meeting = db.session.get(Meeting, meeting_id)
-    if g.user in meeting.favorite_of:
-        meeting.favorite_of.remove(g.user)
+    if user in meeting.favorite_of:
+        meeting.favorite_of.remove(user)
     else:
-        meeting.favorite_of.append(g.user)
+        meeting.favorite_of.append(user)
     db.session.commit()
 
     return redirect(url_for("public.welcome", **request.args))

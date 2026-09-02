@@ -406,7 +406,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:410
-#: web/b3desk/endpoints/meetings.py:339
+#: web/b3desk/endpoints/meetings.py:321
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -446,53 +446,53 @@ msgstr ""
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:322
+#: web/b3desk/endpoints/meetings.py:326
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:330
+#: web/b3desk/endpoints/meetings.py:334
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:334
+#: web/b3desk/endpoints/meetings.py:337
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:352
+#: web/b3desk/endpoints/meetings.py:355
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:363
+#: web/b3desk/endpoints/meetings.py:366
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:416
+#: web/b3desk/endpoints/meetings.py:419
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:419
+#: web/b3desk/endpoints/meetings.py:422
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:422
+#: web/b3desk/endpoints/meetings.py:425
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:429
+#: web/b3desk/endpoints/meetings.py:432
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:442
+#: web/b3desk/endpoints/meetings.py:445
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:464
+#: web/b3desk/endpoints/meetings.py:467
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:467
+#: web/b3desk/endpoints/meetings.py:470
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -2775,16 +2775,16 @@ msgstr ""
 msgid "Favoris"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:85
+#: web/b3desk/templates/meeting/list.html:84
 msgid "Ajouter aux favoris"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:86
-#: web/b3desk/templates/meeting/list.html:90
+#: web/b3desk/templates/meeting/list.html:85
+#: web/b3desk/templates/meeting/list.html:89
 msgid "Label bouton"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:89
+#: web/b3desk/templates/meeting/list.html:88
 msgid "Retirer des favoris"
 msgstr ""
 
