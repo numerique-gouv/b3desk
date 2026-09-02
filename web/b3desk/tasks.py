@@ -1,8 +1,5 @@
-import os
-
 import requests
-from celery import Celery
-from celery.schedules import crontab
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
 
@@ -17,31 +14,6 @@ from b3desk.models.users import get_inactive_users_to_inform
 from b3desk.utils.mailing import send_available_recording_notification_mail
 from b3desk.utils.mailing import send_mail_before_meeting_deletion
 from b3desk.utils.mailing import send_mail_before_user_deletion
-
-REDIS_URL = os.environ.get("REDIS_URL")
-DEBUG = os.environ.get("FLASK_DEBUG")
-
-celery = Celery("tasks")
-celery.conf.broker_url = f"redis://{REDIS_URL}"
-celery.conf.result_backend = f"redis://{REDIS_URL}"
-celery.conf.beat_schedule = {
-    "delete-old-meetings-every-day-at-3-am": {
-        "task": "delete-old-meetings",
-        "schedule": crontab(minute=00, hour=3),
-    },
-    "delete-old-users-every-day-at-3-30-am": {
-        "task": "delete-old-users",
-        "schedule": crontab(minute=30, hour=3),
-    },
-    "inform-owner-before-meeting-deletion-every-day-at-4-am": {
-        "task": "inform-owner-before-meeting-deletion",
-        "schedule": crontab(minute=00, hour=4),
-    },
-    "inform-user-before-account-deletion-every-day-at-4-30-am": {
-        "task": "inform-user-before-account-deletion",
-        "schedule": crontab(minute=30, hour=4),
-    },
-}
 
 logger = get_task_logger(__name__)
 
@@ -65,15 +37,14 @@ def recording_notified_key(bbb_recording_id):
     return f"recording_notification_sent:{bbb_recording_id}"
 
 
-@celery.task(name="background_upload")
+@shared_task(name="background_upload")
 def background_upload(endpoint, xml):
     """Celery task to upload XML documents to BigBlueButton API in background."""
     logger.info("BBB API request %s: xml:%s", endpoint, xml)
 
     session = requests.Session()
-    if DEBUG:  # pragma: no cover
-        # In local development environment, BBB is not served as https
-        session.verify = False
+    # In local development environment, BBB is not served as https
+    session.verify = not current_app.debug
 
     response = session.post(
         endpoint,
@@ -85,7 +56,7 @@ def background_upload(endpoint, xml):
     return True
 
 
-@celery.task(name="send_recording_notification")
+@shared_task(name="send_recording_notification")
 def send_recording_notification(
     meeting_id, bbb_recording_id, force=False, is_min_deadline=False
 ):
@@ -163,130 +134,114 @@ def send_recording_notification(
     )
 
 
-@celery.task(name="delete-old-meetings")
+@shared_task(name="delete-old-meetings")
 def delete_old_meetings():
     """Celery cron task to delete expired meetings from database."""
     logger.info("Celery cron task: delete_old_meetings started")
-    from b3desk import create_app
+    meetings_to_delete = get_inactive_meetings_to_delete()
 
-    app = create_app()
-    with app.app_context():
-        meetings_to_delete = get_inactive_meetings_to_delete()
+    if meetings_to_delete:
+        logger.info(
+            "Celery cron task: %d expired meetings to delete",
+            len(meetings_to_delete),
+        )
+    else:
+        logger.info(
+            "Celery cron task: no action required",
+        )
 
-        if meetings_to_delete:
+    for meeting in meetings_to_delete:
+        success, _ = clean_db_and_delete_meeting(meeting, celery_cron=True)
+        if success:
             logger.info(
-                "Celery cron task: %d expired meetings to delete",
-                len(meetings_to_delete),
-            )
-        else:
-            logger.info(
-                "Celery cron task: no action required",
-            )
-
-        for meeting in meetings_to_delete:
-            success, _ = clean_db_and_delete_meeting(meeting, celery_cron=True)
-            if success:
-                logger.info(
-                    "Celery cron task: %s id:%s named:%s deleted",
-                    "shadow_meeting" if meeting.is_shadow else "meeting",
-                    meeting.id,
-                    meeting.name,
-                )
-        logger.info("Celery cron task: delete_old_meetings ended")
-
-
-@celery.task(name="inform-owner-before-meeting-deletion")
-def inform_owner_before_meeting_deletion():
-    """Celery cron task to inform meeting owner before meeting deletion."""
-    logger.info("Celery cron task: inform_owner_before_meeting_deletion started")
-    from b3desk import create_app
-
-    app = create_app()
-    with app.app_context():
-        meetings_to_inform = get_inactive_meetings_to_inform()
-
-        if meetings_to_inform:
-            logger.info(
-                "Celery cron task: %d meetings expire soon", len(meetings_to_inform)
-            )
-        else:
-            logger.info(
-                "Celery cron task: no action required",
-            )
-        for meeting, delay in meetings_to_inform:
-            send_mail_before_meeting_deletion(meeting, delay)
-            logger.info(
-                "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
+                "Celery cron task: %s id:%s named:%s deleted",
                 "shadow_meeting" if meeting.is_shadow else "meeting",
                 meeting.id,
                 meeting.name,
-                delay,
             )
-        logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
+    logger.info("Celery cron task: delete_old_meetings ended")
 
 
-@celery.task(name="delete-old-users")
+@shared_task(name="inform-owner-before-meeting-deletion")
+def inform_owner_before_meeting_deletion():
+    """Celery cron task to inform meeting owner before meeting deletion."""
+    logger.info("Celery cron task: inform_owner_before_meeting_deletion started")
+    meetings_to_inform = get_inactive_meetings_to_inform()
+
+    if meetings_to_inform:
+        logger.info(
+            "Celery cron task: %d meetings expire soon", len(meetings_to_inform)
+        )
+    else:
+        logger.info(
+            "Celery cron task: no action required",
+        )
+    for meeting, delay in meetings_to_inform:
+        send_mail_before_meeting_deletion(meeting, delay)
+        logger.info(
+            "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
+            "shadow_meeting" if meeting.is_shadow else "meeting",
+            meeting.id,
+            meeting.name,
+            delay,
+        )
+    logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
+
+
+@shared_task(name="delete-old-users")
 def delete_old_users():
     """Celery cron task to delete expired meetings from database."""
     logger.info("Celery cron task: delete_old_users started")
-    from b3desk import create_app
+    users_to_delete = get_inactive_users_to_delete()
 
-    app = create_app()
-    with app.app_context():
-        users_to_delete = get_inactive_users_to_delete()
-
-        if users_to_delete:
+    if users_to_delete:
+        logger.info(
+            "Celery cron task: %d expired user accounts to delete",
+            len(users_to_delete),
+        )
+    else:
+        logger.info(
+            "Celery cron task: no action required",
+        )
+    for user in users_to_delete:
+        if clean_db_and_delete_user(user):
             logger.info(
-                "Celery cron task: %d expired user accounts to delete",
-                len(users_to_delete),
-            )
-        else:
-            logger.info(
-                "Celery cron task: no action required",
-            )
-        for user in users_to_delete:
-            if clean_db_and_delete_user(user):
-                logger.info(
-                    "Celery cron task: user %s, id %s, email %s, deleted",
-                    user.fullname,
-                    user.id,
-                    user.email,
-                )
-            else:
-                logger.error(
-                    "Celery cron task: user not deleted: %s, id %s, email %s",
-                    user.fullname,
-                    user.id,
-                    user.email,
-                )
-        logger.info("Celery cron task: delete_old_users ended")
-
-
-@celery.task(name="inform-user-before-account-deletion")
-def inform_user_before_account_deletion():
-    """Celery cron task to inform user before account deletion."""
-    logger.info("Celery cron task: inform_user_before_account_deletion started")
-    from b3desk import create_app
-
-    app = create_app()
-    with app.app_context():
-        users_to_inform = get_inactive_users_to_inform()
-
-        if users_to_inform:
-            logger.info(
-                "Celery cron task: %d users account expire soon", len(users_to_inform)
-            )
-        else:
-            logger.info(
-                "Celery cron task: no action required",
-            )
-        for user, delay in users_to_inform:
-            send_mail_before_user_deletion(user, delay)
-            logger.info(
-                "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
+                "Celery cron task: user %s, id %s, email %s, deleted",
                 user.fullname,
                 user.id,
                 user.email,
-                delay,
             )
-        logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
+        else:
+            logger.error(
+                "Celery cron task: user not deleted: %s, id %s, email %s",
+                user.fullname,
+                user.id,
+                user.email,
+            )
+    logger.info("Celery cron task: delete_old_users ended")
+
+
+@shared_task(name="inform-user-before-account-deletion")
+def inform_user_before_account_deletion():
+    """Celery cron task to inform user before account deletion."""
+    logger.info("Celery cron task: inform_user_before_account_deletion started")
+    users_to_inform = get_inactive_users_to_inform()
+
+    if users_to_inform:
+        logger.info(
+            "Celery cron task: %d users account expire soon", len(users_to_inform)
+        )
+    else:
+        logger.info(
+            "Celery cron task: no action required",
+        )
+    for user, delay in users_to_inform:
+        send_mail_before_user_deletion(user, delay)
+        logger.info(
+            "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
+            user.fullname,
+            user.id,
+            user.email,
+            delay,
+        )
+    logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")

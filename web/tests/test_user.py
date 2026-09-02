@@ -1,6 +1,5 @@
 import datetime
 from datetime import date
-from unittest import mock
 
 import pytest
 import requests
@@ -254,8 +253,7 @@ def test_delete_old_users(
     meeting_file_id = meeting_file.id
 
     time_machine.move_to(datetime.datetime(2025, 6, 1))
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        delete_old_users()
+    delete_old_users()
 
     assert not db.session.get(User, 1)
     assert db.session.get(User, 2)
@@ -266,8 +264,7 @@ def test_delete_old_users(
 
 def test_delete_old_users_no_action(app, client_app, caplog):
     """Test the cron task logs when there is no user to delete."""
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        delete_old_users()
+    delete_old_users()
     assert "Celery cron task: no action required" in caplog.text
 
 
@@ -278,8 +275,7 @@ def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog
     db.session.commit()
     mocker.patch("b3desk.tasks.clean_db_and_delete_user", return_value=False)
 
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        delete_old_users()
+    delete_old_users()
 
     assert (
         f"Celery cron task: user not deleted: {user.fullname}, id {user.id}, email {user.email}"
@@ -289,8 +285,7 @@ def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog
 
 def test_inform_user_before_account_deletion_no_action(app, client_app, caplog):
     """Test the cron task logs when there is no user to inform."""
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        inform_user_before_account_deletion()
+    inform_user_before_account_deletion()
     assert "Celery cron task: no action required" in caplog.text
 
 
@@ -337,9 +332,8 @@ def test_inform_user_before_account_deletion(
     db.session.commit()
 
     time_machine.move_to(test_date)
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        inform_user_before_account_deletion()
-        users_to_inform = get_inactive_users_to_inform()
+    inform_user_before_account_deletion()
+    users_to_inform = get_inactive_users_to_inform()
     assert users_to_inform == [
         (user_3, DELAY_FOR_FIRST_EMAIL),
         (user_2, DELAY_FOR_SECOND_EMAIL),
@@ -383,9 +377,8 @@ def test_inform_user_before_account_deletion_with_recently_used_meeting(
     db.session.commit()
 
     time_machine.move_to(test_date)
-    with mock.patch("b3desk.create_app", return_value=client_app.app):
-        inform_user_before_account_deletion()
-        users_to_inform = get_inactive_users_to_inform()
+    inform_user_before_account_deletion()
+    users_to_inform = get_inactive_users_to_inform()
 
     assert users_to_inform == [(user, DELAY_FOR_FIRST_EMAIL)]
     assert len(smtpd.messages) == 1

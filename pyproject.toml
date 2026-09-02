@@ -71,6 +71,7 @@ dev = [
     "pytest-xdist>=3.8.0",
     "setuptools>=83.0.0",
     "faker>=40.1.2",
+    "html5lib-modern>=1.2",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",

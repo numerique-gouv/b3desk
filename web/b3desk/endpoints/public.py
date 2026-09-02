@@ -77,12 +77,12 @@ def welcome():
     """Render the authenticated user's welcome page with their meetings."""
     stats = get_meetings_stats()
 
-    order_key = request.args.get("order-key", "created_at")
+    order_key = request.args.get("order_key", "created_at")
     reverse_order = request.args.get(
-        "reverse-order", True, type=lambda x: x.lower() == "true"
+        "reverse_order", True, type=lambda x: x.lower() == "true"
     )
     favorite_filter = request.args.get(
-        "favorite-filter", False, type=lambda x: x.lower() == "true"
+        "favorite_filter", False, type=lambda x: x.lower() == "true"
     )
 
     if order_key not in ["created_at", "name"]:

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-14 16:02+0200\n"
+"POT-Creation-Date: 2026-09-02 13:51+0200\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@cours\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/b3desk/__init__.py:330 web/b3desk/endpoints/meeting_files.py:127
+#: web/b3desk/__init__.py:364 web/b3desk/endpoints/meeting_files.py:127
 #: web/b3desk/endpoints/meeting_files.py:186
 #: web/b3desk/endpoints/meeting_files.py:291
 #: web/b3desk/endpoints/meeting_files.py:482
@@ -843,19 +843,19 @@ msgstr ""
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
 #: web/b3desk/templates/meeting/files.html:64
 #: web/b3desk/templates/meeting/files.html:86
-#: web/b3desk/templates/meeting/files.html:159
+#: web/b3desk/templates/meeting/files.html:140
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:9
 #: web/b3desk/templates/meeting/modals/invite.html:11
 #: web/b3desk/templates/meeting/modals/invite.html:12
-#: web/b3desk/templates/meeting/recordings.html:137
-#: web/b3desk/templates/meeting/recordings.html:138
-#: web/b3desk/templates/meeting/recordings.html:178
-#: web/b3desk/templates/meeting/recordings.html:179
-#: web/b3desk/templates/meeting/recordings.html:221
-#: web/b3desk/templates/meeting/recordings.html:222
+#: web/b3desk/templates/meeting/recordings.html:139
+#: web/b3desk/templates/meeting/recordings.html:140
+#: web/b3desk/templates/meeting/recordings.html:180
+#: web/b3desk/templates/meeting/recordings.html:181
+#: web/b3desk/templates/meeting/recordings.html:223
+#: web/b3desk/templates/meeting/recordings.html:224
 msgid "Fermer"
 msgstr ""
 
@@ -1021,11 +1021,11 @@ msgstr[1] ""
 #: web/b3desk/templates/admin/delete_group.html:9
 #: web/b3desk/templates/admin/group_infos.html:29
 #: web/b3desk/templates/admin/user_table.html:16
-#: web/b3desk/templates/meeting/files.html:146
-#: web/b3desk/templates/meeting/files.html:163
-#: web/b3desk/templates/meeting/files.html:175
+#: web/b3desk/templates/meeting/files.html:144
+#: web/b3desk/templates/meeting/files.html:156
+#: web/b3desk/templates/meeting/files.html:184
 #: web/b3desk/templates/meeting/files.html:205
-#: web/b3desk/templates/meeting/recordings.html:156
+#: web/b3desk/templates/meeting/recordings.html:158
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
 msgstr ""
@@ -1047,13 +1047,13 @@ msgstr "Supprimer le cours"
 #: web/b3desk/templates/admin/delete_group.html:23
 #: web/b3desk/templates/admin/group_form.html:24
 #: web/b3desk/templates/admin/group_form.html:34
-#: web/b3desk/templates/meeting/files.html:178
+#: web/b3desk/templates/meeting/files.html:159
 #: web/b3desk/templates/meeting/form.html:188
 #: web/b3desk/templates/meeting/form.html:190
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
 #: web/b3desk/templates/meeting/modals/delete.html:54
-#: web/b3desk/templates/meeting/recordings.html:159
-#: web/b3desk/templates/meeting/recordings.html:203
+#: web/b3desk/templates/meeting/recordings.html:161
+#: web/b3desk/templates/meeting/recordings.html:205
 msgid "Annuler"
 msgstr ""
 
@@ -1948,83 +1948,83 @@ msgstr ""
 msgid "Guides utilisateurs"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:9
+#: web/b3desk/templates/footer/documentation.html:10
 msgid "Présentation des nouveautés de la v2.4"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:14
+#: web/b3desk/templates/footer/documentation.html:17
 msgid "Créer une réunion improvisée"
 msgstr "Créer un cours improvisé"
 
-#: web/b3desk/templates/footer/documentation.html:15
+#: web/b3desk/templates/footer/documentation.html:18
 msgid "Participer à une réunion"
 msgstr "Participer à un cours"
 
-#: web/b3desk/templates/footer/documentation.html:16
+#: web/b3desk/templates/footer/documentation.html:19
 msgid "Créer et parametrer une salle de réunion"
 msgstr "Créer et parametrer une salle de cours"
 
-#: web/b3desk/templates/footer/documentation.html:16
+#: web/b3desk/templates/footer/documentation.html:19
 msgid "Créer et paramétrer une salle de réunion "
 msgstr "Créer et paramétrer une salle de cours "
 
-#: web/b3desk/templates/footer/documentation.html:17
+#: web/b3desk/templates/footer/documentation.html:20
 msgid "Activer le matériel dans le navigateur"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:18
+#: web/b3desk/templates/footer/documentation.html:21
 msgid "Gérer les utilisateurs"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:19
+#: web/b3desk/templates/footer/documentation.html:22
 msgid "Gérer les documents"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:20
+#: web/b3desk/templates/footer/documentation.html:23
 msgid "Gestion des réunions privées"
 msgstr "Gestion des cours privés"
 
-#: web/b3desk/templates/footer/documentation.html:21
+#: web/b3desk/templates/footer/documentation.html:24
 msgid "Déléguer la création de réunion"
 msgstr "Déléguer la création de cours"
 
-#: web/b3desk/templates/footer/documentation.html:22
+#: web/b3desk/templates/footer/documentation.html:25
 msgid "Enregistrer une réunion"
 msgstr "Enregistrer un cours"
 
-#: web/b3desk/templates/footer/documentation.html:23
+#: web/b3desk/templates/footer/documentation.html:26
 msgid "Créer un sondage"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:24
+#: web/b3desk/templates/footer/documentation.html:27
 msgid "Joindre une réunion par téléphone"
 msgstr "Joindre un cours par téléphone"
 
-#: web/b3desk/templates/footer/documentation.html:25
+#: web/b3desk/templates/footer/documentation.html:28
 msgid "Afficher le tableau de bord"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:26
+#: web/b3desk/templates/footer/documentation.html:29
 msgid "Gérer la mise en page"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:27
+#: web/b3desk/templates/footer/documentation.html:30
 msgid "Extension contrôle du volume"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:27
+#: web/b3desk/templates/footer/documentation.html:30
 msgid "Contrôle du volume"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:103
+#: web/b3desk/templates/footer/documentation.html:106
 msgid "Liste des serveurs BigBlueButton pour l'Éducation"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:104
+#: web/b3desk/templates/footer/documentation.html:107
 msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:105
+#: web/b3desk/templates/footer/documentation.html:108
 msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
 msgstr ""
 
@@ -2317,8 +2317,8 @@ msgstr ""
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:90
 msgid ""
-"À l’attention du délégué à la protection des données (DPD)</br>\n"
-"            56 rue de Varenne </br>\n"
+"À l’attention du délégué à la protection des données (DPD)<br>\n"
+"            56 rue de Varenne <br>\n"
 "            75007 Paris"
 msgstr ""
 
@@ -2331,8 +2331,8 @@ msgstr ""
 
 #: web/b3desk/templates/footer/donnees_personnelles.html:94
 msgid ""
-"Commission nationale informatique et libertés </br>\n"
-"            3 place de Fontenoy – TSA 80715 – </br>\n"
+"Commission nationale informatique et libertés <br>\n"
+"            3 place de Fontenoy – TSA 80715 – <br>\n"
 "            75334 PARIS CEDEX 07"
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr "Bienvenue dans ce cours %(meeting_name)s."
 #: web/b3desk/templates/meeting/files.html:43
 #: web/b3desk/templates/meeting/files.html:227
 #: web/b3desk/templates/meeting/recordings.html:34
-#: web/b3desk/templates/meeting/recordings.html:261
+#: web/b3desk/templates/meeting/recordings.html:263
 msgid "Retour à mes réunions"
 msgstr "Retour à mes cours"
 
@@ -2554,7 +2554,7 @@ msgstr "Retour à mes cours"
 #: web/b3desk/templates/meeting/files.html:47
 #: web/b3desk/templates/meeting/files.html:231
 #: web/b3desk/templates/meeting/recordings.html:38
-#: web/b3desk/templates/meeting/recordings.html:265
+#: web/b3desk/templates/meeting/recordings.html:267
 #, fuzzy, python-format
 msgid "Retour à l'administration de %(meeting_name)s "
 msgstr "Cours « %(meeting_name)s » terminé"
@@ -2568,7 +2568,7 @@ msgid "Ajouter l'utilisateur comme délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:43
-msgid "Supprimer le délégataire"
+msgid "Retirer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation.html:23
@@ -2591,10 +2591,10 @@ msgstr ""
 " déconnectés."
 
 #: web/b3desk/templates/meeting/end.html:9
-#: web/b3desk/templates/meeting/files.html:167
+#: web/b3desk/templates/meeting/files.html:148
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
-#: web/b3desk/templates/meeting/recordings.html:148
-#: web/b3desk/templates/meeting/recordings.html:195
+#: web/b3desk/templates/meeting/recordings.html:150
+#: web/b3desk/templates/meeting/recordings.html:197
 #, python-format
 msgid "Vous n'êtes pas propriétaire de \"%(meeting_name)s\""
 msgstr ""
@@ -2626,65 +2626,65 @@ msgstr ""
 msgid "Ajouter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:107
+#: web/b3desk/templates/meeting/files.html:105
 msgid "Vous pouvez ajouter un fichier :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:110
+#: web/b3desk/templates/meeting/files.html:108
 msgid "Nuage temporairement indisponible"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:111
+#: web/b3desk/templates/meeting/files.html:109
 msgid ""
 "Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités"
 " sont momentanément désactivées. Veuillez réessayer dans quelques "
 "minutes."
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:118
+#: web/b3desk/templates/meeting/files.html:116
 msgid "depuis une URL"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:121
+#: web/b3desk/templates/meeting/files.html:119
 msgid "nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:121
+#: web/b3desk/templates/meeting/files.html:119
 msgid "depuis le Nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:124
+#: web/b3desk/templates/meeting/files.html:122
 msgid "téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:124
+#: web/b3desk/templates/meeting/files.html:122
 msgid "par Téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:139
+#: web/b3desk/templates/meeting/files.html:146
+#, python-format
+msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
+msgstr ""
+
+#: web/b3desk/templates/meeting/files.html:177
 msgid "Vos fichiers associés sont :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:143
+#: web/b3desk/templates/meeting/files.html:181
 msgid "Téléchargeable"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:144
+#: web/b3desk/templates/meeting/files.html:182
 msgid "Titre"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:145
+#: web/b3desk/templates/meeting/files.html:183
 msgid "Ajouté le"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:147
+#: web/b3desk/templates/meeting/files.html:185
 #: web/b3desk/templates/meeting/files.html:209
 msgid "Télécharger"
-msgstr ""
-
-#: web/b3desk/templates/meeting/files.html:165
-#, python-format
-msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
 #: web/b3desk/templates/meeting/files.html:220
@@ -2923,97 +2923,97 @@ msgid ""
 "                "
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:69
+#: web/b3desk/templates/meeting/recordings.html:70
 msgid "Visuels"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:70
+#: web/b3desk/templates/meeting/recordings.html:71
 msgid "Actions"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:89
+#: web/b3desk/templates/meeting/recordings.html:91
 msgid "Voir l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:90
-#: web/b3desk/templates/meeting/recordings.html:244
+#: web/b3desk/templates/meeting/recordings.html:92
+#: web/b3desk/templates/meeting/recordings.html:246
 msgid "Copier le lien de l'enregistrement dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:93
+#: web/b3desk/templates/meeting/recordings.html:95
 msgid "Voir l'enregistrement mp4"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:95
+#: web/b3desk/templates/meeting/recordings.html:97
 msgid "Partager l'enregistrement mp4"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:100
+#: web/b3desk/templates/meeting/recordings.html:102
 #, python-format
 msgid "Supprimer video de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:109
+#: web/b3desk/templates/meeting/recordings.html:111
 msgid "Compte-rendu"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:115
 msgid "Ouvrir le compte-rendu HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:113
+#: web/b3desk/templates/meeting/recordings.html:115
 msgid "HTML"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:118
 msgid "Télécharger le compte-rendu PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:116
+#: web/b3desk/templates/meeting/recordings.html:118
 msgid "PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:121
 msgid "Télécharger le compte-rendu Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:119
+#: web/b3desk/templates/meeting/recordings.html:121
 msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:144
+#: web/b3desk/templates/meeting/recordings.html:146
 #, python-format
 msgid "Supprimer \"<em>%(recording_name)s</em>\" ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:146
+#: web/b3desk/templates/meeting/recordings.html:148
 #, python-format
 msgid ""
 "Voulez-vous vraiment supprimer l'enregistrement "
 "<em>%(recording_name)s</em> de <em>%(meeting_name)s</em>&nbsp;?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:202
 msgid "Modifier le nom de l'enregistrement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:200
+#: web/b3desk/templates/meeting/recordings.html:202
 msgid "Renommer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:228
+#: web/b3desk/templates/meeting/recordings.html:230
 #, python-format
 msgid "Partager l'enregistrement de \"<em>%(recording_name)s</em>\""
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:231
+#: web/b3desk/templates/meeting/recordings.html:233
 msgid ""
 "Cet enregistrement est conservé temporairement sur ce service. Pour le "
 "mettre à disposition de manière pérenne, fournissez ce lien à des "
 "services dédiés à la diffusion"
 msgstr ""
 
-#: web/b3desk/templates/meeting/recordings.html:238
+#: web/b3desk/templates/meeting/recordings.html:240
 msgid ""
 "En cas de diffusion publique, veillez préalablement à obtenir "
 "l'autorisation des participants."
@@ -5381,8 +5381,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ""
-#~ "À l’attention du délégué à la protection des données (DPD)</br>\n"
-#~ "            56 rue de Varenne </br>\n"
+#~ "À l’attention du délégué à la protection des données (DPD)<br>\n"
+#~ "            56 rue de Varenne <br>\n"
 #~ "            75007 Paris"
 #~ msgstr ""
 
@@ -5395,8 +5395,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ""
-#~ "Commission nationale informatique et libertés </br>\n"
-#~ "            3 place de Fontenoy – TSA 80715 – </br>\n"
+#~ "Commission nationale informatique et libertés <br>\n"
+#~ "            3 place de Fontenoy – TSA 80715 – <br>\n"
 #~ "            75334 PARIS CEDEX 07"
 #~ msgstr ""
 
@@ -6121,4 +6121,7 @@ msgstr ""
 
 #~ msgid "Aucune réunion ne correspond à ces paramètres"
 #~ msgstr "Aucun cours ne correspond à ces paramètres"
+
+#~ msgid "Supprimer le délégataire"
+#~ msgstr ""
 

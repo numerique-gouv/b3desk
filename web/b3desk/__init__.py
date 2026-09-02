@@ -14,6 +14,9 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from babel import Locale
+from celery import Celery
+from celery import Task
+from celery.schedules import crontab
 from flask import Flask
 from flask import has_app_context
 from flask import has_request_context
@@ -68,22 +71,53 @@ def setup_configuration(app, config=None):
         app.debug = True
 
 
+BEAT_SCHEDULE = {
+    "delete-old-meetings-every-day-at-3-am": {
+        "task": "delete-old-meetings",
+        "schedule": crontab(minute=00, hour=3),
+    },
+    "delete-old-users-every-day-at-3-30-am": {
+        "task": "delete-old-users",
+        "schedule": crontab(minute=30, hour=3),
+    },
+    "inform-owner-before-meeting-deletion-every-day-at-4-am": {
+        "task": "inform-owner-before-meeting-deletion",
+        "schedule": crontab(minute=00, hour=4),
+    },
+    "inform-user-before-account-deletion-every-day-at-4-30-am": {
+        "task": "inform-user-before-account-deletion",
+        "schedule": crontab(minute=30, hour=4),
+    },
+}
+
+
 def setup_celery(app):
-    """Configure Celery task queue for the application."""
-    from b3desk.tasks import celery
+    """Create the Celery application and run its tasks within an app context."""
 
-    celery.conf.task_always_eager = app.testing
-
-    class ContextTask(celery.Task):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):  # pragma: no cover
+    class FlaskTask(Task):
+        def __call__(self, *args, **kwargs):
             if has_app_context():
                 return self.run(*args, **kwargs)
             with app.app_context():
                 return self.run(*args, **kwargs)
 
-    celery.Task = ContextTask
+    app.config.from_mapping(
+        CELERY={
+            "broker_url": f"redis://{app.config['REDIS_URL']}",
+            "result_backend": f"redis://{app.config['REDIS_URL']}",
+            "imports": ("b3desk.tasks",),
+            "task_always_eager": app.testing,
+            "task_ignore_result": True,
+            "broker_connection_retry_on_startup": True,
+            "beat_schedule": BEAT_SCHEDULE,
+        },
+    )
+
+    celery_app = Celery(app.name, task_cls=FlaskTask)
+    celery_app.config_from_object(app.config["CELERY"])
+    celery_app.set_default()
+    app.extensions["celery"] = celery_app
+    return celery_app
 
 
 def setup_cache(app):
@@ -451,23 +485,24 @@ def setup_oidc(app):
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
-def create_app(test_config=None):
+def create_app(test_config=None, authentication=True):
     """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
     setup_configuration(app, test_config)
     sentry_sdk = setup_sentry(app)
     try:
-        setup_celery(app)
         setup_cache(app)
         setup_logging(app)
         setup_i18n(app)
         setup_csrf(app)
         setup_database(app)
+        setup_celery(app)
         setup_jinja(app)
         setup_flask(app)
         setup_error_pages(app)
         setup_endpoints(app)
-        setup_oidc(app)
+        if authentication:
+            setup_oidc(app)
         setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover
