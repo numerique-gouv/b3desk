@@ -6,4 +6,4 @@
 
 {% trans %}Vous pouvez empêcher cette suppression en vous connectant à votre compte.{% endtrans %}
 
-{% trans %}Rendez-vous simplement sur votre espace :{% endtrans %} {{ welcome_url }}
+{% trans %}Rendez vous simplement sur votre espace :{% endtrans %} {{ welcome_url }}
