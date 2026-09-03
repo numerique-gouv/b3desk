@@ -475,8 +475,8 @@ def get_or_create_shadow_meeting(user):
     )
 
 
-def clean_db_and_delete_meeting(meeting, celery_cron=False):
-    if celery_cron:
+def clean_db_and_delete_meeting(meeting, force=False):
+    if force:
         for delegate in meeting.get_all_delegates:
             remove_delegate_from_db(meeting, delegate)
     if meeting.get_all_delegates:

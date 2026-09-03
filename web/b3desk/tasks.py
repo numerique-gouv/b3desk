@@ -151,7 +151,7 @@ def delete_old_meetings():
         )
 
     for meeting in meetings_to_delete:
-        success, _ = clean_db_and_delete_meeting(meeting, celery_cron=True)
+        success, _ = clean_db_and_delete_meeting(meeting, force=True)
         if success:
             logger.info(
                 "Celery cron task: %s id:%s named:%s deleted",
