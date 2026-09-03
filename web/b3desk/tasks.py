@@ -163,7 +163,7 @@ def delete_old_meetings():
         except Exception:
             db.session.rollback()
             logger.exception(
-                "celery cron task: %s id:%s named:%s not deleted",
+                "Celery cron task: %s id:%s named:%s not deleted",
                 "shadow_meeting" if meeting.is_shadow else "meeting",
                 meeting.id,
                 meeting.name,
