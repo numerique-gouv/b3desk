@@ -343,6 +343,33 @@ def test_inform_user_before_account_deletion_no_action(app, client_app, caplog):
     assert "Celery cron task: no action required" in caplog.text
 
 
+def test_delete_old_users_information_failure(
+    app, client_app, user, mocker, caplog, smtpd, time_machine
+):
+    """Test the cron task logs an error when a user could not be informed."""
+    test_date = datetime.datetime(2024, 1, 1)
+    third_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    )
+    user.last_connection_utc_datetime = third_mail_date
+    user.created_at = third_mail_date
+    db.session.commit()
+
+    mocker.patch(
+        "b3desk.tasks.send_mail_before_user_deletion", side_effect=Exception("boom")
+    )
+
+    time_machine.move_to(test_date)
+    inform_user_before_account_deletion()
+
+    assert f"Celery cron task: user {user.fullname}, id {user.id}, email {user.email}, not informed ({DELAY_FOR_THIRD_EMAIL} day(s) left)"
+    assert len(smtpd.messages) == 0
+
+
 def test_inform_user_before_account_deletion(
     app,
     client_app,

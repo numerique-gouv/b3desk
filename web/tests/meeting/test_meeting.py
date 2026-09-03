@@ -1646,6 +1646,35 @@ def test_delete_old_meetings(
     assert user.meetings == []
 
 
+def test_delete_old_meetings_failure(
+    app,
+    mocker,
+    client_app,
+    time_machine,
+    user,
+    meeting,
+    bbb_getRecordings_response,
+    caplog,
+):
+    """Test that old shadow meetings are deleted."""
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+
+    mocker.patch(
+        "b3desk.tasks.clean_db_and_delete_meeting", side_effect=Exception("boom")
+    )
+    delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == []
+    assert user.meetings == [meeting]
+    assert "Celery cron task: meeting id:1 named:meeting not deleted" in caplog.text
+
+
 def test_delete_old_meetings_but_not_recent_meetings(
     app,
     client_app,
@@ -1818,3 +1847,39 @@ def test_inform_owner_before_meeting_deletion_no_action(app, client_app, caplog)
     """Test the cron task logs when there is no meeting to inform."""
     inform_owner_before_meeting_deletion()
     assert "Celery cron task: no action required" in caplog.text
+
+
+def test_inform_owner_before_meeting_deletion_failure(
+    app,
+    mocker,
+    client_app,
+    time_machine,
+    meeting,
+    user,
+    smtpd,
+    caplog,
+):
+    """Test there is a log when inform owner fails."""
+    test_date = datetime.datetime(2024, 1, 1)
+    third_mail_date = (
+        test_date
+        - datetime.timedelta(
+            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+        )
+        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    )
+
+    meeting.last_connection_utc_datetime = third_mail_date
+    meeting.created_at = third_mail_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    mocker.patch(
+        "b3desk.tasks.send_mail_before_meeting_deletion", side_effect=Exception("boom")
+    )
+    inform_owner_before_meeting_deletion()
+    assert len(smtpd.messages) == 0
+    assert (
+        "Celery cron task: meeting id:1 named:meeting not informed (1 day(s) left)"
+        in caplog.text
+    )
