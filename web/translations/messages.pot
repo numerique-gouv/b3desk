@@ -3094,12 +3094,12 @@ msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:14
-#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
@@ -3165,11 +3165,14 @@ msgid "Vous pouvez empêcher cette suppression en utilisant cette réunion."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:11
-#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
 #, python-format
 msgid ""
 "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
 "et lancez la réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
+msgid "Rendez-vous simplement sur votre espace et lancez la réunion :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
@@ -3363,27 +3366,37 @@ msgid ""
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:59
+#: web/b3desk/utils/mailing.py:43
+#, python-brace-format
+msgid "Nouvelle délégation pour {meeting_name}"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:45
+#, python-brace-format
+msgid "Retrait de délégation pour {meeting_name}"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:61
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:67
+#: web/b3desk/utils/mailing.py:69
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:73
+#: web/b3desk/utils/mailing.py:75
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:75
+#: web/b3desk/utils/mailing.py:77
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:77
+#: web/b3desk/utils/mailing.py:79
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:108
+#: web/b3desk/utils/mailing.py:110
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""

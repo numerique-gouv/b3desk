@@ -40,9 +40,11 @@ def send_delegation_mail(meeting, delegate, new_delegation: bool):
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
     msg["Subject"] = (
-        str(_(f"Nouvelle délégation pour {meeting.name}"))
+        _("Nouvelle délégation pour {meeting_name}").format(meeting_name=meeting.name)
         if new_delegation
-        else str(_(f"Retrait de délégation pour {meeting.name}"))
+        else _("Retrait de délégation pour {meeting_name}").format(
+            meeting_name=meeting.name
+        )
     )
     msg["From"] = smtp["from_email"]
     msg["To"] = delegate.email
