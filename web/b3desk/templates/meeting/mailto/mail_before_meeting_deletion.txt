@@ -4,4 +4,4 @@
 
 {% trans %}Vous pouvez empêcher cette suppression en utilisant cette réunion.{% endtrans %}
 
-{% trans %}Rendez vous simplement sur <a href="{{ welcome_url }}">votre espace</a> et lancez la réunion.{% endtrans %}
+{% trans %}Rendez-vous simplement sur votre espace et lancez la réunion :{% endtrans %} {{ welcome_url }}
