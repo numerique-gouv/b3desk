@@ -5,6 +5,7 @@ import pytest
 import requests
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
+from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.users import User
 from b3desk.models.users import get_inactive_users_to_inform
@@ -226,7 +227,6 @@ def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
     client_app,
     user,
     user_2,
-    meeting,
     meeting_1_user_2,
     group,
     time_machine,
@@ -246,7 +246,7 @@ def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
         title="doc.pdf",
         created_at=date.today(),
         meeting_id=meeting_1_user_2.id,
-        owner=user,
+        owner=user_2,
     )
     db.session.add(meeting_file)
     db.session.commit()
@@ -260,6 +260,40 @@ def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
     assert not db.session.scalars(
         db.select(MeetingFiles).where(MeetingFiles.id == meeting_file_id)
     ).first()
+
+
+def test_delete_old_users_who_is_delegate(
+    app,
+    client_app,
+    user,
+    user_2,
+    meeting,
+    meeting_1_user_2,
+    time_machine,
+    bbb_getRecordings_response,
+):
+    """Test deletion of old user who is delegate of an active meeting."""
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2025, 1, 1)
+    user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user_2.created_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_users()
+
+    assert not db.session.get(User, user.id)
+    assert db.session.get(User, user_2.id)
+    assert not db.session.get(Meeting, meeting.id)
+    assert db.session.get(Meeting, meeting_1_user_2.id)
+    assert not db.session.get(
+        MeetingAccess, {"user_id": user.id, "meeting_id": meeting_1_user_2.id}
+    )
 
 
 def test_delete_old_users_do_not_delete_user_with_active_meeting(
