@@ -198,10 +198,10 @@ class User(db.Model):
 def get_inactive_users_to_delete():
     from b3desk.models.meetings import Meeting
 
-    account_cutoff = datetime.now() - timedelta(
+    account_cutoff = datetime.now(UTC) - timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
-    meeting_cutoff = datetime.now() - timedelta(
+    meeting_cutoff = datetime.now(UTC) - timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
     )
     has_recently_used_meeting = (

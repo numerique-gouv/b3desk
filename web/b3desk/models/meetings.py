@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import random
 import uuid
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -579,7 +580,7 @@ def remove_delegate_from_db(meeting, delegate):
 
 
 def get_inactive_meetings_to_delete():
-    cutoff = datetime.now() - timedelta(
+    cutoff = datetime.now(UTC) - timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
     )
     return db.session.scalars(
@@ -594,7 +595,7 @@ def get_inactive_meetings_to_delete():
 
 
 def get_inactive_meetings_to_inform():
-    today = datetime.now().date()
+    today = datetime.now(UTC).date()
     inactivity_period = timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
     )
