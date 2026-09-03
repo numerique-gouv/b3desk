@@ -1701,6 +1701,7 @@ def test_inform_owner_before_meeting_deletion(
     meeting,
     meeting_2,
     meeting_3,
+    shadow_meeting,
     user,
     smtpd,
 ):
@@ -1735,6 +1736,8 @@ def test_inform_owner_before_meeting_deletion(
     meeting_2.created_at = second_mail_date
     meeting_3.last_connection_utc_datetime = first_mail_date
     meeting_3.created_at = first_mail_date
+    shadow_meeting.last_connection_utc_datetime = first_mail_date
+    shadow_meeting.created_at = first_mail_date
     db.session.commit()
 
     time_machine.move_to(test_date)
@@ -1755,6 +1758,7 @@ def test_inform_owner_before_meeting_deletion_for_unused_meetings(
     meeting,
     meeting_2,
     meeting_3,
+    shadow_meeting,
     user,
     smtpd,
 ):
@@ -1789,6 +1793,8 @@ def test_inform_owner_before_meeting_deletion_for_unused_meetings(
     meeting_2.created_at = second_mail_date
     meeting_3.last_connection_utc_datetime = None
     meeting_3.created_at = first_mail_date
+    shadow_meeting.last_connection_utc_datetime = None
+    shadow_meeting.created_at = first_mail_date
     db.session.commit()
 
     time_machine.move_to(test_date)

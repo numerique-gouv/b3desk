@@ -606,13 +606,14 @@ def get_inactive_meetings_to_inform():
         day_end = day_start + timedelta(days=1)
         matching_meetings = db.session.scalars(
             db.select(Meeting).where(
+                Meeting.is_shadow.is_(False),
                 or_(
                     (Meeting.last_connection_utc_datetime >= day_start)
                     & (Meeting.last_connection_utc_datetime < day_end),
                     (Meeting.last_connection_utc_datetime.is_(None))
                     & (Meeting.created_at >= day_start)
                     & (Meeting.created_at < day_end),
-                )
+                ),
             )
         ).all()
         meetings += [(meeting, delay) for meeting in matching_meetings]
