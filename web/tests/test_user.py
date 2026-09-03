@@ -327,7 +327,7 @@ def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog
     user.last_connection_utc_datetime = datetime.datetime(2000, 1, 1)
     user.created_at = datetime.datetime(2000, 1, 1)
     db.session.commit()
-    mocker.patch("b3desk.tasks.clean_db_and_delete_user", return_value=False)
+    mocker.patch("b3desk.tasks.clean_db_and_delete_user", side_effect=Exception("boom"))
 
     delete_old_users()
 

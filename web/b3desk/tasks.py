@@ -151,14 +151,24 @@ def delete_old_meetings():
         )
 
     for meeting in meetings_to_delete:
-        success, _ = clean_db_and_delete_meeting(meeting, force=True)
-        if success:
-            logger.info(
-                "Celery cron task: %s id:%s named:%s deleted",
+        try:
+            success, _ = clean_db_and_delete_meeting(meeting, force=True)
+            if success:
+                logger.info(
+                    "Celery cron task: %s id:%s named:%s deleted",
+                    "shadow_meeting" if meeting.is_shadow else "meeting",
+                    meeting.id,
+                    meeting.name,
+                )
+        except Exception:
+            db.session.rollback()
+            logger.exception(
+                "celery cron task: %s id:%s named:%s not deleted",
                 "shadow_meeting" if meeting.is_shadow else "meeting",
                 meeting.id,
                 meeting.name,
             )
+
     logger.info("Celery cron task: delete_old_meetings ended")
 
 
@@ -177,14 +187,23 @@ def inform_owner_before_meeting_deletion():
             "Celery cron task: no action required",
         )
     for meeting, delay in meetings_to_inform:
-        send_mail_before_meeting_deletion(meeting, delay)
-        logger.info(
-            "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
-            "shadow_meeting" if meeting.is_shadow else "meeting",
-            meeting.id,
-            meeting.name,
-            delay,
-        )
+        try:
+            send_mail_before_meeting_deletion(meeting, delay)
+            logger.info(
+                "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
+                "shadow_meeting" if meeting.is_shadow else "meeting",
+                meeting.id,
+                meeting.name,
+                delay,
+            )
+        except Exception:
+            logger.exception(
+                "Celery cron task: %s id:%s named:%s not informed (%d day(s) left)",
+                "shadow_meeting" if meeting.is_shadow else "meeting",
+                meeting.id,
+                meeting.name,
+                delay,
+            )
     logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
 
 
@@ -204,20 +223,23 @@ def delete_old_users():
             "Celery cron task: no action required",
         )
     for user in users_to_delete:
-        if clean_db_and_delete_user(user, force=True):
+        try:
+            clean_db_and_delete_user(user, force=True)
             logger.info(
                 "Celery cron task: user %s, id %s, email %s, deleted",
                 user.fullname,
                 user.id,
                 user.email,
             )
-        else:
-            logger.error(
+        except Exception:
+            db.session.rollback()
+            logger.exception(
                 "Celery cron task: user not deleted: %s, id %s, email %s",
                 user.fullname,
                 user.id,
                 user.email,
             )
+
     logger.info("Celery cron task: delete_old_users ended")
 
 
@@ -236,12 +258,21 @@ def inform_user_before_account_deletion():
             "Celery cron task: no action required",
         )
     for user, delay in users_to_inform:
-        send_mail_before_user_deletion(user, delay)
-        logger.info(
-            "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
-            user.fullname,
-            user.id,
-            user.email,
-            delay,
-        )
+        try:
+            send_mail_before_user_deletion(user, delay)
+            logger.info(
+                "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
+                user.fullname,
+                user.id,
+                user.email,
+                delay,
+            )
+        except Exception:
+            logger.exception(
+                "Celery cron task: user %s, id %s, email %s, not informed (%d day(s) left)",
+                user.fullname,
+                user.id,
+                user.email,
+                delay,
+            )
     logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")

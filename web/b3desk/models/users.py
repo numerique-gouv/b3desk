@@ -245,7 +245,6 @@ def clean_db_and_delete_user(user, force=False):
 
     db.session.delete(user)
     db.session.commit()
-    return not db.session.get(User, user.id)
 
 
 def get_inactive_users_to_inform():
