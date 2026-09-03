@@ -204,7 +204,7 @@ def delete_old_users():
             "Celery cron task: no action required",
         )
     for user in users_to_delete:
-        if clean_db_and_delete_user(user):
+        if clean_db_and_delete_user(user, force=True):
             logger.info(
                 "Celery cron task: user %s, id %s, email %s, deleted",
                 user.fullname,

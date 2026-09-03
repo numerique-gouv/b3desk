@@ -4,6 +4,7 @@ from datetime import date
 import pytest
 import requests
 from b3desk.models import db
+from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.users import User
 from b3desk.models.users import get_inactive_users_to_inform
@@ -220,7 +221,7 @@ def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(
     ) in caplog.text
 
 
-def test_delete_old_users(
+def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
     app,
     client_app,
     user,
@@ -231,15 +232,14 @@ def test_delete_old_users(
     time_machine,
     bbb_getRecordings_response,
 ):
-    group.members.append(user)
-    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
-    user.created_at = datetime.datetime(2024, 1, 1)
-    user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
-    user_2.created_at = datetime.datetime(2025, 1, 1)
-    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
-    meeting.created_at = datetime.datetime(2024, 1, 1)
-    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
-    meeting_1_user_2.created_at = datetime.datetime(2025, 1, 1)
+    """Test deletion of old user who is in a group, of which all meetings are old and a meeting have file and delegate."""
+    group.members.append(user_2)
+    user.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    user.created_at = datetime.datetime(2025, 1, 1)
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2024, 1, 1)
+    user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user_2.created_at = datetime.datetime(2024, 1, 1)
 
     meeting_file = MeetingFiles(
         url="https://example.com/doc.pdf",
@@ -255,11 +255,65 @@ def test_delete_old_users(
     time_machine.move_to(datetime.datetime(2025, 6, 1))
     delete_old_users()
 
-    assert not db.session.get(User, 1)
-    assert db.session.get(User, 2)
+    assert db.session.get(User, 1)
+    assert not db.session.get(User, 2)
     assert not db.session.scalars(
         db.select(MeetingFiles).where(MeetingFiles.id == meeting_file_id)
     ).first()
+
+
+def test_delete_old_users_do_not_delete_user_with_active_meeting(
+    app,
+    client_app,
+    user,
+    meeting,
+    meeting_2,
+    time_machine,
+    bbb_getRecordings_response,
+):
+    """Test delete_old_users don't delete user with active meeting."""
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting_2.created_at = datetime.datetime(2025, 1, 1)
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_users()
+
+    assert db.session.get(User, user.id)
+    assert db.session.get(Meeting, meeting.id)
+    assert db.session.get(Meeting, meeting_2.id)
+
+
+def test_delete_old_users_do_not_delete_user_with_active_shadow_meeting(
+    app,
+    client_app,
+    user,
+    meeting,
+    meeting_2,
+    shadow_meeting,
+    time_machine,
+    bbb_getRecordings_response,
+):
+    """Test delete_old_users don't delete user with active shadow meeting."""
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_2.created_at = datetime.datetime(2024, 1, 1)
+    shadow_meeting.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    shadow_meeting.created_at = datetime.datetime(2025, 1, 1)
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_users()
+
+    assert db.session.get(User, user.id)
+    assert db.session.get(Meeting, meeting.id)
+    assert db.session.get(Meeting, meeting_2.id)
+    assert db.session.get(Meeting, shadow_meeting.id)
 
 
 def test_delete_old_users_no_action(app, client_app, caplog):

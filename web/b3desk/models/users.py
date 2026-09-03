@@ -228,12 +228,12 @@ def get_inactive_users_to_delete():
     ).all()
 
 
-def clean_db_and_delete_user(user):
+def clean_db_and_delete_user(user, force=False):
     from b3desk.models.meetings import MeetingFiles
     from b3desk.models.meetings import clean_db_and_delete_meeting
 
     for meeting in user.meetings:
-        clean_db_and_delete_meeting(meeting)
+        clean_db_and_delete_meeting(meeting, force)
 
     for meeting_file in db.session.scalars(
         db.select(MeetingFiles).where(MeetingFiles.owner_id == user.id)
