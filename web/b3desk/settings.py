@@ -1034,3 +1034,9 @@ class MainSettings(BaseSettings):
     Time the emails are sent before inactive accounts are deleted
     Can be entered in the form of: "HH:MM" or datetime.time(minute=MM, hour=H)
     """
+
+    CRON_DEFAULT_TIMEZONE: str = "Europe/Paris"
+    """Le fuseau horaire utilisé pour le lancement des tâches quotidiennes.
+
+    Plus d'infos sur https://data.iana.org/time-zones/tzdb-2021a/zone1970.tab
+    """

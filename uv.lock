@@ -142,6 +142,7 @@ dependencies = [
     { name = "sentry-sdk" },
     { name = "sqlalchemy" },
     { name = "sqlalchemy-utils" },
+    { name = "tzdata" },
     { name = "webdavclient3" },
 ]
 
@@ -203,6 +204,7 @@ requires-dist = [
     { name = "sentry-sdk", specifier = ">=2.3.1,<3.0.0" },
     { name = "sqlalchemy", specifier = ">=2.0.44,<3.0.0" },
     { name = "sqlalchemy-utils", specifier = ">=0.42.1,<0.50.0" },
+    { name = "tzdata", specifier = ">=2026.3" },
     { name = "webdavclient3", specifier = "==3.14.6" },
 ]
 

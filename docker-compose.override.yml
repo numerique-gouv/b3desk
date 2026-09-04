@@ -16,7 +16,7 @@ services:
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}
 
-  worker:
+  worker: &celery-common-override
     hostname: worker.localhost
     environment:
       - FLASK_DEBUG=1
@@ -27,6 +27,10 @@ services:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
     volumes:
       - ./web/b3desk:/opt/bbb-visio/b3desk
+
+  beat:
+    <<: *celery-common-override
+    hostname: beat.localhost
 
   broker:
     hostname: broker.localhost

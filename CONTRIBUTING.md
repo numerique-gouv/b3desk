@@ -14,6 +14,7 @@ Pour lancer l'application et coller au plus proche des conditions de production,
 - nextcloud : un des moyens disponibles pour partager des fichiers en visioconférence (persistance de l'installation dans `nextcloud/html`)
 - postgres : la base de données qui va persister les données des services Nextcloud, keycloak et web (persistance des données dans `postgres/data`)
 - worker : le worker celery permettant de gérer l'upload de fichiers de façon asynchrone
+- beat : l'ordonnanceur celery qui déclenche les tâches périodiques, comme la suppression des réunions expirées. Un seul exemplaire doit tourner à la fois, sans quoi chaque tâche serait déclenchée en double
 - broker : le broker redis qui maintient une liste de tâches dans laquelle vient se servir le worker
 - tokenmock : un mock qui vient reproduire les conditions de prod de distribution d'un token pour la communication entre B3Desk et l'instance Nextcloud de l'utilisateur
 
