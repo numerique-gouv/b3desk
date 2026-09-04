@@ -553,7 +553,7 @@ def test_get_recordings_ai_summary(mocker, meeting, bbb_getRecordings_ai_summary
 
 def test_build_recording_links_ai_summary():
     """The notification mail links include the three ai-summary report formats."""
-    from b3desk.utils import _build_recording_links
+    from b3desk.utils.mailing import _build_recording_links
 
     playbacks = {
         "ai-summary": {
@@ -569,6 +569,26 @@ def test_build_recording_links_ai_summary():
         "https://bbb.test/ai-summary/rec/ai-summary.pdf",
         "https://bbb.test/ai-summary/rec/ai-summary.md",
     ]
+
+
+def test_send_available_recording_notification_mail_no_usable_format(
+    meeting, smtpd, caplog
+):
+    """No usable playback format: skip mailing and log a warning instead."""
+    from b3desk.utils.mailing import send_available_recording_notification_mail
+
+    send_available_recording_notification_mail(
+        meeting,
+        playbacks={"podcast": {"url": "https://bbb.test/playback/podcast"}},
+        recording_name="x",
+        recording_start="2026-01-01T00:00:00+00:00",
+    )
+
+    assert len(smtpd.messages) == 0
+    assert (
+        f"No usable playback format for meeting {meeting.id}, skipping notification mail"
+        in caplog.text
+    )
 
 
 def test_open_recordings_page_ai_summary(

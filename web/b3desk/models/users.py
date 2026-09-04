@@ -12,6 +12,7 @@ import hashlib
 from datetime import UTC
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from flask import current_app
@@ -22,8 +23,12 @@ from sqlalchemy.orm import relationship
 
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
+from b3desk.utils.mailing import EMAIL_DELAYS
 
 from . import db
+from .information import compute_first_mail_deadline
+from .information import get_entities_due_for_next_mail
+from .information import ready_for_final_deletion
 
 if TYPE_CHECKING:
     from .groups import Group
@@ -100,6 +105,8 @@ class User(db.Model):
     last_connection_utc_datetime: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     admin: Mapped[bool] = mapped_column(default=False)
+    information_level: Mapped[int] = mapped_column(default=0)
+    information_sent_at: Mapped[datetime | None]
 
     meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
     favorites: Mapped[list[Meeting]] = relationship(
@@ -186,3 +193,81 @@ class User(db.Model):
         if all(group.enable_ai_summary is False for group in self.groups):
             return False
         return current_app.config["ENABLE_AI_SUMMARY"]
+
+
+def get_inactive_users_to_delete():
+    """Return users that are ready to be deleted."""
+    return db.session.scalars(
+        db.select(User).where(ready_for_final_deletion(User, datetime.now(UTC)))
+    ).all()
+
+
+def clean_db_and_delete_user(user, force=False):
+    from b3desk.models.meetings import MeetingFiles
+    from b3desk.models.meetings import clean_db_and_delete_meeting
+
+    for meeting_file in db.session.scalars(
+        db.select(MeetingFiles).where(MeetingFiles.owner_id == user.id)
+    ):
+        db.session.delete(meeting_file)
+
+    for meeting in user.meetings:
+        clean_db_and_delete_meeting(meeting, force)
+
+    for access in user.user_meeting_access:
+        db.session.delete(access)
+
+    db.session.delete(user)
+    db.session.commit()
+
+
+def as_naive(value):
+    """Strip an aware datetime's timezone so it can be compared to values read from the database."""
+    return value.replace(tzinfo=None) if value.tzinfo else value
+
+
+def get_user_effective_activity(user):
+    """Return a user's most recent activity, from their own account or their meetings."""
+    activities = [user.last_connection_utc_datetime or user.created_at]
+    activities += [
+        meeting.last_connection_utc_datetime or meeting.created_at
+        for meeting in user.meetings
+    ]
+    return max(as_naive(activity) for activity in activities)
+
+
+def update_reactivated_users(first_mail_deadline):
+    """Reset information_level for users reactivated since last email."""
+    reactivated_users = db.session.scalars(
+        db.select(User).where(User.information_level > 0)
+    ).all()
+    for user in reactivated_users:
+        if get_user_effective_activity(user) > first_mail_deadline:
+            user.information_level = 0
+            user.information_sent_at = None
+    db.session.commit()
+
+
+def get_inactive_users_to_inform():
+    """Advance each user's information_level by one step."""
+    now = datetime.now(UTC)
+    account_inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+    first_mail_deadline = as_naive(
+        compute_first_mail_deadline(now, account_inactivity_period)
+    )
+
+    update_reactivated_users(first_mail_deadline)
+
+    never_informed_users = db.session.scalars(
+        db.select(User).where(User.information_level == 0)
+    ).all()
+    users = [
+        (user, EMAIL_DELAYS[0], 1)
+        for user in never_informed_users
+        if get_user_effective_activity(user) <= first_mail_deadline
+    ]
+    users += get_entities_due_for_next_mail(User, now)
+
+    return users

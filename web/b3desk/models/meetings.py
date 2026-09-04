@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 import random
 import uuid
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -27,6 +28,7 @@ from sqlalchemy import String
 from sqlalchemy import Unicode
 from sqlalchemy import UnicodeText
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import and_
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped
@@ -37,8 +39,12 @@ from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
+from b3desk.utils.mailing import EMAIL_DELAYS
 
 from . import db
+from .information import compute_first_mail_deadline
+from .information import get_entities_due_for_next_mail
+from .information import ready_for_final_deletion
 from .roles import Role
 from .users import User
 
@@ -168,15 +174,17 @@ class Meeting(db.Model):
     meeting_access: Mapped[list[MeetingAccess]] = relationship(back_populates="meeting")
     last_connection_utc_datetime: Mapped[datetime | None]
     is_shadow: Mapped[bool | None] = mapped_column(default=False)
+    information_level: Mapped[int] = mapped_column(default=0)
+    information_sent_at: Mapped[datetime | None]
     visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
 
     # BBB params
     name: Mapped[str | None] = mapped_column(Unicode(150))
     attendeePW: Mapped[str | None] = mapped_column(
-        StringEncryptedType(Unicode(50), secret_key())
+        StringEncryptedType(Unicode(50), secret_key)
     )
     moderatorPW: Mapped[str | None] = mapped_column(
-        StringEncryptedType(Unicode(50), secret_key())
+        StringEncryptedType(Unicode(50), secret_key)
     )
     welcome: Mapped[str | None] = mapped_column(UnicodeText())
     dialNumber: Mapped[str | None] = mapped_column(Unicode(50))
@@ -472,7 +480,10 @@ def get_or_create_shadow_meeting(user):
     )
 
 
-def clean_db_and_delete_meeting(meeting):
+def clean_db_and_delete_meeting(meeting, force=False):
+    if force:
+        for delegate in meeting.get_all_delegates:
+            remove_delegate_from_db(meeting, delegate)
     if meeting.get_all_delegates:
         return False, None
 
@@ -490,19 +501,6 @@ def clean_db_and_delete_meeting(meeting):
     db.session.commit()
 
     return True, None
-
-
-def delete_all_old_shadow_meetings():
-    """Delete all shadow meetings not used in the past year."""
-    old_shadow_meetings = db.session.scalars(
-        db.select(Meeting).where(
-            Meeting.last_connection_utc_datetime < datetime.now() - DATA_RETENTION,
-            Meeting.is_shadow,
-        )
-    ).all()
-
-    for shadow_meeting in old_shadow_meetings:
-        clean_db_and_delete_meeting(shadow_meeting)
 
 
 def visio_code_exists(code):
@@ -583,3 +581,78 @@ def remove_delegate_from_db(meeting, delegate):
     ).one()
     db.session.delete(access)
     db.session.commit()
+
+
+def get_inactive_meetings_to_delete():
+    """Return meetings that are ready to be deleted."""
+    now = datetime.now(UTC)
+    cutoff = now - timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+    return db.session.scalars(
+        db.select(Meeting).where(
+            or_(
+                and_(
+                    Meeting.is_shadow.is_(True),
+                    or_(
+                        Meeting.last_connection_utc_datetime < cutoff,
+                        (Meeting.last_connection_utc_datetime.is_(None))
+                        & (Meeting.created_at < cutoff),
+                    ),
+                ),
+                and_(
+                    Meeting.is_shadow.is_(False), ready_for_final_deletion(Meeting, now)
+                ),
+            )
+        )
+    ).all()
+
+
+def update_reactivated_meetings(first_mail_deadline):
+    """Reset information_level for meetings reactivated since last email."""
+    reactivated_meetings = db.session.scalars(
+        db.select(Meeting).where(
+            Meeting.is_shadow.is_(False),
+            Meeting.information_level > 0,
+            or_(
+                Meeting.last_connection_utc_datetime > first_mail_deadline,
+                (Meeting.last_connection_utc_datetime.is_(None))
+                & (Meeting.created_at > first_mail_deadline),
+            ),
+        )
+    ).all()
+    for meeting in reactivated_meetings:
+        meeting.information_level = 0
+        meeting.information_sent_at = None
+    db.session.commit()
+
+
+def get_inactive_meetings_to_inform():
+    """Advance each non-shadow meeting's information_level by one step."""
+    now = datetime.now(UTC)
+    inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+    first_mail_deadline = compute_first_mail_deadline(now, inactivity_period)
+
+    update_reactivated_meetings(first_mail_deadline)
+
+    meetings = [
+        (meeting, EMAIL_DELAYS[0], 1)
+        for meeting in db.session.scalars(
+            db.select(Meeting).where(
+                Meeting.is_shadow.is_(False),
+                Meeting.information_level == 0,
+                or_(
+                    Meeting.last_connection_utc_datetime <= first_mail_deadline,
+                    (Meeting.last_connection_utc_datetime.is_(None))
+                    & (Meeting.created_at <= first_mail_deadline),
+                ),
+            )
+        ).all()
+    ]
+    meetings += get_entities_due_for_next_mail(
+        Meeting, now, Meeting.is_shadow.is_(False)
+    )
+
+    return meetings

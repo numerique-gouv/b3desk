@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-31 15:46+0200\n"
+"POT-Creation-Date: 2026-09-02 13:51+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/b3desk/__init__.py:330 web/b3desk/endpoints/meeting_files.py:127
+#: web/b3desk/__init__.py:364 web/b3desk/endpoints/meeting_files.py:127
 #: web/b3desk/endpoints/meeting_files.py:186
 #: web/b3desk/endpoints/meeting_files.py:291
 #: web/b3desk/endpoints/meeting_files.py:482
@@ -158,7 +158,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:429
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:432
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -521,16 +521,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:408 web/b3desk/models/meetings.py:415
+#: web/b3desk/models/meetings.py:411 web/b3desk/models/meetings.py:418
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:422
+#: web/b3desk/models/meetings.py:425
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:424
+#: web/b3desk/models/meetings.py:427
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -1909,83 +1909,83 @@ msgstr ""
 msgid "Guides utilisateurs"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:9
+#: web/b3desk/templates/footer/documentation.html:10
 msgid "Présentation des nouveautés de la v2.4"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:14
+#: web/b3desk/templates/footer/documentation.html:17
 msgid "Créer une réunion improvisée"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:15
+#: web/b3desk/templates/footer/documentation.html:18
 msgid "Participer à une réunion"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:16
+#: web/b3desk/templates/footer/documentation.html:19
 msgid "Créer et parametrer une salle de réunion"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:16
+#: web/b3desk/templates/footer/documentation.html:19
 msgid "Créer et paramétrer une salle de réunion "
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:17
+#: web/b3desk/templates/footer/documentation.html:20
 msgid "Activer le matériel dans le navigateur"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:18
+#: web/b3desk/templates/footer/documentation.html:21
 msgid "Gérer les utilisateurs"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:19
+#: web/b3desk/templates/footer/documentation.html:22
 msgid "Gérer les documents"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:20
+#: web/b3desk/templates/footer/documentation.html:23
 msgid "Gestion des réunions privées"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:21
+#: web/b3desk/templates/footer/documentation.html:24
 msgid "Déléguer la création de réunion"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:22
+#: web/b3desk/templates/footer/documentation.html:25
 msgid "Enregistrer une réunion"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:23
+#: web/b3desk/templates/footer/documentation.html:26
 msgid "Créer un sondage"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:24
+#: web/b3desk/templates/footer/documentation.html:27
 msgid "Joindre une réunion par téléphone"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:25
+#: web/b3desk/templates/footer/documentation.html:28
 msgid "Afficher le tableau de bord"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:26
+#: web/b3desk/templates/footer/documentation.html:29
 msgid "Gérer la mise en page"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:27
+#: web/b3desk/templates/footer/documentation.html:30
 msgid "Extension contrôle du volume"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:27
+#: web/b3desk/templates/footer/documentation.html:30
 msgid "Contrôle du volume"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:100
+#: web/b3desk/templates/footer/documentation.html:106
 msgid "Liste des serveurs BigBlueButton pour l'Éducation"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:101
+#: web/b3desk/templates/footer/documentation.html:107
 msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:102
+#: web/b3desk/templates/footer/documentation.html:108
 msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
 msgstr ""
 
@@ -2529,7 +2529,7 @@ msgid "Ajouter l'utilisateur comme délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:43
-msgid "Supprimer le délégataire"
+msgid "Retirer le délégataire"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation.html:23
@@ -3092,6 +3092,10 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
@@ -3110,6 +3114,8 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:14
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
@@ -3151,6 +3157,55 @@ msgstr ""
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#, python-format
+msgid "La réunion %(meeting_name)s sera supprimée définitivement "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+msgid "dans 24h"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+#, python-format
+msgid "dans %(delay)s jours"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:5
+msgid "Vous pouvez empêcher cette suppression en utilisant cette réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:7
+#, python-format
+msgid ""
+"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"et lancez la réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+msgid "Votre compte est inactif et sera supprimé "
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:8
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:5
+msgid "Vos salles de réunion et vos fichiers associés seront supprimés également."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:11
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:7
+msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -3323,35 +3378,35 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:100
-msgid "Présentation interactive"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:108
-msgid "Vidéo (téléchargement direct)"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:114
-msgid "Compte-rendu (HTML)"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:116
-msgid "Compte-rendu (PDF)"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:118
-msgid "Compte-rendu (Markdown)"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:149
-#, python-brace-format
-msgid "Votre enregistrement pour {name}"
-msgstr ""
-
-#: web/b3desk/utils/__init__.py:269
+#: web/b3desk/utils/__init__.py:141
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:59
+msgid "Présentation interactive"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:67
+msgid "Vidéo (téléchargement direct)"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:73
+msgid "Compte-rendu (HTML)"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:75
+msgid "Compte-rendu (PDF)"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:77
+msgid "Compte-rendu (Markdown)"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:108
+#, python-brace-format
+msgid "Votre enregistrement pour {name}"
 msgstr ""
 
 #~ msgid ""
@@ -7080,5 +7135,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Ajout de membre"
+#~ msgstr ""
+
+#~ msgid "Supprimer le délégataire"
 #~ msgstr ""
 

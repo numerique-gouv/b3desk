@@ -1,4 +1,4 @@
-from b3desk.utils import _build_recording_links
+from b3desk.utils.mailing import _build_recording_links
 from flask_babel import get_locale
 
 

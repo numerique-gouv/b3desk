@@ -1,4 +1,5 @@
 import datetime
+import logging
 import shutil
 import tempfile
 import threading
@@ -27,6 +28,14 @@ from tests.html_validation import ValidatingTestApp
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
 TRANSLATIONS_DIR = str(Path(__file__).parent.parent / "translations")
+
+
+@pytest.fixture(autouse=True)
+def celery_task_logging(caplog):
+    """Make caplog capture b3desk.tasks' log records."""
+    for name in ("b3desk.tasks", "celery.task", "celery"):
+        logging.getLogger(name).disabled = False
+    caplog.set_level(logging.INFO, logger="b3desk.tasks")
 
 
 @pytest.fixture(autouse=True, scope="session")

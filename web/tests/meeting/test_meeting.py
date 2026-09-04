@@ -21,12 +21,18 @@ from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
 from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_forbidden_pins
+from b3desk.models.meetings import get_inactive_meetings_to_inform
 from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
+from b3desk.tasks import delete_old_meetings
+from b3desk.tasks import inform_owner_before_meeting_deletion
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
+from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 from flask import url_for
 
 
@@ -1613,6 +1619,379 @@ def test_create_meeting_route(client_app, authenticated_user, meeting, bbb_respo
 
     assert bbb_response.called
     assert response.location == url_for("public.welcome")
+
+
+def test_delete_old_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting_1_user_2,
+    user,
+    user_2,
+    bbb_getRecordings_response,
+):
+    """Test that a meeting which received its last warning mail is deleted."""
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.information_level = 3
+    meeting_1_user_2.information_sent_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == ["222222222"]
+    assert user.meetings == []
+
+
+def test_delete_old_meetings_failure(
+    app,
+    mocker,
+    client_app,
+    time_machine,
+    user,
+    meeting,
+    bbb_getRecordings_response,
+    caplog,
+):
+    """Test that a failed deletion is logged."""
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting.information_level = 3
+    meeting.information_sent_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+
+    mocker.patch(
+        "b3desk.tasks.clean_db_and_delete_meeting", side_effect=Exception("boom")
+    )
+    delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == []
+    assert user.meetings == [meeting]
+    assert "Celery cron task: meeting id:1 named:meeting not deleted" in caplog.text
+
+
+def test_delete_old_meetings_but_not_recent_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    user,
+    bbb_getRecordings_response,
+):
+    """Test that old shadow meetings are deleted except the most recent one."""
+    meeting.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting_2.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.information_level = 3
+    meeting_2.information_sent_at = datetime.datetime(2024, 1, 1)
+    db.session.commit()
+    meeting_2_voicebridge = meeting_2.voiceBridge
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == [meeting_2_voicebridge]
+    assert user.meetings == [meeting]
+
+
+def test_delete_old_meetings_never_used_but_not_recent_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    user,
+    bbb_getRecordings_response,
+):
+    """Test that old shadow meetings never used are deleted except the most recent one."""
+    meeting.last_connection_utc_datetime = None
+    meeting.created_at = datetime.datetime(2025, 1, 1)
+    meeting_2.last_connection_utc_datetime = None
+    meeting_2.created_at = datetime.datetime(2024, 1, 1)
+    meeting_2.information_level = 3
+    meeting_2.information_sent_at = datetime.datetime(2024, 1, 1)
+    db.session.commit()
+    meeting_2_voicebridge = meeting_2.voiceBridge
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_meetings()
+    voiceBridges = get_all_previous_voiceBridges()
+
+    assert voiceBridges == [meeting_2_voicebridge]
+    assert user.meetings == [meeting]
+
+
+def test_inform_owner_before_meeting_deletion(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    meeting_2,
+    meeting_3,
+    shadow_meeting,
+    user,
+    smtpd,
+):
+    """Test owner's meeting receives a mail at each step of the warning sequence."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+
+    # never informed and long overdue: must receive the first mail regardless
+    meeting.last_connection_utc_datetime = test_date - inactivity_period
+    meeting.created_at = test_date - inactivity_period
+    # already received the first mail: due for the second one
+    meeting_2.last_connection_utc_datetime = test_date - inactivity_period
+    meeting_2.created_at = test_date - inactivity_period
+    meeting_2.information_level = 1
+    meeting_2.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_FIRST_EMAIL - DELAY_FOR_SECOND_EMAIL
+    )
+    # already received the second mail: due for the third and last one
+    meeting_3.last_connection_utc_datetime = test_date - inactivity_period
+    meeting_3.created_at = test_date - inactivity_period
+    meeting_3.information_level = 2
+    meeting_3.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
+    # shadow meetings are never informed
+    shadow_meeting.last_connection_utc_datetime = test_date - inactivity_period
+    shadow_meeting.created_at = test_date - inactivity_period
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    meetings_to_inform = get_inactive_meetings_to_inform()
+    assert meetings_to_inform == [
+        (meeting, DELAY_FOR_FIRST_EMAIL, 1),
+        (meeting_2, DELAY_FOR_SECOND_EMAIL, 2),
+        (meeting_3, DELAY_FOR_THIRD_EMAIL, 3),
+    ]
+
+    inform_owner_before_meeting_deletion()
+    assert len(smtpd.messages) == 3
+    assert meeting.information_level == 1
+    assert meeting_2.information_level == 2
+    assert meeting_3.information_level == 3
+    assert shadow_meeting.information_level == 0
+    # already informed at their new level, nothing left to send today
+    assert get_inactive_meetings_to_inform() == []
+
+
+def test_inform_owner_before_meeting_deletion_for_unused_meetings(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    shadow_meeting,
+    user,
+    smtpd,
+):
+    """A meeting that was never connected still gets informed, via created_at."""
+    assert len(smtpd.messages) == 0
+    test_date = datetime.datetime(2024, 1, 1)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+
+    meeting.last_connection_utc_datetime = None
+    meeting.created_at = test_date - inactivity_period
+    shadow_meeting.last_connection_utc_datetime = None
+    shadow_meeting.created_at = test_date - inactivity_period
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    inform_owner_before_meeting_deletion()
+
+    assert meeting.information_level == 1
+    assert shadow_meeting.information_level == 0
+    assert len(smtpd.messages) == 1
+
+
+def test_inform_owner_before_meeting_deletion_resets_reactivated_meeting(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    user,
+    smtpd,
+):
+    """A meeting used again must stop progressing toward deletion."""
+    test_date = datetime.datetime(2024, 1, 1)
+    meeting.information_level = 2
+    meeting.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
+    meeting.last_connection_utc_datetime = test_date
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    inform_owner_before_meeting_deletion()
+
+    assert meeting.information_level == 0
+    assert meeting.information_sent_at is None
+    assert len(smtpd.messages) == 0
+
+
+def test_delete_old_meetings_after_reactivation_is_prevented(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    user,
+    bbb_getRecordings_response,
+):
+    """A meeting must not be deleted if it became active again after being warned."""
+    test_date = datetime.datetime(2024, 1, 1)
+    meeting.information_level = 3
+    meeting.information_sent_at = test_date - datetime.timedelta(days=10)
+    meeting.last_connection_utc_datetime = test_date
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    get_inactive_meetings_to_inform()
+    delete_old_meetings()
+
+    assert db.session.get(Meeting, meeting.id)
+
+
+def test_delete_old_meetings_waits_for_a_successful_final_mail(
+    app,
+    client_app,
+    mocker,
+    time_machine,
+    meeting,
+    user,
+    bbb_getRecordings_response,
+):
+    """Deletion must wait for the last warning mail to actually be sent.
+
+    Even if that happens later than originally scheduled.
+    """
+    meeting.information_level = 2
+    meeting.information_sent_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2020, 1, 1)
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    scheduled_date = meeting.information_sent_at + datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
+
+    # the third mail fails to send on the day it was originally due
+    time_machine.move_to(scheduled_date)
+    mail_mock = mocker.patch(
+        "b3desk.tasks.send_mail_before_meeting_deletion", side_effect=Exception("boom")
+    )
+    inform_owner_before_meeting_deletion()
+    assert meeting.information_level == 2
+
+    # well past the originally scheduled deletion date, it is still not
+    # deleted since the last mail was never actually sent
+    time_machine.move_to(scheduled_date + datetime.timedelta(days=10))
+    delete_old_meetings()
+    assert db.session.get(Meeting, meeting.id)
+
+    # the mail eventually goes through, several days late
+    mail_mock.side_effect = None
+    inform_owner_before_meeting_deletion()
+    assert meeting.information_level == 3
+
+    # deletion now waits a full day from this actual, delayed send date
+    time_machine.move_to(scheduled_date + datetime.timedelta(days=10, hours=12))
+    delete_old_meetings()
+    assert db.session.get(Meeting, meeting.id)
+
+    time_machine.move_to(scheduled_date + datetime.timedelta(days=11, seconds=1))
+    delete_old_meetings()
+    assert db.session.get(Meeting, meeting.id) is None
+
+
+def test_inform_owner_before_meeting_deletion_announces_correct_delay_after_retry(
+    app,
+    client_app,
+    mocker,
+    time_machine,
+    meeting,
+    user,
+):
+    """The mail must always announce the delay actually enforced from its own send date.
+
+    Never a stale value based on the originally scheduled date.
+    """
+    meeting.information_level = 1
+    meeting.information_sent_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2020, 1, 1)
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    scheduled_date = meeting.information_sent_at + datetime.timedelta(
+        days=DELAY_FOR_FIRST_EMAIL - DELAY_FOR_SECOND_EMAIL
+    )
+    send_mock = mocker.patch("b3desk.tasks.send_mail_before_meeting_deletion")
+
+    # sent 6 days later than originally scheduled
+    time_machine.move_to(scheduled_date + datetime.timedelta(days=6))
+    inform_owner_before_meeting_deletion()
+
+    send_mock.assert_called_once_with(meeting, DELAY_FOR_SECOND_EMAIL)
+    assert meeting.information_level == 2
+
+
+def test_delete_old_meetings_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no meeting to delete."""
+    delete_old_meetings()
+    assert "Celery cron task: no action required" in caplog.text
+
+
+def test_inform_owner_before_meeting_deletion_no_action(app, client_app, caplog):
+    """Test the cron task logs when there is no meeting to inform."""
+    inform_owner_before_meeting_deletion()
+    assert "Celery cron task: no action required" in caplog.text
+
+
+def test_inform_owner_before_meeting_deletion_failure(
+    app,
+    mocker,
+    client_app,
+    time_machine,
+    meeting,
+    user,
+    smtpd,
+    caplog,
+):
+    """Test there is a log when inform owner fails."""
+    test_date = datetime.datetime(2024, 1, 1)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+
+    meeting.last_connection_utc_datetime = test_date - inactivity_period
+    meeting.created_at = test_date - inactivity_period
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    mocker.patch(
+        "b3desk.tasks.send_mail_before_meeting_deletion", side_effect=Exception("boom")
+    )
+    inform_owner_before_meeting_deletion()
+    assert len(smtpd.messages) == 0
+    assert meeting.information_level == 0
+    assert (
+        f"Celery cron task: meeting id:1 named:meeting not informed ({DELAY_FOR_FIRST_EMAIL} day(s) left)"
+        in caplog.text
+    )
 
 
 def test_delete_unknown_meeting(client_app, authenticated_user):

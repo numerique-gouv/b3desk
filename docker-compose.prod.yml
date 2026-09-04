@@ -6,3 +6,7 @@ services:
   worker:
     env_file:
       - web.env
+
+  beat:
+    env_file:
+      - web.env
