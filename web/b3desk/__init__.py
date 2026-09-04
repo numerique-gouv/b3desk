@@ -71,28 +71,34 @@ def setup_configuration(app, config=None):
         app.debug = True
 
 
-BEAT_SCHEDULE = {
-    "delete-old-meetings-every-day-at-3-am": {
-        "task": "delete-old-meetings",
-        "schedule": crontab(minute=00, hour=3),
-    },
-    "delete-old-users-every-day-at-3-30-am": {
-        "task": "delete-old-users",
-        "schedule": crontab(minute=30, hour=3),
-    },
-    "inform-owner-before-meeting-deletion-every-day-at-4-am": {
-        "task": "inform-owner-before-meeting-deletion",
-        "schedule": crontab(minute=00, hour=4),
-    },
-    "inform-user-before-account-deletion-every-day-at-4-30-am": {
-        "task": "inform-user-before-account-deletion",
-        "schedule": crontab(minute=30, hour=4),
-    },
-}
-
-
 def setup_celery(app):
     """Create the Celery application and run its tasks within an app context."""
+
+    def crontab_at(time):
+        return crontab(minute=time.minute, hour=time.hour)
+
+    BEAT_SCHEDULE = {
+        "delete-old-meetings-every": {
+            "task": "delete-old-meetings",
+            "schedule": crontab_at(app.config["DAILY_MEETING_CLEANUP_TIME"]),
+        },
+        "delete-old-users-every": {
+            "task": "delete-old-users",
+            "schedule": crontab_at(app.config["DAILY_ACCOUNT_CLEANUP_TIME"]),
+        },
+        "inform-owner-before-meeting-deletion-every": {
+            "task": "inform-owner-before-meeting-deletion",
+            "schedule": crontab_at(
+                app.config["DAILY_EMAIL_BEFORE_MEETING_DELETION_TIME"]
+            ),
+        },
+        "inform-user-before-account-deletion-every": {
+            "task": "inform-user-before-account-deletion",
+            "schedule": crontab_at(
+                app.config["DAILY_EMAIL_BEFORE_ACCOUNT_DELETION_TIME"]
+            ),
+        },
+    }
 
     class FlaskTask(Task):
         def __call__(self, *args, **kwargs):

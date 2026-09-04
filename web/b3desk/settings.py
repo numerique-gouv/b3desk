@@ -1002,3 +1002,35 @@ class MainSettings(BaseSettings):
     User account activity is determined by the use of one of the meeting URLs associated with the account or user's login
     An informational email is sent at D-30, D-15, and D-1
     """
+
+    DAILY_MEETING_CLEANUP_TIME: datetime.time = datetime.time(minute=00, hour=3)
+    """Daily Meeting Cleanup Time
+
+    Time at which meetings exceeded INACTIVITY_TIMER_CLEANUP_MEETING
+    Can be entered in the form of: "HH:MM" or datetime.time(minute=MM, hour=H)
+    """
+
+    DAILY_ACCOUNT_CLEANUP_TIME: datetime.time = datetime.time(minute=30, hour=3)
+    """Daily Account Cleanup Time
+
+    Time at which meetings exceeded INACTIVITY_TIMER_CLEANUP_ACCOUNT
+    Can be entered in the form of: "HH:MM" or datetime.time(minute=MM, hour=H)
+    """
+
+    DAILY_EMAIL_BEFORE_MEETING_DELETION_TIME: datetime.time = datetime.time(
+        minute=00, hour=4
+    )
+    """Daily Email Before Meeting Deletion Time
+
+    Time the emails are sent before inactive meetings are deleted
+    Can be entered in the form of: "HH:MM" or datetime.time(minute=MM, hour=H)
+    """
+
+    DAILY_EMAIL_BEFORE_ACCOUNT_DELETION_TIME: datetime.time = datetime.time(
+        minute=30, hour=4
+    )
+    """Daily Email Before Account Deletion Time
+
+    Time the emails are sent before inactive accounts are deleted
+    Can be entered in the form of: "HH:MM" or datetime.time(minute=MM, hour=H)
+    """
