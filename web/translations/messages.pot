@@ -3099,7 +3099,6 @@ msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:7
-#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
 msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
@@ -3405,7 +3404,7 @@ msgstr ""
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:128
+#: web/b3desk/utils/mailing.py:130
 #, python-brace-format
 msgid "Information avant suppression : {meeting_name}"
 msgstr ""

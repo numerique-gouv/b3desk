@@ -1732,7 +1732,6 @@ def test_inform_owner_before_meeting_deletion(
     meeting_3,
     shadow_meeting,
     user,
-    shadow_meeting,
     smtpd,
 ):
     """Test owner's meeting receveive a mail before meeting deletion."""
