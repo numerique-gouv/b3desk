@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:433
+#: web/b3desk/forms.py:161 web/b3desk/models/meetings.py:437
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -500,16 +500,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:412 web/b3desk/models/meetings.py:419
+#: web/b3desk/models/meetings.py:416 web/b3desk/models/meetings.py:423
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:426
+#: web/b3desk/models/meetings.py:430
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:428
+#: web/b3desk/models/meetings.py:432
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -3369,42 +3369,42 @@ msgid ""
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:43
+#: web/b3desk/utils/mailing.py:44
 #, python-brace-format
 msgid "Nouvelle délégation pour {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:45
+#: web/b3desk/utils/mailing.py:46
 #, python-brace-format
 msgid "Retrait de délégation pour {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:61
+#: web/b3desk/utils/mailing.py:62
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:69
+#: web/b3desk/utils/mailing.py:70
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:75
+#: web/b3desk/utils/mailing.py:76
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:77
+#: web/b3desk/utils/mailing.py:78
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:79
+#: web/b3desk/utils/mailing.py:80
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:110
+#: web/b3desk/utils/mailing.py:111
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:130
+#: web/b3desk/utils/mailing.py:131
 #, python-brace-format
 msgid "Information avant suppression : {meeting_name}"
 msgstr ""

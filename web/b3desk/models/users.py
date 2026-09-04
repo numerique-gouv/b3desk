@@ -17,20 +17,18 @@ from typing import TYPE_CHECKING
 
 from flask import current_app
 from sqlalchemy import Unicode
-from sqlalchemy import case
-from sqlalchemy import func
-from sqlalchemy import or_
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
-from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
-from b3desk.utils.mailing import DELAY_FOR_SECOND_EMAIL
-from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
+from b3desk.utils.mailing import EMAIL_DELAYS
 
 from . import db
+from .information import compute_first_mail_deadline
+from .information import get_entities_due_for_next_mail
+from .information import ready_for_final_deletion
 
 if TYPE_CHECKING:
     from .groups import Group
@@ -107,6 +105,8 @@ class User(db.Model):
     last_connection_utc_datetime: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     admin: Mapped[bool] = mapped_column(default=False)
+    information_level: Mapped[int] = mapped_column(default=0)
+    information_sent_at: Mapped[datetime | None]
 
     meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
     favorites: Mapped[list[Meeting]] = relationship(
@@ -196,35 +196,9 @@ class User(db.Model):
 
 
 def get_inactive_users_to_delete():
-    from b3desk.models.meetings import Meeting
-
-    account_cutoff = datetime.now(UTC) - timedelta(
-        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-    )
-    meeting_cutoff = datetime.now(UTC) - timedelta(
-        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
-    )
-    has_recently_used_meeting = (
-        db.select(Meeting.id)
-        .where(
-            Meeting.owner_id == User.id,
-            or_(
-                Meeting.last_connection_utc_datetime >= meeting_cutoff,
-                (Meeting.last_connection_utc_datetime.is_(None))
-                & (Meeting.created_at >= meeting_cutoff),
-            ),
-        )
-        .exists()
-    )
+    """Return users that are ready to be deleted."""
     return db.session.scalars(
-        db.select(User).where(
-            or_(
-                User.last_connection_utc_datetime < account_cutoff,
-                (User.last_connection_utc_datetime.is_(None))
-                & (User.created_at < account_cutoff),
-            ),
-            ~has_recently_used_meeting,
-        )
+        db.select(User).where(ready_for_final_deletion(User, datetime.now(UTC)))
     ).all()
 
 
@@ -247,42 +221,53 @@ def clean_db_and_delete_user(user, force=False):
     db.session.commit()
 
 
-def get_inactive_users_to_inform():
-    from b3desk.models.meetings import Meeting
+def as_naive(value):
+    """Strip an aware datetime's timezone so it can be compared to values read from the database."""
+    return value.replace(tzinfo=None) if value.tzinfo else value
 
-    today = datetime.now(UTC).date()
+
+def get_user_effective_activity(user):
+    """Return a user's most recent activity, from their own account or their meetings."""
+    activities = [user.last_connection_utc_datetime or user.created_at]
+    activities += [
+        meeting.last_connection_utc_datetime or meeting.created_at
+        for meeting in user.meetings
+    ]
+    return max(as_naive(activity) for activity in activities)
+
+
+def update_reactivated_users(first_mail_deadline):
+    """Reset information_level for users reactivated since last email."""
+    reactivated_users = db.session.scalars(
+        db.select(User).where(User.information_level > 0)
+    ).all()
+    for user in reactivated_users:
+        if get_user_effective_activity(user) > first_mail_deadline:
+            user.information_level = 0
+            user.information_sent_at = None
+    db.session.commit()
+
+
+def get_inactive_users_to_inform():
+    """Advance each user's information_level by one step."""
+    now = datetime.now(UTC)
     account_inactivity_period = timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
-
-    meeting_activity = (
-        db.select(
-            Meeting.owner_id.label("owner_id"),
-            func.max(
-                func.coalesce(Meeting.last_connection_utc_datetime, Meeting.created_at)
-            ).label("last_activity"),
-        )
-        .group_by(Meeting.owner_id)
-        .subquery()
+    first_mail_deadline = as_naive(
+        compute_first_mail_deadline(now, account_inactivity_period)
     )
 
-    account_activity = func.coalesce(User.last_connection_utc_datetime, User.created_at)
-    last_activity = func.coalesce(meeting_activity.c.last_activity, account_activity)
-    effective_activity = case(
-        (account_activity >= last_activity, account_activity),
-        else_=last_activity,
-    )
+    update_reactivated_users(first_mail_deadline)
 
-    users = []
-    for delay in (DELAY_FOR_FIRST_EMAIL, DELAY_FOR_SECOND_EMAIL, DELAY_FOR_THIRD_EMAIL):
-        target_date = today + timedelta(days=delay) - account_inactivity_period
-        day_start = datetime(target_date.year, target_date.month, target_date.day)
-        day_end = day_start + timedelta(days=1)
-        matching_users = db.session.scalars(
-            db.select(User)
-            .outerjoin(meeting_activity, meeting_activity.c.owner_id == User.id)
-            .where(effective_activity >= day_start, effective_activity < day_end)
-        ).all()
-        users += [(user, delay) for user in matching_users]
+    never_informed_users = db.session.scalars(
+        db.select(User).where(User.information_level == 0)
+    ).all()
+    users = [
+        (user, EMAIL_DELAYS[0], 1)
+        for user in never_informed_users
+        if get_user_effective_activity(user) <= first_mail_deadline
+    ]
+    users += get_entities_due_for_next_mail(User, now)
 
     return users

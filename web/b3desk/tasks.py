@@ -1,3 +1,6 @@
+from datetime import UTC
+from datetime import datetime
+
 import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -186,9 +189,12 @@ def inform_owner_before_meeting_deletion():
         logger.info(
             "Celery cron task: no action required",
         )
-    for meeting, delay in meetings_to_inform:
+    for meeting, delay, level in meetings_to_inform:
         try:
             send_mail_before_meeting_deletion(meeting, delay)
+            meeting.information_level = level
+            meeting.information_sent_at = datetime.now(UTC)
+            db.session.commit()
             logger.info(
                 "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
                 "shadow_meeting" if meeting.is_shadow else "meeting",
@@ -197,6 +203,7 @@ def inform_owner_before_meeting_deletion():
                 delay,
             )
         except Exception:
+            db.session.rollback()
             logger.exception(
                 "Celery cron task: %s id:%s named:%s not informed (%d day(s) left)",
                 "shadow_meeting" if meeting.is_shadow else "meeting",
@@ -257,9 +264,12 @@ def inform_user_before_account_deletion():
         logger.info(
             "Celery cron task: no action required",
         )
-    for user, delay in users_to_inform:
+    for user, delay, level in users_to_inform:
         try:
             send_mail_before_user_deletion(user, delay)
+            user.information_level = level
+            user.information_sent_at = datetime.now(UTC)
+            db.session.commit()
             logger.info(
                 "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
                 user.fullname,
@@ -268,6 +278,7 @@ def inform_user_before_account_deletion():
                 delay,
             )
         except Exception:
+            db.session.rollback()
             logger.exception(
                 "Celery cron task: user %s, id %s, email %s, not informed (%d day(s) left)",
                 user.fullname,

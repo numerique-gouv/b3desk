@@ -240,6 +240,8 @@ def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
     meeting_1_user_2.created_at = datetime.datetime(2024, 1, 1)
     user_2.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
     user_2.created_at = datetime.datetime(2024, 1, 1)
+    user_2.information_level = 3
+    user_2.information_sent_at = datetime.datetime(2024, 1, 1)
 
     meeting_file = MeetingFiles(
         url="https://example.com/doc.pdf",
@@ -275,6 +277,8 @@ def test_delete_old_users_who_is_delegate(
     """Test deletion of old user who is delegate of an active meeting."""
     user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
     user.created_at = datetime.datetime(2024, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = datetime.datetime(2024, 1, 1)
     meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
     meeting.created_at = datetime.datetime(2024, 1, 1)
     meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
@@ -360,6 +364,8 @@ def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog
     """Test the cron task logs an error when a user could not be deleted."""
     user.last_connection_utc_datetime = datetime.datetime(2000, 1, 1)
     user.created_at = datetime.datetime(2000, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = datetime.datetime(2000, 1, 1)
     db.session.commit()
     mocker.patch("b3desk.tasks.clean_db_and_delete_user", side_effect=Exception("boom"))
 
@@ -413,48 +419,46 @@ def test_inform_user_before_account_deletion(
     user_3,
     smtpd,
 ):
-    """Test user receives a mail before account deletion."""
+    """Test the user receives a mail at each step of the warning sequence."""
     assert len(smtpd.messages) == 0
     test_date = datetime.datetime(2024, 1, 1)
-    third_mail_date = (
-        test_date
-        - datetime.timedelta(
-            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-        )
-        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
-    )
-    second_mail_date = (
-        test_date
-        - datetime.timedelta(
-            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-        )
-        + datetime.timedelta(days=DELAY_FOR_SECOND_EMAIL)
-    )
-    first_mail_date = (
-        test_date
-        - datetime.timedelta(
-            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-        )
-        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
 
-    user.last_connection_utc_datetime = third_mail_date
-    user.created_at = third_mail_date
-    user_2.last_connection_utc_datetime = second_mail_date
-    user_2.created_at = second_mail_date
-    user_3.last_connection_utc_datetime = first_mail_date
-    user_3.created_at = first_mail_date
+    # never informed and long overdue: must receive the first mail regardless
+    user.last_connection_utc_datetime = test_date - inactivity_period
+    user.created_at = test_date - inactivity_period
+    # already received the first mail: due for the second one
+    user_2.last_connection_utc_datetime = test_date - inactivity_period
+    user_2.created_at = test_date - inactivity_period
+    user_2.information_level = 1
+    user_2.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_FIRST_EMAIL - DELAY_FOR_SECOND_EMAIL
+    )
+    # already received the second mail: due for the third and last one
+    user_3.last_connection_utc_datetime = test_date - inactivity_period
+    user_3.created_at = test_date - inactivity_period
+    user_3.information_level = 2
+    user_3.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
     db.session.commit()
 
     time_machine.move_to(test_date)
-    inform_user_before_account_deletion()
     users_to_inform = get_inactive_users_to_inform()
     assert users_to_inform == [
-        (user_3, DELAY_FOR_FIRST_EMAIL),
-        (user_2, DELAY_FOR_SECOND_EMAIL),
-        (user, DELAY_FOR_THIRD_EMAIL),
+        (user, DELAY_FOR_FIRST_EMAIL, 1),
+        (user_2, DELAY_FOR_SECOND_EMAIL, 2),
+        (user_3, DELAY_FOR_THIRD_EMAIL, 3),
     ]
+
+    inform_user_before_account_deletion()
     assert len(smtpd.messages) == 3
+    assert user.information_level == 1
+    assert user_2.information_level == 2
+    assert user_3.information_level == 3
+    assert get_inactive_users_to_inform() == []
 
 
 def test_inform_user_before_account_deletion_with_recently_used_meeting(
@@ -466,34 +470,81 @@ def test_inform_user_before_account_deletion_with_recently_used_meeting(
     meeting,
     smtpd,
 ):
-    """A recently used meeting postpones a user's account-deletion reminder."""
+    """A recently used meeting keeps a user's own overdue activity from mattering."""
     assert len(smtpd.messages) == 0
     test_date = datetime.datetime(2024, 1, 1)
-    first_mail_date = (
-        test_date
-        - datetime.timedelta(
-            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-        )
-        + datetime.timedelta(days=DELAY_FOR_FIRST_EMAIL)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
-    long_inactive_date = test_date - datetime.timedelta(
-        days=2 * client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-    )
+    long_inactive_date = test_date - 2 * inactivity_period
 
     # user's own activity is long expired, but their meeting was used recently
+    # enough to still be within the warning window: only the first mail is due
     user.last_connection_utc_datetime = long_inactive_date
     user.created_at = long_inactive_date
-    meeting.last_connection_utc_datetime = first_mail_date
-    meeting.created_at = first_mail_date
+    meeting.last_connection_utc_datetime = test_date - inactivity_period
+    meeting.created_at = test_date - inactivity_period
 
-    # user_2 has the same expired activity but no meeting to keep it alive
+    # user_2 has the same expired activity but no meeting to keep it alive:
+    # it must still be caught up and informed, however overdue it already is
     user_2.last_connection_utc_datetime = long_inactive_date
     user_2.created_at = long_inactive_date
     db.session.commit()
 
     time_machine.move_to(test_date)
-    inform_user_before_account_deletion()
     users_to_inform = get_inactive_users_to_inform()
 
-    assert users_to_inform == [(user, DELAY_FOR_FIRST_EMAIL)]
-    assert len(smtpd.messages) == 1
+    assert users_to_inform == [
+        (user, DELAY_FOR_FIRST_EMAIL, 1),
+        (user_2, DELAY_FOR_FIRST_EMAIL, 1),
+    ]
+
+    inform_user_before_account_deletion()
+    assert len(smtpd.messages) == 2
+
+
+def test_inform_user_before_account_deletion_resets_reactivated_user(
+    app,
+    client_app,
+    time_machine,
+    user,
+    smtpd,
+):
+    """A user who logs in again must stop progressing toward deletion."""
+    test_date = datetime.datetime(2024, 1, 1)
+    user.information_level = 2
+    user.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
+    user.last_connection_utc_datetime = test_date
+    user.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    inform_user_before_account_deletion()
+
+    assert user.information_level == 0
+    assert user.information_sent_at is None
+    assert len(smtpd.messages) == 0
+
+
+def test_delete_old_users_after_reactivation_is_prevented(
+    app,
+    client_app,
+    time_machine,
+    user,
+    bbb_getRecordings_response,
+):
+    """A user must not be deleted if their account became active again after being warned."""
+    test_date = datetime.datetime(2024, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = test_date - datetime.timedelta(days=10)
+    user.last_connection_utc_datetime = test_date
+    user.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    get_inactive_users_to_inform()
+    delete_old_users()
+
+    assert db.session.get(User, user.id)
