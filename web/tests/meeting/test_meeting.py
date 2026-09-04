@@ -960,7 +960,7 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
         db.select(db.func.count()).select_from(MeetingSecretKey)
     ) == len(Role)
 
-    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
     assert ("success", "Élément supprimé") in res.flashes
     assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     assert (
@@ -984,7 +984,7 @@ def test_delete_meeting_with_meeting_files(
     )
     db.session.add(meeting_file)
     db.session.commit()
-    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
     assert ("success", "Élément supprimé") in res.flashes
     assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 0
@@ -1195,15 +1195,13 @@ def test_add_and_remove_favorite(
     """Test that meetings can be added and removed from favorites."""
     assert authenticated_user not in meeting_3.favorite_of
     response = client_app.post(
-        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
-        {"id": meeting_3.id},
+        f"/meeting/{meeting_3.id}/favorite?order_key=created_at&reverse_order=true&favorite_filter=true"
     ).follow()
     assert response.context["meetings"] == [meeting_3, meeting_2, meeting]
     assert authenticated_user in meeting_3.favorite_of
 
     response = client_app.post(
-        "/meeting/favorite?order_key=created_at&reverse_order=true&favorite_filter=true",
-        {"id": meeting_3.id},
+        f"/meeting/{meeting_3.id}/favorite?order_key=created_at&reverse_order=true&favorite_filter=true"
     ).follow()
     assert response.context["meetings"] == [meeting_2, meeting]
     assert authenticated_user not in meeting_3.favorite_of
@@ -1236,7 +1234,7 @@ def test_create_meeting_with_wrong_PIN(
     res = res.forms[0].submit()
     res.mustcontain("Ce code PIN est déjà utilisé")
 
-    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
     assert ("success", "Élément supprimé") in res.flashes
     assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     previous_voiceBridges = get_all_previous_voiceBridges()
@@ -1320,7 +1318,7 @@ def test_delete_old_voiceBridges_with_form(
     assert ("success", "Mon séminaire a bien été créé(e)") in res.flashes
     meeting = db.session.scalar(db.select(Meeting))
     res = client_app.get("/").follow()
-    res = client_app.post("/meeting/delete", {"id": {meeting.id}})
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
     assert ("success", "Élément supprimé") in res.flashes
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
@@ -1552,7 +1550,7 @@ def test_delete_recordings_failure_when_delete_meeting(
         "b3desk.models.bbb.BBB.delete_all_recordings",
         return_value={"returncode": "FAILED", "message": "some error"},
     )
-    res = client_app.post("/meeting/delete", {"id": meeting.id})
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
     assert (
         "error",
         "Impossible de supprimer les vidéos de ce séminaire : some error",
@@ -1994,3 +1992,29 @@ def test_inform_owner_before_meeting_deletion_failure(
         f"Celery cron task: meeting id:1 named:meeting not informed ({DELAY_FOR_FIRST_EMAIL} day(s) left)"
         in caplog.text
     )
+
+
+def test_delete_unknown_meeting(client_app, authenticated_user):
+    """Test that deleting an unknown meeting returns a 404."""
+    client_app.post("/meeting/99999/delete", status=404)
+
+
+def test_delete_meeting_of_another_user(
+    client_app, authenticated_user, meeting_2_user_2
+):
+    """Test that deleting a meeting the user has no access to returns a 403."""
+    client_app.post(f"/meeting/{meeting_2_user_2.id}/delete", status=403)
+    assert db.session.get(Meeting, meeting_2_user_2.id) is not None
+
+
+def test_favorite_unknown_meeting(client_app, authenticated_user):
+    """Test that favoriting an unknown meeting returns a 404."""
+    client_app.post("/meeting/99999/favorite", status=404)
+
+
+def test_favorite_meeting_of_another_user(
+    client_app, authenticated_user, meeting_2_user_2
+):
+    """Test that favoriting a meeting the user has no access to returns a 403."""
+    client_app.post(f"/meeting/{meeting_2_user_2.id}/favorite", status=403)
+    assert authenticated_user not in meeting_2_user_2.favorite_of

@@ -442,3 +442,12 @@ def test_should_display_captcha_with_no_token(client_app, caplog):
         result = should_display_captcha()
         assert not result
         assert "captcha error : Captchetat service is down" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_proxy_without_get_parameter(access_token, client_app, mocker):
+    """Test that a missing 'get' parameter does not raise an error."""
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", return_value=Captcha_response(200))
+    response = client_app.get("/simple-captcha-endpoint", params={"c": "captchaFR"})
+    assert Captcha_response(200).json() == json.loads(response.body.decode("utf-8"))

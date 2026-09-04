@@ -52,6 +52,11 @@ def model_converter(model):
     """Create a Flask URL converter for database model instances."""
 
     class ModelConverter(BaseConverter):
+        # Restricting the URL part to digits keeps non numeric identifiers from
+        # reaching the database, where they would raise a DataError instead of
+        # a 404. All the converted models have an integer primary key.
+        regex = r"\d+"
+
         def __init__(self, *args, required=True, **kwargs):
             self.required = required
             super().__init__(self, *args, **kwargs)

@@ -150,4 +150,4 @@ def test_user_cannot_read_files_page_for_shadow_meeting(
 def test_user_cannot_delete_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.post("/meeting/delete", {"id": shadow_meeting.id}, status=403)
+    client_app.post(f"/meeting/{shadow_meeting.id}/delete", status=403)
