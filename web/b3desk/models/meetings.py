@@ -152,6 +152,7 @@ class MeetingSession(db.Model):
     started_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     ended_at = db.Column(db.DateTime)
     recording_id = db.Column(db.Unicode(250))
+    participant_count = db.Column(db.Integer)
 
     @property
     def duration(self):
@@ -183,7 +184,7 @@ class Meeting(db.Model):
     last_connection_utc_datetime: Mapped[datetime | None]
     is_shadow: Mapped[bool | None] = mapped_column(default=False)
     visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
-    
+
     sessions = db.relationship(
         "MeetingSession",
         back_populates="meeting",

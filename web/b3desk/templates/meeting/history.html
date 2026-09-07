@@ -75,7 +75,10 @@
                                     <tr>
                                         <td>
                                             {% if session.recording and session.recording.name %}<strong>{{ session.recording.name }}</strong><br>{% endif %}
-                                            {{ session.started_at|datetimeformat('yyyy-MM-dd HH:mm:ss') }}
+                                            {{ session.started_at|datetimeformat('yyyy-MM-dd HH:mm:ss') }}<br>
+                                            {% if session.participant_count is not none %}
+                                                {{ session.participant_count }} participant(s)
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {% if not session.ended_at %}

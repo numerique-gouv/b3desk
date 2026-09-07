@@ -28,6 +28,7 @@ def upgrade():
         sa.Column("started_at", sa.DateTime(), nullable=False),
         sa.Column("ended_at", sa.DateTime(), nullable=True),
         sa.Column("recording_id", sa.Unicode(length=250), nullable=True),
+        sa.Column("participant_count", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["meeting_id"], ["meeting.id"], name="meeting_session_meeting_id_fkey"
         ),
