@@ -186,7 +186,6 @@ class BBB:
         meta_academy=None,
         analytics_callback_url=None,
         meta_bbb_recording_ready_url=None,
-        meta_end_callback_url=None,
         ai_summary=None,
         file_sharing=None,
     ):
@@ -257,8 +256,6 @@ class BBB:
         params["guestPolicy"] = "ASK_MODERATOR" if guest_policy else "ALWAYS_ACCEPT"
         if meta_bbb_recording_ready_url:
             params["meta_bbb-recording-ready-url"] = meta_bbb_recording_ready_url
-        if meta_end_callback_url:
-            params["meta_endCallbackUrl"] = meta_end_callback_url
         if not ai_summary:
             params["meta_bbb-disable-recording-formats"] = "ai-summary"
 

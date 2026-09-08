@@ -796,7 +796,16 @@ class MainSettings(BaseSettings):
     """
 
     BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL: str | None = None
-    """Passé à l'API BBB via le paramètre ``meta_analytics-callback-url``.
+    """Service d'analytics externe vers lequel b3desk relaie les données.
+
+    BBB est toujours configuré (via le paramètre
+    ``meta_analytics-callback-url``) pour envoyer son callback d'analytics
+    à b3desk lui-même (voir
+    ``b3desk.endpoints.bbb_callback.analytics_callback``) : c'est
+    l'unique notification de fin de réunion, elle sert à clore la
+    ``MeetingSession`` avec les horaires réels fournis par BBB (page
+    d'historique de la réunion). Si cette valeur est définie, b3desk
+    relaie en plus tel quel le contenu reçu vers cette URL externe.
 
     Plus d’informations sur
     https://docs.bigbluebutton.org/development/api/#create

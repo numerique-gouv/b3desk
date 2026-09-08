@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+import requests
 from flask import Blueprint
 from flask import current_app
 from flask import request
@@ -8,6 +9,7 @@ from flask import url_for
 from joserfc import jwt
 from joserfc.errors import BadSignatureError
 from joserfc.errors import DecodeError
+from joserfc.errors import JoseError
 from joserfc.jwk import OctKey
 
 from b3desk import cache
@@ -34,50 +36,100 @@ def get_recording_status_callback_url():
     )
 
 
-def get_meeting_ended_callback_url(bbb_meeting_id):
-    """Get the URL of the callback used by BBB to notify that a meeting ended."""
+def get_analytics_callback_url():
+    """Get the URL of the callback used by BBB to send analytics data."""
     return url_for(
-        "bbb-callback.meeting_ended",
-        meetingID=bbb_meeting_id,
+        "bbb-callback.analytics_callback",
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
     )
 
 
+def _parse_bbb_datetime(value):
+    """Parse a BBB analytics ISO-8601 timestamp into naive local time."""
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value).astimezone().replace(tzinfo=None)
+    except ValueError:
+        logger.warning("Could not parse BBB analytics timestamp %r", value)
+        return None
+
+
 @csrf.exempt
-@bp.route("/bbb-callback/meeting_ended", methods=["GET"])
-def meeting_ended():
-    """Handle BBB's end-of-meeting callback (``meta_endCallbackUrl``)."""
-    bbb_meeting_id = request.args.get("meetingID")
-    if not bbb_meeting_id:
-        logger.error("Missing 'meetingID' in meeting_ended callback")
-        return "", 410
+@bp.route("/bbb-callback/analytics", methods=["POST"])
+def analytics_callback():
+    """Handle BBB's analytics callback (``meta_analytics-callback-url``)."""
+    auth_header = request.headers.get("Authorization", "")
+    token_value = auth_header.removeprefix("Bearer ").strip()
+    if not token_value:
+        logger.error("Missing bearer token in analytics callback")
+        return "", 401
 
-    meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
-    if not meeting:
-        logger.error("No meeting found for meetingID=%r", bbb_meeting_id)
-        return "", 410
+    key = OctKey.import_key(current_app.config["BIGBLUEBUTTON_SECRET"].encode())
 
-    session = (
-        MeetingSession.query.filter_by(meeting_id=meeting.id, ended_at=None)
-        .order_by(MeetingSession.started_at.desc())
-        .first()
+    try:
+        # BBB signs this callback with HS512
+        jwt.decode(token_value, key, algorithms=["HS512"])
+    except JoseError as e:
+        logger.error("Invalid signature on analytics callback: %s", e)
+        return "", 401
+
+    payload = request.get_json(silent=True, force=True) or {}
+    bbb_meeting_id = payload.get("meeting_id")
+    meeting = (
+        get_meeting_from_bbb_meeting_id(bbb_meeting_id) if bbb_meeting_id else None
     )
-    if session:
-        session.ended_at = datetime.now()
-        db.session.commit()
-        logger.info(
-            "Meeting ended callback received for meeting %s (meetingID=%s)",
-            meeting.name,
-            bbb_meeting_id,
+
+    if not meeting:
+        logger.warning(
+            "Analytics callback for unknown or missing meetingID=%r", bbb_meeting_id
         )
     else:
-        logger.warning(
-            "Meeting ended callback received for meeting %s (meetingID=%s) "
-            "but no open session found",
-            meeting.name,
-            bbb_meeting_id,
+        session = (
+            MeetingSession.query.filter_by(meeting_id=meeting.id, ended_at=None)
+            .order_by(MeetingSession.started_at.desc())
+            .first()
         )
+        if session:
+            data = payload.get("data") or {}
+            started_at = _parse_bbb_datetime(data.get("start"))
+            if started_at:
+                session.started_at = started_at
+            session.ended_at = _parse_bbb_datetime(data.get("finish")) or datetime.now()
+            attendees = data.get("attendees")
+            if isinstance(attendees, list):
+                session.participant_count = len(attendees)
+            db.session.commit()
+            logger.info(
+                "Analytics callback closed session for meeting %s (meetingID=%s)",
+                meeting.name,
+                bbb_meeting_id,
+            )
+        else:
+            logger.warning(
+                "Analytics callback received for meeting %s (meetingID=%s) "
+                "but no open session found",
+                meeting.name,
+                bbb_meeting_id,
+            )
+
+    analytics_url = current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"]
+    if analytics_url:
+        try:
+            requests.post(
+                analytics_url,
+                data=request.get_data(),
+                headers={
+                    "Content-Type": request.content_type or "application/json",
+                    "Authorization": auth_header,
+                },
+                timeout=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"],
+            )
+        except requests.RequestException as e:
+            logger.error(
+                "Failed to relay analytics callback to %s: %s", analytics_url, e
+            )
 
     return "", 200
 
