@@ -1,5 +1,7 @@
 import datetime
+import json
 
+import requests
 from b3desk import cache
 from b3desk.models import db
 from b3desk.models.meetings import MeetingSession
@@ -215,3 +217,199 @@ def test_subsequent_callback_triggers_recheck(
         status=200,
     )
     delay.assert_called_once_with(meeting.id, RECORD_ID)
+
+
+def test_analytics_callback_relays_payload_to_configured_url(
+    client_app, mocker, make_analytics_bearer_token
+):
+    """A valid callback is relayed as-is to the configured analytics service."""
+    signed = make_analytics_bearer_token({})
+    mock_post = mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    payload = {"meeting_id": "some-external-id", "data": {"foo": "bar"}}
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        payload,
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+
+    mock_post.assert_called_once()
+    args, kwargs = mock_post.call_args
+    assert args[0] == client_app.app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"]
+    assert json.loads(kwargs["data"]) == payload
+    assert kwargs["headers"]["Authorization"] == f"Bearer {signed}"
+
+
+def test_analytics_callback_still_acknowledges_when_relay_fails(
+    client_app, meeting, mocker, make_analytics_bearer_token
+):
+    """A relay failure is logged but does not fail the callback or lose the update.
+
+    BBB retries non-2xx/410 responses, and the relay target is a third party
+    outside our control: its failure must not cause BBB to retry, nor discard
+    the session update we already made from BBB's own payload.
+    """
+    session = MeetingSession(meeting_id=meeting.id)
+    db.session.add(session)
+    db.session.commit()
+
+    signed = make_analytics_bearer_token({})
+    mock_post = mocker.patch(
+        "b3desk.endpoints.bbb_callback.requests.post",
+        side_effect=requests.RequestException("boom"),
+    )
+
+    before = datetime.datetime.now()
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {
+            "meeting_id": meeting.bbb_meeting_id,
+            "data": {"attendees": [{"ext_user_id": "w_1", "name": "Alice"}]},
+        },
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+    after = datetime.datetime.now()
+
+    mock_post.assert_called_once()
+    db.session.refresh(session)
+    assert before <= session.ended_at <= after
+    assert session.participant_count == 1
+
+
+def test_analytics_callback_invalid_signature_returns_401(client_app, mocker):
+    """JWT signed with the wrong secret returns 401, nothing is relayed."""
+    key = OctKey.import_key(b"wrong-secret")
+    signed = jwt.encode({"alg": "HS512"}, {}, key, algorithms=["HS512"])
+    mock_post = mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {},
+        headers={"Authorization": f"Bearer {signed}"},
+        status=401,
+    )
+    mock_post.assert_not_called()
+
+
+def test_analytics_callback_wrong_algorithm_returns_401(
+    client_app, mocker, make_signed_parameters
+):
+    """A token with the right secret but the wrong algorithm is rejected.
+
+    Regression test: BBB signs this specific callback with HS512, unlike its
+    other callbacks (HS256). A token correctly signed with the shared secret
+    but using HS256 must still be rejected rather than silently crashing
+    (joserfc raises ``UnsupportedAlgorithmError`` for algorithms outside its
+    default allowlist unless explicitly requested).
+    """
+    signed = make_signed_parameters({})
+    mock_post = mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {},
+        headers={"Authorization": f"Bearer {signed}"},
+        status=401,
+    )
+    mock_post.assert_not_called()
+
+
+def test_analytics_callback_missing_token_returns_401(client_app, mocker):
+    """Missing Authorization header returns 401, nothing is relayed."""
+    mock_post = mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    client_app.post_json("/bbb-callback/analytics", {}, status=401)
+    mock_post.assert_not_called()
+
+
+def test_analytics_callback_without_configured_url_is_not_relayed(
+    client_app, mocker, make_analytics_bearer_token
+):
+    """When no external analytics URL is configured, the callback is a no-op."""
+    signed = make_analytics_bearer_token({})
+    mock_post = mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+    client_app.app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"] = None
+
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {"foo": "bar"},
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+    mock_post.assert_not_called()
+
+
+def test_analytics_callback_falls_back_to_now_when_finish_is_missing(
+    client_app, meeting, mocker, make_analytics_bearer_token
+):
+    """Missing/unparseable finish timestamp still closes the session, using 'now'."""
+    session = MeetingSession(meeting_id=meeting.id)
+    db.session.add(session)
+    db.session.commit()
+
+    signed = make_analytics_bearer_token({})
+    mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    before = datetime.datetime.now()
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {"meeting_id": meeting.bbb_meeting_id, "data": {}},
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+    after = datetime.datetime.now()
+
+    db.session.refresh(session)
+    assert session.ended_at is not None
+    assert before <= session.ended_at <= after
+    assert session.participant_count is None
+
+
+def test_analytics_callback_ignores_non_string_timestamps(
+    client_app, meeting, mocker, make_analytics_bearer_token
+):
+    """Non-string start/finish values (malformed payload) don't crash the callback.
+
+    Regression test: ``datetime.fromisoformat`` raises ``TypeError`` (not
+    ``ValueError``) for non-string input, e.g. if BBB ever sends a number or
+    object instead of an ISO-8601 string.
+    """
+    session = MeetingSession(meeting_id=meeting.id)
+    db.session.add(session)
+    db.session.commit()
+
+    signed = make_analytics_bearer_token({})
+    mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    before = datetime.datetime.now()
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {
+            "meeting_id": meeting.bbb_meeting_id,
+            "data": {"start": 12345, "finish": {"not": "a string"}},
+        },
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+    after = datetime.datetime.now()
+
+    db.session.refresh(session)
+    assert before <= session.ended_at <= after
+
+
+def test_analytics_callback_without_open_session_is_still_acknowledged(
+    client_app, meeting, mocker, make_analytics_bearer_token
+):
+    """No open session for the meeting: callback is acknowledged, nothing to update."""
+    signed = make_analytics_bearer_token({})
+    mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {"meeting_id": meeting.bbb_meeting_id, "data": {}},
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+    assert MeetingSession.query.filter_by(meeting_id=meeting.id).count() == 0

@@ -1054,6 +1054,19 @@ def make_signed_parameters(app):
     return make
 
 
+@pytest.fixture
+def make_analytics_bearer_token(app):
+    """Sign a token the way BBB signs its analytics callback (HS512)."""
+    from joserfc import jwt
+    from joserfc.jwk import OctKey
+
+    def make(payload):
+        key = OctKey.import_key(app.config["BIGBLUEBUTTON_SECRET"].encode())
+        return jwt.encode({"alg": "HS512"}, payload, key, algorithms=["HS512"])
+
+    return make
+
+
 @pytest.fixture()
 def mock_meeting_is_not_running(mocker):
     """Mock meeting.bbb.is_running() to return False."""

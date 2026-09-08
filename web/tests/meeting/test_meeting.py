@@ -7,7 +7,7 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-from b3desk.endpoints.bbb_callback import get_meeting_ended_callback_url
+from b3desk.endpoints.bbb_callback import get_analytics_callback_url
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_quick_meeting_secret_key
@@ -497,7 +497,7 @@ def test_create_no_file(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -529,7 +529,6 @@ def test_create_no_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
@@ -641,7 +640,7 @@ def test_create_with_only_a_default_file(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -673,7 +672,6 @@ def test_create_with_only_a_default_file(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
@@ -754,7 +752,7 @@ def test_create_with_files(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -786,7 +784,6 @@ def test_create_with_files(
         ),
         "voiceBridge": "111111111",
         "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
-        "meta_endCallbackUrl": get_meeting_ended_callback_url(meeting.bbb_meeting_id),
         "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
