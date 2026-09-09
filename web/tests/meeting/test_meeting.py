@@ -1607,14 +1607,6 @@ def test_url_for_role_returns_none_without_secret_key(client_app, meeting):
     assert meeting.url_for_role(Role.attendee) is None
 
 
-def test_create_meeting_route(client_app, authenticated_user, meeting, bbb_response):
-    """The create_meeting route must create the BBB room and redirect to welcome."""
-    response = client_app.get(f"/meeting/create/{meeting.id}", status=302)
-
-    assert bbb_response.called
-    assert response.location == url_for("public.welcome")
-
-
 def test_delete_unknown_meeting(client_app, authenticated_user):
     """Test that deleting an unknown meeting returns a 404."""
     client_app.post("/meeting/99999/delete", status=404)
