@@ -25,7 +25,6 @@ from b3desk.forms import DelegationSearchForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
-from b3desk.join import create_bbb_meeting
 from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_join_url
 from b3desk.models import db
@@ -294,17 +293,6 @@ def end_meeting(meeting: Meeting, user: User):
             _("Réunion « %(meeting_name)s » terminée", meeting_name=meeting.name),
             "success",
         )
-    return redirect(url_for("public.welcome"))
-
-
-@bp.route("/meeting/create/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
-@meeting_access_required()
-def create_meeting(meeting: Meeting, user: User):
-    """Create the meeting on BBB server."""
-    create_bbb_meeting(meeting, g.user)
-    db.session.commit()
     return redirect(url_for("public.welcome"))
 
 
