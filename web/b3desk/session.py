@@ -3,6 +3,7 @@ from functools import wraps
 from flask import abort
 from flask import current_app
 from flask import g
+from flask import request
 from flask import session
 from flask_pyoidc.user_session import UserSession
 
@@ -23,6 +24,24 @@ def get_authenticated_attendee_fullname():
         mapping.get("family_name", "family_name"), ""
     ).title()
     return f"{given_name} {family_name}".strip()
+
+
+def admin_needed(view_function):
+    """Require that authenticated user is admin."""
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not g.user or not g.user.admin:
+            abort(403)
+
+        return view_function(*args, **kwargs)
+
+    return decorator
+
+
+def is_admin_mode():
+    """Whether admin mode is requested by an actual admin (display hint, not access control)."""
+    return "admin_mode" in request.args and bool(g.user) and g.user.admin
 
 
 def user_needed(view_function):
@@ -52,7 +71,7 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user:
+            if meeting.owner == g.user or g.user.admin:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

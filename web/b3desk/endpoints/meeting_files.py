@@ -36,6 +36,7 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
+from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..session import user_needed
 
@@ -49,9 +50,11 @@ bp = Blueprint("meeting_files", __name__)
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
+    if meeting.is_shadow:
+        abort(403)
     form = MeetingFilesForm()
 
-    if not current_app.config["FILE_SHARING"]:
+    if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
@@ -64,6 +67,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
+        admin_mode=is_admin_mode(),
     )
 
 
@@ -398,6 +402,7 @@ def delete_meeting_file():
 
     if (
         meeting_file.meeting.owner_id != g.user.id
+        and not g.user.admin
         and meeting_file.meeting not in g.user.get_all_delegated_meetings
     ):
         return {

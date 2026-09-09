@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.6.3"
+version = "1.7.0"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }
@@ -23,11 +23,11 @@ dependencies = [
     "flask-sqlalchemy>=3.0.3,<4.0.0",
     "flask-wtf>=1.2.1,<2.0.0",
     "gunicorn>=23.0.0",
-    "joserfc>=1.1.0,<2.0.0",
+    "joserfc>=1.6.8,<2.0.0",
     "netaddr>=1.2.1,<2.0.0",
     "psycopg2>=2.9.3,<3.0.0",
     "pydantic>=2.12.0,<3.0.0",
-    "pydantic-settings>=2.10.0,<3.0.0",
+    "pydantic-settings>=2.14.2,<3.0.0",
     "python-slugify>=8.0.4,<9.0.0",
     "redis>=7.0.0,<8.0.0",
     "requests>=2.32.4,<3.0.0",
@@ -49,6 +49,7 @@ b3desk = "b3desk.cli:main"
 
 [dependency-groups]
 dev = [
+    "canaille>=0.2.0,<0.3.0",
     "coverage>=7.2.2,<8.0.0",
     "flake8>=7.0.0,<8.0.0",
     "Flask-WebTest>=0.1.6,<0.2.0",
@@ -63,13 +64,14 @@ dev = [
     "pytest-postgresql>=7.0.0,<8.0.0",
     "pytest-smtpd>=0.1.0,<0.2.0",
     "time-machine>=3.0.0,<4.0.0",
-    "wsgidav>=4.3.1,<5.0.0",
+    "wsgidav>=4.3.4,<5.0.0",
     # This is used to allow flask-webtest > webtest > webob to be compatible with py3.13+
     "legacy-cgi>=2.6.3,<3.0.0 ; python_version>='3.13'",
     "tox-uv>=1.28.0",
     "diff-cover>=9.7.2",
     "pytest-xdist>=3.8.0",
-    "setuptools>=82.0.0",
+    "setuptools>=83.0.0",
+    "faker>=40.1.2",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",
@@ -77,11 +79,6 @@ doc = [
     "sphinx>=7.0.0,<8.0.0",
     "sphinx-rtd-theme>=2.0.0,<3.0.0",
     "sphinx-issues>=4.0.0,<5.0.0",
-]
-worker = [
-    "celery>=5.2.7,<6.0.0",
-    "redis>=7.0.0,<8.0.0",
-    "requests>=2.32.4,<3.0.0",
 ]
 
 [tool.pytest.ini_options]

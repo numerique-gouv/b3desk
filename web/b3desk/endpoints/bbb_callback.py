@@ -1,0 +1,116 @@
+import logging
+
+from flask import Blueprint
+from flask import current_app
+from flask import request
+from flask import url_for
+from joserfc import jwt
+from joserfc.errors import BadSignatureError
+from joserfc.errors import DecodeError
+from joserfc.jwk import OctKey
+
+from b3desk import cache
+from b3desk import csrf
+from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
+from b3desk.tasks import RECORDING_CACHE_TTL
+from b3desk.tasks import recording_notified_key
+from b3desk.tasks import recording_scheduled_key
+from b3desk.tasks import send_recording_notification
+
+bp = Blueprint("bbb-callback", __name__)
+
+logger = logging.getLogger(__name__)
+
+
+def get_recording_status_callback_url():
+    """Get the URL of the callback used by BBB to notify that the registration is available."""
+    return url_for(
+        "bbb-callback.recording_status",
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+
+
+@csrf.exempt
+@bp.route("/bbb-callback/recording_status", methods=["POST"])
+def recording_status():
+    """Handle BBB callback when a recording format is available.
+
+    BBB triggers this callback once per rendered format (presentation, video, ...).
+    To send a single notification covering all formats, the first callback for a
+    given record_id schedules two deadline tasks: one at
+    ``RECORDING_NOTIFICATION_MIN_DELAY`` that unlocks sending, and one at
+    ``RECORDING_NOTIFICATION_MAX_DELAY`` that sends whatever is ready as a safety
+    net. Subsequent callbacks re-check the available formats and send as soon as
+    all expected ones are present (once the minimum delay has elapsed). The
+    ``send_recording_notification`` task re-queries BBB each time and
+    guards against duplicate mails with an atomic cache flag.
+
+    Returns 410 on definitively invalid payloads to stop BBB retries
+    (BBB only stops retrying on 2xx and 410, per the API documentation).
+    """
+    signed_parameters = request.form.get("signed_parameters")
+    if not signed_parameters:
+        logger.error("Missing 'signed_parameters' in callback payload")
+        return "", 410
+
+    key = OctKey.import_key(current_app.config["BIGBLUEBUTTON_SECRET"].encode())
+
+    try:
+        token = jwt.decode(signed_parameters, key)
+    except (BadSignatureError, DecodeError) as e:
+        logger.error("Invalid signature on callback: %s", e)
+        return "", 401
+
+    bbb_meeting_id = token.claims.get("meeting_id")
+    bbb_recording_id = token.claims.get("record_id")
+    if not bbb_meeting_id or not bbb_recording_id:
+        logger.error(
+            "Missing claims in callback token: meeting_id=%r record_id=%r",
+            bbb_meeting_id,
+            bbb_recording_id,
+        )
+        return "", 410
+
+    meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
+    if not meeting:
+        return "", 410
+
+    if cache.get(recording_notified_key(bbb_recording_id)):
+        logger.info(
+            "Recording notification already sent for %s, ignoring callback",
+            bbb_recording_id,
+        )
+        return "", 200
+
+    is_first_callback = cache.add(
+        recording_scheduled_key(bbb_recording_id), True, timeout=RECORDING_CACHE_TTL
+    )
+    if is_first_callback:
+        min_delay = current_app.config["RECORDING_NOTIFICATION_MIN_DELAY"]
+        max_delay = current_app.config["RECORDING_NOTIFICATION_MAX_DELAY"]
+        send_recording_notification.apply_async(
+            args=[meeting.id, bbb_recording_id],
+            kwargs={"is_min_deadline": True},
+            countdown=min_delay,
+        )
+        send_recording_notification.apply_async(
+            args=[meeting.id, bbb_recording_id],
+            kwargs={"force": True},
+            countdown=max_delay,
+        )
+        logger.info(
+            "Recording notification scheduled for meeting %s (record=%s): "
+            "min=%ss max=%ss",
+            meeting.name,
+            bbb_recording_id,
+            min_delay,
+            max_delay,
+        )
+    else:
+        send_recording_notification.delay(meeting.id, bbb_recording_id)
+        logger.info(
+            "Recording callback for %s: re-checking expected formats",
+            bbb_recording_id,
+        )
+    return "", 200

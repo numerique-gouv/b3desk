@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_hash
 from b3desk.join import get_role
 from b3desk.models import db
@@ -281,7 +282,13 @@ def test_save_meeting_in_no_recording_environment(
 
 
 def test_create_no_file(
-    client_app, meeting, mocker, bbb_response, mock_meeting_is_not_running
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
 ):
     """Tests the BBB meeting creation request.
 
@@ -316,6 +323,7 @@ def test_create_no_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.ai_summary = False
     create_bbb_meeting(meeting, meeting.owner)
 
     assert bbb_response.called
@@ -361,11 +369,44 @@ def test_create_no_file(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
 
     assert not mocked_background_upload.called
+
+
+def test_create_ai_summary_adds_banner(
+    client_app,
+    meeting,
+    mocker,
+    bbb_response,
+    mock_meeting_is_not_running,
+    authenticated_user,
+    user,
+):
+    """AI summary enabled adds the banner and keeps the ai-summary format."""
+    from b3desk.join import create_bbb_meeting
+
+    meeting.ai_summary = True
+    assert meeting.ai_summary_enabled
+
+    create_bbb_meeting(meeting, meeting.owner)
+
+    assert bbb_response.called
+    bbb_url = bbb_response.call_args.args[0].url
+    bbb_params = {
+        key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
+    }
+
+    assert (
+        bbb_params["bannerText"]
+        == "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
+    )
+    assert bbb_params["bannerColor"] == "#202c7d"
+    assert "meta_bbb-disable-recording-formats" not in bbb_params
 
 
 def test_create_with_only_a_default_file(
@@ -415,6 +456,7 @@ def test_create_with_only_a_default_file(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.ai_summary = False
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -470,6 +512,8 @@ def test_create_with_only_a_default_file(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -523,6 +567,7 @@ def test_create_with_files(
     meeting.lockSettingsDisablePublicChat = False
     meeting.lockSettingsDisableNote = False
     meeting.guestPolicy = True
+    meeting.meta_recording_recording_ai_summary = True
 
     meeting_file = MeetingFiles(
         nc_path=file_path,
@@ -579,6 +624,8 @@ def test_create_with_files(
             _external=True,
         ),
         "voiceBridge": "111111111",
+        "meta_bbb-recording-ready-url": get_recording_status_callback_url(),
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
     assert bbb_params == body
@@ -690,6 +737,7 @@ def test_create_quick_meeting(
         "checksum": mock.ANY,
         "presentationUploadExternalDescription": "Fichiers depuis votre Nextcloud",
         "presentationUploadExternalUrl": mock.ANY,
+        "meta_bbb-disable-recording-formats": "ai-summary",
     }
 
 
@@ -1029,6 +1077,26 @@ def test_edit_meeting_without_change_anything(client_app, meeting, authenticated
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
 
+def test_edit_meeting_preserves_ai_summary_when_owner_unauthorised(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """Editing a meeting must keep the stored ai_summary preference when the owner has lost authorisation and the field is hidden."""
+    meeting.ai_summary = True
+    db.session.commit()
+    client_app.app.config["ENABLE_AI_SUMMARY"] = False
+    assert meeting.owner.can_use_ai_summary is False
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
+    assert "ai_summary" not in res.forms[0].fields
+
+    res.forms[0]["name"] = "Titre modifié"
+    res.forms[0].submit()
+
+    db.session.refresh(meeting)
+    assert meeting.ai_summary is True
+    assert meeting.ai_summary_enabled is False
+
+
 def test_delete_old_voiceBridges_with_form(
     time_machine,
     client_app,
@@ -1286,3 +1354,16 @@ def test_delete_recordings_failure_when_delete_meeting(
         "error",
         "Impossible de supprimer les vidéos de ce séminaire : some error",
     ) in res.flashes
+
+
+def test_create_meeting_ai_summary_requires_recording(
+    client_app, meeting, authenticated_user
+):
+    res = client_app.get("/meeting/new")
+    res.forms[0]["name"] = "Mon meeting de test"
+    res.forms[0]["allowStartStopRecording"] = False
+    res.forms[0]["ai_summary"] = "on"
+    res = res.forms[0].submit()
+    res.mustcontain(
+        "La génération de résumé nécessite d'activer l'enregistrement manuel ou automatique."
+    )

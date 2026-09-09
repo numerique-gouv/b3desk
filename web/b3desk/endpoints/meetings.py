@@ -42,6 +42,7 @@ from b3desk.models.users import User
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
+from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..utils import send_delegation_mail
 
@@ -83,12 +84,15 @@ def quick_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
+    if meeting.is_shadow:
+        abort(403)
     form = RecordingForm()
     return render_template(
         "meeting/recordings.html",
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
         form=form,
+        admin_mode=is_admin_mode(),
     )
 
 
@@ -123,6 +127,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
 @auth.oidc_auth("default")
 def new_meeting():
     """Display the form to create a new meeting and handle submission."""
+    admin_mode = False
     if not g.user.can_create_meetings:
         flash(_("Vous n'avez pas le droit de créer de nouvelles réunions"), "error")
         return redirect(url_for("public.welcome"))
@@ -139,6 +144,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -148,6 +154,7 @@ def new_meeting():
             meeting=None,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     meeting = Meeting()
@@ -178,6 +185,9 @@ def new_meeting():
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
+    if meeting.is_shadow:
+        abort(403)
+    admin_mode = is_admin_mode()
     form = (
         MeetingWithRecordForm(
             request.form if request.method == "POST" else None, obj=meeting
@@ -194,6 +204,7 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     if not form.validate():
@@ -203,10 +214,13 @@ def edit_meeting(meeting: Meeting, user: User):
             meeting=meeting,
             form=form,
             recording=current_app.config["RECORDING"],
+            admin_mode=admin_mode,
         )
 
     del form.id
     del form.name
+    if hasattr(form, "ai_summary") and not meeting.owner.can_use_ai_summary:
+        del form.ai_summary
 
     meeting.record = bool(
         form.data.get("allowStartStopRecording") or form.data.get("autoStartRecording")
@@ -238,6 +252,10 @@ def edit_meeting(meeting: Meeting, user: User):
             "meeting/end.html",
             meeting=meeting,
         )
+
+    if admin_mode:
+        return redirect(url_for("admin.meeting_infos", meeting=meeting))
+
     return redirect(url_for("public.welcome"))
 
 
@@ -276,7 +294,10 @@ def delete_meeting():
         meeting_id = request.form["id"]
         meeting = db.session.get(Meeting, meeting_id)
 
-        if meeting.owner_id == g.user.id:
+        if meeting.is_shadow:
+            abort(403)
+
+        if meeting.owner_id == g.user.id or g.user.admin:
             if not meeting.get_all_delegates:
                 for meeting_file in meeting.files:
                     db.session.delete(meeting_file)
@@ -302,7 +323,7 @@ def delete_meeting():
                 flash(_("Vous devez retirer les délégataires"), "error")
         else:
             flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
-    return redirect(url_for("public.welcome"))
+    return redirect(url_for("public.welcome" if not is_admin_mode() else "admin.home"))
 
 
 @bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
@@ -331,7 +352,7 @@ def delete_video_meeting(meeting: Meeting, user: User):
             ),
             "error",
         )
-    return redirect(url_for("public.welcome"))
+    return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
 
 @bp.route("/meeting/favorite", methods=["POST"])
@@ -362,29 +383,29 @@ def get_available_visio_code():
 @meeting_access_required()
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
+    if meeting.is_shadow:
+        abort(403)
     form = DelegationSearchForm(request.form)
+    admin_mode = is_admin_mode()
     if not request.form or not form.validate():
         return render_template(
             "meeting/delegation.html",
             meeting=meeting,
             form=form,
+            admin_mode=admin_mode,
         )
 
     data = form.search.data.lower()
-    new_delegate = (
-        db.session.query(User)
-        .filter(
-            User.email == data,
-            user.email != User.email,
-        )
-        .first()
-    )
+    new_delegate = db.session.query(User).filter(User.email == data).first()
 
     if new_delegate is None:
         flash(_("L'utilisateur recherché n'existe pas"), "error")
 
     elif new_delegate in meeting.get_all_delegates:
         flash(_("L'utilisateur est déjà délégataire"), "warning")
+
+    elif data == meeting.owner.email:
+        flash(_("Cet utilisateur est le propriétaire"), "warning")
 
     elif (
         len(meeting.get_all_delegates)
@@ -416,6 +437,7 @@ def manage_delegation(meeting: Meeting, user: User):
         "meeting/delegation.html",
         meeting=meeting,
         form=form,
+        admin_mode=admin_mode,
     )
 
 
@@ -440,4 +462,10 @@ def remove_delegate(meeting: Meeting, user: User, delegate: User):
             meeting.id,
             meeting.name,
         )
-    return redirect(url_for("meetings.manage_delegation", meeting=meeting))
+    return redirect(
+        url_for(
+            "meetings.manage_delegation",
+            meeting=meeting,
+            admin_mode=is_admin_mode() or None,
+        )
+    )

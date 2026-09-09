@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
+{% block main %}
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    ]) }}
+    <div class="fr-py-3w main-connected-actions">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_users") }}" title="{% trans %}Liste des utilisateurs{% endtrans %}">
+                                    {% trans %}Utilisateurs{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_meetings") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                                    {% trans %}Réunions{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col fr-tile fr-enlarge-link">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                <a href="{{ url_for("admin.manage_groups") }}" title="{% trans %}Liste des réunions{% endtrans %}">
+                                    {% trans %}Groupes{% endtrans %}
+                                </a>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

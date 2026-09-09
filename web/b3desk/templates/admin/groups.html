@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
+{% block main %}
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_groups'), 'label': _('Groupes')},
+    ]) }}
+
+    <a href="{{ url_for("admin.create_group") }}" class="fr-btn fr-btn--primary">
+        {% trans %}Nouveau groupe{% endtrans %}
+    </a>
+    <br>
+    <br>
+    <form class="fr-search-bar", id="groupSearchForm", name="search_group" role="search" action="{{ url_for("admin.manage_groups") }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un groupe{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
+    {% set groups = groups_page.items %}
+    {% if not groups %}
+        <br>
+        {% if data %}
+            <p>{% trans %}Aucun groupe ne correspond à cette recherche.{% endtrans %}</p>
+        {% else %}
+            <p>{% trans %}Aucun groupe n'a encore été créé.{% endtrans %}</p>
+        {% endif %}
+    {% else %}
+        {% set page_obj = groups_page %}
+        {% set page_endpoint = 'admin.manage_groups' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} groupe correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} groupes correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} groupe
+                    {% pluralize %}
+                    {{ count }} groupes
+                {% endtrans %}
+            {% endif %}
+        </p>
+        {% include 'admin/group_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}

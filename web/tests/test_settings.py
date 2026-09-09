@@ -19,6 +19,16 @@ def test_list_of_strings_type(configuration):
     assert config_obj.OIDC_ATTENDEE_SCOPES == ["openid", "profile", "ect.scope.cv"]
 
 
+def test_list_of_strings_from_env_var(configuration, monkeypatch):
+    """Comma-separated env vars are parsed into lists."""
+    monkeypatch.setenv("RECORDING_EXPECTED_FORMATS", "presentation, video")
+    configuration.pop("RECORDING_EXPECTED_FORMATS", None)
+
+    config_obj = MainSettings(**configuration)
+
+    assert config_obj.RECORDING_EXPECTED_FORMATS == ["presentation", "video"]
+
+
 def test_enable_sip_true_with_and_without_private_key_home_page(
     client_app,
 ):

@@ -11,13 +11,18 @@
 from logging.config import dictConfig
 from logging.config import fileConfig
 from pathlib import Path
+from urllib.parse import urlencode
 
+from babel import Locale
 from flask import Flask
+from flask import has_app_context
+from flask import has_request_context
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import Babel
+from flask_babel import get_locale
 from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_pyoidc import OIDCAuthentication
@@ -32,9 +37,9 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.6.3"
+__version__ = "1.7.0"
 
-LANGUAGES = ["en", "fr"]
+LANGUAGES = ["fr", "en"]
 
 babel = Babel()
 cache = Cache()
@@ -68,6 +73,17 @@ def setup_celery(app):
     from b3desk.tasks import celery
 
     celery.conf.task_always_eager = app.testing
+
+    class ContextTask(celery.Task):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):  # pragma: no cover
+            if has_app_context():
+                return self.run(*args, **kwargs)
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
 
 
 def setup_cache(app):
@@ -134,6 +150,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -154,6 +171,7 @@ def setup_logging(app):
         dictConfig(
             {
                 "version": 1,
+                "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
                         "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
@@ -176,9 +194,15 @@ def setup_i18n(app):
     from flask import session
 
     def locale_selector():
+        if not has_request_context():
+            if app.config.get("MEETING_LOCALE_VARIANT"):
+                return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
+            return "fr"
+
         if request.args.get("lang") in LANGUAGES:
             session["lang"] = request.args["lang"]
-        lang = session.get("lang") if session.get("lang") in LANGUAGES else "fr"
+        default = app.config["BABEL_DEFAULT_LOCALE"]
+        lang = session.get("lang") if session.get("lang") in LANGUAGES else default
         if lang == "fr" and app.config.get("MEETING_LOCALE_VARIANT"):
             return f"fr@{app.config['MEETING_LOCALE_VARIANT']}"
         return lang
@@ -211,8 +235,18 @@ def setup_jinja(app):
     if app.debug or app.testing:
         app.jinja_env.undefined = StrictUndefined
 
+    def lang_url(code):
+        args = request.args.to_dict(flat=True)
+        args["lang"] = code
+        return f"{request.path}?{urlencode(args)}"
+
+    def language_name(code):
+        name = Locale.parse(code).display_name
+        return name[:1].upper() + name[1:]
+
     @app.context_processor
     def global_processor():
+        locale = get_locale()
         return {
             "debug": app.debug,
             "config": app.config,
@@ -222,6 +256,11 @@ def setup_jinja(app):
             "is_rie": is_rie(),
             "version": __version__,
             "LANGUAGES": LANGUAGES,
+            "current_lang": locale.language
+            if locale
+            else app.config["BABEL_DEFAULT_LOCALE"],
+            "lang_url": lang_url,
+            "language_name": language_name,
             "Role": Role,
         }
 
@@ -229,12 +268,13 @@ def setup_jinja(app):
 def setup_flask(app):
     """Register custom URL converters for models and enums."""
     with app.app_context():
+        from b3desk.models.groups import Group
         from b3desk.models.meetings import Meeting
         from b3desk.models.meetings import MeetingFiles
         from b3desk.models.roles import Role
         from b3desk.models.users import User
 
-        for model in (Meeting, User, MeetingFiles):
+        for model in (Meeting, User, MeetingFiles, Group):
             app.url_map.converters[model.__name__.lower()] = model_converter(model)
 
         for enum in (Role,):
@@ -248,7 +288,6 @@ def setup_error_pages(app):
     from flask import flash
     from flask import g
     from flask import jsonify
-    from flask import redirect
     from flask_babel import lazy_gettext as _
     from webdav3.exceptions import WebDavException
 
@@ -303,7 +342,9 @@ def setup_endpoints(app):
     """Import and register all application blueprints."""
     with app.app_context():
         import b3desk.commands
+        import b3desk.endpoints.admin
         import b3desk.endpoints.api
+        import b3desk.endpoints.bbb_callback
         import b3desk.endpoints.captcha
         import b3desk.endpoints.join
         import b3desk.endpoints.meeting_files
@@ -317,6 +358,8 @@ def setup_endpoints(app):
         app.register_blueprint(b3desk.endpoints.meeting_files.bp)
         app.register_blueprint(b3desk.commands.bp)
         app.register_blueprint(b3desk.endpoints.captcha.bp)
+        app.register_blueprint(b3desk.endpoints.bbb_callback.bp)
+        app.register_blueprint(b3desk.endpoints.admin.bp)
 
 
 def setup_debug_host_redirect(app):

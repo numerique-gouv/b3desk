@@ -139,3 +139,21 @@ Vous pouvez vérifier que le token est valide avec la commande :
    docker exec -it <CONTAINER_ID/NAME> flask check-sip-token "<token>"
 
 Il suffira de transmettre ce token au matériel SIP qui devra le joindre dans le header ``{"Authorization": <token>}`` lors de ses requêtes sur la route suivante : ``https://<instance_b3desk>/sip-connect/<visio_code>``
+
+
+Gestion des administrateurs
+===========================
+
+Donner les droits admin
+-----------------------
+
+.. code-block:: bash
+
+   docker exec -it <CONTAINER_ID/NAME> flask user-to-admin <email>
+
+Retirer les droits admin
+------------------------
+
+.. code-block:: bash
+
+   docker exec -it <CONTAINER_ID/NAME> flask admin-to-user <email>

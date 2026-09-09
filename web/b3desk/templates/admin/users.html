@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+{% from 'admin/macros.html' import breadcrumb %}
+
+{% block main %}
+    {{ breadcrumb([
+    {'href': url_for('admin.home'), 'label': _('Menu Admin')},
+    {'href': url_for('admin.manage_users'), 'label': _('Utilisateurs')},
+    ]) }}
+    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
+        {{ form.search.label(class_="fr-label") }}
+        {{ form.search(class_="fr-input")  }}
+        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    <br>
+    {% set users = users_page.items %}
+    {% if not users %}
+        <br>
+        <p>{% trans %}Aucun utilisateur ne correspond à cette recherche.{% endtrans %}</p>
+    {% else %}
+        {% set page_obj = users_page %}
+        {% set page_endpoint = 'admin.manage_users' %}
+        {% set search = data %}
+        <p class="fr-table__detail">
+            {% if data %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur correspondant aux critères
+                    {% pluralize %}
+                    {{ count }} utilisateurs correspondant aux critères
+                {% endtrans %}
+            {% else %}
+                {% trans trimmed count=page_obj.total %}
+                    {{ count }} utilisateur
+                    {% pluralize %}
+                    {{ count }} utilisateurs
+                {% endtrans %}
+            {% endif %}
+        </p>
+        {% include 'admin/user_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}

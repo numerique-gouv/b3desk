@@ -14,6 +14,7 @@ from pydantic import computed_field
 from pydantic import field_validator
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
+from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
 
 
@@ -25,7 +26,9 @@ def split_comma_separated_strings(value):
     return map(str.strip, value.split(","))
 
 
-ListOfStrings = Annotated[list[str], BeforeValidator(split_comma_separated_strings)]
+ListOfStrings = Annotated[
+    list[str], NoDecode, BeforeValidator(split_comma_separated_strings)
+]
 
 
 class MeetingLocaleVariant(str, Enum):
@@ -251,6 +254,15 @@ class MainSettings(BaseSettings):
 
     Plus d’infos sur
     https://python-babel.github.io/flask-babel/#configuration
+    """
+
+    BABEL_DEFAULT_LOCALE: str = "fr"
+    """La langue utilisée par défaut lorsque l’utilisateur n’en a pas choisi."""
+
+    BABEL_DEFAULT_TIMEZONE: str = "Europe/Paris"
+    """Le fuseau horaire utilisé pour l’affichage des dates et heures.
+
+    Plus d'infos sur https://data.iana.org/time-zones/tzdb-2021a/zone1970.tab
     """
 
     MAX_MEETINGS_PER_USER: int = 50
@@ -800,6 +812,41 @@ class MainSettings(BaseSettings):
     Timeout for BBB request expressed in seconds in logs
     """
 
+    RECORDING_NOTIFICATION_MIN_DELAY: int = 60
+    """Délai minimum (en secondes) avant l'envoi du mail notifiant la
+    disponibilité d'un enregistrement.
+
+    BBB envoie un callback par format de rendu publié (``presentation``,
+    ``video``...). Aucune notification n'est envoyée avant l'expiration de ce
+    délai, décompté depuis le premier callback reçu pour un enregistrement,
+    même si tous les formats attendus sont déjà disponibles. Il laisse à BBB le
+    temps de publier les formats rapides avant l'envoi.
+    """
+
+    RECORDING_NOTIFICATION_MAX_DELAY: int = 3600
+    """Délai maximum (en secondes) avant l'envoi du mail notifiant la
+    disponibilité d'un enregistrement.
+
+    En fonctionnement nominal, le mail est envoyé dès que tous les formats
+    attendus sont disponibles (et que le délai minimum est écoulé). Passé ce
+    délai maximum, décompté depuis le premier callback, le mail est envoyé avec
+    les formats disponibles à cet instant, même si tous les formats attendus ne
+    sont pas encore prêts — par exemple un compte-rendu IA qui tarde ou échoue.
+    """
+
+    RECORDING_EXPECTED_FORMATS: ListOfStrings = ["presentation", "video"]
+    """Formats de lecture attendus pour un enregistrement BBB.
+
+    La notification n'est émise qu'une fois tous ces formats disponibles,
+    auxquels s'ajoute ``ai-summary`` lorsque le compte-rendu IA est activé pour
+    le séminaire. Le format ``ai-summary`` ne doit pas figurer dans cette liste :
+    il est ajouté automatiquement selon la configuration de chaque séminaire.
+
+    Une instance qui ne produit pas le format ``video`` doit le retirer de cette
+    liste, sans quoi la complétude ne sera jamais atteinte et chaque mail
+    attendra l'expiration de ``RECORDING_NOTIFICATION_MAX_DELAY``.
+    """
+
     MATOMO_URL: str | None = None
     """URL de l’instance de Matomo vers laquelle envoyer des statistiques."""
 
@@ -905,7 +952,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_CLIENT_SECRET: str | None = None
-    """ Piste Oauth client_secret
+    """Piste Oauth client_secret
 
     Oauth client secret can be retrieved from the PISTE site under APPLICATION on
     the following line: Identifiants Oauth
@@ -919,7 +966,7 @@ class MainSettings(BaseSettings):
     """
 
     PISTE_OAUTH_API_URL: str | None = "https://oauth.piste.gouv.fr/api"
-    """ PISTE OAUTH APU url
+    """PISTE OAUTH APU url
 
     basic url for PISTE OAUTH API used to get access token to captchetat API
     """
@@ -930,8 +977,8 @@ class MainSettings(BaseSettings):
     Number of attempts to enter the visio-code before submitting a captcha
     """
 
-    MAXIMUM_MEETING_DELEGATES: int | None = 1
-    """ Maximum meeting delegates
+    MAXIMUM_MEETING_DELEGATES: int | None = 15
+    """Maximum meeting delegates
 
     Maximum number of delegates for one meeting
     """
@@ -940,4 +987,10 @@ class MainSettings(BaseSettings):
     """Contact link
 
     If entered, a 'contact' button wil appear in footer
+    """
+
+    ENABLE_AI_SUMMARY: bool | None = False
+    """Enable AI summary
+
+    Allow AI summary generation on records
     """

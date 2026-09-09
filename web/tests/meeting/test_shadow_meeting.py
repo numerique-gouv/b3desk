@@ -138,3 +138,33 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
 
     meeting = db.session.get(Meeting, 1)
     assert meeting.last_connection_utc_datetime == datetime.datetime(2025, 1, 1)
+
+
+def test_user_cannot_edit_delegates_for_shadow_meeting(
+    client_app, shadow_meeting, authenticated_user
+):
+    client_app.get("/meeting/manage-delegation/1", status=403)
+
+
+def test_user_cannot_read_records_page_for_shadow_meeting(
+    client_app, shadow_meeting, authenticated_user
+):
+    client_app.get("/meeting/recordings/1", status=403)
+
+
+def test_user_cannot_edit_shadow_meeting(
+    client_app, shadow_meeting, authenticated_user
+):
+    client_app.get("/meeting/edit/1", status=403)
+
+
+def test_user_cannot_read_files_page_for_shadow_meeting(
+    client_app, shadow_meeting, authenticated_user
+):
+    client_app.get("/meeting/files/1", status=403)
+
+
+def test_user_cannot_delete_shadow_meeting(
+    client_app, shadow_meeting, authenticated_user
+):
+    client_app.post("/meeting/delete", {"id": "1"}, status=403)

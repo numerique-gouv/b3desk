@@ -34,7 +34,7 @@ def get_or_create_user(user_info):
     )
     email = user_info[mapping.get("email", "email")].lower()
 
-    user = db.session.query(User).filter(User.email == email).first()
+    user = User.get_user_by_email(email)
 
     if user is None:
         user = User(
@@ -89,10 +89,17 @@ class User(db.Model):
     nc_last_auto_enroll = db.Column(db.DateTime)
     last_connection_utc_datetime = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
 
     meetings = db.relationship("Meeting", back_populates="owner")
     favorites = db.relationship(
         "Meeting", secondary="favorite", back_populates="favorite_of"
+    )
+    groups = db.relationship(
+        "Group",
+        secondary="group_member",
+        back_populates="members",
+        cascade_backrefs=False,
     )
 
     @property
@@ -135,3 +142,37 @@ class User(db.Model):
             )
             .all()
         )
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        return db.session.query(User).filter(User.email == email).first()
+
+    @property
+    def can_use_file_sharing(self):
+        if not self.groups:
+            return current_app.config["FILE_SHARING"]
+        if any(group.enable_file_sharing for group in self.groups):
+            return True
+        if all(group.enable_file_sharing is False for group in self.groups):
+            return False
+        return current_app.config["FILE_SHARING"]
+
+    @property
+    def can_use_sip(self):
+        if not self.groups:
+            return current_app.config["ENABLE_SIP"]
+        if any(group.enable_sip for group in self.groups):
+            return True
+        if all(group.enable_sip is False for group in self.groups):
+            return False
+        return current_app.config["ENABLE_SIP"]
+
+    @property
+    def can_use_ai_summary(self):
+        if not self.groups:
+            return current_app.config["ENABLE_AI_SUMMARY"]
+        if any(group.enable_ai_summary for group in self.groups):
+            return True
+        if all(group.enable_ai_summary is False for group in self.groups):
+            return False
+        return current_app.config["ENABLE_AI_SUMMARY"]

@@ -139,6 +139,7 @@ class Meeting(db.Model):
     lockSettingsDisablePrivateChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisablePublicChat = db.Column(db.Boolean, unique=False, default=True)
     lockSettingsDisableNote = db.Column(db.Boolean, unique=False, default=True)
+    ai_summary = db.Column(db.Boolean, unique=False, default=False, nullable=False)
     guestPolicy = db.Column(db.Boolean, unique=False, default=True)
     logo = db.Column(db.Unicode(200))
 
@@ -156,6 +157,11 @@ class Meeting(db.Model):
         if not self._bbb:
             self._bbb = BBB(self.meetingID)
         return self._bbb
+
+    @property
+    def ai_summary_enabled(self):
+        """Whether the AI summary recording format is expected for this meeting."""
+        return bool(self.ai_summary) and self.owner.can_use_ai_summary
 
     @property
     def meetingID(self):
@@ -196,6 +202,17 @@ class Meeting(db.Model):
             )
             .all()
         )
+
+
+def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
+    """Retrieve a Meeting from a BBB-formatted meeting ID like ``meeting-persistent-{id}--{hash}``."""
+    try:
+        id = bbb_meeting_id.split("-")[2]
+    except (IndexError, AttributeError):
+        return None
+    if not id.isdigit():
+        return None
+    return get_meeting_from_meeting_id(id)
 
 
 class PreviousVoiceBridge(db.Model):
@@ -327,6 +344,7 @@ def create_and_save_shadow_meeting(user):
         moderatorOnlyMessage=str(_("Bienvenue aux modérateurs")),
         record=False,
         autoStartRecording=False,
+        ai_summary=False,
         allowStartStopRecording=False,
         lockSettingsDisableMic=False,
         lockSettingsDisablePrivateChat=False,
