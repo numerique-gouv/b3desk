@@ -157,7 +157,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:211 web/b3desk/models/meetings.py:461
+#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:453
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -349,8 +349,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:264 web/b3desk/endpoints/meetings.py:154
-#: web/b3desk/endpoints/meetings.py:219
+#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:188
+#: web/b3desk/endpoints/meetings.py:250
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -461,8 +461,8 @@ msgstr ""
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:436
-#: web/b3desk/endpoints/meetings.py:314
+#: web/b3desk/endpoints/meeting_files.py:432
+#: web/b3desk/endpoints/meetings.py:358
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -474,85 +474,81 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:106
-msgid "Impossible de renommer l'enregistrement"
-msgstr ""
-
-#: web/b3desk/endpoints/meetings.py:117
+#: web/b3desk/endpoints/meetings.py:150
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:120
+#: web/b3desk/endpoints/meetings.py:153
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:135
+#: web/b3desk/endpoints/meetings.py:169
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:181
+#: web/b3desk/endpoints/meetings.py:215
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:270
+#: web/b3desk/endpoints/meetings.py:302
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:295
+#: web/b3desk/endpoints/meetings.py:327
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:319
+#: web/b3desk/endpoints/meetings.py:363
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:327
+#: web/b3desk/endpoints/meetings.py:371
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:330
+#: web/b3desk/endpoints/meetings.py:374
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:351
+#: web/b3desk/endpoints/meetings.py:396
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:396
+#: web/b3desk/endpoints/meetings.py:407
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:449
+#: web/b3desk/endpoints/meetings.py:460
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:452
+#: web/b3desk/endpoints/meetings.py:463
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:455
+#: web/b3desk/endpoints/meetings.py:466
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:462
+#: web/b3desk/endpoints/meetings.py:473
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:475
+#: web/b3desk/endpoints/meetings.py:486
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:497
+#: web/b3desk/endpoints/meetings.py:508
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:467
+#: web/b3desk/endpoints/meetings.py:511
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
@@ -2932,17 +2928,16 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:84
-#: web/b3desk/templates/meeting/list.html:86
-msgid "Label bouton"
+#: web/b3desk/templates/meeting/history.html:160
+msgid "Télécharger le compte-rendu Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:84
-msgid "Ajouter aux favoris"
+#: web/b3desk/templates/meeting/history.html:160
+msgid "Markdown"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:86
-msgid "Retirer des favoris"
+#: web/b3desk/templates/meeting/history.html:171
+msgid "Voir l'enregistrement"
 msgstr ""
 
 #: web/b3desk/templates/meeting/history.html:172
@@ -3097,16 +3092,16 @@ msgstr ""
 msgid "Favoris"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:85
+#: web/b3desk/templates/meeting/list.html:84
 msgid "Ajouter aux favoris"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:86
-#: web/b3desk/templates/meeting/list.html:90
+#: web/b3desk/templates/meeting/list.html:85
+#: web/b3desk/templates/meeting/list.html:89
 msgid "Label bouton"
 msgstr ""
 
-#: web/b3desk/templates/meeting/list.html:89
+#: web/b3desk/templates/meeting/list.html:88
 msgid "Retirer des favoris"
 msgstr ""
 
