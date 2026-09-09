@@ -549,6 +549,41 @@ def test_open_recordings_page_includes_orphan_recordings(
     assert len(recording_ids) == len(set(recording_ids))
 
 
+def test_recording_filter_only_shows_sessions_with_a_recording(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """The `recording_filter` query param hides sessions without a recording attached."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    session_without_recording = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 5, 9, 0, 0),
+        ended_at=datetime.datetime(2018, 7, 5, 9, 30, 0),
+    )
+    db.session.add(session_without_recording)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+    sessions = response.context["sessions"]
+    assert len(sessions) == 3
+    assert any(s["recording"] is None for s in sessions)
+
+    filtered_response = client_app.get(
+        f"/meeting/history/{meeting.id}", params={"recording_filter": "true"}
+    )
+    filtered_sessions = filtered_response.context["sessions"]
+    assert len(filtered_sessions) == 2
+    assert all(s["recording"] is not None for s in filtered_sessions)
+
+
 # todo test that multiple meetings with same start and end date are not merged and displayed on the correct page
 
 

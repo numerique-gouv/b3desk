@@ -86,6 +86,9 @@ def show_meeting_session(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
     form = RecordingForm()
+    recording_filter = request.args.get(
+        "recording_filter", False, type=lambda x: x.lower() == "true"
+    )
     recordings = meeting.bbb.get_recordings()
     recordings_by_id = {recording["recordID"]: recording for recording in recordings}
     session_recording_ids = {
@@ -112,6 +115,8 @@ def show_meeting_session(meeting: Meeting, user: User):
         if recording["recordID"] not in session_recording_ids
     ]
     sessions.sort(key=lambda session: session["started_at"], reverse=True)
+    if recording_filter:
+        sessions = [session for session in sessions if session["recording"]]
     return render_template(
         "meeting/history.html",
         meeting_mailto_params=meeting_mailto_params,
@@ -120,6 +125,7 @@ def show_meeting_session(meeting: Meeting, user: User):
         delete_recording_form=DeleteRecordingForm(),
         admin_mode=is_admin_mode(),
         sessions=sessions,
+        recording_filter=recording_filter,
     )
 
 

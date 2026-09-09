@@ -50,8 +50,24 @@
                 </div>
             </div>
         </div>
+        <div class="fr-container">
+            <div class="fr-grid-row fr-mt-2w fr-grid-row--middle">
+                <p class="fr-mr-3w fr-mb-1w">{% trans %}Filtrer{% endtrans %} :</p>
+                <ul class="fr-tags-group">
+                    <li>
+                        <button type="button" class="fr-tag" aria-pressed="{{ 'true' if recording_filter else 'false' }}" onclick="location.href='{{ url_for("meetings.show_meeting_session", meeting=meeting, admin_mode=admin_mode or None, recording_filter=not recording_filter) }}'">
+                            {% trans %}Avec enregistrement seulement{% endtrans %}
+                        </button>
+                    </li>
+                </ul>
 
-        <div class="fr-table">
+                {% if recording_filter and not sessions %}
+                    <p class="fr-text--sm">{% trans %}Aucune session avec enregistrement.{% endtrans %}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fr-table fr-mt-0">
             <div class="fr-table__wrapper">
                 <div class="fr-table__container">
                     <div class="fr-table__content">
