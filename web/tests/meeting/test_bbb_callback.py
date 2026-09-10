@@ -244,7 +244,7 @@ def test_analytics_callback_relays_payload_to_configured_url(
 def test_analytics_callback_still_acknowledges_when_relay_fails(
     client_app, meeting, mocker, make_analytics_bearer_token
 ):
-    """A relay failure is logged but does not fail the callback or lose the update.
+    """A relay failure is retried, then logged, without failing the callback.
 
     BBB retries non-2xx/410 responses, and the relay target is a third party
     outside our control: its failure must not cause BBB to retry, nor discard
@@ -272,7 +272,7 @@ def test_analytics_callback_still_acknowledges_when_relay_fails(
     )
     after = datetime.datetime.now()
 
-    mock_post.assert_called_once()
+    assert mock_post.call_count == 3
     db.session.refresh(session)
     assert before <= session.ended_at <= after
     assert session.participant_count == 1

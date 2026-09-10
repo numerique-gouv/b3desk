@@ -13,6 +13,7 @@ import portpicker
 import psycopg
 import pytest
 import respx
+import stamina
 from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
@@ -29,6 +30,18 @@ from tests.html_validation import ValidatingTestApp
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
 TRANSLATIONS_DIR = str(Path(__file__).parent.parent / "translations")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _disable_stamina_backoff():
+    """Skip stamina's real sleep/backoff between retries so retry tests stay fast.
+
+    `cap=True` only caps the attempts instead of overriding them, so decorators'
+    own `attempts=` values are preserved and retry counts stay testable.
+    """
+    stamina.set_testing(True, attempts=10, cap=True)
+    yield
+    stamina.set_testing(False)
 
 
 @pytest.fixture(autouse=True, scope="session")

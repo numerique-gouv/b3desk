@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import requests
+import stamina
 from flask import Blueprint
 from flask import current_app
 from flask import request
@@ -54,6 +55,21 @@ def _parse_bbb_datetime(value):
     except (TypeError, ValueError):
         logger.warning("Could not parse BBB analytics timestamp %r", value)
         return None
+
+
+@stamina.retry(on=requests.RequestException, attempts=3)
+def _relay_callback(auth_header):
+    analytics_url = current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"]
+    if analytics_url:
+        requests.post(
+            analytics_url,
+            data=request.get_data(),
+            headers={
+                "Content-Type": request.content_type or "application/json",
+                "Authorization": auth_header,
+            },
+            timeout=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"],
+        )
 
 
 @csrf.exempt
@@ -113,24 +129,14 @@ def analytics_callback():
                 meeting.name,
                 bbb_meeting_id,
             )
-
-    analytics_url = current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"]
-    if analytics_url:
-        try:
-            requests.post(
-                analytics_url,
-                data=request.get_data(),
-                headers={
-                    "Content-Type": request.content_type or "application/json",
-                    "Authorization": auth_header,
-                },
-                timeout=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"],
-            )
-        except requests.RequestException as e:
-            logger.error(
-                "Failed to relay analytics callback to %s: %s", analytics_url, e
-            )
-
+    try:
+        _relay_callback(auth_header)
+    except requests.RequestException as e:
+        logger.error(
+            "Failed to relay analytics callback to %s: %s",
+            current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"],
+            e,
+        )
     return "", 200
 
 
