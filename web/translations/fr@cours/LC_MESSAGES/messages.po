@@ -473,16 +473,16 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr "Le cours n'est pas en cours"
 
-#: web/b3desk/endpoints/meetings.py:150
+#: web/b3desk/endpoints/meetings.py:149
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:153
+#: web/b3desk/endpoints/meetings.py:152
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:169
+#: web/b3desk/endpoints/meetings.py:168
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr "Vous n'avez pas le droit de créer de nouveaux cours"
 

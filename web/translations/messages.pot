@@ -349,8 +349,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:188
-#: web/b3desk/endpoints/meetings.py:250
+#: web/b3desk/endpoints/admin.py:226 web/b3desk/endpoints/meetings.py:187
+#: web/b3desk/endpoints/meetings.py:249
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
@@ -462,7 +462,7 @@ msgid "Fichier introuvable"
 msgstr ""
 
 #: web/b3desk/endpoints/meeting_files.py:432
-#: web/b3desk/endpoints/meetings.py:358
+#: web/b3desk/endpoints/meetings.py:346
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
@@ -474,81 +474,81 @@ msgstr ""
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:150
+#: web/b3desk/endpoints/meetings.py:149
 msgid "Enregistrement renommé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:153
+#: web/b3desk/endpoints/meetings.py:152
 #, python-brace-format
 msgid "Impossible de modifier cet enregistrement : {code}, {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:169
+#: web/b3desk/endpoints/meetings.py:168
 msgid "Vous n'avez pas le droit de créer de nouvelles réunions"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:215
+#: web/b3desk/endpoints/meetings.py:214
 #, python-brace-format
 msgid "{meeting_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:302
+#: web/b3desk/endpoints/meetings.py:301
 #, python-format
 msgid "%(meeting_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:327
+#: web/b3desk/endpoints/meetings.py:326
 #, python-format
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:363
+#: web/b3desk/endpoints/meetings.py:351
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:371
+#: web/b3desk/endpoints/meetings.py:359
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:374
+#: web/b3desk/endpoints/meetings.py:362
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:396
+#: web/b3desk/endpoints/meetings.py:384
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:407
+#: web/b3desk/endpoints/meetings.py:395
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:460
+#: web/b3desk/endpoints/meetings.py:448
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:463
+#: web/b3desk/endpoints/meetings.py:451
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:466
+#: web/b3desk/endpoints/meetings.py:454
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:473
+#: web/b3desk/endpoints/meetings.py:461
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:486
+#: web/b3desk/endpoints/meetings.py:474
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:508
+#: web/b3desk/endpoints/meetings.py:496
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:511
+#: web/b3desk/endpoints/meetings.py:499
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
