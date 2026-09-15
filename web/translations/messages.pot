@@ -3422,3 +3422,8 @@ msgstr ""
 msgid "Information avant suppression : {meeting_name}"
 msgstr ""
 
+#: web/b3desk/utils/mailing.py:152
+#, python-brace-format
+msgid "Information avant suppression : {user_name}"
+msgstr ""
+

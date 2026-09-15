@@ -149,7 +149,9 @@ def send_mail_before_user_deletion(user, delay):
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
-    msg["Subject"] = str(_(f"Information avant suppression : {user.fullname}"))
+    msg["Subject"] = _("Information avant suppression : {user_name}").format(
+        user_name=user.fullname
+    )
     msg["From"] = smtp["from_email"]
     msg["To"] = user.email
 
