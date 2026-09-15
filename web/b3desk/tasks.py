@@ -1,20 +1,11 @@
-import os
-
 import requests
-from celery import Celery
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
 
 from b3desk import cache
 from b3desk.models import db
 from b3desk.utils import send_available_recording_notification_mail
-
-REDIS_URL = os.environ.get("REDIS_URL")
-DEBUG = os.environ.get("FLASK_DEBUG")
-
-celery = Celery("tasks")
-celery.conf.broker_url = f"redis://{REDIS_URL}"
-celery.conf.result_backend = f"redis://{REDIS_URL}"
 
 logger = get_task_logger(__name__)
 
@@ -38,15 +29,14 @@ def recording_notified_key(bbb_recording_id):
     return f"recording_notification_sent:{bbb_recording_id}"
 
 
-@celery.task(name="background_upload")
+@shared_task(name="background_upload")
 def background_upload(endpoint, xml):
     """Celery task to upload XML documents to BigBlueButton API in background."""
     logger.info("BBB API request %s: xml:%s", endpoint, xml)
 
     session = requests.Session()
-    if DEBUG:  # pragma: no cover
-        # In local development environment, BBB is not served as https
-        session.verify = False
+    # In local development environment, BBB is not served as https
+    session.verify = not current_app.debug
 
     response = session.post(
         endpoint,
@@ -58,7 +48,7 @@ def background_upload(endpoint, xml):
     return True
 
 
-@celery.task(name="send_recording_notification")
+@shared_task(name="send_recording_notification")
 def send_recording_notification(
     meeting_id, bbb_recording_id, force=False, is_min_deadline=False
 ):

@@ -39,6 +39,15 @@ class ShowMeetingForm(Form):
     meeting_id = IntegerField()
 
 
+class ChunkUploadForm(FlaskForm):
+    """Dropzone chunk metadata."""
+
+    dzchunkindex = IntegerField(validators=[validators.InputRequired()])
+    dzchunkbyteoffset = IntegerField(validators=[validators.InputRequired()])
+    dztotalchunkcount = IntegerField(validators=[validators.InputRequired()])
+    dztotalfilesize = IntegerField(validators=[validators.InputRequired()])
+
+
 class MeetingFilesForm(FlaskForm):
     url = TextAreaField(
         label=_("Lien web du fichier à ajouter"),

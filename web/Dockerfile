@@ -15,7 +15,7 @@ COPY --from=root pyproject.toml uv.lock /opt/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-install-project --directory /opt --python /usr/local/bin/python
 
-COPY misc/wsgi.py misc/gunicorn.py misc/run_webserver.sh /opt/bbb-visio/
+COPY misc/wsgi.py misc/run_webserver.sh /opt/bbb-visio/
 COPY misc/job.cron /etc/cron.d/job
 COPY migrations /opt/bbb-visio/migrations
 COPY b3desk /opt/bbb-visio/b3desk

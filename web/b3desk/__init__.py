@@ -15,6 +15,8 @@ from urllib.parse import urlencode
 
 from authlib.integrations.flask_client import OAuth
 from babel import Locale
+from celery import Celery
+from celery import Task
 from flask import Flask
 from flask import has_app_context
 from flask import has_request_context
@@ -37,7 +39,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.6.4dev"
+__version__ = "1.8.0dev"
 
 LANGUAGES = ["fr", "en"]
 
@@ -69,21 +71,31 @@ def setup_configuration(app, config=None):
 
 
 def setup_celery(app):
-    """Configure Celery task queue for the application."""
-    from b3desk.tasks import celery
+    """Create the Celery application and run its tasks within an app context."""
 
-    celery.conf.task_always_eager = app.testing
-
-    class ContextTask(celery.Task):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):  # pragma: no cover
+    class FlaskTask(Task):
+        def __call__(self, *args, **kwargs):
             if has_app_context():
                 return self.run(*args, **kwargs)
             with app.app_context():
                 return self.run(*args, **kwargs)
 
-    celery.Task = ContextTask
+    app.config.from_mapping(
+        CELERY={
+            "broker_url": f"redis://{app.config['REDIS_URL']}",
+            "result_backend": f"redis://{app.config['REDIS_URL']}",
+            "imports": ("b3desk.tasks",),
+            "task_always_eager": app.testing,
+            "task_ignore_result": True,
+            "broker_connection_retry_on_startup": True,
+        },
+    )
+
+    celery_app = Celery(app.name, task_cls=FlaskTask)
+    celery_app.config_from_object(app.config["CELERY"])
+    celery_app.set_default()
+    app.extensions["celery"] = celery_app
+    return celery_app
 
 
 def setup_cache(app):
@@ -423,23 +435,24 @@ def setup_authlib(app):
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
-def create_app(test_config=None):
+def create_app(test_config=None, authentication=True):
     """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
     setup_configuration(app, test_config)
     sentry_sdk = setup_sentry(app)
     try:
-        setup_celery(app)
         setup_cache(app)
         setup_logging(app)
         setup_i18n(app)
         setup_csrf(app)
         setup_database(app)
+        setup_celery(app)
         setup_jinja(app)
         setup_flask(app)
         setup_error_pages(app)
         setup_endpoints(app)
-        setup_authlib(app)
+        if authentication:
+            setup_authlib(app)
         setup_debug_host_redirect(app)
         setup_user_session(app)
     except Exception as exc:  # pragma: no cover

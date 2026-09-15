@@ -14,9 +14,10 @@ from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from urllib.parse import urlparse
-from xml.etree import ElementTree
 
 import requests
+from defusedxml import ElementTree
+from defusedxml.common import DefusedXmlException
 from flask import current_app
 from flask import url_for
 from flask_babel import lazy_gettext as _
@@ -113,7 +114,7 @@ class BBB:
 
         try:
             root = ElementTree.fromstring(response.content)
-        except ElementTree.ParseError as err:
+        except (ElementTree.ParseError, DefusedXmlException) as err:
             logger.warning("BBB API XML parse error %s", err)
             raise BigBlueButtonUnavailable() from err
 
@@ -391,6 +392,21 @@ class BBB:
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
         return sorted(result, key=lambda x: x["start_date"], reverse=True)
+
+    def get_recording(self, recording_id):
+        """Return this meeting recording matching the identifier, if any.
+
+        BBB recording identifiers are global, so callers must use this to check
+        that a user submitted identifier really belongs to the meeting at hand.
+        """
+        return next(
+            (
+                recording
+                for recording in self.get_recordings()
+                if recording["recordID"] == recording_id
+            ),
+            None,
+        )
 
     def update_recordings(self, recording_ids, metadata):
         """Update the recordings of a meeting.

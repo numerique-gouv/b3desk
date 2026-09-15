@@ -66,8 +66,10 @@
             <div class="fr-table fr-table--bordered fr-table--layout-fixed">
                 <table>
                     <thead>
-                        <th>{% trans %}Visuels{% endtrans %}</th>
-                        <th>{% trans %}Actions{% endtrans %}</th>
+                        <tr>
+                            <th>{% trans %}Visuels{% endtrans %}</th>
+                            <th>{% trans %}Actions{% endtrans %}</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% set playback = recording.playbacks.get("presentation") %}

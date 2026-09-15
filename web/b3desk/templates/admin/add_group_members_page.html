@@ -9,7 +9,7 @@
     {'href': url_for('admin.add_group_members_page', group=group), 'label': _('Ajouter des membres à') ~ ' ' ~ group.name},
     ]) }}
     <h5 class="fr-h2">{% trans group_name=group.name %}Ajouter des membres à {{ group_name }}{% endtrans %}</h5>
-    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members_page", group=group) }}" method="get">
+    <form class="fr-search-bar" id="userSearchForm" name="search_user" role="search" action="{{ url_for("admin.add_group_members_page", group=group) }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>

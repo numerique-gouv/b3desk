@@ -1,0 +1,30 @@
+name: Run security checks
+
+on:
+  pull_request:
+    branches:
+      - production
+      - main
+  push:
+    branches:
+      - production
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: audit the dependencies
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - name: Audit the runtime and development dependencies
+        run: uv audit --locked --preview-features audit-command
+      - name: Audit the documentation dependencies
+        run: uv audit --locked --only-group doc --preview-features audit-command

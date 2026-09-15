@@ -1115,3 +1115,139 @@ def test_delete_meeting_file_not_owner(client_app, authenticated_user, meeting):
 
     assert response.status_int == 403
     assert "ne pouvez pas supprimer" in response.json["msg"]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        {},
+        {"from": "URL"},
+        {"from": "unknown", "value": "https://example.com/doc.pdf"},
+        {"from": "URL", "value": 42},
+    ],
+)
+def test_add_meeting_files_with_invalid_payload(
+    client_app, authenticated_user, meeting, payload
+):
+    """Test that malformed payloads are rejected with a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}",
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_add_meeting_files_upload_without_uploaded_chunk(
+    client_app, authenticated_user, meeting
+):
+    """Test that referencing a file that was never uploaded returns a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}",
+        params=json.dumps({"from": "upload", "value": "never-uploaded.jpg"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+    assert "Aucun fichier téléversé" in response.json["msg"]
+
+
+def test_toggledownload_with_invalid_payload(client_app, authenticated_user, meeting):
+    """Test that a non boolean value is rejected with a 400."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": "yes"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+@pytest.mark.parametrize("payload", [None, [], {}, {"id": "not-an-integer"}])
+def test_delete_meeting_file_with_invalid_payload(
+    client_app, authenticated_user, payload
+):
+    """Test that malformed payloads are rejected with a 400."""
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+@pytest.mark.parametrize("payload", [None, {}, [42]])
+def test_file_picker_callback_with_invalid_payload(
+    client_app, authenticated_user, meeting, payload
+):
+    """Test that a payload which is not a list of paths is rejected with a 400."""
+    response = client_app.post(
+        url_for(
+            "meeting_files.file_picker_callback",
+            bbb_meeting_id=meeting.bbb_meeting_id,
+        ),
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_invalid_metadata(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that non numeric chunk metadata is rejected with a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": "not-a-number",
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_csrf_enabled(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that the chunk form validates the token Dropzone sends along."""
+    client_app.app.config["WTF_CSRF_ENABLED"] = True
+    page = client_app.get(url_for("meeting_files.edit_meeting_files", meeting=meeting))
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "csrf_token": page.forms["upload-form"]["csrf_token"].value,
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    assert response.json["msg"] == "ok"
