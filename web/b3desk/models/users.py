@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 
 from flask import current_app
 from sqlalchemy import Unicode
+from sqlalchemy import or_
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -28,6 +29,7 @@ from b3desk.utils.mailing import EMAIL_DELAYS
 from . import db
 from .information import compute_first_mail_deadline
 from .information import get_entities_due_for_next_mail
+from .information import last_used
 from .information import ready_for_final_deletion
 
 if TYPE_CHECKING:
@@ -232,25 +234,29 @@ def as_naive(value):
     return value.replace(tzinfo=None) if value.tzinfo else value
 
 
-def get_user_effective_activity(user):
-    """Return a user's most recent activity, from their own account or their meetings."""
-    activities = [user.last_connection_utc_datetime or user.created_at]
-    activities += [
-        meeting.last_connection_utc_datetime or meeting.created_at
-        for meeting in user.meetings
-    ]
-    return max(as_naive(activity) for activity in activities)
+def user_used_since(deadline):
+    """SQLAlchemy condition: the user, or any meeting they own, was used after the deadline."""
+    from b3desk.models.meetings import Meeting
+
+    return or_(
+        last_used(User) > deadline,
+        db.select(Meeting)
+        .where(Meeting.owner_id == User.id, last_used(Meeting) > deadline)
+        .exists(),
+    )
 
 
 def update_reactivated_users(first_mail_deadline):
     """Reset information_level for users reactivated since last email."""
     reactivated_users = db.session.scalars(
-        db.select(User).where(User.information_level > 0)
+        db.select(User).where(
+            User.information_level > 0,
+            user_used_since(first_mail_deadline),
+        )
     ).all()
     for user in reactivated_users:
-        if get_user_effective_activity(user) > first_mail_deadline:
-            user.information_level = 0
-            user.information_sent_at = None
+        user.information_level = 0
+        user.information_sent_at = None
     db.session.commit()
 
 
@@ -266,13 +272,14 @@ def get_inactive_users_to_inform():
 
     update_reactivated_users(first_mail_deadline)
 
-    never_informed_users = db.session.scalars(
-        db.select(User).where(User.information_level == 0)
-    ).all()
     users = [
         (user, EMAIL_DELAYS[0], 1)
-        for user in never_informed_users
-        if get_user_effective_activity(user) <= first_mail_deadline
+        for user in db.session.scalars(
+            db.select(User).where(
+                User.information_level == 0,
+                ~user_used_since(first_mail_deadline),
+            )
+        ).all()
     ]
     users += get_entities_due_for_next_mail(User, now)
 

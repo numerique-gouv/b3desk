@@ -516,6 +516,34 @@ def test_inform_user_before_account_deletion(
     assert get_inactive_users_to_inform() == []
 
 
+def test_inform_user_before_account_deletion_for_never_connected_users(
+    app,
+    client_app,
+    time_machine,
+    user,
+    user_2,
+    meeting_2_user_2,
+):
+    """Test that users who never connected are selected on their creation date."""
+    test_date = datetime.datetime(2024, 1, 1)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+
+    user.last_connection_utc_datetime = None
+    user.created_at = test_date - inactivity_period
+    # same profile, but owns a meeting created today: activity comes from it
+    user_2.last_connection_utc_datetime = None
+    user_2.created_at = test_date - inactivity_period
+    meeting_2_user_2.last_connection_utc_datetime = None
+    meeting_2_user_2.created_at = test_date
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+
+    assert get_inactive_users_to_inform() == [(user, DELAY_FOR_FIRST_EMAIL, 1)]
+
+
 def test_inform_user_before_account_deletion_with_recently_used_meeting(
     app,
     client_app,

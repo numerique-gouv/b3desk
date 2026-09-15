@@ -13,6 +13,7 @@
 from datetime import timedelta
 
 from sqlalchemy import and_
+from sqlalchemy import func
 
 from b3desk.utils.mailing import DELAY_FOR_THIRD_EMAIL
 from b3desk.utils.mailing import EMAIL_DELAYS
@@ -23,6 +24,16 @@ from . import db
 def compute_first_mail_deadline(now, inactivity_period):
     """Activity older than this deadline means the first warning mail is due."""
     return now - inactivity_period + timedelta(days=EMAIL_DELAYS[0])
+
+
+def last_used(model):
+    """Return the entity's most recent use, falling back to its creation date.
+
+    Both models leave last_connection_utc_datetime NULL until first use, so
+    coalescing it with the non-nullable created_at keeps the expression free of
+    NULL, and therefore safe to negate.
+    """
+    return func.coalesce(model.last_connection_utc_datetime, model.created_at)
 
 
 def ready_for_final_deletion(model, now):
