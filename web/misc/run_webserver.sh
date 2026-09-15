@@ -3,4 +3,4 @@
 # DB Migration
 flask db upgrade &>> /var/log/flask-migrate.log
 
-gunicorn --chdir /opt/bbb-visio --bind 0.0.0.0:5000 --workers "${WEB_CONCURRENCY:-4}" --log-level info --access-logfile /var/log/gunicorn-access.log --error-logfile /var/log/gunicorn-error.log wsgi:app
+gunicorn --config /opt/bbb-visio/gunicorn.conf.py wsgi:app
