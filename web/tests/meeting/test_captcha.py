@@ -221,6 +221,31 @@ def test_captchetat_service_status_with_no_token(
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captchetat_service_status_but_captchetat_is_down(
+    access_token, client_app, mocker, caplog
+):
+    """Test that captchetat service status reports an error when captchetat is unreachable."""
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", side_effect=requests.exceptions.ConnectionError())
+    assert captchetat_service_status() != "UP"
+    assert "Network issue during connection to captchetat" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_home_when_captchetat_is_unreachable(access_token, client_app, mocker):
+    """Test that the home page hides the captcha when captchetat is unreachable."""
+    client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
+    access_token.return_value = "valid-access-token"
+    mocker.patch("requests.get", side_effect=requests.exceptions.ConnectionError())
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    response = client_app.get("/home", status=200)
+    response.mustcontain("window.shouldDisplayCaptcha = false")
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
 @mock.patch("b3desk.endpoints.captcha.captchetat_service_status")
 @mock.patch("b3desk.endpoints.join.captcha_validation")
 def test_join_with_visio_code_and_captcha_needed(

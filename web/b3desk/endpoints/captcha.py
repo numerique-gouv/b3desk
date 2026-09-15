@@ -107,9 +107,15 @@ def captchetat_service_status():
         captcha_error("Invalid credentials.")
         return {"success": False}, 403
 
-    response = requests.get(
-        f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    data = response.json()
+    try:
+        response = requests.get(
+            f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        data = response.json()
+    except requests.RequestException as exc:
+        message = f"Network issue during connection to captchetat {exc}"
+        captcha_error(message)
+        return {"success": False}, 503
+
     return data["status"]
