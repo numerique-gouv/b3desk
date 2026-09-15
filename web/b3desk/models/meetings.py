@@ -173,7 +173,7 @@ class Meeting(db.Model):
     )
     meeting_access: Mapped[list[MeetingAccess]] = relationship(back_populates="meeting")
     last_connection_utc_datetime: Mapped[datetime | None]
-    is_shadow: Mapped[bool | None] = mapped_column(default=False)
+    is_shadow: Mapped[bool] = mapped_column(default=False)
     information_level: Mapped[int] = mapped_column(default=0)
     information_sent_at: Mapped[datetime | None]
     visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
