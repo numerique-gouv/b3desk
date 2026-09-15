@@ -2,7 +2,11 @@
     {% trans %}Bonjour{% endtrans %} {{ user.fullname }},
     <br/>
     <br/>
-    {% trans %}Votre compte est inactif et sera supprimé {% endtrans %}{% if delay==1 %}{% trans %}dans 24h{% endtrans %}{% else %}{% trans %}dans {{ delay }} jours{% endtrans %}{% endif %}.
+    {% trans trimmed count=delay %}
+        Votre compte est inactif et sera supprimé dans {{ count }} jour.
+        {% pluralize %}
+        Votre compte est inactif et sera supprimé dans {{ count }} jours.
+    {% endtrans %}
     <br/>
     <br/>
     {% trans %}Vos salles de réunion et vos fichiers associés seront supprimés également.{% endtrans %}
