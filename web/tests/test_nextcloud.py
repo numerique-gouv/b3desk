@@ -2,11 +2,14 @@ import shutil
 from datetime import date
 from pathlib import Path
 
+import httpx2
 from b3desk import cache
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from b3desk.nextcloud import WebDAVClient
 from b3desk.nextcloud import credentials_breaker
+from b3desk.nextcloud import get_secondary_identity_provider_users_from_email
+from b3desk.nextcloud import get_user_nc_credentials
 from b3desk.nextcloud import is_auth_error
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.nextcloud import is_nextcloud_unavailable_error
@@ -434,3 +437,40 @@ def test_webdav_client_with_spaces_in_username(client_app, webdav_server):
         assert info["name"] == "test.txt"
     finally:
         shutil.rmtree(user_dir)
+
+
+def test_get_secondary_identity_provider_users_from_email(client_app, httpx2_mock):
+    """Users matching an email are queried on the secondary identity provider."""
+    route = httpx2_mock.route(method="GET").respond(200, json=[{"username": "alice"}])
+
+    with client_app.app.app_context():
+        response = get_secondary_identity_provider_users_from_email(
+            "alice@test", "access-token"
+        )
+
+    assert response.json() == [{"username": "alice"}]
+    assert route.calls.last.request.headers["authorization"] == "Bearer access-token"
+
+
+def test_get_user_nc_credentials_ignores_identity_provider_error(
+    client_app, user, mocker
+):
+    """A failing secondary identity provider falls back on the preferred username."""
+    client_app.app.config["SECONDARY_IDENTITY_PROVIDER_ENABLED"] = True
+    mocker.patch(
+        "b3desk.nextcloud.get_secondary_identity_provider_id_from_email",
+        side_effect=httpx2.HTTPStatusError(
+            "error",
+            request=httpx2.Request("GET", "http://test"),
+            response=httpx2.Response(500),
+        ),
+    )
+    request = mocker.patch(
+        "b3desk.nextcloud.make_nextcloud_credentials_request",
+        return_value={"nctoken": None, "nclocator": None, "nclogin": None},
+    )
+
+    with client_app.app.app_context():
+        get_user_nc_credentials(user)
+
+    assert request.call_args.args[1] == {"username": user.preferred_username}

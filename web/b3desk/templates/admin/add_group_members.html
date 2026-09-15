@@ -20,7 +20,7 @@
             {% endtrans %}
         </p>
     {% endif %}
-    <form class="fr-search-bar", id="userSearchForm", name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
+    <form class="fr-search-bar" id="userSearchForm" name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>

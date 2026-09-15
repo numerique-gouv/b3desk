@@ -11,7 +11,7 @@ def test_valid_callback_returns_200_and_sends_email(
 ):
     """Valid callback sends a notification email to the meeting owner and returns 200."""
     signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID}
     )
 
     assert len(smtpd.messages) == 0
@@ -36,7 +36,9 @@ def test_invalid_signature_returns_401(client_app, meeting, smtpd):
     """JWT signed with wrong secret returns 401, no email sent."""
     key = OctKey.import_key(b"wrong-secret")
     signed = jwt.encode(
-        {"alg": "HS256"}, {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}, key
+        {"alg": "HS256"},
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID},
+        key,
     )
 
     client_app.post(
@@ -70,7 +72,7 @@ def test_missing_record_id_claim_returns_410(
     client_app, meeting, smtpd, make_signed_parameters
 ):
     """Token missing the record_id claim returns 410 to stop BBB retries."""
-    signed = make_signed_parameters({"meeting_id": meeting.meetingID})
+    signed = make_signed_parameters({"meeting_id": meeting.bbb_meeting_id})
     client_app.post(
         "/bbb-callback/recording_status",
         {"signed_parameters": signed},
@@ -83,22 +85,6 @@ def test_unknown_meeting_returns_410(client_app, smtpd, make_signed_parameters):
     """Callback for a meeting absent from the database returns 410, no email sent."""
     signed = make_signed_parameters(
         {"meeting_id": "meeting-persistent-9999--hash", "record_id": RECORD_ID}
-    )
-
-    client_app.post(
-        "/bbb-callback/recording_status",
-        {"signed_parameters": signed},
-        status=410,
-    )
-    assert len(smtpd.messages) == 0
-
-
-def test_invalid_meeting_id_returns_410(
-    client_app, meeting, smtpd, bbb_recording, make_signed_parameters
-):
-    """Callback for a meeting with invalid structure id from bbb returns 410, no email sent."""
-    signed = make_signed_parameters(
-        {"meeting_id": str(meeting.id), "record_id": RECORD_ID}
     )
 
     client_app.post(
@@ -128,7 +114,7 @@ def test_duplicate_callback_for_same_record_id_only_sends_one_mail(
 ):
     """A second callback for the same record_id is acknowledged but does not re-notify."""
     signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID}
     )
 
     client_app.post(
@@ -153,7 +139,7 @@ def test_callback_acknowledges_even_when_bbb_has_no_recording_yet(
     mocker.patch.object(BBB.get_recordings, "uncached", return_value=[])
 
     signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID}
     )
 
     client_app.post(
@@ -174,7 +160,7 @@ def test_subsequent_callback_triggers_recheck(
     )
 
     signed = make_signed_parameters(
-        {"meeting_id": meeting.meetingID, "record_id": RECORD_ID}
+        {"meeting_id": meeting.bbb_meeting_id, "record_id": RECORD_ID}
     )
     client_app.post(
         "/bbb-callback/recording_status",

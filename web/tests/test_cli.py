@@ -48,18 +48,18 @@ def test_populate(cli_runner, client_app):
         bp.cli, ["populate", "--users", "5", "--meetings", "8", "--seed", "42"]
     )
     assert res.exit_code == 0, res.output
-    assert db.session.query(User).count() == 5
-    assert db.session.query(Meeting).count() == 8
-    assert db.session.query(Group).count() == 5
+    assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 5
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 8
+    assert db.session.scalar(db.select(db.func.count()).select_from(Group)) == 5
 
 
 def test_populate_without_users(cli_runner, client_app):
     """Test CLI populate creates no meeting and no group when asked for zero user."""
     res = cli_runner.invoke(bp.cli, ["populate", "--users", "0", "--meetings", "5"])
     assert res.exit_code == 0, res.output
-    assert db.session.query(User).count() == 0
-    assert db.session.query(Meeting).count() == 0
-    assert db.session.query(Group).count() == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(Group)) == 0
 
 
 def test_populate_refuses_outside_development(cli_runner, client_app, app, monkeypatch):
@@ -69,4 +69,4 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     res = cli_runner.invoke(bp.cli, ["populate", "--users", "1", "--meetings", "1"])
     assert res.exit_code != 0
     assert "only available in development" in res.output
-    assert db.session.query(User).count() == 0
+    assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0

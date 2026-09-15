@@ -6,7 +6,7 @@
     {'href': url_for('admin.home'), 'label': _('Menu Admin')},
     {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
     ]) }}
-    <form class="fr-search-bar", id="meetingSearchForm", name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="get">
+    <form class="fr-search-bar" id="meetingSearchForm" name="search_meeting" role="search" action="{{ url_for("admin.manage_meetings") }}" method="get">
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
         <button title="{% trans %}Rechercher une réunion{% endtrans %}" type="submit" class="fr-btn"></button>

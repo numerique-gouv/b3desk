@@ -10,18 +10,19 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 import logging
+from datetime import UTC
 from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
 from urllib.parse import urlparse
-from xml.etree import ElementTree
 
-import requests
+import httpx2
+from defusedxml import ElementTree
+from defusedxml.common import DefusedXmlException
 from flask import current_app
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
 from b3desk.tasks import background_upload
+from b3desk.utils import http_client
 
 from .. import BigBlueButtonUnavailable
 from .. import cache
@@ -32,7 +33,7 @@ logger = logging.getLogger("bbb")
 
 def cache_key(func, caller, prepped, *args, **kwargs):
     """Generate a cache key based on the request URL."""
-    return prepped.url
+    return str(prepped.url)
 
 
 def parse_ai_summary_playback(format_element):
@@ -59,7 +60,7 @@ def parse_ai_summary_playback(format_element):
 
 def caching_exclusion(func, caller, prepped, *args, **kwargs):
     """Only read-only methods should be cached."""
-    url = urlparse(prepped.url)
+    url = urlparse(str(prepped.url))
     endpoint_name = url.path.split("/")[-1]
     return prepped.method != "GET" or endpoint_name not in (
         "isMeetingRunning",
@@ -85,27 +86,18 @@ class BBB:
 
         Raises BigBlueButtonUnavailable on network/parsing errors.
         """
-        session = requests.Session()
-        if current_app.debug:  # pragma: no cover
-            session.verify = False
-
         logger.debug(
             "BBB API request method:%s url:%s data:%s",
             request.method,
             request.url,
-            request.body,
+            request.content,
         )
         try:
-            response = session.send(
-                request,
-                timeout=timedelta(
-                    seconds=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"]
-                ).total_seconds(),
-            )
-        except requests.Timeout as err:
+            response = http_client().send(request)
+        except httpx2.TimeoutException as err:
             logger.warning("BBB API timeout error %s", err)
             raise BigBlueButtonUnavailable() from err
-        except requests.exceptions.ConnectionError as err:
+        except httpx2.ConnectError as err:
             logger.warning("BBB API connection error %s", err)
             raise BigBlueButtonUnavailable() from err
 
@@ -113,7 +105,7 @@ class BBB:
 
         try:
             root = ElementTree.fromstring(response.content)
-        except ElementTree.ParseError as err:
+        except (ElementTree.ParseError, DefusedXmlException) as err:
             logger.warning("BBB API XML parse error %s", err)
             raise BigBlueButtonUnavailable() from err
 
@@ -126,22 +118,22 @@ class BBB:
 
     def bbb_request(self, action, method="GET", **kwargs):
         """Prepare a BBB API request with authentication checksum."""
-        request = requests.Request(
-            method=method,
-            url="{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+        request = http_client().build_request(
+            method,
+            "{}/{}".format(current_app.config["BIGBLUEBUTTON_ENDPOINT"], action),
+            timeout=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"],
             **kwargs,
         )
-        prepped = request.prepare()
         bigbluebutton_secret = current_app.config["BIGBLUEBUTTON_SECRET"]
         secret = "{}{}".format(
-            prepped.url.replace("?", "").replace(
-                f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/", ""
-            ),
+            str(request.url)
+            .replace("?", "")
+            .replace(f"{current_app.config['BIGBLUEBUTTON_ENDPOINT']}/", ""),
             bigbluebutton_secret,
         )
         checksum = hashlib.sha1(secret.encode("utf-8")).hexdigest()
-        prepped.prepare_url(prepped.url, params={"checksum": checksum})
-        return prepped
+        request.url = request.url.copy_merge_params({"checksum": checksum})
+        return request
 
     @cache.memoize(
         unless=caching_exclusion,
@@ -343,10 +335,10 @@ class BBB:
                 data["name"] = name.text if name is not None else None
                 data["participants"] = int(recording.find("participants").text)
                 data["start_date"] = datetime.fromtimestamp(
-                    int(recording.find("startTime").text) / 1000.0, tz=timezone.utc
+                    int(recording.find("startTime").text) / 1000.0, tz=UTC
                 ).replace(microsecond=0)
                 data["end_date"] = datetime.fromtimestamp(
-                    int(recording.find("endTime").text) / 1000.0, tz=timezone.utc
+                    int(recording.find("endTime").text) / 1000.0, tz=UTC
                 ).replace(microsecond=0)
 
                 data["playbacks"] = {}
@@ -391,6 +383,21 @@ class BBB:
         except (AttributeError, TypeError, ValueError) as exception:
             logger.error(exception)
         return sorted(result, key=lambda x: x["start_date"], reverse=True)
+
+    def get_recording(self, recording_id):
+        """Return this meeting recording matching the identifier, if any.
+
+        BBB recording identifiers are global, so callers must use this to check
+        that a user submitted identifier really belongs to the meeting at hand.
+        """
+        return next(
+            (
+                recording
+                for recording in self.get_recordings()
+                if recording["recordID"] == recording_id
+            ),
+            None,
+        )
 
     def update_recordings(self, recording_ids, metadata):
         """Update the recordings of a meeting.
@@ -471,4 +478,4 @@ class BBB:
         request = self.bbb_request(
             "insertDocument", params={"meetingID": self.meeting_id}
         )
-        background_upload.delay(request.url, payload)
+        background_upload.delay(str(request.url), payload)

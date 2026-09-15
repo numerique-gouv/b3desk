@@ -75,9 +75,9 @@ def meeting_access_required(level=None):
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:
-                access = MeetingAccess.query.filter_by(
-                    user_id=g.user.id, meeting_id=meeting.id
-                ).one_or_none()
+                access = db.session.get(
+                    MeetingAccess, {"user_id": g.user.id, "meeting_id": meeting.id}
+                )
                 if access and access.level >= level:
                     return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 

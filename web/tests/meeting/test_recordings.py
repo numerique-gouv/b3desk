@@ -1,15 +1,15 @@
 import datetime
-from datetime import timezone
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
-from xml.etree import ElementTree
 
 import pytest
+import respx
 from b3desk.commands import bp
+from defusedxml import ElementTree
 
 
 @pytest.fixture
-def bbb_getRecordings_response(mocker):
+def bbb_getRecordings_response(httpx2_mock):
     """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
 
     class Response:
@@ -130,11 +130,12 @@ def bbb_getRecordings_response(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_missing_recordID(mocker):
+def bbb_getRecordings_missing_recordID(httpx2_mock):
     """Fixture with missing recordID to trigger AttributeError."""
 
     class Response:
@@ -162,11 +163,12 @@ def bbb_getRecordings_missing_recordID(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_ai_summary(mocker):
+def bbb_getRecordings_ai_summary(httpx2_mock):
     """Fixture providing a getRecordings response that includes an ai-summary format."""
 
     class Response:
@@ -212,7 +214,47 @@ def bbb_getRecordings_ai_summary(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
+
+
+@pytest.fixture
+def bbb_getRecordings_per_meeting(httpx2_mock):
+    """Fixture that gives each meeting one recording of its own."""
+
+    def send(request):
+        meeting_id = parse_qs(urlparse(str(request.url)).query).get("meetingID", [""])[
+            0
+        ]
+
+        class Response:
+            content = f"""
+<response>
+  <returncode>SUCCESS</returncode>
+  <recordings>
+    <recording>
+      <recordID>{meeting_id}-recording</recordID>
+      <metadata>
+        <name>Recording</name>
+      </metadata>
+      <participants>1</participants>
+      <startTime>1530718721124</startTime>
+      <endTime>1530718810456</endTime>
+      <playback>
+        <format>
+          <type>presentation</type>
+          <url>https://bbb.test/playback/{meeting_id}</url>
+        </format>
+      </playback>
+    </recording>
+  </recordings>
+</response>
+"""
+
+        return respx.MockResponse(200, content=Response.content)
+
+    httpx2_mock.route().mock(side_effect=send)
+    yield httpx2_mock
 
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
@@ -222,8 +264,8 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(meeting.meetingID).get_recordings()
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording = recordings[0]
@@ -251,7 +293,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
         == "https://bbb.test/presentation/ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124/presentation/d2d9a672040fbde2a47a10bf6c37b6a4b5ae187f-1530718721134/thumbnails/thumb-1.png"
     )
     assert first_recording["start_date"] == datetime.datetime(
-        2018, 7, 4, 15, 38, 41, tzinfo=timezone.utc
+        2018, 7, 4, 15, 38, 41, tzinfo=datetime.UTC
     )
     second_recording = recordings[1]
     assert second_recording["recordID"] != first_recording["recordID"]
@@ -267,22 +309,26 @@ def test_get_recordings_with_missing_recordID(
     """Test that exception is caught when recordID is missing."""
     from b3desk.models.bbb import BBB
 
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert isinstance(recordings, list)
     assert len(recordings) == 0
     assert "'NoneType' object has no attribute 'text'" in caplog.text
 
 
-def test_update_recording_name(client_app, authenticated_user, meeting, bbb_response):
+def test_update_recording_name(
+    client_app, authenticated_user, meeting, bbb_getRecordings_response
+):
     """Test that recording name can be updated via BBB API."""
+    recording_id = meeting.bbb.get_recordings()[0]["recordID"]
+
     response = client_app.post(
-        f"/meeting/{meeting.id}/recordings/recording_id",
+        f"/meeting/{meeting.id}/recordings/{recording_id}",
         {"name": "First recording"},
         status=302,
     )
 
-    bbb_url = bbb_response.call_args.args[0].url
+    bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
     )
@@ -290,9 +336,37 @@ def test_update_recording_name(client_app, authenticated_user, meeting, bbb_resp
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     assert bbb_params["meta_name"] == "First recording"
-    assert bbb_params["recordID"] == "recording_id"
+    assert bbb_params["recordID"] == recording_id
 
     assert f"meeting/recordings/{meeting.id}" in response.location
+
+
+def test_update_name_of_an_unknown_recording(
+    client_app, authenticated_user, meeting, bbb_getRecordings_response
+):
+    """Test that an identifier unknown to the meeting is rejected."""
+    client_app.post(
+        f"/meeting/{meeting.id}/recordings/unknown-recording",
+        {"name": "First recording"},
+        status=404,
+    )
+
+
+def test_update_name_of_a_recording_of_another_meeting(
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2_user_2,
+    bbb_getRecordings_per_meeting,
+):
+    """Test that recording identifiers cannot be borrowed from another meeting."""
+    other_recording_id = meeting_2_user_2.bbb.get_recordings()[0]["recordID"]
+
+    client_app.post(
+        f"/meeting/{meeting.id}/recordings/{other_recording_id}",
+        {"name": "First recording"},
+        status=404,
+    )
 
 
 def test_delete_recordings(
@@ -303,8 +377,8 @@ def test_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
-    recordings = BBB(meeting.meetingID).get_recordings()
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
     first_recording_id = recordings[0]["recordID"]
@@ -334,7 +408,7 @@ def test_delegate_can_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = meeting_1_user_2.bbb.get_recordings()
 
     assert len(recordings) == 2
@@ -352,6 +426,49 @@ def test_delegate_can_delete_recordings(
     assert f"/meeting/recordings/{meeting_1_user_2.id}" in response.location
 
 
+def test_delete_unknown_recording(
+    client_app, authenticated_user, meeting, bbb_getRecordings_response
+):
+    """Test that an identifier unknown to the meeting is rejected."""
+    client_app.post(
+        f"/meeting/{meeting.id}/video/delete",
+        {"recordID": "unknown-recording"},
+        status=404,
+    )
+
+
+def test_delete_several_recordings_at_once(
+    client_app, authenticated_user, meeting, bbb_getRecordings_response
+):
+    """Test that the comma separated form the BBB API accepts is rejected."""
+    recording_ids = [
+        recording["recordID"] for recording in meeting.bbb.get_recordings()
+    ]
+
+    client_app.post(
+        f"/meeting/{meeting.id}/video/delete",
+        {"recordID": ",".join(recording_ids)},
+        status=404,
+    )
+
+
+def test_delete_recording_of_another_meeting(
+    client_app,
+    authenticated_user,
+    meeting,
+    meeting_2_user_2,
+    bbb_getRecordings_per_meeting,
+):
+    """Test that recording identifiers cannot be borrowed from another meeting."""
+    other_recording_id = meeting_2_user_2.bbb.get_recordings()[0]["recordID"]
+
+    client_app.post(
+        f"/meeting/{meeting.id}/video/delete",
+        {"recordID": other_recording_id},
+        status=404,
+    )
+
+
 def test_open_recordings_page(
     client_app,
     authenticated_user,
@@ -366,7 +483,7 @@ def test_open_recordings_page(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{meeting.id}")
@@ -377,7 +494,7 @@ def test_open_recordings_page(
         )
         == 2
     )
-    assert len(BBB(meeting.meetingID).get_recordings()) == 2
+    assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
 
 
 def test_parse_ai_summary_playback():
@@ -429,7 +546,7 @@ def test_get_recordings_ai_summary(mocker, meeting, bbb_getRecordings_ai_summary
     """ai-summary playback exposes the summary HTML/PDF/Markdown URLs from <urls>."""
     from b3desk.models.bbb import BBB
 
-    recordings = BBB(meeting.meetingID).get_recordings()
+    recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 1
     summary = recordings[0]["playbacks"]["ai-summary"]

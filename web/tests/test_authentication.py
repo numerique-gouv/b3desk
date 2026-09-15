@@ -14,7 +14,7 @@ def test_user_authentication(
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
 
-    assert not User.query.all()
+    assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
     res = client_app.get("/home")
     res.mustcontain("S’identifier")
@@ -55,7 +55,7 @@ def test_lasuite_user_authentication(
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
 
-    assert not User.query.all()
+    assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
     res = client_app.get("/home")
     res.mustcontain("Se connecter ou créer un compte")
