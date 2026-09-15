@@ -128,7 +128,7 @@ def send_mail_before_meeting_deletion(meeting, delay):
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
-    msg["Subject"] = _("Information avant suppression : {meeting_name}").format(
+    msg["Subject"] = _("Information avant suppression : {meeting_name}").format(
         meeting_name=meeting.name
     )
     msg["From"] = smtp["from_email"]
@@ -149,7 +149,7 @@ def send_mail_before_user_deletion(user, delay):
     }
     text = render_template(f"meeting/mailto/{body_file}.txt", **context)
     html = render_template(f"meeting/mailto/{body_file}.html", **context)
-    msg["Subject"] = _("Information avant suppression : {user_name}").format(
+    msg["Subject"] = _("Information avant suppression : {user_name}").format(
         user_name=user.fullname
     )
     msg["From"] = smtp["from_email"]

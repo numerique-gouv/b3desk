@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-15 16:52+0200\n"
+"POT-Creation-Date: 2026-09-15 16:57+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -3657,7 +3657,6 @@ msgstr ""
 "கோப்புகளை நீங்கள் இப்போது பார்க்கலாம் மற்றும் நிர்வகிக்கலாம்."
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
-#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:18
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr "<a href=\"%(welcome_url)s\">உங்கள் ச்பேசுக்கு</a> செல்லவும்."
@@ -3721,12 +3720,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:15
 #, python-format
 msgid ""
-"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
 "et lancez la réunion."
-msgstr "<a href=\"%(welcome_url)s\">உங்கள் ச்பேசுக்கு</a> செல்லவும்."
+msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:11
-msgid "Rendez vous simplement sur votre espace et lancez la réunion :"
+msgid "Rendez-vous simplement sur votre espace et lancez la réunion :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
@@ -3747,8 +3746,13 @@ msgstr ""
 msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
 msgstr ""
 
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:18
+#, python-format
+msgid "Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr ""
+
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:13
-msgid "Rendez vous simplement sur votre espace :"
+msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -3974,12 +3978,12 @@ msgstr "{name} க்கான உங்கள் பதிவு"
 
 #: web/b3desk/utils/mailing.py:131
 #, python-brace-format
-msgid "Information avant suppression : {meeting_name}"
+msgid "Information avant suppression : {meeting_name}"
 msgstr ""
 
 #: web/b3desk/utils/mailing.py:152
 #, python-brace-format
-msgid "Information avant suppression : {user_name}"
+msgid "Information avant suppression : {user_name}"
 msgstr ""
 
 #~ msgid "Identifiant"
@@ -4004,5 +4008,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Votre compte est inactif et sera supprimé "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Rendez vous simplement sur <a "
+#~ "href=\"%(welcome_url)s\">votre espace</a> et lancez"
+#~ " la réunion."
+#~ msgstr "<a href=\"%(welcome_url)s\">உங்கள் ச்பேசுக்கு</a> செல்லவும்."
+
+#~ msgid "Rendez vous simplement sur votre espace et lancez la réunion :"
+#~ msgstr ""
+
+#~ msgid "Rendez vous simplement sur votre espace :"
+#~ msgstr ""
+
+#~ msgid "Information avant suppression : {meeting_name}"
+#~ msgstr ""
+
+#~ msgid "Information avant suppression : {user_name}"
 #~ msgstr ""
 

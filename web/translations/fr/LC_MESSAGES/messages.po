@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-15 16:52+0200\n"
+"POT-Creation-Date: 2026-09-15 16:57+0200\n"
 "PO-Revision-Date: 2022-04-29 15:10+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -3131,7 +3131,6 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.html:11
-#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:18
 #, python-format
 msgid "Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
 msgstr ""
@@ -3195,12 +3194,12 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:15
 #, python-format
 msgid ""
-"Rendez vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
 "et lancez la réunion."
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:11
-msgid "Rendez vous simplement sur votre espace et lancez la réunion :"
+msgid "Rendez-vous simplement sur votre espace et lancez la réunion :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
@@ -3221,8 +3220,13 @@ msgstr ""
 msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
 msgstr ""
 
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:18
+#, python-format
+msgid "Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr ""
+
 #: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:13
-msgid "Rendez vous simplement sur votre espace :"
+msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -3438,12 +3442,12 @@ msgstr ""
 
 #: web/b3desk/utils/mailing.py:131
 #, python-brace-format
-msgid "Information avant suppression : {meeting_name}"
+msgid "Information avant suppression : {meeting_name}"
 msgstr ""
 
 #: web/b3desk/utils/mailing.py:152
 #, python-brace-format
-msgid "Information avant suppression : {user_name}"
+msgid "Information avant suppression : {user_name}"
 msgstr ""
 
 #~ msgid ""
@@ -7187,5 +7191,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Votre compte est inactif et sera supprimé "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Rendez vous simplement sur <a "
+#~ "href=\"%(welcome_url)s\">votre espace</a> et lancez"
+#~ " la réunion."
+#~ msgstr ""
+
+#~ msgid "Rendez vous simplement sur votre espace et lancez la réunion :"
+#~ msgstr ""
+
+#~ msgid "Rendez vous simplement sur votre espace :"
+#~ msgstr ""
+
+#~ msgid "Information avant suppression : {meeting_name}"
+#~ msgstr ""
+
+#~ msgid "Information avant suppression : {user_name}"
 #~ msgstr ""
 
