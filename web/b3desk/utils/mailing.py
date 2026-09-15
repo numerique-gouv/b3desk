@@ -2,6 +2,7 @@ import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 
+import stamina
 from flask import current_app
 from flask import render_template
 from flask import url_for
@@ -158,19 +159,35 @@ def send_mail_before_user_deletion(user, delay):
     send_email(msg, text, html, smtp)
 
 
+@stamina.retry(on=(smtplib.SMTPException, OSError), attempts=3, timeout=10)
+def _deliver(msg, smtp):
+    """Open an SMTP connection and hand the message over.
+
+    Kept apart from send_email so that a retry replays the delivery alone: the
+    message body is built once, and replaying add_alternative would stack a
+    second HTML part onto the same message.
+    """
+    connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
+    with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+        if smtp["starttls"]:
+            smtp_connect.starttls()
+        if smtp["username"]:
+            smtp_connect.login(smtp["username"], smtp["password"])
+        smtp_connect.send_message(msg)
+
+
 def send_email(msg, text, html, smtp):
+    """Send the message, logging delivery failures rather than raising them.
+
+    Delivery cannot be guaranteed anyway, since a relay may accept a message and
+    bounce it later, so callers carry on: the warning sequence tracks attempts,
+    not receipts, and a dead address never blocks a deletion.
+    """
     msg.set_content(text)
     msg.add_alternative(html, subtype="html")
 
-    connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
     try:
-        with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
-            if smtp["starttls"]:
-                smtp_connect.starttls()
-            if smtp["username"]:
-                smtp_connect.login(smtp["username"], smtp["password"])
-            smtp_connect.send_message(msg)
-        current_app.logger.info("Email sent to %s", msg["To"])
+        _deliver(msg, smtp)
     except (smtplib.SMTPException, OSError) as e:
         current_app.logger.error(
             "Failed to send email to %s via SMTP host %s: %s",
@@ -178,3 +195,6 @@ def send_email(msg, text, html, smtp):
             smtp["host"],
             e,
         )
+        return
+
+    current_app.logger.info("Email sent to %s", msg["To"])

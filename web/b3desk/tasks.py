@@ -128,9 +128,15 @@ def send_recording_notification(
     ):
         return
 
-    send_available_recording_notification_mail(
-        meeting, playbacks, recording_name, recording_start
-    )
+    try:
+        send_available_recording_notification_mail(
+            meeting, playbacks, recording_name, recording_start
+        )
+    except Exception:
+        # Release the claim, otherwise the notification stays unsent until the
+        # cache entry expires and no later attempt can take it over.
+        cache.delete(recording_notified_key(bbb_recording_id))
+        raise
 
 
 @shared_task(name="delete-old-meetings")

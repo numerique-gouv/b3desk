@@ -37,6 +37,7 @@ dependencies = [
     "tzdata>=2026.3",
     "webdavclient3==3.14.6",
     "httpx2>=2.13.0",
+    "stamina>=26.1.0",
 ]
 
 [tool.uv]

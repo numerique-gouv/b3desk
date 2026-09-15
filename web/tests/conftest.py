@@ -13,6 +13,7 @@ import portpicker
 import psycopg
 import pytest
 import respx
+import stamina
 from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
@@ -29,6 +30,13 @@ from tests.html_validation import ValidatingTestApp
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
 TRANSLATIONS_DIR = str(Path(__file__).parent.parent / "translations")
+
+
+@pytest.fixture(autouse=True)
+def no_retry_delay():
+    """Run stamina retries without their backoff, and only once."""
+    with stamina.set_testing(True):
+        yield
 
 
 @pytest.fixture(autouse=True)

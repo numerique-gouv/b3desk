@@ -240,7 +240,7 @@ def user_used_since(deadline):
 
     return or_(
         last_used(User) > deadline,
-        db.select(Meeting)
+        db.select(Meeting.id)
         .where(Meeting.owner_id == User.id, last_used(Meeting) > deadline)
         .exists(),
     )

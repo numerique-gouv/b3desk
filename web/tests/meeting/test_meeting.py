@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import smtplib
 import time
 from datetime import date
 from pathlib import Path
@@ -1806,6 +1807,37 @@ def test_inform_owner_before_meeting_deletion(
     assert shadow_meeting.information_level == 0
     # already informed at their new level, nothing left to send today
     assert get_inactive_meetings_to_inform() == []
+
+
+def test_inform_owner_before_meeting_deletion_carries_on_when_delivery_fails(
+    app,
+    client_app,
+    mocker,
+    time_machine,
+    meeting,
+    user,
+    smtpd,
+    caplog,
+):
+    """Test that an undelivered warning mail is logged but still advances the sequence."""
+    test_date = datetime.datetime(2024, 1, 1)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+    meeting.last_connection_utc_datetime = test_date - inactivity_period
+    meeting.created_at = test_date - inactivity_period
+    db.session.commit()
+
+    mocker.patch("smtplib.SMTP", side_effect=smtplib.SMTPException("boom"))
+
+    time_machine.move_to(test_date)
+    inform_owner_before_meeting_deletion()
+
+    assert len(smtpd.messages) == 0
+    assert "Failed to send email to" in caplog.text
+    # delivery is never guaranteed, so the sequence tracks attempts, not receipts
+    assert meeting.information_level == 1
+    assert meeting.information_sent_at is not None
 
 
 def test_inform_owner_before_meeting_deletion_for_unused_meetings(
