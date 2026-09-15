@@ -151,13 +151,21 @@ def delete_old_meetings():
 
     for meeting in meetings_to_delete:
         try:
-            success, _ = clean_db_and_delete_meeting(meeting, force=True)
+            success, data = clean_db_and_delete_meeting(meeting, force=True)
             if success:
                 logger.info(
                     "Celery cron task: %s id:%s named:%s deleted",
                     "shadow_meeting" if meeting.is_shadow else "meeting",
                     meeting.id,
                     meeting.name,
+                )
+            else:
+                logger.error(
+                    "Celery cron task: %s id:%s named:%s not deleted: %s",
+                    "shadow_meeting" if meeting.is_shadow else "meeting",
+                    meeting.id,
+                    meeting.name,
+                    data,
                 )
         except Exception:
             db.session.rollback()
@@ -227,13 +235,23 @@ def delete_old_users():
         )
     for user in users_to_delete:
         try:
-            clean_db_and_delete_user(user, force=True)
-            logger.info(
-                "Celery cron task: user %s, id %s, email %s, deleted",
-                user.fullname,
-                user.id,
-                user.email,
-            )
+            success, data = clean_db_and_delete_user(user, force=True)
+            if success:
+                logger.info(
+                    "Celery cron task: user %s, id %s, email %s, deleted",
+                    user.fullname,
+                    user.id,
+                    user.email,
+                )
+            else:
+                logger.error(
+                    "Celery cron task: user %s, id %s, email %s, not deleted, "
+                    "one of their meetings could not be removed: %s",
+                    user.fullname,
+                    user.id,
+                    user.email,
+                    data,
+                )
         except Exception:
             db.session.rollback()
             logger.exception(

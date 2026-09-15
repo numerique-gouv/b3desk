@@ -203,22 +203,28 @@ def get_inactive_users_to_delete():
 
 
 def clean_db_and_delete_user(user, force=False):
+    """Delete a user and everything they own, and report whether it succeeded."""
     from b3desk.models.meetings import MeetingFiles
     from b3desk.models.meetings import clean_db_and_delete_meeting
+
+    for meeting in user.meetings:
+        success, data = clean_db_and_delete_meeting(meeting, force)
+        if not success:
+            db.session.rollback()
+            return False, data
 
     for meeting_file in db.session.scalars(
         db.select(MeetingFiles).where(MeetingFiles.owner_id == user.id)
     ):
         db.session.delete(meeting_file)
 
-    for meeting in user.meetings:
-        clean_db_and_delete_meeting(meeting, force)
-
     for access in user.user_meeting_access:
         db.session.delete(access)
 
     db.session.delete(user)
     db.session.commit()
+
+    return True, None
 
 
 def as_naive(value):

@@ -1669,6 +1669,35 @@ def test_delete_old_meetings_failure(
     assert "Celery cron task: meeting id:1 named:meeting not deleted" in caplog.text
 
 
+def test_delete_old_meetings_logs_unsuccessful_deletion(
+    app,
+    mocker,
+    client_app,
+    time_machine,
+    user,
+    meeting,
+    caplog,
+):
+    """Test that a deletion that did not succeed is logged."""
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+    meeting.information_level = 3
+    meeting.information_sent_at = datetime.datetime(2024, 1, 1)
+
+    db.session.commit()
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+
+    mocker.patch(
+        "b3desk.tasks.clean_db_and_delete_meeting",
+        return_value=(False, {"returncode": "FAILED"}),
+    )
+    delete_old_meetings()
+
+    assert user.meetings == [meeting]
+    assert "Celery cron task: meeting id:1 named:meeting not deleted" in caplog.text
+
+
 def test_delete_old_meetings_but_not_recent_meetings(
     app,
     client_app,

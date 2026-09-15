@@ -385,6 +385,53 @@ def test_delete_old_users_deletion_failure(app, client_app, user, mocker, caplog
     )
 
 
+def test_delete_old_users_when_a_meeting_cannot_be_deleted(
+    app,
+    client_app,
+    user,
+    user_2,
+    meeting,
+    meeting_1_user_2,
+    mocker,
+    caplog,
+    time_machine,
+):
+    """Test that a user whose meeting could not be deleted is kept, files included."""
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = datetime.datetime(2024, 1, 1)
+    meeting.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    meeting.created_at = datetime.datetime(2024, 1, 1)
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_1_user_2.id,
+        owner=user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    meeting_file_id = meeting_file.id
+
+    mocker.patch(
+        "b3desk.models.meetings.clean_db_and_delete_meeting",
+        return_value=(False, {"returncode": "FAILED"}),
+    )
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_users()
+
+    assert db.session.get(User, user.id)
+    assert db.session.get(Meeting, meeting.id)
+    assert db.session.get(MeetingFiles, meeting_file_id)
+    assert (
+        f"Celery cron task: user {user.fullname}, id {user.id}, email {user.email}, not deleted"
+        in caplog.text
+    )
+
+
 def test_inform_user_before_account_deletion_no_action(app, client_app, caplog):
     """Test the cron task logs when there is no user to inform."""
     inform_user_before_account_deletion()
