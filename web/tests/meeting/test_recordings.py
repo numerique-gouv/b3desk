@@ -3,12 +3,13 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+import respx
 from b3desk.commands import bp
 from defusedxml import ElementTree
 
 
 @pytest.fixture
-def bbb_getRecordings_response(mocker):
+def bbb_getRecordings_response(httpx2_mock):
     """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
 
     class Response:
@@ -129,11 +130,12 @@ def bbb_getRecordings_response(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_missing_recordID(mocker):
+def bbb_getRecordings_missing_recordID(httpx2_mock):
     """Fixture with missing recordID to trigger AttributeError."""
 
     class Response:
@@ -161,11 +163,12 @@ def bbb_getRecordings_missing_recordID(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_ai_summary(mocker):
+def bbb_getRecordings_ai_summary(httpx2_mock):
     """Fixture providing a getRecordings response that includes an ai-summary format."""
 
     class Response:
@@ -211,15 +214,18 @@ def bbb_getRecordings_ai_summary(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_per_meeting(mocker):
+def bbb_getRecordings_per_meeting(httpx2_mock):
     """Fixture that gives each meeting one recording of its own."""
 
-    def send(prepped, *args, **kwargs):
-        meeting_id = parse_qs(urlparse(prepped.url).query).get("meetingID", [""])[0]
+    def send(request):
+        meeting_id = parse_qs(urlparse(str(request.url)).query).get("meetingID", [""])[
+            0
+        ]
 
         class Response:
             content = f"""
@@ -244,11 +250,11 @@ def bbb_getRecordings_per_meeting(mocker):
   </recordings>
 </response>
 """
-            text = ""
 
-        return Response
+        return respx.MockResponse(200, content=Response.content)
 
-    yield mocker.patch("requests.Session.send", side_effect=send)
+    httpx2_mock.route().mock(side_effect=send)
+    yield httpx2_mock
 
 
 def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
@@ -258,7 +264,7 @@ def test_get_recordings(mocker, meeting, bbb_getRecordings_response):
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
@@ -322,7 +328,7 @@ def test_update_recording_name(
         status=302,
     )
 
-    bbb_url = bbb_getRecordings_response.call_args.args[0].url
+    bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
     )
@@ -371,7 +377,7 @@ def test_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = BBB(meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
@@ -402,7 +408,7 @@ def test_delegate_can_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = meeting_1_user_2.bbb.get_recordings()
 
     assert len(recordings) == 2
@@ -477,7 +483,7 @@ def test_open_recordings_page(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{meeting.id}")

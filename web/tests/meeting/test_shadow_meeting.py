@@ -102,7 +102,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
     join_url = "/meeting/join"
     assert join_url == response.form.action
-    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+    mocker.patch("httpx2.Client.send", return_value=ResponseBBBcreate)
 
     response.form.submit()
 
@@ -134,7 +134,7 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
     join_url = "/meeting/join"
     assert join_url == response.form.action
 
-    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+    mocker.patch("httpx2.Client.send", return_value=ResponseBBBcreate)
 
     response = response.form.submit()
 
