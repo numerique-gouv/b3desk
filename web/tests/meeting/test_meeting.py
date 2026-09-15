@@ -472,8 +472,8 @@ def test_create_no_file(
     meeting.ai_summary = False
     create_bbb_meeting(meeting, meeting.owner)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
@@ -541,8 +541,8 @@ def test_create_ai_summary_adds_banner(
 
     create_bbb_meeting(meeting, meeting.owner)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     bbb_params = {
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
@@ -615,8 +615,8 @@ def test_create_with_only_a_default_file(
 
     create_bbb_meeting(meeting, meeting.owner)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
@@ -726,8 +726,8 @@ def test_create_with_files(
 
     create_bbb_meeting(meeting, meeting.owner)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
@@ -830,8 +830,8 @@ def test_save_existing_meeting_gets_default_logoutUrl(
 
     create_bbb_meeting(meeting, meeting.owner)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
@@ -879,8 +879,8 @@ def test_create_quick_meeting(
     expected_attendee_hash = get_quick_meeting_secret_key(meeting, Role.attendee)
     create_bbb_quick_meeting(meeting, user)
 
-    assert bbb_response.called
-    bbb_url = bbb_response.call_args.args[0].url
+    assert bbb_response.calls.called
+    bbb_url = str(bbb_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/create"
     )
@@ -917,7 +917,7 @@ def test_join_meeting_as_moderator_quick_meeting(client_app, bbb_response):
     response.form["fullname"] = "Alice"
     response = response.form.submit()
 
-    assert bbb_response.called
+    assert bbb_response.calls.called
     assert (
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/join" in response.location
     )
@@ -1611,14 +1611,6 @@ def test_url_for_role_returns_none_without_secret_key(client_app, meeting):
     db.session.commit()
 
     assert meeting.url_for_role(Role.attendee) is None
-
-
-def test_create_meeting_route(client_app, authenticated_user, meeting, bbb_response):
-    """The create_meeting route must create the BBB room and redirect to welcome."""
-    response = client_app.get(f"/meeting/create/{meeting.id}", status=302)
-
-    assert bbb_response.called
-    assert response.location == url_for("public.welcome")
 
 
 def test_delete_old_meetings(

@@ -1,4 +1,4 @@
-import requests
+import httpx2
 from flask import Blueprint
 from flask import current_app
 from flask import g
@@ -6,6 +6,8 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+
+from b3desk.utils import http_client
 
 from .. import auth
 from .. import cache
@@ -32,14 +34,14 @@ def get_meetings_stats():
         return None
 
     try:
-        response = requests.get(current_app.config["STATS_URL"])
+        response = http_client().get(current_app.config["STATS_URL"])
         if response.status_code != 200:
             return None
         stats_array = response.content.decode(encoding="utf-8").split("\n")
         stats_array = [row.split(",") for row in stats_array]
         participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
         running_count = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except requests.RequestException:
+    except httpx2.HTTPError:
         return None
 
     return {"participantCount": participant_count, "runningCount": running_count}

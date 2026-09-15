@@ -1,5 +1,5 @@
 import click
-import requests
+import httpx2
 from flask import Blueprint
 from flask import current_app
 
@@ -20,7 +20,7 @@ def get_apps_id(email):
         current_app.logger.info(
             "ID from secondary identity provider for email %s: %s", email, secondary_id
         )
-    except requests.RequestException as e:
+    except httpx2.HTTPError as e:
         current_app.logger.error(e)
 
 

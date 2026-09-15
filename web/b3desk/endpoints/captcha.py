@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-import requests
+import httpx2
 from flask import Blueprint
 from flask import Response
 from flask import current_app
@@ -8,6 +8,7 @@ from flask import request
 
 from b3desk import cache
 from b3desk.session import visio_code_attempt_counter_reset
+from b3desk.utils import http_client
 
 bp = Blueprint("captcha", __name__)
 CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"
@@ -27,7 +28,7 @@ def get_captchetat_token():
         "scope": "piste.captchetat",
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    response = requests.post(url, data=form_data, headers=headers)
+    response = http_client().post(url, data=form_data, headers=headers)
     if response.status_code != 200 or "access_token" not in response.json():
         message = "OAuth access token not received"
         captcha_error(message)
@@ -49,12 +50,12 @@ def captcha_proxy():
 
     piste_url = f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/simple-captcha-endpoint"
     try:
-        response = requests.get(
+        response = http_client().get(
             piste_url,
             params=dict(request.args),
             headers={"Authorization": f"Bearer {access_token}"},
         )
-    except requests.RequestException as exc:
+    except httpx2.HTTPError as exc:
         message = f"Network issue during connection to captchetat {exc}"
         captcha_error(message)
         return {"success": False}, 503
@@ -77,13 +78,13 @@ def captcha_validation(captcha_uuid, captcha_code):
         return True
 
     try:
-        response = requests.post(
+        response = http_client().post(
             f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/valider-captcha",
             headers={"Authorization": f"Bearer {access_token}"},
             json={"uuid": captcha_uuid, "code": captcha_code},
         )
 
-    except requests.RequestException as exc:
+    except httpx2.HTTPError as exc:
         message = f"Network issue during connection to captchetat {exc}"
         captcha_error(message)
         return True
@@ -107,9 +108,15 @@ def captchetat_service_status():
         captcha_error("Invalid credentials.")
         return {"success": False}, 403
 
-    response = requests.get(
-        f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    data = response.json()
+    try:
+        response = http_client().get(
+            f"{current_app.config['CAPTCHETAT_API_URL']}/captchetat/v2/healthcheck",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        data = response.json()
+    except httpx2.HTTPError as exc:
+        message = f"Network issue during connection to captchetat {exc}"
+        captcha_error(message)
+        return {"success": False}, 503
+
     return data["status"]

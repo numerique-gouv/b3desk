@@ -1,7 +1,6 @@
 from datetime import UTC
 from datetime import datetime
 
-import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
@@ -14,6 +13,7 @@ from b3desk.models.meetings import get_inactive_meetings_to_inform
 from b3desk.models.users import clean_db_and_delete_user
 from b3desk.models.users import get_inactive_users_to_delete
 from b3desk.models.users import get_inactive_users_to_inform
+from b3desk.utils import http_client
 from b3desk.utils.mailing import send_available_recording_notification_mail
 from b3desk.utils.mailing import send_mail_before_meeting_deletion
 from b3desk.utils.mailing import send_mail_before_user_deletion
@@ -45,14 +45,10 @@ def background_upload(endpoint, xml):
     """Celery task to upload XML documents to BigBlueButton API in background."""
     logger.info("BBB API request %s: xml:%s", endpoint, xml)
 
-    session = requests.Session()
-    # In local development environment, BBB is not served as https
-    session.verify = not current_app.debug
-
-    response = session.post(
+    response = http_client().post(
         endpoint,
         headers={"Content-Type": "application/xml"},
-        data=xml,
+        content=xml,
     )
 
     logger.info("BBB API response %s", response.text)

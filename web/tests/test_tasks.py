@@ -2,6 +2,7 @@ import datetime
 
 from b3desk import cache
 from b3desk.models import db
+from b3desk.tasks import background_upload
 from b3desk.tasks import recording_min_reached_key
 from b3desk.tasks import recording_notified_key
 from b3desk.tasks import send_recording_notification
@@ -196,3 +197,14 @@ def test_concurrent_claim_prevents_duplicate_mail(client_app, meeting, smtpd, mo
         meeting_id=meeting.id, bbb_recording_id=RECORD_ID, force=True
     )
     assert len(smtpd.messages) == 0
+
+
+def test_background_upload(client_app, httpx2_mock):
+    """The presentation XML is posted to the BigBlueButton endpoint."""
+    route = httpx2_mock.route(method="POST").respond(200, content=b"<response/>")
+
+    with client_app.app.app_context():
+        assert background_upload("https://bbb.test/api/insertDocument", "<modules/>")
+
+    assert route.calls.last.request.content == b"<modules/>"
+    assert route.calls.last.request.headers["content-type"] == "application/xml"
