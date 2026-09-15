@@ -262,3 +262,14 @@ def test_missing_returncode_response(meeting, mocker, caplog):
     with pytest.raises(BigBlueButtonUnavailable):
         bbb.is_running()
     assert "BBB API response missing returncode" in caplog.text
+
+
+def test_cache_key_is_the_request_url():
+    """The cache key of a BBB response is the URL of its request."""
+    from b3desk.models.bbb import cache_key
+
+    request = httpx2.Request("GET", "https://bbb.test/api/getMeetings?checksum=abc")
+
+    assert cache_key(None, None, request) == (
+        "https://bbb.test/api/getMeetings?checksum=abc"
+    )
