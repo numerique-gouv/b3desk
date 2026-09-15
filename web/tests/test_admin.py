@@ -543,7 +543,7 @@ def test_admin_can_update_recording_name(
         status=302,
     )
 
-    bbb_url = bbb_getRecordings_response.call_args.args[0].url
+    bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
     )
@@ -584,7 +584,7 @@ def test_admin_can_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = BBB(other_meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
@@ -626,7 +626,7 @@ def test_admin_can_open_recordings_page(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{other_meeting.id}")

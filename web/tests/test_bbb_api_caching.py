@@ -1,5 +1,5 @@
+import httpx2
 import pytest
-import requests
 from b3desk import BigBlueButtonUnavailable
 
 
@@ -26,7 +26,7 @@ def test_is_running(meeting, mocker):
         content = IS_MEETING_RUNNING_SUCCESS_RESPONSE
         text = ""
 
-    send = mocker.patch("requests.Session.send", return_value=Response)
+    send = mocker.patch("httpx2.Client.send", return_value=Response)
 
     assert send.call_count == 0
 
@@ -152,8 +152,8 @@ def test_get_recordings(meeting, mocker):
     class DirectLinkRecording:
         status_code = 200
 
-    send = mocker.patch("requests.Session.send", return_value=Response)
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    send = mocker.patch("httpx2.Client.send", return_value=Response)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
 
     assert send.call_count == 0
 
@@ -196,8 +196,8 @@ def test_create(meeting, mocker):
         content = CREATE_RESPONSE
         text = ""
 
-    send = mocker.patch("requests.Session.send", return_value=Response)
-    mocker.patch("requests.post")
+    send = mocker.patch("httpx2.Client.send", return_value=Response)
+    mocker.patch("httpx2.Client.post")
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     mocker.patch("b3desk.join.is_nextcloud_available", return_value=True)
 
@@ -214,7 +214,7 @@ def test_create(meeting, mocker):
 
 def test_timeout_bbb_request(client_app, mocker, authenticated_user, meeting, caplog):
     mocker.patch(
-        "requests.Session.send", side_effect=requests.Timeout("timeout message")
+        "httpx2.Client.send", side_effect=httpx2.TimeoutException("timeout message")
     )
     client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     assert "BBB API timeout error timeout message" in caplog.text
@@ -224,7 +224,7 @@ def test_timeout_bbb_get_recordings_request(
     client_app, mocker, authenticated_user, meeting, caplog
 ):
     mocker.patch(
-        "requests.Session.send", side_effect=requests.Timeout("timeout message")
+        "httpx2.Client.send", side_effect=httpx2.TimeoutException("timeout message")
     )
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
     client_app.app.config["BIGBLUEBUTTON_API_CACHE_DURATION"] = 0
@@ -240,7 +240,7 @@ def test_invalid_xml_response(meeting, mocker, caplog):
         content = b"<invalid xml"
         text = "<invalid xml"
 
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):
@@ -256,7 +256,7 @@ def test_missing_returncode_response(meeting, mocker, caplog):
         content = b"<response><something>else</something></response>"
         text = ""
 
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     bbb = BBB(meeting.bbb_meeting_id)
     with pytest.raises(BigBlueButtonUnavailable):

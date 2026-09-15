@@ -4,7 +4,7 @@ from datetime import date
 from pathlib import Path
 
 import filetype
-import requests
+import httpx2
 from flask import Blueprint
 from flask import abort
 from flask import after_this_request
@@ -37,6 +37,7 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
 
 from .. import auth
+from .. import http_client
 from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..session import user_needed
@@ -116,7 +117,7 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
         return response
 
     if meeting_file.url:
-        response = requests.get(meeting_file.url)
+        response = http_client().get(meeting_file.url)
         with tmp_name.open("wb") as f:
             f.write(response.content)
         return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
@@ -240,8 +241,10 @@ def add_meeting_file_URL(url, meeting_id):
     title = url.rsplit("/", 1)[-1]
 
     try:
-        metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
-    except requests.exceptions.RequestException as request_error:
+        metadata = http_client().head(
+            url, timeout=REQUEST_TIMEOUT, follow_redirects=False
+        )
+    except httpx2.HTTPError as request_error:
         current_app.logger.warning(
             "URL file request failed for %s: %s", url, request_error
         )
@@ -251,7 +254,7 @@ def add_meeting_file_URL(url, meeting_id):
             ).format(title=title)
         }, 400
 
-    if not metadata.ok:
+    if not metadata.is_success:
         return {
             "msg": _(
                 "Fichier {title} non disponible, veuillez vérifier l'URL proposée"

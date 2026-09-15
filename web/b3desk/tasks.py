@@ -1,9 +1,9 @@
-import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
 
 from b3desk import cache
+from b3desk import http_client
 from b3desk.models import db
 from b3desk.utils import send_available_recording_notification_mail
 
@@ -34,14 +34,10 @@ def background_upload(endpoint, xml):
     """Celery task to upload XML documents to BigBlueButton API in background."""
     logger.info("BBB API request %s: xml:%s", endpoint, xml)
 
-    session = requests.Session()
-    # In local development environment, BBB is not served as https
-    session.verify = not current_app.debug
-
-    response = session.post(
+    response = http_client().post(
         endpoint,
         headers={"Content-Type": "application/xml"},
-        data=xml,
+        content=xml,
     )
 
     logger.info("BBB API response %s", response.text)

@@ -4,8 +4,8 @@ from datetime import date
 from datetime import datetime
 from pathlib import Path
 
+import httpx2
 import pytest
-import requests
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -536,13 +536,9 @@ def test_add_nextcloud_file_sqlalchemy_error(
     assert "déjà été mis en ligne" in response.json["msg"]
 
 
-def test_add_url_file(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file(client_app, authenticated_user, meeting, httpx2_mock):
     """Test adding a file from URL."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "1000"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
-    mocker.patch.object(requests, "get", return_value=mocker.Mock())
+    httpx2_mock.route(method="HEAD").respond(200, headers={"content-length": "1000"})
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -555,7 +551,7 @@ def test_add_url_file(client_app, authenticated_user, meeting, mocker):
 
 
 def test_add_url_file_sqlalchemy_error(
-    client_app, authenticated_user, meeting, mocker, nextcloud_credentials
+    client_app, authenticated_user, meeting, mocker, nextcloud_credentials, httpx2_mock
 ):
     """SQLAlchemy error during URL file add returns appropriate error message."""
     meeting.owner.nc_login = nextcloud_credentials["nclogin"]
@@ -566,11 +562,7 @@ def test_add_url_file_sqlalchemy_error(
     db.session.add(meeting.owner)
     db.session.commit()
 
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "1000"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
-    mocker.patch.object(requests, "get", return_value=mocker.Mock())
+    httpx2_mock.route(method="HEAD").respond(200, headers={"content-length": "1000"})
 
     mocker.patch(
         "b3desk.endpoints.meeting_files.db.session.commit",
@@ -823,7 +815,7 @@ def test_download_meeting_file_not_found(client_app, authenticated_user, meeting
 
 
 def test_download_meeting_file_from_url(
-    client_app, authenticated_user, meeting, mocker
+    client_app, authenticated_user, meeting, httpx2_mock
 ):
     """Test downloading a file that has a URL (not from Nextcloud)."""
     meeting_file = MeetingFiles(
@@ -836,9 +828,7 @@ def test_download_meeting_file_from_url(
     db.session.add(meeting_file)
     db.session.commit()
 
-    mock_response = mocker.Mock()
-    mock_response.content = b"fake pdf content"
-    mocker.patch.object(requests, "get", return_value=mock_response)
+    httpx2_mock.route(method="GET").respond(200, content=b"fake pdf content")
 
     response = client_app.get(
         url_for(
@@ -851,11 +841,11 @@ def test_download_meeting_file_from_url(
     assert response.status_int == 200
 
 
-def test_add_url_file_not_available(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file_not_available(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
     """Test adding a URL file when the URL is not available."""
-    mock_head = mocker.Mock()
-    mock_head.ok = False
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(404)
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -868,12 +858,12 @@ def test_add_url_file_not_available(client_app, authenticated_user, meeting, moc
     assert "non disponible" in response.json["msg"]
 
 
-def test_add_url_file_network_error(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file_network_error(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
     """Test adding a URL file when a network error occurs."""
-    mocker.patch.object(
-        requests,
-        "head",
-        side_effect=requests.exceptions.Timeout("Connection timed out"),
+    httpx2_mock.route(method="HEAD").mock(
+        side_effect=httpx2.TimeoutException("Connection timed out")
     )
 
     response = client_app.post(
@@ -887,12 +877,11 @@ def test_add_url_file_network_error(client_app, authenticated_user, meeting, moc
     assert "non disponible" in response.json["msg"]
 
 
-def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file_too_large(client_app, authenticated_user, meeting, httpx2_mock):
     """Test adding a URL file when the file is too large."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "999999999"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(
+        200, headers={"content-length": "999999999"}
+    )
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -906,13 +895,10 @@ def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker)
 
 
 def test_add_url_file_no_content_length(
-    client_app, authenticated_user, meeting, mocker
+    client_app, authenticated_user, meeting, httpx2_mock
 ):
     """Test adding a URL file when content-length header is missing."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {}
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(200)
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
