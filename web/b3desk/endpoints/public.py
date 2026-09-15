@@ -7,9 +7,10 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
+from b3desk.utils import http_client
+
 from .. import auth
 from .. import cache
-from .. import http_client
 from ..session import has_user_session
 from ..session import should_display_captcha
 from ..templates.content import FAQ_CONTENT

@@ -7,8 +7,8 @@ from flask import current_app
 from flask import request
 
 from b3desk import cache
-from b3desk import http_client
 from b3desk.session import visio_code_attempt_counter_reset
+from b3desk.utils import http_client
 
 bp = Blueprint("captcha", __name__)
 CACHE_KEY_CAPTCHETAT_CREDENTIALS = "captchetat-credentials"

@@ -14,7 +14,7 @@ from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
 
 from b3desk import cache
-from b3desk import http_client
+from b3desk.utils import http_client
 
 NEXTCLOUD_BACKOFF_INITIAL = 1
 NEXTCLOUD_BACKOFF_MULTIPLIER = 1

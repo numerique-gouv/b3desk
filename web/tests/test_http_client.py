@@ -1,7 +1,7 @@
 """Temporary smoke test for the shared HTTP client plumbing."""
 
 import httpx2
-from b3desk import http_client
+from b3desk.utils import http_client
 
 
 def test_http_client_is_lazy_and_shared(client_app):

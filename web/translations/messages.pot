@@ -1,7 +1,7 @@
-#: web/b3desk/__init__.py:362 web/b3desk/endpoints/meeting_files.py:133
-#: web/b3desk/endpoints/meeting_files.py:198
-#: web/b3desk/endpoints/meeting_files.py:305
-#: web/b3desk/endpoints/meeting_files.py:512
+#: web/b3desk/__init__.py:342 web/b3desk/endpoints/meeting_files.py:141
+#: web/b3desk/endpoints/meeting_files.py:206
+#: web/b3desk/endpoints/meeting_files.py:313
+#: web/b3desk/endpoints/meeting_files.py:520
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -361,73 +361,77 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:60
+#: web/b3desk/endpoints/meeting_files.py:61
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:84
-#: web/b3desk/endpoints/meeting_files.py:159
-#: web/b3desk/endpoints/meeting_files.py:366
-#: web/b3desk/endpoints/meeting_files.py:417
-#: web/b3desk/endpoints/meeting_files.py:422
-#: web/b3desk/endpoints/meeting_files.py:487
+#: web/b3desk/endpoints/meeting_files.py:85
+#: web/b3desk/endpoints/meeting_files.py:167
+#: web/b3desk/endpoints/meeting_files.py:374
+#: web/b3desk/endpoints/meeting_files.py:425
+#: web/b3desk/endpoints/meeting_files.py:430
+#: web/b3desk/endpoints/meeting_files.py:495
 msgid "Requête invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:179
+#: web/b3desk/endpoints/meeting_files.py:124
+msgid "Le fichier n’a pas pu être téléchargé, veuillez vérifier l’URL proposée."
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:187
 msgid "Aucun fichier téléversé pour ce nom"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:185
-#: web/b3desk/endpoints/meeting_files.py:268
+#: web/b3desk/endpoints/meeting_files.py:193
+#: web/b3desk/endpoints/meeting_files.py:276
 #, python-brace-format
 msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:228
-#: web/b3desk/endpoints/meeting_files.py:289
-#: web/b3desk/endpoints/meeting_files.py:336
-#: web/b3desk/endpoints/meeting_files.py:379
+#: web/b3desk/endpoints/meeting_files.py:236
+#: web/b3desk/endpoints/meeting_files.py:297
+#: web/b3desk/endpoints/meeting_files.py:344
+#: web/b3desk/endpoints/meeting_files.py:387
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:253
-#: web/b3desk/endpoints/meeting_files.py:260
+#: web/b3desk/endpoints/meeting_files.py:261
+#: web/b3desk/endpoints/meeting_files.py:268
 #, python-brace-format
 msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:315
+#: web/b3desk/endpoints/meeting_files.py:323
 #, python-brace-format
 msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:387
+#: web/b3desk/endpoints/meeting_files.py:395
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:400
+#: web/b3desk/endpoints/meeting_files.py:408
 msgid "Type de fichier non autorisé"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:404
+#: web/b3desk/endpoints/meeting_files.py:412
 msgid "Erreur de taille du fichier"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:426
+#: web/b3desk/endpoints/meeting_files.py:434
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:435
+#: web/b3desk/endpoints/meeting_files.py:443
 #: web/b3desk/endpoints/meetings.py:313
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:443
+#: web/b3desk/endpoints/meeting_files.py:451
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:467
+#: web/b3desk/endpoints/meeting_files.py:475
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -3315,32 +3319,32 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:100
+#: web/b3desk/utils/__init__.py:170
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:108
+#: web/b3desk/utils/__init__.py:178
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:114
+#: web/b3desk/utils/__init__.py:184
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:116
+#: web/b3desk/utils/__init__.py:186
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:118
+#: web/b3desk/utils/__init__.py:188
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:149
+#: web/b3desk/utils/__init__.py:219
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:274
+#: web/b3desk/utils/__init__.py:344
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

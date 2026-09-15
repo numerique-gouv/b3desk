@@ -3,8 +3,8 @@ from celery.utils.log import get_task_logger
 from flask import current_app
 
 from b3desk import cache
-from b3desk import http_client
 from b3desk.models import db
+from b3desk.utils import http_client
 from b3desk.utils import send_available_recording_notification_mail
 
 logger = get_task_logger(__name__)

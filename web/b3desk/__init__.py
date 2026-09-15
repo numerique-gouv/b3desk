@@ -13,12 +13,10 @@ from logging.config import fileConfig
 from pathlib import Path
 from urllib.parse import urlencode
 
-import httpx2
 from babel import Locale
 from celery import Celery
 from celery import Task
 from flask import Flask
-from flask import current_app
 from flask import has_app_context
 from flask import has_request_context
 from flask import redirect
@@ -50,24 +48,6 @@ cache = Cache()
 csrf = CSRFProtect()
 auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
-
-HTTP_TIMEOUT = 10
-
-
-def http_client():
-    """Return the HTTP client shared by the whole process, built on first use.
-
-    In local development environment, services are not served as https, so
-    certificate verification is disabled.
-    """
-    client = current_app.extensions.get("http_client")
-    if client is None:
-        client = current_app.extensions["http_client"] = httpx2.Client(
-            timeout=HTTP_TIMEOUT,
-            verify=not current_app.debug,
-            follow_redirects=True,
-        )
-    return client
 
 
 class BigBlueButtonUnavailable(Exception):

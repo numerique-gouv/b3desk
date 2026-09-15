@@ -22,10 +22,10 @@ from flask import url_for
 from flask_babel import lazy_gettext as _
 
 from b3desk.tasks import background_upload
+from b3desk.utils import http_client
 
 from .. import BigBlueButtonUnavailable
 from .. import cache
-from .. import http_client
 from .roles import Role
 
 logger = logging.getLogger("bbb")

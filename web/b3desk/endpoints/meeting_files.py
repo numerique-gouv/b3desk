@@ -35,9 +35,10 @@ from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
+from b3desk.utils import download_url_to_path
+from b3desk.utils import http_client
 
 from .. import auth
-from .. import http_client
 from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..session import user_needed
@@ -117,9 +118,16 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
         return response
 
     if meeting_file.url:
-        response = http_client().get(meeting_file.url)
-        with tmp_name.open("wb") as f:
-            f.write(response.content)
+        if not download_url_to_path(meeting_file.url, tmp_name):
+            flash(
+                _(
+                    "Le fichier n’a pas pu être téléchargé, "
+                    "veuillez vérifier l’URL proposée."
+                ),
+                "error",
+            )
+            return redirect(url_for("public.welcome"))
+
         return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
     # get file from nextcloud WEBDAV and send it

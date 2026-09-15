@@ -830,15 +830,96 @@ def test_download_meeting_file_from_url(
 
     httpx2_mock.route(method="GET").respond(200, content=b"fake pdf content")
 
-    response = client_app.get(
+    response = download_url_meeting_file(client_app, meeting, meeting_file)
+
+    assert response.status_int == 200
+    assert response.body == b"fake pdf content"
+
+
+def add_url_meeting_file(meeting):
+    """Attach a file referencing an external URL to the meeting."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    return meeting_file
+
+
+def download_url_meeting_file(client_app, meeting, meeting_file, **kwargs):
+    """Request the download endpoint for the given meeting file."""
+    return client_app.get(
         url_for(
             "meeting_files.download_meeting_files",
             meeting=meeting,
             meeting_file=meeting_file,
         ),
+        **kwargs,
     )
 
-    assert response.status_int == 200
+
+def assert_download_refused(response):
+    """Check that the download endpoint redirected with an error flash."""
+    assert any(
+        cat == "error" and "n’a pas pu être téléchargé" in msg
+        for cat, msg in response.flashes
+    )
+
+
+def test_download_meeting_file_from_url_network_error(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """A failing URL download redirects instead of raising."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").mock(
+        side_effect=httpx2.TimeoutException("too slow")
+    )
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_unavailable(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """An error status on the remote URL redirects instead of serving the body."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").respond(404, content=b"not found")
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_too_large(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """A URL serving more than MAX_SIZE_UPLOAD is not downloaded."""
+    meeting_file = add_url_meeting_file(meeting)
+    client_app.app.config["MAX_SIZE_UPLOAD"] = 10
+    httpx2_mock.route(method="GET").respond(200, content=b"0" * 64)
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_too_slow(
+    client_app, authenticated_user, meeting, httpx2_mock, mocker
+):
+    """A URL trickling data past DOWNLOAD_MAX_DURATION is not downloaded."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").respond(200, content=b"first chunk")
+    mocker.patch("b3desk.utils.time.monotonic", side_effect=[0, 1000])
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
 
 
 def test_add_url_file_not_available(
