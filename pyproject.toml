@@ -193,6 +193,7 @@ version = "literal: pyproject.toml: project.version"
 main_branches = ["main", "production"]
 categories = [
     "Actions requises",
+    "Migrations",
     "Configuration",
     "Ajouté",
     "Modifié",

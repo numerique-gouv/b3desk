@@ -30,9 +30,9 @@ just changelog-collect
 numéro de version qu'il lit dans `pyproject.toml` — d'où l'ordre de ces deux
 étapes. Le fichier s'ouvre ensuite dans votre éditeur : c'est le moment de
 relire l'entrée, de fusionner les formulations redondantes et de vérifier que
-les rubriques « Actions requises » et « Configuration » disent bien tout ce
-qu'une personne qui administre une instance doit savoir avant de mettre à
-jour. Ce texte sera publié tel quel dans les notes de la release.
+les rubriques « Actions requises », « Migrations » et « Configuration » disent
+bien tout ce qu'une personne qui administre une instance doit savoir avant de
+mettre à jour. Ce texte sera publié tel quel dans les notes de la release.
 
 ## Lancer les tests avec `tox`
 ```bash
@@ -126,4 +126,4 @@ Pousser ce commit sur upstream
 git push upstream main
 ```
 
-⚠️ Attention, pour que le numéro de version s'affiche correctement sur la version déployée, il est nécessaire que le projet soit déployé avec git (c.à.d. qu'il y ait un dépôt git qui soit déployé), et aussi que le commit qui soit déployé soit directement marqué par un tag git. Dans les autres cas, c'est le numéro de commit qui sera affiché.
+⚠️ Le numéro affiché en pied de page est celui que portait `pyproject.toml` au moment de la construction de l'image Docker, lu dans les métadonnées du paquet installé. Une instance qui n'a pas reconstruit son image continue donc d'afficher la version précédente, même si son dépôt est à jour.

@@ -19,6 +19,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
+    "sphinx_issues",
     "sphinxcontrib.autodoc_pydantic",
 ]
 
@@ -85,6 +86,16 @@ texinfo_documents = [
         "Miscellaneous",
     )
 ]
+
+# -- Options for sphinx-issues --------------------------------------------
+
+# Lets the documentation write {issue}`42`, {pr}`58` or {user}`azmeuk`.
+# CHANGELOG.md keeps plain Markdown links instead: it is also read on GitHub
+# and copied into the release notes, where Sphinx roles would show up raw.
+issues_github_path = "numerique-gouv/b3desk"
+
+# {user} points at the sponsoring page by default, which is not what we mean.
+issues_user_uri = "https://github.com/{user}"
 
 # -- Options for autosectionlabel -----------------------------------------
 

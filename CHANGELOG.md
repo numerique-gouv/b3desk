@@ -7,531 +7,600 @@ Les entrées sont produites par [scriv](https://scriv.readthedocs.io) à partir
 des fragments déposés dans `changelog.d`, décrits dans le [guide de
 contribution](https://github.com/numerique-gouv/b3desk/blob/main/CONTRIBUTING.md).
 
-Les versions antérieures à la mise en place de ce fichier sont reprises telles
-qu'elles avaient été publiées sur la
-[page des releases GitHub](https://github.com/numerique-gouv/b3desk/releases),
-avec leur hétérogénéité d'origine.
-
 <!-- scriv-insert-here -->
 
 <a id='changelog-1.7.0'></a>
 ## v1.7.0 — 2026-09-09
 
-### Ajouts
-- Augmentation du nombre de délégataires par défaut, amélioration des messages d'erreur sur l'interface délégataires by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/364
-- Backoffice lot 1 by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/361
-- Menu de sélection de langue by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/366
-- Configuration de la callback BBB et envoi de mail lors de la disponibilité d'un enregistrement by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/354
-- Correction de fautes de frappe dans la documentation by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/377
-- Transcription IA by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/362
-- Backoffice lot 2 by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/374
-- Affichage du nom du salon sur la page d'attente et la page de connexion by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/382
+### Migrations
 
-### Nouvelles migrations
-- Nouveau champs `admin` sur la table d'utilisateurs
-- Nouvelle table `groupes`
-- Nouveaux champs `ai_summary` et `meta_disable_recording_ai_summary` sur la table meetings
+- Nouveau champ `admin` sur la table des utilisateurs.
+- Nouvelle table `groupes`.
+- Nouveaux champs `ai_summary` et `meta_disable_recording_ai_summary` sur la table `meetings`.
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.6.3...v1.7.0
+### Ajouté
+
+- Transcription IA ({pr}`362`, {user}`azmeuk`).
+- Backoffice, premier lot ({pr}`361`, {user}`SbirLobo`).
+- Backoffice, second lot ({pr}`374`, {user}`SbirLobo`).
+- Menu de sélection de langue ({pr}`366`, {user}`azmeuk`).
+- Configuration de la callback BBB et envoi d'un courriel lorsqu'un enregistrement devient disponible ({pr}`354`, {user}`SbirLobo`).
+- Affichage du nom du salon sur la page d'attente et la page de connexion ({pr}`382`, {user}`SbirLobo`).
+
+### Modifié
+
+- Augmentation du nombre de délégataires par défaut et amélioration des messages d'erreur de l'interface de délégation ({pr}`364`, {user}`SbirLobo`).
+
+### Corrigé
+
+- Fautes de frappe dans la documentation ({pr}`377`, {user}`SbirLobo`).
 
 <a id='changelog-1.6.3'></a>
 ## v1.6.3 — 2026-05-27
 
-- Personnalisation des claims OIDC by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/360
+### Ajouté
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.6.2...v1.6.3
+- Personnalisation des claims OIDC ({pr}`360`, {user}`azmeuk`).
 
 <a id='changelog-1.6.2'></a>
 ## v1.6.2 — 2026-05-27
 
-- Rajout des salons délégués dans l'API by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/357
+### Ajouté
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.6.1...v1.6.2
+- Les salons délégués apparaissent dans l'API ({pr}`357`, {user}`azmeuk`).
 
 <a id='changelog-1.6.1'></a>
 ## v1.6.1 — 2026-05-13
 
-### Chore
-- bump requests from 2.32.5 to 2.33.0
-- bump cryptography from 46.0.5 to 46.0.6
-- bump pygments from 2.19.2 to 2.20.0
-- bump cryptography from 46.0.6 to 46.0.7
-- bump uv from 0.9.26 to 0.11.6
-- bump pytest from 9.0.2 to 9.0.3
-- bump mako from 1.3.10 to 1.3.11
-- bump authlib from 1.6.9 to 1.6.11
-- bump python-dotenv from 1.2.1 to 1.2.2
-- bump lxml from 6.0.2 to 6.1.0
-- bump mako from 1.3.11 to 1.3.12
-- bump urllib3 from 2.6.3 to 2.7.0
+### Modifié
 
-### Features
-- Réparation du système de traductions by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/308
-- Translations update from Hosted Weblate by @weblate in https://github.com/numerique-gouv/b3desk/pull/344
+- Mise à jour des catalogues de traduction depuis Hosted Weblate ({pr}`344`, {user}`weblate`).
+- Améliorations sur l'interface de délégation de réunions ({pr}`339`, {user}`SbirLobo`).
+- Mise à jour des dépendances Python.
 
-### Fix
-- Améliorations sur l'interface de délégation de réunions by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/339
+### Corrigé
 
-### New Contributors
-- @weblate made their first contribution in https://github.com/numerique-gouv/b3desk/pull/344
-
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.6.0...v1.6.1
+- Réparation du système de traductions ({pr}`308`, {user}`SbirLobo`).
 
 <a id='changelog-1.6.0'></a>
 ## v1.6.0 — 2026-03-24
 
-- Délégation de permissions aux salons by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/241 (Issue #226 )
+### Migrations
 
-### MIGRATION
-- is-favorite column in meeting table become an intermediate table : favorite
-- new intermediate table in DB : Permission
-- the previoius meeting favorites are saved and restore with the db migration
-- [77f91494af65](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/77f91494af65_create_meeting_access_and_favorite_.py) Add `meeting_access` table and `favorite` table
-- [9dd2b54b4b11](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/9dd2b54b4b11_rename_meeting_user_id_to_owner_id.py) change `user_id` in `owner_id`  from `meeting_files` table.
+- [`77f91494af65`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/77f91494af65_create_meeting_access_and_favorite_.py) ajoute les tables `meeting_access` et `favorite`. La colonne `is_favorite` de la table des salons devient une table intermédiaire `favorite` ; les favoris existants sont conservés et restaurés par la migration.
+- [`9dd2b54b4b11`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/9dd2b54b4b11_rename_meeting_user_id_to_owner_id.py) renomme `user_id` en `owner_id` dans la table `meeting_files`.
 
-### ADDED
-- new setting : `MAXIMUM_MEETING_DELEGATES`
-- new page : `delegation.html`
+### Configuration
 
-### DEV
-- Adds 5 users
+- Nouveau paramètre `MAXIMUM_MEETING_DELEGATES`.
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.5.8...v1.6.0
+### Ajouté
+
+- Délégation de permissions aux salons, avec une nouvelle page `delegation.html` ({pr}`241`, {issue}`226`, {user}`SbirLobo`).
+
+### Modifié
+
+- L'environnement de développement fournit cinq comptes utilisateurs supplémentaires.
 
 <a id='changelog-1.5.8'></a>
 ## v1.5.8 — 2026-03-24
 
-### FEATURES
-- Mise à jour des catalogues de traduction by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/307
+### Ajouté
 
-### FIXES
-- Affichage complet du logo sur les instances avec un nom très long by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/319
-- Nom de participant éditable pour les utilisateurs connectés by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/318
+- Mise à jour des catalogues de traduction ({pr}`307`, {user}`SbirLobo`).
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.5.7...v1.5.8
+### Corrigé
+
+- Affichage complet du logo sur les instances portant un nom très long ({pr}`319`, {user}`SbirLobo`).
+- Nom de participant éditable pour les personnes connectées ({pr}`318`, {user}`SbirLobo`).
 
 <a id='changelog-1.5.7'></a>
 ## v1.5.7 — 2026-02-11
 
-### Perf
-- Suppression des requêtes inutiles de la page d'accueil by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/300
+### Modifié
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.5.6...v1.5.7
+- Suppression des requêtes inutiles de la page d'accueil ({pr}`300`, {user}`SbirLobo`).
 
 <a id='changelog-1.5.6'></a>
 ## v1.5.6 — 2026-02-11
 
-### Fixes
-- Correction du crash de la commande `get-apps-id` by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/284
-- Correction de la mise en ligne de fichiers pour les utilisateurs dont l'identifiant contient un espace by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/295
-- Les utilisateurs authentifiés ne sont plus obligés d'attendre si le salon est lancé by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/294
+### Configuration
 
-### Settings
-- Le paramètre `BIGBLUEBUTTON_REQUEST_TIMEOUT` est exprimé en secondes by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/291
+- Le paramètre `BIGBLUEBUTTON_REQUEST_TIMEOUT` est désormais exprimé en secondes ({pr}`291`, {user}`SbirLobo`).
 
-### Features
-- Taille maximale sur les champs by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/293
-- Enregistrement manuel pré-coché dans le formulaire de création meeting by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/302
-- Ajout du numéro de téléphone et du PIN dans l'API shadow meeting by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/303
+### Ajouté
 
-### Other
-- chore(deps): bump cryptography from 46.0.3 to 46.0.5 by @dependabot[bot] in https://github.com/numerique-gouv/b3desk/pull/306
+- Taille maximale sur les champs de saisie ({pr}`293`, {user}`SbirLobo`).
+- Enregistrement manuel pré-coché dans le formulaire de création d'un salon ({pr}`302`, {user}`SbirLobo`).
+- Numéro de téléphone et PIN dans l'API des salons fantômes ({pr}`303`, {user}`SbirLobo`).
 
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.5.5...v1.5.6
+### Modifié
+
+- Mise à jour des dépendances Python ({pr}`306`).
+
+### Corrigé
+
+- Crash de la commande `get-apps-id` ({pr}`284`, {user}`SbirLobo`).
+- Mise en ligne de fichiers pour les personnes dont l'identifiant contient un espace ({pr}`295`, {user}`azmeuk`).
+- Les personnes authentifiées ne sont plus obligées d'attendre lorsque le salon est déjà lancé ({pr}`294`, {user}`SbirLobo`).
 
 <a id='changelog-1.5.5'></a>
 ## v1.5.5 — 2026-01-21
 
 ### Migrations
-- [3bf32932f522](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/3bf32932f522_meeting_files_owner_id.py) adds a `owner` column to meeting files. #242
-- [a1b2c3d4e5f6](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/a1b2c3d4e5f6_remove_is_default_from_meeting_files.py) removes the `is_default` column from meeting files. #242
 
-### Features
-  - Add the room's visio-code in the BBB welcome message by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/275
-  - Optional contact link in the footer by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/249
-  - BIGBLUEBUTTON_REQUEST_TIMEOUT configuration parameter by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/276
-  - Dedicated logger for BBB requests by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/278
+- [`3bf32932f522`](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/3bf32932f522_meeting_files_owner_id.py) ajoute une colonne `owner` aux fichiers de salon ({pr}`242`).
+- [`a1b2c3d4e5f6`](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/a1b2c3d4e5f6_remove_is_default_from_meeting_files.py) retire la colonne `is_default` des fichiers de salon ({pr}`242`).
 
-### Fixes
-  - Fix the recordings page by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/246
-  - Improve visio-code and voice-bridge generation performance by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/271
-  - Open the correct accordion on meeting edit form errors by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/255
-  - Fix middle-click paste for visio-codes by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/253
-  - Fix error when uploading documents by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/234
-  - Host the state webinar icon locally by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/272
-  - Fixes on Nextcloud connection by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/242
-  - Jinja syntax error to capitalize string by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/280
+### Ajouté
 
-### Other
-  - Run the testsuite with PostgreSQL and sqlite by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/229
-  - Use Python 3.14 in the Docker images by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/240
-  - Use uv in the Docker images by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/239
-  - Update Nextcloud file picker to version 1.0.4 by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/279
-  - Release documentation improvements by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/283
-  - Remove user reference from invitation link URLs by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/257
-  - Remove the email meeting feature by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/267
+- Le code visio du salon apparaît dans le message d'accueil BBB ({pr}`275`, {user}`SbirLobo`).
+- Lien de contact optionnel dans le pied de page ({pr}`249`, {user}`SbirLobo`).
+- Paramètre de configuration `BIGBLUEBUTTON_REQUEST_TIMEOUT` ({pr}`276`, {user}`SbirLobo`).
+- Journal dédié aux requêtes BBB ({pr}`278`, {user}`azmeuk`).
+
+### Modifié
+
+- La suite de tests s'exécute sur PostgreSQL et SQLite ({pr}`229`, {user}`azmeuk`).
+- Les images Docker utilisent Python 3.14 ({pr}`240`, {user}`azmeuk`).
+- Les images Docker utilisent uv ({pr}`239`, {user}`azmeuk`).
+- Le sélecteur de fichiers Nextcloud passe en version 1.0.4 ({pr}`279`, {user}`SbirLobo`).
+- La référence à l'utilisateur disparaît des URL des liens d'invitation ({pr}`257`, {user}`azmeuk`).
+- Améliorations de la documentation de publication ({pr}`283`, {user}`SbirLobo`).
+
+### Supprimé
+
+- La fonctionnalité d'envoi de salon par courriel est retirée ({pr}`267`, {user}`azmeuk`).
+
+### Corrigé
+
+- Page des enregistrements ({pr}`246`, {user}`SbirLobo`).
+- Performances de génération des codes visio et des ponts vocaux ({pr}`271`, {user}`azmeuk`).
+- Ouverture du bon accordéon en cas d'erreur du formulaire d'édition d'un salon ({pr}`255`, {user}`SbirLobo`).
+- Collage au clic du milieu pour les codes visio ({pr}`253`, {user}`SbirLobo`).
+- Erreur lors de la mise en ligne de documents ({pr}`234`, {user}`SbirLobo`).
+- L'icône du webinaire de l'État est désormais hébergée localement ({pr}`272`, {user}`SbirLobo`).
+- Connexion à Nextcloud ({pr}`242`, {user}`azmeuk`).
+- Erreur de syntaxe Jinja sur la mise en capitale d'une chaîne ({pr}`280`, {user}`SbirLobo`).
 
 <a id='changelog-1.5.4'></a>
 ## v1.5.4 — 2025-12-17
 
-### FEATURES
+### Ajouté
 
-- Log BBB room creation responses. #263
+- Journalisation des réponses de création de salon BBB ({issue}`263`).
 
 <a id='changelog-1.5.3'></a>
 ## v1.5.3 — 2025-12-17
 
-### FIXES
+### Corrigé
 
-- Increase User.preferred_username length. #265
+- Allongement de la colonne `User.preferred_username` ({pr}`265`).
 
 <a id='changelog-1.5.2'></a>
 ## v1.5.2 — 2025-11-25
 
-### FEATURE
-- #211  Upload de fichiers Nextcloud depuis l'interface de BBB #223
+### Migrations
 
-### MIGRATION
-- remove `meeting_files_external` table
+- La table `meeting_files_external` est supprimée.
+
+### Ajouté
+
+- Mise en ligne de fichiers Nextcloud depuis l'interface de BBB ({issue}`211`, {pr}`223`).
 
 <a id='changelog-1.5.1'></a>
 ## v1.5.1 — 2025-11-25
 
-No change with 1.5.0
+Aucun changement par rapport à la version 1.5.0.
 
 <a id='changelog-1.5.0'></a>
 ## v1.5.0 — 2025-11-25
 
-### FIXES
-- fixes join mail meeting bug by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/196
-- fixes bug with paste function in visio-code inputs by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/207
-- deletes private-key from tests to improve security by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/210
-- #164 Rafraîchissement des identifiants nextcloud en cas d'erreur WebDAV by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/218
-- fixes settings validators to inform on invalid settings without crash the app by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/222
-- Hotfix db and quick meeting by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/192
-
-### FEATURES
-
-- Support for Python 3.13 by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/193
-- adds a test for quick meeting route by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/197
-- #179 changes default record name adding time by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/201
-- https://github.com/numerique-gouv/b3desk/issues/169#issuecomment-3249079108 doc: add configuration examples by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/206
-- #167 Mise à jour du texte de l'encart RIE by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/212
-- #191 adds created_at info in user table by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/204
-- #217 Ouverture des meetings dans un nouvel onglet by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/225
-- #182 #203 adds logs to follow the life of the meetings by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/200
-
-### CHANGES
-- #109 Ré-écriture de tokenmock en Python by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/198
-- Migration de poetry à uv by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/209
-- #169 Captcha pour les codes salon by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/199
-- Abandon de Python 3.9 by @azmeuk in https://github.com/numerique-gouv/b3desk/pull/224
-- #99 update default parameters in shadow meetings by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/220
-- #183 increases time before refresh each attempt to join a meeting in wait page by @SbirLobo in https://github.com/numerique-gouv/b3desk/pull/219
-
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.4.1...v1.5.0
-
 ### Migrations
-- new column in user : preferred_username
-- new column in user : created_at
-- column `visio_code` in meeting is now a string
 
-### Settings update
-- LOG_CONFIG
-- PISTE_OAUTH_CLIENT_ID
-- PISTE_OAUTH_CLIENT_SECRET
-- CAPTCHETAT_API_URL
-- PISTE_OAUTH_API_URL
-- CAPTCHA_NUMBER_ATTEMPTS
+- Nouvelle colonne `preferred_username` sur la table des utilisateurs.
+- Nouvelle colonne `created_at` sur la table des utilisateurs.
+- La colonne `visio_code` de la table des salons devient une chaîne de caractères.
+
+### Configuration
+
+- Nouveaux paramètres `LOG_CONFIG`, `PISTE_OAUTH_CLIENT_ID`, `PISTE_OAUTH_CLIENT_SECRET`, `CAPTCHETAT_API_URL`, `PISTE_OAUTH_API_URL` et `CAPTCHA_NUMBER_ATTEMPTS`.
+
+### Ajouté
+
+- Prise en charge de Python 3.13 ({pr}`193`, {user}`azmeuk`).
+- L'heure est ajoutée au nom par défaut des enregistrements ({issue}`179`, {pr}`201`, {user}`SbirLobo`).
+- Exemples de configuration dans la documentation ({pr}`206`, {user}`azmeuk`).
+- Mise à jour du texte de l'encart RIE ({issue}`167`, {pr}`212`, {user}`azmeuk`).
+- Information `created_at` dans la table des utilisateurs ({issue}`191`, {pr}`204`, {user}`SbirLobo`).
+- Les salons s'ouvrent dans un nouvel onglet ({issue}`217`, {pr}`225`, {user}`azmeuk`).
+- Journaux permettant de suivre le cycle de vie des salons ({issue}`182`, {issue}`203`, {pr}`200`, {user}`SbirLobo`).
+- Test de la route de réunion immédiate ({pr}`197`, {user}`SbirLobo`).
+
+### Modifié
+
+- Captcha sur les codes salon ({issue}`169`, {pr}`199`, {user}`SbirLobo`).
+- Paramètres par défaut des salons fantômes ({issue}`99`, {pr}`220`, {user}`SbirLobo`).
+- Le délai entre deux tentatives de connexion à un salon depuis la page d'attente est allongé ({issue}`183`, {pr}`219`, {user}`SbirLobo`).
+- Réécriture de tokenmock en Python ({issue}`109`, {pr}`198`, {user}`azmeuk`).
+- Migration de poetry à uv ({pr}`209`, {user}`azmeuk`).
+
+### Supprimé
+
+- Abandon de la prise en charge de Python 3.9 ({pr}`224`, {user}`azmeuk`).
+
+### Corrigé
+
+- Envoi du courriel de participation à un salon ({pr}`196`, {user}`SbirLobo`).
+- Collage dans les champs de code visio ({pr}`207`, {user}`SbirLobo`).
+- Rafraîchissement des identifiants Nextcloud en cas d'erreur WebDAV ({issue}`164`, {pr}`218`, {user}`azmeuk`).
+- Les validateurs de configuration signalent les paramètres invalides sans faire planter l'application ({pr}`222`, {user}`SbirLobo`).
+- Base de données et réunion immédiate ({pr}`192`, {user}`SbirLobo`).
+
+### Sécurité
+
+- La clé privée est retirée des tests ({pr}`210`, {user}`SbirLobo`).
 
 <a id='changelog-1.4.1'></a>
 ## v1.4.1 — 2025-08-07
 
-### update packages
-- Alembic
-- SQLAlchemy
+### Migrations
 
-### visio code in DB
-new migration to standardize meeting table
+- Nouvelle migration normalisant la table des salons autour du code visio.
 
-### quick meeting
-fixes quick meeting bug  : it should not be saved in DB
+### Modifié
+
+- Mise à jour d'Alembic et de SQLAlchemy.
+
+### Corrigé
+
+- Une réunion immédiate n'est plus enregistrée en base de données.
 
 <a id='changelog-1.4.0'></a>
 ## v1.4.0 — 2025-07-18
 
-### Voice bridge management
+### Migrations
 
-> PR #168
-> Fixes #147
+- La colonne `voiceBridge` de la table des salons devient unique et une valeur est générée pour les salons existants. Une table supplémentaire conserve la trace des `voiceBridge` récemment supprimés ({pr}`168`, {issue}`147`).
+- Nouveaux attributs `last_connection_utc_datetime` et `is_shadow` sur la table des salons ({pr}`172`, {issue}`99`).
+- L'attribut `visio_code` devient unique et une valeur est générée pour les salons existants ({pr}`180`, {issue}`16`).
 
-B3Desk is now in charge of managing PIN (or voiceBridge in BBB terms) generation for users to be able to join meetings by phone.
-New migration to set `voiceBridge` unique and generate one for existing `Meeting`, and a new table to keep track of recently deleted `voiceBridge`.
-Adds 2 new configuration variables:
+### Configuration
 
-- `BIGBLUEBUTTON_DIALNUMBER` phone number used in BBB or Scalelite config, for display purpose
-- `ENABLE_PIN_MANAGEMENT` defaults to False, enable B3Desk to send PIN on meeting creation. Require `BIGBLUEBUTTON_DIALNUMBER` to work
+- `BIGBLUEBUTTON_DIALNUMBER` : numéro de téléphone configuré dans BBB ou Scalelite, à des fins d'affichage.
+- `ENABLE_PIN_MANAGEMENT` : `False` par défaut, permet à B3Desk d'envoyer le PIN à la création d'un salon. Nécessite `BIGBLUEBUTTON_DIALNUMBER`.
+- `ENABLE_SIP` : `False` par défaut, permet à B3Desk de fournir l'URL SIPMediaGW dans l'API et dans la fenêtre d'invitation. Nécessite `FQDN_SIP_SERVER`.
+- `FQDN_SIP_SERVER` : domaine SIP utilisé pour construire l'URL SIPMediaGW, sous la forme `<visio_code>@<fqdn_serveur_SIP>`.
+- `PRIVATE_KEY` : clé privée générée par joserfc.
 
-### Shadow meeting
+### Ajouté
 
-> PR #172
-> Fixes #99
+- B3Desk prend en charge la génération des PIN, le `voiceBridge` au sens de BBB, pour permettre de rejoindre un salon par téléphone ({pr}`168`, {issue}`147`).
+- Chaque utilisateur dispose d'un salon fantôme, utilisable par les greffons d'agenda pour créer rapidement un salon. La nouvelle route `api/shadow-meeting` expose les URL permettant de le rejoindre ({pr}`172`, {issue}`99`).
+- B3Desk fournit une URL pour SIPMediaGW et en protège l'accès par un jeton, sur `/sip-connect/<visio-code>` avec un en-tête `Authorization`. De nouvelles [commandes](https://b3desk.readthedocs.io/fr/latest/maintainers/settings.html#id1) aident à vérifier l'installation de la clé privée et du jeton. Ajoute la dépendance `joserfc` ({pr}`180`, {issue}`16`).
+- Nouveau formulaire permettant de rejoindre un salon par son code visio, en POST, que l'on soit connecté ou non ({pr}`188`, {issue}`169`).
+- Une tâche planifiée supprime les salons fantômes inutilisés ({pr}`172`, {issue}`99`).
 
-Each user has a "shadow meeting" that can be used by calendar plugins to quickly create a `Meeting`. The new `api/shadow-meeting` displays urls to join this meeting.
-New cron deletes old unused shadow meetings.
-New migration on `Meeting` adds `last_connection_utc_datetime` and `is_shadow` attributes.
+### Modifié
 
-### SIP connection
-
-> PR #180
-> Fixes #16
-
-B3Desk provides an url for SIPMediaGW and secures access with a token, reachable on `/sip-connect/<visio-code>` only with an `Authorization` token in request header.
-New migration adds unique attribute `visio_code` and generate one for existing `Meeting`.
-New [commands](https://b3desk.readthedocs.io/fr/latest/maintainers/settings.html#id1) to help an check for private key / token installation.
-New app dependency installed by docker: `joserfc`
-Adds 3 new configuration variables:
-
-- `ENABLE_SIP` default to False enable B3Desk to give SIPMediaGW_url in API and invitation modal. Require `FQDN_SIP_SERVER` to work.
-- `FQDN_SIP_SERVER` is the SIP domain used to create the SIPMediaGW_url : `<visio_code>@<fqdn_serveur_SIP>`
-- `PRIVATE_KEY` to register the private key generated by joserfc
-
-### Visio-code for users
-
-> PR #188
-> References #169
-
-New user interface for meeting connection.
-Adds a new form for logged-in / logged-out users to join a meeting with its visio-code through a POST request.
-Updates DSFR version.
+- Mise à jour de la version du DSFR ({pr}`188`).
 
 <a id='changelog-1.3.1'></a>
 ## v1.3.1 — 2025-05-22
 
-- fixes #174 : Fixes STATS_URL connection error that caused the interface to crash
+### Corrigé
 
-- fixes Matomo integration
+- Erreur de connexion à `STATS_URL` qui faisait planter l'interface ({issue}`174`).
+- Intégration de Matomo.
 
 <a id='changelog-1.3.0'></a>
 ## v1.3.0 — 2025-04-02
 
-- Classement des salons
-  Migration `44cab47dbc9b` qui ajoute les colonnes `updated_at` `created_at` (la migration ajoute la date du jour si valeur inexistante) et `is_favorite`
-  fixes #26
-- Nouveaux styles sur la personnalisation de salons
-  fixes #89
-- Gérer les erreurs de connexion à BBB
-  fixes #39
-- Ajustements LaSuite
-  fixes #148
-- Questionnaire en fin de session configurable
-  fixes #122
-- Erreurs de connexion au serveur d'identité
-  fixes #119
-- Log d'erreur de réponse BBB
-  fixes #166
+### Migrations
+
+- La migration `44cab47dbc9b` ajoute les colonnes `updated_at`, `created_at` et `is_favorite` ; la date du jour est utilisée lorsque la valeur est absente.
+
+### Ajouté
+
+- Classement des salons ({issue}`26`).
+- Nouveaux styles pour la personnalisation des salons ({issue}`89`).
+- Questionnaire de fin de session configurable ({issue}`122`).
+- Journalisation des réponses en erreur de BBB ({issue}`166`).
+
+### Modifié
+
+- Ajustements pour LaSuite ({issue}`148`).
+
+### Corrigé
+
+- Gestion des erreurs de connexion à BBB ({issue}`39`).
+- Erreurs de connexion au serveur d'identité ({issue}`119`).
 
 <a id='changelog-1.2.20'></a>
 ## v1.2.20 — 2025-02-13
 
-- mis à jour le nombre de participants pour un défaut à 350.
+### Configuration
+
+- Le nombre de participants par défaut passe à 350.
 
 <a id='changelog-1.2.19'></a>
 ## v1.2.19 — 2025-02-05
 
-- Corrige la volumétrie de requêtes sur les enregistrements vidéo.
+### Corrigé
+
+- Volumétrie des requêtes portant sur les enregistrements vidéo.
 
 <a id='changelog-1.2.18'></a>
 ## v1.2.18 — 2024-09-12
 
-- Met à jour les CGU
-- Ajoute un lien cliquable dans le message de bienvenue du salon
+### Ajouté
+
+- Lien cliquable dans le message de bienvenue du salon.
+
+### Modifié
+
+- Mise à jour des CGU.
 
 <a id='changelog-1.2.17'></a>
 ## v1.2.17 — 2024-08-23
 
-- Ajuste l'intégration de LaSuite
-- Corrige l'affichage des liens d'invitations
-- Met à jour la présentation des liens de partage :
-  - Nouvelle configuration `VIDEO_STREAMING_LINKS` pour afficher les services de diffusion sur lesquels télécharger les enregistrements :
-    - Dans le cas d'une instance CV/visio-agents `VIDEO_STREAMING_LINKS='{"PodEduc": "https://podeduc.apps.education.fr/", "Tubes": "https://tubes.apps.education.fr/"}'`
-    - Dans le cas d'une instance webinaire, ne doit pas être renseignée ou doit être vide.
+### Configuration
+
+- Nouveau paramètre `VIDEO_STREAMING_LINKS`, qui affiche les services de diffusion depuis lesquels télécharger les enregistrements. Sur une instance CV ou visio-agents : `VIDEO_STREAMING_LINKS='{"PodEduc": "https://podeduc.apps.education.fr/", "Tubes": "https://tubes.apps.education.fr/"}'`. Sur une instance webinaire, le paramètre doit rester vide ou absent.
+
+### Modifié
+
+- Ajustement de l'intégration de LaSuite.
+- Nouvelle présentation des liens de partage.
+
+### Corrigé
+
+- Affichage des liens d'invitation.
 
 <a id='changelog-1.2.16'></a>
 ## v1.2.16 — 2024-07-23
 
-- Désactive l'upload de fichiers à la création de salons. L'upload asynchrone de tous les fichiers permet au salon d'être créé plus rapidement.
+### Modifié
+
+- La mise en ligne de fichiers à la création d'un salon est désactivée : l'envoi asynchrone de tous les fichiers permet au salon d'être créé plus rapidement.
 
 <a id='changelog-1.2.15'></a>
 ## v1.2.15 — 2024-07-23
 
-- Adapte l'image de fond de LaSuite numérique à l'id du service dédié
+### Modifié
+
+- L'image de fond de LaSuite numérique s'adapte à l'identifiant du service concerné.
 
 <a id='changelog-1.2.14'></a>
 ## v1.2.14 — 2024-07-23
 
-- Ajoute la homepage de LaSuite numérique grâce à la variable d'environnement `ENABLE_LASUITENUMERIQUE` avec un défaut sur `False`
+### Configuration
+
+- Nouveau paramètre `ENABLE_LASUITENUMERIQUE`, `False` par défaut, qui ajoute la page d'accueil de LaSuite numérique.
 
 <a id='changelog-1.2.13'></a>
 ## v1.2.13 — 2024-07-22
 
-- Update donnees_personnelles.html by @klorydryk in https://github.com/numerique-gouv/b3desk/pull/138
+### Modifié
 
-### New Contributors
-- @klorydryk made their first contribution in https://github.com/numerique-gouv/b3desk/pull/138
-
-**Full Changelog**: https://github.com/numerique-gouv/b3desk/compare/v1.2.12...v1.2.13
+- Mise à jour de la page des données personnelles ({pr}`138`, {user}`klorydryk`).
 
 <a id='changelog-1.2.12'></a>
 ## v1.2.12 — 2024-06-07
 
-- Corrige l'envoi en double des fichiers non défaut dans le salon
+### Corrigé
+
+- Envoi en double des fichiers non défaut dans le salon.
 
 <a id='changelog-1.2.11'></a>
 ## v1.2.11 — 2024-06-07
 
-- Indique le protocole actuel dans les liens d'invitation
-- Ajoute la possibilité de brancher un outil de surveillance
-- Documente l'environnement de développement pour des interfaces https exposées sur le web
-- Documente le processus et les interfaces pour le partage de fichiers
-- Corrige le partage de fichier en production
-  fixes #130
+### Ajouté
+
+- Possibilité de brancher un outil de surveillance.
+- Documentation de l'environnement de développement pour des interfaces HTTPS exposées sur le web.
+- Documentation du processus et des interfaces de partage de fichiers.
+
+### Modifié
+
+- Les liens d'invitation indiquent le protocole courant.
+
+### Corrigé
+
+- Partage de fichiers en production ({issue}`130`).
 
 <a id='changelog-1.2.10'></a>
 ## v1.2.10 — 2024-05-16
 
-- Corrige la génération de hash de visio avec une string du rôle traduite en anglais
+### Corrigé
+
+- Génération du hash de visio lorsque le rôle est traduit en anglais.
 
 <a id='changelog-1.2.9'></a>
 ## v1.2.9 — 2024-05-16
 
-- Assurer la rétrocompatibilité avec différentes méthodes de génération de hash
+### Corrigé
+
+- Rétrocompatibilité avec les différentes méthodes de génération de hash.
 
 <a id='changelog-1.2.8'></a>
 ## v1.2.8 — 2024-05-16
 
-- Corrige la création des hash de visio pour rester compatible avec les anciens.
+### Corrigé
+
+- Création des hash de visio, qui restent compatibles avec les anciens.
 
 <a id='changelog-1.2.7'></a>
 ## v1.2.7 — 2024-05-15
 
-- Corriger l'absence de `nclogin` pour certain serveurs d'identité
+### Corrigé
+
+- Absence de `nclogin` sur certains serveurs d'identité.
 
 <a id='changelog-1.2.6'></a>
 ## v1.2.6 — 2024-04-30
 
-- Ajouter la possibilité de se connecter à un serveur d'identité secondaire pour récupérer les ID Nextcloud spécifiques avec un email utilisateur
-  - Pour utiliser cette fonctionnalité, il est nécessaire de configurer les paramètres `SECONDARY_IDENTITY_PROVIDER_ENABLED`, `SECONDARY_IDENTITY_PROVIDER_URI`, `SECONDARY_IDENTITY_PROVIDER_REALM`, `SECONDARY_IDENTITY_PROVIDER_CLIENT_ID` et `SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET`. Voir la [documentation](https://b3desk.readthedocs.io/fr/latest/maintainers/settings.html#jumelage-avec-apps).
+### Configuration
+
+- Nouveaux paramètres `SECONDARY_IDENTITY_PROVIDER_ENABLED`, `SECONDARY_IDENTITY_PROVIDER_URI`, `SECONDARY_IDENTITY_PROVIDER_REALM`, `SECONDARY_IDENTITY_PROVIDER_CLIENT_ID` et `SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET`, décrits dans la [documentation](https://b3desk.readthedocs.io/fr/latest/maintainers/settings.html#jumelage-avec-apps).
+
+### Ajouté
+
+- Connexion à un serveur d'identité secondaire, pour récupérer les identifiants Nextcloud propres à un utilisateur à partir de son adresse électronique.
 
 <a id='changelog-1.2.5'></a>
 ## v1.2.5 — 2024-04-26
 
-- Ajouter une configuration de log basique
+### Ajouté
+
+- Configuration de journalisation de base.
 
 <a id='changelog-1.2.4'></a>
 ## v1.2.4 — 2024-04-25
 
-- Ajouter les logs info sur les serveurs gunicorn de production
-- Mettre à jour les librairies de test
+### Ajouté
+
+- Journaux de niveau info sur les serveurs gunicorn de production.
+
+### Modifié
+
+- Mise à jour des bibliothèques de test.
 
 <a id='changelog-1.2.3'></a>
 ## v1.2.3 — 2024-04-24
 
-- Ajouter de la [documentation](https://b3desk.readthedocs.io/fr/latest/developers/imitateProduction.html) sur la création d'un environnement local fonctionnel pour du partage de fichiers
-- Ajouter des logs sur la cinématique de partage de documents
+### Ajouté
+
+- [Documentation](https://b3desk.readthedocs.io/fr/latest/developers/imitateProduction.html) sur la mise en place d'un environnement local fonctionnel pour le partage de fichiers.
+- Journaux sur la cinématique de partage de documents.
 
 <a id='changelog-1.2.2'></a>
 ## v1.2.2 — 2024-04-22
 
-- Mise à jour de librairies
-- Ajout de logs sur l'API BBB et sur le worker
-- Ajout d'un badge notifiant l'environnement actuel
-- Correction du système de partage de fichiers #123
+### Ajouté
+
+- Journaux sur l'API BBB et sur le worker.
+- Badge signalant l'environnement courant.
+
+### Modifié
+
+- Mise à jour de bibliothèques.
+
+### Corrigé
+
+- Système de partage de fichiers ({issue}`123`).
 
 <a id='changelog-1.2.1'></a>
 ## v1.2.1 — 2024-04-05
 
-- fix settings comma separated list of string parsing
+### Corrigé
+
+- Lecture des paramètres exprimés sous forme de listes de chaînes séparées par des virgules.
 
 <a id='changelog-1.2.0'></a>
 ## v1.2.0 — 2024-04-04
 
-- Ajouter un script de suivi Matomo #54
-- Ajouter "https://" à la récupération de l'url du Nuage depuis LaBoîte #48
-- Liens urls modérateurs/participants facilement identifiables / ajouter dans les urls un "/guest/" pour le lien invité et un "/admin/" pour le lien modérateur #93
-- Ajout de l'académie en paramètre dans la création de salon #80
-- Parcours de suppression de salle #90
-- Informations limite de conservation des enregistrements #98
-- Forcer la casse des noms venant du SSO #47
-- UX : Tableau de bord et choix entre réunion immédiate et permanente
-  #75
-- Pages d'erreur statiques #81
-- Mauvaise page d'atterrissage au lancement d'une visio depuis B3Desk #77
-- Soupçons de problème de charge #76
-- Pas de création des tables lors d'une primo-installation #78
-- Fournir un script SQL pour passer les anciennes bases en v1.1 pour la mise à jour #49
-- Documenter les options de configuration #10
+### Actions requises
+
+- Lancer le script SQL fourni pour faire passer les anciennes bases en version 1.1 ({issue}`49`).
+
+### Ajouté
+
+- Script de suivi Matomo ({issue}`54`).
+- Les liens modérateur et participant deviennent identifiables, avec `/admin/` et `/guest/` dans les URL ({issue}`93`).
+- L'académie devient un paramètre de la création d'un salon ({issue}`80`).
+- Parcours de suppression d'un salon ({issue}`90`).
+- Information sur la limite de conservation des enregistrements ({issue}`98`).
+- Tableau de bord et choix entre réunion immédiate et salon permanent ({issue}`75`).
+- Pages d'erreur statiques ({issue}`81`).
+- Documentation des options de configuration ({issue}`10`).
+
+### Modifié
+
+- La casse des noms provenant du SSO est forcée ({issue}`47`).
+
+### Corrigé
+
+- Ajout de `https://` à l'URL du Nuage récupérée depuis LaBoîte ({issue}`48`).
+- Les tables sont bien créées lors d'une primo-installation ({issue}`78`).
+- Page d'atterrissage erronée au lancement d'une visio depuis B3Desk ({issue}`77`).
+- Soupçons de problème de charge ({issue}`76`).
 
 <a id='changelog-1.1.6'></a>
 ## v1.1.6 — 2024-03-19
 
-- Rétroportage du correctif #117 du bug qui masquait l'affichage du pdf par défaut lorsque `FILE_SHARING` était activé
+### Corrigé
+
+- Rétroportage du correctif masquant l'affichage du PDF par défaut lorsque `FILE_SHARING` est activé ({pr}`117`).
 
 <a id='changelog-1.1.5'></a>
 ## v1.1.5 — 2024-03-14
 
-- Corrige le plantage du alembic_helper lors de la recherche d'existence de table, notamment dans le cas des pertes de numéro de migrations de base de données.
+### Corrigé
+
+- Plantage de `alembic_helper` lors de la recherche d'existence d'une table, notamment en cas de perte de numéro de migration.
 
 <a id='changelog-1.1.4'></a>
 ## v1.1.4 — 2024-03-12
 
-- Divers correctifs sur l'API meetings à destination des plugins pour Thunderbird et Outlook
-- Le paramètre `OIDC_INTROSPECTION_AUTH_METHOD` peut être utilisé pour paramétrer la manière dont b3desk se connecte au point d'accès d'introspection du serveur d'identité
+### Configuration
+
+- Le paramètre `OIDC_INTROSPECTION_AUTH_METHOD` définit la manière dont B3Desk se connecte au point d'accès d'introspection du serveur d'identité.
+
+### Corrigé
+
+- Divers correctifs sur l'API des salons, à destination des greffons Thunderbird et Outlook.
 
 <a id='changelog-1.1.3'></a>
 ## v1.1.3 — 2024-01-26
 
-Ajouts :
+### Ajouté
 
-- Page d'erreur statique pour nginx #81
+- Page d'erreur statique pour nginx ({issue}`81`).
 
 <a id='changelog-1.1.2'></a>
 ## v1.1.2 — 2023-12-08
 
-Corrections
+### Corrigé
 
--  Correction additionnelle en rapport avec le crash de la dropzone #58 #64
+- Correction additionnelle du plantage de la zone de dépôt de fichiers ({issue}`58`, {pr}`64`).
 
 <a id='changelog-1.1.1'></a>
 ## v1.1.1 — 2023-12-07
 
-Corrections
-- Correction du chemin de téléversement de fichiers des conférences #59
-- Correction du helper de migration alembic pour le test d'existence des colonnes dans la base de données #49
+### Corrigé
+
+- Chemin de téléversement des fichiers de conférence ({pr}`59`).
+- Helper de migration Alembic pour le test d'existence des colonnes en base de données ({issue}`49`).
 
 <a id='changelog-1.1.0'></a>
 ## v1.1.0 — 2023-10-25
 
-Ajouts
-- Option pour désactiver l'authentification des participants #9 #11
-- Lecture des variables `OIDC_SCOPES` et `OIDC_ATTENDEE_SCOPES` depuis
-  l'environnement. #7
-- Personnalisation de l'URL du sondage de satisfaction #12 #29
-- Message d'attente à l'entrée d'un séminaire #13 #34
-- Template personnalisé pour les erreurs 400 #27 #37
-- Affichage du numéro de version en pied de page #25 #31 #45
+### Configuration
 
-Corrections
-- Correction de la variable %%CONFNAME%% en description du séminaire
-  #18 #19
-- Couleur de l'indicateur de chargement #13 #40
+- Les variables `OIDC_SCOPES` et `OIDC_ATTENDEE_SCOPES` sont lues depuis l'environnement ({pr}`7`).
+- L'URL du sondage de satisfaction devient personnalisable ({issue}`12`, {pr}`29`).
+
+### Ajouté
+
+- Option permettant de désactiver l'authentification des participants ({issue}`9`, {pr}`11`).
+- Message d'attente à l'entrée d'un séminaire ({issue}`13`, {pr}`34`).
+- Gabarit personnalisé pour les erreurs 400 ({issue}`27`, {pr}`37`).
+- Affichage du numéro de version en pied de page ({issue}`25`, {pr}`31`, {pr}`45`).
+
+### Corrigé
+
+- Variable `%%CONFNAME%%` dans la description d'un séminaire ({issue}`18`, {pr}`19`).
+- Couleur de l'indicateur de chargement ({issue}`13`, {pr}`40`).
 
 <a id='changelog-1.0.2'></a>
 ## v1.0.2 — 2023-07-18
 
-Now with a licence: EUPL.
+### Ajouté
+
+- Le projet est publié sous licence EUPL.
 
 <a id='changelog-1.0.0'></a>
 ## v1.0.0 — 2023-07-17
 
-First commit of this public repository of the BBB fronted provided and used by the French Ministry of Education.
+Première publication du dépôt public de l'interface BigBlueButton fournie et utilisée par le ministère de l'Éducation nationale.

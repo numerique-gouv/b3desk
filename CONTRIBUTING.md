@@ -121,16 +121,26 @@ just changelog
 ```
 
 Le fichier créé contient toutes les rubriques disponibles en commentaire :
-gardez celles qui s'appliquent, supprimez les autres. Les deux premières
-rubriques, « Actions requises » et « Configuration », sont celles que les
-personnes qui administrent une instance liront avant de mettre à jour : c'est
-là que se décrivent les migrations à lancer et les paramètres à ajouter.
+gardez celles qui s'appliquent, supprimez les autres. Les trois premières,
+« Actions requises », « Migrations » et « Configuration », sont celles que les
+personnes qui administrent une instance liront avant de mettre à jour. La
+première ne contient que ce qu'elles doivent faire de leurs mains ; les
+migrations, elles, s'appliquent toutes seules au démarrage, et la rubrique sert
+à savoir quoi sauvegarder avant et ce qui ne sera pas réversible.
 
 Le fragment est rédigé du point de vue de l'usage, pas du code. Il est relu en
 même temps que le reste de la pull request, et [scriv](https://scriv.readthedocs.io)
 le déplacera dans le
 [CHANGELOG](https://github.com/numerique-gouv/b3desk/blob/main/CHANGELOG.md) au moment de la publication
 d'une version, d'où il alimentera les notes de la release GitHub.
+
+Les tickets et les personnes se référencent avec les rôles de
+[sphinx-issues](https://github.com/sloria/sphinx-issues) — `` {pr}`366` ``,
+`` {issue}`226` `` et `` {user}`azmeuk` `` — et non avec des liens écrits à la
+main. Ces rôles ne sont interprétés que par la documentation : le workflow de
+publication les remplace par des liens avant de les envoyer dans les notes de
+release, et le `CHANGELOG.md` consulté directement sur GitHub les affiche tels
+quels.
 
 Une modification sans effet visible — une refactorisation, un changement
 d'outillage, une correction de test — n'a pas besoin de fragment. Posez alors
