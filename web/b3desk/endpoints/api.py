@@ -1,4 +1,3 @@
-import requests
 from authlib.integrations.flask_oauth2 import ResourceProtector
 from authlib.oauth2.rfc6750 import InvalidTokenError
 from authlib.oauth2.rfc7662 import IntrospectTokenValidator
@@ -8,6 +7,7 @@ from flask import request
 
 from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.users import get_or_create_user
+from b3desk.utils import http_client
 
 from .. import oauth
 
@@ -21,7 +21,7 @@ class OIDCIntrospectTokenValidator(IntrospectTokenValidator):
         introspection_endpoint = oauth.default.load_server_metadata()[
             "introspection_endpoint"
         ]
-        response = requests.post(
+        response = http_client().post(
             introspection_endpoint,
             data={"token": token_string},
             auth=(

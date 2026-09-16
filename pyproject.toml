@@ -36,6 +36,7 @@ dependencies = [
     "sqlalchemy-utils>=0.42.1,<0.50.0",
     "webdavclient3==3.14.6",
     "authlib>=1.7.2",
+    "httpx2>=2.13.0",
 ]
 
 [tool.uv]
@@ -73,6 +74,7 @@ dev = [
     "setuptools>=83.0.0",
     "faker>=40.1.2",
     "html5lib-modern>=1.2",
+    "pytest-httpx2>=1.0.0",
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",

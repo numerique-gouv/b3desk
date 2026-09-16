@@ -441,7 +441,7 @@ def test_rasing_time_before_refresh_in_waiting_meeting(
     client_app, meeting, authenticated_user, mocker
 ):
     """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     response = client_app.get(response.location)
@@ -456,7 +456,7 @@ def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
     client_app, meeting, authenticated_user, mocker
 ):
     """Tests seconds_before_refresh does not increase beyong maximum_refresh_time each time waiting_meeting is refreshed."""
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     def increase_waiting_time(previous_waiting_time="10"):
         response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")

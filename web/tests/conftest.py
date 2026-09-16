@@ -11,6 +11,7 @@ import b3desk.utils
 import portpicker
 import psycopg
 import pytest
+import respx
 from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
@@ -789,17 +790,25 @@ def authenticated_attendee(client_app, user, mocker):
 
 
 @pytest.fixture
-def bbb_response(mocker):
+def httpx2_mock():
+    """Override the pytest-httpx2 fixture: shared fixtures may go uncalled."""
+    with respx.mock(using="httpcore2", assert_all_called=False) as router:
+        yield router
+
+
+@pytest.fixture
+def bbb_response(httpx2_mock):
     class Response:
         content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge><attendeePW>attendee</attendeePW><moderatorPW>moderator</moderatorPW></response>"""
         status_code = 200
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_response(mocker):
+def bbb_getRecordings_response(httpx2_mock):
     """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
 
     class Response:
@@ -920,7 +929,8 @@ def bbb_getRecordings_response(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture(scope="session")

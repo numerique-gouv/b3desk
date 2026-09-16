@@ -1,10 +1,9 @@
-from datetime import datetime
 from datetime import timedelta
 from urllib.parse import unquote
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
-import requests
+import httpx2
 from flask import current_app
 from flask import g
 from webdav3.client import Client as webdavClient
@@ -14,6 +13,8 @@ from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
 
 from b3desk import cache
+from b3desk.utils import http_client
+from b3desk.utils import utcnow
 
 NEXTCLOUD_BACKOFF_INITIAL = 1
 NEXTCLOUD_BACKOFF_MULTIPLIER = 1
@@ -44,7 +45,7 @@ class CircuitBreaker:
         if expires_at is None:
             return False
 
-        remaining = (expires_at - datetime.now()).total_seconds()
+        remaining = (expires_at - utcnow()).total_seconds()
         current_app.logger.debug(
             "%s: %s blocked, retry in %.0fs", self.key_prefix, identifier, remaining
         )
@@ -55,7 +56,7 @@ class CircuitBreaker:
         backoff_key = f"{self.key_prefix}_backoff:{identifier}"
 
         current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-        expires_at = datetime.now() + timedelta(seconds=current_backoff)
+        expires_at = utcnow() + timedelta(seconds=current_backoff)
         cache.set(key, expires_at, timeout=current_backoff)
 
         next_backoff = min(
@@ -168,11 +169,11 @@ def make_nextcloud_credentials_request(url, payload, headers):
     Handles URL validation and HTTPS enforcement based on configuration.
     """
     try:
-        response = requests.post(
+        response = http_client().post(
             url, json=payload, headers=headers, timeout=NEXTCLOUD_REQUEST_TIMEOUT
         )
         data = response.json()
-    except requests.exceptions.RequestException as e:  # pragma: no cover
+    except httpx2.HTTPError as e:  # pragma: no cover
         current_app.logger.error(
             "Unable to contact %s with payload %s and header %s, %s",
             url,
@@ -226,7 +227,7 @@ class NoUserFound(Exception):
 def get_secondary_identity_provider_token():
     """Retrieve OAuth access token from secondary identity provider using client credentials."""
     # TODO: replace this with authlib
-    return requests.post(
+    return http_client().post(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/protocol/openid-connect/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data={
@@ -240,7 +241,7 @@ def get_secondary_identity_provider_token():
 
 def get_secondary_identity_provider_users_from_email(email, access_token):
     """Query secondary identity provider API to retrieve users matching the given email."""
-    return requests.get(
+    return http_client().get(
         f"{current_app.config['SECONDARY_IDENTITY_PROVIDER_URI']}/auth/admin/realms/{current_app.config['SECONDARY_IDENTITY_PROVIDER_REALM']}/users",
         headers={
             "Authorization": f"Bearer {access_token}",
@@ -260,7 +261,7 @@ def get_secondary_identity_provider_id_from_email(email):
     try:
         token_response = get_secondary_identity_provider_token()
         token_response.raise_for_status()
-    except requests.exceptions.HTTPError as exception:
+    except httpx2.HTTPStatusError as exception:
         current_app.logger.warning(
             "Get token request error: %s, %s", exception, token_response.text
         )
@@ -282,7 +283,7 @@ def get_secondary_identity_provider_id_from_email(email):
             email=email, access_token=access_token
         )
         users_response.raise_for_status()
-    except requests.exceptions.HTTPError as exception:
+    except httpx2.HTTPStatusError as exception:
         current_app.logger.warning(
             "Get user from email request error: %s, %s", exception, users_response.text
         )
@@ -331,7 +332,7 @@ def get_user_nc_credentials(user):
             nc_username = get_secondary_identity_provider_id_from_email(
                 email=user.email
             )
-        except requests.exceptions.HTTPError:
+        except httpx2.HTTPStatusError:
             pass
         except (TooManyUsers, NoUserFound) as e:
             current_app.logger.warning(e)
@@ -388,7 +389,7 @@ def update_user_nc_credentials(user, force_renew=False):
         and user.nc_locator
         and user.nc_token
         and (
-            (elapsed_time := (datetime.now() - user.nc_last_auto_enroll)).days
+            (elapsed_time := (utcnow() - user.nc_last_auto_enroll)).days
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
@@ -422,5 +423,5 @@ def update_user_nc_credentials(user, force_renew=False):
     user.nc_locator = data["nclocator"]
     user.nc_token = data["nctoken"]
     user.nc_login = data["nclogin"]
-    user.nc_last_auto_enroll = datetime.now()
+    user.nc_last_auto_enroll = utcnow()
     return True

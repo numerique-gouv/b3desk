@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-import requests
+import httpx2
 from authlib.integrations.base_client import MismatchingStateError
 from authlib.integrations.base_client import OAuthError
 from flask import Blueprint
@@ -14,6 +14,8 @@ from flask import request
 from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
+
+from b3desk.utils import http_client
 
 from .. import cache
 from .. import oauth
@@ -43,14 +45,14 @@ def get_meetings_stats():
         return None
 
     try:
-        response = requests.get(current_app.config["STATS_URL"])
+        response = http_client().get(current_app.config["STATS_URL"])
         if response.status_code != 200:
             return None
         stats_array = response.content.decode(encoding="utf-8").split("\n")
         stats_array = [row.split(",") for row in stats_array]
         participant_count = int(stats_array[current_app.config["STATS_INDEX"]][1])
         running_count = int(stats_array[current_app.config["STATS_INDEX"]][2])
-    except requests.RequestException:
+    except httpx2.HTTPError:
         return None
 
     return {"participantCount": participant_count, "runningCount": running_count}

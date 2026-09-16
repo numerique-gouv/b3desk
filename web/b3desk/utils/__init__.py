@@ -1,10 +1,13 @@
 import random
 import smtplib
 import string
+import time
+from datetime import UTC
 from datetime import datetime
 from email.message import EmailMessage
 from functools import wraps
 
+import httpx2
 from flask import abort
 from flask import current_app
 from flask import flash
@@ -28,6 +31,79 @@ from slugify import slugify
 from werkzeug.routing import BaseConverter
 
 from b3desk.models import db
+
+HTTP_TIMEOUT = 10
+DOWNLOAD_MAX_DURATION = 60
+DOWNLOAD_CHUNK_SIZE = 64 * 1024
+
+
+def http_client():
+    """Return the HTTP client shared by the whole process, built on first use.
+
+    In local development environment, services are not served as https, so
+    certificate verification is disabled.
+    """
+    client = current_app.extensions.get("http_client")
+    if client is None:
+        client = current_app.extensions["http_client"] = httpx2.Client(
+            timeout=HTTP_TIMEOUT,
+            verify=not current_app.debug,
+            follow_redirects=True,
+        )
+    return client
+
+
+def download_url_to_path(url, path):
+    """Download an external URL into a local path, bounded in time and in size.
+
+    Return False when the download failed or grew past MAX_SIZE_UPLOAD. The
+    client timeout only bounds the delay between two chunks, so a slow trickle
+    is caught by the deadline instead.
+    """
+    max_size = current_app.config["MAX_SIZE_UPLOAD"]
+    deadline = time.monotonic() + DOWNLOAD_MAX_DURATION
+    downloaded = 0
+
+    try:
+        with http_client().stream("GET", url) as response:
+            if not response.is_success:
+                current_app.logger.warning(
+                    "URL file download for %s returned status %s",
+                    url,
+                    response.status_code,
+                )
+                return False
+
+            with path.open("wb") as f:
+                for chunk in response.iter_bytes(chunk_size=DOWNLOAD_CHUNK_SIZE):
+                    if time.monotonic() > deadline:
+                        current_app.logger.warning(
+                            "URL file download for %s exceeded %s seconds",
+                            url,
+                            DOWNLOAD_MAX_DURATION,
+                        )
+                        return False
+
+                    downloaded += len(chunk)
+                    if downloaded > max_size:
+                        current_app.logger.warning(
+                            "URL file download for %s exceeded %s bytes", url, max_size
+                        )
+                        return False
+
+                    f.write(chunk)
+    except httpx2.HTTPError as request_error:
+        current_app.logger.warning(
+            "URL file download failed for %s: %s", url, request_error
+        )
+        return False
+
+    return True
+
+
+def utcnow():
+    """Return the current UTC time as a naive datetime, the way it is stored."""
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def secret_key():
@@ -62,6 +138,7 @@ def make_smtp():
         "starttls": current_app.config["SMTP_STARTTLS"],
         "username": current_app.config["SMTP_USERNAME"],
         "password": current_app.config["SMTP_PASSWORD"],
+        "timeout": current_app.config["SMTP_TIMEOUT"],
     }
 
 
@@ -159,7 +236,9 @@ def send_email(msg, text, html, smtp):
 
     connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
     try:
-        with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+        with connection_func(
+            smtp["host"], smtp["port"], timeout=smtp["timeout"]
+        ) as smtp_connect:
             if smtp["starttls"]:
                 smtp_connect.starttls()
             if smtp["username"]:
