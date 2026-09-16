@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 
-import requests
+import httpx2
 from flask import Flask
 from flask import current_app
 from flask import jsonify
@@ -71,10 +71,12 @@ def token():
     }
 
     try:
-        response = requests.post(nextcloud_endpoint, data=payload, timeout=30)
+        response = httpx2.post(
+            nextcloud_endpoint, data=payload, timeout=30, follow_redirects=True
+        )
         nc_data = response.json()
 
-    except requests.exceptions.RequestException as exc:
+    except httpx2.HTTPError as exc:
         current_app.logger.error(f"Failed to connect to Nextcloud: {exc}")
         return jsonify({"error": f"Failed to connect to Nextcloud: {exc}"}), 500
 
