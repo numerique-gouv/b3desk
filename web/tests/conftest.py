@@ -42,9 +42,18 @@ def no_retry_delay():
 @pytest.fixture(autouse=True)
 def celery_task_logging(caplog):
     """Make caplog capture b3desk.tasks' log records."""
-    for name in ("b3desk.tasks", "celery.task", "celery"):
+    disabled = {
+        name: logging.getLogger(name).disabled
+        for name in ("b3desk.tasks", "celery.task", "celery")
+    }
+    for name in disabled:
         logging.getLogger(name).disabled = False
     caplog.set_level(logging.INFO, logger="b3desk.tasks")
+
+    yield
+
+    for name, was_disabled in disabled.items():
+        logging.getLogger(name).disabled = was_disabled
 
 
 @pytest.fixture(autouse=True, scope="session")
