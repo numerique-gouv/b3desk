@@ -109,6 +109,34 @@ prek install
 
 Ainsi, lorsque vous ferez un commit, ruff sera automatiquement lancé et formatera le code si ça n'a pas été fait (il vous faudra ajouter ce nouveau changement avec git).
 
+#### Journal des modifications
+
+Chaque modification qui change quelque chose pour les personnes qui utilisent
+B3Desk ou pour celles qui administrent une instance est accompagnée d'un
+*fragment* de journal des modifications, déposé dans le dossier `changelog.d` :
+
+```bash
+just changelog
+# ou directement : uv run scriv create --edit
+```
+
+Le fichier créé contient toutes les rubriques disponibles en commentaire :
+gardez celles qui s'appliquent, supprimez les autres. Les deux premières
+rubriques, « Actions requises » et « Configuration », sont celles que les
+personnes qui administrent une instance liront avant de mettre à jour : c'est
+là que se décrivent les migrations à lancer et les paramètres à ajouter.
+
+Le fragment est rédigé du point de vue de l'usage, pas du code. Il est relu en
+même temps que le reste de la pull request, et [scriv](https://scriv.readthedocs.io)
+le déplacera dans le
+[CHANGELOG](https://github.com/numerique-gouv/b3desk/blob/main/CHANGELOG.md) au moment de la publication
+d'une version, d'où il alimentera les notes de la release GitHub.
+
+Une modification sans effet visible — une refactorisation, un changement
+d'outillage, une correction de test — n'a pas besoin de fragment. Posez alors
+le label « skip changelog » sur la pull request pour que l'intégration continue
+cesse d'en réclamer un.
+
 #### Intégration continue GitHub
 
 GitHub Actions est utilisé afin de s'assurer que le code reste propre et fonctionnel et que les conteneurs peuvent communiquer entre eux pour s'assurer que l'embarquement de nouveaux développeur·euses sur de nouvelles machines est possible.
@@ -121,6 +149,7 @@ La CI GitHub est utilisée pour :
 - lancer tous les conteneurs et faire un healthcheck sur chacun : pour valider que la configuration locale est fonctionnelle, et notamment qu'un token bien généré permet à B3Desk de communiquer avec une instance Nextcloud
 - valider que la couverture de test est au moins égale à la couverture précédente : pour inciter à ajouter des tests
 - valider que le code a bien été formaté : un `ruff check .` est lancé
+- valider qu'un fragment de journal des modifications a été ajouté, sauf si la pull request porte le label « skip changelog »
 
 #### Vérification de la couverture
 Vous pouvez anticiper anticiper la validation de couverture effectuée par la CI de GitHub avec :

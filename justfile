@@ -14,6 +14,16 @@ install-dev:
 doc:
     uv run sphinx-build documentation build/sphinx/html
 
+# Describe the current change for the users and the administrators, in a changelog fragment
+[group('dev')]
+changelog:
+    uv run scriv create --edit
+
+# Move the changelog fragments into the CHANGELOG, under the version set in pyproject.toml
+[group('release')]
+changelog-collect:
+    uv run scriv collect --edit
+
 # Refresh the translation catalogs from the code, end to end
 [group('translation')]
 translation: translation-extract translation-update translation-compile

@@ -14,11 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # scriv matches the changelog entries against the list of git tags.
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
       - run: uv build
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          generate_release_notes: true
           files: |
             dist/*.whl
             dist/*.tar.gz
+      - name: Write the release notes from the changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run --only-group release scriv github-release --repo ${{ github.repository }}

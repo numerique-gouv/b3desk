@@ -1,33 +1,38 @@
 # Publication
 
-Pour publier une nouvelle version :
+Pour publier une nouvelle version :
 
 ## S'assurer que `main` est à jour
 
-## Être sur la branche `production`
-
-La branche de référence pour les releases est `production`. C'est ici qu'on retrouve les différentes versions installées sur les instances. À ces releases correspondent des tags git.
+Le journal des modifications et le numéro de version sont préparés sur `main`,
+puis reportés sur `production` par le merge habituel. Commencez donc par vous
+placer sur `main` et par récupérer les dernières modifications.
 
 ```
-git branch
-# La liste des branches sera affichée avec une * avant la branche actuelle.
-```
-Si la branche actuelle n'est pas `production` :
-```
-git switch production
+git switch main
+git pull upstream main
 ```
 
-## Récupérer les dernières modifications
+## Fixer le numéro de version
 
-Faire un merge de `main` dans `production` pour récupérer les dernières modifications prêtes à être publiées.
+Enlever `dev` du numéro de version dans les fichiers `pyproject.toml` et
+`web/b3desk/__init__.py`. La version passe par exemple de `1.2.20dev` à
+`1.2.20`.
+
+## Rassembler le journal des modifications
+
 ```
-git merge main
+just changelog-collect
 ```
-`main` devrait être dans une version de dev et supérieure à `production`. Ce merge devrait créer deux conflits sur `pyproject.toml` et `web/b3desk/__init__.py`.
 
-## Résoudre ces conflits
-
-Résoudre les conflit en mettant à jour le numéro de version dans `pyproject.toml` et dans `web/b3desk/__init__.py` simplement en enlevant `dev` de la version.
+[scriv](https://scriv.readthedocs.io) déplace les fragments du dossier
+`changelog.d` dans le fichier `CHANGELOG.md`, sous un titre reprenant le
+numéro de version qu'il lit dans `pyproject.toml` — d'où l'ordre de ces deux
+étapes. Le fichier s'ouvre ensuite dans votre éditeur : c'est le moment de
+relire l'entrée, de fusionner les formulations redondantes et de vérifier que
+les rubriques « Actions requises » et « Configuration » disent bien tout ce
+qu'une personne qui administre une instance doit savoir avant de mettre à
+jour. Ce texte sera publié tel quel dans les notes de la release.
 
 ## Lancer les tests avec `tox`
 ```bash
@@ -37,13 +42,38 @@ Résoudre les erreurs éventuelles avant de recommencer la procédure.
 
 ## Nommer ce commit
 
-Pour simplifier l'historique du versionnement on nomme ce merge "Merge branch 'main' W.X.Ydev into production"
+```
+git add pyproject.toml web/b3desk/__init__.py CHANGELOG.md changelog.d
+git commit -m "chore: prepare the W.X.Y release"
+# exemple : git commit -m "chore: prepare the 1.2.20 release"
+git push upstream main
+```
+
+## Être sur la branche `production`
+
+La branche de référence pour les releases est `production`. C'est ici qu'on retrouve les différentes versions installées sur les instances. À ces releases correspondent des tags git.
 
 ```
-git add <fichiers modifiés>
-# exemple : git add pyproject.toml web/b3desk/__init__.py
-git commit -m "Merge branch 'main' W.X.Ydev into production"
-# exemple : git commit -m "Merge branch 'main' 1.2.20dev into production"
+git switch production
+```
+
+## Récupérer les dernières modifications
+
+Faire un merge de `main` dans `production` pour récupérer les dernières modifications prêtes à être publiées, numéro de version et journal des modifications compris.
+
+```
+git merge main
+```
+
+En cas de conflit sur `pyproject.toml`, `web/b3desk/__init__.py` ou
+`CHANGELOG.md`, conserver systématiquement la version de `main`, qui est celle
+que l'on publie.
+
+Pour simplifier l'historique du versionnement on nomme ce merge "Merge branch 'main' W.X.Y into production".
+
+```
+git commit -m "Merge branch 'main' W.X.Y into production"
+# exemple : git commit -m "Merge branch 'main' 1.2.20 into production"
 ```
 
 ## Ajouter un tag
@@ -63,7 +93,15 @@ git push upstream production --follow-tags
 
 ## Publier la nouvelle version
 
-La release est publiée automatiquement par GitHub Actions à la réception du tag. Il suffit de se rendre sur [la page des releases](https://github.com/numerique-gouv/b3desk/releases) pour contrôler le message généré, et éventuellement le compléter (tickets fermés par la release, nouvelles migrations avec le revision ID délivré par alembic, configuration à ajouter, etc.).
+La release est publiée automatiquement par GitHub Actions à la réception du
+tag. Le workflow construit les paquets, les attache à la release, puis écrit
+les notes de version à partir de l'entrée correspondante du `CHANGELOG.md`. Il
+n'y a donc rien à compléter à la main sur [la page des
+releases](https://github.com/numerique-gouv/b3desk/releases) : si le texte
+publié ne convient pas, corrigez l'entrée dans `CHANGELOG.md` et relancez le
+workflow, plutôt que d'éditer la release depuis l'interface de GitHub — une
+modification faite là serait écrasée à la prochaine exécution, et surtout elle
+ne se retrouverait pas dans le dépôt.
 
 ## Mettre `main` à jour
 
