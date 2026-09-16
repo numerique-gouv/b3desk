@@ -90,6 +90,10 @@ texinfo_documents = [
 
 autosectionlabel_prefix_document = True
 
+# Every changelog entry repeats the same category titles, which cannot yield
+# unique labels.
+suppress_warnings = ["autosectionlabel.maintainers/changelog"]
+
 # -- Options for autodo_pydantic_settings -------------------------------------------
 
 autodoc_pydantic_model_show_json = False
