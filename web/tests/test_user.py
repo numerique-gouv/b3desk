@@ -642,7 +642,7 @@ def test_inform_user_before_account_deletion_with_recently_used_meeting(
     time_machine.move_to(test_date)
     users_to_inform = get_inactive_users_to_inform()
 
-    assert users_to_inform == [
+    assert sorted(users_to_inform, key=lambda entry: entry[0].id) == [
         (user, DELAY_FOR_FIRST_EMAIL, 1),
         (user_2, DELAY_FOR_FIRST_EMAIL, 1),
     ]
