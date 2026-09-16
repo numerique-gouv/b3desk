@@ -226,7 +226,7 @@ def inform_owner_before_meeting_deletion():
 
 @shared_task(name="delete-old-users")
 def delete_old_users():
-    """Celery cron task to delete expired meetings from database."""
+    """Celery cron task to delete expired user accounts from database."""
     logger.info("Celery cron task: delete_old_users started")
     users_to_delete = get_inactive_users_to_delete()
 
@@ -306,4 +306,4 @@ def inform_user_before_account_deletion():
                 user.email,
                 delay,
             )
-    logger.info("Celery cron task: inform_owner_before_meeting_deletion ended")
+    logger.info("Celery cron task: inform_user_before_account_deletion ended")
