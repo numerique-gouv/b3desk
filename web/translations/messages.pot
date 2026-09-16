@@ -3384,47 +3384,47 @@ msgid ""
 "sécuriser la connexion SIPMediaGW"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:45
+#: web/b3desk/utils/mailing.py:46
 #, python-brace-format
 msgid "Nouvelle délégation pour {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:47
+#: web/b3desk/utils/mailing.py:48
 #, python-brace-format
 msgid "Retrait de délégation pour {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:63
+#: web/b3desk/utils/mailing.py:64
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:71
+#: web/b3desk/utils/mailing.py:72
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:77
+#: web/b3desk/utils/mailing.py:78
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:79
+#: web/b3desk/utils/mailing.py:80
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:81
+#: web/b3desk/utils/mailing.py:82
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:112
+#: web/b3desk/utils/mailing.py:113
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:132
+#: web/b3desk/utils/mailing.py:133
 #, python-brace-format
 msgid "Information avant suppression : {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/mailing.py:153
+#: web/b3desk/utils/mailing.py:154
 #, python-brace-format
 msgid "Information avant suppression : {user_name}"
 msgstr ""

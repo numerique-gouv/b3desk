@@ -24,6 +24,7 @@ def make_smtp():
         "starttls": current_app.config["SMTP_STARTTLS"],
         "username": current_app.config["SMTP_USERNAME"],
         "password": current_app.config["SMTP_PASSWORD"],
+        "timeout": current_app.config["SMTP_TIMEOUT"],
     }
 
 
@@ -159,7 +160,7 @@ def send_mail_before_user_deletion(user, delay):
     send_email(msg, text, html, smtp)
 
 
-@stamina.retry(on=(smtplib.SMTPException, OSError), attempts=3, timeout=10)
+@stamina.retry(on=(smtplib.SMTPException, OSError), attempts=3, timeout=45)
 def _deliver(msg, smtp):
     """Open an SMTP connection and hand the message over.
 
@@ -168,7 +169,9 @@ def _deliver(msg, smtp):
     second HTML part onto the same message.
     """
     connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
-    with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+    with connection_func(
+        smtp["host"], smtp["port"], timeout=smtp["timeout"]
+    ) as smtp_connect:
         if smtp["starttls"]:
             smtp_connect.starttls()
         if smtp["username"]:

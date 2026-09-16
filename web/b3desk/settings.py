@@ -741,6 +741,14 @@ class MainSettings(BaseSettings):
     SMTP_STARTTLS: bool | None = False
     """Connexion StartTLS au serveur SMTP."""
 
+    SMTP_TIMEOUT: int = 10
+    """Délai d’attente en secondes de chaque échange avec le serveur SMTP.
+
+    Le délai s’applique à la connexion puis à chaque réponse du serveur, et non
+    à la session entière. Sans lui, un serveur qui accepte la connexion sans
+    jamais répondre bloque indéfiniment le processus appelant.
+    """
+
     DEFAULT_MEETING_DURATION: int = 280
     """Durée maximum en minutes des réunion passée à l'API BBB.
 
