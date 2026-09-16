@@ -444,6 +444,7 @@ def manage_academy(group: Group):
         )
 
     new_academy = form.data["academy"]
+    form = AcademyForm(formdata=None)
     if new_academy not in group.academic_codes:
         group.academic_codes.append(new_academy)
         db.session.commit()

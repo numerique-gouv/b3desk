@@ -333,7 +333,7 @@ msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
 #: web/b3desk/endpoints/admin.py:270 web/b3desk/endpoints/admin.py:438
-#: web/b3desk/endpoints/admin.py:514 web/b3desk/endpoints/meetings.py:154
+#: web/b3desk/endpoints/admin.py:515 web/b3desk/endpoints/meetings.py:154
 #: web/b3desk/endpoints/meetings.py:216
 msgid "Le formulaire contient des erreurs"
 msgstr ""
@@ -366,16 +366,16 @@ msgstr[1] ""
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:458
+#: web/b3desk/endpoints/admin.py:459
 #, python-brace-format
 msgid "{new_academy} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:532
+#: web/b3desk/endpoints/admin.py:533
 msgid "L'utilisateur est déjà pas dans la liste"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:550
+#: web/b3desk/endpoints/admin.py:551
 msgid "L'utilisateur n'est pas dans la liste"
 msgstr ""
 
