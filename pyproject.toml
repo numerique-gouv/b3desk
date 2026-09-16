@@ -74,6 +74,7 @@ dev = [
     "faker>=40.1.2",
     "html5lib-modern>=1.2",
     "pytest-httpx2>=1.0.0",
+    {include-group = "release"},
 ]
 doc = [
     "autodoc-pydantic>=2.2.0,<3.0.0",
@@ -81,6 +82,10 @@ doc = [
     "sphinx>=7.0.0,<8.0.0",
     "sphinx-rtd-theme>=2.0.0,<3.0.0",
     "sphinx-issues>=4.0.0,<5.0.0",
+]
+# Kept apart from the dev group so the release workflow can install it alone
+release = [
+    "scriv>=1.8.0",
 ]
 
 [tool.pytest.ini_options]
@@ -174,6 +179,26 @@ partial_branches = [
     "pragma: no branch",
     "if app.debug",
     "if app.testing",
+]
+
+[tool.scriv]
+format = "md"
+md_header_level = "2"
+compact_fragments = true
+# The leading "v" matches the git tags, so "scriv github-release" targets the
+# right release instead of creating one on a tag that does not exist.
+entry_title_template = "{% if version %}v{{ version }} — {% endif %}{{ date.strftime('%Y-%m-%d') }}"
+version = "literal: pyproject.toml: project.version"
+main_branches = ["main", "production"]
+categories = [
+    "Actions requises",
+    "Configuration",
+    "Ajouté",
+    "Modifié",
+    "Déprécié",
+    "Supprimé",
+    "Corrigé",
+    "Sécurité",
 ]
 
 [[tool.babel.mappings]]

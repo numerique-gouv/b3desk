@@ -1,0 +1,31 @@
+{% set aides = {
+    "Actions requises": "Ce qu'il faut faire au moment de la mise à jour : migration de base de données (avec son identifiant de révision), réindexation, intervention sur l'infrastructure.",
+    "Configuration": "Les paramètres ajoutés, renommés ou supprimés, avec leur valeur par défaut et ce qui se passe si on n'y touche pas.",
+    "Ajouté": "Une fonctionnalité que les personnes qui utilisent B3Desk ne pouvaient pas faire avant.",
+    "Modifié": "Un comportement existant qui change, vu de l'interface ou de l'API.",
+    "Déprécié": "Ce qui fonctionne encore mais disparaîtra, et par quoi le remplacer.",
+    "Supprimé": "Ce qui n'existe plus.",
+    "Corrigé": "Un dysfonctionnement visible qui ne se produit plus.",
+    "Sécurité": "Une vulnérabilité corrigée, et l'exposition qu'elle représentait.",
+} -%}
+<!--
+Un fragment de journal des modifications.
+
+Décrivez le changement du point de vue des personnes qui utilisent B3Desk et
+de celles qui administrent une instance, jamais du point de vue du code : ce
+fichier finira tel quel dans les notes de version que ces personnes liront.
+Référencez l'issue ou la pull request d'un lien Markdown.
+
+Gardez la ou les sections qui s'appliquent en retirant leur commentaire HTML,
+et supprimez les autres. Un changement purement interne n'a pas besoin de
+fragment : posez le label « skip changelog » sur la pull request.
+-->
+{% for cat in config.categories %}
+<!--
+### {{ cat }}
+
+{{ aides[cat] }}
+
+-
+-->
+{% endfor -%}
