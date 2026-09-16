@@ -272,6 +272,43 @@ def test_delete_old_users_in_group_with_old_meetings_with_delegate_and_files(
     ).first()
 
 
+def test_delete_old_users_deletes_their_files_on_a_surviving_meeting(
+    app,
+    client_app,
+    user,
+    user_2,
+    meeting_1_user_2,
+    time_machine,
+):
+    """A file uploaded by a delegate goes away with them, though its meeting stays."""
+    user.last_connection_utc_datetime = datetime.datetime(2024, 1, 1)
+    user.created_at = datetime.datetime(2024, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = datetime.datetime(2024, 1, 1)
+    meeting_1_user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    meeting_1_user_2.created_at = datetime.datetime(2025, 1, 1)
+    user_2.last_connection_utc_datetime = datetime.datetime(2025, 1, 1)
+    user_2.created_at = datetime.datetime(2025, 1, 1)
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting_1_user_2.id,
+        owner=user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    meeting_file_id = meeting_file.id
+
+    time_machine.move_to(datetime.datetime(2025, 6, 1))
+    delete_old_users()
+
+    assert not db.session.get(User, user.id)
+    assert db.session.get(Meeting, meeting_1_user_2.id)
+    assert not db.session.get(MeetingFiles, meeting_file_id)
+
+
 def test_delete_old_users_who_is_delegate(
     app,
     client_app,
