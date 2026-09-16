@@ -1,6 +1,8 @@
 import random
 import string
 import time
+from datetime import UTC
+from datetime import datetime
 from functools import wraps
 
 import httpx2
@@ -93,6 +95,11 @@ def download_url_to_path(url, path):
         return False
 
     return True
+
+
+def utcnow():
+    """Return the current UTC time as a naive datetime, the way it is stored."""
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def secret_key():

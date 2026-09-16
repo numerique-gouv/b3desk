@@ -138,7 +138,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:438
+#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:435
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -517,16 +517,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:417 web/b3desk/models/meetings.py:424
+#: web/b3desk/models/meetings.py:414 web/b3desk/models/meetings.py:421
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:431
+#: web/b3desk/models/meetings.py:428
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:433
+#: web/b3desk/models/meetings.py:430
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -3378,7 +3378,7 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:216
+#: web/b3desk/utils/__init__.py:223
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

@@ -39,6 +39,7 @@ from wtforms import ValidationError
 
 from b3desk.utils import get_random_alphanumeric_string
 from b3desk.utils import secret_key
+from b3desk.utils import utcnow
 from b3desk.utils.mailing import EMAIL_DELAYS
 
 from . import db
@@ -146,10 +147,8 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     legacy_secret_keys: Mapped[list[str]] = mapped_column(
         JSON, default=list
     )  # old sha1-hash schemes
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.now, onupdate=datetime.now
-    )
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 
     meeting: Mapped[Meeting] = relationship(back_populates="secret_keys")
 
@@ -162,10 +161,8 @@ class Meeting(db.Model):
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped[User] = relationship(back_populates="meetings")
 
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.now, onupdate=datetime.now
-    )
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
     files: Mapped[list[MeetingFiles]] = relationship(
         back_populates="meeting", cascade="all, delete-orphan"
     )
@@ -290,7 +287,7 @@ class Meeting(db.Model):
 class PreviousVoiceBridge(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     voiceBridge: Mapped[str] = mapped_column(Unicode(50), unique=True)
-    archived_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    archived_at: Mapped[datetime] = mapped_column(default=utcnow)
 
 
 def get_all_previous_voiceBridges():
@@ -302,7 +299,7 @@ def delete_old_voiceBridges():
     """Delete archived voice bridges older than one year."""
     db.session.execute(
         db.delete(PreviousVoiceBridge).where(
-            PreviousVoiceBridge.archived_at < datetime.now() - DATA_RETENTION
+            PreviousVoiceBridge.archived_at < utcnow() - DATA_RETENTION
         )
     )
 
