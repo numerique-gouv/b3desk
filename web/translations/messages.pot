@@ -260,12 +260,12 @@ msgid "doit être unique"
 msgstr ""
 
 #: web/b3desk/forms.py:333 web/b3desk/templates/admin/group_infos.html:59
-#: web/b3desk/templates/admin/user_infos.html:133
+#: web/b3desk/templates/admin/user_infos.html:149
 msgid "SIP"
 msgstr ""
 
 #: web/b3desk/forms.py:341 web/b3desk/templates/admin/group_infos.html:67
-#: web/b3desk/templates/admin/user_infos.html:141
+#: web/b3desk/templates/admin/user_infos.html:157
 msgid "Ajout de document"
 msgstr ""
 
@@ -945,7 +945,7 @@ msgstr ""
 msgid "Ouvrir la page d'administration"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:72
+#: web/b3desk/templates/admin/user_infos.html:88
 #: web/b3desk/templates/tools.html:25
 msgid "Admin"
 msgstr ""
@@ -1252,7 +1252,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:83
 #: web/b3desk/templates/admin/meeting_infos.html:66
-#: web/b3desk/templates/admin/user_infos.html:64
+#: web/b3desk/templates/admin/user_infos.html:80
 msgid "Création"
 msgstr ""
 
@@ -1358,7 +1358,7 @@ msgid "Réunion silencieuse (shadow_meeting)"
 msgstr ""
 
 #: web/b3desk/templates/admin/meeting_infos.html:58
-#: web/b3desk/templates/admin/user_infos.html:56
+#: web/b3desk/templates/admin/user_infos.html:72
 msgid "Dernière connexion"
 msgstr ""
 
@@ -1434,48 +1434,56 @@ msgstr ""
 msgid "Alias"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:80
-msgid "NC Locator"
+#: web/b3desk/templates/admin/user_infos.html:56
+msgid "Domaine académique"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:88
-msgid "NC Login"
+#: web/b3desk/templates/admin/user_infos.html:64
+msgid "Académie"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:96
+msgid "NC Locator"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_infos.html:104
+msgid "NC Login"
+msgstr ""
+
+#: web/b3desk/templates/admin/user_infos.html:112
 msgid "NC Dernière connexion"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:110
+#: web/b3desk/templates/admin/user_infos.html:126
 #, python-format
 msgid "Liste des réunions de <em>%(fullname)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:114
+#: web/b3desk/templates/admin/user_infos.html:130
 #, python-format
 msgid "<em>%(fullname)s</em> n'a pas créé de réunion."
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:117
+#: web/b3desk/templates/admin/user_infos.html:133
 #, python-format
 msgid "Liste des réunions déléguées de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:122
+#: web/b3desk/templates/admin/user_infos.html:138
 #, python-format
 msgid "Droits de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:149
+#: web/b3desk/templates/admin/user_infos.html:165
 msgid "Transcription"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:163
+#: web/b3desk/templates/admin/user_infos.html:179
 #, python-format
 msgid "Liste des groupes de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/user_infos.html:167
+#: web/b3desk/templates/admin/user_infos.html:183
 #, python-format
 msgid "%(fullname)s n'appartient à aucun groupe."
 msgstr ""
