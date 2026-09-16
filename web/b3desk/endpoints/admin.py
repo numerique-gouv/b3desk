@@ -235,6 +235,7 @@ def group_infos(group: Group):
     return render_template(
         "admin/group_infos.html",
         group=group,
+        codaca=CODACA,
     )
 
 

@@ -332,50 +332,50 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:269 web/b3desk/endpoints/admin.py:437
-#: web/b3desk/endpoints/admin.py:513 web/b3desk/endpoints/meetings.py:154
+#: web/b3desk/endpoints/admin.py:270 web/b3desk/endpoints/admin.py:438
+#: web/b3desk/endpoints/admin.py:514 web/b3desk/endpoints/meetings.py:154
 #: web/b3desk/endpoints/meetings.py:216
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:292
+#: web/b3desk/endpoints/admin.py:293
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:323
+#: web/b3desk/endpoints/admin.py:324
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:327
+#: web/b3desk/endpoints/admin.py:328
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:353
+#: web/b3desk/endpoints/admin.py:354
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:371
+#: web/b3desk/endpoints/admin.py:372
 #, python-format
 msgid "%(num)s membre ajouté au groupe"
 msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:401
+#: web/b3desk/endpoints/admin.py:402
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:457
+#: web/b3desk/endpoints/admin.py:458
 #, python-brace-format
 msgid "{new_academy} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:531
+#: web/b3desk/endpoints/admin.py:532
 msgid "L'utilisateur est déjà pas dans la liste"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:549
+#: web/b3desk/endpoints/admin.py:550
 msgid "L'utilisateur n'est pas dans la liste"
 msgstr ""
 
@@ -1207,7 +1207,7 @@ msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:18
-#: web/b3desk/templates/admin/group_infos.html:120
+#: web/b3desk/templates/admin/group_infos.html:153
 #: web/b3desk/templates/admin/group_members.html:11
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
@@ -1264,12 +1264,21 @@ msgstr ""
 msgid "Nombre de membres"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:115
-#: web/b3desk/templates/admin/group_infos.html:116
+#: web/b3desk/templates/admin/group_infos.html:127
+#, python-format
+msgid "%(academic_code)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:144
+msgid "Ce groupe n'a pas été affecté à une académie"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:148
+#: web/b3desk/templates/admin/group_infos.html:149
 msgid "Gérer les académies"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:121
+#: web/b3desk/templates/admin/group_infos.html:154
 msgid "Gérer l'exclusion d'utilisateurs"
 msgstr ""
 
