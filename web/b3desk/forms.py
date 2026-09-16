@@ -19,6 +19,7 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import PIN_LENGTH
 from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
+from b3desk.models.users import CODACA
 
 MAX_URL_LENGTH = 255
 MAX_LOGOUTURL_LENGTH = 250
@@ -372,16 +373,16 @@ class GroupForm(FlaskForm):
 
 
 class AcademicDomainForm(FlaskForm):
-    academic_domain = StringField(
+    academic_domain = SelectField(
         label=_(
             "Académies",
         ),
-        render_kw={
-            "placeholder": "Saisir le nom de domaine de l'académie (ex: ac-paris.fr)"
-        },
         description=_(
             "Les utilisateurs portant ce nom de domaine seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
         ),
+        choices=[("", "---")]
+        + [(code, f"{code} {name}") for code, name in CODACA.items()],
+        default="",
         validators=[
             validators.DataRequired(),
         ],

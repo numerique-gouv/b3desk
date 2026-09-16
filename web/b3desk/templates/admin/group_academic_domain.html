@@ -48,7 +48,7 @@
         </p>
         {% for domain in group.academic_domains %}
             <a href="{{ url_for("admin.remove_academic_domain", group=group, domain=domain) }}" class="fr-tag fr-tag--dismiss" aria-label="{% trans %}Retirer {{ domain }}{% endtrans %}">
-                {{ domain }}
+                {{ domain }} {{ codaca.get(domain, "") }}
             </a>
         {% endfor %}
     {% endif %}

@@ -20,6 +20,7 @@ from b3desk.forms import UserSearchForm
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
+from b3desk.models.users import CODACA
 from b3desk.models.users import User
 
 from ..session import admin_needed
@@ -432,6 +433,7 @@ def manage_academic_domain(group: Group):
             "admin/group_academic_domain.html",
             form=form,
             group=group,
+            codaca=CODACA,
         )
 
     if not form.validate():
@@ -440,6 +442,7 @@ def manage_academic_domain(group: Group):
             "admin/group_academic_domain.html",
             form=form,
             group=group,
+            codaca=CODACA,
         )
 
     new_domain = form.data["academic_domain"]
@@ -464,6 +467,7 @@ def manage_academic_domain(group: Group):
         "admin/group_academic_domain.html",
         form=form,
         group=group,
+        codaca=CODACA,
     )
 
 
@@ -484,6 +488,7 @@ def remove_academic_domain(group: Group):
         "admin/group_academic_domain.html",
         form=form,
         group=group,
+        codaca=CODACA,
     )
 
 

@@ -89,6 +89,7 @@ def get_or_create_user(user_info):
     meta_data = json.dumps(
         {
             "academic_domain": user_info.get(mapping.get("FrEduAca", "FrEduAca"), ""),
+            "acedemic_code": user_info.get(mapping.get("codaca", "codaca"), ""),
         }
     )
 
