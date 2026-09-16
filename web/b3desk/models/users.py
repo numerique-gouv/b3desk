@@ -198,9 +198,13 @@ class User(db.Model):
 
 
 def get_inactive_users_to_delete():
-    """Return users that are ready to be deleted."""
+    """Return users ready for deletion, skipping those active since the first mail."""
+    now = datetime.now(UTC)
     return db.session.scalars(
-        db.select(User).where(ready_for_final_deletion(User, datetime.now(UTC)))
+        db.select(User).where(
+            ready_for_final_deletion(User, now),
+            ~user_used_since(account_first_mail_deadline(now)),
+        )
     ).all()
 
 
@@ -234,6 +238,14 @@ def as_naive(value):
     return value.replace(tzinfo=None) if value.tzinfo else value
 
 
+def account_first_mail_deadline(now):
+    """Return the activity deadline that starts the account warning sequence."""
+    inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+    return as_naive(compute_first_mail_deadline(now, inactivity_period))
+
+
 def user_used_since(deadline):
     """SQLAlchemy condition: the user, or any meeting they own, was used after the deadline."""
     from b3desk.models.meetings import Meeting
@@ -263,12 +275,7 @@ def update_reactivated_users(first_mail_deadline):
 def get_inactive_users_to_inform():
     """Advance each user's information_level by one step."""
     now = datetime.now(UTC)
-    account_inactivity_period = timedelta(
-        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-    )
-    first_mail_deadline = as_naive(
-        compute_first_mail_deadline(now, account_inactivity_period)
-    )
+    first_mail_deadline = account_first_mail_deadline(now)
 
     update_reactivated_users(first_mail_deadline)
 

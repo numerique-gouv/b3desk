@@ -1919,6 +1919,28 @@ def test_delete_old_meetings_after_reactivation_is_prevented(
     assert db.session.get(Meeting, meeting.id)
 
 
+def test_delete_old_meetings_after_reactivation_without_the_warning_task(
+    app,
+    client_app,
+    time_machine,
+    meeting,
+    user,
+    bbb_getRecordings_response,
+):
+    """A reactivated meeting must survive even when the warning task did not run first."""
+    test_date = datetime.datetime(2024, 1, 1)
+    meeting.information_level = 3
+    meeting.information_sent_at = test_date - datetime.timedelta(days=10)
+    meeting.last_connection_utc_datetime = test_date
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    delete_old_meetings()
+
+    assert db.session.get(Meeting, meeting.id)
+
+
 def test_delete_old_meetings_waits_for_a_successful_final_mail(
     app,
     client_app,

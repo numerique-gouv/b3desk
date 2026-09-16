@@ -44,6 +44,7 @@ from b3desk.utils.mailing import EMAIL_DELAYS
 from . import db
 from .information import compute_first_mail_deadline
 from .information import get_entities_due_for_next_mail
+from .information import last_used
 from .information import ready_for_final_deletion
 from .roles import Role
 from .users import User
@@ -583,8 +584,16 @@ def remove_delegate_from_db(meeting, delegate):
     db.session.commit()
 
 
+def meeting_first_mail_deadline(now):
+    """Return the activity deadline that starts the meeting warning sequence."""
+    inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
+    )
+    return compute_first_mail_deadline(now, inactivity_period)
+
+
 def get_inactive_meetings_to_delete():
-    """Return meetings that are ready to be deleted."""
+    """Return meetings ready for deletion, skipping those used since the first mail."""
     now = datetime.now(UTC)
     cutoff = now - timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
@@ -601,7 +610,9 @@ def get_inactive_meetings_to_delete():
                     ),
                 ),
                 and_(
-                    Meeting.is_shadow.is_(False), ready_for_final_deletion(Meeting, now)
+                    Meeting.is_shadow.is_(False),
+                    ready_for_final_deletion(Meeting, now),
+                    last_used(Meeting) <= meeting_first_mail_deadline(now),
                 ),
             )
         )
@@ -630,10 +641,7 @@ def update_reactivated_meetings(first_mail_deadline):
 def get_inactive_meetings_to_inform():
     """Advance each non-shadow meeting's information_level by one step."""
     now = datetime.now(UTC)
-    inactivity_period = timedelta(
-        days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
-    )
-    first_mail_deadline = compute_first_mail_deadline(now, inactivity_period)
+    first_mail_deadline = meeting_first_mail_deadline(now)
 
     update_reactivated_meetings(first_mail_deadline)
 

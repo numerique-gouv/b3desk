@@ -362,6 +362,30 @@ def test_delete_old_users_do_not_delete_user_with_active_shadow_meeting(
     assert db.session.get(Meeting, shadow_meeting.id)
 
 
+def test_delete_old_users_after_reactivation_without_the_warning_task(
+    app,
+    client_app,
+    time_machine,
+    user,
+    meeting,
+    bbb_getRecordings_response,
+):
+    """A reactivated user must survive even when the warning task did not run first."""
+    test_date = datetime.datetime(2024, 1, 1)
+    user.information_level = 3
+    user.information_sent_at = test_date - datetime.timedelta(days=10)
+    user.last_connection_utc_datetime = test_date
+    user.created_at = datetime.datetime(2020, 1, 1)
+    meeting.last_connection_utc_datetime = test_date
+    meeting.created_at = datetime.datetime(2020, 1, 1)
+    db.session.commit()
+
+    time_machine.move_to(test_date)
+    delete_old_users()
+
+    assert db.session.get(User, user.id)
+
+
 def test_delete_old_users_no_action(app, client_app, caplog):
     """Test the cron task logs when there is no user to delete."""
     delete_old_users()
