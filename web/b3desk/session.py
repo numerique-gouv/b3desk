@@ -83,7 +83,7 @@ def user_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not has_user_session() or not g.user:
+        if not g.user:
             abort(403)
 
         return view_function(*args, user=g.user, **kwargs)

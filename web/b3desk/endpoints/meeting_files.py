@@ -419,7 +419,7 @@ def delete_meeting_file():
 
     try:
         meeting_file_id = int(data["id"])
-    except (KeyError, TypeError, ValueError):
+    except KeyError, TypeError, ValueError:
         return {"msg": _("Requête invalide")}, 400
 
     meeting_file = db.session.get(MeetingFiles, meeting_file_id)

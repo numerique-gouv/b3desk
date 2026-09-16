@@ -42,7 +42,12 @@ def get_or_create_user(user_info):
     preferred_username = user_info.get(
         mapping.get("preferred_username", "preferred_username")
     )
-    email = user_info[mapping.get("email", "email")].lower()
+    email_claim = mapping.get("email", "email")
+    email = user_info.get(email_claim)
+    if not email:
+        raise KeyError(email_claim)
+
+    email = email.lower()
 
     user = User.get_user_by_email(email)
 

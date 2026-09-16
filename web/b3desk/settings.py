@@ -1,7 +1,7 @@
 import datetime
 import json
 import warnings
-from enum import Enum
+from enum import StrEnum
 from typing import Annotated
 from typing import Any
 
@@ -31,14 +31,12 @@ ListOfStrings = Annotated[
 ]
 
 
-class MeetingLocaleVariant(str, Enum):
+class MeetingLocaleVariant(StrEnum):
     """Variante de locale pour le vocabulaire des réunions."""
 
     REUNION = ""
     COURS = "cours"
     SEMINAIRE = "seminaire"
-
-    __str__ = str.__str__
 
 
 class MainSettings(BaseSettings):

@@ -391,8 +391,10 @@ def setup_debug_host_redirect(app):
 
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
+    from flask import flash
     from flask import g
     from flask import session
+    from flask_babel import lazy_gettext as _
 
     from b3desk import session as b3desk_session
     from b3desk.models.users import get_or_create_user
@@ -401,13 +403,16 @@ def setup_user_session(app):
     def load_user():
         g.user = None
         if not b3desk_session.has_user_session():
-            return
+            return None
 
         try:
             userinfo = session["userinfo"]
             g.user = get_or_create_user(userinfo)
-        except (KeyError, TypeError):
-            return
+        except (KeyError, TypeError) as exc:
+            app.logger.error("Could not build a user from the OIDC claims: %s", exc)
+            b3desk_session.clear_userinfo()
+            flash(_("Votre session est invalide, merci de vous reconnecter."), "error")
+            return redirect(url_for("public.home"))
 
 
 def setup_authlib(app):
