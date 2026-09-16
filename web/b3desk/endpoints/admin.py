@@ -500,7 +500,7 @@ def manage_excluded_users(group: Group):
             group=group,
             excluded_users_page=excluded_users_page,
             add_members=False,
-            remove_excluded_users=True,
+            excluded_users_mode=True,
         )
 
     if not form.validate():
@@ -512,7 +512,7 @@ def manage_excluded_users(group: Group):
             group=group,
             excluded_users_page=excluded_users_page,
             add_members=False,
-            remove_excluded_users=True,
+            excluded_users_mode=True,
         )
 
     email = form.data["search"]
@@ -531,7 +531,7 @@ def manage_excluded_users(group: Group):
         group=group,
         excluded_users_page=excluded_users_page,
         add_members=False,
-        remove_excluded_users=True,
+        excluded_users_mode=True,
     )
 
 
@@ -559,5 +559,5 @@ def remove_excluded_users(group: Group, user: User):
         group=group,
         excluded_users_page=excluded_users_page,
         add_members=False,
-        remove_excluded_users=True,
+        excluded_users_mode=True,
     )

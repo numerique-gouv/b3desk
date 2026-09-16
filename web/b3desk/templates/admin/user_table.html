@@ -15,10 +15,10 @@
                                     <th class="fr-col--xs fr-cell--center">{% trans %}Prénom{% endtrans %}</th>
                                     <th class="fr-col--xs fr-cell--center">{% trans %}Email{% endtrans %}</th>
                                     <th class="fr-col--xs fr-cell--center">{% trans %}Consulter{% endtrans %}</th>
-                                    {% if group and not add_members and not remove_excluded_users %}
+                                    {% if group and not add_members and not excluded_users_mode|default(false) %}
                                         <th class="fr-col fr-cell--center">{% trans %}Supprimer{% endtrans %}</th>
                                     {% endif %}
-                                    {% if group and not add_members and remove_excluded_users %}
+                                    {% if group and not add_members and excluded_users_mode|default(false) %}
                                         <th class="fr-col fr-cell--center">{% trans %}Retirer{% endtrans %}</th>
                                     {% endif %}
                                 </tr>
@@ -51,7 +51,7 @@
                                         <td class="fr-col fr-cell--center">
                                             <a href="{{ url_for("admin.user_infos", user=user) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-eye-line" title="{% trans username=user.fullname %}{{ username }} infos{% endtrans %}"></a>
                                         </td>
-                                        {% if group and not add_members and not remove_excluded_users %}
+                                        {% if group and not add_members and not excluded_users_mode|default(false) %}
                                             <td class="fr-col--xs fr-cell--center">
                                                 <form method="post" action="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}">
                                                     {% include 'meeting/csrf.html' %}
@@ -59,7 +59,7 @@
                                                 </form>
                                             </td>
                                         {% endif %}
-                                        {% if group and not add_members and remove_excluded_users %}
+                                        {% if group and not add_members and excluded_users_mode|default(false) %}
                                             <td class="fr-col--xs fr-cell--center">
                                                 <a class="fr-btn fr-btn--secondary fr-icon-flag-line" aria-hidden="true" title="{% trans %}Retirer l'utilisateur{% endtrans %}" href="{{ url_for("admin.remove_excluded_users", group=group, user=user) }}"></a>
                                             </td>
