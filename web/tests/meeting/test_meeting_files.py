@@ -1,11 +1,11 @@
 import json
+from datetime import UTC
 from datetime import date
 from datetime import datetime
-from datetime import timezone
 from pathlib import Path
 
+import httpx2
 import pytest
-import requests
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
@@ -72,7 +72,7 @@ def test_add_dropzone_file(
 ):
     """Test uploading a file via dropzone chunked upload."""
     res = client_app.post(
-        "/meeting/files/1/upload",
+        f"/meeting/files/{meeting.id}/upload",
         {
             "dzchunkindex": 0,
             "dzchunkbyteoffset": 0,
@@ -84,19 +84,14 @@ def test_add_dropzone_file(
 
     assert res.json["msg"] == "ok"
 
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
-
-
-@pytest.fixture()
-def mock_meeting_is_running(mocker):
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
 
 
 def test_file_picker_called_by_bbb(
     client_app, authenticated_user, meeting, mock_meeting_is_running
 ):
-    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.meetingID)
+    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.bbb_meeting_id)
     response = client_app.get(url)
     assert "meeting/file_picker.html" in vars(response)["contexts"]
 
@@ -106,7 +101,7 @@ def test_file_picker_callback(client_app, authenticated_user, meeting, mocker):
 
     mocker.patch("b3desk.tasks.background_upload.delay", return_value=True)
     url = url_for(
-        "meeting_files.file_picker_callback", bbb_meeting_id=meeting.meetingID
+        "meeting_files.file_picker_callback", bbb_meeting_id=meeting.bbb_meeting_id
     )
     client_app.post(
         url,
@@ -541,13 +536,9 @@ def test_add_nextcloud_file_sqlalchemy_error(
     assert "déjà été mis en ligne" in response.json["msg"]
 
 
-def test_add_url_file(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file(client_app, authenticated_user, meeting, httpx2_mock):
     """Test adding a file from URL."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "1000"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
-    mocker.patch.object(requests, "get", return_value=mocker.Mock())
+    httpx2_mock.route(method="HEAD").respond(200, headers={"content-length": "1000"})
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -560,22 +551,18 @@ def test_add_url_file(client_app, authenticated_user, meeting, mocker):
 
 
 def test_add_url_file_sqlalchemy_error(
-    client_app, authenticated_user, meeting, mocker, nextcloud_credentials
+    client_app, authenticated_user, meeting, mocker, nextcloud_credentials, httpx2_mock
 ):
     """SQLAlchemy error during URL file add returns appropriate error message."""
     meeting.owner.nc_login = nextcloud_credentials["nclogin"]
     meeting.owner.nc_locator = nextcloud_credentials["nclocator"]
     meeting.owner.nc_token = nextcloud_credentials["nctoken"]
     meeting.owner.nc_last_auto_enroll = datetime.now()
-    meeting.owner.last_connection_utc_datetime = datetime.now(timezone.utc)
+    meeting.owner.last_connection_utc_datetime = datetime.now(UTC)
     db.session.add(meeting.owner)
     db.session.commit()
 
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "1000"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
-    mocker.patch.object(requests, "get", return_value=mocker.Mock())
+    httpx2_mock.route(method="HEAD").respond(200, headers={"content-length": "1000"})
 
     mocker.patch(
         "b3desk.endpoints.meeting_files.db.session.commit",
@@ -626,7 +613,7 @@ def test_file_picker_meeting_not_running(
     """Test file picker redirects when meeting is not running."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
-    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.meetingID)
+    url = url_for("meeting_files.file_picker", bbb_meeting_id=meeting.bbb_meeting_id)
     response = client_app.get(url, status=302)
 
     assert any(
@@ -641,7 +628,7 @@ def test_add_dropzone_file_already_added(
 
     def dropzone_post(status):
         return client_app.post(
-            "/meeting/files/1/upload",
+            f"/meeting/files/{meeting.id}/upload",
             {
                 "dzchunkindex": 0,
                 "dzchunkbyteoffset": 0,
@@ -654,7 +641,7 @@ def test_add_dropzone_file_already_added(
 
     res = dropzone_post(status=200)
     assert res.json["msg"] == "ok"
-    with (tmp_path / "chunks" / "1-1-file.jpg").open("rb") as fd:
+    with (tmp_path / "chunks" / f"1-{meeting.id}-file.jpg").open("rb") as fd:
         assert jpg_file_content == fd.read()
 
     res = dropzone_post(status=409)
@@ -828,7 +815,7 @@ def test_download_meeting_file_not_found(client_app, authenticated_user, meeting
 
 
 def test_download_meeting_file_from_url(
-    client_app, authenticated_user, meeting, mocker
+    client_app, authenticated_user, meeting, httpx2_mock
 ):
     """Test downloading a file that has a URL (not from Nextcloud)."""
     meeting_file = MeetingFiles(
@@ -841,26 +828,105 @@ def test_download_meeting_file_from_url(
     db.session.add(meeting_file)
     db.session.commit()
 
-    mock_response = mocker.Mock()
-    mock_response.content = b"fake pdf content"
-    mocker.patch.object(requests, "get", return_value=mock_response)
+    httpx2_mock.route(method="GET").respond(200, content=b"fake pdf content")
 
-    response = client_app.get(
+    response = download_url_meeting_file(client_app, meeting, meeting_file)
+
+    assert response.status_int == 200
+    assert response.body == b"fake pdf content"
+
+
+def add_url_meeting_file(meeting):
+    """Attach a file referencing an external URL to the meeting."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+    return meeting_file
+
+
+def download_url_meeting_file(client_app, meeting, meeting_file, **kwargs):
+    """Request the download endpoint for the given meeting file."""
+    return client_app.get(
         url_for(
             "meeting_files.download_meeting_files",
             meeting=meeting,
             meeting_file=meeting_file,
         ),
+        **kwargs,
     )
 
-    assert response.status_int == 200
+
+def assert_download_refused(response):
+    """Check that the download endpoint redirected with an error flash."""
+    assert any(
+        cat == "error" and "n’a pas pu être téléchargé" in msg
+        for cat, msg in response.flashes
+    )
 
 
-def test_add_url_file_not_available(client_app, authenticated_user, meeting, mocker):
+def test_download_meeting_file_from_url_network_error(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """A failing URL download redirects instead of raising."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").mock(
+        side_effect=httpx2.TimeoutException("too slow")
+    )
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_unavailable(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """An error status on the remote URL redirects instead of serving the body."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").respond(404, content=b"not found")
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_too_large(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
+    """A URL serving more than MAX_SIZE_UPLOAD is not downloaded."""
+    meeting_file = add_url_meeting_file(meeting)
+    client_app.app.config["MAX_SIZE_UPLOAD"] = 10
+    httpx2_mock.route(method="GET").respond(200, content=b"0" * 64)
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_download_meeting_file_from_url_too_slow(
+    client_app, authenticated_user, meeting, httpx2_mock, mocker
+):
+    """A URL trickling data past DOWNLOAD_MAX_DURATION is not downloaded."""
+    meeting_file = add_url_meeting_file(meeting)
+    httpx2_mock.route(method="GET").respond(200, content=b"first chunk")
+    mocker.patch("b3desk.utils.time.monotonic", side_effect=[0, 1000])
+
+    response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
+
+    assert_download_refused(response)
+
+
+def test_add_url_file_not_available(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
     """Test adding a URL file when the URL is not available."""
-    mock_head = mocker.Mock()
-    mock_head.ok = False
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(404)
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -873,12 +939,12 @@ def test_add_url_file_not_available(client_app, authenticated_user, meeting, moc
     assert "non disponible" in response.json["msg"]
 
 
-def test_add_url_file_network_error(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file_network_error(
+    client_app, authenticated_user, meeting, httpx2_mock
+):
     """Test adding a URL file when a network error occurs."""
-    mocker.patch.object(
-        requests,
-        "head",
-        side_effect=requests.exceptions.Timeout("Connection timed out"),
+    httpx2_mock.route(method="HEAD").mock(
+        side_effect=httpx2.TimeoutException("Connection timed out")
     )
 
     response = client_app.post(
@@ -892,12 +958,11 @@ def test_add_url_file_network_error(client_app, authenticated_user, meeting, moc
     assert "non disponible" in response.json["msg"]
 
 
-def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker):
+def test_add_url_file_too_large(client_app, authenticated_user, meeting, httpx2_mock):
     """Test adding a URL file when the file is too large."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {"content-length": "999999999"}
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(
+        200, headers={"content-length": "999999999"}
+    )
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -911,13 +976,10 @@ def test_add_url_file_too_large(client_app, authenticated_user, meeting, mocker)
 
 
 def test_add_url_file_no_content_length(
-    client_app, authenticated_user, meeting, mocker
+    client_app, authenticated_user, meeting, httpx2_mock
 ):
     """Test adding a URL file when content-length header is missing."""
-    mock_head = mocker.Mock()
-    mock_head.ok = True
-    mock_head.headers = {}
-    mocker.patch.object(requests, "head", return_value=mock_head)
+    httpx2_mock.route(method="HEAD").respond(200)
 
     response = client_app.post(
         url_for("meeting_files.add_meeting_files", meeting=meeting),
@@ -1120,3 +1182,139 @@ def test_delete_meeting_file_not_owner(client_app, authenticated_user, meeting):
 
     assert response.status_int == 403
     assert "ne pouvez pas supprimer" in response.json["msg"]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        {},
+        {"from": "URL"},
+        {"from": "unknown", "value": "https://example.com/doc.pdf"},
+        {"from": "URL", "value": 42},
+    ],
+)
+def test_add_meeting_files_with_invalid_payload(
+    client_app, authenticated_user, meeting, payload
+):
+    """Test that malformed payloads are rejected with a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}",
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_add_meeting_files_upload_without_uploaded_chunk(
+    client_app, authenticated_user, meeting
+):
+    """Test that referencing a file that was never uploaded returns a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}",
+        params=json.dumps({"from": "upload", "value": "never-uploaded.jpg"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+    assert "Aucun fichier téléversé" in response.json["msg"]
+
+
+def test_toggledownload_with_invalid_payload(client_app, authenticated_user, meeting):
+    """Test that a non boolean value is rejected with a 400."""
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=meeting.id,
+        owner=meeting.owner,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/{meeting_file.id}/toggledownload",
+        params=json.dumps({"value": "yes"}),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+@pytest.mark.parametrize("payload", [None, [], {}, {"id": "not-an-integer"}])
+def test_delete_meeting_file_with_invalid_payload(
+    client_app, authenticated_user, payload
+):
+    """Test that malformed payloads are rejected with a 400."""
+    response = client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+@pytest.mark.parametrize("payload", [None, {}, [42]])
+def test_file_picker_callback_with_invalid_payload(
+    client_app, authenticated_user, meeting, payload
+):
+    """Test that a payload which is not a list of paths is rejected with a 400."""
+    response = client_app.post(
+        url_for(
+            "meeting_files.file_picker_callback",
+            bbb_meeting_id=meeting.bbb_meeting_id,
+        ),
+        params=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_invalid_metadata(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that non numeric chunk metadata is rejected with a 400."""
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": "not-a-number",
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        expect_errors=True,
+    )
+
+    assert response.status_int == 400
+
+
+def test_upload_file_chunks_with_csrf_enabled(
+    client_app, authenticated_user, meeting, jpg_file_content
+):
+    """Test that the chunk form validates the token Dropzone sends along."""
+    client_app.app.config["WTF_CSRF_ENABLED"] = True
+    page = client_app.get(url_for("meeting_files.edit_meeting_files", meeting=meeting))
+
+    response = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "csrf_token": page.forms["upload-form"]["csrf_token"].value,
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+    )
+
+    assert response.json["msg"] == "ok"

@@ -144,7 +144,7 @@
             <ul class="fr-toggle__list">
               {{ render_field(form.allowStartStopRecording) }}
               {{ render_field(form.autoStartRecording) }}
-              {% if (meeting is not none and meeting.owner.can_use_ai_summary) or g.user.can_use_ai_summary %}
+              {% if (meeting.owner if meeting is not none else g.user).can_use_ai_summary %}
                 {{ render_field(form.ai_summary) }}
               {% endif %}
             </ul>

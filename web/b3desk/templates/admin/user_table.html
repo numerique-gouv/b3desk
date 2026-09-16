@@ -29,7 +29,7 @@
                                         {% if add_members %}
                                             <td class="fr-cell--fixed fr-cell--center" scope="row">
                                                 <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                                    <input {% if select_all and user in selected_users %}checked{% elif group in user.groups %} checked disabled title="{% trans fullname=user.fullname %}{{ fullname }} est dans le groupe{% endtrans %}" {% else %} title="{% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}" {% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
+                                                    <input {% if select_all %}checked{% endif %} data-fr-row-select="true" id="table-select-checkbox-{{user.id}}" type="checkbox" name="user_ids" value="{{ user.id }}">
                                                     <label class="fr-label" for="table-select-checkbox-{{user.id}}">
                                                         {% trans fullname=user.fullname %}Sélectionner {{ fullname }}{% endtrans %}
                                                     </label>
@@ -53,7 +53,10 @@
                                         </td>
                                         {% if group and not add_members and not remove_excluded_users %}
                                             <td class="fr-col--xs fr-cell--center">
-                                                <a class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}" href="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}"></a>
+                                                <form method="post" action="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}">
+                                                    {% include 'meeting/csrf.html' %}
+                                                    <button type="submit" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}"></button>
+                                                </form>
                                             </td>
                                         {% endif %}
                                         {% if group and not add_members and remove_excluded_users %}

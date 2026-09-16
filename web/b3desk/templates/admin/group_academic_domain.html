@@ -31,7 +31,7 @@
 
     <h4>{{ form.academic_domain.label }}</h4>
     <p class="fr-hint-text">{{ form.academic_domain.description }}</p>
-    <form class="fr-search-bar", id="addDomain", name="search_meeting" role="search" action="{{ url_for("admin.manage_academic_domain", group=group) }}" method="post">
+    <form class="fr-search-bar" id="addDomain" name="search_meeting" role="search" action="{{ url_for("admin.manage_academic_domain", group=group) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.academic_domain(class_="fr-input") }}
         <button title="{% trans %}Exclure l'utilisateur du groupe{% endtrans %}" type="submit" class="fr-btn"></button>

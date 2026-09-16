@@ -1,3 +1,5 @@
+import httpx2
+from b3desk import cache
 from flask import abort
 from flask import url_for
 from flask_webtest import TestApp
@@ -226,3 +228,30 @@ def test_donnees_personnelles__authenticated_user(client_app, authenticated_user
     response = client_app.get("/donnees_personnelles", status=200)
 
     response.mustcontain("Alice Cooper")
+
+
+def test_get_meetings_stats(client_app, httpx2_mock):
+    """Meeting statistics are read from the configured CSV file."""
+    from b3desk.endpoints.public import get_meetings_stats
+
+    cache.clear()
+    client_app.app.config["STATS_URL"] = "https://stats.test/stats.csv"
+    client_app.app.config["STATS_INDEX"] = 1
+    httpx2_mock.route(method="GET").respond(
+        200, content=b"date,participants,rooms\n2026-01-01,42,7\n"
+    )
+
+    with client_app.app.app_context():
+        assert get_meetings_stats() == {"participantCount": 42, "runningCount": 7}
+
+
+def test_get_meetings_stats_network_error(client_app, httpx2_mock):
+    """An unreachable statistics file yields no statistics."""
+    from b3desk.endpoints.public import get_meetings_stats
+
+    cache.clear()
+    client_app.app.config["STATS_URL"] = "https://stats.test/stats.csv"
+    httpx2_mock.route(method="GET").mock(side_effect=httpx2.ConnectError("unreachable"))
+
+    with client_app.app.app_context():
+        assert get_meetings_stats() is None

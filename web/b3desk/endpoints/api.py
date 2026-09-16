@@ -2,9 +2,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import request
 
-from b3desk.join import get_signin_url
 from b3desk.models.meetings import get_or_create_shadow_meeting
-from b3desk.models.roles import Role
 from b3desk.models.users import get_or_create_user
 from b3desk.utils import check_oidc_connection
 
@@ -30,8 +28,8 @@ def api_meetings():
         "meetings": [
             {
                 "name": meeting.name,
-                "moderator_url": get_signin_url(meeting, Role.moderator),
-                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "moderator_url": meeting.moderator_url,
+                "attendee_url": meeting.attendee_url,
                 "visio_code": meeting.visio_code,
                 "delegate": is_delegate,
                 **(
@@ -73,8 +71,8 @@ def shadow_meeting():
         "shadow-meeting": [
             {
                 "name": meeting.name,
-                "moderator_url": get_signin_url(meeting, Role.moderator),
-                "attendee_url": get_signin_url(meeting, Role.attendee),
+                "moderator_url": meeting.moderator_url,
+                "attendee_url": meeting.attendee_url,
                 "visio_code": meeting.visio_code,
                 **(
                     {

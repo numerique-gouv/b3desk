@@ -30,7 +30,7 @@
     </nav>
     <h4>{{ form.search.label }}</h4>
     <p class="fr-hint-text">{{ form.search.description }}</p>
-    <form class="fr-search-bar", id="addUser", name="search_meeting" role="search" action="{{ url_for("admin.manage_excluded_users", group=group) }}" method="post">
+    <form class="fr-search-bar" id="addUser" name="search_meeting" role="search" action="{{ url_for("admin.manage_excluded_users", group=group) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.search(class_="fr-input") }}
         <button title="{% trans %}Exclure l'utilisateur du groupe{% endtrans %}" type="submit" class="fr-btn"></button>

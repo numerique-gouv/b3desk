@@ -10,17 +10,67 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 import json
+from datetime import UTC
 from datetime import date
 from datetime import datetime
-from datetime import timezone
+from typing import TYPE_CHECKING
 
 from flask import current_app
+from sqlalchemy import Unicode
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from b3desk.models.groups import Group
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
 
 from . import db
+
+if TYPE_CHECKING:
+    from .groups import Group
+    from .meetings import Meeting
+    from .meetings import MeetingAccess
+
+
+CODACA = {
+    "000": "Étranger",
+    "001": "Paris",
+    "002": "Aix-Marseille",
+    "003": "Besançon",
+    "004": "Bordeaux",
+    "005": "Caen",
+    "006": "Clermont-Ferrand",
+    "007": "Dijon",
+    "008": "Grenoble",
+    "009": "Lille",
+    "010": "Lyon",
+    "011": "Montpellier",
+    "012": "Nancy-Metz",
+    "013": "Poitiers",
+    "014": "Rennes",
+    "015": "Strasbourg",
+    "016": "Toulouse",
+    "017": "Nantes",
+    "018": "Orléans-Tours",
+    "019": "Reims",
+    "020": "Amiens",
+    "021": "Rouen",
+    "022": "Limoges",
+    "023": "Nice",
+    "024": "Créteil",
+    "025": "Versailles",
+    "027": "Corse",
+    "028": "La Réunion",
+    "031": "Martinique",
+    "032": "Guadeloupe",
+    "033": "Guyane",
+    "040": "Nouvelle Calédonie",
+    "041": "Polynésie Française",
+    "042": "Wallis et Futuna",
+    "043": "Mayotte",
+    "044": "St Pierre et Miquelon",
+}
 
 
 def get_or_create_user(user_info):
@@ -50,7 +100,7 @@ def get_or_create_user(user_info):
             given_name=given_name,
             family_name=family_name,
             preferred_username=preferred_username,
-            last_connection_utc_datetime=datetime.now(timezone.utc),
+            last_connection_utc_datetime=datetime.now(UTC),
             meta_data=meta_data,
         )
         update_user_nc_credentials(user)
@@ -76,8 +126,8 @@ def get_or_create_user(user_info):
             not user.last_connection_utc_datetime
             or user.last_connection_utc_datetime.date() < date.today()
         ):
-            user.last_connection_utc_datetime = datetime.now(timezone.utc)
-            user_changes["last_connection_utc_datetime"] = datetime.now(timezone.utc)
+            user.last_connection_utc_datetime = datetime.now(UTC)
+            user_changes["last_connection_utc_datetime"] = datetime.now(UTC)
 
         if user.meta_data and user.meta_data != meta_data:
             user.meta_data = meta_data
@@ -94,26 +144,29 @@ def get_or_create_user(user_info):
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.Unicode(255), unique=True)
-    given_name = db.Column(db.Unicode(50))
-    family_name = db.Column(db.Unicode(50))
-    preferred_username = db.Column(db.Unicode(255), nullable=True)
-    nc_locator = db.Column(db.Unicode(255))
-    nc_login = db.Column(db.Unicode(255))
-    nc_token = db.Column(db.Unicode(255))
-    nc_last_auto_enroll = db.Column(db.DateTime)
-    last_connection_utc_datetime = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    admin = db.Column(db.Boolean, default=False, nullable=False)
-    meta_data = db.Column(db.JSON)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str | None] = mapped_column(Unicode(255), unique=True)
+    given_name: Mapped[str | None] = mapped_column(Unicode(50))
+    family_name: Mapped[str | None] = mapped_column(Unicode(50))
+    preferred_username: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_locator: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_login: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_token: Mapped[str | None] = mapped_column(Unicode(255))
+    nc_last_auto_enroll: Mapped[datetime | None]
+    last_connection_utc_datetime: Mapped[datetime | None]
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    admin: Mapped[bool] = mapped_column(default=False)
+    meta_data: Mapped[str | None] = mapped_column(db.JSON)
 
-    meetings = db.relationship("Meeting", back_populates="owner")
-    favorites = db.relationship(
-        "Meeting", secondary="favorite", back_populates="favorite_of"
+    meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
+    favorites: Mapped[list[Meeting]] = relationship(
+        secondary="favorite", back_populates="favorite_of"
     )
-    groups = db.relationship(
-        "Group", secondary="group_member", back_populates="members"
+    groups: Mapped[list[Group]] = relationship(
+        secondary="group_member", back_populates="members"
+    )
+    user_meeting_access: Mapped[list[MeetingAccess]] = relationship(
+        back_populates="user"
     )
     excluded_groups = db.relationship(
         "Group", secondary="excludelist", back_populates="excluded_users"
@@ -154,18 +207,18 @@ class User(db.Model):
         from b3desk.models.meetings import Meeting
         from b3desk.models.meetings import MeetingAccess
 
-        return (
-            Meeting.query.join(MeetingAccess)
-            .filter(
+        return db.session.scalars(
+            db.select(Meeting)
+            .join(MeetingAccess)
+            .where(
                 MeetingAccess.user_id == self.id,
                 MeetingAccess.level == AccessLevel.DELEGATE,
             )
-            .all()
-        )
+        ).all()
 
     @classmethod
     def get_user_by_email(cls, email):
-        return db.session.query(User).filter(User.email == email).first()
+        return db.session.scalars(db.select(cls).where(cls.email == email)).first()
 
     @property
     def can_use_file_sharing(self):
@@ -205,6 +258,7 @@ class User(db.Model):
             if (
                 self not in group.excluded_users
                 and self.mail_domain in group.academic_domains
+                and self not in group.members
             ):
                 group.members.append(self)
                 added_groups.append((group.id, group.name))

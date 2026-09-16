@@ -1,4 +1,3 @@
-import pytest
 from b3desk.commands import bp
 from b3desk.join import create_bbb_meeting
 from b3desk.models import db
@@ -30,6 +29,25 @@ def test_add_group_members_filters_by_search(
     res = client_app.get(
         f"/admin/add-group-members/{group.id}?search={user.email}", status=200
     )
+    assert user.email in res.text
+    assert user_2.email not in res.text
+
+
+def test_add_group_members_excludes_existing_members(
+    cli_runner,
+    client_app,
+    user,
+    user_2,
+    group,
+    authenticated_user,
+):
+    """Test that users already in the group don't appear in the add members list."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    user_2.groups.append(group)
+    db.session.commit()
+
+    res = client_app.get(f"/admin/add-group-members/{group.id}", status=200)
+
     assert user.email in res.text
     assert user_2.email not in res.text
 
@@ -283,7 +301,7 @@ def test_admin_can_add_multiple_users_at_once_in_a_group(
     res = client_app.post(
         "/admin/add-group-members/1", {"user_ids": [1, 2, 3]}, status=302
     )
-    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
+    assert ("success", "3 membres ajoutés au groupe") in res.flashes
     assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
     assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
@@ -298,18 +316,29 @@ def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
     assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
 
 
+def test_non_numeric_user_id_is_ignored(
+    cli_runner, client_app, user, group, authenticated_user
+):
+    """Test a malformed user id does not raise a server error."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    res = client_app.post(
+        "/admin/add-group-members/1", {"user_ids": ["oops"]}, status=302
+    )
+    assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
+    assert not group.members
+
+
 def test_admin_can_add_multiple_users_filtered_with_search(
     cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
 ):
-    """Test admin can add multiple users filtered with search."""
+    """Test admin adds every user matching the search, and only those."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post(
-        "/admin/add-group-members/1?search=%40ladomain.tld&select_all=1"
+        "/admin/add-group-members/1", {"search": "ber", "select_all": "1"}, status=302
     )
-    assert ("success", "3 membre(s) ajouté(s) au groupe") in res.flashes
-    assert "alice@domain.tld became member of group 1 Group 1" in caplog.text
+    assert ("success", "1 membre ajouté au groupe") in res.flashes
+    assert [member.email for member in group.members] == ["berenice@domain.tld"]
     assert "berenice@domain.tld became member of group 1 Group 1" in caplog.text
-    assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
 
 
 def test_can_use_ai_summary_returns_true_when_group_enables_it(client_app, user, group):
@@ -332,12 +361,6 @@ def test_can_use_ai_summary_falls_back_to_config_when_group_has_none(
     assert user.can_use_ai_summary is True
 
 
-@pytest.fixture()
-def mock_meeting_is_not_running(mocker):
-    """Mock meeting.bbb.is_running() to return False."""
-    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-
-
 def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     cli_runner,
     client_app,
@@ -349,19 +372,56 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
     mock_meeting_is_not_running,
     bbb_response,
 ):
-    """Test when owner loses ai-summary authorization, ai_summary is disabled on their meetings before launch."""
-    user.admin = True
-    group.members.append(user)
-    group_2.members.append(user)
+    """When the owner loses ai-summary authorisation, launching the meeting keeps the stored preference while ai_summary_enabled reflects the loss."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     group.academic_domains.append("domain.tld")
     group_2.academic_domains.append("domain.tld")
     db.session.commit()
+    client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
     assert user.can_use_ai_summary is True
     meeting.ai_summary = True
-    client_app.get("/admin/manage-group-members/1/1", status=200)
+    assert meeting.ai_summary_enabled is True
+    client_app.post("/admin/manage-group-members/1/1", status=302)
     create_bbb_meeting(meeting, meeting.owner)
-    assert meeting.ai_summary is False
     assert user.can_use_ai_summary is False
+    assert meeting.ai_summary is True
+    assert meeting.ai_summary_enabled is False
+
+
+def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
+    cli_runner,
+    client_app,
+    user,
+    user_2,
+    meeting,
+    group,
+    group_2,
+    authenticated_user,
+    mock_meeting_is_not_running,
+    mocker,
+):
+    """In delegation, the BBB room file-sharing flag follows the owner's ability, not the launcher's."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    # Alice's domain matches Group 2 so automatic_group_affiliation doesn't
+    # remove her from it on the second request below; Group 1 must stay
+    # without a matching domain so she isn't auto-added there too.
+    group_2.academic_domains.append("domain.tld")
+    db.session.commit()
+    # Owner alice (id 1) in Group 2: file sharing disabled.
+    client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
+    # Launcher berenice (id 2) in Group 1: file sharing enabled.
+    client_app.post("/admin/add-group-members/1", {"user_ids": [2]}, status=302)
+    assert meeting.owner_id == user.id
+    assert user.can_use_file_sharing is False
+    assert user_2.can_use_file_sharing is True
+
+    create = mocker.patch(
+        "b3desk.models.bbb.BBB.create",
+        return_value={"returncode": "SUCCESS", "voiceBridge": meeting.voiceBridge},
+    )
+    create_bbb_meeting(meeting, user_2)
+    assert create.call_args.kwargs["file_sharing"] is False
 
 
 def test_automatic_affiliation_with_academic_domain(user_2, group):

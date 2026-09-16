@@ -1,13 +1,23 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Unicode
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from . import db
 
+if TYPE_CHECKING:
+    from .users import User
+
 group_member_table = db.Table(
     "group_member",
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-    db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("group_id", ForeignKey("group.id"), primary_key=True),
 )
 
 excludelist_table = db.Table(
@@ -18,21 +28,23 @@ excludelist_table = db.Table(
 
 
 class Group(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.now, onupdate=datetime.now
     )
 
-    name = db.Column(db.Unicode(150), unique=True)
-    enable_sip = db.Column(db.Boolean, default=None)
-    enable_file_sharing = db.Column(db.Boolean, default=None)
-    enable_ai_summary = db.Column(db.Boolean, default=None)
-    academic_domains = db.Column(MutableList.as_mutable(db.JSON), default=list)
+    name: Mapped[str | None] = mapped_column(Unicode(150), unique=True)
+    enable_sip: Mapped[bool | None] = mapped_column(default=None)
+    enable_file_sharing: Mapped[bool | None] = mapped_column(default=None)
+    enable_ai_summary: Mapped[bool | None] = mapped_column(default=None)
+    academic_domains: Mapped[list] = mapped_column(
+        MutableList.as_mutable(db.JSON), default=list
+    )
 
-    members = db.relationship(
-        "User", secondary=group_member_table, back_populates="groups"
+    members: Mapped[list[User]] = relationship(
+        secondary=group_member_table, back_populates="groups"
     )
     excluded_users = db.relationship(
         "User", secondary=excludelist_table, back_populates="excluded_groups"

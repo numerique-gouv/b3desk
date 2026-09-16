@@ -29,15 +29,23 @@ MAX_MEETING_DURATION = timedelta(minutes=999)
 
 class JoinMeetingForm(FlaskForm):
     fullname = StringField()
-    meeting_fake_id = StringField()
-    hash_ = StringField()
+    meeting_id = StringField()
+    secret_key = StringField()
     fullname_suffix = StringField()
     seconds_before_refresh = FloatField()
-    quick_meeting = BooleanField()
 
 
 class ShowMeetingForm(Form):
     meeting_id = IntegerField()
+
+
+class ChunkUploadForm(FlaskForm):
+    """Dropzone chunk metadata."""
+
+    dzchunkindex = IntegerField(validators=[validators.InputRequired()])
+    dzchunkbyteoffset = IntegerField(validators=[validators.InputRequired()])
+    dztotalchunkcount = IntegerField(validators=[validators.InputRequired()])
+    dztotalfilesize = IntegerField(validators=[validators.InputRequired()])
 
 
 class MeetingFilesForm(FlaskForm):
@@ -251,7 +259,7 @@ class MeetingWithRecordForm(MeetingForm):
         description=_(
             "La génération de résumé est basée sur l'audio de l'enregistrement."
         ),
-        default=False,
+        default=True,
     )
 
     def validate_ai_summary(self, field):
@@ -302,16 +310,6 @@ class GroupSearchForm(FlaskForm):
     )
 
 
-class MemberSearchForm(FlaskForm):
-    search = EmailField(
-        label=_("Ajout de membre"),
-        render_kw={
-            "placeholder": "Saisir l'e-mail de l'utilisateur (ex: nom@exemple.fr)"
-        },
-        validators=[validators.DataRequired()],
-    )
-
-
 def nullable_bool(value):
     if value in (None, "", "None"):
         return None
@@ -319,7 +317,6 @@ def nullable_bool(value):
 
 
 class GroupForm(FlaskForm):
-    id = IntegerField()
     name = StringField(
         label=_(
             "Nom du groupe",
@@ -350,7 +347,6 @@ class GroupForm(FlaskForm):
         label=_(
             "Génération de résumé (IA)",
         ),
-        description=_("Désactivé par défaut"),
         choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
         coerce=nullable_bool,
         default="None",
@@ -366,6 +362,11 @@ class GroupForm(FlaskForm):
         self.enable_file_sharing.description = (
             _("Activé par défaut")
             if current_app.config["FILE_SHARING"]
+            else _("Désactivé par défaut")
+        )
+        self.enable_ai_summary.description = (
+            _("Activé par défaut")
+            if current_app.config["ENABLE_AI_SUMMARY"]
             else _("Désactivé par défaut")
         )
 

@@ -83,7 +83,7 @@ Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 403.
 #### Mauvaise audience du jeton
 
 Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 403.
-Dans les faits il faut s'assurer que le paramètre `aud` du jeton contient bien l'ID client OIDC de l'application, définie dans le paramètre `OIDC_CLIENT_ID` de l'application, et prenant par défaut la valeur `bbb-vision`.
+Dans les faits il faut s'assurer que le paramètre `aud` du jeton contient bien l'ID client OIDC de l'application, définie dans le paramètre `OIDC_CLIENT_ID` de l'application, et prenant par défaut la valeur `bbb-visio`.
 On peut vérifier l'audience d'un token avec des outils tels que [jwt.io](https://jwt.io).
 
 Par défaut, keycloak ne remplit pas l'audience du jeton avec l'ID client.
@@ -100,4 +100,4 @@ Il est nécessaire d'effectuer une configuration dans la console d'aministration
    - Included Custom Audience: bbb-visio
 
    ![keycloak](../_static/keycloak-audience.png)
-7. Générer un nouveau token et vérifier qu'il contient bien la valeur `bbb-vision` dans le paramètre `aud`.
+7. Générer un nouveau token et vérifier qu'il contient bien la valeur `bbb-visio` dans le paramètre `aud`.

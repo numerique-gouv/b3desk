@@ -1,7 +1,7 @@
 from datetime import date
 
+import httpx2
 import pytest
-import requests
 from b3desk.models import db
 from b3desk.models.users import User
 from b3desk.models.users import get_or_create_user
@@ -55,11 +55,11 @@ def test_update_last_connection_if_more_than_24h(client_app):
 
 
 def test_make_nextcloud_credentials_request_with_scheme_response(
-    client_app, app, cloud_service_response, mocker
+    client_app, app, cloud_service_response, httpx2_mock
 ):
     """Test that Nextcloud credentials request preserves HTTP scheme."""
     assert cloud_service_response.data["nclocator"].startswith("http://")
-    mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
+    httpx2_mock.route(method="POST").respond(200, json=cloud_service_response.data)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
     credentials = make_nextcloud_credentials_request(
         url=app.config["NC_LOGIN_API_URL"],
@@ -71,11 +71,11 @@ def test_make_nextcloud_credentials_request_with_scheme_response(
 
 @pytest.mark.secure
 def test_make_nextcloud_credentials_request_with_secure_response(
-    client_app, app, cloud_service_response, mocker
+    client_app, app, cloud_service_response, httpx2_mock
 ):
     """Test that Nextcloud credentials request preserves HTTPS scheme."""
     assert cloud_service_response.data["nclocator"].startswith("https://")
-    mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
+    httpx2_mock.route(method="POST").respond(200, json=cloud_service_response.data)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = False
     credentials = make_nextcloud_credentials_request(
         url=app.config["NC_LOGIN_API_URL"],
@@ -86,11 +86,11 @@ def test_make_nextcloud_credentials_request_with_secure_response(
 
 
 def test_make_nextcloud_credentials_request_force_secure_for_unsecure(
-    client_app, app, cloud_service_response, mocker
+    client_app, app, cloud_service_response, httpx2_mock
 ):
     """Test that HTTP URLs are forced to HTTPS when configured."""
     assert cloud_service_response.data["nclocator"].startswith("http://")
-    mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
+    httpx2_mock.route(method="POST").respond(200, json=cloud_service_response.data)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
     credentials = make_nextcloud_credentials_request(
         url=app.config["NC_LOGIN_API_URL"],
@@ -102,11 +102,11 @@ def test_make_nextcloud_credentials_request_force_secure_for_unsecure(
 
 @pytest.mark.no_scheme
 def test_make_nextcloud_credentials_request_force_secure_for_missing_scheme(
-    client_app, app, cloud_service_response, mocker
+    client_app, app, cloud_service_response, httpx2_mock
 ):
     """Test that missing scheme is forced to HTTPS when configured."""
     assert not cloud_service_response.data["nclocator"].startswith("http")
-    mocker.patch("b3desk.nextcloud.requests.post", return_value=cloud_service_response)
+    httpx2_mock.route(method="POST").respond(200, json=cloud_service_response.data)
     app.config["FORCE_HTTPS_ON_EXTERNAL_URLS"] = True
     credentials = make_nextcloud_credentials_request(
         url=app.config["NC_LOGIN_API_URL"],
@@ -125,13 +125,17 @@ def test_get_secondary_identity_provider_id_from_email_token_error(
         text = "Unable to get token"
 
         def raise_for_status():
-            raise requests.exceptions.HTTPError
+            raise httpx2.HTTPStatusError(
+                "error",
+                request=httpx2.Request("GET", "http://test"),
+                response=httpx2.Response(500),
+            )
 
     mocker.patch(
         "b3desk.nextcloud.get_secondary_identity_provider_token",
         return_value=TokenErrorAnswer,
     )
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(httpx2.HTTPStatusError):
         get_secondary_identity_provider_id_from_email("jean.espece@rock.test")
     assert "Get token request error:" in caplog.text
 
@@ -145,13 +149,17 @@ def test_get_secondary_identity_provider_id_from_email_request_error(
         text = "Unable to ask identity provider"
 
         def raise_for_status():
-            raise requests.exceptions.HTTPError
+            raise httpx2.HTTPStatusError(
+                "error",
+                request=httpx2.Request("GET", "http://test"),
+                response=httpx2.Response(500),
+            )
 
     mocker.patch(
         "b3desk.nextcloud.get_secondary_identity_provider_users_from_email",
         return_value=RequestErrorAnswer,
     )
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(httpx2.HTTPStatusError):
         get_secondary_identity_provider_id_from_email("michel.vendeur@rock.test")
     assert "Get user from email request error:" in caplog.text
 

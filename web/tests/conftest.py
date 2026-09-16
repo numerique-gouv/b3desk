@@ -12,17 +12,19 @@ import b3desk.utils
 import portpicker
 import psycopg
 import pytest
+import respx
 from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
 from flask_migrate import Migrate
 from flask_migrate import upgrade
-from flask_webtest import TestApp
 from jinja2 import FileSystemBytecodeCache
 from joserfc.jwk import RSAKey
 from pytest_lazy_fixtures import lf
 from wsgidav.fs_dav_provider import FilesystemProvider
 from wsgidav.wsgidav_app import WsgiDAVApp
+
+from tests.html_validation import ValidatingTestApp
 
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
@@ -72,6 +74,7 @@ def sqlite_template_db(tmp_path_factory):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
@@ -128,6 +131,7 @@ def postgresql_template_db(postgresql_proc):
     db.init_app(app)
 
     with app.app_context():
+        import b3desk.models.groups
         import b3desk.models.meetings
         import b3desk.models.users  # noqa: F401
 
@@ -347,7 +351,9 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
-        "RECORDING_NOTIFICATION_DELAY": 0,
+        "RECORDING_NOTIFICATION_MIN_DELAY": 0,
+        "RECORDING_NOTIFICATION_MAX_DELAY": 0,
+        "RECORDING_EXPECTED_FORMATS": ["presentation"],
         "MEETING_LOGOUT_URL": "https://meeting-logout.test/logout",
         "SMTP_FROM": "from@mail.test",
         "BIGBLUEBUTTON_DIALNUMBER": "+33bbbphonenumber",
@@ -397,7 +403,7 @@ def app(configuration, jinja_cache_directory):
 @pytest.fixture
 def client_app(app):
     with app.test_request_context():
-        yield TestApp(app)
+        yield ValidatingTestApp(app)
 
 
 @pytest.fixture
@@ -417,6 +423,9 @@ def meeting(client_app, user):
     )
     db.session.add(meeting)
     meeting.favorite_of.append(user)
+    db.session.commit()
+
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -441,6 +450,9 @@ def meeting_2(client_app, user):
     meeting.favorite_of.append(user)
     db.session.commit()
 
+    meeting.create_secret_keys()
+    db.session.commit()
+
     yield meeting
 
 
@@ -459,6 +471,9 @@ def meeting_3(client_app, user):
         visio_code="911111113",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -481,6 +496,9 @@ def meeting_1_user_2(client_app, user, user_2):
         visio_code="922222222",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_secret_keys()
     db.session.commit()
 
     access = MeetingAccess(
@@ -511,6 +529,9 @@ def meeting_2_user_2(client_app, user_2):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_secret_keys()
+    db.session.commit()
+
     yield meeting
 
 
@@ -531,6 +552,9 @@ def meeting_1_user_3(client_app, user, user_3):
         visio_code="933333333",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_secret_keys()
     db.session.commit()
 
     access = MeetingAccess(
@@ -561,6 +585,9 @@ def shadow_meeting(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_secret_keys()
+    db.session.commit()
+
     yield meeting
 
 
@@ -581,6 +608,9 @@ def shadow_meeting_2(client_app, user):
     db.session.add(meeting)
     db.session.commit()
 
+    meeting.create_secret_keys()
+    db.session.commit()
+
     yield meeting
 
 
@@ -599,6 +629,9 @@ def shadow_meeting_3(client_app, user):
         visio_code="511111113",
     )
     db.session.add(meeting)
+    db.session.commit()
+
+    meeting.create_secret_keys()
     db.session.commit()
 
     yield meeting
@@ -785,17 +818,25 @@ def authenticated_attendee(client_app, user, mocker):
 
 
 @pytest.fixture
-def bbb_response(mocker):
+def httpx2_mock():
+    """Override the pytest-httpx2 fixture: shared fixtures may go uncalled."""
+    with respx.mock(using="httpcore2", assert_all_called=False) as router:
+        yield router
+
+
+@pytest.fixture
+def bbb_response(httpx2_mock):
     class Response:
         content = """<response><returncode>SUCCESS</returncode><running>true</running><voiceBridge>111111111</voiceBridge><attendeePW>attendee</attendeePW><moderatorPW>moderator</moderatorPW></response>"""
         status_code = 200
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture
-def bbb_getRecordings_response(mocker):
+def bbb_getRecordings_response(httpx2_mock):
     """Fixture that provides a mock BBB getRecordings API response with sample recording data."""
 
     class Response:
@@ -916,7 +957,8 @@ def bbb_getRecordings_response(mocker):
 """
         text = ""
 
-    yield mocker.patch("requests.Session.send", return_value=Response)
+    httpx2_mock.route().respond(200, content=Response.content)
+    yield httpx2_mock
 
 
 @pytest.fixture(scope="session")
@@ -1026,7 +1068,7 @@ def bbb_recording(mocker):
                     }
                 },
                 "start_date": datetime.datetime(
-                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.timezone.utc
+                    2001, 1, 1, 10, 0, 0, tzinfo=datetime.UTC
                 ),
                 "name": "",
             }
@@ -1044,3 +1086,15 @@ def make_signed_parameters(app):
         return jwt.encode({"alg": "HS256"}, payload, key)
 
     return make
+
+
+@pytest.fixture()
+def mock_meeting_is_not_running(mocker):
+    """Mock meeting.bbb.is_running() to return False."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+
+@pytest.fixture()
+def mock_meeting_is_running(mocker):
+    """Mock meeting.bbb.is_running() to return True."""
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)

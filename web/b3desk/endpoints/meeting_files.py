@@ -4,7 +4,7 @@ from datetime import date
 from pathlib import Path
 
 import filetype
-import requests
+import httpx2
 from flask import Blueprint
 from flask import abort
 from flask import after_this_request
@@ -22,6 +22,7 @@ from sqlalchemy import exc
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename
 
+from b3desk.forms import ChunkUploadForm
 from b3desk.forms import MeetingFilesForm
 from b3desk.models import db
 from b3desk.models.bbb import BBB
@@ -34,8 +35,11 @@ from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
+from b3desk.utils import download_url_to_path
+from b3desk.utils import http_client
 
 from .. import auth
+from ..session import is_admin_mode
 from ..session import meeting_access_required
 from ..session import user_needed
 
@@ -52,7 +56,6 @@ def edit_meeting_files(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
     form = MeetingFilesForm()
-    admin_mode = "admin_mode" in request.args or False
 
     if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
@@ -67,7 +70,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
-        admin_mode=admin_mode,
+        admin_mode=is_admin_mode(),
     )
 
 
@@ -77,18 +80,22 @@ def edit_meeting_files(meeting: Meeting, user: User):
 @meeting_access_required(AccessLevel.DELEGATE)
 def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or file upload."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {"msg": _("Requête invalide")}, 400
 
-    if data["from"] == "nextcloud":
-        return add_meeting_file_nextcloud(data["value"], meeting.id)
+    origin = data.get("from")
+    value = data.get("value")
+    if origin not in ("nextcloud", "URL", "upload") or not isinstance(value, str):
+        return {"msg": "no file provided"}, 400
 
-    if data["from"] == "URL":
-        return add_meeting_file_URL(data["value"], meeting.id)
+    if origin == "nextcloud":
+        return add_meeting_file_nextcloud(value, meeting.id)
 
-    if data["from"] == "upload":
-        return add_meeting_file_from_upload(secure_filename(data["value"]), meeting.id)
+    if origin == "URL":
+        return add_meeting_file_URL(value, meeting.id)
 
-    return {"msg": "no file provided"}, 400
+    return add_meeting_file_from_upload(secure_filename(value), meeting.id)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
@@ -111,9 +118,16 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
         return response
 
     if meeting_file.url:
-        response = requests.get(meeting_file.url)
-        with tmp_name.open("wb") as f:
-            f.write(response.content)
+        if not download_url_to_path(meeting_file.url, tmp_name):
+            flash(
+                _(
+                    "Le fichier n’a pas pu être téléchargé, "
+                    "veuillez vérifier l’URL proposée."
+                ),
+                "error",
+            )
+            return redirect(url_for("public.welcome"))
+
         return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
     # get file from nextcloud WEBDAV and send it
@@ -148,7 +162,10 @@ def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     if meeting_file.meeting_id != meeting.id:
         abort(404)
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not isinstance(data.get("value"), bool):
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_file.is_downloadable = data["value"]
     db.session.add(meeting_file)
     db.session.commit()
@@ -166,6 +183,9 @@ def add_meeting_file_from_upload(title, meeting_id):
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
     upload_path = upload_chunk_dir / f"{g.user.id}-{meeting_id}-{title}"
+    if not upload_path.is_file():
+        return {"msg": _("Aucun fichier téléversé pour ce nom")}, 400
+
     metadata = upload_path.stat()
     if int(metadata.st_size) > current_app.config["MAX_SIZE_UPLOAD"]:
         return {
@@ -229,8 +249,10 @@ def add_meeting_file_URL(url, meeting_id):
     title = url.rsplit("/", 1)[-1]
 
     try:
-        metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
-    except requests.exceptions.RequestException as request_error:
+        metadata = http_client().head(
+            url, timeout=REQUEST_TIMEOUT, follow_redirects=False
+        )
+    except httpx2.HTTPError as request_error:
         current_app.logger.warning(
             "URL file request failed for %s: %s", url, request_error
         )
@@ -240,7 +262,7 @@ def add_meeting_file_URL(url, meeting_id):
             ).format(title=title)
         }, 400
 
-    if not metadata.ok:
+    if not metadata.is_success:
         return {
             "msg": _(
                 "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
@@ -347,13 +369,17 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 @meeting_access_required(AccessLevel.DELEGATE)
 def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
+    form = ChunkUploadForm()
+    if not form.validate() or "dropzoneFiles" not in request.files:
+        return {"msg": _("Requête invalide")}, 400
+
     file = request.files["dropzoneFiles"]
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
     save_path = upload_chunk_dir / secure_filename(
         f"{user.id}-{meeting.id}-{file.filename}"
     )
-    current_chunk = int(request.form["dzchunkindex"])
+    current_chunk = form.dzchunkindex.data
 
     # If the file already exists it's ok if we are appending to it,
     # but not if it's new file that would overwrite the existing one
@@ -362,13 +388,13 @@ def upload_file_chunks(meeting: Meeting, user: User):
 
     try:
         with save_path.open("ab") as f:
-            f.seek(int(request.form["dzchunkbyteoffset"]))
+            f.seek(form.dzchunkbyteoffset.data)
             f.write(file.stream.read())
 
     except OSError:
         return {"msg": _("Erreur lors de l'écriture du fichier sur le disque")}, 500
 
-    total_chunks = int(request.form["dztotalchunkcount"])
+    total_chunks = form.dztotalchunkcount.data
 
     if current_chunk + 1 == total_chunks:
         # This was the last chunk, the file should be complete and the size we expect
@@ -381,7 +407,7 @@ def upload_file_chunks(meeting: Meeting, user: User):
             save_path.unlink()
             return {"msg": _("Type de fichier non autorisé")}, 400
 
-        if save_path.stat().st_size != int(request.form["dztotalfilesize"]):
+        if save_path.stat().st_size != form.dztotalfilesize.data:
             save_path.unlink()
             return {"msg": _("Erreur de taille du fichier")}, 400
 
@@ -394,11 +420,18 @@ def upload_file_chunks(meeting: Meeting, user: User):
 @auth.oidc_auth("default")
 def delete_meeting_file():
     """Delete a meeting file."""
-    data = request.get_json()
-    meeting_file_id = data["id"]
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {"msg": _("Requête invalide")}, 400
+
+    try:
+        meeting_file_id = int(data["id"])
+    except (KeyError, TypeError, ValueError):
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_file = db.session.get(MeetingFiles, meeting_file_id)
     if meeting_file is None:
-        return {"id": data["id"], "msg": _("Fichier introuvable")}, 404
+        return {"id": meeting_file_id, "msg": _("Fichier introuvable")}, 404
 
     if (
         meeting_file.meeting.owner_id != g.user.id
@@ -455,7 +488,12 @@ def file_picker_callback(user: User, bbb_meeting_id: str):
     This is called by the Nextcloud file picker when users select a document.
     This makes BBB download the document from the 'ncdownload' endpoint.
     """
-    filenames = request.get_json()
+    filenames = request.get_json(silent=True)
+    if not isinstance(filenames, list) or not all(
+        isinstance(filename, str) for filename in filenames
+    ):
+        return {"msg": _("Requête invalide")}, 400
+
     meeting_files = [
         create_external_meeting_file(filename, g.user) for filename in filenames
     ]

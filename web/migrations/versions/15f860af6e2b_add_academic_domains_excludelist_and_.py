@@ -1,7 +1,7 @@
 """add academic domains, excludelist and user metadata.
 
 Revision ID: 15f860af6e2b
-Revises: a3a6e932b2ae
+Revises: a3203f74e042
 Create Date: 2026-06-30 08:44:48.397024
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "15f860af6e2b"
-down_revision = "a3a6e932b2ae"
+down_revision = "a3203f74e042"
 branch_labels = None
 depends_on = None
 

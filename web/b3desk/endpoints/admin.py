@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
@@ -16,11 +17,9 @@ from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
 from b3desk.forms import UserExclusionForm
 from b3desk.forms import UserSearchForm
-from b3desk.join import get_signin_url
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
-from b3desk.models.roles import Role
 from b3desk.models.users import User
 
 from ..session import admin_needed
@@ -84,7 +83,7 @@ def get_users_paginate(per_page, data=None):
     return db.paginate(query, per_page=per_page)
 
 
-def get_all_users_not_in_group(group, data=None):
+def query_all_users_not_in_group(group, data=None):
     query = (
         db.select(User).where(~User.groups.contains(group)).order_by(User.created_at)
     )
@@ -97,6 +96,24 @@ def get_all_users_not_in_group(group, data=None):
                 User.email.ilike(f"%{data}%"),
             )
         )
+    return query
+
+
+def get_all_users_not_in_group(group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.session.execute(query).scalars().all()
+
+
+def get_all_users_not_in_group_paginate(per_page, group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.paginate(query, per_page=per_page)
+
+
+def get_users_by_ids(user_ids):
+    ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]
+    if not ids:
+        return []
+    query = db.select(User).where(User.id.in_(ids))
     return db.session.execute(query).scalars().all()
 
 
@@ -118,7 +135,7 @@ def home():
 @admin_needed
 def manage_users():
     """Display user list to manage users."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -147,7 +164,7 @@ def user_infos(user: User):
 @admin_needed
 def manage_meetings():
     """Display meeting list to manage meetings."""
-    form = MeetingSearchForm(request.args, meta={"csrf": False})
+    form = MeetingSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
@@ -163,9 +180,6 @@ def manage_meetings():
 @admin_needed
 def meeting_infos(meeting: Meeting):
     """Display meeting infos of admin page."""
-    meeting.moderator_url = get_signin_url(meeting, Role.moderator)
-    meeting.attendee_url = get_signin_url(meeting, Role.attendee)
-    meeting.authenticated_url = get_signin_url(meeting, Role.authenticated)
     return render_template(
         "admin/meeting_infos.html",
         admin_mode=True,
@@ -223,20 +237,12 @@ def group_infos(group: Group):
     )
 
 
-@bp.route("/admin/groups", methods=["GET", "POST"])
+@bp.route("/admin/groups")
 @admin_needed
 def manage_groups():
     """Display group list to manage groups of admin page."""
-    form = GroupSearchForm(request.form)
-    if not request.form or not form.validate():
-        groups_page = get_groups_paginate(per_page=PER_PAGE, data=None)
-        return render_template(
-            "admin/groups.html",
-            groups_page=groups_page,
-            form=form,
-            data=None,
-        )
-    data = form.search.data.lower()
+    form = GroupSearchForm(request.args)
+    data = form.search.data.lower() if form.search.data else None
     groups_page = get_groups_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/groups.html",
@@ -269,8 +275,6 @@ def edit_group(group: Group):
             group=group,
         )
 
-    del form.id
-
     updated_data = {
         key: form.data[key]
         for key in form.data
@@ -298,7 +302,7 @@ def edit_group(group: Group):
 @admin_needed
 def manage_group_members(group: Group):
     """Display group members list and member addition of admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
     return render_template(
@@ -311,11 +315,11 @@ def manage_group_members(group: Group):
     )
 
 
-@bp.route("/admin/manage-group-members/<group:group>/<user:member>")
+@bp.route("/admin/manage-group-members/<group:group>/<user:member>", methods=["POST"])
 @admin_needed
 def remove_member(group: Group, member: User):
-    """Display group members list and member removing admin page."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
+    """Remove a member from the group."""
+    form = UserSearchForm(request.args)
     data = form.search.data.lower() if form.search.data else None
     if member not in group.members:
         flash(_("L'utilisateur ne fait pas partie du groupe"), "error")
@@ -329,15 +333,7 @@ def remove_member(group: Group, member: User):
             group.id,
             group.name,
         )
-    members_page = get_group_members_paginate(group, per_page=PER_PAGE, data=data)
-    return render_template(
-        "admin/group_members.html",
-        group=group,
-        form=form,
-        members_page=members_page,
-        data=data,
-        add_members=False,
-    )
+    return redirect(url_for("admin.manage_group_members", group=group, search=data))
 
 
 @bp.route("/admin/delete-group/<group:group>")
@@ -350,10 +346,10 @@ def delete_group(group: Group):
     )
 
 
-@bp.route("/admin/confirm-delete-group/<group:group>")
+@bp.route("/admin/confirm-delete-group/<group:group>", methods=["POST"])
 @admin_needed
 def confirm_delete_group(group: Group):
-    """Display group deletion of admin page."""
+    """Delete a group."""
     db.session.delete(group)
     db.session.commit()
     flash(_("Le groupe a été supprimé"), "success")
@@ -361,11 +357,10 @@ def confirm_delete_group(group: Group):
     return redirect(url_for("admin.manage_groups"))
 
 
-def add_users_in_group(selected_users, group, ids=False):
+def add_users_in_group(users, group):
     added_users = []
-    for user in selected_users:
-        user = db.session.get(User, int(user)) if ids else user
-        if user and user not in group.members:
+    for user in users:
+        if user not in group.members:
             group.members.append(user)
             added_users.append(user)
     db.session.commit()
@@ -374,7 +369,11 @@ def add_users_in_group(selected_users, group, ids=False):
             "%s became member of group %s %s", user.email, group.id, group.name
         )
     flash(
-        _(f"{len(added_users)} membre(s) ajouté(s) au groupe"),
+        ngettext(
+            "%(num)s membre ajouté au groupe",
+            "%(num)s membres ajoutés au groupe",
+            len(added_users),
+        ),
         "success",
     )
 
@@ -383,29 +382,23 @@ def add_users_in_group(selected_users, group, ids=False):
 @admin_needed
 def add_group_members(group: Group):
     """Display non member users list to add members."""
-    form = UserSearchForm(request.args, meta={"csrf": False})
-    select_all = (
-        bool(request.values.get("select_all"))
-        if request.values.get("select_all")
-        else False
+    form = UserSearchForm(request.args)
+    select_all = bool(request.values.get("select_all"))
+    search = request.values.get("search")
+    data = search.lower() if search else None
+
+    users_page = get_all_users_not_in_group_paginate(
+        per_page=PER_PAGE, group=group, data=data
     )
 
-    if request.method == "GET":
-        data = form.search.data.lower() if form.search.data else None
-    else:
-        data = (
-            request.form.get("search").lower() if request.form.get("search") else None
-        )
-
-    selected_users = get_all_users_not_in_group(group, data)
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
-
     if request.method == "POST":
-        user_ids = request.form.getlist("user_ids")
-        if select_all and selected_users:
-            add_users_in_group(selected_users, group)
-        elif user_ids:
-            add_users_in_group(user_ids, group, ids=True)
+        users = (
+            get_all_users_not_in_group(group, data)
+            if select_all
+            else get_users_by_ids(request.form.getlist("user_ids"))
+        )
+        if users:
+            add_users_in_group(users, group)
         else:
             flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
         return redirect(
@@ -420,12 +413,10 @@ def add_group_members(group: Group):
     return render_template(
         "admin/add_group_members.html",
         group=group,
-        search=data,
         form=form,
         users_page=users_page,
         data=data,
         add_members=True,
-        selected_users=selected_users,
         select_all=select_all,
     )
 

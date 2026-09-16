@@ -24,3 +24,8 @@ def test_locale_selector_outside_request_context_without_variant(app):
         locale = get_locale()
 
     assert str(locale) == "fr"
+
+
+def test_model_converter_rejects_non_numeric_identifier(client_app, authenticated_user):
+    """A non numeric identifier in the URL must not reach the database."""
+    client_app.get("/meeting/edit/not-an-integer", status=404)
