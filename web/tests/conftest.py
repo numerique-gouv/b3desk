@@ -314,7 +314,6 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
         "BIGBLUEBUTTON_SECRET": "test-bbb-secret",
         "OIDC_ISSUER": iam_server.url,
-        "OIDC_REDIRECT_URI": iam_client.redirect_uris[0],
         "OIDC_CLIENT_ID": iam_client.client_id,
         "OIDC_CLIENT_SECRET": iam_client.client_secret,
         "OIDC_CLIENT_AUTH_METHOD": iam_client.token_endpoint_auth_method,
