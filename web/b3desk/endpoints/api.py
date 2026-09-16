@@ -11,15 +11,20 @@ from .. import auth
 bp = Blueprint("api", __name__)
 
 
+def _get_authenticated_user():
+    """Fetch userinfo for the bearer token validated by token_auth, and get or create the matching user."""
+    client = auth.clients["default"]
+    access_token = auth._parse_access_token(request)
+    userinfo = client.userinfo_request(access_token).to_dict()
+    return get_or_create_user(userinfo)
+
+
 @bp.route("/api/meetings")
 @check_oidc_connection(auth)
 @auth.token_auth("default", scopes_required=["openid"])
 def api_meetings():
     """Return all non-shadow meetings owned by or delegated to the authenticated user via API."""
-    client = auth.clients["default"]
-    access_token = auth._parse_access_token(request)
-    userinfo = client.userinfo_request(access_token).to_dict()
-    user = get_or_create_user(userinfo)
+    user = _get_authenticated_user()
 
     owned = [(meeting, False) for meeting in user.meetings if not meeting.is_shadow]
     delegated = [(meeting, True) for meeting in user.get_all_delegated_meetings]
@@ -60,10 +65,7 @@ def api_meetings():
 @auth.token_auth("default", scopes_required=["openid"])
 def shadow_meeting():
     """Get or create the shadow meeting for the authenticated user via API."""
-    client = auth.clients["default"]
-    access_token = auth._parse_access_token(request)
-    userinfo = client.userinfo_request(access_token).to_dict()
-    user = get_or_create_user(userinfo)
+    user = _get_authenticated_user()
 
     meeting = get_or_create_shadow_meeting(user)
 
