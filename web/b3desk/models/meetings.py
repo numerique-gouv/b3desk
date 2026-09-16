@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 import random
 import uuid
-from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -591,7 +590,7 @@ def meeting_first_mail_deadline(now):
 
 def get_inactive_meetings_to_delete():
     """Return meetings ready for deletion, skipping those used since the first mail."""
-    now = datetime.now(UTC)
+    now = utcnow()
     cutoff = now - timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_MEETING"]
     )
@@ -637,7 +636,7 @@ def update_reactivated_meetings(first_mail_deadline):
 
 def get_inactive_meetings_to_inform():
     """Advance each non-shadow meeting's information_level by one step."""
-    now = datetime.now(UTC)
+    now = utcnow()
     first_mail_deadline = meeting_first_mail_deadline(now)
 
     update_reactivated_meetings(first_mail_deadline)

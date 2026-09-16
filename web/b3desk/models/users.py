@@ -9,7 +9,6 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
 import hashlib
-from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -200,7 +199,7 @@ class User(db.Model):
 
 def get_inactive_users_to_delete():
     """Return users ready for deletion, skipping those active since the first mail."""
-    now = datetime.now(UTC)
+    now = utcnow()
     return db.session.scalars(
         db.select(User).where(
             ready_for_final_deletion(User, now),
@@ -234,17 +233,12 @@ def clean_db_and_delete_user(user, force=False):
     return True, None
 
 
-def as_naive(value):
-    """Strip an aware datetime's timezone so it can be compared to values read from the database."""
-    return value.replace(tzinfo=None) if value.tzinfo else value
-
-
 def account_first_mail_deadline(now):
     """Return the activity deadline that starts the account warning sequence."""
     inactivity_period = timedelta(
         days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
-    return as_naive(compute_first_mail_deadline(now, inactivity_period))
+    return compute_first_mail_deadline(now, inactivity_period)
 
 
 def user_used_since(deadline):
@@ -275,7 +269,7 @@ def update_reactivated_users(first_mail_deadline):
 
 def get_inactive_users_to_inform():
     """Advance each user's information_level by one step."""
-    now = datetime.now(UTC)
+    now = utcnow()
     first_mail_deadline = account_first_mail_deadline(now)
 
     update_reactivated_users(first_mail_deadline)

@@ -1,6 +1,3 @@
-from datetime import UTC
-from datetime import datetime
-
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from flask import current_app
@@ -14,6 +11,7 @@ from b3desk.models.users import clean_db_and_delete_user
 from b3desk.models.users import get_inactive_users_to_delete
 from b3desk.models.users import get_inactive_users_to_inform
 from b3desk.utils import http_client
+from b3desk.utils import utcnow
 from b3desk.utils.mailing import send_available_recording_notification_mail
 from b3desk.utils.mailing import send_mail_before_meeting_deletion
 from b3desk.utils.mailing import send_mail_before_user_deletion
@@ -203,7 +201,7 @@ def inform_owner_before_meeting_deletion():
         try:
             send_mail_before_meeting_deletion(meeting, delay)
             meeting.information_level = level
-            meeting.information_sent_at = datetime.now(UTC)
+            meeting.information_sent_at = utcnow()
             db.session.commit()
             logger.info(
                 "Celery cron task: %s id:%s named:%s informed (%d day(s) left)",
@@ -288,7 +286,7 @@ def inform_user_before_account_deletion():
         try:
             send_mail_before_user_deletion(user, delay)
             user.information_level = level
-            user.information_sent_at = datetime.now(UTC)
+            user.information_sent_at = utcnow()
             db.session.commit()
             logger.info(
                 "Celery cron task: user %s, id %s, email %s, informed (%d day(s) left)",
