@@ -467,15 +467,15 @@ def test_delete_old_users_information_failure(
 ):
     """Test the cron task logs an error when a user could not be informed."""
     test_date = datetime.datetime(2024, 1, 1)
-    third_mail_date = (
-        test_date
-        - datetime.timedelta(
-            days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
-        )
-        + datetime.timedelta(days=DELAY_FOR_THIRD_EMAIL)
+    inactivity_period = datetime.timedelta(
+        days=client_app.app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
     )
-    user.last_connection_utc_datetime = third_mail_date
-    user.created_at = third_mail_date
+    user.last_connection_utc_datetime = test_date - inactivity_period
+    user.created_at = test_date - inactivity_period
+    user.information_level = 2
+    user.information_sent_at = test_date - datetime.timedelta(
+        days=DELAY_FOR_SECOND_EMAIL - DELAY_FOR_THIRD_EMAIL
+    )
     db.session.commit()
 
     mocker.patch(
@@ -485,8 +485,12 @@ def test_delete_old_users_information_failure(
     time_machine.move_to(test_date)
     inform_user_before_account_deletion()
 
-    assert f"Celery cron task: user {user.fullname}, id {user.id}, email {user.email}, not informed ({DELAY_FOR_THIRD_EMAIL} day(s) left)"
+    assert (
+        f"Celery cron task: user {user.fullname}, id {user.id}, email {user.email}, not informed ({DELAY_FOR_THIRD_EMAIL} day(s) left)"
+        in caplog.text
+    )
     assert len(smtpd.messages) == 0
+    assert user.information_level == 2
 
 
 def test_inform_user_before_account_deletion(
