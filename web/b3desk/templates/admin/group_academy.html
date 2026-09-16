@@ -31,10 +31,9 @@
 
     <h4>{{ form.academy.label }}</h4>
     <p class="fr-hint-text">{{ form.academy.description }}</p>
-    <form class="fr-search-bar" id="addAcademy" name="search_meeting" role="search" action="{{ url_for("admin.manage_academy", group=group) }}" method="post">
+    <form id="addAcademy" name="search_meeting" action="{{ url_for("admin.manage_academy", group=group) }}" method="post">
         {% include 'meeting/csrf.html' %}
-        {{ form.academy(class_="fr-input") }}
-        <button title="{% trans %}Exclure l'utilisateur du groupe{% endtrans %}" type="submit" class="fr-btn"></button>
+        {{ form.academy(class_="fr-select", onchange="this.form.submit()") }}
     </form>
     {% if not group.academic_codes %}
         <p>{% trans %}Aucune académie sélectionnée{% endtrans %}</p>
