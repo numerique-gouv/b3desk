@@ -1,4 +1,4 @@
-"""add academic domains, excludelist and user metadata.
+"""add academic code, excludelist and user metadata.
 
 Revision ID: 15f860af6e2b
 Revises: a3203f74e042
@@ -32,7 +32,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("user_id", "group_id"),
     )
     with op.batch_alter_table("group", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("academic_code", sa.JSON(), nullable=True))
+        batch_op.add_column(sa.Column("academic_codes", sa.JSON(), nullable=True))
 
     with op.batch_alter_table("user", schema=None) as batch_op:
         batch_op.add_column(sa.Column("meta_data", sa.JSON(), nullable=True))
@@ -43,6 +43,6 @@ def downgrade():
         batch_op.drop_column("meta_data")
 
     with op.batch_alter_table("group", schema=None) as batch_op:
-        batch_op.drop_column("academic_code")
+        batch_op.drop_column("academic_codes")
 
     op.drop_table("excludelist")

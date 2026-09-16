@@ -228,6 +228,7 @@ def iam_user(iam_server):
         meta_data=json.dumps(
             {
                 "academic_domain": "domain.tld",
+                "academic_code": "001",
             }
         ),
     )
@@ -248,6 +249,7 @@ def iam_user_2(iam_server):
         meta_data=json.dumps(
             {
                 "academic_domain": "domain.tld",
+                "academic_code": "001",
             }
         ),
     )
@@ -268,6 +270,7 @@ def iam_user_3(iam_server):
         meta_data=json.dumps(
             {
                 "academic_domain": "domain.tld",
+                "academic_code": "001",
             }
         ),
     )

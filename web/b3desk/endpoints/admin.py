@@ -11,7 +11,7 @@ from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
-from b3desk.forms import AcademicDomainForm
+from b3desk.forms import AcademyForm
 from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
@@ -258,12 +258,10 @@ def manage_groups():
 def edit_group(group: Group):
     """Display group settings for group edition of admin page."""
     form = GroupForm(request.form if request.method == "POST" else None, obj=group)
-    domain_form = AcademicDomainForm(request.form)
     if request.method == "GET":
         return render_template(
             "admin/group_form.html",
             form=form,
-            domain_form=domain_form,
             group=group,
         )
 
@@ -272,7 +270,6 @@ def edit_group(group: Group):
         return render_template(
             "admin/group_form.html",
             form=form,
-            domain_form=domain_form,
             group=group,
         )
 
@@ -422,15 +419,15 @@ def add_group_members(group: Group):
     )
 
 
-@bp.route("/admin/academic-domain/<group:group>", methods=["GET", "POST"])
+@bp.route("/admin/academy/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def manage_academic_domain(group: Group):
-    """Display and manage a group's academic domains."""
-    form = AcademicDomainForm(request.form)
+def manage_academy(group: Group):
+    """Display and manage group's academies."""
+    form = AcademyForm(request.form)
 
     if request.method == "GET":
         return render_template(
-            "admin/group_academic_domain.html",
+            "admin/group_academy.html",
             form=form,
             group=group,
             codaca=CODACA,
@@ -439,53 +436,56 @@ def manage_academic_domain(group: Group):
     if not form.validate():
         flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
-            "admin/group_academic_domain.html",
+            "admin/group_academy.html",
             form=form,
             group=group,
             codaca=CODACA,
         )
 
-    new_domain = form.data["academic_domain"]
-    if new_domain not in group.academic_code:
-        group.academic_code.append(new_domain)
+    new_academy = form.data["academy"]
+    if new_academy not in group.academic_codes:
+        group.academic_codes.append(new_academy)
         db.session.commit()
         current_app.logger.info(
             "%s a été ajouté à la liste du groupe %s %s",
-            new_domain,
+            new_academy,
             group.id,
             group.name,
         )
     else:
         flash(
-            _("{new_domain} est déjà dans la liste du groupe {group_name}").format(
-                new_domain=new_domain, group_name=group.name
+            _("{new_academy} est déjà dans la liste du groupe {group_name}").format(
+                new_academy=new_academy, group_name=group.name
             ),
             "error",
         )
 
     return render_template(
-        "admin/group_academic_domain.html",
+        "admin/group_academy.html",
         form=form,
         group=group,
         codaca=CODACA,
     )
 
 
-@bp.route("/admin/remove-academic-domain/<group:group>")
+@bp.route("/admin/remove-academy/<group:group>")
 @admin_needed
-def remove_academic_domain(group: Group):
-    """Remove academic domain from group."""
-    form = AcademicDomainForm(request.form)
-    domain = request.args["domain"]
-    if domain in group.academic_code:
-        group.academic_code.remove(domain)
+def remove_academy(group: Group):
+    """Remove academy from group."""
+    form = AcademyForm(request.form)
+    academic_code = request.args["academic_code"]
+    if academic_code in group.academic_codes:
+        group.academic_codes.remove(academic_code)
         db.session.commit()
         current_app.logger.info(
-            "%s a été retiré le la liste du groupe %s %s", domain, group.id, group.name
+            "%s a été retiré le la liste du groupe %s %s",
+            academic_code,
+            group.id,
+            group.name,
         )
 
     return render_template(
-        "admin/group_academic_domain.html",
+        "admin/group_academy.html",
         form=form,
         group=group,
         codaca=CODACA,

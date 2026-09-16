@@ -332,43 +332,43 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:271 web/b3desk/endpoints/admin.py:440
+#: web/b3desk/endpoints/admin.py:269 web/b3desk/endpoints/admin.py:437
 #: web/b3desk/endpoints/admin.py:513 web/b3desk/endpoints/meetings.py:154
 #: web/b3desk/endpoints/meetings.py:216
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:295
+#: web/b3desk/endpoints/admin.py:292
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:326
+#: web/b3desk/endpoints/admin.py:323
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:330
+#: web/b3desk/endpoints/admin.py:327
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:356
+#: web/b3desk/endpoints/admin.py:353
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:374
+#: web/b3desk/endpoints/admin.py:371
 #, python-format
 msgid "%(num)s membre ajouté au groupe"
 msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:404
+#: web/b3desk/endpoints/admin.py:401
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:460
+#: web/b3desk/endpoints/admin.py:457
 #, python-brace-format
-msgid "{new_domain} est déjà dans la liste du groupe {group_name}"
+msgid "{new_academy} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
 #: web/b3desk/endpoints/admin.py:531
@@ -960,7 +960,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:6
 #: web/b3desk/templates/admin/delete_group.html:6
-#: web/b3desk/templates/admin/group_academic_domain.html:9
+#: web/b3desk/templates/admin/group_academy.html:9
 #: web/b3desk/templates/admin/group_excluded_users.html:9
 #: web/b3desk/templates/admin/group_form.html:57
 #: web/b3desk/templates/admin/group_infos.html:6
@@ -980,7 +980,7 @@ msgstr ""
 
 #: web/b3desk/templates/admin/add_group_members.html:7
 #: web/b3desk/templates/admin/delete_group.html:7
-#: web/b3desk/templates/admin/group_academic_domain.html:12
+#: web/b3desk/templates/admin/group_academy.html:12
 #: web/b3desk/templates/admin/group_excluded_users.html:12
 #: web/b3desk/templates/admin/group_form.html:58
 #: web/b3desk/templates/admin/group_infos.html:7
@@ -1111,35 +1111,35 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:16
+#: web/b3desk/templates/admin/group_academy.html:16
 #: web/b3desk/templates/admin/group_excluded_users.html:16
 #: web/b3desk/templates/admin/group_form.html:61
 msgid "Créer groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:24
+#: web/b3desk/templates/admin/group_academy.html:24
 msgid "Gérer les académies de"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:37
+#: web/b3desk/templates/admin/group_academy.html:37
 #: web/b3desk/templates/admin/group_excluded_users.html:36
 msgid "Exclure l'utilisateur du groupe"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:40
+#: web/b3desk/templates/admin/group_academy.html:40
 msgid "Aucune académie sélectionnée"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:43
+#: web/b3desk/templates/admin/group_academy.html:43
 #, python-format
 msgid "%(count)s académie sélectionnée"
 msgid_plural "%(count)s académies sélectionnées"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/templates/admin/group_academic_domain.html:50
+#: web/b3desk/templates/admin/group_academy.html:50
 #, python-format
-msgid "Retirer %(domain)s"
+msgid "Retirer %(academic_code)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_excluded_users.html:24

@@ -372,8 +372,8 @@ class GroupForm(FlaskForm):
         )
 
 
-class AcademicDomainForm(FlaskForm):
-    academic_domain = SelectField(
+class AcademyForm(FlaskForm):
+    academy = SelectField(
         label=_(
             "Académies",
         ),

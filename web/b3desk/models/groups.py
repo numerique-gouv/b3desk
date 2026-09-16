@@ -39,7 +39,7 @@ class Group(db.Model):
     enable_sip: Mapped[bool | None] = mapped_column(default=None)
     enable_file_sharing: Mapped[bool | None] = mapped_column(default=None)
     enable_ai_summary: Mapped[bool | None] = mapped_column(default=None)
-    academic_code: Mapped[list] = mapped_column(
+    academic_codes: Mapped[list] = mapped_column(
         MutableList.as_mutable(db.JSON), default=list
     )
 

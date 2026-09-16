@@ -265,14 +265,14 @@ class User(db.Model):
         for group in groups:
             if (
                 self not in group.excluded_users
-                and self.academic_code in group.academic_code
+                and self.academic_code in group.academic_codes
                 and self not in group.members
             ):
                 group.members.append(self)
                 added_groups.append((group.id, group.name))
             if (
                 self in group.excluded_users
-                or self.academic_code not in group.academic_code
+                or self.academic_code not in group.academic_codes
             ) and self in group.members:
                 group.members.remove(self)
                 removed_groups.append((group.id, group.name))

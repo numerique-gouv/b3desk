@@ -239,7 +239,7 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     group.members.append(user)
     group_2.members.append(user_2)
     group_3.members.append(user_3)
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     db.session.commit()
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
@@ -277,7 +277,7 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     group.members.append(user)
     group_2.members.append(user_2)
     group_3.members.append(user_3)
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -374,8 +374,8 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
 ):
     """When the owner loses ai-summary authorisation, launching the meeting keeps the stored preference while ai_summary_enabled reflects the loss."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    group.academic_code.append("domain.tld")
-    group_2.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
+    group_2.academic_codes.append("001")
     db.session.commit()
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
@@ -406,7 +406,7 @@ def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
     # Alice's domain matches Group 2 so automatic_group_affiliation doesn't
     # remove her from it on the second request below; Group 1 must stay
     # without a matching domain so she isn't auto-added there too.
-    group_2.academic_code.append("domain.tld")
+    group_2.academic_codes.append("001")
     db.session.commit()
     # Owner alice (id 1) in Group 2: file sharing disabled.
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
@@ -424,20 +424,20 @@ def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
     assert create.call_args.kwargs["file_sharing"] is False
 
 
-def test_automatic_affiliation_with_academic_domain(user_2, group):
-    """Test user not in group become member if is from academic domain list."""
-    group.academic_code = ["domain.tld"]
+def test_automatic_affiliation_with_academic_code(user_2, group):
+    """Test user not in group become member if is from academy list."""
+    group.academic_codes = ["001"]
     db.session.commit()
     assert group.members == []
     user_2.automatic_group_affiliation()
     assert group.members == [user_2]
 
 
-def test_automatic_affiliation_with_academic_domain_and_user_in_excluded_users(
+def test_automatic_affiliation_with_academic_code_and_user_in_excluded_users(
     user_2, group
 ):
-    """Test excluded user does not become member even if is from academic domain list."""
-    group.academic_code = ["domain.tld"]
+    """Test excluded user does not become member even if is from academy list."""
+    group.academic_codes = ["001"]
     group.excluded_users.append(user_2)
     db.session.commit()
     user_2.automatic_group_affiliation()
@@ -448,7 +448,7 @@ def test_automatic_removing_from_group_if_in_excluded_users(user_2, group):
     """Test user in group is automaticly remove if is excluded."""
     group.members.append(user_2)
     group.excluded_users.append(user_2)
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     db.session.commit()
     assert user_2 in db.session.execute(group.get_all_exclude_users).scalars().all()
     user_2.automatic_group_affiliation()
@@ -458,25 +458,25 @@ def test_automatic_removing_from_group_if_in_excluded_users(user_2, group):
 def test_automatic_removing_from_group_if_not_in_academic_list(user_2, group):
     """Test user in group is automaticly remove if is not in academic list excluded."""
     assert not group.members
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     db.session.commit()
     user_2.automatic_group_affiliation()
     assert user_2 in group.members
-    group.academic_code.remove("domain.tld")
+    group.academic_codes.remove("001")
     db.session.commit()
     user_2.automatic_group_affiliation()
     assert not group.members
 
 
 def test_admin_can_add_domain_in_group(client_app, group, user, authenticated_user):
-    """Test admin can add academic domain in group."""
+    """Test admin can add academy in group."""
     user.admin = True
     db.session.commit()
-    res = client_app.get("/admin/academic-domain/1", status=200)
+    res = client_app.get("/admin/academy/1", status=200)
     form = res.form
-    form["academic_domain"] = "domain.tld"
+    form["academy"] = "001"
     form.submit()
-    assert group.academic_code == ["domain.tld"]
+    assert group.academic_codes == ["001"]
     client_app.get("/welcome")
     assert group.members == [user]
 
@@ -484,41 +484,41 @@ def test_admin_can_add_domain_in_group(client_app, group, user, authenticated_us
 def test_add_domain_in_group_with_form_error(
     client_app, group, user, authenticated_user
 ):
-    """Test academic domain form display error message."""
+    """Test academy form display error message."""
     user.admin = True
     db.session.commit()
-    res = client_app.get("/admin/academic-domain/1", status=200)
+    res = client_app.get("/admin/academy/1", status=200)
     form = res.form
-    form["academic_domain"] = ""
+    form["academy"] = ""
     res = form.submit()
     assert ("error", "Le formulaire contient des erreurs") in res.flashes
 
 
 def test_add_domain_already_in_group(client_app, group, user, authenticated_user):
-    """Test admin cannot add academic domain already in group."""
+    """Test admin cannot add academy already in group."""
     user.admin = True
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     db.session.commit()
-    res = client_app.get("/admin/academic-domain/1", status=200)
+    res = client_app.get("/admin/academy/1", status=200)
     form = res.form
-    form["academic_domain"] = "domain.tld"
+    form["academy"] = "001"
     res = form.submit()
     assert (
         "error",
-        "domain.tld est déjà dans la liste du groupe Group 1",
+        "001 est déjà dans la liste du groupe Group 1",
     ) in res.flashes
 
 
 def test_admin_can_remove_domain_in_group(client_app, group, user, authenticated_user):
-    """Test admin can remove academic domain in group."""
+    """Test admin can remove academy in group."""
     user.admin = True
-    group.academic_code.append("domain.tld")
+    group.academic_codes.append("001")
     db.session.commit()
-    assert group.academic_code == ["domain.tld"]
+    assert group.academic_codes == ["001"]
     client_app.get(
-        "/admin/remove-academic-domain/1", params={"domain": "domain.tld"}, status=200
+        "/admin/remove-academy/1", params={"academic_code": "001"}, status=200
     )
-    assert group.academic_code == []
+    assert group.academic_codes == []
 
 
 def test_admin_can_add_excluded_user_in_group(
