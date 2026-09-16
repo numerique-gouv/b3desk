@@ -3319,32 +3319,32 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:176
+#: web/b3desk/utils/__init__.py:177
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:184
+#: web/b3desk/utils/__init__.py:185
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:190
+#: web/b3desk/utils/__init__.py:191
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:192
+#: web/b3desk/utils/__init__.py:193
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:194
+#: web/b3desk/utils/__init__.py:195
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:225
+#: web/b3desk/utils/__init__.py:226
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:350
+#: web/b3desk/utils/__init__.py:353
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
