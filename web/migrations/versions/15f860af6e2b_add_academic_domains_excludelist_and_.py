@@ -32,7 +32,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("user_id", "group_id"),
     )
     with op.batch_alter_table("group", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("academic_domains", sa.JSON(), nullable=True))
+        batch_op.add_column(sa.Column("academic_code", sa.JSON(), nullable=True))
 
     with op.batch_alter_table("user", schema=None) as batch_op:
         batch_op.add_column(sa.Column("meta_data", sa.JSON(), nullable=True))
@@ -43,6 +43,6 @@ def downgrade():
         batch_op.drop_column("meta_data")
 
     with op.batch_alter_table("group", schema=None) as batch_op:
-        batch_op.drop_column("academic_domains")
+        batch_op.drop_column("academic_code")
 
     op.drop_table("excludelist")

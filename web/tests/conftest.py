@@ -761,6 +761,7 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
             "given_name": "Alice",
             "preferred_username": "alice",
             "FrEduAca": "domain.tld",
+            "codaca": "001",
         }
         session["refresh_token"] = ("",)
         session["visio_code_attempt_counter"] = 0
@@ -787,6 +788,7 @@ def authenticated_user_2(client_app, user_2, iam_token, iam_server, iam_user_2):
             "given_name": "Berenice",
             "preferred_username": "berenice",
             "FrEduAca": "domain.tld",
+            "codaca": "002",
         }
         session["refresh_token"] = ""
 
@@ -811,6 +813,7 @@ def authenticated_attendee(client_app, user, mocker):
             "family_name": "Dylan",
             "given_name": "Bob",
             "FrEduAca": "domain.tld",
+            "codaca": "003",
         }
         session["refresh_token"] = ""
 

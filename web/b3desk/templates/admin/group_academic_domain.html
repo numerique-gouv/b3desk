@@ -36,17 +36,17 @@
         {{ form.academic_domain(class_="fr-input") }}
         <button title="{% trans %}Exclure l'utilisateur du groupe{% endtrans %}" type="submit" class="fr-btn"></button>
     </form>
-    {% if not group.academic_domains %}
+    {% if not group.academic_code %}
         <p>{% trans %}Aucune académie sélectionnée{% endtrans %}</p>
     {% else %}
         <p class="fr-table__detail">
-            {% trans trimmed count=group.academic_domains|length %}
+            {% trans trimmed count=group.academic_code|length %}
                 {{ count }} académie sélectionnée
                 {% pluralize %}
                 {{ count }} académies sélectionnées
             {% endtrans %}
         </p>
-        {% for domain in group.academic_domains %}
+        {% for domain in group.academic_code %}
             <a href="{{ url_for("admin.remove_academic_domain", group=group, domain=domain) }}" class="fr-tag fr-tag--dismiss" aria-label="{% trans %}Retirer {{ domain }}{% endtrans %}">
                 {{ domain }} {{ codaca.get(domain, "") }}
             </a>

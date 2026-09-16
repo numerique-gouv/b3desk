@@ -89,7 +89,7 @@ def get_or_create_user(user_info):
     meta_data = json.dumps(
         {
             "academic_domain": user_info.get(mapping.get("FrEduAca", "FrEduAca"), ""),
-            "acedemic_code": user_info.get(mapping.get("codaca", "codaca"), ""),
+            "academic_code": user_info.get(mapping.get("codaca", "codaca"), ""),
         }
     )
 
@@ -203,6 +203,13 @@ class User(db.Model):
         return self.email.split("@")[1] if self.email and "@" in self.email else None
 
     @property
+    def academic_code(self):
+        """Return the user's académie code (CODACA) from meta_data, if any."""
+        if self.meta_data:
+            return json.loads(self.meta_data)["academic_code"]
+        return None
+
+    @property
     def get_all_delegated_meetings(self):
         from b3desk.models.meetings import AccessLevel
         from b3desk.models.meetings import Meeting
@@ -258,14 +265,14 @@ class User(db.Model):
         for group in groups:
             if (
                 self not in group.excluded_users
-                and self.mail_domain in group.academic_domains
+                and self.academic_code in group.academic_code
                 and self not in group.members
             ):
                 group.members.append(self)
                 added_groups.append((group.id, group.name))
             if (
                 self in group.excluded_users
-                or self.mail_domain not in group.academic_domains
+                or self.academic_code not in group.academic_code
             ) and self in group.members:
                 group.members.remove(self)
                 removed_groups.append((group.id, group.name))

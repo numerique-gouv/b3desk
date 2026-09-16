@@ -313,7 +313,7 @@ def test_admin_cannot_add_member_already_in_group(
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    group.academic_domains.append("domain.tld")
+    group.academic_code.append("domain.tld")
     db.session.commit()
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     category, message = res.flashes[0]
@@ -329,7 +329,7 @@ def test_admin_can_remove_member_from_group(
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    group.academic_domains.append("domain.tld")
+    group.academic_code.append("domain.tld")
     db.session.commit()
     res = client_app.post("/admin/manage-group-members/1/1", status=302)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes

@@ -230,6 +230,7 @@ def test_user_update_personnal_infos(
         "preferred_username": "alice2",
         "email": "alice@domain.tld",
         "FrEduAca": "mydomain.test",
+        "codaca": "004",
     }
     get_or_create_user(user_info)
 
@@ -237,4 +238,7 @@ def test_user_update_personnal_infos(
     assert "'given_name': 'Alice2'" in caplog.text
     assert "'family_name': 'Cooper2'" in caplog.text
     assert "'preferred_username': 'alice2'" in caplog.text
-    assert "'meta_data': '{\"academic_domain\": \"mydomain.test\"}'" in caplog.text
+    assert (
+        '\'meta_data\': \'{"academic_domain": "mydomain.test", "academic_code": "004"}\''
+        in caplog.text
+    )

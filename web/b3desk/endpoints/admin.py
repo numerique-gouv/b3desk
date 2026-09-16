@@ -446,8 +446,8 @@ def manage_academic_domain(group: Group):
         )
 
     new_domain = form.data["academic_domain"]
-    if new_domain not in group.academic_domains:
-        group.academic_domains.append(new_domain)
+    if new_domain not in group.academic_code:
+        group.academic_code.append(new_domain)
         db.session.commit()
         current_app.logger.info(
             "%s a été ajouté à la liste du groupe %s %s",
@@ -477,8 +477,8 @@ def remove_academic_domain(group: Group):
     """Remove academic domain from group."""
     form = AcademicDomainForm(request.form)
     domain = request.args["domain"]
-    if domain in group.academic_domains:
-        group.academic_domains.remove(domain)
+    if domain in group.academic_code:
+        group.academic_code.remove(domain)
         db.session.commit()
         current_app.logger.info(
             "%s a été retiré le la liste du groupe %s %s", domain, group.id, group.name
