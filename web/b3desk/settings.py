@@ -17,6 +17,8 @@ from pydantic_settings import BaseSettings
 from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
 
+from b3desk.utils.mailing import EMAIL_DELAYS
+
 
 def split_comma_separated_strings(value):
     """Convert a comma-separated string into a list of stripped strings."""
@@ -1002,6 +1004,22 @@ class MainSettings(BaseSettings):
     User account activity is determined by the use of one of the meeting URLs associated with the account or user's login
     An informational email is sent at D-30, D-15, and D-1
     """
+
+    @field_validator(
+        "INACTIVITY_TIMER_CLEANUP_MEETING", "INACTIVITY_TIMER_CLEANUP_ACCOUNT"
+    )
+    def check_inactivity_timer(cls, value: int, info: ValidationInfo) -> int:
+        """Refuse an inactivity delay that the warning sequence cannot fit in.
+
+        A shorter delay makes the first mail due for activity in the future, which
+        selects every meeting and every account for deletion.
+        """
+        if value <= EMAIL_DELAYS[0]:
+            raise ValueError(
+                f"{info.field_name} must be greater than {EMAIL_DELAYS[0]} days, "
+                "the delay announced by the first warning mail"
+            )
+        return value
 
     DAILY_MEETING_CLEANUP_TIME: datetime.time = datetime.time(minute=00, hour=3)
     """Daily Meeting Cleanup Time

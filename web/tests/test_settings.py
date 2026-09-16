@@ -6,6 +6,7 @@ import pytest
 from b3desk import create_app
 from b3desk.settings import MainSettings
 from b3desk.settings import MeetingLocaleVariant
+from b3desk.utils.mailing import DELAY_FOR_FIRST_EMAIL
 from flask import url_for
 
 
@@ -180,6 +181,26 @@ def test_sip_settings_raised_error_messages_without_private_key(configuration):
         ValueError, match="PRIVATE_KEY configuration required when enabling SIPMediaGW"
     ):
         MainSettings.model_validate(configuration)
+
+
+def test_inactivity_timer_shorter_than_the_warning_sequence(configuration):
+    """Test an inactivity delay that cannot fit the warning sequence is refused."""
+    configuration["INACTIVITY_TIMER_CLEANUP_MEETING"] = DELAY_FOR_FIRST_EMAIL
+
+    with pytest.raises(
+        ValueError,
+        match=f"INACTIVITY_TIMER_CLEANUP_MEETING must be greater than {DELAY_FOR_FIRST_EMAIL} days",
+    ):
+        MainSettings.model_validate(configuration)
+
+
+def test_inactivity_timer_longer_than_the_warning_sequence(configuration):
+    """Test an inactivity delay one day longer than the sequence is accepted."""
+    configuration["INACTIVITY_TIMER_CLEANUP_ACCOUNT"] = DELAY_FOR_FIRST_EMAIL + 1
+
+    config_obj = MainSettings.model_validate(configuration)
+
+    assert config_obj.INACTIVITY_TIMER_CLEANUP_ACCOUNT == DELAY_FOR_FIRST_EMAIL + 1
 
 
 def test_sip_settings_raised_no_error_with_sip_disabled(configuration):
