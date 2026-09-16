@@ -7,6 +7,10 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
+#: web/b3desk/__init__.py:416
+msgid "Votre session est invalide, merci de vous reconnecter."
+msgstr ""
+
 #: web/b3desk/forms.py:53
 msgid "Lien web du fichier à ajouter"
 msgstr ""

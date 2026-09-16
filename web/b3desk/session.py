@@ -14,6 +14,12 @@ def has_user_session():
     return user_session.is_authenticated()
 
 
+def clear_user_session():
+    """Remove every OIDC key from the session, logging the user out locally."""
+    for key in UserSession.KEYS:
+        session.pop(key, None)
+
+
 def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
     attendee_session = UserSession(session)
