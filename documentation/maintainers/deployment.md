@@ -86,10 +86,12 @@ Enfin lorsque la bonne branche est chargée et que l’application est correctem
 
 ```bash
 # En production
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 
 # En pré-production
-docker compose -f docker-compose.yml -f docker-compose.preprod.yml up
+docker compose -f docker-compose.yml -f docker-compose.preprod.yml up --build
 ```
+
+L’option `--build` est nécessaire : le code de l’application est embarqué dans l’image et n’est plus monté depuis le dépôt. Sans reconstruction, un `git pull` ne change rien à ce qui s’exécute réellement dans les conteneurs.
 
 Le fichier `run_webserver.sh` est lancé par le `Dockerfile` et migre la base de données automatiquement. Ces docker-compose de production et preproduction peuvent donc être utilisés pour une primo-installation, ou sur une instance existante.

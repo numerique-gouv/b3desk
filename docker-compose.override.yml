@@ -1,3 +1,12 @@
+# Mounting the sources over the copy installed in the image gives an immediate
+# reload while developing. Both gunicorn, through its "chdir" setting, and the
+# flask CLI put /opt/bbb-visio at the head of sys.path, so what is mounted here
+# wins over the installed package.
+x-code-volumes: &code-volumes
+  - ./web/b3desk:/opt/bbb-visio/b3desk
+  - ./web/migrations:/opt/bbb-visio/migrations
+  - ./web/translations:/opt/bbb-visio/translations
+
 services:
   web:
     hostname: b3desk.localhost
@@ -11,6 +20,9 @@ services:
       - default
       - bbb-shared
     volumes:
+      - ./web/b3desk:/opt/bbb-visio/b3desk
+      - ./web/migrations:/opt/bbb-visio/migrations
+      - ./web/translations:/opt/bbb-visio/translations
       - /tmp/download/:/tmp/download/  # same target as TMP_DOWNLOAD_DIR
       - /tmp/b3desk/:/tmp/b3desk/  # same target as UPLOAD_DIR
     env_file:
@@ -25,8 +37,7 @@ services:
       - bbb-shared
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
-    volumes:
-      - ./web/b3desk:/opt/bbb-visio/b3desk
+    volumes: *code-volumes
 
   broker:
     hostname: broker.localhost

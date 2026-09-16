@@ -15,9 +15,9 @@ git pull upstream main
 
 ## Fixer le numéro de version
 
-Enlever `dev` du numéro de version dans les fichiers `pyproject.toml` et
-`web/b3desk/__init__.py`. La version passe par exemple de `1.2.20dev` à
-`1.2.20`.
+Enlever le suffixe de développement du numéro de version dans le champ
+`version` de `pyproject.toml`. La version passe par exemple de `1.2.20.dev0` à
+`1.2.20`. Les numéros suivent [PEP 440](https://peps.python.org/pep-0440/).
 
 ## Rassembler le journal des modifications
 
@@ -43,7 +43,7 @@ Résoudre les erreurs éventuelles avant de recommencer la procédure.
 ## Nommer ce commit
 
 ```
-git add pyproject.toml web/b3desk/__init__.py CHANGELOG.md changelog.d
+git add pyproject.toml CHANGELOG.md changelog.d
 git commit -m "chore: prepare the W.X.Y release"
 # exemple : git commit -m "chore: prepare the 1.2.20 release"
 git push upstream main
@@ -65,8 +65,7 @@ Faire un merge de `main` dans `production` pour récupérer les dernières modif
 git merge main
 ```
 
-En cas de conflit sur `pyproject.toml`, `web/b3desk/__init__.py` ou
-`CHANGELOG.md`, conserver systématiquement la version de `main`, qui est celle
+En cas de conflit sur `pyproject.toml` ou `CHANGELOG.md`, conserver systématiquement la version de `main`, qui est celle
 que l'on publie.
 
 Pour simplifier l'historique du versionnement on nomme ce merge "Merge branch 'main' W.X.Y into production".
@@ -111,14 +110,14 @@ Repasser sur `main`
 git switch main
 ```
 
-Passer cette branche sur la prochaine version dev `W.X.Zdev` dans les fichiers `pyproject.toml` et `web/b3desk/__init__.py`.
+Passer cette branche sur la prochaine version de développement `W.X.Z.dev0` dans `pyproject.toml`.
 
-Nommer ce commit "Update main to W.X.Zdev version".
+Nommer ce commit "Update main to W.X.Z.dev0 version".
 
 ```
-git add pyproject.toml web/b3desk/__init__.py
-git commit -m "Update main to W.X.Zdev version"
-# exemple : git commit -m "Update main to 1.2.21dev version"
+git add pyproject.toml
+git commit -m "Update main to W.X.Z.dev0 version"
+# exemple : git commit -m "Update main to 1.2.21.dev0 version"
 ```
 
 Pousser ce commit sur upstream
