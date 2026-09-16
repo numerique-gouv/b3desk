@@ -17,7 +17,6 @@ from flask import request
 from flask import url_for
 from flask_babel import format_datetime
 from flask_babel import lazy_gettext as _
-from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from itsdangerous import BadSignature
 from itsdangerous.url_safe import URLSafeSerializer
 from joserfc.errors import BadSignatureError
@@ -317,26 +316,6 @@ class SignedConverter(BaseConverter):
             return serializer.loads(signed_value)
         except BadSignature:
             abort(404)
-
-
-def check_oidc_connection(auth):
-    """Ensure OIDC client connection is properly initialized."""
-
-    def decorator_func(initial_func):
-        @wraps(initial_func)
-        def wrapper_func(*args, **kwargs):
-            if not auth.clients:
-                auth.clients = {
-                    name: PyoidcFacade(
-                        configuration, auth._redirect_uri_config.full_uri
-                    )
-                    for (name, configuration) in auth._provider_configurations.items()
-                }
-            return initial_func(*args, **kwargs)
-
-        return wrapper_func
-
-    return decorator_func
 
 
 def check_private_key():

@@ -8,6 +8,7 @@ from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
 
@@ -27,11 +28,12 @@ from b3desk.models.roles import Role
 from b3desk.models.users import User
 from b3desk.session import visio_code_attempt_counter_increment
 from b3desk.session import visio_code_attempt_counter_reset
-from b3desk.utils import check_oidc_connection
 from b3desk.utils import check_token_errors
 
-from .. import auth
+from .. import oauth
 from ..session import get_authenticated_attendee_fullname
+from ..session import has_attendee_session
+from ..session import login_required
 from ..session import meeting_access_required
 from ..session import should_display_captcha
 
@@ -90,8 +92,7 @@ def signin_meeting(
 # it may be removed after https://github.com/numerique-gouv/b3desk/issues/256
 @bp.route("/meeting/auth/<meeting_id>/creator/<user:creator>/hash/<secret_key>")
 @bp.route("/meeting/auth/<meeting_id>/hash/<secret_key>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 def authenticate_then_signin_meeting(
     meeting_id, secret_key, creator: User | None = None
 ):
@@ -232,14 +233,18 @@ def join_meeting():
 
 # Cannot use a flask converter here because the meeting may not be persisted yet
 @bp.route("/meeting/join/<meeting_id>/authenticated")
-@check_oidc_connection(auth)
-@auth.oidc_auth("attendee")
 def join_meeting_as_authenticated(meeting_id):
     """Join a meeting with authenticated attendee role using OIDC."""
     # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
     # We should look if we can delete it.
     if not meeting_id.isdigit():
         abort(404)
+
+    if not has_attendee_session():
+        session["attendee_next_meeting_id"] = meeting_id
+        redirect_uri = url_for("public.attendee_callback", _external=True)
+        return oauth.attendee.authorize_redirect(redirect_uri)
+
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
@@ -255,8 +260,7 @@ def join_meeting_as_authenticated(meeting_id):
 
 
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
@@ -276,7 +280,6 @@ def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
 
 
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])
-@check_oidc_connection(auth)
 def join_waiting_meeting_from_sip(visio_code):
     """Join a meeting using visio code from SIP phone connection."""
     token = request.headers.get("Authorization")
@@ -305,7 +308,6 @@ def get_visio_code_from_form():
 
 
 @bp.route("/meeting/visio_code", methods=["POST"])
-@check_oidc_connection(auth)
 def visio_code_connection():
     """Process visio code form submission and redirect to meeting if valid."""
     visio_code = get_visio_code_from_form()
@@ -331,7 +333,6 @@ def visio_code_connection():
 
 
 @bp.route("/meeting/visio_code_form", methods=["POST"])
-@check_oidc_connection(auth)
 def visio_code_form_validation():
     """Validate the visio-code from from the front."""
     visio_code = get_visio_code_from_form()

@@ -326,24 +326,9 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://docs.dropzone.dev/configuration/basics/configuration-options
     """
 
-    OIDC_ID_TOKEN_COOKIE_SECURE: bool = False
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_REQUIRE_VERIFIED_EMAIL: bool = False
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_USER_INFO_ENABLED: bool = True
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_OPENID_REALM: str = "apps"
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
     OIDC_SCOPES: ListOfStrings = ["openid", "email", "profile"]
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
     demandée au serveur d’identité, séparés par des virgules.
-
-    Passé en paramètre ``auth_request_params`` de flask-pyoidc.
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
 
     .. code-block:: toml
         :caption: Exemple dans un fichier de configuration TOML
@@ -354,14 +339,6 @@ class MainSettings(BaseSettings):
         :caption: Exemple en variable d’environnement
 
         OIDC_SCOPES="openid,email,profile,siret,usual_name"
-    """
-
-    OIDC_USERINFO_HTTP_METHOD: str = "POST"
-    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
-    d’entrée *UserInfo* du serveur d’identité.
-
-    Plus d’infos sur
-    https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
     OIDC_CLAIMS_MAPPING: dict[str, str] = {}
@@ -391,15 +368,6 @@ class MainSettings(BaseSettings):
     Par exemple : https://auth.example.com
     """
 
-    OIDC_AUTH_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_USERINFO_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_TOKEN_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
     OIDC_CLIENT_ID: str | None = None
     """ID du client auprès du serveur d’identité des organisateurs."""
 
@@ -410,24 +378,6 @@ class MainSettings(BaseSettings):
     OIDC_CLIENT_AUTH_METHOD: str | None = "client_secret_post"
     """Méthode de communication avec le point d’entrée ``token_endpoint`` du
     serveur d’identité des organisateurs."""
-
-    OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
-    """Méthode de communication avec le point d’entrée d’introspection
-    ``token_introspection`` du serveur d’identité des organisateurs."""
-
-    # TODO: replace by OIDCAuthentication.redirect_uri_config
-    OIDC_REDIRECT_URI: str | None = None
-    """URL de B3Desk vers laquelle le serveur d’identité redirige les
-    utilisateurs après authentification.
-
-    Par exemple ``https://visio-test.education.fr/oidc_callback``
-
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/configuration.html?highlight=OIDC_REDIRECT_URI#static-client-registration
-    """
-
-    OIDC_SERVICE_NAME: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé à part en valeur
-    par défaut de ``OIDC_ATTENDEE_SERVICE_NAME``."""
 
     # Attendee OIDC Configuration (back to default if empty)
     OIDC_ATTENDEE_ENABLED: bool | None = True
@@ -454,7 +404,7 @@ class MainSettings(BaseSettings):
     """Secret permettant d’identifier le client auprès du serveur d’identité
     des participants authentifiés.
 
-    Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
+    Si non renseigné, prend la valeur de ``OIDC_CLIENT_SECRET``.
     """
 
     OIDC_ATTENDEE_CLIENT_AUTH_METHOD: str | None = None
@@ -464,29 +414,9 @@ class MainSettings(BaseSettings):
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_AUTH_METHOD``.
     """
 
-    OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
-    """Méthode de communication avec le point d’entrée d’introspection
-    ``token_introspection`` du serveur d’identité  des participants
-    authentifiés.
-
-    Si non renseigné, prend la valeur de ``OIDC_INTROSPECTION_AUTH_METHOD``.
-    """
-
-    OIDC_ATTENDEE_USERINFO_HTTP_METHOD: str | None = None
-    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
-    d’entrée *UserInfo* du serveur d’identité.
-
-    Si non renseigné, prend la valeur de ``OIDC_USERINFO_HTTP_METHOD``.
-
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
-    """
-
     OIDC_ATTENDEE_SERVICE_NAME: str | None = None
     """Nom du service d’authentification des participants authentifiés. Utilisé
-    pour l’affichage dans la modale d’invitation de participants authentifés.
-
-    Si non renseigné, prend la valeur de ``OIDC_SERVICE_NAME``.
-    """
+    pour l’affichage dans la modale d’invitation de participants authentifés."""
 
     OIDC_ATTENDEE_SCOPES: ListOfStrings | None = None
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
@@ -494,9 +424,6 @@ class MainSettings(BaseSettings):
     des virgules.
 
     Si non renseigné, prend la valeur de ``OIDC_SCOPES``.
-
-    Passé en paramètre ``auth_request_params`` de flask-pyoidc.
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
     OIDC_ATTENDEE_CLAIMS_MAPPING: dict[str, str] = {}
@@ -559,31 +486,6 @@ class MainSettings(BaseSettings):
     ) -> str:
         """Return OIDC_CLIENT_AUTH_METHOD if attendee client auth method is not specified."""
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
-
-    @field_validator("OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD")
-    def get_attendee_introspection_endpoint_auth_method(
-        cls, attendee_introspection_endpoint_auth_method: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_INTROSPECTION_AUTH_METHOD if attendee introspection auth method is not specified."""
-        return attendee_introspection_endpoint_auth_method or info.data.get(
-            "OIDC_INTROSPECTION_AUTH_METHOD"
-        )
-
-    @field_validator("OIDC_ATTENDEE_USERINFO_HTTP_METHOD")
-    def get_attendee_userinfo_http_method(
-        cls, attendee_userinfo_http_method: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_USERINFO_HTTP_METHOD if attendee userinfo HTTP method is not specified."""
-        return attendee_userinfo_http_method or info.data.get(
-            "OIDC_USERINFO_HTTP_METHOD"
-        )
-
-    @field_validator("OIDC_ATTENDEE_SERVICE_NAME")
-    def get_attendee_attendee_service_name(
-        cls, attendee_attendee_service_name: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_SERVICE_NAME if attendee service name is not specified."""
-        return attendee_attendee_service_name or info.data.get("OIDC_SERVICE_NAME")
 
     @field_validator("OIDC_ATTENDEE_SCOPES")
     def get_attendee_attendee_scopes(

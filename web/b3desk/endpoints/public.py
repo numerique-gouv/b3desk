@@ -1,20 +1,31 @@
+from urllib.parse import urlencode
+
 import httpx2
+from authlib.integrations.base_client import MismatchingStateError
+from authlib.integrations.base_client import OAuthError
 from flask import Blueprint
+from flask import abort
 from flask import current_app
+from flask import flash
 from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
+from flask_babel import lazy_gettext as _
 
 from b3desk.utils import http_client
 
-from .. import auth
 from .. import cache
+from .. import oauth
+from ..session import clear_userinfo
 from ..session import has_user_session
+from ..session import login_required
 from ..session import should_display_captcha
+from ..session import store_attendee_userinfo
+from ..session import store_userinfo
 from ..templates.content import FAQ_CONTENT
-from ..utils import check_oidc_connection
 from ..utils import check_private_key
 from .meetings import meeting_mailto_params
 
@@ -55,6 +66,51 @@ def index():
     return redirect(url_for("public.home"))
 
 
+@bp.route("/login")
+def login():
+    redirect_uri = url_for("public.authorize", _external=True)
+    return oauth.default.authorize_redirect(redirect_uri)
+
+
+@bp.route("/authorize")
+def authorize():
+    try:
+        token = oauth.default.authorize_access_token()
+    except MismatchingStateError as exc:
+        current_app.logger.warning("OIDC authorization state mismatch: %s", exc)
+        flash(_("Votre session de connexion a expiré, merci de réessayer."), "error")
+        return redirect(url_for("public.home"))
+    except OAuthError as exc:
+        current_app.logger.warning("OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.home"))
+
+    store_userinfo(token)
+    return redirect(url_for("public.welcome"))
+
+
+@bp.route(
+    "/oidc_callback"
+)  # vérifier ce qui est enregistré en prod dans OIDC_REDIRECT_URI
+def attendee_callback():
+    try:
+        token = oauth.attendee.authorize_access_token()
+    except MismatchingStateError as exc:
+        current_app.logger.warning("Attendee OIDC state mismatch: %s", exc)
+        flash(_("Votre session de connexion a expiré, merci de réessayer."), "error")
+        return redirect(url_for("public.index"))
+    except OAuthError as exc:
+        current_app.logger.warning("Attendee OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.index"))
+
+    store_attendee_userinfo(token)
+    meeting_id = session.pop("attendee_next_meeting_id", None) or abort(404)
+    return redirect(
+        url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
+    )
+
+
 @bp.route("/home")
 @check_private_key()
 def home():
@@ -72,8 +128,7 @@ def home():
 
 
 @bp.route("/welcome")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @check_private_key()
 def welcome():
     """Render the authenticated user's welcome page with their meetings."""
@@ -182,10 +237,21 @@ def documentation():
 
 
 @bp.route("/logout")
-@check_oidc_connection(auth)
-@auth.oidc_logout
 def logout():
-    """Log out the current user and redirect to the index page."""
+    """Log out the current user locally, and from the OIDC provider if it supports it."""
+    id_token = session.get("id_token")
+    clear_userinfo()
+
+    end_session_endpoint = oauth.default.load_server_metadata().get(
+        "end_session_endpoint"
+    )
+    if end_session_endpoint and id_token:
+        params = {
+            "id_token_hint": id_token,
+            "post_logout_redirect_uri": url_for("public.logout", _external=True),
+        }
+        return redirect(f"{end_session_endpoint}?{urlencode(params)}")
+
     return redirect(url_for("public.index"))
 
 
