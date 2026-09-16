@@ -599,11 +599,7 @@ def get_inactive_meetings_to_delete():
             or_(
                 and_(
                     Meeting.is_shadow.is_(True),
-                    or_(
-                        Meeting.last_connection_utc_datetime < cutoff,
-                        (Meeting.last_connection_utc_datetime.is_(None))
-                        & (Meeting.created_at < cutoff),
-                    ),
+                    last_used(Meeting) < cutoff,
                 ),
                 and_(
                     Meeting.is_shadow.is_(False),
@@ -621,11 +617,7 @@ def update_reactivated_meetings(first_mail_deadline):
         db.select(Meeting).where(
             Meeting.is_shadow.is_(False),
             Meeting.information_level > 0,
-            or_(
-                Meeting.last_connection_utc_datetime > first_mail_deadline,
-                (Meeting.last_connection_utc_datetime.is_(None))
-                & (Meeting.created_at > first_mail_deadline),
-            ),
+            last_used(Meeting) > first_mail_deadline,
         )
     ).all()
     for meeting in reactivated_meetings:
@@ -647,11 +639,7 @@ def get_inactive_meetings_to_inform():
             db.select(Meeting).where(
                 Meeting.is_shadow.is_(False),
                 Meeting.information_level == 0,
-                or_(
-                    Meeting.last_connection_utc_datetime <= first_mail_deadline,
-                    (Meeting.last_connection_utc_datetime.is_(None))
-                    & (Meeting.created_at <= first_mail_deadline),
-                ),
+                last_used(Meeting) <= first_mail_deadline,
             )
         ).all()
     ]
