@@ -220,6 +220,12 @@ def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(
     ) in caplog.text
 
 
+def test_academic_code_without_meta_data(client_app, user):
+    """Test that academic_code is None when user has no meta_data."""
+    user.meta_data = None
+    assert user.academic_code is None
+
+
 def test_user_update_personnal_infos(
     client_app, authenticated_user, caplog, iam_user, user
 ):
