@@ -1619,7 +1619,6 @@ def test_delete_old_meetings(
     client_app,
     time_machine,
     meeting_1_user_2,
-    user,
     user_2,
     bbb_getRecordings_response,
 ):
@@ -1636,7 +1635,7 @@ def test_delete_old_meetings(
     voiceBridges = get_all_previous_voiceBridges()
 
     assert voiceBridges == ["222222222"]
-    assert user.meetings == []
+    assert user_2.meetings == []
 
 
 def test_delete_old_meetings_failure(
