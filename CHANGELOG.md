@@ -14,9 +14,11 @@ contribution](https://github.com/numerique-gouv/b3desk/blob/main/CONTRIBUTING.md
 
 ### Migrations
 
-- Nouveau champ `admin` sur la table des utilisateurs.
-- Nouvelle table `groupes`.
-- Nouveaux champs `ai_summary` et `meta_disable_recording_ai_summary` sur la table `meetings`.
+- [`791755877bb1`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/791755877bb1_adds_user_admin_flag.py) ajoute la colonne `admin` à la table des utilisateurs.
+- [`fd08854f3582`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/fd08854f3582_disable_ai_summary_by_default.py) ajoute la colonne `meta_disable_recording_ai_summary` à la table des salons.
+- [`a3a6e932b2ae`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/a3a6e932b2ae_add_group_table_and_ai_summary.py) crée les tables `group` et `group_member`, puis remplace `meta_disable_recording_ai_summary` par une colonne `ai_summary` dont le sens est inversé. Une instance qui vient de la version 1.6.3 traverse les deux migrations et ne conserve que `ai_summary`.
+
+Une fois la mise à jour terminée, `flask db current` renvoie `a3a6e932b2ae`.
 
 ### Ajouté
 
@@ -69,6 +71,8 @@ contribution](https://github.com/numerique-gouv/b3desk/blob/main/CONTRIBUTING.md
 
 - [`77f91494af65`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/77f91494af65_create_meeting_access_and_favorite_.py) ajoute les tables `meeting_access` et `favorite`. La colonne `is_favorite` de la table des salons devient une table intermédiaire `favorite` ; les favoris existants sont conservés et restaurés par la migration.
 - [`9dd2b54b4b11`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/9dd2b54b4b11_rename_meeting_user_id_to_owner_id.py) renomme `user_id` en `owner_id` dans la table `meeting_files`.
+
+Une fois la mise à jour terminée, `flask db current` renvoie `9dd2b54b4b11`.
 
 ### Configuration
 
@@ -129,8 +133,10 @@ contribution](https://github.com/numerique-gouv/b3desk/blob/main/CONTRIBUTING.md
 
 ### Migrations
 
-- [`3bf32932f522`](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/3bf32932f522_meeting_files_owner_id.py) ajoute une colonne `owner` aux fichiers de salon ({pr}`242`).
-- [`a1b2c3d4e5f6`](https://github.com/numerique-gouv/b3desk/blob/622a768585e9df29708fb35537430b3bca74f0ad/web/migrations/versions/a1b2c3d4e5f6_remove_is_default_from_meeting_files.py) retire la colonne `is_default` des fichiers de salon ({pr}`242`).
+- [`3bf32932f522`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/3bf32932f522_meeting_files_owner_id.py) ajoute une colonne `owner` aux fichiers de salon ({pr}`242`).
+- [`a1b2c3d4e5f6`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/a1b2c3d4e5f6_remove_is_default_from_meeting_files.py) retire la colonne `is_default` des fichiers de salon ({pr}`242`).
+
+Une fois la mise à jour terminée, `flask db current` renvoie `a1b2c3d4e5f6`.
 
 ### Ajouté
 
@@ -173,16 +179,24 @@ contribution](https://github.com/numerique-gouv/b3desk/blob/main/CONTRIBUTING.md
 <a id='changelog-1.5.3'></a>
 ## v1.5.3 — 2025-12-17
 
+### Migrations
+
+- [`9a4ffc3a0f0d`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/9a4ffc3a0f0d_increase_email_and_preferred_username_.py) porte les colonnes `email` et `preferred_username` de la table des utilisateurs à 255 caractères ({pr}`265`).
+
+Une fois la mise à jour terminée, `flask db current` renvoie `9a4ffc3a0f0d`.
+
 ### Corrigé
 
-- Allongement de la colonne `User.preferred_username` ({pr}`265`).
+- Les adresses électroniques et les noms d'utilisateur les plus longs ne sont plus tronqués ({pr}`265`).
 
 <a id='changelog-1.5.2'></a>
 ## v1.5.2 — 2025-11-25
 
 ### Migrations
 
-- La table `meeting_files_external` est supprimée.
+- [`9869cacd37a4`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/9869cacd37a4_removes_meeting_files_external_table.py) supprime la table `meeting_files_external`.
+
+Une fois la mise à jour terminée, `flask db current` renvoie `9869cacd37a4`.
 
 ### Ajouté
 
@@ -198,9 +212,11 @@ Aucun changement par rapport à la version 1.5.0.
 
 ### Migrations
 
-- Nouvelle colonne `preferred_username` sur la table des utilisateurs.
-- Nouvelle colonne `created_at` sur la table des utilisateurs.
-- La colonne `visio_code` de la table des salons devient une chaîne de caractères.
+- [`3c8b6c640fee`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/3c8b6c640fee_visio_code_length.py) convertit la colonne `visio_code` de la table des salons en chaîne de 50 caractères.
+- [`454adc444042`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/454adc444042_adds_created_at_in_user.py) ajoute la colonne `created_at` à la table des utilisateurs ; les comptes existants reçoivent la date du 1er janvier 1900.
+- [`f68adee062bf`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/f68adee062bf_user_preferred_username.py) ajoute la colonne `preferred_username` à la table des utilisateurs.
+
+Une fois la mise à jour terminée, `flask db current` renvoie `f68adee062bf`.
 
 ### Configuration
 
@@ -244,10 +260,6 @@ Aucun changement par rapport à la version 1.5.0.
 <a id='changelog-1.4.1'></a>
 ## v1.4.1 — 2025-08-07
 
-### Migrations
-
-- Nouvelle migration normalisant la table des salons autour du code visio.
-
 ### Modifié
 
 - Mise à jour d'Alembic et de SQLAlchemy.
@@ -261,9 +273,11 @@ Aucun changement par rapport à la version 1.5.0.
 
 ### Migrations
 
-- La colonne `voiceBridge` de la table des salons devient unique et une valeur est générée pour les salons existants. Une table supplémentaire conserve la trace des `voiceBridge` récemment supprimés ({pr}`168`, {issue}`147`).
-- Nouveaux attributs `last_connection_utc_datetime` et `is_shadow` sur la table des salons ({pr}`172`, {issue}`99`).
-- L'attribut `visio_code` devient unique et une valeur est générée pour les salons existants ({pr}`180`, {issue}`16`).
+- [`c25342fd2428`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/c25342fd2428_voicebridge_managed_by_b3desk.py) rend la colonne `voiceBridge` de la table des salons unique et génère une valeur pour les salons existants. La nouvelle table `previous_voice_bridge` conserve la trace des `voiceBridge` récemment supprimés ({pr}`168`, {issue}`147`).
+- [`2e95af7b75cf`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/2e95af7b75cf_adds_shadow_meeting.py) ajoute les colonnes `last_connection_utc_datetime` et `is_shadow` à la table des salons ({pr}`172`, {issue}`99`).
+- [`0052f608f4b3`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/0052f608f4b3_adds_visio_code_in_meeting.py) ajoute la colonne `visio_code` à la table des salons, la rend unique et génère une valeur pour les salons existants ({pr}`180`, {issue}`16`).
+
+Une fois la mise à jour terminée, `flask db current` renvoie `0052f608f4b3`.
 
 ### Configuration
 
@@ -298,7 +312,9 @@ Aucun changement par rapport à la version 1.5.0.
 
 ### Migrations
 
-- La migration `44cab47dbc9b` ajoute les colonnes `updated_at`, `created_at` et `is_favorite` ; la date du jour est utilisée lorsque la valeur est absente.
+- [`44cab47dbc9b`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/44cab47dbc9b_add_date_and_favorite_in_meeting_table.py) ajoute les colonnes `created_at`, `updated_at` et `is_favorite` à la table des salons ; les salons existants reçoivent la date du jour.
+
+Une fois la mise à jour terminée, `flask db current` renvoie `44cab47dbc9b`.
 
 ### Ajouté
 

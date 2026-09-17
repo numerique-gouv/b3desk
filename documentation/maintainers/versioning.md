@@ -34,6 +34,13 @@ les rubriques « Actions requises », « Migrations » et « Configuration » di
 bien tout ce qu'une personne qui administre une instance doit savoir avant de
 mettre à jour. Ce texte sera publié tel quel dans les notes de la release.
 
+Une fois l'éditeur refermé, `scripts/changelog_migration_head.py` referme la
+rubrique « Migrations » sur la révision que la base atteint en fin de mise à
+jour, et annonce les entrées qu'il a marquées. Il la déduit des `down_revision`
+des migrations citées, pas de leur ordre dans la liste ; l'erreur qu'il signale
+plutôt que de choisir au hasard est le lot à plusieurs têtes de chaîne, signe
+que deux pull requests ont greffé leur migration sur le même parent.
+
 ## Lancer les tests avec `tox`
 ```bash
 tox -p

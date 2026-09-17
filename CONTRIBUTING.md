@@ -128,6 +128,20 @@ première ne contient que ce qu'elles doivent faire de leurs mains ; les
 migrations, elles, s'appliquent toutes seules au démarrage, et la rubrique sert
 à savoir quoi sauvegarder avant et ce qui ne sera pas réversible.
 
+Chaque puce de la rubrique « Migrations » s'ouvre sur l'identifiant de révision,
+lié au fichier de migration sur GitHub, de manière que la personne qui prépare
+une mise à jour puisse lire ce qui sera exécuté sur sa base :
+
+```markdown
+- [`791755877bb1`](https://github.com/numerique-gouv/b3desk/blob/main/web/migrations/versions/791755877bb1_adds_user_admin_flag.py)
+  ajoute la colonne `admin` à la table des utilisateurs.
+```
+
+La rubrique se referme sur la révision que la base atteint une fois la mise à
+jour passée. Ne l'écrivez pas dans le fragment : scriv rassemble les migrations
+de plusieurs pull requests sous une seule rubrique, et cette révision n'est
+connue qu'au moment de la publication, où `just changelog-collect` l'ajoute.
+
 Le fragment est rédigé du point de vue de l'usage, pas du code. Il est relu en
 même temps que le reste de la pull request, et [scriv](https://scriv.readthedocs.io)
 le déplacera dans le
