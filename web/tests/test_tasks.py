@@ -1,5 +1,6 @@
 import datetime
 
+import pytest
 from b3desk import cache
 from b3desk.models import db
 from b3desk.tasks import background_upload
@@ -197,6 +198,25 @@ def test_concurrent_claim_prevents_duplicate_mail(client_app, meeting, smtpd, mo
         meeting_id=meeting.id, bbb_recording_id=RECORD_ID, force=True
     )
     assert len(smtpd.messages) == 0
+
+
+def test_failed_mail_releases_the_claim(client_app, meeting, mocker):
+    """A failed delivery releases the claim so a later attempt can take it over."""
+    _mock_recording(
+        mocker,
+        playbacks={"presentation": {"url": "https://bbb.test/playback/presentation"}},
+    )
+    mocker.patch(
+        "b3desk.tasks.send_available_recording_notification_mail",
+        side_effect=RuntimeError("delivery exploded"),
+    )
+
+    with pytest.raises(RuntimeError):
+        send_recording_notification(
+            meeting_id=meeting.id, bbb_recording_id=RECORD_ID, force=True
+        )
+
+    assert not cache.get(recording_notified_key(RECORD_ID))
 
 
 def test_background_upload(client_app, httpx2_mock):

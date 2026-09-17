@@ -26,7 +26,7 @@ services:
     ports:
       - 5000:5000
 
-  worker:
+  worker: &celery-common
     container_name: worker
     depends_on:
       - broker
@@ -43,6 +43,11 @@ services:
     volumes: *app-volumes
     entrypoint: []
     command: celery worker --loglevel=info
+
+  beat:
+    <<: *celery-common
+    container_name: beat
+    command: celery beat --loglevel=info --schedule /tmp/celerybeat-schedule --pidfile=
 
   broker:
     container_name: broker

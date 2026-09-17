@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:344 web/b3desk/endpoints/meeting_files.py:141
+#: web/b3desk/__init__.py:373 web/b3desk/endpoints/meeting_files.py:141
 #: web/b3desk/endpoints/meeting_files.py:206
 #: web/b3desk/endpoints/meeting_files.py:313
 #: web/b3desk/endpoints/meeting_files.py:520
@@ -7,7 +7,7 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/__init__.py:418
+#: web/b3desk/__init__.py:447
 msgid "Votre session est invalide, merci de vous reconnecter."
 msgstr ""
 
@@ -142,7 +142,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:426
+#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:434
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -282,27 +282,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:659 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:661 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:663
+#: web/b3desk/settings.py:665
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:676
+#: web/b3desk/settings.py:678
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:679
+#: web/b3desk/settings.py:681
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:682
+#: web/b3desk/settings.py:684
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:686
+#: web/b3desk/settings.py:688
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -521,16 +521,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:405 web/b3desk/models/meetings.py:412
+#: web/b3desk/models/meetings.py:413 web/b3desk/models/meetings.py:420
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:419
+#: web/b3desk/models/meetings.py:427
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:421
+#: web/b3desk/models/meetings.py:429
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -3092,6 +3092,10 @@ msgstr ""
 #: web/b3desk/templates/meeting/mailto/mail_add_delegation_body.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.html:3
 #: web/b3desk/templates/meeting/mailto/mail_available_recording_notification_body.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:1
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:2
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:1
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.html:2
 #: web/b3desk/templates/meeting/mailto/mail_remove_delegation_body.txt:1
 msgid "Bonjour"
@@ -3151,6 +3155,61 @@ msgstr ""
 msgid ""
 "Vous pouvez également retrouver l'ensemble de vos enregistrements depuis "
 "votre espace :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:3
+#, python-format
+msgid ""
+"La réunion %(meeting_name)s sera supprimée définitivement dans %(count)s "
+"jour."
+msgid_plural ""
+"La réunion %(meeting_name)s sera supprimée définitivement dans %(count)s "
+"jours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:12
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:9
+msgid "Vous pouvez empêcher cette suppression en utilisant cette réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.html:15
+#, python-format
+msgid ""
+"Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a> "
+"et lancez la réunion."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_meeting_deletion.txt:11
+msgid "Rendez-vous simplement sur votre espace et lancez la réunion :"
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:5
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:3
+#, python-format
+msgid "Votre compte est inactif et sera supprimé dans %(count)s jour."
+msgid_plural "Votre compte est inactif et sera supprimé dans %(count)s jours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:12
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:9
+msgid "Vos salles de réunion et vos fichiers associés seront supprimés également."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:15
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:11
+msgid "Vous pouvez empêcher cette suppression en vous connectant à votre compte."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.html:18
+#, python-format
+msgid "Rendez-vous simplement sur <a href=\"%(welcome_url)s\">votre espace</a>."
+msgstr ""
+
+#: web/b3desk/templates/meeting/mailto/mail_before_user_account_deletion.txt:13
+msgid "Rendez-vous simplement sur votre espace :"
 msgstr ""
 
 #: web/b3desk/templates/meeting/mailto/mail_body.txt:4
@@ -3323,34 +3382,54 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:177
+#: web/b3desk/utils/__init__.py:223
+msgid ""
+"La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
+"sécuriser la connexion SIPMediaGW"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:46
+#, python-brace-format
+msgid "Nouvelle délégation pour {meeting_name}"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:48
+#, python-brace-format
+msgid "Retrait de délégation pour {meeting_name}"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:64
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:185
+#: web/b3desk/utils/mailing.py:72
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:191
+#: web/b3desk/utils/mailing.py:78
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:193
+#: web/b3desk/utils/mailing.py:80
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:195
+#: web/b3desk/utils/mailing.py:82
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:226
+#: web/b3desk/utils/mailing.py:113
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:353
-msgid ""
-"La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
-"sécuriser la connexion SIPMediaGW"
+#: web/b3desk/utils/mailing.py:133
+#, python-brace-format
+msgid "Information avant suppression : {meeting_name}"
+msgstr ""
+
+#: web/b3desk/utils/mailing.py:154
+#, python-brace-format
+msgid "Information avant suppression : {user_name}"
 msgstr ""
 

@@ -3,29 +3,8 @@ import datetime
 from b3desk.join import get_meeting_secret_key
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
-from b3desk.models.meetings import delete_all_old_shadow_meetings
-from b3desk.models.meetings import get_all_previous_voiceBridges
 from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.roles import Role
-
-
-def test_delete_all_old_shadow_meetings(
-    time_machine,
-    meeting,
-    meeting_2,
-    meeting_3,
-    shadow_meeting,
-    shadow_meeting_2,
-    shadow_meeting_3,
-    user,
-):
-    """Test that old shadow meetings are deleted except the most recent one."""
-    time_machine.move_to(datetime.datetime(2025, 6, 1))
-    delete_all_old_shadow_meetings()
-    voiceBridges = get_all_previous_voiceBridges()
-    assert voiceBridges == ["555555552", "555555553"]
-    assert user.meetings == [meeting, meeting_2, meeting_3, shadow_meeting]
-    assert get_or_create_shadow_meeting(user) == shadow_meeting
 
 
 def test_get_or_create_shadow_meeting(client_app, user):

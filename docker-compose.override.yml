@@ -28,7 +28,7 @@ services:
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}
 
-  worker:
+  worker: &celery-common-override
     hostname: worker.localhost
     environment:
       - FLASK_DEBUG=1
@@ -38,6 +38,10 @@ services:
     env_file:
       - ${ENV_FILE_OVERRIDE-web.env}   # to get shared REDIS_URL
     volumes: *code-volumes
+
+  beat:
+    <<: *celery-common-override
+    hostname: beat.localhost
 
   broker:
     hostname: broker.localhost
