@@ -420,15 +420,15 @@ def add_group_members(group: Group):
     )
 
 
-@bp.route("/admin/academy/<group:group>", methods=["GET", "POST"])
+@bp.route("/admin/affiliation/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def manage_academy(group: Group):
+def affiliation_management(group: Group):
     """Display and manage group's academies."""
     form = AcademyForm(request.form)
 
     if request.method == "GET":
         return render_template(
-            "admin/group_academy.html",
+            "admin/group_affiliation_management.html",
             form=form,
             group=group,
             codaca=CODACA,
@@ -437,7 +437,7 @@ def manage_academy(group: Group):
     if not form.validate():
         flash(_("Le formulaire contient des erreurs"), "error")
         return render_template(
-            "admin/group_academy.html",
+            "admin/group_affiliation_management.html",
             form=form,
             group=group,
             codaca=CODACA,
@@ -463,7 +463,7 @@ def manage_academy(group: Group):
         )
 
     return render_template(
-        "admin/group_academy.html",
+        "admin/group_affiliation_management.html",
         form=form,
         group=group,
         codaca=CODACA,
@@ -487,7 +487,7 @@ def remove_academy(group: Group):
         )
 
     return render_template(
-        "admin/group_academy.html",
+        "admin/group_affiliation_management.html",
         form=form,
         group=group,
         codaca=CODACA,

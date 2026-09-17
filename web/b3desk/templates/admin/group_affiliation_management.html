@@ -20,7 +20,7 @@
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
                     </li>
                     <li>
-                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_academy', group=group) }}">
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.affiliation_management', group=group) }}">
                             {% trans %}Gérer les académies de{% endtrans %} {{ group.name }}
                         </a>
                     </li>
@@ -31,7 +31,7 @@
 
     <h4>{{ form.academy.label }}</h4>
     <p class="fr-hint-text">{{ form.academy.description }}</p>
-    <form id="addAcademy" name="search_meeting" action="{{ url_for("admin.manage_academy", group=group) }}" method="post">
+    <form id="addAcademy" name="search_meeting" action="{{ url_for("admin.affiliation_management", group=group) }}" method="post">
         {% include 'meeting/csrf.html' %}
         {{ form.academy(class_="fr-select", onchange="this.form.submit()") }}
     </form>

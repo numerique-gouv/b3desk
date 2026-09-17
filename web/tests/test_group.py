@@ -472,7 +472,7 @@ def test_admin_can_add_domain_in_group(client_app, group, user, authenticated_us
     """Test admin can add academy in group."""
     user.admin = True
     db.session.commit()
-    res = client_app.get("/admin/academy/1", status=200)
+    res = client_app.get("/admin/affiliation/1", status=200)
     form = res.form
     form["academy"] = "001"
     form.submit()
@@ -487,7 +487,7 @@ def test_add_domain_in_group_with_form_error(
     """Test academy form display error message."""
     user.admin = True
     db.session.commit()
-    res = client_app.get("/admin/academy/1", status=200)
+    res = client_app.get("/admin/affiliation/1", status=200)
     form = res.form
     form["academy"] = ""
     res = form.submit()
@@ -499,7 +499,7 @@ def test_add_domain_already_in_group(client_app, group, user, authenticated_user
     user.admin = True
     group.academic_codes.append("001")
     db.session.commit()
-    res = client_app.get("/admin/academy/1", status=200)
+    res = client_app.get("/admin/affiliation/1", status=200)
     form = res.form
     form["academy"] = "001"
     res = form.submit()
