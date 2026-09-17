@@ -1241,7 +1241,7 @@ msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:18
-#: web/b3desk/templates/admin/group_infos.html:160
+#: web/b3desk/templates/admin/group_infos.html:163
 #: web/b3desk/templates/admin/group_members.html:11
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
@@ -1299,23 +1299,27 @@ msgid "Nombre de membres"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:127
-#, python-format
-msgid "%(academic_code)s"
+#: web/b3desk/templates/admin/user_infos.html:64
+msgid "Académie"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:151
+#: web/b3desk/templates/admin/group_infos.html:137
+msgid "Nom de domaine"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:154
 msgid "Ce groupe n'a pas d'affiliation automatique"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:155
+#: web/b3desk/templates/admin/group_infos.html:158
 msgid "Gérer les académies"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:156
+#: web/b3desk/templates/admin/group_infos.html:159
 msgid "Gérer les affiliations automatiques"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:161
+#: web/b3desk/templates/admin/group_infos.html:164
 msgid "Gérer l'exclusion d'utilisateurs"
 msgstr ""
 
@@ -1482,10 +1486,6 @@ msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:56
 msgid "Domaine académique"
-msgstr ""
-
-#: web/b3desk/templates/admin/user_infos.html:64
-msgid "Académie"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_infos.html:96

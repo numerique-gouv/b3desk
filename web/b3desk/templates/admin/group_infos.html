@@ -124,15 +124,18 @@
                                             {% for academic_code in group.academic_codes%}
                                                 <tr class="">
                                                     <td class="fr-col fr-cell--center">
-                                                        {% trans %}{{ academic_code }}{% endtrans %}
+                                                        {% trans %}Académie{% endtrans %}
                                                     </td>
                                                     <td class="fr-col fr-cell--center">
-                                                        {{ codaca.get(academic_code, "") }}
+                                                        {{ academic_code }} {{ codaca.get(academic_code, "") }}
                                                     </td>
                                                 </tr>
                                             {% endfor %}
                                             {% for mail_domain in group.mail_domains%}
                                                 <tr class="">
+                                                    <td class="fr-col fr-cell--center">
+                                                        {% trans %}Nom de domaine{% endtrans %}
+                                                    </td>
                                                     <td class="fr-col fr-cell--center">
                                                         {{ mail_domain }}
                                                     </td>
