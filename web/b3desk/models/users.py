@@ -199,14 +199,17 @@ class User(db.Model):
         """Extract and return the domain from meta_data or part of the user's email address."""
         if self.meta_data:
             user_meta_data = json.loads(self.meta_data)
-            return user_meta_data["academic_domain"]
+            if "academic_domain" in user_meta_data:
+                return user_meta_data["academic_domain"]
         return self.email.split("@")[1] if self.email and "@" in self.email else None
 
     @property
     def academic_code(self):
         """Return the user's académie code (CODACA) from meta_data, if any."""
         if self.meta_data:
-            return json.loads(self.meta_data)["academic_code"]
+            user_meta_data = json.loads(self.meta_data)
+            if "academic_code" in user_meta_data:
+                return user_meta_data["academic_code"]
         return None
 
     @property
