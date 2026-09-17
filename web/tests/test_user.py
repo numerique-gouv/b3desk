@@ -43,6 +43,26 @@ def test_get_or_create_user(client_app):
     assert user.created_at.date() == date.today()
 
 
+@pytest.mark.parametrize(
+    "email_claim",
+    [{}, {"email": None}, {"email": ""}],
+    ids=["missing", "null", "empty"],
+)
+def test_get_or_create_user_rejects_unusable_email(client_app, email_claim):
+    """A claim set without a usable email cannot identify a user."""
+    user_info = {
+        "given_name": "Alice",
+        "family_name": "Cooper",
+        "preferred_username": "alice",
+        **email_claim,
+    }
+
+    with pytest.raises(KeyError):
+        get_or_create_user(user_info)
+
+    assert db.session.get(User, 1) is None
+
+
 def test_update_last_connection_if_more_than_24h(client_app):
     """Test that last connection date updates after 24 hours."""
     user_info = {

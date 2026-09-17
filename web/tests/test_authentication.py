@@ -82,3 +82,21 @@ def test_lasuite_user_authentication(
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
+
+
+def test_unusable_claims_clear_the_session(client_app, caplog):
+    """A session whose claims cannot build a user is cleared instead of breaking every page."""
+    with client_app.session_transaction() as session:
+        session["current_provider"] = "default"
+        session["last_authenticated"] = "true"
+        session["userinfo"] = {"given_name": "Alice", "family_name": "Cooper"}
+
+    res = client_app.get("/welcome", status=302)
+    assert res.location.endswith("/home")
+    res.follow(status=200).mustcontain("Votre session est invalide")
+
+    with client_app.session_transaction() as session:
+        assert "userinfo" not in session
+        assert "last_authenticated" not in session
+
+    assert "Could not build a user from the OIDC claims" in caplog.text
