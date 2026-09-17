@@ -378,10 +378,25 @@ class AcademyForm(FlaskForm):
             "Académies",
         ),
         description=_(
-            "Les utilisateurs portant ce nom de domaine seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
+            "Les utilisateurs issues de cette académie seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
         ),
         choices=[("", "---")]
         + [(code, f"{code} {name}") for code, name in CODACA.items()],
+        default="",
+        validators=[
+            validators.DataRequired(),
+        ],
+    )
+
+
+class MailDomainForm(FlaskForm):
+    mail_domain = StringField(
+        label=_(
+            "Domaines",
+        ),
+        description=_(
+            "Les utilisateurs portant ce nom de domaine seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
+        ),
         default="",
         validators=[
             validators.DataRequired(),

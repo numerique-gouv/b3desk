@@ -110,8 +110,8 @@
             </div>
         </div>
     </div>
-    <h5>Liste des académies affiliées à {{  group.name }}</h5>
-    {% if group.academic_codes %}
+    <h5>Liste des affiliations automatiques de {{  group.name }}</h5>
+    {% if group.academic_codes or group.mail_domains %}
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12">
                 <div class="fr-table fr-table--no-caption" id="selected-user-component">
@@ -131,6 +131,13 @@
                                                     </td>
                                                 </tr>
                                             {% endfor %}
+                                            {% for mail_domain in group.mail_domains%}
+                                                <tr class="">
+                                                    <td class="fr-col fr-cell--center">
+                                                        {{ mail_domain }}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
                                         </tr>
                                     </tbody>
                                 </table>
@@ -141,12 +148,12 @@
             </div>
         </div>
     {% else %}
-        <p>{% trans %}Ce groupe n'a pas été affecté à une académie{% endtrans %}</p>
+        <p>{% trans %}Ce groupe n'a pas d'affiliation automatique{% endtrans %}</p>
     {% endif %}
     <ul class="fr-btns-group fr-btns-group--icon-left">
         <li>
             <a href="{{ url_for("admin.affiliation_management", group=group) }}" rel="noopener" class="fr-btn fr-btn--secondary fr-icon-government-line" aria-hidden="true" title="{% trans %}Gérer les académies{% endtrans %}">
-                {% trans %}Gérer les académies{% endtrans %}
+                {% trans %}Gérer les affiliations automatiques{% endtrans %}
             </a>
         </li>
         <li>

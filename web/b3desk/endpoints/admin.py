@@ -14,6 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from b3desk.forms import AcademyForm
 from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
+from b3desk.forms import MailDomainForm
 from b3desk.forms import MeetingSearchForm
 from b3desk.forms import UserExclusionForm
 from b3desk.forms import UserSearchForm
@@ -423,48 +424,60 @@ def add_group_members(group: Group):
 @bp.route("/admin/affiliation/<group:group>", methods=["GET", "POST"])
 @admin_needed
 def affiliation_management(group: Group):
-    """Display and manage group's academies."""
-    form = AcademyForm(request.form)
+    """Display and manage group's automatic affiliation."""
+    academy_form = AcademyForm(request.form)
+    mail_domain_form = MailDomainForm(request.form)
 
-    if request.method == "GET":
-        return render_template(
-            "admin/group_affiliation_management.html",
-            form=form,
-            group=group,
-            codaca=CODACA,
-        )
+    if request.method == "POST" and "academy" in request.form:
+        if not academy_form.validate():
+            flash(_("Le formulaire contient des erreurs"), "error")
+        else:
+            new_academy = academy_form.data["academy"]
+            academy_form = AcademyForm(formdata=None)
+            if new_academy not in group.academic_codes:
+                group.academic_codes.append(new_academy)
+                db.session.commit()
+                current_app.logger.info(
+                    "%s a été ajouté à la liste du groupe %s %s",
+                    new_academy,
+                    group.id,
+                    group.name,
+                )
+            else:
+                flash(
+                    _(
+                        "{new_academy} est déjà dans la liste du groupe {group_name}"
+                    ).format(new_academy=new_academy, group_name=group.name),
+                    "error",
+                )
 
-    if not form.validate():
-        flash(_("Le formulaire contient des erreurs"), "error")
-        return render_template(
-            "admin/group_affiliation_management.html",
-            form=form,
-            group=group,
-            codaca=CODACA,
-        )
-
-    new_academy = form.data["academy"]
-    form = AcademyForm(formdata=None)
-    if new_academy not in group.academic_codes:
-        group.academic_codes.append(new_academy)
-        db.session.commit()
-        current_app.logger.info(
-            "%s a été ajouté à la liste du groupe %s %s",
-            new_academy,
-            group.id,
-            group.name,
-        )
-    else:
-        flash(
-            _("{new_academy} est déjà dans la liste du groupe {group_name}").format(
-                new_academy=new_academy, group_name=group.name
-            ),
-            "error",
-        )
+    elif request.method == "POST" and "mail_domain" in request.form:
+        if not mail_domain_form.validate():
+            flash(_("Le formulaire contient des erreurs"), "error")
+        else:
+            new_mail_domain = mail_domain_form.data["mail_domain"]
+            mail_domain_form = MailDomainForm(formdata=None)
+            if new_mail_domain not in group.mail_domains:
+                group.mail_domains.append(new_mail_domain)
+                db.session.commit()
+                current_app.logger.info(
+                    "%s a été ajouté à la liste du groupe %s %s",
+                    new_mail_domain,
+                    group.id,
+                    group.name,
+                )
+            else:
+                flash(
+                    _(
+                        "{new_mail_domain} est déjà dans la liste du groupe {group_name}"
+                    ).format(new_mail_domain=new_mail_domain, group_name=group.name),
+                    "error",
+                )
 
     return render_template(
         "admin/group_affiliation_management.html",
-        form=form,
+        academy_form=academy_form,
+        mail_domain_form=mail_domain_form,
         group=group,
         codaca=CODACA,
     )
@@ -474,7 +487,6 @@ def affiliation_management(group: Group):
 @admin_needed
 def remove_academy(group: Group):
     """Remove academy from group."""
-    form = AcademyForm(request.form)
     academic_code = request.args["academic_code"]
     if academic_code in group.academic_codes:
         group.academic_codes.remove(academic_code)
@@ -488,7 +500,32 @@ def remove_academy(group: Group):
 
     return render_template(
         "admin/group_affiliation_management.html",
-        form=form,
+        academy_form=AcademyForm(formdata=None),
+        mail_domain_form=MailDomainForm(formdata=None),
+        group=group,
+        codaca=CODACA,
+    )
+
+
+@bp.route("/admin/remove-mail-domain/<group:group>")
+@admin_needed
+def remove_mail_domain(group: Group):
+    """Remove mail domain from group."""
+    mail_domain = request.args["mail_domain"]
+    if mail_domain in group.mail_domains:
+        group.mail_domains.remove(mail_domain)
+        db.session.commit()
+        current_app.logger.info(
+            "%s a été retiré de la liste du groupe %s %s",
+            mail_domain,
+            group.id,
+            group.name,
+        )
+
+    return render_template(
+        "admin/group_affiliation_management.html",
+        academy_form=AcademyForm(formdata=None),
+        mail_domain_form=MailDomainForm(formdata=None),
         group=group,
         codaca=CODACA,
     )

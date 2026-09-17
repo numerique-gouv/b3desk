@@ -42,6 +42,9 @@ class Group(db.Model):
     academic_codes: Mapped[list] = mapped_column(
         MutableList.as_mutable(db.JSON), default=list
     )
+    mail_domains: Mapped[list] = mapped_column(
+        MutableList.as_mutable(db.JSON), default=list
+    )
 
     members: Mapped[list[User]] = relationship(
         secondary=group_member_table, back_populates="groups"

@@ -283,15 +283,25 @@ msgstr ""
 
 #: web/b3desk/forms.py:381
 msgid ""
+"Les utilisateurs issues de cette académie seront automatiquement ajoutés "
+"à ce groupe lors de leur prochaine connexion au service"
+msgstr ""
+
+#: web/b3desk/forms.py:395
+msgid "Domaines"
+msgstr ""
+
+#: web/b3desk/forms.py:398
+msgid ""
 "Les utilisateurs portant ce nom de domaine seront automatiquement ajoutés"
 " à ce groupe lors de leur prochaine connexion au service"
 msgstr ""
 
-#: web/b3desk/forms.py:394
+#: web/b3desk/forms.py:409
 msgid "Liste d'exclusion"
 msgstr ""
 
-#: web/b3desk/forms.py:399
+#: web/b3desk/forms.py:414
 msgid ""
 "Les utilisateurs exclus seront automatiquement retirés du groupe lors de "
 "leur prochaine connexion au service"
@@ -323,59 +333,64 @@ msgid ""
 "envoyez-lui l'un de ces liens :"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:210
+#: web/b3desk/endpoints/admin.py:211
 msgid "Ce nom est déjà utilisé."
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:225
+#: web/b3desk/endpoints/admin.py:226
 #, python-brace-format
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:270 web/b3desk/endpoints/admin.py:438
-#: web/b3desk/endpoints/admin.py:515 web/b3desk/endpoints/meetings.py:154
-#: web/b3desk/endpoints/meetings.py:216
+#: web/b3desk/endpoints/admin.py:271 web/b3desk/endpoints/admin.py:433
+#: web/b3desk/endpoints/admin.py:456 web/b3desk/endpoints/admin.py:552
+#: web/b3desk/endpoints/meetings.py:154 web/b3desk/endpoints/meetings.py:216
 msgid "Le formulaire contient des erreurs"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:293
+#: web/b3desk/endpoints/admin.py:294
 #, python-format
 msgid "%(group_name)s modifications prises en compte"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:324
+#: web/b3desk/endpoints/admin.py:325
 msgid "L'utilisateur ne fait pas partie du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:328
+#: web/b3desk/endpoints/admin.py:329
 msgid "L'utilisateur a été retiré du groupe"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:354
+#: web/b3desk/endpoints/admin.py:355
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:372
+#: web/b3desk/endpoints/admin.py:373
 #, python-format
 msgid "%(num)s membre ajouté au groupe"
 msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:402
+#: web/b3desk/endpoints/admin.py:403
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:459
+#: web/b3desk/endpoints/admin.py:449
 #, python-brace-format
 msgid "{new_academy} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:533
+#: web/b3desk/endpoints/admin.py:472
+#, python-brace-format
+msgid "{new_mail_domain} est déjà dans la liste du groupe {group_name}"
+msgstr ""
+
+#: web/b3desk/endpoints/admin.py:570
 msgid "L'utilisateur est déjà pas dans la liste"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:551
+#: web/b3desk/endpoints/admin.py:588
 msgid "L'utilisateur n'est pas dans la liste"
 msgstr ""
 
@@ -1118,7 +1133,7 @@ msgid "Créer groupe"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_affiliation_management.html:24
-msgid "Gérer les académies de"
+msgid "Gérer les affiliations automatiques de"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_affiliation_management.html:39
@@ -1135,6 +1150,26 @@ msgstr[1] ""
 #: web/b3desk/templates/admin/group_affiliation_management.html:49
 #, python-format
 msgid "Retirer %(academic_code)s"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_affiliation_management.html:61
+msgid "Ajouter le domaine"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_affiliation_management.html:64
+msgid "Aucun domaine de messagerie sélectionné"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_affiliation_management.html:67
+#, python-format
+msgid "%(count)s domaine de messagerie sélectionné"
+msgid_plural "%(count)s domaines de messagerie sélectionnés"
+msgstr[0] ""
+msgstr[1] ""
+
+#: web/b3desk/templates/admin/group_affiliation_management.html:74
+#, python-format
+msgid "Retirer %(mail_domain)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_excluded_users.html:24
@@ -1206,7 +1241,7 @@ msgid "Éditer %(group_name)s"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_infos.html:18
-#: web/b3desk/templates/admin/group_infos.html:153
+#: web/b3desk/templates/admin/group_infos.html:160
 #: web/b3desk/templates/admin/group_members.html:11
 #, python-format
 msgid "Gérer les membres de %(group_name)s"
@@ -1268,16 +1303,19 @@ msgstr ""
 msgid "%(academic_code)s"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:144
-msgid "Ce groupe n'a pas été affecté à une académie"
+#: web/b3desk/templates/admin/group_infos.html:151
+msgid "Ce groupe n'a pas d'affiliation automatique"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:148
-#: web/b3desk/templates/admin/group_infos.html:149
+#: web/b3desk/templates/admin/group_infos.html:155
 msgid "Gérer les académies"
 msgstr ""
 
-#: web/b3desk/templates/admin/group_infos.html:154
+#: web/b3desk/templates/admin/group_infos.html:156
+msgid "Gérer les affiliations automatiques"
+msgstr ""
+
+#: web/b3desk/templates/admin/group_infos.html:161
 msgid "Gérer l'exclusion d'utilisateurs"
 msgstr ""
 

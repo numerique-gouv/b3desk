@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <a class="fr-breadcrumb__link" href="{{ url_for('admin.affiliation_management', group=group) }}">
-                            {% trans %}Gérer les académies de{% endtrans %} {{ group.name }}
+                            {% trans %}Gérer les affiliations automatiques de{% endtrans %} {{ group.name }}
                         </a>
                     </li>
                 {% endif %}
@@ -29,11 +29,11 @@
         </div>
     </nav>
 
-    <h4>{{ form.academy.label }}</h4>
-    <p class="fr-hint-text">{{ form.academy.description }}</p>
+    <h4>{{ academy_form.academy.label }}</h4>
+    <p class="fr-hint-text">{{ academy_form.academy.description }}</p>
     <form id="addAcademy" name="search_meeting" action="{{ url_for("admin.affiliation_management", group=group) }}" method="post">
         {% include 'meeting/csrf.html' %}
-        {{ form.academy(class_="fr-select", onchange="this.form.submit()") }}
+        {{ academy_form.academy(class_="fr-select", onchange="this.form.submit()") }}
     </form>
     {% if not group.academic_codes %}
         <p>{% trans %}Aucune académie sélectionnée{% endtrans %}</p>
@@ -48,6 +48,31 @@
         {% for academic_code in group.academic_codes %}
             <a href="{{ url_for("admin.remove_academy", group=group, academic_code=academic_code) }}" class="fr-tag fr-tag--dismiss" aria-label="{% trans %}Retirer {{ academic_code }}{% endtrans %}">
                 {{ academic_code }} {{ codaca.get(academic_code, "") }}
+            </a>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <br>
+    <h4>{{ mail_domain_form.mail_domain.label }}</h4>
+    <p class="fr-hint-text">{{ mail_domain_form.mail_domain.description }}</p>
+    <form class="fr-search-bar" id="addMailDomain" action="{{ url_for("admin.affiliation_management", group=group) }}" method="post">
+        {% include 'meeting/csrf.html' %}
+        {{ mail_domain_form.mail_domain(class_="fr-input", placeholder="exemple.gouv.fr") }}
+        <button title="{% trans %}Ajouter le domaine{% endtrans %}" type="submit" class="fr-btn fr-icon-add-line"></button>
+    </form>
+    {% if not group.mail_domains %}
+        <p>{% trans %}Aucun domaine de messagerie sélectionné{% endtrans %}</p>
+    {% else %}
+        <p class="fr-table__detail">
+            {% trans trimmed count=group.mail_domains|length %}
+                {{ count }} domaine de messagerie sélectionné
+                {% pluralize %}
+                {{ count }} domaines de messagerie sélectionnés
+            {% endtrans %}
+        </p>
+        {% for mail_domain in group.mail_domains %}
+            <a href="{{ url_for("admin.remove_mail_domain", group=group, mail_domain=mail_domain) }}" class="fr-tag fr-tag--dismiss" aria-label="{% trans %}Retirer {{ mail_domain }}{% endtrans %}">
+                {{ mail_domain }}
             </a>
         {% endfor %}
     {% endif %}
