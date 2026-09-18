@@ -371,15 +371,14 @@ def add_users_in_group(users, group):
         current_app.logger.info(
             "%s became member of group %s %s", user.email, group.id, group.name
         )
-    if added_users:
-        flash(
-            ngettext(
-                "%(num)s membre ajouté au groupe",
-                "%(num)s membres ajoutés au groupe",
-                len(added_users),
-            ),
-            "success",
-        )
+    flash(
+        ngettext(
+            "%(num)s membre ajouté au groupe",
+            "%(num)s membres ajoutés au groupe",
+            len(added_users),
+        ),
+        "success",
+    )
     if excluded_users:
         flash(
             ngettext(

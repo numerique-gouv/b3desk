@@ -316,6 +316,7 @@ def test_admin_cannot_add_member_already_in_group(
     group.academic_codes.append("001")
     db.session.commit()
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
+    print(res.flashes)
     category, message = res.flashes[0]
     assert category == "success"
     assert message.startswith("0 membre")
