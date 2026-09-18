@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from urllib.parse import unquote
 from urllib.parse import urlparse
@@ -15,6 +14,7 @@ from webdav3.exceptions import WebDavException
 
 from b3desk import cache
 from b3desk.utils import http_client
+from b3desk.utils import utcnow
 
 NEXTCLOUD_BACKOFF_INITIAL = 1
 NEXTCLOUD_BACKOFF_MULTIPLIER = 1
@@ -45,7 +45,7 @@ class CircuitBreaker:
         if expires_at is None:
             return False
 
-        remaining = (expires_at - datetime.now()).total_seconds()
+        remaining = (expires_at - utcnow()).total_seconds()
         current_app.logger.debug(
             "%s: %s blocked, retry in %.0fs", self.key_prefix, identifier, remaining
         )
@@ -56,7 +56,7 @@ class CircuitBreaker:
         backoff_key = f"{self.key_prefix}_backoff:{identifier}"
 
         current_backoff = cache.get(backoff_key) or NEXTCLOUD_BACKOFF_INITIAL
-        expires_at = datetime.now() + timedelta(seconds=current_backoff)
+        expires_at = utcnow() + timedelta(seconds=current_backoff)
         cache.set(key, expires_at, timeout=current_backoff)
 
         next_backoff = min(
@@ -389,7 +389,7 @@ def update_user_nc_credentials(user, force_renew=False):
         and user.nc_locator
         and user.nc_token
         and (
-            (elapsed_time := (datetime.now() - user.nc_last_auto_enroll)).days
+            (elapsed_time := (utcnow() - user.nc_last_auto_enroll)).days
             <= current_app.config["NC_LOGIN_TIMEDELTA_DAYS"]
         )
     ):
@@ -430,6 +430,6 @@ def update_user_nc_credentials(user, force_renew=False):
     if user.nc_login != data["nclogin"]:
         user.nc_login = data["nclogin"]
         user_changes["nclogin"] = data["nclogin"]
-    user.nc_last_auto_enroll = datetime.now()
-    user_changes["nc_last_auto_enroll"] = datetime.now()
+    user.nc_last_auto_enroll = utcnow()
+    user_changes["nc_last_auto_enroll"] = utcnow()
     return user_changes

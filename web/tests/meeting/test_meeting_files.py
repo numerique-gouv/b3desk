@@ -13,6 +13,7 @@ from b3desk.models.meetings import assign_unique_codes
 from b3desk.models.meetings import get_meeting_file_hash
 from b3desk.models.users import User
 from b3desk.session import user_needed
+from flask import g
 from flask import url_for
 from sqlalchemy import exc
 from webdav3.exceptions import WebDavException
@@ -116,9 +117,9 @@ def test_file_picker_invalid_signature_returns_404(client_app, authenticated_use
     client_app.get("/meeting/invalid-signature/file-picker", status=404)
 
 
-def test_user_needed_decorator_aborts_403_without_session(client_app, mocker):
-    """user_needed decorator returns 403 when user session is missing."""
-    mocker.patch("b3desk.session.has_user_session", return_value=False)
+def test_user_needed_decorator_aborts_403_without_user(client_app):
+    """user_needed decorator returns 403 when no user is loaded."""
+    g.user = None
 
     @user_needed
     def protected_view(user):  # pragma: no cover

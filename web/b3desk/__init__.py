@@ -8,6 +8,7 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
+from importlib.metadata import version
 from logging.config import dictConfig
 from logging.config import fileConfig
 from pathlib import Path
@@ -31,6 +32,7 @@ from flask_pyoidc import OIDCAuthentication
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
+from packaging.version import Version
 
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
@@ -39,7 +41,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.8.0dev"
+__version__ = version("b3desk")
 
 LANGUAGES = ["fr", "en"]
 
@@ -263,7 +265,7 @@ def setup_jinja(app):
             "debug": app.debug,
             "config": app.config,
             "beta": app.config["BETA"],
-            "development_version": __version__ == "0.0.0" or "dev" in __version__,
+            "development_version": Version(__version__).is_devrelease,
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
             "version": __version__,
@@ -391,8 +393,10 @@ def setup_debug_host_redirect(app):
 
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
+    from flask import flash
     from flask import g
     from flask import session
+    from flask_babel import lazy_gettext as _
     from flask_pyoidc.user_session import UserSession
 
     from b3desk import session as b3desk_session
@@ -402,14 +406,17 @@ def setup_user_session(app):
     def load_user():
         g.user = None
         if not b3desk_session.has_user_session():
-            return
+            return None
 
         try:
             user_session = UserSession(session)
             info = user_session.userinfo
             g.user = get_or_create_user(info)
-        except (KeyError, TypeError):
-            return
+        except (KeyError, TypeError) as exc:
+            app.logger.error("Could not build a user from the OIDC claims: %s", exc)
+            b3desk_session.clear_user_session()
+            flash(_("Votre session est invalide, merci de vous reconnecter."), "error")
+            return redirect(url_for("public.home"))
 
 
 def setup_oidc(app):

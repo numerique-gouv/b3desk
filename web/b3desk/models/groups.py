@@ -9,6 +9,8 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
+from b3desk.utils import utcnow
+
 from . import db
 
 if TYPE_CHECKING:
@@ -30,10 +32,8 @@ excludelist_table = db.Table(
 class Group(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.now, onupdate=datetime.now
-    )
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 
     name: Mapped[str | None] = mapped_column(Unicode(150), unique=True)
     enable_sip: Mapped[bool | None] = mapped_column(default=None)

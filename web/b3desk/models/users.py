@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 import hashlib
 import json
-from datetime import UTC
 from datetime import date
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -24,6 +23,7 @@ from sqlalchemy.orm import relationship
 from b3desk.models.groups import Group
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
+from b3desk.utils import utcnow
 
 from . import db
 
@@ -84,7 +84,12 @@ def get_or_create_user(user_info):
     preferred_username = user_info.get(
         mapping.get("preferred_username", "preferred_username")
     )
-    email = user_info[mapping.get("email", "email")].lower()
+    email_claim = mapping.get("email", "email")
+    email = user_info.get(email_claim)
+    if not email:
+        raise KeyError(email_claim)
+
+    email = email.lower()
 
     meta_data = json.dumps(
         {
@@ -101,7 +106,7 @@ def get_or_create_user(user_info):
             given_name=given_name,
             family_name=family_name,
             preferred_username=preferred_username,
-            last_connection_utc_datetime=datetime.now(UTC),
+            last_connection_utc_datetime=utcnow(),
             meta_data=meta_data,
         )
         update_user_nc_credentials(user)
@@ -127,8 +132,8 @@ def get_or_create_user(user_info):
             not user.last_connection_utc_datetime
             or user.last_connection_utc_datetime.date() < date.today()
         ):
-            user.last_connection_utc_datetime = datetime.now(UTC)
-            user_changes["last_connection_utc_datetime"] = datetime.now(UTC)
+            user.last_connection_utc_datetime = utcnow()
+            user_changes["last_connection_utc_datetime"] = utcnow()
 
         if user.meta_data and user.meta_data != meta_data:
             user.meta_data = meta_data
@@ -155,7 +160,7 @@ class User(db.Model):
     nc_token: Mapped[str | None] = mapped_column(Unicode(255))
     nc_last_auto_enroll: Mapped[datetime | None]
     last_connection_utc_datetime: Mapped[datetime | None]
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
     admin: Mapped[bool] = mapped_column(default=False)
     meta_data: Mapped[str | None] = mapped_column(db.JSON)
 

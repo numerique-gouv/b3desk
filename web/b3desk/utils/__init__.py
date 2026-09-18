@@ -2,6 +2,7 @@ import random
 import smtplib
 import string
 import time
+from datetime import UTC
 from datetime import datetime
 from email.message import EmailMessage
 from functools import wraps
@@ -101,6 +102,11 @@ def download_url_to_path(url, path):
     return True
 
 
+def utcnow():
+    """Return the current UTC time as a naive datetime, the way it is stored."""
+    return datetime.now(UTC).replace(tzinfo=None)
+
+
 def secret_key():
     """Return the application's secret key from configuration."""
     return current_app.config["SECRET_KEY"]
@@ -133,6 +139,7 @@ def make_smtp():
         "starttls": current_app.config["SMTP_STARTTLS"],
         "username": current_app.config["SMTP_USERNAME"],
         "password": current_app.config["SMTP_PASSWORD"],
+        "timeout": current_app.config["SMTP_TIMEOUT"],
     }
 
 
@@ -230,7 +237,9 @@ def send_email(msg, text, html, smtp):
 
     connection_func = smtplib.SMTP_SSL if smtp["ssl"] else smtplib.SMTP
     try:
-        with connection_func(smtp["host"], smtp["port"]) as smtp_connect:
+        with connection_func(
+            smtp["host"], smtp["port"], timeout=smtp["timeout"]
+        ) as smtp_connect:
             if smtp["starttls"]:
                 smtp_connect.starttls()
             if smtp["username"]:

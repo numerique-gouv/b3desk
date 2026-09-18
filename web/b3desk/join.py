@@ -1,5 +1,4 @@
 import hashlib
-from datetime import datetime
 
 from flask import current_app
 from flask import render_template
@@ -9,6 +8,7 @@ from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.models import db
 from b3desk.models.roles import Role
 from b3desk.nextcloud import is_nextcloud_available
+from b3desk.utils import utcnow
 
 
 def get_quick_meeting_secret_key(meeting, role: Role) -> str:
@@ -101,7 +101,7 @@ def get_join_url(
         )
 
     if not meeting.quick:
-        meeting.last_connection_utc_datetime = datetime.now()
+        meeting.last_connection_utc_datetime = utcnow()
         db.session.add(meeting)
         db.session.commit()
 
