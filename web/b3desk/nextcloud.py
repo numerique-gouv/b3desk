@@ -381,7 +381,7 @@ def update_user_nc_credentials(user, force_renew=False):
     # visio-agent calls EDNAT API for NC_DATA retrieval, passing LOGIN as postData
     # visio-agent can now connect to remote NC with NC_DATA
     if not user.can_use_file_sharing:
-        return False
+        return None
 
     if (
         not force_renew
@@ -399,10 +399,10 @@ def update_user_nc_credentials(user, force_renew=False):
             timedelta(days=current_app.config["NC_LOGIN_TIMEDELTA_DAYS"])
             - elapsed_time,
         )
-        return False
+        return None
 
     if credentials_breaker.is_blocked(user.id):
-        return False
+        return None
 
     data = get_user_nc_credentials(user)
     if (
@@ -416,12 +416,20 @@ def update_user_nc_credentials(user, force_renew=False):
             "Could not retrieve Nextcloud credentials for user %s: %s", user, data
         )
         credentials_breaker.mark_failed(user.id)
-        return False
+        return None
 
+    user_changes = {}
     credentials_breaker.clear(user.id)
     current_app.logger.info("New Nextcloud enroll for user %s", data["nclogin"])
-    user.nc_locator = data["nclocator"]
-    user.nc_token = data["nctoken"]
-    user.nc_login = data["nclogin"]
+    if user.nc_locator != data["nclocator"]:
+        user.nc_locator = data["nclocator"]
+        user_changes["nclocator"] = data["nclocator"]
+    if user.nc_token != data["nctoken"]:
+        user.nc_token = data["nctoken"]
+        user_changes["nctoken"] = data["nctoken"]
+    if user.nc_login != data["nclogin"]:
+        user.nc_login = data["nclogin"]
+        user_changes["nclogin"] = data["nclogin"]
     user.nc_last_auto_enroll = utcnow()
-    return True
+    user_changes["nc_last_auto_enroll"] = utcnow()
+    return user_changes

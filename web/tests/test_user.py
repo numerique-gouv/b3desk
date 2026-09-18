@@ -238,3 +238,33 @@ def test_get_user_nc_credentials_with_nextcloud_credentials_request_failed(
     assert (
         f"Cannot contact NC {client_app.app.config['NC_LOGIN_API_URL']}, returning error {ncresponse['error']}"
     ) in caplog.text
+
+
+def test_academic_code_without_meta_data(client_app, user):
+    """Test that academic_code is None when user has no meta_data."""
+    user.meta_data = None
+    assert user.academic_code is None
+
+
+def test_user_update_personnal_infos(
+    client_app, authenticated_user, caplog, iam_user, user
+):
+    """Test correct logs when user update personnal infos."""
+    user_info = {
+        "given_name": "Alice2",
+        "family_name": "Cooper2",
+        "preferred_username": "alice2",
+        "email": "alice@domain.tld",
+        "FrEduAca": "mydomain.test",
+        "codaca": "004",
+    }
+    get_or_create_user(user_info)
+
+    assert f"{user.email} has changed" in caplog.text
+    assert "'given_name': 'Alice2'" in caplog.text
+    assert "'family_name': 'Cooper2'" in caplog.text
+    assert "'preferred_username': 'alice2'" in caplog.text
+    assert (
+        '\'meta_data\': \'{"academic_domain": "mydomain.test", "academic_code": "004"}\''
+        in caplog.text
+    )

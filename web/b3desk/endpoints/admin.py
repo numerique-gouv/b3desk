@@ -7,16 +7,21 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
+from b3desk.forms import AcademyForm
 from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
+from b3desk.forms import MailDomainForm
 from b3desk.forms import MeetingSearchForm
+from b3desk.forms import UserExclusionForm
 from b3desk.forms import UserSearchForm
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
+from b3desk.models.users import CODACA
 from b3desk.models.users import User
 
 from ..session import admin_needed
@@ -78,6 +83,45 @@ def get_users_paginate(per_page, data=None):
             )
         )
     return db.paginate(query, per_page=per_page)
+
+
+def query_all_users_not_in_group(group, data=None):
+    query = (
+        db.select(User).where(~User.groups.contains(group)).order_by(User.created_at)
+    )
+    if data:
+        query = query.where(
+            or_(
+                User.id == int(data) if data.isdigit() else None,
+                User.given_name.ilike(f"%{data}%"),
+                User.family_name.ilike(f"%{data}%"),
+                User.email.ilike(f"%{data}%"),
+            )
+        )
+    return query
+
+
+def get_all_users_not_in_group(group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.session.execute(query).scalars().all()
+
+
+def get_all_users_not_in_group_paginate(per_page, group, data=None):
+    query = query_all_users_not_in_group(group, data)
+    return db.paginate(query, per_page=per_page)
+
+
+def get_users_by_ids(user_ids):
+    ids = [int(user_id) for user_id in user_ids if user_id.isdigit()]
+    if not ids:
+        return []
+    query = db.select(User).where(User.id.in_(ids))
+    return db.session.execute(query).scalars().all()
+
+
+def get_excluded_users_paginate(group, per_page):
+    members = group.get_all_exclude_users
+    return db.paginate(members, per_page=per_page)
 
 
 @bp.route("/admin/home")
@@ -192,6 +236,7 @@ def group_infos(group: Group):
     return render_template(
         "admin/group_infos.html",
         group=group,
+        codaca=CODACA,
     )
 
 
@@ -312,39 +357,264 @@ def confirm_delete_group(group: Group):
     return redirect(url_for("admin.manage_groups"))
 
 
-@bp.route("/admin/add-group-members/<group:group>")
+def add_users_in_group(users, group):
+    added_users = []
+    excluded_users = []
+    for user in users:
+        if user in group.excluded_users:
+            excluded_users.append(user)
+        elif user not in group.members:
+            group.members.append(user)
+            added_users.append(user)
+    db.session.commit()
+    for user in added_users:
+        current_app.logger.info(
+            "%s became member of group %s %s", user.email, group.id, group.name
+        )
+    flash(
+        ngettext(
+            "%(num)s membre ajouté au groupe",
+            "%(num)s membres ajoutés au groupe",
+            len(added_users),
+        ),
+        "success",
+    )
+    if excluded_users:
+        flash(
+            ngettext(
+                "%(emails)s est sur la liste d'exclusion du groupe et n'a pas été ajouté",
+                "%(emails)s sont sur la liste d'exclusion du groupe et n'ont pas été ajoutés",
+                len(excluded_users),
+                emails=", ".join(user.email for user in excluded_users),
+            ),
+            "warning",
+        )
+
+
+@bp.route("/admin/add-group-members/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def add_group_members_page(group: Group):
+def add_group_members(group: Group):
     """Display non member users list to add members."""
     form = UserSearchForm(request.args)
-    data = form.search.data.lower() if form.search.data else None
-    users_page = get_users_paginate(per_page=PER_PAGE, data=data)
+    select_all = bool(request.values.get("select_all"))
+    search = request.values.get("search")
+    data = search.lower() if search else None
+
+    users_page = get_all_users_not_in_group_paginate(
+        per_page=PER_PAGE, group=group, data=data
+    )
+
+    if request.method == "POST":
+        users = (
+            get_all_users_not_in_group(group, data)
+            if select_all
+            else get_users_by_ids(request.form.getlist("user_ids"))
+        )
+        if users:
+            add_users_in_group(users, group)
+        else:
+            flash(_("Vous n'avez pas sélectionné d'utilisateur"), "message")
+        return redirect(
+            url_for(
+                "admin.add_group_members",
+                group=group,
+                search=data,
+                select_all=1 if select_all else None,
+            )
+        )
+
     return render_template(
-        "admin/add_group_members_page.html",
+        "admin/add_group_members.html",
         group=group,
         form=form,
         users_page=users_page,
         data=data,
         add_members=True,
+        select_all=select_all,
     )
 
 
-@bp.route("/admin/add-group-members/<group:group>/<user:user>", methods=["POST"])
+@bp.route("/admin/affiliation/<group:group>", methods=["GET", "POST"])
 @admin_needed
-def add_group_members(group: Group, user: User):
-    """Add a member to the group."""
-    form = UserSearchForm(request.args)
-    data = form.search.data.lower() if form.search.data else None
-    if user in group.members:
-        flash(_("L'utilisateur est déjà dans le groupe"), "error")
-    else:
-        group.members.append(user)
+def affiliation_management(group: Group):
+    """Display and manage group's automatic affiliation."""
+    academy_form = AcademyForm(request.form)
+    mail_domain_form = MailDomainForm(request.form)
+
+    if request.method == "POST" and "academy" in request.form:
+        if not academy_form.validate():
+            flash(_("Le formulaire contient des erreurs"), "error")
+        else:
+            new_academy = academy_form.data["academy"]
+            academy_form = AcademyForm(formdata=None)
+            if new_academy not in group.academic_codes:
+                group.academic_codes.append(new_academy)
+                db.session.commit()
+                current_app.logger.info(
+                    "%s a été ajouté à la liste du groupe %s %s",
+                    new_academy,
+                    group.id,
+                    group.name,
+                )
+            else:
+                flash(
+                    _(
+                        "{new_academy} est déjà dans la liste du groupe {group_name}"
+                    ).format(new_academy=new_academy, group_name=group.name),
+                    "error",
+                )
+
+    elif request.method == "POST" and "mail_domain" in request.form:
+        if not mail_domain_form.validate():
+            flash(_("Le formulaire contient des erreurs"), "error")
+        else:
+            new_mail_domain = mail_domain_form.data["mail_domain"]
+            mail_domain_form = MailDomainForm(formdata=None)
+            if new_mail_domain not in group.mail_domains:
+                group.mail_domains.append(new_mail_domain)
+                db.session.commit()
+                current_app.logger.info(
+                    "%s a été ajouté à la liste du groupe %s %s",
+                    new_mail_domain,
+                    group.id,
+                    group.name,
+                )
+            else:
+                flash(
+                    _(
+                        "{new_mail_domain} est déjà dans la liste du groupe {group_name}"
+                    ).format(new_mail_domain=new_mail_domain, group_name=group.name),
+                    "error",
+                )
+
+    return render_template(
+        "admin/group_affiliation_management.html",
+        academy_form=academy_form,
+        mail_domain_form=mail_domain_form,
+        group=group,
+        codaca=CODACA,
+    )
+
+
+@bp.route("/admin/remove-academy/<group:group>")
+@admin_needed
+def remove_academy(group: Group):
+    """Remove academy from group."""
+    academic_code = request.args["academic_code"]
+    if academic_code in group.academic_codes:
+        group.academic_codes.remove(academic_code)
         db.session.commit()
-        flash(_("L'utilisateur a été ajouté au groupe"), "success")
         current_app.logger.info(
-            "%s became member of group %s %s",
-            user.email,
+            "%s a été retiré le la liste du groupe %s %s",
+            academic_code,
             group.id,
             group.name,
         )
-    return redirect(url_for("admin.add_group_members_page", group=group, search=data))
+
+    return render_template(
+        "admin/group_affiliation_management.html",
+        academy_form=AcademyForm(formdata=None),
+        mail_domain_form=MailDomainForm(formdata=None),
+        group=group,
+        codaca=CODACA,
+    )
+
+
+@bp.route("/admin/remove-mail-domain/<group:group>")
+@admin_needed
+def remove_mail_domain(group: Group):
+    """Remove mail domain from group."""
+    mail_domain = request.args["mail_domain"]
+    if mail_domain in group.mail_domains:
+        group.mail_domains.remove(mail_domain)
+        db.session.commit()
+        current_app.logger.info(
+            "%s a été retiré de la liste du groupe %s %s",
+            mail_domain,
+            group.id,
+            group.name,
+        )
+
+    return render_template(
+        "admin/group_affiliation_management.html",
+        academy_form=AcademyForm(formdata=None),
+        mail_domain_form=MailDomainForm(formdata=None),
+        group=group,
+        codaca=CODACA,
+    )
+
+
+@bp.route("/admin/excluded-users/<group:group>", methods=["GET", "POST"])
+@admin_needed
+def manage_excluded_users(group: Group):
+    form = UserExclusionForm(request.form)
+
+    if request.method == "GET":
+        excluded_users_page = get_excluded_users_paginate(group, per_page=PER_PAGE)
+        return render_template(
+            "admin/group_excluded_users.html",
+            form=form,
+            group=group,
+            excluded_users_page=excluded_users_page,
+            add_members=False,
+            excluded_users_mode=True,
+        )
+
+    if not form.validate():
+        excluded_users_page = get_excluded_users_paginate(group, per_page=PER_PAGE)
+        flash(_("Le formulaire contient des erreurs"), "error")
+        return render_template(
+            "admin/group_excluded_users.html",
+            form=form,
+            group=group,
+            excluded_users_page=excluded_users_page,
+            add_members=False,
+            excluded_users_mode=True,
+        )
+
+    email = form.data["search"]
+    user = User.get_user_by_email(email)
+    current_app.logger.warning(email)
+    current_app.logger.warning(user)
+    if user not in group.excluded_users:
+        group.excluded_users.append(user)
+        db.session.commit()
+    else:
+        flash(_("L'utilisateur est déjà pas dans la liste"), "error")
+    excluded_users_page = get_excluded_users_paginate(group, per_page=PER_PAGE)
+    return render_template(
+        "admin/group_excluded_users.html",
+        form=form,
+        group=group,
+        excluded_users_page=excluded_users_page,
+        add_members=False,
+        excluded_users_mode=True,
+    )
+
+
+@bp.route("/admin/excluded-users/<group:group>/<user:user>")
+@admin_needed
+def remove_excluded_users(group: Group, user: User):
+    form = UserExclusionForm(request.form)
+
+    if user not in group.excluded_users:
+        flash(_("L'utilisateur n'est pas dans la liste"), "error")
+    else:
+        group.excluded_users.remove(user)
+        db.session.commit()
+        current_app.logger.info(
+            "%s a été retiré le la liste du groupe %s %s",
+            user.fullname,
+            group.id,
+            group.name,
+        )
+
+    excluded_users_page = get_excluded_users_paginate(group, per_page=PER_PAGE)
+    return render_template(
+        "admin/group_excluded_users.html",
+        form=form,
+        group=group,
+        excluded_users_page=excluded_users_page,
+        add_members=False,
+        excluded_users_mode=True,
+    )

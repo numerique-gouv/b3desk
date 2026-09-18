@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+        <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1"></button>
+        <div class="fr-collapse" id="breadcrumb-1">
+            <ol class="fr-breadcrumb__list">
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.home') }}">{% trans %}Menu Admin{% endtrans %}</a>
+                </li>
+                <li>
+                    <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_groups') }}">{% trans %}Groupes{% endtrans %}</a>
+                </li>
+                {% if group is none %}
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.create_group') }}">{% trans %}Créer groupe{% endtrans %}</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.group_infos', group=group) }}">{{ group.name }}</a>
+                    </li>
+                    <li>
+                        <a class="fr-breadcrumb__link" href="{{ url_for('admin.manage_excluded_users', group=group) }}">
+                            {% trans %}Gérer la liste d'exclusion de{% endtrans %} {{ group.name }}
+                        </a>
+                    </li>
+                {% endif %}
+            </ol>
+        </div>
+    </nav>
+    <h4>{{ form.search.label }}</h4>
+    <p class="fr-hint-text">{{ form.search.description }}</p>
+    <form class="fr-search-bar" id="addUser" name="search_meeting" role="search" action="{{ url_for("admin.manage_excluded_users", group=group) }}" method="post">
+        {% include 'meeting/csrf.html' %}
+        {{ form.search(class_="fr-input") }}
+        <button title="{% trans %}Exclure l'utilisateur du groupe{% endtrans %}" type="submit" class="fr-btn"></button>
+    </form>
+    {% set users = excluded_users_page.items %}
+    {% if not users %}
+        <p>{% trans %}Aucun utilisateur exclus{% endtrans %}</p>
+    {% else %}
+        <p class="fr-table__detail">
+            {% trans trimmed count=excluded_users_page.total %}
+                {{ count }} utilisateur exclus
+                {% pluralize %}
+                {{ count }} utilisateurs exclus
+            {% endtrans %}
+        </p>
+        {% set page_obj = excluded_users_page %}
+        {% set page_endpoint = 'admin.manage_excluded_users' %}
+        {% include 'admin/user_table.html' %}
+        {% include 'admin/paging.html' %}
+    {% endif %}
+{% endblock %}

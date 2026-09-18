@@ -1,4 +1,5 @@
 import datetime
+import json
 import shutil
 import tempfile
 import threading
@@ -224,6 +225,12 @@ def iam_user(iam_server):
         user_name="Alice_user_name",
         family_name="Cooper",
         preferred_username="alice",
+        meta_data=json.dumps(
+            {
+                "academic_domain": "domain.tld",
+                "academic_code": "001",
+            }
+        ),
     )
     iam_server.backend.save(iam_user)
 
@@ -239,6 +246,12 @@ def iam_user_2(iam_server):
         given_name="Berenice",
         user_name="Berenice_user_name",
         family_name="Cooler",
+        meta_data=json.dumps(
+            {
+                "academic_domain": "domain.tld",
+                "academic_code": "001",
+            }
+        ),
     )
     iam_server.backend.save(iam_user_2)
 
@@ -254,6 +267,12 @@ def iam_user_3(iam_server):
         given_name="Charlie",
         user_name="Charlie_user_name",
         family_name="Crooner",
+        meta_data=json.dumps(
+            {
+                "academic_domain": "domain.tld",
+                "academic_code": "001",
+            }
+        ),
     )
     iam_server.backend.save(iam_user_3)
 
@@ -630,6 +649,7 @@ def user(client_app, iam_user):
         given_name=iam_user.given_name,
         family_name=iam_user.family_name,
         preferred_username=iam_user.preferred_username,
+        meta_data=iam_user.meta_data,
     )
     db.session.add(user)
     db.session.commit()
@@ -645,6 +665,7 @@ def user_2(client_app, iam_user_2):
         email=iam_user_2.emails[0],
         given_name=iam_user_2.given_name,
         family_name=iam_user_2.family_name,
+        meta_data=iam_user_2.meta_data,
     )
     db.session.add(user_2)
     db.session.commit()
@@ -660,6 +681,7 @@ def user_3(client_app, iam_user_3):
         email=iam_user_3.emails[0],
         given_name=iam_user_3.given_name,
         family_name=iam_user_3.family_name,
+        meta_data=iam_user_3.meta_data,
     )
     db.session.add(user_3)
     db.session.commit()
@@ -741,6 +763,8 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
             "family_name": "Cooper",
             "given_name": "Alice",
             "preferred_username": "alice",
+            "FrEduAca": "domain.tld",
+            "codaca": "001",
         }
         session["refresh_token"] = ("",)
         session["visio_code_attempt_counter"] = 0
@@ -766,6 +790,8 @@ def authenticated_user_2(client_app, user_2, iam_token, iam_server, iam_user_2):
             "family_name": "Cooler",
             "given_name": "Berenice",
             "preferred_username": "berenice",
+            "FrEduAca": "domain.tld",
+            "codaca": "002",
         }
         session["refresh_token"] = ""
 
@@ -789,6 +815,8 @@ def authenticated_attendee(client_app, user, mocker):
             "email": "bob@domain.tld",
             "family_name": "Dylan",
             "given_name": "Bob",
+            "FrEduAca": "domain.tld",
+            "codaca": "003",
         }
         session["refresh_token"] = ""
 

@@ -1,3 +1,4 @@
+import datetime
 import shutil
 from datetime import date
 from pathlib import Path
@@ -260,7 +261,7 @@ def test_update_credentials_marks_blocked_on_failure(app, client_app, user, mock
 
     result = update_user_nc_credentials(user)
 
-    assert result is False
+    assert result is None
     assert credentials_breaker.is_blocked(user.id) is True
 
 
@@ -278,7 +279,7 @@ def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
 
     result = update_user_nc_credentials(user)
 
-    assert result is False
+    assert result is None
     get_creds_mock.assert_not_called()
 
 
@@ -305,7 +306,11 @@ def test_update_credentials_clears_backoff_on_success(app, client_app, user, moc
 
     result = update_user_nc_credentials(user)
 
-    assert result is True
+    assert result["nclocator"] == "http://nextcloud.test"
+    assert result["nctoken"] == "token123"
+    assert result["nclogin"] == "alice"
+    assert result["nc_last_auto_enroll"].date() == datetime.date.today()
+
     assert credentials_breaker.is_blocked(user.id) is False
 
 

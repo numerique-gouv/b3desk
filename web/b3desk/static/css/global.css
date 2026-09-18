@@ -167,17 +167,17 @@ form.delete {
   bottom: calc(2rem/2);
 }
 
-#delegationSearchForm .fr-btn::before {
+#addDomain .fr-btn::before {
+  mask-image: url("../dsfr-v1.14.0/icons/system/add-circle-line.svg");
+}
+
+#addUser .fr-btn::before {
   mask-image: url("../dsfr-v1.14.0/icons/user/user-add-fill.svg");
 }
 
 .delegated-icon::before {
   --icon-size: 2rem !important;
   margin-left:0.5rem;
-}
-
-#memberSearchForm .fr-btn::before {
-  mask-image: url("../dsfr-v1.14.0/icons/user/user-add-fill.svg");
 }
 
 @keyframes modal-overlay{

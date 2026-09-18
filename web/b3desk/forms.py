@@ -19,6 +19,7 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import PIN_LENGTH
 from b3desk.models.meetings import pin_generation
 from b3desk.models.meetings import pin_is_unique_validator
+from b3desk.models.users import CODACA
 
 MAX_URL_LENGTH = 255
 MAX_LOGOUTURL_LENGTH = 250
@@ -369,3 +370,48 @@ class GroupForm(FlaskForm):
             if current_app.config["ENABLE_AI_SUMMARY"]
             else _("Désactivé par défaut")
         )
+
+
+class AcademyForm(FlaskForm):
+    academy = SelectField(
+        label=_(
+            "Académies",
+        ),
+        description=_(
+            "Les utilisateurs issues de cette académie seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
+        ),
+        choices=[("", "---")]
+        + [(code, f"{code} {name}") for code, name in CODACA.items()],
+        default="",
+        validators=[
+            validators.DataRequired(),
+        ],
+    )
+
+
+class MailDomainForm(FlaskForm):
+    mail_domain = StringField(
+        label=_(
+            "Domaines",
+        ),
+        description=_(
+            "Les utilisateurs portant ce nom de domaine seront automatiquement ajoutés à ce groupe lors de leur prochaine connexion au service",
+        ),
+        default="",
+        validators=[
+            validators.DataRequired(),
+        ],
+    )
+
+
+class UserExclusionForm(FlaskForm):
+    search = EmailField(
+        label=_("Liste d'exclusion"),
+        render_kw={
+            "placeholder": "Saisir l'e-mail de l'utilisateur (ex: nom@exemple.fr)"
+        },
+        description=_(
+            "Les utilisateurs exclus seront automatiquement retirés du groupe lors de leur prochaine connexion au service",
+        ),
+        validators=[validators.DataRequired()],
+    )
