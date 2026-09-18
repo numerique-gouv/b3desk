@@ -468,12 +468,58 @@ def test_automatic_removing_from_group_if_not_in_academic_list(user_2, group):
     assert not group.members
 
 
+def test_automatic_affiliation_with_mail_domain(user_2, group):
+    """Test user not in group become member if is from mail domain list."""
+    group.mail_domains = ["domain.tld"]
+    db.session.commit()
+    assert group.members == []
+    user_2.automatic_group_affiliation()
+    assert group.members == [user_2]
+
+
+def test_automatic_affiliation_with_mail_domain_and_user_in_excluded_users(
+    user_2, group
+):
+    """Test excluded user does not become member even if is from mail domain list."""
+    group.mail_domains = ["domain.tld"]
+    group.excluded_users.append(user_2)
+    db.session.commit()
+    user_2.automatic_group_affiliation()
+    assert group.members == []
+
+
+def test_automatic_removing_from_group_if_in_excluded_users_with_mail_domain(
+    user_2, group
+):
+    """Test user in group is automaticly remove if is excluded."""
+    group.members.append(user_2)
+    group.excluded_users.append(user_2)
+    group.mail_domains.append("domain.tld")
+    db.session.commit()
+    assert user_2 in db.session.execute(group.get_all_exclude_users).scalars().all()
+    user_2.automatic_group_affiliation()
+    assert group.members == []
+
+
+def test_automatic_removing_from_group_if_not_in_mail_domain_list(user_2, group):
+    """Test user in group is automaticly remove if is not in mail domain list."""
+    assert not group.members
+    group.mail_domains.append("domain.tld")
+    db.session.commit()
+    user_2.automatic_group_affiliation()
+    assert user_2 in group.members
+    group.mail_domains.remove("domain.tld")
+    db.session.commit()
+    user_2.automatic_group_affiliation()
+    assert not group.members
+
+
 def test_admin_can_add_domain_in_group(client_app, group, user, authenticated_user):
     """Test admin can add academy in group."""
     user.admin = True
     db.session.commit()
     res = client_app.get("/admin/affiliation/1", status=200)
-    form = res.form
+    form = res.forms["addAcademy"]
     form["academy"] = "001"
     form.submit()
     assert group.academic_codes == ["001"]
@@ -488,7 +534,7 @@ def test_add_domain_in_group_with_form_error(
     user.admin = True
     db.session.commit()
     res = client_app.get("/admin/affiliation/1", status=200)
-    form = res.form
+    form = res.forms["addAcademy"]
     form["academy"] = ""
     res = form.submit()
     assert ("error", "Le formulaire contient des erreurs") in res.flashes
@@ -500,7 +546,7 @@ def test_add_domain_already_in_group(client_app, group, user, authenticated_user
     group.academic_codes.append("001")
     db.session.commit()
     res = client_app.get("/admin/affiliation/1", status=200)
-    form = res.form
+    form = res.forms["addAcademy"]
     form["academy"] = "001"
     res = form.submit()
     assert (
@@ -519,6 +565,63 @@ def test_admin_can_remove_domain_in_group(client_app, group, user, authenticated
         "/admin/remove-academy/1", params={"academic_code": "001"}, status=200
     )
     assert group.academic_codes == []
+
+
+def test_admin_can_add_mail_domain_in_group(
+    client_app, group, user, authenticated_user
+):
+    """Test admin can add mail domain in group."""
+    user.admin = True
+    db.session.commit()
+    res = client_app.get("/admin/affiliation/1", status=200)
+    form = res.forms["addMailDomain"]
+    form["mail_domain"] = "domain.tld"
+    form.submit()
+    assert group.mail_domains == ["domain.tld"]
+    client_app.get("/welcome")
+    assert group.members == [user]
+
+
+def test_add_mail_domain_in_group_with_form_error(
+    client_app, group, user, authenticated_user
+):
+    """Test mail domain form display error message."""
+    user.admin = True
+    db.session.commit()
+    res = client_app.get("/admin/affiliation/1", status=200)
+    form = res.forms["addMailDomain"]
+    form["mail_domain"] = ""
+    res = form.submit()
+    assert ("error", "Le formulaire contient des erreurs") in res.flashes
+
+
+def test_add_mail_domain_already_in_group(client_app, group, user, authenticated_user):
+    """Test admin cannot add mail domain already in group."""
+    user.admin = True
+    group.mail_domains.append("domain.tld")
+    db.session.commit()
+    res = client_app.get("/admin/affiliation/1", status=200)
+    form = res.forms["addMailDomain"]
+    form["mail_domain"] = "domain.tld"
+    res = form.submit()
+    assert (
+        "error",
+        "domain.tld est déjà dans la liste du groupe Group 1",
+    ) in res.flashes
+
+
+def test_admin_can_remove_mail_domain_in_group(
+    client_app, group, user, authenticated_user
+):
+    """Test admin can remove mail domain in group."""
+    user.admin = True
+    group.mail_domains.append("domain.tld")
+    db.session.commit()
+    assert group.mail_domains == ["domain.tld"]
+    client_app.get(
+        "/admin/remove-mail-domain/1", params={"mail_domain": "domain.tld"}, status=200
+    )
+    assert group.mail_domains == []
 
 
 def test_admin_can_add_excluded_user_in_group(
