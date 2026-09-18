@@ -346,8 +346,8 @@ msgstr ""
 msgid "{group_name} a bien été créé(e)"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:271 web/b3desk/endpoints/admin.py:447
-#: web/b3desk/endpoints/admin.py:470 web/b3desk/endpoints/admin.py:566
+#: web/b3desk/endpoints/admin.py:271 web/b3desk/endpoints/admin.py:446
+#: web/b3desk/endpoints/admin.py:469 web/b3desk/endpoints/admin.py:565
 #: web/b3desk/endpoints/meetings.py:154 web/b3desk/endpoints/meetings.py:216
 msgid "Le formulaire contient des erreurs"
 msgstr ""
@@ -369,14 +369,14 @@ msgstr ""
 msgid "Le groupe a été supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:377
+#: web/b3desk/endpoints/admin.py:376
 #, python-format
 msgid "%(num)s membre ajouté au groupe"
 msgid_plural "%(num)s membres ajoutés au groupe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:386
+#: web/b3desk/endpoints/admin.py:385
 #, python-format
 msgid "%(emails)s est sur la liste d'exclusion du groupe et n'a pas été ajouté"
 msgid_plural ""
@@ -385,25 +385,25 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: web/b3desk/endpoints/admin.py:417
+#: web/b3desk/endpoints/admin.py:416
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:463
+#: web/b3desk/endpoints/admin.py:462
 #, python-brace-format
 msgid "{new_academy} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:486
+#: web/b3desk/endpoints/admin.py:485
 #, python-brace-format
 msgid "{new_mail_domain} est déjà dans la liste du groupe {group_name}"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:584
+#: web/b3desk/endpoints/admin.py:583
 msgid "L'utilisateur est déjà pas dans la liste"
 msgstr ""
 
-#: web/b3desk/endpoints/admin.py:602
+#: web/b3desk/endpoints/admin.py:601
 msgid "L'utilisateur n'est pas dans la liste"
 msgstr ""
 
