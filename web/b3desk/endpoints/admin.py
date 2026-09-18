@@ -359,8 +359,11 @@ def confirm_delete_group(group: Group):
 
 def add_users_in_group(users, group):
     added_users = []
+    excluded_users = []
     for user in users:
-        if user not in group.members:
+        if user in group.excluded_users:
+            excluded_users.append(user)
+        elif user not in group.members:
             group.members.append(user)
             added_users.append(user)
     db.session.commit()
@@ -368,14 +371,25 @@ def add_users_in_group(users, group):
         current_app.logger.info(
             "%s became member of group %s %s", user.email, group.id, group.name
         )
-    flash(
-        ngettext(
-            "%(num)s membre ajouté au groupe",
-            "%(num)s membres ajoutés au groupe",
-            len(added_users),
-        ),
-        "success",
-    )
+    if added_users:
+        flash(
+            ngettext(
+                "%(num)s membre ajouté au groupe",
+                "%(num)s membres ajoutés au groupe",
+                len(added_users),
+            ),
+            "success",
+        )
+    if excluded_users:
+        flash(
+            ngettext(
+                "%(emails)s est sur la liste d'exclusion du groupe et n'a pas été ajouté",
+                "%(emails)s sont sur la liste d'exclusion du groupe et n'ont pas été ajoutés",
+                len(excluded_users),
+                emails=", ".join(user.email for user in excluded_users),
+            ),
+            "warning",
+        )
 
 
 @bp.route("/admin/add-group-members/<group:group>", methods=["GET", "POST"])

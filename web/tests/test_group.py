@@ -307,6 +307,41 @@ def test_admin_can_add_multiple_users_at_once_in_a_group(
     assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
 
 
+def test_admin_cannot_add_excluded_user_in_a_group(
+    cli_runner, client_app, user, user_2, group, authenticated_user, caplog
+):
+    """Test admin cannot add a user who is on the group's exclusion list."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    group.excluded_users.append(user_2)
+    db.session.commit()
+    res = client_app.post("/admin/add-group-members/1", {"user_ids": [2]}, status=302)
+    assert (
+        "warning",
+        "berenice@domain.tld est sur la liste d'exclusion du groupe et n'a pas été ajouté",
+    ) in res.flashes
+    assert group.members == []
+    assert "berenice@domain.tld became member of group" not in caplog.text
+
+
+def test_admin_adds_allowed_users_and_is_warned_about_excluded_ones(
+    cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
+):
+    """Test admin adds non-excluded users and is warned about excluded ones in the same request."""
+    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    group.excluded_users.append(user_2)
+    db.session.commit()
+    res = client_app.post(
+        "/admin/add-group-members/1", {"user_ids": [2, 3]}, status=302
+    )
+    assert ("success", "1 membre ajouté au groupe") in res.flashes
+    assert (
+        "warning",
+        "berenice@domain.tld est sur la liste d'exclusion du groupe et n'a pas été ajouté",
+    ) in res.flashes
+    assert group.members == [user_3]
+    assert "charlie@domain.tld became member of group 1 Group 1" in caplog.text
+
+
 def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
     cli_runner, client_app, user, group, authenticated_user, caplog
 ):
