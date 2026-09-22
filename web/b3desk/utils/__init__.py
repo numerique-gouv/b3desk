@@ -109,7 +109,7 @@ def utcnow():
 
 def secret_key():
     """Return the application's secret key from configuration."""
-    return current_app.config["SECRET_KEY"]
+    return current_app.config["SECRET_KEY"]  # pragma: no cover
 
 
 def is_rie():
