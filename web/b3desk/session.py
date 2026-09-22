@@ -14,6 +14,12 @@ def has_user_session():
     return user_session.is_authenticated()
 
 
+def clear_user_session():
+    """Remove every OIDC key from the session, logging the user out locally."""
+    for key in UserSession.KEYS:
+        session.pop(key, None)
+
+
 def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
     attendee_session = UserSession(session)
@@ -49,7 +55,7 @@ def user_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not has_user_session() or not g.user:
+        if not g.user:
             abort(403)
 
         return view_function(*args, user=g.user, **kwargs)

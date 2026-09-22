@@ -3,7 +3,7 @@ FROM python:3.14-slim
 WORKDIR /opt/app
 
 RUN apt update && apt install --yes curl
-RUN pip install --no-cache-dir flask requests
+RUN pip install --no-cache-dir flask "httpx2>=2.13.0"
 
 # Copy application files
 COPY app.py .

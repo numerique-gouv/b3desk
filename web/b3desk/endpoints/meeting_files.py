@@ -4,7 +4,7 @@ from datetime import date
 from pathlib import Path
 
 import filetype
-import requests
+import httpx2
 from flask import Blueprint
 from flask import abort
 from flask import after_this_request
@@ -35,6 +35,8 @@ from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import check_oidc_connection
+from b3desk.utils import download_url_to_path
+from b3desk.utils import http_client
 
 from .. import auth
 from ..session import is_admin_mode
@@ -116,9 +118,16 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
         return response
 
     if meeting_file.url:
-        response = requests.get(meeting_file.url)
-        with tmp_name.open("wb") as f:
-            f.write(response.content)
+        if not download_url_to_path(meeting_file.url, tmp_name):
+            flash(
+                _(
+                    "Le fichier n’a pas pu être téléchargé, "
+                    "veuillez vérifier l’URL proposée."
+                ),
+                "error",
+            )
+            return redirect(url_for("public.welcome"))
+
         return send_file(tmp_name, as_attachment=True, download_name=meeting_file.title)
 
     # get file from nextcloud WEBDAV and send it
@@ -240,8 +249,10 @@ def add_meeting_file_URL(url, meeting_id):
     title = url.rsplit("/", 1)[-1]
 
     try:
-        metadata = requests.head(url, timeout=REQUEST_TIMEOUT)
-    except requests.exceptions.RequestException as request_error:
+        metadata = http_client().head(
+            url, timeout=REQUEST_TIMEOUT, follow_redirects=False
+        )
+    except httpx2.HTTPError as request_error:
         current_app.logger.warning(
             "URL file request failed for %s: %s", url, request_error
         )
@@ -251,7 +262,7 @@ def add_meeting_file_URL(url, meeting_id):
             ).format(title=title)
         }, 400
 
-    if not metadata.ok:
+    if not metadata.is_success:
         return {
             "msg": _(
                 "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
@@ -415,7 +426,7 @@ def delete_meeting_file():
 
     try:
         meeting_file_id = int(data["id"])
-    except (KeyError, TypeError, ValueError):
+    except KeyError, TypeError, ValueError:
         return {"msg": _("Requête invalide")}, 400
 
     meeting_file = db.session.get(MeetingFiles, meeting_file_id)
