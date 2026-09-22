@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-15 11:24+0200\n"
+"POT-Creation-Date: 2026-09-22 10:40+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -15,16 +15,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/b3desk/__init__.py:342 web/b3desk/endpoints/meeting_files.py:128
-#: web/b3desk/endpoints/meeting_files.py:192
-#: web/b3desk/endpoints/meeting_files.py:297
-#: web/b3desk/endpoints/meeting_files.py:500
+#: web/b3desk/__init__.py:344 web/b3desk/endpoints/meeting_files.py:137
+#: web/b3desk/endpoints/meeting_files.py:201
+#: web/b3desk/endpoints/meeting_files.py:308
+#: web/b3desk/endpoints/meeting_files.py:511
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
 msgstr ""
 "கோப்பு பணி தற்காலிகமாக கிடைக்கவில்லை. சில நிமிடங்களில் மீண்டும் "
 "முயற்சிக்கவும்."
+
+#: web/b3desk/__init__.py:416
+msgid "Votre session est invalide, merci de vous reconnecter."
+msgstr ""
 
 #: web/b3desk/forms.py:53
 msgid "Lien web du fichier à ajouter"
@@ -174,7 +178,7 @@ msgstr "மதிப்பீட்டாளர்களுக்கு செ�
 msgid "150 caractères max"
 msgstr "அதிகபட்சம் 150 எழுத்துகள்"
 
-#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:429
+#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:426
 msgid "Bienvenue aux modérateurs"
 msgstr "மதிப்பீட்டாளர்களை வரவேற்கிறோம்"
 
@@ -320,27 +324,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:563 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:561 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr "எனது சந்திப்பு அறைகள்"
 
-#: web/b3desk/settings.py:567
+#: web/b3desk/settings.py:565
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr "மாநில வெபினாரின் உடனடி நிகழ்நிலை கூட்டத்திற்கான அழைப்பு"
 
-#: web/b3desk/settings.py:580
+#: web/b3desk/settings.py:578
 msgid "Réunion improvisée"
 msgstr "திடீர் சந்திப்பு"
 
-#: web/b3desk/settings.py:583
+#: web/b3desk/settings.py:581
 msgid " Lien Modérateur  "
 msgstr " மதிப்பீட்டாளர் இணைப்பு  "
 
-#: web/b3desk/settings.py:586
+#: web/b3desk/settings.py:584
 msgid " Lien Participant  "
 msgstr " லீன் பங்கேற்பாளர்  "
 
-#: web/b3desk/settings.py:590
+#: web/b3desk/settings.py:588
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -405,73 +409,77 @@ msgstr "உள்ளிட்ட கேப்ட்சா தவறானது"
 msgid "Le code de connexion saisi est erroné"
 msgstr "உள்ளிட்ட இணைப்புக் குறியீடு தவறானது"
 
-#: web/b3desk/endpoints/meeting_files.py:57
+#: web/b3desk/endpoints/meeting_files.py:59
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr "இந்த உருப்படியை நீங்கள் திருத்த முடியாது"
 
-#: web/b3desk/endpoints/meeting_files.py:80
-#: web/b3desk/endpoints/meeting_files.py:153
-#: web/b3desk/endpoints/meeting_files.py:357
-#: web/b3desk/endpoints/meeting_files.py:407
-#: web/b3desk/endpoints/meeting_files.py:412
-#: web/b3desk/endpoints/meeting_files.py:475
+#: web/b3desk/endpoints/meeting_files.py:82
+#: web/b3desk/endpoints/meeting_files.py:162
+#: web/b3desk/endpoints/meeting_files.py:368
+#: web/b3desk/endpoints/meeting_files.py:418
+#: web/b3desk/endpoints/meeting_files.py:423
+#: web/b3desk/endpoints/meeting_files.py:486
 msgid "Requête invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:173
+#: web/b3desk/endpoints/meeting_files.py:120
+msgid "Le fichier n’a pas pu être téléchargé, veuillez vérifier l’URL proposée."
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:182
 msgid "Aucun fichier téléversé pour ce nom"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:179
-#: web/b3desk/endpoints/meeting_files.py:260
+#: web/b3desk/endpoints/meeting_files.py:188
+#: web/b3desk/endpoints/meeting_files.py:271
 #, python-brace-format
 msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr "கோப்பு {title} மிகவும் பெரியது, {max_size}MB ஐ விட அதிகமாக இல்லை"
 
-#: web/b3desk/endpoints/meeting_files.py:222
-#: web/b3desk/endpoints/meeting_files.py:281
-#: web/b3desk/endpoints/meeting_files.py:328
-#: web/b3desk/endpoints/meeting_files.py:370
+#: web/b3desk/endpoints/meeting_files.py:231
+#: web/b3desk/endpoints/meeting_files.py:292
+#: web/b3desk/endpoints/meeting_files.py:339
+#: web/b3desk/endpoints/meeting_files.py:381
 msgid "Le fichier a déjà été mis en ligne"
 msgstr "கோப்பு ஏற்கனவே பதிவேற்றப்பட்டது"
 
-#: web/b3desk/endpoints/meeting_files.py:245
-#: web/b3desk/endpoints/meeting_files.py:252
+#: web/b3desk/endpoints/meeting_files.py:256
+#: web/b3desk/endpoints/meeting_files.py:263
 #, python-brace-format
 msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
 msgstr "{title} கோப்பு கிடைக்கவில்லை, பரிந்துரைக்கப்பட்ட முகவரி ஐச் சரிபார்க்கவும்"
 
-#: web/b3desk/endpoints/meeting_files.py:307
+#: web/b3desk/endpoints/meeting_files.py:318
 #, python-brace-format
 msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr "கோப்பு {path} மிகவும் பெரியது, {max_size}MB ஐ விட அதிகமாக இல்லை"
 
-#: web/b3desk/endpoints/meeting_files.py:378
+#: web/b3desk/endpoints/meeting_files.py:389
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr "கோப்பை வட்டுக்கு எழுதுவதில் பிழை"
 
-#: web/b3desk/endpoints/meeting_files.py:391
+#: web/b3desk/endpoints/meeting_files.py:402
 msgid "Type de fichier non autorisé"
 msgstr "அங்கீகரிக்கப்படாத கோப்பு வகை"
 
-#: web/b3desk/endpoints/meeting_files.py:395
+#: web/b3desk/endpoints/meeting_files.py:406
 msgid "Erreur de taille du fichier"
 msgstr "கோப்பு அளவு பிழை"
 
-#: web/b3desk/endpoints/meeting_files.py:416
+#: web/b3desk/endpoints/meeting_files.py:427
 msgid "Fichier introuvable"
 msgstr "கோப்பு கிடைக்கவில்லை"
 
-#: web/b3desk/endpoints/meeting_files.py:425
-#: web/b3desk/endpoints/meetings.py:315
+#: web/b3desk/endpoints/meeting_files.py:436
+#: web/b3desk/endpoints/meetings.py:305
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr "நீங்கள் இந்த உருப்படியை நீக்க முடியாது"
 
-#: web/b3desk/endpoints/meeting_files.py:433
+#: web/b3desk/endpoints/meeting_files.py:444
 msgid "Fichier supprimé avec succès"
 msgstr "கோப்பு வெற்றிகரமாக நீக்கப்பட்டது"
 
-#: web/b3desk/endpoints/meeting_files.py:456
+#: web/b3desk/endpoints/meeting_files.py:467
 msgid "La réunion n'est pas en cours"
 msgstr "கூட்டம் நடைபெறவில்லை"
 
@@ -503,78 +511,78 @@ msgstr "%(meeting_name)s மாற்றங்கள் கணக்கில்
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr "“%(meeting_name)s” சந்திப்பு முடிந்தது"
 
-#: web/b3desk/endpoints/meetings.py:320
+#: web/b3desk/endpoints/meetings.py:310
 msgid "Élément supprimé"
 msgstr "நீக்கப்பட்ட உருப்படி"
 
-#: web/b3desk/endpoints/meetings.py:328
+#: web/b3desk/endpoints/meetings.py:318
 msgid "Vous devez retirer les délégataires"
 msgstr "நீங்கள் பிரதிநிதிகளை அகற்ற வேண்டும்"
 
-#: web/b3desk/endpoints/meetings.py:331
+#: web/b3desk/endpoints/meetings.py:321
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr "இந்த சந்திப்பிலிருந்து வீடியோக்களை நீக்க முடியவில்லை: {message}"
 
-#: web/b3desk/endpoints/meetings.py:352
+#: web/b3desk/endpoints/meetings.py:342
 msgid "Vidéo supprimée"
 msgstr "வீடியோ நீக்கப்பட்டது"
 
-#: web/b3desk/endpoints/meetings.py:363
+#: web/b3desk/endpoints/meetings.py:353
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr "இந்த வீடியோவை நீக்க முடியவில்லை: %(code)s, %(message)s"
 
-#: web/b3desk/endpoints/meetings.py:414
+#: web/b3desk/endpoints/meetings.py:404
 msgid "L'utilisateur recherché n'existe pas"
 msgstr "நீங்கள் தேடும் பயனர் இல்லை"
 
-#: web/b3desk/endpoints/meetings.py:417
+#: web/b3desk/endpoints/meetings.py:407
 msgid "L'utilisateur est déjà délégataire"
 msgstr "பயனர் ஏற்கனவே ஒரு சார்பாளர்"
 
-#: web/b3desk/endpoints/meetings.py:420
+#: web/b3desk/endpoints/meetings.py:410
 msgid "Cet utilisateur est le propriétaire"
 msgstr "இந்த பயனர் உரிமையாளர்"
 
-#: web/b3desk/endpoints/meetings.py:427
+#: web/b3desk/endpoints/meetings.py:417
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr "இந்தக் கூட்டத்தில் இனி புதிய பிரதிநிதிகளைப் பெற முடியாது"
 
-#: web/b3desk/endpoints/meetings.py:440
+#: web/b3desk/endpoints/meetings.py:430
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr "பிரதிநிதிகளில் பயனர் சேர்க்கப்பட்டார்"
 
-#: web/b3desk/endpoints/meetings.py:461
+#: web/b3desk/endpoints/meetings.py:451
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr "பயனர் பிரதிநிதிகளில் ஒருவர் அல்ல"
 
-#: web/b3desk/endpoints/meetings.py:464
+#: web/b3desk/endpoints/meetings.py:454
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr "பிரதிநிதிகளில் இருந்து பயனர் அகற்றப்பட்டார்"
 
-#: web/b3desk/endpoints/public.py:79 web/b3desk/endpoints/public.py:98
+#: web/b3desk/endpoints/public.py:81 web/b3desk/endpoints/public.py:100
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:83 web/b3desk/endpoints/public.py:102
+#: web/b3desk/endpoints/public.py:85 web/b3desk/endpoints/public.py:104
 msgid "La connexion a été annulée."
 msgstr ""
 
-#: web/b3desk/models/bbb.py:274
+#: web/b3desk/models/bbb.py:265
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:408 web/b3desk/models/meetings.py:415
+#: web/b3desk/models/meetings.py:405 web/b3desk/models/meetings.py:412
 msgid "Ce code PIN est déjà utilisé"
 msgstr "இந்த பின் ஏற்கனவே பயன்பாட்டில் உள்ளது"
 
-#: web/b3desk/models/meetings.py:422
+#: web/b3desk/models/meetings.py:419
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr "%(fullname)s சந்திப்பு"
 
-#: web/b3desk/models/meetings.py:424
+#: web/b3desk/models/meetings.py:421
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr "%(fullname)s மீட்டிங்குக்கு வரவேற்கிறோம்"
@@ -3878,32 +3886,32 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr "இடைநிலைப்பலகைக்கு தகவலை நகலெடுக்கவும்"
 
-#: web/b3desk/utils/__init__.py:99
+#: web/b3desk/utils/__init__.py:176
 msgid "Présentation interactive"
 msgstr "ஊடாடும் விளக்கக்காட்சி"
 
-#: web/b3desk/utils/__init__.py:107
+#: web/b3desk/utils/__init__.py:184
 msgid "Vidéo (téléchargement direct)"
 msgstr "வீடியோ (நேரடி பதிவிறக்கம்)"
 
-#: web/b3desk/utils/__init__.py:113
+#: web/b3desk/utils/__init__.py:190
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:115
+#: web/b3desk/utils/__init__.py:192
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:117
+#: web/b3desk/utils/__init__.py:194
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:148
+#: web/b3desk/utils/__init__.py:225
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr "{name} க்கான உங்கள் பதிவு"
 
-#: web/b3desk/utils/__init__.py:253
+#: web/b3desk/utils/__init__.py:332
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-15 11:24+0200\n"
+"POT-Creation-Date: 2026-09-22 10:40+0200\n"
 "PO-Revision-Date: 2026-06-06 21:01+0000\n"
 "Last-Translator: Александр Косенков <akosenkov149@gmail.com>\n"
 "Language: ru\n"
@@ -16,16 +16,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/b3desk/__init__.py:342 web/b3desk/endpoints/meeting_files.py:128
-#: web/b3desk/endpoints/meeting_files.py:192
-#: web/b3desk/endpoints/meeting_files.py:297
-#: web/b3desk/endpoints/meeting_files.py:500
+#: web/b3desk/__init__.py:344 web/b3desk/endpoints/meeting_files.py:137
+#: web/b3desk/endpoints/meeting_files.py:201
+#: web/b3desk/endpoints/meeting_files.py:308
+#: web/b3desk/endpoints/meeting_files.py:511
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
 msgstr ""
 "Файловая служба временно недоступна. Пожалуйста, повторите попытку через "
 "несколько минут."
+
+#: web/b3desk/__init__.py:416
+msgid "Votre session est invalide, merci de vous reconnecter."
+msgstr ""
 
 #: web/b3desk/forms.py:53
 msgid "Lien web du fichier à ajouter"
@@ -159,7 +163,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:429
+#: web/b3desk/forms.py:170 web/b3desk/models/meetings.py:426
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -299,27 +303,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:563 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:561 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:567
+#: web/b3desk/settings.py:565
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:580
+#: web/b3desk/settings.py:578
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:583
+#: web/b3desk/settings.py:581
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:586
+#: web/b3desk/settings.py:584
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:590
+#: web/b3desk/settings.py:588
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -382,73 +386,77 @@ msgstr ""
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:57
+#: web/b3desk/endpoints/meeting_files.py:59
 msgid "Vous ne pouvez pas modifier cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:80
-#: web/b3desk/endpoints/meeting_files.py:153
-#: web/b3desk/endpoints/meeting_files.py:357
-#: web/b3desk/endpoints/meeting_files.py:407
-#: web/b3desk/endpoints/meeting_files.py:412
-#: web/b3desk/endpoints/meeting_files.py:475
+#: web/b3desk/endpoints/meeting_files.py:82
+#: web/b3desk/endpoints/meeting_files.py:162
+#: web/b3desk/endpoints/meeting_files.py:368
+#: web/b3desk/endpoints/meeting_files.py:418
+#: web/b3desk/endpoints/meeting_files.py:423
+#: web/b3desk/endpoints/meeting_files.py:486
 msgid "Requête invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:173
+#: web/b3desk/endpoints/meeting_files.py:120
+msgid "Le fichier n’a pas pu être téléchargé, veuillez vérifier l’URL proposée."
+msgstr ""
+
+#: web/b3desk/endpoints/meeting_files.py:182
 msgid "Aucun fichier téléversé pour ce nom"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:179
-#: web/b3desk/endpoints/meeting_files.py:260
+#: web/b3desk/endpoints/meeting_files.py:188
+#: web/b3desk/endpoints/meeting_files.py:271
 #, python-brace-format
 msgid "Fichier {title} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:222
-#: web/b3desk/endpoints/meeting_files.py:281
-#: web/b3desk/endpoints/meeting_files.py:328
-#: web/b3desk/endpoints/meeting_files.py:370
+#: web/b3desk/endpoints/meeting_files.py:231
+#: web/b3desk/endpoints/meeting_files.py:292
+#: web/b3desk/endpoints/meeting_files.py:339
+#: web/b3desk/endpoints/meeting_files.py:381
 msgid "Le fichier a déjà été mis en ligne"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:245
-#: web/b3desk/endpoints/meeting_files.py:252
+#: web/b3desk/endpoints/meeting_files.py:256
+#: web/b3desk/endpoints/meeting_files.py:263
 #, python-brace-format
 msgid "Fichier {title} non disponible, veuillez vérifier l'URL proposée"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:307
+#: web/b3desk/endpoints/meeting_files.py:318
 #, python-brace-format
 msgid "Fichier {path} trop volumineux, ne pas dépasser {max_size}Mo"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:378
+#: web/b3desk/endpoints/meeting_files.py:389
 msgid "Erreur lors de l'écriture du fichier sur le disque"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:391
+#: web/b3desk/endpoints/meeting_files.py:402
 msgid "Type de fichier non autorisé"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:395
+#: web/b3desk/endpoints/meeting_files.py:406
 msgid "Erreur de taille du fichier"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:416
+#: web/b3desk/endpoints/meeting_files.py:427
 msgid "Fichier introuvable"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:425
-#: web/b3desk/endpoints/meetings.py:315
+#: web/b3desk/endpoints/meeting_files.py:436
+#: web/b3desk/endpoints/meetings.py:305
 msgid "Vous ne pouvez pas supprimer cet élément"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:433
+#: web/b3desk/endpoints/meeting_files.py:444
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
-#: web/b3desk/endpoints/meeting_files.py:456
+#: web/b3desk/endpoints/meeting_files.py:467
 msgid "La réunion n'est pas en cours"
 msgstr ""
 
@@ -480,78 +488,78 @@ msgstr ""
 msgid "Réunion « %(meeting_name)s » terminée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:320
+#: web/b3desk/endpoints/meetings.py:310
 msgid "Élément supprimé"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:328
+#: web/b3desk/endpoints/meetings.py:318
 msgid "Vous devez retirer les délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:331
+#: web/b3desk/endpoints/meetings.py:321
 #, python-brace-format
 msgid "Impossible de supprimer les vidéos de cette réunion : {message}"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:352
+#: web/b3desk/endpoints/meetings.py:342
 msgid "Vidéo supprimée"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:363
+#: web/b3desk/endpoints/meetings.py:353
 #, python-format
 msgid "Impossible de supprimer cette vidéo : %(code)s, %(message)s"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:414
+#: web/b3desk/endpoints/meetings.py:404
 msgid "L'utilisateur recherché n'existe pas"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:417
+#: web/b3desk/endpoints/meetings.py:407
 msgid "L'utilisateur est déjà délégataire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:420
+#: web/b3desk/endpoints/meetings.py:410
 msgid "Cet utilisateur est le propriétaire"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:427
+#: web/b3desk/endpoints/meetings.py:417
 msgid "Cette réunion ne peut plus recevoir de nouvelle délégation"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:440
+#: web/b3desk/endpoints/meetings.py:430
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:461
+#: web/b3desk/endpoints/meetings.py:451
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:464
+#: web/b3desk/endpoints/meetings.py:454
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:79 web/b3desk/endpoints/public.py:98
+#: web/b3desk/endpoints/public.py:81 web/b3desk/endpoints/public.py:100
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:83 web/b3desk/endpoints/public.py:102
+#: web/b3desk/endpoints/public.py:85 web/b3desk/endpoints/public.py:104
 msgid "La connexion a été annulée."
 msgstr ""
 
-#: web/b3desk/models/bbb.py:274
+#: web/b3desk/models/bbb.py:265
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:408 web/b3desk/models/meetings.py:415
+#: web/b3desk/models/meetings.py:405 web/b3desk/models/meetings.py:412
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:422
+#: web/b3desk/models/meetings.py:419
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:424
+#: web/b3desk/models/meetings.py:421
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""
@@ -3353,32 +3361,32 @@ msgstr ""
 msgid "Copier les informations dans le presse-papiers"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:99
+#: web/b3desk/utils/__init__.py:176
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:107
+#: web/b3desk/utils/__init__.py:184
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:113
+#: web/b3desk/utils/__init__.py:190
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:115
+#: web/b3desk/utils/__init__.py:192
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:117
+#: web/b3desk/utils/__init__.py:194
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:148
+#: web/b3desk/utils/__init__.py:225
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:253
+#: web/b3desk/utils/__init__.py:332
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

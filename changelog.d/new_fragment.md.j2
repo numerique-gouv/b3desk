@@ -1,5 +1,6 @@
 {% set aides = {
-    "Actions requises": "Ce qu'il faut faire au moment de la mise à jour : migration de base de données (avec son identifiant de révision), réindexation, intervention sur l'infrastructure.",
+    "Actions requises": "Ce que la personne qui administre l'instance doit faire elle-même au moment de la mise à jour, et que rien n'automatise : reconstruire une image, lancer un script, intervenir sur l'infrastructure.",
+    "Migrations": "Ce que la mise à jour change dans la base de données. Chaque puce s'ouvre sur l'identifiant de révision, lié au fichier de migration sur GitHub. Ces migrations sont appliquées automatiquement au démarrage : la rubrique sert à savoir quoi sauvegarder avant, et ce qui ne sera pas réversible. La phrase qui désigne la révision atteinte en fin de mise à jour est ajoutée à la publication, ne l'écrivez pas ici.",
     "Configuration": "Les paramètres ajoutés, renommés ou supprimés, avec leur valeur par défaut et ce qui se passe si on n'y touche pas.",
     "Ajouté": "Une fonctionnalité que les personnes qui utilisent B3Desk ne pouvaient pas faire avant.",
     "Modifié": "Un comportement existant qui change, vu de l'interface ou de l'API.",
@@ -13,8 +14,11 @@ Un fragment de journal des modifications.
 
 Décrivez le changement du point de vue des personnes qui utilisent B3Desk et
 de celles qui administrent une instance, jamais du point de vue du code : ce
-fichier finira tel quel dans les notes de version que ces personnes liront.
-Référencez l'issue ou la pull request d'un lien Markdown.
+fichier finira dans les notes de version que ces personnes liront.
+
+Référencez les tickets et les personnes avec les rôles de sphinx-issues :
+{pr}`366`, {issue}`226` et {user}`azmeuk`, plutôt qu'avec des liens écrits à
+la main.
 
 Gardez la ou les sections qui s'appliquent en retirant leur commentaire HTML,
 et supprimez les autres. Un changement purement interne n'a pas besoin de

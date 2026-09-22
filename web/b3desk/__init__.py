@@ -8,6 +8,7 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
+from importlib.metadata import version
 from logging.config import dictConfig
 from logging.config import fileConfig
 from pathlib import Path
@@ -31,6 +32,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
+from packaging.version import Version
 
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
@@ -39,7 +41,7 @@ from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
 
-__version__ = "1.8.0dev"
+__version__ = version("b3desk")
 
 LANGUAGES = ["fr", "en"]
 
@@ -263,7 +265,7 @@ def setup_jinja(app):
             "debug": app.debug,
             "config": app.config,
             "beta": app.config["BETA"],
-            "development_version": __version__ == "0.0.0" or "dev" in __version__,
+            "development_version": Version(__version__).is_devrelease,
             "documentation_link": app.config["DOCUMENTATION_LINK"],
             "is_rie": is_rie(),
             "version": __version__,

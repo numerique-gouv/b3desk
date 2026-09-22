@@ -19,3 +19,9 @@ Le format d'un fragment et le sens de chaque rubrique sont décrits dans le
 modèle [`new_fragment.md.j2`](new_fragment.md.j2), recopié en commentaire dans
 chaque nouveau fichier. Les fragments disparaissent lorsqu'ils sont collectés ;
 leur contenu vit alors dans `CHANGELOG.md`.
+
+Les tickets et les personnes se référencent avec les rôles de sphinx-issues,
+`` {pr}`366` ``, `` {issue}`226` `` et `` {user}`azmeuk` ``. Le workflow de
+publication les remplace par des liens avant de remplir les notes de release ;
+tout nouveau rôle employé ici demande donc une règle supplémentaire dans
+`.github/workflows/Release.yml`.

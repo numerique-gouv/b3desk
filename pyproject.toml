@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "b3desk"
-version = "1.8.0dev"
+version = "1.8.0.dev0"
 description = "Outil de visioconférence pour les agents de l'Education Nationale et de l'Etat en général."
 authors = [
     { name = "Your Name", email = "you@example.com" }
@@ -37,6 +37,7 @@ dependencies = [
     "webdavclient3==3.14.6",
     "authlib>=1.7.2",
     "httpx2>=2.13.0",
+    "packaging>=26.0,<27.0",
 ]
 
 [tool.uv]
@@ -193,6 +194,7 @@ version = "literal: pyproject.toml: project.version"
 main_branches = ["main", "production"]
 categories = [
     "Actions requises",
+    "Migrations",
     "Configuration",
     "Ajouté",
     "Modifié",

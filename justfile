@@ -23,6 +23,7 @@ changelog:
 [group('release')]
 changelog-collect:
     uv run scriv collect --edit
+    uv run python scripts/changelog_migration_head.py
 
 # Refresh the translation catalogs from the code, end to end
 [group('translation')]
