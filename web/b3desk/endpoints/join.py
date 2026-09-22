@@ -296,15 +296,19 @@ def join_waiting_meeting_from_sip(visio_code):
     )
 
 
+def get_visio_code_from_form():
+    """Rebuild the visio code from the three form fields it is split into.
+
+    Missing fields yield an incomplete code, which no meeting matches.
+    """
+    return "".join(request.form.get(f"visio_code{index}", "") for index in range(1, 4))
+
+
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
 def visio_code_connection():
     """Process visio code form submission and redirect to meeting if valid."""
-    visio_code = (
-        request.form.get("visio_code1")
-        + request.form.get("visio_code2")
-        + request.form.get("visio_code3")
-    )
+    visio_code = get_visio_code_from_form()
 
     if should_display_captcha(check_service_status=False):
         captcha_uuid = request.form.get("captchetat-uuid")
@@ -330,11 +334,7 @@ def visio_code_connection():
 @check_oidc_connection(auth)
 def visio_code_form_validation():
     """Validate the visio-code from from the front."""
-    visio_code = (
-        request.form.get("visio_code1")
-        + request.form.get("visio_code2")
-        + request.form.get("visio_code3")
-    )
+    visio_code = get_visio_code_from_form()
     meeting_exists = bool(get_meeting_by_visio_code(visio_code))
     if not meeting_exists:
         visio_code_attempt_counter_increment()

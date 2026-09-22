@@ -521,7 +521,7 @@ def test_admin_can_delete_meeting_file(
 
 
 def test_admin_can_update_recording_name(
-    cli_runner, client_app, authenticated_user, bbb_response
+    cli_runner, client_app, authenticated_user, bbb_getRecordings_response
 ):
     """Test admin can update recording name."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
@@ -535,13 +535,15 @@ def test_admin_can_update_recording_name(
     assign_unique_codes(other_meeting)
     db.session.commit()
 
+    recording_id = other_meeting.bbb.get_recordings()[0]["recordID"]
+
     response = client_app.post(
-        f"/meeting/{other_meeting.id}/recordings/recording_id",
+        f"/meeting/{other_meeting.id}/recordings/{recording_id}",
         {"name": "First recording"},
         status=302,
     )
 
-    bbb_url = bbb_response.call_args.args[0].url
+    bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert bbb_url.startswith(
         f"{client_app.app.config['BIGBLUEBUTTON_ENDPOINT']}/updateRecordings"
     )
@@ -549,7 +551,7 @@ def test_admin_can_update_recording_name(
         key: value[0] for key, value in parse_qs(urlparse(bbb_url).query).items()
     }
     assert bbb_params["meta_name"] == "First recording"
-    assert bbb_params["recordID"] == "recording_id"
+    assert bbb_params["recordID"] == recording_id
 
     assert f"meeting/recordings/{other_meeting.id}" in response.location
 
@@ -582,7 +584,7 @@ def test_admin_can_delete_recordings(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     recordings = BBB(other_meeting.bbb_meeting_id).get_recordings()
 
     assert len(recordings) == 2
@@ -624,7 +626,7 @@ def test_admin_can_open_recordings_page(
     class DirectLinkRecording:
         status_code = 200
 
-    mocker.patch("b3desk.models.bbb.requests.get", return_value=DirectLinkRecording)
+    mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
     response = client_app.get(f"/meeting/recordings/{other_meeting.id}")

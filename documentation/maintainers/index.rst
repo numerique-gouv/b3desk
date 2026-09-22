@@ -6,6 +6,7 @@ Cette partie de la documentation est à destination des personnes qui déploient
 .. toctree::
    :maxdepth: 2
 
+   changelog
    codeReview
    versioning
    deployment

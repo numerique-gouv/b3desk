@@ -102,7 +102,7 @@ def test_join_meeting_as_moderator_correctly_save_last_connection_date(
 
     join_url = "/meeting/join"
     assert join_url == response.form.action
-    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+    mocker.patch("httpx2.Client.send", return_value=ResponseBBBcreate)
 
     response.form.submit()
 
@@ -134,7 +134,7 @@ def test_join_meeting_as_attendee_not_save_last_connection_date(
     join_url = "/meeting/join"
     assert join_url == response.form.action
 
-    mocker.patch("requests.Session.send", return_value=ResponseBBBcreate)
+    mocker.patch("httpx2.Client.send", return_value=ResponseBBBcreate)
 
     response = response.form.submit()
 
@@ -171,4 +171,4 @@ def test_user_cannot_read_files_page_for_shadow_meeting(
 def test_user_cannot_delete_shadow_meeting(
     client_app, shadow_meeting, authenticated_user
 ):
-    client_app.post("/meeting/delete", {"id": shadow_meeting.id}, status=403)
+    client_app.post(f"/meeting/{shadow_meeting.id}/delete", status=403)

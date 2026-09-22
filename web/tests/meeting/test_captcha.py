@@ -1,7 +1,7 @@
 import json
 from unittest import mock
 
-import requests
+import httpx2
 from b3desk.endpoints.captcha import captcha_validation
 from b3desk.endpoints.captcha import captchetat_service_status
 from b3desk.endpoints.captcha import get_captchetat_token
@@ -81,17 +81,17 @@ class Captcha_healthcheck_response:
 
 def test_get_captchetat_token(client_app, mocker):
     """Test that captchetat access token is retrieved successfully."""
-    mocker.patch("requests.post", return_value=Access_token_response(200))
+    mocker.patch("httpx2.Client.post", return_value=Access_token_response(200))
     access_token = get_captchetat_token()
     assert access_token == "valid-access-token"
-    mocker.patch("requests.post", return_value=Access_token_bad_response(200))
+    mocker.patch("httpx2.Client.post", return_value=Access_token_bad_response(200))
     access_token = get_captchetat_token()
     assert access_token == "valid-access-token"
 
 
 def test_get_captchetat_token_bad_status_code(client_app, mocker, caplog):
     """Test that bad status code is logged when getting captchetat token."""
-    mocker.patch("requests.post", return_value=Access_token_response(401))
+    mocker.patch("httpx2.Client.post", return_value=Access_token_response(401))
     access_token = get_captchetat_token()
     assert access_token != "valid-access-token"
     assert "captcha error : OAuth access token not received" in caplog.text
@@ -99,7 +99,7 @@ def test_get_captchetat_token_bad_status_code(client_app, mocker, caplog):
 
 def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
     """Test that bad response format is logged when getting captchetat token."""
-    mocker.patch("requests.post", return_value=Access_token_bad_response(200))
+    mocker.patch("httpx2.Client.post", return_value=Access_token_bad_response(200))
     access_token = get_captchetat_token()
     assert access_token != "valid-access-token"
     assert "captcha error : OAuth access token not received" in caplog.text
@@ -109,7 +109,7 @@ def test_get_captchetat_token_bad_response(client_app, mocker, caplog):
 def test_captcha_proxy(access_token, client_app, mocker):
     """Test that captcha proxy returns captcha image and sound correctly."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.get", return_value=Captcha_response(200))
+    mocker.patch("httpx2.Client.get", return_value=Captcha_response(200))
     captcha_response = Captcha_response(200)
     response = client_app.get(
         "/simple-captcha-endpoint", params={"get": "sound", "c": "captchaFR"}
@@ -125,7 +125,9 @@ def test_captcha_proxy(access_token, client_app, mocker):
 def test_captcha_proxy_but_captchetat_is_down(access_token, client_app, mocker, caplog):
     """Test that captcha proxy returns error when captchetat service is down."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.get", side_effect=requests.exceptions.ConnectionError())
+    mocker.patch(
+        "httpx2.Client.get", side_effect=httpx2.ConnectError("connection refused")
+    )
     response = client_app.get(
         "/simple-captcha-endpoint",
         params={"get": "sound", "c": "captchaFR"},
@@ -139,7 +141,7 @@ def test_captcha_proxy_but_captchetat_is_down(access_token, client_app, mocker, 
 def test_captcha_proxy_with_no_token(access_token, client_app, mocker, caplog):
     """Test that captcha proxy returns 403 when token is missing."""
     access_token.return_value = None
-    mocker.patch("requests.get", return_value=Captcha_response(200))
+    mocker.patch("httpx2.Client.get", return_value=Captcha_response(200))
     response = client_app.get(
         "/simple-captcha-endpoint",
         params={"get": "sound", "c": "captchaFR"},
@@ -153,7 +155,7 @@ def test_captcha_proxy_with_no_token(access_token, client_app, mocker, caplog):
 def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
     """Test that bad response from captchetat is logged."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.get", return_value=Captcha_response(401))
+    mocker.patch("httpx2.Client.get", return_value=Captcha_response(401))
     client_app.get("/simple-captcha-endpoint", status=401)
     assert "captcha error : Captcha image/sound not received" in caplog.text
 
@@ -162,7 +164,7 @@ def test_captcha_proxy_bad_response(access_token, client_app, mocker, caplog):
 def test_captcha_validation(access_token, client_app, mocker):
     """Test that captcha validation returns correct result."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.post", return_value=Captcha_validation_response())
+    mocker.patch("httpx2.Client.post", return_value=Captcha_validation_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
     assert validation == {"true"}
 
@@ -173,7 +175,9 @@ def test_captcha_validation_but_captchetat_is_down(
 ):
     """Test that captcha validation passes when captchetat service is down."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.post", side_effect=requests.exceptions.ConnectionError())
+    mocker.patch(
+        "httpx2.Client.post", side_effect=httpx2.ConnectError("connection refused")
+    )
     validation = captcha_validation("captcha_uuid", "captcha_code")
     assert validation
     assert "Network issue during connection to captchetat" in caplog.text
@@ -183,7 +187,7 @@ def test_captcha_validation_but_captchetat_is_down(
 def test_captcha_validation_with_no_token(access_token, client_app, mocker, caplog):
     """Test that captcha validation passes when token is missing."""
     access_token.return_value = None
-    mocker.patch("requests.post", return_value=Captcha_validation_response())
+    mocker.patch("httpx2.Client.post", return_value=Captcha_validation_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
     assert validation
     assert "captcha error : Invalid credentials." in caplog.text
@@ -193,7 +197,7 @@ def test_captcha_validation_with_no_token(access_token, client_app, mocker, capl
 def test_captcha_validation_bad_response(access_token, client_app, mocker, caplog):
     """Test that captcha validation passes when response is bad."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.post", return_value=Captcha_validation_bad_response())
+    mocker.patch("httpx2.Client.post", return_value=Captcha_validation_bad_response())
     validation = captcha_validation("captcha_uuid", "captcha_code")
     assert validation
     assert "captcha error : An error happened during captcha validation." in caplog.text
@@ -203,7 +207,7 @@ def test_captcha_validation_bad_response(access_token, client_app, mocker, caplo
 def test_captchetat_service_status(access_token, client_app, mocker):
     """Test that captchetat service status is retrieved correctly."""
     access_token.return_value = "valid-access-token"
-    mocker.patch("requests.get", return_value=Captcha_healthcheck_response())
+    mocker.patch("httpx2.Client.get", return_value=Captcha_healthcheck_response())
     status = captchetat_service_status()
     assert status == "UP"
 
@@ -214,10 +218,39 @@ def test_captchetat_service_status_with_no_token(
 ):
     """Test that captchetat service status returns error when token is missing."""
     access_token.return_value = None
-    mocker.patch("requests.get", return_value=Captcha_healthcheck_response())
+    mocker.patch("httpx2.Client.get", return_value=Captcha_healthcheck_response())
     response = captchetat_service_status()
     assert "captcha error : Invalid credentials." in caplog.text
     assert response == ({"success": False}, 403)
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captchetat_service_status_but_captchetat_is_down(
+    access_token, client_app, mocker, caplog
+):
+    """Test that captchetat service status reports an error when captchetat is unreachable."""
+    access_token.return_value = "valid-access-token"
+    mocker.patch(
+        "httpx2.Client.get", side_effect=httpx2.ConnectError("connection refused")
+    )
+    assert captchetat_service_status() != "UP"
+    assert "Network issue during connection to captchetat" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_home_when_captchetat_is_unreachable(access_token, client_app, mocker):
+    """Test that the home page hides the captcha when captchetat is unreachable."""
+    client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
+    access_token.return_value = "valid-access-token"
+    mocker.patch(
+        "httpx2.Client.get", side_effect=httpx2.ConnectError("connection refused")
+    )
+
+    with client_app.session_transaction() as sess:
+        sess["visio_code_attempt_counter"] = 2
+
+    response = client_app.get("/home", status=200)
+    response.mustcontain("window.shouldDisplayCaptcha = false")
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
@@ -442,3 +475,12 @@ def test_should_display_captcha_with_no_token(client_app, caplog):
         result = should_display_captcha()
         assert not result
         assert "captcha error : Captchetat service is down" in caplog.text
+
+
+@mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
+def test_captcha_proxy_without_get_parameter(access_token, client_app, mocker):
+    """Test that a missing 'get' parameter does not raise an error."""
+    access_token.return_value = "valid-access-token"
+    mocker.patch("httpx2.Client.get", return_value=Captcha_response(200))
+    response = client_app.get("/simple-captcha-endpoint", params={"c": "captchaFR"})
+    assert Captcha_response(200).json() == json.loads(response.body.decode("utf-8"))

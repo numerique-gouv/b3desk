@@ -6,6 +6,7 @@ import pytest
 from b3desk import create_app
 from b3desk.settings import MainSettings
 from b3desk.settings import MeetingLocaleVariant
+from flask import url_for
 
 
 def test_list_of_strings_type(configuration):
@@ -240,3 +241,14 @@ def test_meeting_locale_variant_takes_precedence_over_legacy(configuration):
         config_obj = MainSettings.model_validate(configuration)
 
     assert config_obj.MEETING_LOCALE_VARIANT == MeetingLocaleVariant.COURS
+
+
+def test_create_app_without_authentication(configuration, mocker):
+    """Celery processes skip OIDC, but still build the URLs their mails carry."""
+    setup_oidc = mocker.patch("b3desk.setup_oidc")
+
+    app = create_app(configuration, authentication=False)
+
+    setup_oidc.assert_not_called()
+    with app.app_context():
+        assert url_for("public.welcome", _external=True)

@@ -1,6 +1,8 @@
 import datetime
 
 from b3desk import cache
+from b3desk.models import db
+from b3desk.tasks import background_upload
 from b3desk.tasks import recording_min_reached_key
 from b3desk.tasks import recording_notified_key
 from b3desk.tasks import send_recording_notification
@@ -129,6 +131,7 @@ def test_lists_all_available_formats(client_app, meeting, smtpd, mocker, caplog)
 def test_ai_summary_expected_but_absent_waits(client_app, meeting, smtpd, mocker):
     """When the AI summary is expected but not yet rendered, no mail at min delay."""
     meeting.ai_summary = True
+    db.session.commit()
     _mock_recording(
         mocker,
         playbacks={"presentation": {"url": "https://bbb.test/playback/presentation"}},
@@ -142,6 +145,7 @@ def test_ai_summary_expected_but_absent_waits(client_app, meeting, smtpd, mocker
 def test_ai_summary_expected_and_present_sends(client_app, meeting, smtpd, mocker):
     """When the AI summary is expected and present, the mail is sent."""
     meeting.ai_summary = True
+    db.session.commit()
     _mock_recording(
         mocker,
         playbacks={
@@ -158,6 +162,7 @@ def test_ai_summary_expected_and_present_sends(client_app, meeting, smtpd, mocke
 def test_max_delay_sends_incomplete_recording(client_app, meeting, smtpd, mocker):
     """The max-delay safety net mails the available formats even when incomplete."""
     meeting.ai_summary = True
+    db.session.commit()
     _mock_recording(
         mocker,
         playbacks={"presentation": {"url": "https://bbb.test/playback/presentation"}},
@@ -192,3 +197,14 @@ def test_concurrent_claim_prevents_duplicate_mail(client_app, meeting, smtpd, mo
         meeting_id=meeting.id, bbb_recording_id=RECORD_ID, force=True
     )
     assert len(smtpd.messages) == 0
+
+
+def test_background_upload(client_app, httpx2_mock):
+    """The presentation XML is posted to the BigBlueButton endpoint."""
+    route = httpx2_mock.route(method="POST").respond(200, content=b"<response/>")
+
+    with client_app.app.app_context():
+        assert background_upload("https://bbb.test/api/insertDocument", "<modules/>")
+
+    assert route.calls.last.request.content == b"<modules/>"
+    assert route.calls.last.request.headers["content-type"] == "application/xml"

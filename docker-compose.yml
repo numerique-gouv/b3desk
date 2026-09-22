@@ -2,13 +2,13 @@
   # Other container are available in docker-compose.override.yml if needed
   # see documentation [link] for more info
 
+# Logs, configuration and instance data, which every environment needs to
+# read or write from the host. The application code itself is baked into the
+# image, and only mounted over in development: see docker-compose.override.yml
 x-app-volumes: &app-volumes
   - ./web/logs:/var/log
   - ./web/conf:/opt/bbb-visio/conf
-  - ./web/b3desk:/opt/bbb-visio/b3desk
   - ./web/instance:/opt/bbb-visio/instance
-  - ./web/migrations:/opt/bbb-visio/migrations
-  - ./web/translations:/opt/bbb-visio/translations
 
 services:
   web:
@@ -39,7 +39,7 @@ services:
     #   - web.env  # to get shared REDIS_URL
     # WORKER NEEDS TO HAVE REDIS_URL ENV VAR SET, either by shared.env or web.env
     environment:
-      - APP=b3desk.celery_worker.celery
+      - APP=b3desk.celery_worker
     volumes: *app-volumes
     entrypoint: []
     command: celery worker --loglevel=info

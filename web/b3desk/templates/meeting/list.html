@@ -76,9 +76,8 @@
                             <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
                         </div>
                         <div class="fr-col-offset-3"></div>
-                        <form action="{{ url_for("meetings.meeting_favorite", order_key=order_key, reverse_order=reverse_order, favorite_filter=favorite_filter) }}" method="POST">
+                        <form action="{{ url_for("meetings.meeting_favorite", meeting=meeting, order_key=order_key, reverse_order=reverse_order, favorite_filter=favorite_filter) }}" method="POST">
                             <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
-                                {% include 'meeting/id.html' %}
                                 {% include 'meeting/csrf.html' %}
                                 <div class="fr-col-1">
                                     {% if g.user not in meeting.favorite_of %}

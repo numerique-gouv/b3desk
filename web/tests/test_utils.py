@@ -1,4 +1,8 @@
+from email.message import EmailMessage
+
 from b3desk.utils import _build_recording_links
+from b3desk.utils import make_smtp
+from b3desk.utils import send_email
 from flask_babel import get_locale
 
 
@@ -24,3 +28,31 @@ def test_locale_selector_outside_request_context_without_variant(app):
         locale = get_locale()
 
     assert str(locale) == "fr"
+
+
+def test_model_converter_rejects_non_numeric_identifier(client_app, authenticated_user):
+    """A non numeric identifier in the URL must not reach the database."""
+    client_app.get("/meeting/edit/not-an-integer", status=404)
+
+
+def test_send_email_bounds_the_smtp_session_with_a_timeout(app, mocker):
+    """Without a timeout, a relay that never answers blocks the caller forever."""
+    connection = mocker.patch("b3desk.utils.smtplib.SMTP")
+    app.config["SMTP_TIMEOUT"] = 3
+
+    with app.app_context():
+        send_email(EmailMessage(), "text", "<p>html</p>", make_smtp())
+
+    assert connection.call_args.kwargs["timeout"] == 3
+
+
+def test_send_email_bounds_the_ssl_smtp_session_with_a_timeout(app, mocker):
+    """The SSL connection is bounded the same way as the plain one."""
+    connection = mocker.patch("b3desk.utils.smtplib.SMTP_SSL")
+    app.config["SMTP_SSL"] = True
+    app.config["SMTP_TIMEOUT"] = 3
+
+    with app.app_context():
+        send_email(EmailMessage(), "text", "<p>html</p>", make_smtp())
+
+    assert connection.call_args.kwargs["timeout"] == 3

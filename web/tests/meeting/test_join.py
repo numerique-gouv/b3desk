@@ -443,7 +443,7 @@ def test_rasing_time_before_refresh_in_waiting_meeting(
     client_app, meeting, authenticated_user, mocker
 ):
     """Tests seconds_before_refresh increases each time waiting_meeting is refreshed."""
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
     response = client_app.get(response.location)
@@ -458,7 +458,7 @@ def test_maximum_rasing_time_before_refresh_in_waiting_meeting(
     client_app, meeting, authenticated_user, mocker
 ):
     """Tests seconds_before_refresh does not increase beyong maximum_refresh_time each time waiting_meeting is refreshed."""
-    mocker.patch("requests.Session.send", return_value=Response)
+    mocker.patch("httpx2.Client.send", return_value=Response)
 
     def increase_waiting_time(previous_waiting_time="10"):
         response = client_app.get(f"/meeting/join/{meeting.id}/moderateur")
@@ -536,3 +536,15 @@ def test_visio_code_form_validation_with_invalid_captcha(client_app, meeting, mo
         "shouldDisplayCaptcha": False,
         "captchaCode": False,
     }
+
+
+def test_visio_code_connection_with_missing_fields(client_app, meeting):
+    """Test that a partial visio code form is treated as a wrong code."""
+    response = client_app.post("/meeting/visio_code", params={"visio_code1": "911"})
+    assert ("error", "Le code de connexion saisi est erroné") in response.flashes
+
+
+def test_visio_code_form_validation_with_missing_fields(client_app, meeting):
+    """Test that a partial visio code form does not raise an error."""
+    response = client_app.post("/meeting/visio_code_form", params={})
+    assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
