@@ -245,10 +245,10 @@ def test_meeting_locale_variant_takes_precedence_over_legacy(configuration):
 
 def test_create_app_without_authentication(configuration, mocker):
     """Celery processes skip OIDC, but still build the URLs their mails carry."""
-    setup_oidc = mocker.patch("b3desk.setup_oidc")
+    setup_authlib = mocker.patch("b3desk.setup_authlib")
 
     app = create_app(configuration, authentication=False)
 
-    setup_oidc.assert_not_called()
+    setup_authlib.assert_not_called()
     with app.app_context():
         assert url_for("public.welcome", _external=True)

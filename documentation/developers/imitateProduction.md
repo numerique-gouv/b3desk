@@ -68,15 +68,6 @@ Attendez avant de relancer votre service, vous ne pouvez malheureusement pas enc
 
 Maintenant que votre site dispose d'un vrai domaine, il faut encore qu'il puisse communiquer avec le Keycloak qui tourne localement et que celui-ci renvoie bien sur ce nouveau domaine.
 
-Vous devez donc modifier à nouveau votre `web.env` avec :
-```
-OIDC_REDIRECT_URI=https://b3deskextdomain.ngrok-free.app/oidc_callback
-```
-
-Vous pouvez maintenant relancer votre service pour que cette configuration soit prise en compte :
-```
-docker compose up --build web keycloak -d
-```
 Si vous vous rendez maintenant sur `https://b3deskextdomain.ngrok-free.app` vous devriez arriver sur l'accueil du site.
 
 ### Configurer Keycloak

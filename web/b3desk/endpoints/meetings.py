@@ -39,10 +39,9 @@ from b3desk.models.meetings import remove_delegate_from_db
 from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.roles import Role
 from b3desk.models.users import User
-from b3desk.utils import check_oidc_connection
 
-from .. import auth
 from ..session import is_admin_mode
+from ..session import login_required
 from ..session import meeting_access_required
 from ..utils import send_delegation_mail
 
@@ -61,8 +60,7 @@ def meeting_mailto_params(meeting: Meeting, role: Role):
 
 
 @bp.route("/meeting/quick")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 def quick_meeting():
     """Create and join a quick meeting for the authenticated user."""
     meeting = get_quick_meeting_from_meeting_id()
@@ -78,8 +76,7 @@ def quick_meeting():
 
 
 @bp.route("/meeting/recordings/<meeting:meeting>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def show_meeting_recording(meeting: Meeting, user: User):
     """Display the list of recordings for a meeting."""
@@ -96,8 +93,7 @@ def show_meeting_recording(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/recordings/<recording_id>", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
@@ -126,8 +122,7 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
 
 
 @bp.route("/meeting/new", methods=["GET", "POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 def new_meeting():
     """Display the form to create a new meeting and handle submission."""
     admin_mode = False
@@ -185,8 +180,7 @@ def new_meeting():
 
 
 @bp.route("/meeting/edit/<meeting:meeting>", methods=["GET", "POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting(meeting: Meeting, user: User):
     """Display the form to edit an existing meeting and handle submission."""
@@ -282,8 +276,7 @@ def edit_meeting(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/end", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def end_meeting(meeting: Meeting, user: User):
     """End the meeting on BBB."""
@@ -297,8 +290,7 @@ def end_meeting(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/delete", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def delete_meeting(meeting: Meeting, user: User):
     """Delete a meeting and all its associated files and recordings."""
@@ -336,8 +328,7 @@ def delete_meeting(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/video/delete", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def delete_video_meeting(meeting: Meeting, user: User):
     """Delete a specific recording from a meeting."""
@@ -369,8 +360,7 @@ def delete_video_meeting(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/<meeting:meeting>/favorite", methods=["POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def meeting_favorite(meeting: Meeting, user: User):
     """Toggle the favorite status of a meeting."""
@@ -384,15 +374,14 @@ def meeting_favorite(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/available-visio-code", methods=["GET"])
-@auth.oidc_auth("default")
+@login_required
 def get_available_visio_code():
     """Generate and return an available unique visio code."""
     return jsonify(available_visio_code=unique_visio_code_generation())
 
 
 @bp.route("/meeting/manage-delegation/<meeting:meeting>", methods=["GET", "POST"])
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required()
 def manage_delegation(meeting: Meeting, user: User):
     """Display the page for manage meeting delegation."""
@@ -455,8 +444,7 @@ def manage_delegation(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @meeting_access_required()
 def remove_delegate(meeting: Meeting, user: User, delegate: User):
     if delegate not in meeting.get_all_delegates:

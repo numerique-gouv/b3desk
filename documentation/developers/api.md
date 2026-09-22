@@ -78,11 +78,11 @@ Lorsque le jeton d'identification n'a pas été fourni dans la requête, l'API r
 
 #### Jeton expiré
 
-Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 403.
+Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 401.
 
 #### Mauvaise audience du jeton
 
-Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 403.
+Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 401.
 Dans les faits il faut s'assurer que le paramètre `aud` du jeton contient bien l'ID client OIDC de l'application, définie dans le paramètre `OIDC_CLIENT_ID` de l'application, et prenant par défaut la valeur `bbb-visio`.
 On peut vérifier l'audience d'un token avec des outils tels que [jwt.io](https://jwt.io).
 
