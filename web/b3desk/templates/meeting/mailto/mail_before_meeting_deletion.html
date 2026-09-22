@@ -1,0 +1,16 @@
+<html>
+    {% trans %}Bonjour{% endtrans %} {{ meeting.owner.fullname }},
+    <br/>
+    <br/>
+    {% trans trimmed count=delay, meeting_name=meeting.name %}
+        La réunion {{ meeting_name }} sera supprimée définitivement dans {{ count }} jour.
+        {% pluralize %}
+        La réunion {{ meeting_name }} sera supprimée définitivement dans {{ count }} jours.
+    {% endtrans %}
+    <br/>
+    <br/>
+    {% trans %}Vous pouvez empêcher cette suppression en utilisant cette réunion.{% endtrans %}
+    <br/>
+    <br/>
+    {% trans %}Rendez-vous simplement sur <a href="{{ welcome_url }}">votre espace</a> et lancez la réunion.{% endtrans %}
+</html>

@@ -1,0 +1,13 @@
+{% trans %}Bonjour{% endtrans %} {{ user.fullname }},
+
+{% trans trimmed count=delay %}
+    Votre compte est inactif et sera supprimé dans {{ count }} jour.
+    {% pluralize %}
+    Votre compte est inactif et sera supprimé dans {{ count }} jours.
+{% endtrans %}
+
+{% trans %}Vos salles de réunion et vos fichiers associés seront supprimés également.{% endtrans %}
+
+{% trans %}Vous pouvez empêcher cette suppression en vous connectant à votre compte.{% endtrans %}
+
+{% trans %}Rendez-vous simplement sur votre espace :{% endtrans %} {{ welcome_url }}

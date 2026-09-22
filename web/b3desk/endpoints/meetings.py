@@ -44,7 +44,7 @@ from b3desk.utils import check_oidc_connection
 from .. import auth
 from ..session import is_admin_mode
 from ..session import meeting_access_required
-from ..utils import send_delegation_mail
+from ..utils.mailing import send_delegation_mail
 
 bp = Blueprint("meetings", __name__)
 

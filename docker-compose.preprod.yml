@@ -11,3 +11,9 @@ services:
       - FLASK_DEBUG=1
     env_file:
       - web.env
+
+  beat:
+    environment:
+      - FLASK_DEBUG=1
+    env_file:
+      - web.env

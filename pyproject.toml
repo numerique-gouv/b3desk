@@ -34,9 +34,11 @@ dependencies = [
     "sentry-sdk>=2.3.1,<3.0.0",
     "sqlalchemy>=2.0.44,<3.0.0",
     "sqlalchemy-utils>=0.42.1,<0.50.0",
+    "tzdata>=2026.3",
     "webdavclient3==3.14.6",
     "httpx2>=2.13.0",
     "packaging>=26.0,<27.0",
+    "stamina>=26.1.0",
 ]
 
 [tool.uv]
@@ -91,6 +93,7 @@ release = [
 
 [tool.pytest.ini_options]
 testpaths = "web"
+log_level = "INFO"
 markers = [
     "secure: cloud auth responds with a https url",
     "no_scheme: cloud auth responds without any scheme for url",

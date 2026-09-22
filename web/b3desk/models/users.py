@@ -11,10 +11,12 @@
 import hashlib
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from flask import current_app
 from sqlalchemy import Unicode
+from sqlalchemy import or_
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -22,8 +24,13 @@ from sqlalchemy.orm import relationship
 from b3desk.nextcloud import update_user_nc_credentials
 from b3desk.utils import secret_key
 from b3desk.utils import utcnow
+from b3desk.utils.mailing import EMAIL_DELAYS
 
 from . import db
+from .information import compute_first_mail_deadline
+from .information import get_entities_due_for_next_mail
+from .information import last_used
+from .information import ready_for_final_deletion
 
 if TYPE_CHECKING:
     from .groups import Group
@@ -105,6 +112,8 @@ class User(db.Model):
     last_connection_utc_datetime: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
     admin: Mapped[bool] = mapped_column(default=False)
+    information_level: Mapped[int] = mapped_column(default=0)
+    information_sent_at: Mapped[datetime | None]
 
     meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
     favorites: Mapped[list[Meeting]] = relationship(
@@ -191,3 +200,94 @@ class User(db.Model):
         if all(group.enable_ai_summary is False for group in self.groups):
             return False
         return current_app.config["ENABLE_AI_SUMMARY"]
+
+
+def get_inactive_users_to_delete():
+    """Return users ready for deletion, skipping those active since the first mail."""
+    now = utcnow()
+    return db.session.scalars(
+        db.select(User).where(
+            ready_for_final_deletion(User, now),
+            ~user_used_since(account_first_mail_deadline(now)),
+        )
+    ).all()
+
+
+def clean_db_and_delete_user(user, force=False):
+    """Delete a user and everything they own, and report whether it succeeded."""
+    from b3desk.models.meetings import MeetingFiles
+    from b3desk.models.meetings import clean_db_and_delete_meeting
+
+    for meeting in user.meetings:
+        success, data = clean_db_and_delete_meeting(meeting, force)
+        if not success:
+            db.session.rollback()
+            return False, data
+
+    for meeting_file in db.session.scalars(
+        db.select(MeetingFiles).where(MeetingFiles.owner_id == user.id)
+    ):
+        db.session.delete(meeting_file)
+
+    for access in user.user_meeting_access:
+        db.session.delete(access)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return True, None
+
+
+def account_first_mail_deadline(now):
+    """Return the activity deadline that starts the account warning sequence."""
+    inactivity_period = timedelta(
+        days=current_app.config["INACTIVITY_TIMER_CLEANUP_ACCOUNT"]
+    )
+    return compute_first_mail_deadline(now, inactivity_period)
+
+
+def user_used_since(deadline):
+    """SQLAlchemy condition: the user, or any meeting they own, was used after the deadline."""
+    from b3desk.models.meetings import Meeting
+
+    return or_(
+        last_used(User) > deadline,
+        db.select(Meeting.id)
+        .where(Meeting.owner_id == User.id, last_used(Meeting) > deadline)
+        .exists(),
+    )
+
+
+def update_reactivated_users(first_mail_deadline):
+    """Reset information_level for users reactivated since last email."""
+    reactivated_users = db.session.scalars(
+        db.select(User).where(
+            User.information_level > 0,
+            user_used_since(first_mail_deadline),
+        )
+    ).all()
+    for user in reactivated_users:
+        user.information_level = 0
+        user.information_sent_at = None
+    db.session.commit()
+
+
+def get_inactive_users_to_inform():
+    """Advance each user's information_level by one step."""
+    now = utcnow()
+    first_mail_deadline = account_first_mail_deadline(now)
+
+    update_reactivated_users(first_mail_deadline)
+
+    users = [
+        (user, EMAIL_DELAYS[0], 1)
+        for user in db.session.scalars(
+            db.select(User).where(
+                User.information_level == 0,
+                ~user_used_since(first_mail_deadline),
+            )
+        ).all()
+    ]
+    users += get_entities_due_for_next_mail(User, now)
+
+    return users
