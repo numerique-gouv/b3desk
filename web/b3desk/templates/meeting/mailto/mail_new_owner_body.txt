@@ -1,0 +1,7 @@
+{% trans %}Bonjour{% endtrans %} {{ new_owner.given_name }} {{ new_owner.family_name }},
+
+{{ previous_owner.fullname }} {% trans %}vous a transféré la propriété de la réunion{% endtrans %} {{ meeting.name }}.
+
+{% trans %}Vous pouvez dès à présent consulter et gérer les délégataires, l'édition, les enregistrements et les fichiers associés à cette réunion.{% endtrans %}
+
+{% trans %}Rendez-vous simplement sur votre espace :{% endtrans %} {{ welcome_url }}
