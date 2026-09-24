@@ -19,13 +19,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const needConfirm = document.getElementsByClassName("need-confirm");
     const modal = document.querySelector("#delegate-confirmation");
     const form = document.getElementById("meeting-form");
-    needConfirm[0].addEventListener("click", (event) => {
+    if (needConfirm[0]) {
+        needConfirm[0].addEventListener("click", (event) => {
         event.preventDefault();
         window.dsfr(modal).modal.disclose();
-    });
+        });
+    };
+
     const modalValidation = document.getElementsByClassName("delegate-confirm");
-    modalValidation[0].addEventListener("click", (event) => {
+    if (modalValidation[0]) {
+        modalValidation[0].addEventListener("click", (event) => {
         event.preventDefault();
         form.submit();
-    });
+        });
+    };
+
 });
