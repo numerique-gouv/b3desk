@@ -17,6 +17,7 @@ from b3desk import cache
 from b3desk import csrf
 from b3desk.models import db
 from b3desk.models.meetings import MeetingSession
+from b3desk.models.meetings import SessionAttendee
 from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
 from b3desk.tasks import RECORDING_CACHE_TTL
 from b3desk.tasks import recording_notified_key
@@ -55,6 +56,32 @@ def _parse_bbb_datetime(value):
     except (TypeError, ValueError):
         logger.warning("Could not parse BBB analytics timestamp %r", value)
         return None
+
+
+def _parse_bbb_timestamps(values):
+    """Parse a BBB analytics list of timestamps, skipping invalid entries."""
+    if not isinstance(values, list):
+        values = [values]
+    return [parsed for value in values if (parsed := _parse_bbb_datetime(value))]
+
+
+def _build_session_attendee(attendee):
+    """Build a SessionAttendee from a BBB analytics attendee entry.
+
+    BBB reports ``joins`` and ``leaves`` as lists of timestamps, as an attendee
+    can leave and rejoin a meeting: only the first join and the last leave are kept.
+    """
+    joins = _parse_bbb_timestamps(attendee.get("joins"))
+    leaves = _parse_bbb_timestamps(attendee.get("leaves"))
+    duration = attendee.get("duration")
+    name = attendee.get("name")
+    return SessionAttendee(
+        name=name[:150] if isinstance(name, str) else None,
+        moderator=bool(attendee.get("moderator")),
+        joins=min(joins) if joins else None,
+        leaves=max(leaves) if leaves else None,
+        duration=int(duration) if isinstance(duration, int | float) else None,
+    )
 
 
 @stamina.retry(on=requests.RequestException, attempts=3)
@@ -116,6 +143,11 @@ def analytics_callback():
             attendees = data.get("attendees")
             if isinstance(attendees, list):
                 session.participant_count = len(attendees)
+                session.attendees = [
+                    _build_session_attendee(attendee)
+                    for attendee in attendees
+                    if isinstance(attendee, dict)
+                ]
             db.session.commit()
             logger.info(
                 "Analytics callback closed session for meeting %s (meetingID=%s)",

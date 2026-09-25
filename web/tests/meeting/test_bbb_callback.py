@@ -413,3 +413,74 @@ def test_analytics_callback_without_open_session_is_still_acknowledged(
         status=200,
     )
     assert MeetingSession.query.filter_by(meeting_id=meeting.id).count() == 0
+
+
+def test_analytics_callback_stores_session_attendees(
+    client_app, meeting, mocker, make_analytics_bearer_token
+):
+    """Attendees details are stored, keeping the first join and the last leave."""
+    session = MeetingSession(meeting_id=meeting.id)
+    db.session.add(session)
+    db.session.commit()
+
+    signed = make_analytics_bearer_token({})
+    mocker.patch("b3desk.endpoints.bbb_callback.requests.post")
+
+    client_app.post_json(
+        "/bbb-callback/analytics",
+        {
+            "meeting_id": meeting.bbb_meeting_id,
+            "data": {
+                "attendees": [
+                    {
+                        "ext_user_id": "w_1",
+                        "name": "Alice",
+                        "moderator": True,
+                        "joins": ["2026-09-23T10:00:00+00:00"],
+                        "leaves": ["2026-09-23T11:00:00+00:00"],
+                        "duration": 3600,
+                    },
+                    {
+                        "ext_user_id": "w_2",
+                        "name": "Bob",
+                        "moderator": False,
+                        "joins": [
+                            "2026-09-23T10:30:00+00:00",
+                            "2026-09-23T10:10:00+00:00",
+                        ],
+                        "leaves": [
+                            "2026-09-23T10:20:00+00:00",
+                            "2026-09-23T10:50:00+00:00",
+                        ],
+                        "duration": 1800,
+                    },
+                    {"ext_user_id": "w_3", "name": "Charlie", "joins": "invalid"},
+                ]
+            },
+        },
+        headers={"Authorization": f"Bearer {signed}"},
+        status=200,
+    )
+
+    def local(value):
+        return datetime.datetime.fromisoformat(value).astimezone().replace(tzinfo=None)
+
+    db.session.refresh(session)
+    assert session.participant_count == 3
+    attendees = {attendee.name: attendee for attendee in session.attendees}
+    assert attendees.keys() == {"Alice", "Bob", "Charlie"}
+
+    assert attendees["Alice"].moderator is True
+    assert attendees["Alice"].joins == local("2026-09-23T10:00:00+00:00")
+    assert attendees["Alice"].leaves == local("2026-09-23T11:00:00+00:00")
+    assert attendees["Alice"].duration == 3600
+
+    assert attendees["Bob"].moderator is False
+    assert attendees["Bob"].joins == local("2026-09-23T10:10:00+00:00")
+    assert attendees["Bob"].leaves == local("2026-09-23T10:50:00+00:00")
+    assert attendees["Bob"].duration == 1800
+
+    assert attendees["Charlie"].moderator is False
+    assert attendees["Charlie"].joins is None
+    assert attendees["Charlie"].leaves is None
+    assert attendees["Charlie"].duration is None
