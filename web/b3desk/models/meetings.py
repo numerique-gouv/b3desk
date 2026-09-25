@@ -146,21 +146,40 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     meeting: Mapped[Meeting] = relationship(back_populates="secret_keys")
 
 
+class SessionAttendee(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("meeting_session.id", ondelete="CASCADE")
+    )
+    name: Mapped[str | None] = mapped_column(Unicode(150))
+    moderator: Mapped[bool | None] = mapped_column(default=False)
+    joins: Mapped[datetime | None]
+    leaves: Mapped[datetime | None]
+    duration: Mapped[int | None]
+
+    session = db.relationship("MeetingSession", back_populates="attendees")
+
+
 class MeetingSession(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
-    started_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    ended_at = db.Column(db.DateTime)
-    recording_id = db.Column(db.Unicode(250))
-    participant_count = db.Column(db.Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("meeting.id"))
+    started_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    ended_at: Mapped[datetime | None]
+    recording_id: Mapped[str | None] = mapped_column(Unicode(250))
+    participant_count: Mapped[int | None]
+
+    meeting = db.relationship("Meeting", back_populates="sessions")
+    attendees = db.relationship(
+        "SessionAttendee",
+        back_populates="session",
+        order_by="SessionAttendee.joins.asc()",
+    )
 
     @property
     def duration(self):
         if not self.ended_at:
             return None
         return self.ended_at - self.started_at
-
-    meeting = db.relationship("Meeting", back_populates="sessions")
 
 
 class Meeting(db.Model):
