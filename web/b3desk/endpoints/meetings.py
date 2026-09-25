@@ -96,20 +96,24 @@ def show_meeting_session(meeting: Meeting, user: User):
     }
     sessions = [
         {
+            "id": session.id,
             "started_at": session.started_at,
             "ended_at": session.ended_at,
             "recording": recordings_by_id.get(session.recording_id),
             "duration": session.duration,
             "participant_count": session.participant_count,
+            "attendees": session.attendees,
         }
         for session in meeting.sessions
     ] + [
         {
+            "id": None,
             "started_at": recording["start_date"].replace(tzinfo=None),
             "ended_at": recording["end_date"].replace(tzinfo=None),
             "recording": recording,
             "duration": recording["end_date"] - recording["start_date"],
             "participant_count": None,
+            "attendees": [],
         }
         for recording in recordings
         if recording["recordID"] not in session_recording_ids

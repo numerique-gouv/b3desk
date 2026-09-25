@@ -222,6 +222,18 @@ form.delete {
   margin-bottom: -6rem;
 }
 
+/* history */
+
+.history-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  gap: 16px;
+}
+.history-section {
+  background-color: var(--background-alt-grey);
+}
+
 /* modal */
 .scampi-modal {
   left: 0;

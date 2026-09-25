@@ -506,12 +506,7 @@ def test_open_recordings_page(
 
     response = client_app.get(f"/meeting/history/{meeting.id}")
     html = response.body.decode("utf-8")
-    assert (
-        html.count(
-            '<button type="button" class="btn-copy fr-btn--sm fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line"'
-        )
-        == 2
-    )
+    assert html.count(f'id="meeting-{meeting.id}-recording-link-copy"') == 2
     assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
 
 
@@ -689,3 +684,79 @@ def test_open_recordings_page_ai_summary(
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.html" in html
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf" in html
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.md" in html
+
+
+def test_history_lists_session_attendees(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Each session with attendees gets its own dialog listing them."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+    from b3desk.models.meetings import SessionAttendee
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 5, 9, 0, 0),
+        ended_at=datetime.datetime(2018, 7, 5, 10, 0, 0),
+        participant_count=2,
+        attendees=[
+            SessionAttendee(
+                name="Alice",
+                moderator=True,
+                joins=datetime.datetime(2018, 7, 5, 9, 0, 0),
+                leaves=datetime.datetime(2018, 7, 5, 10, 0, 0),
+                duration=3600,
+            ),
+            SessionAttendee(name="Bob", moderator=False),
+        ],
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    dialog = response.pyquery(f"#participants-{session.id}")
+    assert dialog
+    assert response.pyquery(f'button[aria-controls="participants-{session.id}"]')
+    rows = [
+        [td.text_content().replace("\xa0", " ").strip() for td in tr.findall("td")]
+        for tr in dialog("tbody tr")
+    ]
+    # datetimeformat renders naive datetimes as UTC in BABEL_DEFAULT_TIMEZONE
+    assert sorted(rows) == [
+        ["Alice", "Modérateur", "11:00:00", "12:00:00", "1 heure"],
+        ["Bob", "Participant", "", "", ""],
+    ]
+
+
+def test_history_shows_session_not_yet_closed_by_analytics_callback(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+):
+    """A session BBB has not reported on yet (no end, no attendees) is displayed as ongoing."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
+    mocker.patch("b3desk.models.bbb.BBB.get_recordings", return_value=[])
+
+    session = MeetingSession(
+        meeting_id=meeting.id, started_at=datetime.datetime(2018, 7, 5, 9, 0, 0)
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    assert "En cours" in response.text
+    assert not response.pyquery(f"#participants-{session.id}")
