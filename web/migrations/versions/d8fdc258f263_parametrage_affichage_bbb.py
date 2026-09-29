@@ -48,7 +48,7 @@ def upgrade():
                 "showSessionDetailsOnJoin",
                 sa.Boolean(),
                 nullable=False,
-                server_default=sa.true(),
+                server_default=sa.false(),
             )
         )
 
