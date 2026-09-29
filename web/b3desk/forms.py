@@ -296,7 +296,7 @@ class MeetingForm(B3DeskForm):
 
     showSessionDetailsOnJoin = BooleanField(
         label=_("Informations affichées à l'ouverture"),
-        default=True,
+        default=False,
     )
 
     def __init__(self, *args, meeting=None, **kwargs):
