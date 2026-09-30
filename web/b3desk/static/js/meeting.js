@@ -351,7 +351,6 @@ if (openNCFilePickerButton) {
 
 
 const toggleIsDownloadableBoxes = document.querySelectorAll(".js-toggle-downloadable")
-console.log(toggleIsDownloadableBoxes)
 toggleIsDownloadableBoxes.forEach((box) => {
     box.addEventListener("click", (e) => {
         toggleIsDownloadable(e);
