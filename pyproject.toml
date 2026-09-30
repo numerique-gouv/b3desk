@@ -37,6 +37,7 @@ dependencies = [
     "webdavclient3==3.14.6",
     "httpx2>=2.13.0",
     "packaging>=26.0,<27.0",
+    "pydantic-settings-export>=1.1.3",
 ]
 
 [tool.uv]
