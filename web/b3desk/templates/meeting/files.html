@@ -178,10 +178,10 @@
                                     <td>
                                         <div class="fr-toggle">
                                             {% if file.is_downloadable %}
-                                                <input onclick=toggleIsDownloadable(event) checked type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <input checked type="checkbox" class="fr-toggle__input js-toggle-downloadable" id="toggle-{{ file.id }}">
                                                 <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                             {% else %}
-                                                <input onclick=toggleIsDownloadable(event) type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <input type="checkbox" class="fr-toggle__input js-toggle-downloadable" id="toggle-{{ file.id }}">
                                                 <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                             {% endif %}
                                         </div>
