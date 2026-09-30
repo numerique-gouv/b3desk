@@ -70,3 +70,14 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     assert res.exit_code != 0
     assert "only available in development" in res.output
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
+
+
+# todo faire un test plus solide avec un fichier de conf a tester et comparer l'output avec un export type
+def test_config_dump(app, cli_runner, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    with app.app_context():
+        cli_runner.invoke(bp.cli, ["config-dump"])
+    content = (tmp_path / "web.env.dump").read_text()
+    assert "# Le nom de domaine sur lequel est déployé l'instance B3Desk." in content
+    assert '\nPREFERRED_URL_SCHEME="http"\n' in content
+    assert "\n# LOG_CONFIG=null\n" in content
