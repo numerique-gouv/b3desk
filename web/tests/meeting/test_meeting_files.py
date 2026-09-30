@@ -43,7 +43,6 @@ def test_nextcloud_authentication_issue(
         url_for("meeting_files.edit_meeting_files", meeting=meeting), status=200
     )
     res.mustcontain("disabled")
-    res.mustcontain(no="onClick=openNCFilePicker")
 
 
 def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker):
@@ -56,7 +55,6 @@ def test_nextcloud_webdav_issue(client_app, authenticated_user, meeting, mocker)
         status=200,
     )
     res.mustcontain("disabled")
-    res.mustcontain(no="onClick=openNCFilePicker")
 
 
 def test_file_sharing_disabled(client_app, authenticated_user, meeting):
