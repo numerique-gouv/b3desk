@@ -340,3 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createNCFilePicker()
 })
+
+
+const openNCFilePickerButton = document.getElementById("openNCFilePickerButton")
+if (openNCFilePickerButton) {
+    openNCFilePickerButton.addEventListener('click', (e) => {
+        ncfilepicker.getFilesPath();
+    })
+}
