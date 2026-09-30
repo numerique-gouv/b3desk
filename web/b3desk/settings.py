@@ -42,7 +42,7 @@ class MeetingLocaleVariant(StrEnum):
 class MainSettings(BaseSettings):
     """Paramètres de configuration du frontal B3Desk."""
 
-    model_config = SettingsConfigDict(extra="allow")
+    model_config = SettingsConfigDict(extra="allow", use_attribute_docstrings=True)
 
     SECRET_KEY: str
     """Clé secrète utilisée notamment pour la signature des cookies. Cette clé
