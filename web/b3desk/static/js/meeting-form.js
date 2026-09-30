@@ -37,3 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 });
+
+const generateButtons = document.querySelectorAll(".js-generate-button");
+generateButtons.forEach((button) => {
+    const fieldName = button.dataset.fieldName;
+    const passwordField = document.getElementById(fieldName);
+    button.addEventListener("click", (e) => {
+        if (passwordField) {passwordField.value=generatePassWord(10)};
+    });
+});
