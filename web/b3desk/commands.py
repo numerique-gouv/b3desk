@@ -1,11 +1,21 @@
+from pathlib import Path
+
 import click
 import httpx2
 from flask import Blueprint
 from flask import current_app
+from flask_babel.speaklater import LazyString
+from pydantic_core import core_schema
+from pydantic_settings_export import Exporter
+from pydantic_settings_export import PSESettings
+from pydantic_settings_export.generators.dotenv import DotEnvGenerator
+from pydantic_settings_export.generators.dotenv import DotEnvSettings
+from pydantic_settings_export.models import value_repr
 
 from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
 from b3desk.models.users import User
+from b3desk.settings import MainSettings
 
 bp = Blueprint("commands", __name__, cli_group=None)
 
@@ -212,3 +222,44 @@ def admin_to_user(email):
         )
     except ValueError as e:
         print(f"Admin to User result: {e}")
+
+
+# Some settings defaults are lazy_gettext strings, which pydantic cannot serialize
+LazyString.__get_pydantic_core_schema__ = classmethod(
+    lambda cls, source, handler: core_schema.no_info_plain_validator_function(
+        lambda value: value,
+        serialization=core_schema.plain_serializer_function_ser_schema(str),
+    )
+)
+
+
+class RunningConfigDotEnvGenerator(DotEnvGenerator):
+    """Export the settings values, commenting the defaults and adding docstrings."""
+
+    name = "running-dotenv"
+
+    def _process_field(self, settings_info, field, *args):
+        name = field.env_names[0] if field.env_names else field.name
+        value = field.value if field.has_value else field.default
+        line = f"{name}={value_repr(value)}"
+        if not field.has_value:
+            line = f"# {line}"
+        description = "".join(
+            f"# {doc_line}\n" for doc_line in (field.description or "").splitlines()
+        )
+        return description + line + "\n"
+
+
+@bp.cli.command("config-dump")
+def config_dump():
+    """Export the running configuration to a dotenv file."""
+    running_settings = MainSettings.model_construct(
+        **{name: current_app.config[name] for name in MainSettings.model_fields}
+    )
+    settings = PSESettings(project_dir=Path("./"), root_dir=Path("./"))
+    generators = [
+        RunningConfigDotEnvGenerator(
+            settings, DotEnvSettings(paths=[Path("web.env.dump")])
+        ),
+    ]
+    Exporter(settings, generators).run_all(running_settings)
