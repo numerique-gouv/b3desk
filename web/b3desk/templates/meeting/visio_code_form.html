@@ -46,10 +46,10 @@
 </div>
 
 {% block js %}
-    <script>
-        window.shouldDisplayCaptcha = {{ should_display_captcha|tojson }};
-        window.visioCodeFormValidationUrl = {{ url_for("join.visio_code_form_validation")|tojson }};
-    </script>
     <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/visio_code_form.js')}}"></script>
+    <script
+        src="{{ url_for('static', filename='js/visio_code_form.js')}}"
+        data-should-display-captcha="{{ should_display_captcha|tojson }}"
+        data-visio-code-form-validation-url="{{ url_for('join.visio_code_form_validation') }}"
+    ></script>
 {% endblock %}
