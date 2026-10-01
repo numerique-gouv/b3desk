@@ -335,6 +335,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var form_files = document.getElementById('meeting-form');
 
+    var delete_files = document.querySelectorAll(".js-delete-file");
+    delete_files.forEach((delete_file) => {
+        delete_file.addEventListener("submit", (e) => {
+            deleteFile(e);
+        })
+    });
+
     form_files.addEventListener('submit', (e) => {
         e.preventDefault();
 
