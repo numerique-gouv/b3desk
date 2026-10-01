@@ -117,7 +117,7 @@ services:
     env_file:
       - postgres.env
     ports:
-      - 127.0.0.2:5432:5432
+      - 127.0.0.1:5432:5432
     volumes:
       - ./postgres/initdb:/docker-entrypoint-initdb.d
       - ./postgres/data:/var/lib/postgresql/data
