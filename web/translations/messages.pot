@@ -837,9 +837,9 @@ msgid "Accueil - %(service_title)s"
 msgstr ""
 
 #: web/b3desk/templates/header.html:12 web/b3desk/templates/header.html:13
-#: web/b3desk/templates/meeting/files.html:53
-#: web/b3desk/templates/meeting/files.html:75
-#: web/b3desk/templates/meeting/files.html:127
+#: web/b3desk/templates/meeting/files.html:52
+#: web/b3desk/templates/meeting/files.html:74
+#: web/b3desk/templates/meeting/files.html:126
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:7
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:8
 #: web/b3desk/templates/meeting/modals/delete.html:8
@@ -1049,10 +1049,10 @@ msgstr ""
 #: web/b3desk/templates/admin/delete_group.html:9
 #: web/b3desk/templates/admin/group_infos.html:29
 #: web/b3desk/templates/admin/user_table.html:19
-#: web/b3desk/templates/meeting/files.html:131
-#: web/b3desk/templates/meeting/files.html:143
-#: web/b3desk/templates/meeting/files.html:171
-#: web/b3desk/templates/meeting/files.html:192
+#: web/b3desk/templates/meeting/files.html:130
+#: web/b3desk/templates/meeting/files.html:142
+#: web/b3desk/templates/meeting/files.html:170
+#: web/b3desk/templates/meeting/files.html:191
 #: web/b3desk/templates/meeting/recordings.html:144
 #: web/b3desk/templates/meeting/row.html:80
 msgid "Supprimer"
@@ -1074,7 +1074,7 @@ msgstr ""
 #: web/b3desk/templates/admin/delete_group.html:23
 #: web/b3desk/templates/admin/group_form.html:24
 #: web/b3desk/templates/admin/group_form.html:34
-#: web/b3desk/templates/meeting/files.html:146
+#: web/b3desk/templates/meeting/files.html:145
 #: web/b3desk/templates/meeting/form.html:181
 #: web/b3desk/templates/meeting/form.html:183
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:33
@@ -1127,7 +1127,7 @@ msgid "OUI"
 msgstr ""
 
 #: web/b3desk/templates/admin/group_form_content.html:53
-#: web/b3desk/templates/meeting/files.html:43
+#: web/b3desk/templates/meeting/files.html:42
 #: web/b3desk/templates/meeting/form.html:59
 msgid "Enregistrement impossible car certains champs sont mal renseignés."
 msgstr ""
@@ -1260,14 +1260,14 @@ msgid "Défaut"
 msgstr ""
 
 #: web/b3desk/templates/admin/macros.html:5
-#: web/b3desk/templates/meeting/files.html:182
-#: web/b3desk/templates/meeting/files.html:185
+#: web/b3desk/templates/meeting/files.html:181
+#: web/b3desk/templates/meeting/files.html:184
 msgid "Oui"
 msgstr ""
 
 #: web/b3desk/templates/admin/macros.html:7
-#: web/b3desk/templates/meeting/files.html:182
-#: web/b3desk/templates/meeting/files.html:185
+#: web/b3desk/templates/meeting/files.html:181
+#: web/b3desk/templates/meeting/files.html:184
 msgid "Non"
 msgstr ""
 
@@ -2550,8 +2550,8 @@ msgid "Délégation de la réunion <em>%(meeting_name)s</em>"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:9
-#: web/b3desk/templates/meeting/files.html:32
-#: web/b3desk/templates/meeting/files.html:214
+#: web/b3desk/templates/meeting/files.html:31
+#: web/b3desk/templates/meeting/files.html:213
 #: web/b3desk/templates/meeting/files_previous_page.html:2
 #: web/b3desk/templates/meeting/recordings.html:20
 #: web/b3desk/templates/meeting/recordings.html:249
@@ -2560,8 +2560,8 @@ msgid "Retour à mes réunions"
 msgstr ""
 
 #: web/b3desk/templates/meeting/delegation-management.html:14
-#: web/b3desk/templates/meeting/files.html:36
-#: web/b3desk/templates/meeting/files.html:218
+#: web/b3desk/templates/meeting/files.html:35
+#: web/b3desk/templates/meeting/files.html:217
 #: web/b3desk/templates/meeting/files_previous_page.html:6
 #: web/b3desk/templates/meeting/recordings.html:24
 #: web/b3desk/templates/meeting/recordings.html:253
@@ -2613,7 +2613,7 @@ msgid ""
 msgstr ""
 
 #: web/b3desk/templates/meeting/end.html:9
-#: web/b3desk/templates/meeting/files.html:135
+#: web/b3desk/templates/meeting/files.html:134
 #: web/b3desk/templates/meeting/modals/delegate-confirmation.html:14
 #: web/b3desk/templates/meeting/recordings.html:136
 #: web/b3desk/templates/meeting/recordings.html:183
@@ -2639,77 +2639,77 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:28
+#: web/b3desk/templates/meeting/files.html:27
 #, python-format
 msgid "Gestion des présentations associées à <em>%(meeting_name)s</em>"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:83
+#: web/b3desk/templates/meeting/files.html:82
 msgid "Ajouter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:94
+#: web/b3desk/templates/meeting/files.html:93
 msgid "Vous pouvez ajouter un fichier :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:97
+#: web/b3desk/templates/meeting/files.html:96
 msgid "Nuage temporairement indisponible"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:98
+#: web/b3desk/templates/meeting/files.html:97
 msgid ""
 "Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités"
 " sont momentanément désactivées. Veuillez réessayer dans quelques "
 "minutes."
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:104
+#: web/b3desk/templates/meeting/files.html:103
 msgid "depuis une URL"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:107
+#: web/b3desk/templates/meeting/files.html:106
 msgid "nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:107
+#: web/b3desk/templates/meeting/files.html:106
 msgid "depuis le Nuage"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:110
+#: web/b3desk/templates/meeting/files.html:109
 msgid "téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:110
+#: web/b3desk/templates/meeting/files.html:109
 msgid "par Téléversement"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:133
+#: web/b3desk/templates/meeting/files.html:132
 #, python-format
 msgid "Voulez-vous vraiment supprimer le fichier <em>%(file_title)s</em> ?"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:164
+#: web/b3desk/templates/meeting/files.html:163
 msgid "Vos fichiers associés sont :"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:168
+#: web/b3desk/templates/meeting/files.html:167
 msgid "Téléchargeable"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:169
+#: web/b3desk/templates/meeting/files.html:168
 msgid "Titre"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:170
+#: web/b3desk/templates/meeting/files.html:169
 msgid "Ajouté le"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:172
-#: web/b3desk/templates/meeting/files.html:196
+#: web/b3desk/templates/meeting/files.html:171
+#: web/b3desk/templates/meeting/files.html:195
 msgid "Télécharger"
 msgstr ""
 
-#: web/b3desk/templates/meeting/files.html:207
+#: web/b3desk/templates/meeting/files.html:206
 msgid "Aucun document de présentation n'est prévu pour cette réunion actuellement"
 msgstr ""
 
