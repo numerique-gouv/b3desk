@@ -169,7 +169,7 @@ function append_file_to_fileslist(title, id, date) {
     input.setAttribute('value', id);
     form.setAttribute('action', delete_meeting_file_url);
     form.setAttribute('method', 'POST');
-    form.setAttribute('onsubmit', 'deleteFile(event)');
+    form.addEventListener('submit', deleteFile);
 
 
     form.appendChild(input);
@@ -337,9 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var delete_files = document.querySelectorAll(".js-delete-file");
     delete_files.forEach((delete_file) => {
-        delete_file.addEventListener("submit", (e) => {
-            deleteFile(e);
-        })
+        delete_file.addEventListener('submit', deleteFile);
     });
 
     form_files.addEventListener('submit', (e) => {
