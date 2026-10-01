@@ -14,16 +14,15 @@
 {% endblock %}
 
 {% block js %}
-    <script>
-        const nc_locator = "{{ g.user.nc_locator }}";
-        const nc_login = "{{ g.user.nc_login }}";
-        const nc_token = "{{ g.user.nc_token }}";
-        const meeting_id = "{{ meeting.id }}";
-        const meeting_files_url_base = "/meeting/files/{{ meeting.id }}/";
-        const add_meeting_files_url = "{{ url_for("meeting_files.add_meeting_files", meeting=meeting) }}";
-        const delete_meeting_file_url = "{{ url_for("meeting_files.delete_meeting_file") }}";
-        const accepted_files = "{{ config.ACCEPTED_FILES_CLIENT_SIDE }}";
-    </script>
     <script src="{{ url_for("static", filename="nextcloud/filePickerWrapper.js") }}"></script>
-    <script src="{{ url_for("static", filename="js/meeting.js") }}"></script>
+    <script
+        src="{{ url_for('static', filename='js/meeting.js') }}"
+        data-nc-locator="{{ g.user.nc_locator }}"
+        data-nc-login="{{ g.user.nc_login }}"
+        data-nc-token="{{ g.user.nc_token }}"
+        data-meeting-files-url-base="/meeting/files/{{ meeting.id }}/"
+        data-add-meeting-files-url="{{ url_for('meeting_files.add_meeting_files', meeting=meeting) }}"
+        data-delete-meeting-file-url="{{ url_for('meeting_files.delete_meeting_file') }}"
+        data-accepted-files="{{ config.ACCEPTED_FILES_CLIENT_SIDE }}"
+    ></script>
 {% endblock %}

@@ -1,5 +1,13 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
+const nc_locator = document.currentScript.dataset.ncLocator;
+const nc_login = document.currentScript.dataset.ncLogin;
+const nc_token = document.currentScript.dataset.ncToken;
+const meeting_files_url_base = document.currentScript.dataset.meetingFilesUrlBase;
+const add_meeting_files_url = document.currentScript.dataset.addMeetingFilesUrl;
+const delete_meeting_file_url = document.currentScript.dataset.deleteMeetingFileUrl;
+const accepted_files = document.currentScript.dataset.acceptedFiles;
+
 Dropzone.autoDiscover = false;
 
 function toggleIsDownloadable(e){
