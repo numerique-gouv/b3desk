@@ -245,7 +245,8 @@ class RunningConfigDotEnvGenerator(DotEnvGenerator):
         if not field.has_value:
             line = f"# {line}"
         description = "".join(
-            f"# {doc_line}\n" for doc_line in (field.description or "").splitlines()
+            f"# {doc_line}".rstrip() + "\n"
+            for doc_line in (field.description or "").splitlines()
         )
         return description + line + "\n"
 

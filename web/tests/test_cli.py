@@ -1,8 +1,13 @@
+import pathlib
+
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
 from b3desk.models.users import User
+from b3desk.settings import MainSettings
+from flask import Flask
+from flask_babel import Babel
 
 
 def test_get_apps_id(cli_runner, user):
@@ -72,12 +77,38 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
 
-# todo faire un test plus solide avec un fichier de conf a tester et comparer l'output avec un export type
-def test_config_dump(app, cli_runner, tmp_path, monkeypatch):
+def test_config_dump(tmp_path, monkeypatch):
+    """Export a fixed configuration and compare it with the reference dotenv file."""
+    # Ignore any environment variable that could alter the settings on the dev machine
+    for name in MainSettings.model_fields:
+        monkeypatch.delenv(name, raising=False)
+
+    settings = MainSettings(
+        SECRET_KEY="test-secret-key",
+        SERVER_NAME="b3desk.test",
+        PREFERRED_URL_SCHEME="http",
+        SQLALCHEMY_DATABASE_URI="postgresql://user:password@postgres/b3desk",
+        UPLOAD_DIR="/tmp/b3desk/upload",
+        TMP_DOWNLOAD_DIR="/tmp/b3desk/download",
+        BIGBLUEBUTTON_ENDPOINT="https://bbb.test",
+        BIGBLUEBUTTON_SECRET="test-bbb-secret",
+        OIDC_ISSUER="https://iam.test",
+        OIDC_CLIENT_ID="test-client-id",
+        OIDC_CLIENT_SECRET="test-client-secret",
+    )
+    app = Flask(__name__)
+    app.config.from_object(settings)
+    Babel(app)
+
     monkeypatch.chdir(tmp_path)
     with app.app_context():
-        cli_runner.invoke(bp.cli, ["config-dump"])
-    content = (tmp_path / "web.env.dump").read_text()
-    assert "# Le nom de domaine sur lequel est déployé l'instance B3Desk." in content
-    assert '\nPREFERRED_URL_SCHEME="http"\n' in content
-    assert "\n# LOG_CONFIG=null\n" in content
+        res = app.test_cli_runner(catch_exceptions=False).invoke(
+            bp.cli, ["config-dump"]
+        )
+    assert res.exit_code == 0, res.output
+
+    exported_config = (tmp_path / "web.env.dump").read_text()
+    expected_config = (
+        pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
+    ).read_text()
+    assert exported_config == expected_config
