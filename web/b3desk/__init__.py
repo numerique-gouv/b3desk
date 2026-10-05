@@ -14,7 +14,6 @@ from logging.config import fileConfig
 from pathlib import Path
 from urllib.parse import urlencode
 
-from authlib.integrations.flask_client import OAuth
 from babel import Locale
 from celery import Celery
 from celery import Task
@@ -37,6 +36,7 @@ from packaging.version import Version
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
 
+from .oidc import OIDCOAuth
 from .utils import SignedConverter
 from .utils import enum_converter
 from .utils import model_converter
@@ -48,7 +48,7 @@ LANGUAGES = ["fr", "en"]
 babel = Babel()
 cache = Cache()
 csrf = CSRFProtect()
-oauth = OAuth()
+oauth = OIDCOAuth()
 migrate = Migrate()
 
 
