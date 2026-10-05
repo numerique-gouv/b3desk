@@ -18,6 +18,9 @@ Les paramètres suivants sont supprimés :
 - OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD
 - OIDC_ATTENDEE_USERINFO_HTTP_METHOD
 
+L’URL de retour des fournisseurs d’identité ne se configure plus avec `OIDC_REDIRECT_URI`.
+Elle est construite à partir de `PREFERRED_URL_SCHEME` et `SERVER_NAME` : `https://<SERVER_NAME>/oidc_callback`.
+
 ### Modifié
 
 - Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 401.

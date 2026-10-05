@@ -66,14 +66,30 @@ def index():
     return redirect(url_for("public.home"))
 
 
+def oidc_redirect_uri():
+    """Return the URL the identity providers redirect to after authentication."""
+    return url_for(
+        "public.oidc_callback",
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+
+
 @bp.route("/login")
 def login():
-    redirect_uri = url_for("public.authorize", _external=True)
-    return oauth.default.authorize_redirect(redirect_uri)
+    return oauth.default.authorize_redirect(oidc_redirect_uri())
 
 
-@bp.route("/authorize")
-def authorize():
+@bp.route("/oidc_callback")
+def oidc_callback():
+    """Complete the OIDC authentication of an organizer or an attendee."""
+    state = request.args.get("state")
+    if oauth.attendee.framework.get_state_data(session, state):
+        return attendee_callback()
+    return organizer_callback()
+
+
+def organizer_callback():
     try:
         token = oauth.default.authorize_access_token()
     except MismatchingStateError as exc:
@@ -89,16 +105,9 @@ def authorize():
     return redirect(url_for("public.welcome"))
 
 
-@bp.route(
-    "/oidc_callback"
-)  # vérifier ce qui est enregistré en prod dans OIDC_REDIRECT_URI
 def attendee_callback():
     try:
         token = oauth.attendee.authorize_access_token()
-    except MismatchingStateError as exc:
-        current_app.logger.warning("Attendee OIDC state mismatch: %s", exc)
-        flash(_("Votre session de connexion a expiré, merci de réessayer."), "error")
-        return redirect(url_for("public.index"))
     except OAuthError as exc:
         current_app.logger.warning("Attendee OIDC authorization error: %s", exc)
         flash(_("La connexion a été annulée."), "error")
@@ -248,7 +257,11 @@ def logout():
     if end_session_endpoint and id_token:
         params = {
             "id_token_hint": id_token,
-            "post_logout_redirect_uri": url_for("public.logout", _external=True),
+            "post_logout_redirect_uri": url_for(
+                "public.logout",
+                _external=True,
+                _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+            ),
         }
         return redirect(f"{end_session_endpoint}?{urlencode(params)}")
 

@@ -153,8 +153,8 @@ def test_attendee_callback_mismatching_state_redirects_home(
     tampered_location = response.headers["Location"].replace("state=", "state=wrong-")
     response = client_app.get(tampered_location, status=302)
 
-    assert response.location.endswith("/")
-    response.follow(status=302).follow().mustcontain(
+    assert response.location.endswith("/home")
+    response.follow().mustcontain(
         "Votre session de connexion a expiré, merci de réessayer."
     )
 
@@ -177,6 +177,37 @@ def test_attendee_callback_oauth_error_redirects_home(
 
     assert response.location.endswith("/")
     response.follow(status=302).follow().mustcontain("La connexion a été annulée.")
+
+
+def test_organizer_and_attendee_share_the_redirect_uri(
+    client_app, configuration, iam_server, iam_client
+):
+    """Organizers and attendees are redirected to /oidc_callback after authentication."""
+    response = client_app.get("/login", status=302)
+    params = parse_qs(urlparse(response.location).query)
+    assert params["redirect_uri"] == ["http://b3desk.test/oidc_callback"]
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    params = parse_qs(urlparse(response.location).query)
+    assert params["redirect_uri"] == ["http://b3desk.test/oidc_callback"]
+
+
+def test_attendee_authentication(client_app, configuration, iam_server, iam_client):
+    """Attendees go back to the meeting after authenticating through /oidc_callback."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+    assert response.headers["Location"].startswith("http://b3desk.test/oidc_callback")
+
+    response = client_app.get(response.headers["Location"], status=302)
+    assert response.location == "/meeting/join/1/authenticated"
+
+    with client_app.session_transaction() as session:
+        assert session["attendee_userinfo"]["sub"] == iam_user.user_name
+        assert "userinfo" not in session
 
 
 def test_logout_redirects_to_end_session_endpoint(
