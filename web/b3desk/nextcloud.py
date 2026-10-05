@@ -173,14 +173,8 @@ def make_nextcloud_credentials_request(url, payload, headers):
             url, json=payload, headers=headers, timeout=NEXTCLOUD_REQUEST_TIMEOUT
         )
         data = response.json()
-    except httpx2.HTTPError as e:  # pragma: no cover
-        current_app.logger.error(
-            "Unable to contact %s with payload %s and header %s, %s",
-            url,
-            payload,
-            headers,
-            e,
-        )
+    except httpx2.HTTPError as e:
+        current_app.logger.error("Unable to contact %s: %s", url, e)
         return None
 
     if current_app.config.get("FORCE_HTTPS_ON_EXTERNAL_URLS"):
@@ -413,7 +407,9 @@ def update_user_nc_credentials(user, force_renew=False):
         or data["nctoken"] is None
     ):
         current_app.logger.info(
-            "Could not retrieve Nextcloud credentials for user %s: %s", user, data
+            "Could not retrieve Nextcloud credentials for user %s: %s",
+            user,
+            (data or {}).get("error") or "incomplete credentials",
         )
         credentials_breaker.mark_failed(user.id)
         return False

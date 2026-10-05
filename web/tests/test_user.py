@@ -136,6 +136,23 @@ def test_make_nextcloud_credentials_request_force_secure_for_missing_scheme(
     assert credentials["nclocator"].startswith("https://")
 
 
+def test_make_nextcloud_credentials_request_does_not_log_api_key(
+    client_app, app, httpx2_mock, caplog
+):
+    """The API key is not logged when Nextcloud cannot be reached."""
+    httpx2_mock.route(method="POST").mock(
+        side_effect=httpx2.ConnectError("connection refused")
+    )
+    credentials = make_nextcloud_credentials_request(
+        url=app.config["NC_LOGIN_API_URL"],
+        payload={"username": "Alice"},
+        headers={"X-API-KEY": app.config["NC_LOGIN_API_KEY"]},
+    )
+    assert credentials is None
+    assert "Unable to contact" in caplog.text
+    assert app.config["NC_LOGIN_API_KEY"] not in caplog.text
+
+
 def test_get_secondary_identity_provider_id_from_email_token_error(
     client_app, mocker, caplog
 ):

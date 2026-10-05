@@ -10,7 +10,7 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext as _
 
 from b3desk.endpoints.captcha import captcha_validation
 from b3desk.forms import JoinMeetingForm
@@ -282,6 +282,9 @@ def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
 @bp.route("/sip-connect/<visio_code>", methods=["GET"])
 def join_waiting_meeting_from_sip(visio_code):
     """Join a meeting using visio code from SIP phone connection."""
+    if not current_app.config["ENABLE_SIP"]:
+        abort(404)
+
     token = request.headers.get("Authorization")
     if check_token_errors(token):
         abort(401)

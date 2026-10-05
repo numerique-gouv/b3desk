@@ -339,6 +339,20 @@ def test_join_meeting_with_sip_connect(client_app, meeting):
     response.mustcontain("Rejoindre le séminaire")
 
 
+def test_join_meeting_with_sip_connect_sip_disabled(client_app, meeting):
+    """Test that SIP connect returns 404 when SIP is disabled."""
+    client_app.app.config["ENABLE_SIP"] = False
+    header = {"alg": "RS256", "typ": "JWT"}
+    claims = {
+        "iss": f"{client_app.app.config['PREFERRED_URL_SCHEME']}://{client_app.app.config['SERVER_NAME']}"
+    }
+    private_key_from_settings = RSAKey.import_key(client_app.app.config["PRIVATE_KEY"])
+    token = jwt.encode(header, claims, private_key_from_settings)
+    client_app.get(
+        "/sip-connect/911111111", headers={"Authorization": token}, status=404
+    )
+
+
 def test_join_meeting_with_sip_connect_no_token(client_app, meeting):
     """Test that SIP connect without token returns 401."""
     client_app.get("/sip-connect/911111111", status=401)
