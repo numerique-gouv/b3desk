@@ -21,9 +21,10 @@ def store_attendee_userinfo(token):
 
 
 def clear_userinfo():
-    """Remove userinfo and id_token from session, logging out the current user locally."""
+    """Remove the organizer and attendee identities from session, logging out the current user locally."""
     session.pop("userinfo", None)
     session.pop("id_token", None)
+    session.pop("attendee_userinfo", None)
 
 
 def has_user_session():

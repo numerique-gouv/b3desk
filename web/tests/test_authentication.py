@@ -133,11 +133,13 @@ def test_clear_session_after_logout(
             "given_name": "Alice",
             "preferred_username": "alice",
         }
+        session["attendee_userinfo"] = {"given_name": "Bob", "family_name": "Dylan"}
     client_app.get("/logout")
 
     with client_app.session_transaction() as session:
         assert "id_token" not in session
         assert "userinfo" not in session
+        assert "attendee_userinfo" not in session
 
 
 def test_authorize_tampered_state_redirects_home(
