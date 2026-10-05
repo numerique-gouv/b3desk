@@ -6,7 +6,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext as _
 from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
