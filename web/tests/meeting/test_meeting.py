@@ -185,6 +185,23 @@ def test_save_existing_meeting_not_running(
     )
 
 
+def test_save_existing_meeting_escapes_meeting_name_in_flash_message(
+    client_app, authenticated_user, meeting, mock_meeting_is_not_running
+):
+    """The meeting name is escaped in the confirmation message."""
+    meeting.name = "<script>alert(1)</script>"
+    db.session.commit()
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res = res.forms[0].submit().follow()
+
+    assert "<script>alert(1)</script>" not in res.text
+    assert (
+        "&lt;script&gt;alert(1)&lt;/script&gt; modifications prises en compte"
+        in res.text
+    )
+
+
 def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(
     client_app, authenticated_user, meeting, mock_meeting_is_not_running, caplog
 ):

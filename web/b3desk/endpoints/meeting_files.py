@@ -17,7 +17,7 @@ from flask import request
 from flask import send_file
 from flask import send_from_directory
 from flask import url_for
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext as _
 from sqlalchemy import exc
 from webdav3.exceptions import WebDavException
 from werkzeug.utils import secure_filename

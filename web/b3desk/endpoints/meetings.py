@@ -19,7 +19,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext as _
 
 from b3desk.forms import DelegationSearchForm
 from b3desk.forms import MeetingForm
