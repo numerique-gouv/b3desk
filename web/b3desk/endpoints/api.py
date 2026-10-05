@@ -1,9 +1,13 @@
+import httpx2
+import requests
 from authlib.integrations.flask_oauth2 import ResourceProtector
 from authlib.oauth2.rfc6750 import InvalidTokenError
 from authlib.oauth2.rfc7662 import IntrospectTokenValidator
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import request
+from joserfc.errors import JoseError
 
 from b3desk.models.meetings import get_or_create_shadow_meeting
 from b3desk.models.users import get_or_create_user
@@ -18,18 +22,22 @@ require_oauth = ResourceProtector()
 
 class OIDCIntrospectTokenValidator(IntrospectTokenValidator):
     def introspect_token(self, token_string):
-        introspection_endpoint = oauth.default.load_server_metadata()[
-            "introspection_endpoint"
-        ]
-        response = http_client().post(
-            introspection_endpoint,
-            data={"token": token_string},
-            auth=(
-                current_app.config["OIDC_CLIENT_ID"],
-                current_app.config["OIDC_CLIENT_SECRET"],
-            ),
-        )
-        response.raise_for_status()
+        try:
+            introspection_endpoint = oauth.default.load_server_metadata()[
+                "introspection_endpoint"
+            ]
+            response = http_client().post(
+                introspection_endpoint,
+                data={"token": token_string},
+                auth=(
+                    current_app.config["OIDC_CLIENT_ID"],
+                    current_app.config["OIDC_CLIENT_SECRET"],
+                ),
+            )
+            response.raise_for_status()
+        except (requests.RequestException, httpx2.HTTPError) as exc:
+            current_app.logger.error("Could not introspect the API token: %s", exc)
+            abort(503)
         return response.json()
 
     def validate_token(self, token, scopes, request):
@@ -47,9 +55,13 @@ require_oauth.register_token_validator(OIDCIntrospectTokenValidator())
 def _get_authenticated_user():
     """Fetch userinfo for the bearer token validated by require_oauth, and get or create the matching user."""
     access_token = request.headers["Authorization"].split(maxsplit=1)[1]
-    userinfo = oauth.default.userinfo(
-        token={"access_token": access_token, "token_type": "Bearer"}
-    )
+    try:
+        userinfo = oauth.default.userinfo(
+            token={"access_token": access_token, "token_type": "Bearer"}
+        )
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.error("Could not fetch the API token userinfo: %s", exc)
+        abort(503)
     return get_or_create_user(userinfo)
 
 

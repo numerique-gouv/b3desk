@@ -80,6 +80,10 @@ Lorsque le jeton d'identification n'a pas été fourni dans la requête, l'API r
 
 Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 401.
 
+#### Fournisseur d'identité indisponible
+
+Lorsque le fournisseur d'identité ne peut pas vérifier le jeton, l'API retourne des codes d'erreur HTTP 503.
+
 #### Mauvaise audience du jeton
 
 Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 401.

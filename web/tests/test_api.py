@@ -1,7 +1,10 @@
 import datetime
 
+import httpx2
 import pytest
+import requests
 from authlib.oauth2.rfc6750 import InvalidTokenError
+from b3desk import oauth
 from b3desk.endpoints.api import OIDCIntrospectTokenValidator
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
@@ -97,6 +100,54 @@ def test_api_meetings_invalid_token(client_app):
     client_app.get(
         "/api/meetings", headers={"Authorization": "Bearer invalid-token"}, status=401
     )
+
+
+def test_api_meetings_introspection_endpoint_unreachable(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the identity provider cannot introspect the token."""
+    http_client = mocker.patch("b3desk.endpoints.api.http_client")
+    http_client.return_value.post.side_effect = httpx2.ConnectError("unreachable")
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not introspect the API token" in caplog.text
+
+
+def test_api_meetings_introspection_endpoint_error(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the introspection endpoint answers with an error."""
+    http_client = mocker.patch("b3desk.endpoints.api.http_client")
+    http_client.return_value.post.return_value = httpx2.Response(
+        500, request=httpx2.Request("POST", "https://iam.test/introspect")
+    )
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not introspect the API token" in caplog.text
+
+
+def test_api_meetings_userinfo_endpoint_unreachable(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the identity provider cannot return the userinfo."""
+    mocker.patch.object(
+        oauth.default, "userinfo", side_effect=requests.ConnectionError("unreachable")
+    )
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not fetch the API token userinfo" in caplog.text
 
 
 def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user, user):

@@ -25,3 +25,4 @@ Elle est construite à partir de `PREFERRED_URL_SCHEME` et `SERVER_NAME` : `http
 
 - Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 401.
 - Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 401.
+- Lorsque le fournisseur d’identité ne peut pas vérifier le jeton, l’API retourne des codes d’erreur HTTP 503.
