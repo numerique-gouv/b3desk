@@ -50,7 +50,7 @@ b3desk = "b3desk.cli:main"
 
 [dependency-groups]
 dev = [
-    "canaille>=0.2.0,<0.3.0",
+    "canaille>=0.3.6,<0.4.0",
     "coverage>=7.2.2,<8.0.0",
     "flake8>=7.0.0,<8.0.0",
     "Flask-WebTest>=0.1.6,<0.2.0",
@@ -59,7 +59,7 @@ dev = [
     "pytest>=9.0.3,<10.0.0",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
-    "pytest-iam>=0.2.4",
+    "pytest-iam>=0.2.6",
     "pytest-lazy-fixtures>=1.0.0,<2.0.0",
     "pytest-mock>=3.11.1,<4.0.0",
     "pytest-postgresql>=7.0.0,<8.0.0",

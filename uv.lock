@@ -218,7 +218,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "canaille", specifier = ">=0.2.0,<0.3.0" },
+    { name = "canaille", specifier = ">=0.3.6,<0.4.0" },
     { name = "coverage", specifier = ">=7.2.2,<8.0.0" },
     { name = "diff-cover", specifier = ">=9.7.2" },
     { name = "faker", specifier = ">=40.1.2" },
@@ -232,7 +232,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=6.0.0" },
     { name = "pytest-dotenv", specifier = ">=0.5.2,<0.6.0" },
     { name = "pytest-httpx2", specifier = ">=1.0.0" },
-    { name = "pytest-iam", specifier = ">=0.2.4" },
+    { name = "pytest-iam", specifier = ">=0.2.6" },
     { name = "pytest-lazy-fixtures", specifier = ">=1.0.0,<2.0.0" },
     { name = "pytest-mock", specifier = ">=3.11.1,<4.0.0" },
     { name = "pytest-postgresql", specifier = ">=7.0.0,<8.0.0" },
@@ -349,7 +349,7 @@ wheels = [
 
 [[package]]
 name = "canaille"
-version = "0.2.7"
+version = "0.3.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "blinker" },
@@ -366,13 +366,14 @@ dependencies = [
     { name = "wtforms" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/a9/1308772d885e5ee8b3a008a063dfb7a88bd2fcdf4e67294ecf2f5341eb3b/canaille-0.2.7-py3-none-any.whl", hash = "sha256:c7a607c7b409aff5d2c73686b0358546efa33da98a7ad01ff39474c3c644e81b", size = 3054253, upload-time = "2026-04-14T09:11:02.212Z" },
+    { url = "https://files.pythonhosted.org/packages/da/e0/b33cdd2ea3beb30fdfb0854e891f08ac7afd32822f92a2f99e4454411c69/canaille-0.3.6-py3-none-any.whl", hash = "sha256:08ea77246f5b9e4c67ea4c867449aa3aa4ce434300a9ae78c2c80558fc719e57", size = 3367977, upload-time = "2026-08-04T13:39:06.484Z" },
 ]
 
 [package.optional-dependencies]
 oidc = [
     { name = "authlib" },
     { name = "joserfc" },
+    { name = "tomlkit" },
 ]
 
 [[package]]
@@ -1756,17 +1757,18 @@ wheels = [
 
 [[package]]
 name = "pytest-iam"
-version = "0.2.5"
+version = "0.2.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "canaille", extra = ["oidc"] },
     { name = "faker" },
     { name = "portpicker" },
     { name = "pytest" },
+    { name = "wtforms" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/af/78/1862c04a67c015b0956bbbfe514f87d05b08b61ed08e3996219ea3e0857e/pytest_iam-0.2.5.tar.gz", hash = "sha256:d720d779aec87557f2899b4d5716b199e7b7d462a20812c32619e7d70268edd3", size = 96642, upload-time = "2025-11-02T18:27:12.84Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/51/bff13cdd7ecda34076aad27a17f331c72095076490d083c9bd55a742d03e/pytest_iam-0.2.6.tar.gz", hash = "sha256:676134e317b1c4fd9b5bf4da70984b413dd214dab9875e2423572ba9d26e3cb2", size = 106385, upload-time = "2026-06-20T07:30:23.147Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/98/6e2b3d5c07b928433c9b8caedb08dd424c0efc3d87ac11496785402eca42/pytest_iam-0.2.5-py3-none-any.whl", hash = "sha256:1b88db04dfb65d43778d433f56b2be88dffc6d74d74b010125ffd2a726082fc1", size = 5737, upload-time = "2025-11-02T18:27:11.339Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/3b/5120b8cb85426dc7d3a26545e5b1809a957b0110701aca06be39fe5cffec/pytest_iam-0.2.6-py3-none-any.whl", hash = "sha256:1a378789ae57339bd187d8782f0f2e196e7c9044e406bafd9aaf941c15506171", size = 5752, upload-time = "2026-06-20T07:30:22.079Z" },
 ]
 
 [[package]]
@@ -2233,6 +2235,15 @@ wheels = [
 ]
 
 [[package]]
+name = "tomlkit"
+version = "0.15.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/96/e07752635b98536177fa1f37671c8f3cdde2e724c6bcf6034b2cfb571565/tomlkit-0.15.1.tar.gz", hash = "sha256:e25bbf38843005246210a12982776f27f99cb9be67160e14434d0c0d21ee1e97", size = 180129, upload-time = "2026-07-17T01:48:04.562Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/bc/8c13eb66537dce1d2bd3a57132902f38d0e7f5bb46fa9f4daed9fe9d76ee/tomlkit-0.15.1-py3-none-any.whl", hash = "sha256:177a05aece5a8ca5266fd3c448abb47b8d352f09d477d3ca8332db4d89b24304", size = 49449, upload-time = "2026-07-17T01:48:05.728Z" },
+]
+
+[[package]]
 name = "tox"
 version = "4.64.6"
 source = { registry = "https://pypi.org/simple" }
@@ -2494,12 +2505,12 @@ wheels = [
 
 [[package]]
 name = "wtforms"
-version = "3.2.2"
+version = "3.3.0b3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markupsafe" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/91/ed9b517da898e3fb747566aa3c12a734bd64ea7449a0d25ec74ce8f8b8eb/wtforms-3.2.2.tar.gz", hash = "sha256:7b00c73f8670f35d4edb0293dcd81b980528bee72fd662b182aaba27ae570b93", size = 139583, upload-time = "2026-05-03T05:53:44.147Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/cb/cc93833812d9dda59d3e3a0290a856d038377d694dc2028bba481497408c/wtforms-3.3.0b3.tar.gz", hash = "sha256:a11c56a355dba743b345414bf2490fc3fe715026ad90dc591812dab185d9437d", size = 168361, upload-time = "2026-06-15T12:25:09.87Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/76/bb225c8300f3a0ba28e01df51419c6c9574a297c43d71b29048e03b65deb/wtforms-3.2.2-py3-none-any.whl", hash = "sha256:72b90d5d921bd3119252069cf0301e9c13915f9e52792652bc91c5dda4b79e56", size = 158656, upload-time = "2026-05-03T05:53:46.072Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/0b/e5910c6624212dd86be716947822df95f1b43a287547566831c362d767c4/wtforms-3.3.0b3-py3-none-any.whl", hash = "sha256:4dc5b277cd67a1da04e206f66436852156b41c91bb1543eebb43eb934555fc52", size = 171248, upload-time = "2026-06-15T12:25:08.579Z" },
 ]
