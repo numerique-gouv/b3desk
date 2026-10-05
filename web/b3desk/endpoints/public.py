@@ -1,6 +1,7 @@
 from urllib.parse import urlencode
 
 import httpx2
+import requests
 from authlib.integrations.base_client import MismatchingStateError
 from authlib.integrations.base_client import OAuthError
 from flask import Blueprint
@@ -256,11 +257,17 @@ def logout():
     """Log out the current user locally, and from the OIDC provider if it supports it."""
     id_token = session.get("id_token")
     clear_userinfo()
+    if not id_token:
+        return redirect(url_for("public.index"))
 
-    end_session_endpoint = oauth.default.load_server_metadata().get(
-        "end_session_endpoint"
-    )
-    if end_session_endpoint and id_token:
+    try:
+        metadata = oauth.default.load_server_metadata()
+    except requests.RequestException as exc:
+        current_app.logger.warning("Could not reach the OIDC provider: %s", exc)
+        return redirect(url_for("public.index"))
+
+    end_session_endpoint = metadata.get("end_session_endpoint")
+    if end_session_endpoint:
         params = {
             "id_token_hint": id_token,
             "post_logout_redirect_uri": url_for(

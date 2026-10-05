@@ -2,6 +2,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+import requests
 from b3desk.models import db
 from b3desk.models.users import User
 from flask import url_for
@@ -286,6 +287,26 @@ def test_logout_redirects_to_end_session_endpoint(
     with client_app.app.test_request_context():
         expected_redirect = url_for("public.logout", _external=True)
     assert params["post_logout_redirect_uri"] == [expected_redirect]
+
+
+def test_logout_when_the_identity_provider_is_unreachable(
+    client_app, configuration, iam_server, iam_client, mocker, caplog
+):
+    """Users are logged out locally and redirected home when the identity provider is down."""
+    mocker.patch(
+        "b3desk.oauth.default.load_server_metadata",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+    with client_app.session_transaction() as session:
+        session["id_token"] = "id-token"
+        session["userinfo"] = {"email": "alice@domain.tld"}
+
+    response = client_app.get("/logout", status=302)
+
+    assert response.location == "/"
+    with client_app.session_transaction() as session:
+        assert "userinfo" not in session
+    assert "Could not reach the OIDC provider" in caplog.text
 
 
 def test_unusable_claims_clear_the_session(client_app, caplog):
