@@ -264,6 +264,30 @@ def test_update_credentials_marks_blocked_on_failure(app, client_app, user, mock
     assert credentials_breaker.is_blocked(user.id) is True
 
 
+def test_update_credentials_does_not_log_token_on_failure(
+    app, client_app, user, mocker, caplog
+):
+    """The Nextcloud token is not logged when other credentials are missing."""
+    user.nc_login = None
+    user.nc_locator = None
+    user.nc_token = None
+    user.nc_last_auto_enroll = None
+    db.session.add(user)
+    db.session.commit()
+
+    mocker.patch(
+        "b3desk.nextcloud.get_user_nc_credentials",
+        return_value={"nclogin": "alice", "nclocator": None, "nctoken": "token123"},
+    )
+
+    with caplog.at_level("INFO"):
+        result = update_user_nc_credentials(user)
+
+    assert result is False
+    assert "Could not retrieve Nextcloud credentials" in caplog.text
+    assert "token123" not in caplog.text
+
+
 def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
     """Credentials fetch is skipped when user is in backoff."""
     user.nc_login = None
