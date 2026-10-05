@@ -279,6 +279,9 @@ def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
 @check_oidc_connection(auth)
 def join_waiting_meeting_from_sip(visio_code):
     """Join a meeting using visio code from SIP phone connection."""
+    if not current_app.config["ENABLE_SIP"]:
+        abort(404)
+
     token = request.headers.get("Authorization")
     if check_token_errors(token):
         abort(401)

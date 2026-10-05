@@ -359,11 +359,11 @@ msgstr ""
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:317
+#: web/b3desk/endpoints/join.py:320
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:322
+#: web/b3desk/endpoints/join.py:325
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
