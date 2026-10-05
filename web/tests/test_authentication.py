@@ -1,6 +1,7 @@
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+import pytest
 from b3desk.models import db
 from b3desk.models.users import User
 from flask import url_for
@@ -72,6 +73,48 @@ def test_lasuite_user_authentication(
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
+
+
+def test_user_goes_back_to_requested_page_after_login(
+    client_app, configuration, iam_server, iam_client
+):
+    """After login, users land on the page they requested before authenticating."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/new?type=quick", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert response.location == "/meeting/new?type=quick"
+
+
+@pytest.mark.parametrize(
+    "next_url",
+    [
+        "https://evil.test/",
+        "//evil.test/",
+        "/\\evil.test/",
+        "/\t/evil.test/",
+        "/\n/evil.test/",
+        "evil.test",
+    ],
+)
+def test_login_ignores_external_next_url(
+    client_app, configuration, iam_server, iam_client, next_url
+):
+    """External URLs in the next parameter are ignored, and users land on the welcome page."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", params={"next": next_url}, status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert response.location == "/welcome"
 
 
 def test_clear_session_after_logout(

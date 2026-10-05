@@ -21,6 +21,7 @@ from .. import cache
 from .. import oauth
 from ..session import clear_userinfo
 from ..session import has_user_session
+from ..session import is_local_url
 from ..session import login_required
 from ..session import should_display_captcha
 from ..session import store_attendee_userinfo
@@ -77,6 +78,10 @@ def oidc_redirect_uri():
 
 @bp.route("/login")
 def login():
+    next_url = request.args.get("next", "")
+    session["login_next_url"] = (
+        next_url if is_local_url(next_url) else url_for("public.welcome")
+    )
     return oauth.default.authorize_redirect(oidc_redirect_uri())
 
 
@@ -102,7 +107,8 @@ def organizer_callback():
         return redirect(url_for("public.home"))
 
     store_userinfo(token)
-    return redirect(url_for("public.welcome"))
+    next_url = session.pop("login_next_url", None) or url_for("public.welcome")
+    return redirect(next_url)
 
 
 def attendee_callback():

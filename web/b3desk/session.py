@@ -36,13 +36,24 @@ def has_attendee_session():
     return "attendee_userinfo" in session
 
 
+def is_local_url(url):
+    """Check that the URL is a path on this site, and not an external URL."""
+    return (
+        url.isprintable()
+        and url.startswith("/")
+        and not url.startswith("//")
+        and "\\" not in url
+    )
+
+
 def login_required(view_function):
     """Require that the user is authenticated, redirecting to login otherwise."""
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
         if not has_user_session():
-            return redirect(url_for("public.login"))
+            next_url = request.full_path if request.query_string else request.path
+            return redirect(url_for("public.login", next=next_url))
 
         return view_function(*args, **kwargs)
 
