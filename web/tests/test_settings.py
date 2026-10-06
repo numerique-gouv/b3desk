@@ -255,6 +255,21 @@ def test_create_app_without_authentication(configuration, mocker):
         assert url_for("public.welcome", _external=True)
 
 
+def test_oidc_issuer_with_trailing_slash(configuration, mocker):
+    """The discovery URL has no double slash when the issuer ends with a slash."""
+    configuration["OIDC_ISSUER"] = "https://idp.test/realm/"
+    configuration["OIDC_ATTENDEE_ISSUER"] = "https://attendee-idp.test/realm/"
+    register = mocker.patch("b3desk.oauth.register")
+
+    create_app(configuration)
+
+    urls = [call.kwargs["server_metadata_url"] for call in register.call_args_list]
+    assert urls == [
+        "https://idp.test/realm/.well-known/openid-configuration",
+        "https://attendee-idp.test/realm/.well-known/openid-configuration",
+    ]
+
+
 def test_session_cookie_name_depends_on_minor_version(mocker):
     """The session cookie name changes with each minor version."""
     mocker.patch("b3desk.settings.version", return_value="2.3.1")

@@ -424,7 +424,7 @@ def setup_authlib(app):
         client_id=app.config["OIDC_CLIENT_ID"],
         client_secret=app.config["OIDC_CLIENT_SECRET"],
         token_endpoint_auth_method=app.config["OIDC_CLIENT_AUTH_METHOD"],
-        server_metadata_url=f"{app.config['OIDC_ISSUER']}/.well-known/openid-configuration",
+        server_metadata_url=f"{app.config['OIDC_ISSUER'].rstrip('/')}/.well-known/openid-configuration",
         client_kwargs={"scope": app.config["OIDC_SCOPES"], "default_timeout": 5},
     )
     oauth.register(
@@ -432,7 +432,7 @@ def setup_authlib(app):
         client_id=app.config["OIDC_ATTENDEE_CLIENT_ID"],
         client_secret=app.config["OIDC_ATTENDEE_CLIENT_SECRET"],
         token_endpoint_auth_method=app.config["OIDC_ATTENDEE_CLIENT_AUTH_METHOD"],
-        server_metadata_url=f"{app.config['OIDC_ATTENDEE_ISSUER']}/.well-known/openid-configuration",
+        server_metadata_url=f"{app.config['OIDC_ATTENDEE_ISSUER'].rstrip('/')}/.well-known/openid-configuration",
         client_kwargs={
             "scope": app.config["OIDC_ATTENDEE_SCOPES"],
             "default_timeout": 5,
