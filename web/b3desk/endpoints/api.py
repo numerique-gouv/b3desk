@@ -57,7 +57,8 @@ def _get_authenticated_user():
     access_token = request.headers["Authorization"].split(maxsplit=1)[1]
     try:
         userinfo = oauth.default.userinfo(
-            token={"access_token": access_token, "token_type": "Bearer"}
+            token={"access_token": access_token, "token_type": "Bearer"},
+            check_audience=False,
         )
     except (requests.RequestException, JoseError) as exc:
         current_app.logger.error("Could not fetch the API token userinfo: %s", exc)

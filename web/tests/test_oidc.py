@@ -125,6 +125,34 @@ def test_userinfo_signed_jwt_wrong_audience(
             oauth.default.userinfo(token={"access_token": "token"})
 
 
+def test_api_accepts_signed_userinfo_for_other_clients(
+    client_app, iam_client, iam_token, userinfo_key, mocker
+):
+    """API tokens issued to other clients are accepted with a signed userinfo."""
+    with client_app.app.test_request_context():
+        claims = userinfo_claims(
+            iam_client, aud="other-client", email="alice@example.test"
+        )
+    mocker.patch.object(
+        oauth.default,
+        "fetch_jwk_set",
+        return_value=KeySet([userinfo_key]).as_dict(private=False),
+    )
+    mocker.patch.object(
+        oauth.default,
+        "get",
+        return_value=signed_userinfo_response(userinfo_key, claims),
+    )
+
+    response = client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=200,
+    )
+
+    assert response.json == {"meetings": []}
+
+
 def test_userinfo_signed_jwt_wrong_signature(
     client_app, iam_client, userinfo_key, mocker
 ):

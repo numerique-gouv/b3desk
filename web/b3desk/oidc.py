@@ -12,7 +12,7 @@ class OIDCClient(FlaskOAuth2App):
 
     # Remove when authlib supports signed UserInfo responses:
     # https://github.com/authlib/authlib/issues/941
-    def userinfo(self, **kwargs):
+    def userinfo(self, check_audience=True, **kwargs):
         """Fetch the user claims, returned either as JSON or as a signed JWT."""
         metadata = self.load_server_metadata()
         response = self.get(metadata["userinfo_endpoint"], **kwargs)
@@ -28,11 +28,10 @@ class OIDCClient(FlaskOAuth2App):
         except InvalidKeyIdError:
             key_set = KeySet.import_key_set(self.fetch_jwk_set(force=True))
             token = jwt.decode(response.text, key_set, algorithms=algorithms)
-        jwt.JWTClaimsRegistry(
-            leeway=120,
-            iss={"essential": True, "value": metadata["issuer"]},
-            aud={"essential": True, "value": self.client_id},
-        ).validate(token.claims)
+        claims_options = {"iss": {"essential": True, "value": metadata["issuer"]}}
+        if check_audience:
+            claims_options["aud"] = {"essential": True, "value": self.client_id}
+        jwt.JWTClaimsRegistry(leeway=120, **claims_options).validate(token.claims)
         return UserInfo(token.claims)
 
 
