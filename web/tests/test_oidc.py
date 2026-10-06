@@ -225,3 +225,14 @@ def test_attendee_authentication_when_the_userinfo_endpoint_fails(
     assert response.location == "/"
     with client_app.session_transaction() as session:
         assert "attendee_userinfo" not in session
+
+
+def test_identity_provider_requests_have_a_timeout(client_app, iam_server, mocker):
+    """Requests to the identity provider cannot block forever."""
+    request = mocker.spy(requests.Session, "request")
+
+    login(client_app, iam_server)
+
+    assert request.call_count > 0
+    for call in request.call_args_list:
+        assert call.kwargs.get("timeout") == 5
