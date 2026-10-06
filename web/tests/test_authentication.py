@@ -313,6 +313,7 @@ def test_logout_redirects_to_end_session_endpoint(
 
     params = parse_qs(parsed.query)
     assert params["id_token_hint"] == [id_token]
+    assert len(params["state"][0]) >= 32
 
     with client_app.app.test_request_context():
         expected_redirect = url_for("public.logout", _external=True)

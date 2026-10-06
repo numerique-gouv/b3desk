@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 
 import httpx2
 import requests
+from authlib.common.security import generate_token
 from authlib.integrations.base_client import MismatchingStateError
 from authlib.integrations.base_client import OAuthError
 from flask import Blueprint
@@ -282,6 +283,7 @@ def logout():
     if end_session_endpoint:
         params = {
             "id_token_hint": id_token,
+            "state": generate_token(32),
             "post_logout_redirect_uri": url_for(
                 "public.logout",
                 _external=True,
