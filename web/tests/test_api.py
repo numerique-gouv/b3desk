@@ -186,7 +186,7 @@ def test_api_meetings_client_id_missing_in_token_audience(
     iam_server.backend.delete(iam_token)
 
 
-def test_keycloak_introspect_token_validator_rejects_wrong_audience(client_app):
+def test_introspect_token_validator_rejects_wrong_audience(client_app):
     """The audience check must be exercised directly here, not through the API.
 
     The canaille test server refuses to introspect a token whose audience
@@ -201,7 +201,7 @@ def test_keycloak_introspect_token_validator_rejects_wrong_audience(client_app):
         validator.validate_token(token, ["openid"], request=None)
 
 
-def test_keycloak_introspect_token_validator_accepts_matching_audience(client_app):
+def test_introspect_token_validator_accepts_matching_audience(client_app):
     """A token whose audience includes our client_id and has the required scope is accepted."""
     validator = OIDCIntrospectTokenValidator()
 
@@ -214,7 +214,7 @@ def test_keycloak_introspect_token_validator_accepts_matching_audience(client_ap
         validator.validate_token(token, ["openid"], request=None)
 
 
-def test_keycloak_introspect_token_validator_accepts_matching_string_audience(
+def test_introspect_token_validator_accepts_matching_string_audience(
     client_app,
 ):
     """Some providers return a single audience as a bare string rather than a list."""
@@ -229,7 +229,7 @@ def test_keycloak_introspect_token_validator_accepts_matching_string_audience(
         validator.validate_token(token, ["openid"], request=None)
 
 
-def test_keycloak_introspect_token_validator_rejects_wrong_string_audience(
+def test_introspect_token_validator_rejects_wrong_string_audience(
     client_app,
 ):
     """A bare-string audience that doesn't match our client_id must be rejected too."""

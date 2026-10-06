@@ -215,10 +215,10 @@ def test_authorize_oauth_error_redirects_home(
     response.follow().mustcontain("La connexion a été annulée.")
 
 
-def test_attendee_callback_mismatching_state_redirects_home(
+def test_attendee_tampered_state_redirects_home(
     client_app, configuration, iam_server, iam_client
 ):
-    """A tampered OIDC state on the attendee callback must redirect to home."""
+    """A tampered OIDC state after an attendee authentication redirects to home."""
     iam_user = iam_server.random_user()
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
