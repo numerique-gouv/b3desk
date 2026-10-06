@@ -76,6 +76,36 @@ def test_lasuite_user_authentication(
     assert user.family_name == iam_user.family_name
 
 
+def test_login_session_is_permanent(client_app, configuration, iam_server, iam_client):
+    """The session cookie outlives the browser session after login."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    cookie = response.headers["Set-Cookie"]
+    assert cookie.startswith(f"{client_app.app.config['SESSION_COOKIE_NAME']}=")
+    assert "Expires=" in cookie
+
+
+def test_attendee_session_is_permanent(
+    client_app, configuration, iam_server, iam_client
+):
+    """The session cookie outlives the browser session after attendee authentication."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert "Expires=" in response.headers["Set-Cookie"]
+
+
 def test_user_goes_back_to_requested_page_after_login(
     client_app, configuration, iam_server, iam_client
 ):

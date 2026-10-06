@@ -11,12 +11,14 @@ from flask import url_for
 
 def store_userinfo(token):
     """Add userinfo and id_token from token in session."""
+    session.permanent = True
     session["userinfo"] = token["userinfo"]
     session["id_token"] = token["id_token"]
 
 
 def store_attendee_userinfo(token):
-    """Add userinfo and id_token from token in session."""
+    """Add the attendee userinfo from token in session."""
+    session.permanent = True
     session["attendee_userinfo"] = token["userinfo"]
 
 
