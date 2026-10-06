@@ -182,6 +182,7 @@ def test_login_rejects_userinfo_with_another_subject(client_app, iam_server, moc
     response, _ = login(client_app, iam_server)
 
     assert response.location.endswith("/home")
+    response.follow().mustcontain("La connexion a été annulée.")
     with client_app.session_transaction() as session:
         assert "userinfo" not in session
 
@@ -197,5 +198,30 @@ def test_login_when_the_userinfo_endpoint_fails(client_app, iam_server, mocker):
     response, _ = login(client_app, iam_server)
 
     assert response.location.endswith("/home")
+    response.follow().mustcontain(
+        "La connexion a échoué, merci de réessayer plus tard."
+    )
     with client_app.session_transaction() as session:
         assert "userinfo" not in session
+
+
+def test_attendee_authentication_when_the_userinfo_endpoint_fails(
+    client_app, iam_server, mocker
+):
+    """Attendee authentication fails without error page when the userinfo endpoint is unreachable."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+    mocker.patch.object(
+        oauth.attendee,
+        "userinfo",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert response.location == "/"
+    with client_app.session_transaction() as session:
+        assert "attendee_userinfo" not in session

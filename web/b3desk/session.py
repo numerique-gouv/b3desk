@@ -9,17 +9,17 @@ from flask import session
 from flask import url_for
 
 
-def store_userinfo(token):
-    """Add userinfo and id_token from token in session."""
+def store_userinfo(userinfo, id_token):
+    """Add the organizer userinfo and id_token in session."""
     session.permanent = True
-    session["userinfo"] = token["userinfo"]
-    session["id_token"] = token["id_token"]
+    session["userinfo"] = userinfo
+    session["id_token"] = id_token
 
 
-def store_attendee_userinfo(token):
-    """Add the attendee userinfo from token in session."""
+def store_attendee_userinfo(userinfo):
+    """Add the attendee userinfo in session."""
     session.permanent = True
-    session["attendee_userinfo"] = token["userinfo"]
+    session["attendee_userinfo"] = userinfo
 
 
 def clear_userinfo():

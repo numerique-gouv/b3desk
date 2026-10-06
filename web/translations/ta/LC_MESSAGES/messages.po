@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 16:18+0200\n"
+"POT-Creation-Date: 2026-10-06 14:24+0200\n"
 "PO-Revision-Date: 2026-06-24 15:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language: ta\n"
@@ -323,27 +323,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:561 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:580 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr "எனது சந்திப்பு அறைகள்"
 
-#: web/b3desk/settings.py:565
+#: web/b3desk/settings.py:584
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr "மாநில வெபினாரின் உடனடி நிகழ்நிலை கூட்டத்திற்கான அழைப்பு"
 
-#: web/b3desk/settings.py:578
+#: web/b3desk/settings.py:597
 msgid "Réunion improvisée"
 msgstr "திடீர் சந்திப்பு"
 
-#: web/b3desk/settings.py:581
+#: web/b3desk/settings.py:600
 msgid " Lien Modérateur  "
 msgstr " மதிப்பீட்டாளர் இணைப்பு  "
 
-#: web/b3desk/settings.py:584
+#: web/b3desk/settings.py:603
 msgid " Lien Participant  "
 msgstr " லீன் பங்கேற்பாளர்  "
 
-#: web/b3desk/settings.py:588
+#: web/b3desk/settings.py:607
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -393,13 +393,13 @@ msgstr[1] ""
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:78
-#: web/b3desk/endpoints/join.py:144 web/b3desk/endpoints/join.py:149
-#: web/b3desk/endpoints/join.py:202 web/b3desk/endpoints/join.py:210
+#: web/b3desk/endpoints/join.py:69 web/b3desk/endpoints/join.py:79
+#: web/b3desk/endpoints/join.py:145 web/b3desk/endpoints/join.py:150
+#: web/b3desk/endpoints/join.py:203 web/b3desk/endpoints/join.py:211
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr "நீங்கள் பயன்படுத்திய அழைப்பு இணைப்பு தவறானது."
 
-#: web/b3desk/endpoints/join.py:180
+#: web/b3desk/endpoints/join.py:181
 msgid "Lien invalide"
 msgstr "தவறான இணைப்பு"
 
@@ -563,17 +563,21 @@ msgstr "பயனர் பிரதிநிதிகளில் ஒருவ�
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr "பிரதிநிதிகளில் இருந்து பயனர் அகற்றப்பட்டார்"
 
-#: web/b3desk/endpoints/meetings.py:490
+#: web/b3desk/endpoints/meetings.py:489
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:81 web/b3desk/endpoints/public.py:100
+#: web/b3desk/endpoints/public.py:106
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:85 web/b3desk/endpoints/public.py:104
+#: web/b3desk/endpoints/public.py:110 web/b3desk/endpoints/public.py:128
 msgid "La connexion a été annulée."
+msgstr ""
+
+#: web/b3desk/endpoints/public.py:114 web/b3desk/endpoints/public.py:132
+msgid "La connexion a échoué, merci de réessayer plus tard."
 msgstr ""
 
 #: web/b3desk/models/bbb.py:265

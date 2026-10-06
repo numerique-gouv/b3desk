@@ -524,12 +524,16 @@ msgstr ""
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:103
+#: web/b3desk/endpoints/public.py:106
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:107 web/b3desk/endpoints/public.py:120
+#: web/b3desk/endpoints/public.py:110 web/b3desk/endpoints/public.py:128
 msgid "La connexion a été annulée."
+msgstr ""
+
+#: web/b3desk/endpoints/public.py:114 web/b3desk/endpoints/public.py:132
+msgid "La connexion a échoué, merci de réessayer plus tard."
 msgstr ""
 
 #: web/b3desk/models/bbb.py:265

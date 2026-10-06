@@ -1,32 +1,14 @@
-import requests
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import FlaskOAuth2App
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
 from joserfc import jwt
 from joserfc.errors import InvalidKeyIdError
-from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
 
 
 class OIDCClient(FlaskOAuth2App):
-    """OpenID Connect client that reads the user claims from the userinfo endpoint."""
-
-    def authorize_access_token(self, **kwargs):
-        """Fetch the access token, then the user claims from the userinfo endpoint."""
-        token = super().authorize_access_token(**kwargs)
-        try:
-            userinfo = self.userinfo(token=token)
-        except (requests.RequestException, JoseError) as exc:
-            raise OAuthError(
-                description=f"Could not fetch the userinfo: {exc}"
-            ) from exc
-
-        if userinfo.get("sub") != token["userinfo"].get("sub"):
-            raise OAuthError(description="The userinfo and ID token subjects differ")
-
-        token["userinfo"] = userinfo
-        return token
+    """OpenID Connect client that can read signed userinfo responses."""
 
     # Remove when authlib supports signed UserInfo responses:
     # https://github.com/authlib/authlib/issues/941
@@ -56,3 +38,11 @@ class OIDCClient(FlaskOAuth2App):
 
 class OIDCOAuth(OAuth):
     oauth2_client_cls = OIDCClient
+
+
+def fetch_userinfo(client, token):
+    """Fetch the user claims from the userinfo endpoint, and check they match the ID token subject."""
+    userinfo = client.userinfo(token=token)
+    if userinfo.get("sub") != token["userinfo"].get("sub"):
+        raise OAuthError(description="The userinfo and ID token subjects differ")
+    return userinfo

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-05 16:18+0200\n"
+"POT-Creation-Date: 2026-10-06 14:24+0200\n"
 "PO-Revision-Date: 2026-02-13 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr@seminaire\n"
@@ -311,27 +311,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:561 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:580 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr "Mes salles de séminaire"
 
-#: web/b3desk/settings.py:565
+#: web/b3desk/settings.py:584
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr "Invitation à un séminaire en ligne immédiat du Webinaire de l’Etat"
 
-#: web/b3desk/settings.py:578
+#: web/b3desk/settings.py:597
 msgid "Réunion improvisée"
 msgstr "Séminaire improvisé"
 
-#: web/b3desk/settings.py:581
+#: web/b3desk/settings.py:600
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:584
+#: web/b3desk/settings.py:603
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:588
+#: web/b3desk/settings.py:607
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -381,13 +381,13 @@ msgstr[1] ""
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:78
-#: web/b3desk/endpoints/join.py:144 web/b3desk/endpoints/join.py:149
-#: web/b3desk/endpoints/join.py:202 web/b3desk/endpoints/join.py:210
+#: web/b3desk/endpoints/join.py:69 web/b3desk/endpoints/join.py:79
+#: web/b3desk/endpoints/join.py:145 web/b3desk/endpoints/join.py:150
+#: web/b3desk/endpoints/join.py:203 web/b3desk/endpoints/join.py:211
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:180
+#: web/b3desk/endpoints/join.py:181
 msgid "Lien invalide"
 msgstr ""
 
@@ -551,17 +551,21 @@ msgstr ""
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:490
+#: web/b3desk/endpoints/meetings.py:489
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:81 web/b3desk/endpoints/public.py:100
+#: web/b3desk/endpoints/public.py:106
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:85 web/b3desk/endpoints/public.py:104
+#: web/b3desk/endpoints/public.py:110 web/b3desk/endpoints/public.py:128
 msgid "La connexion a été annulée."
+msgstr ""
+
+#: web/b3desk/endpoints/public.py:114 web/b3desk/endpoints/public.py:132
+msgid "La connexion a échoué, merci de réessayer plus tard."
 msgstr ""
 
 #: web/b3desk/models/bbb.py:265

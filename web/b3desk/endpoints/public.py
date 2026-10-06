@@ -15,11 +15,13 @@ from flask import request
 from flask import session
 from flask import url_for
 from flask_babel import lazy_gettext as _
+from joserfc.errors import JoseError
 
 from b3desk.utils import http_client
 
 from .. import cache
 from .. import oauth
+from ..oidc import fetch_userinfo
 from ..session import clear_userinfo
 from ..session import has_user_session
 from ..session import is_local_url
@@ -98,6 +100,7 @@ def oidc_callback():
 def organizer_callback():
     try:
         token = oauth.default.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.default, token)
     except MismatchingStateError as exc:
         current_app.logger.warning("OIDC authorization state mismatch: %s", exc)
         flash(_("Votre session de connexion a expiré, merci de réessayer."), "error")
@@ -106,8 +109,12 @@ def organizer_callback():
         current_app.logger.warning("OIDC authorization error: %s", exc)
         flash(_("La connexion a été annulée."), "error")
         return redirect(url_for("public.home"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.home"))
 
-    store_userinfo(token)
+    store_userinfo(userinfo, token["id_token"])
     next_url = session.pop("login_next_url", None) or url_for("public.welcome")
     return redirect(next_url)
 
@@ -115,12 +122,17 @@ def organizer_callback():
 def attendee_callback():
     try:
         token = oauth.attendee.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.attendee, token)
     except OAuthError as exc:
         current_app.logger.warning("Attendee OIDC authorization error: %s", exc)
         flash(_("La connexion a été annulée."), "error")
         return redirect(url_for("public.index"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("Attendee OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.index"))
 
-    store_attendee_userinfo(token)
+    store_attendee_userinfo(userinfo)
     meeting_id = session.pop("attendee_next_meeting_id", None) or abort(404)
     return redirect(
         url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
