@@ -439,10 +439,7 @@ def setup_authlib(app):
         },
     )
 
-    try:
-        oauth.init_app(app)
-    except Exception as exc:  # noqa: BLE001
-        app.logger.error("OIDC service is not ready: %s", exc)
+    oauth.init_app(app)
 
 
 def create_app(test_config=None, authentication=True):
