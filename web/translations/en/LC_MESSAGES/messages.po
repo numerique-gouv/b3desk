@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-06 15:10+0200\n"
+"POT-Creation-Date: 2026-10-06 15:46+0200\n"
 "PO-Revision-Date: 2026-05-05 10:03+0000\n"
 "Last-Translator: Éloi Rivard <eloi.rivard@nubla.fr>\n"
 "Language: en\n"
@@ -550,11 +550,11 @@ msgstr ""
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:111 web/b3desk/endpoints/public.py:129
+#: web/b3desk/endpoints/public.py:111 web/b3desk/endpoints/public.py:130
 msgid "La connexion a été annulée."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:115 web/b3desk/endpoints/public.py:133
+#: web/b3desk/endpoints/public.py:115 web/b3desk/endpoints/public.py:134
 msgid "La connexion a échoué, merci de réessayer plus tard."
 msgstr ""
 

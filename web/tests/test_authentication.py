@@ -91,6 +91,25 @@ def test_login_session_is_permanent(client_app, configuration, iam_server, iam_c
     assert "Expires=" in cookie
 
 
+def test_login_forgets_the_previous_attendee(
+    client_app, configuration, iam_server, iam_client
+):
+    """An organizer login forgets the attendee identity of a previous user."""
+    with client_app.session_transaction() as session:
+        session["attendee_userinfo"] = {"given_name": "Alice", "family_name": "Cooper"}
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    client_app.get(response.headers["Location"], status=302)
+
+    with client_app.session_transaction() as session:
+        assert "attendee_userinfo" not in session
+        assert "userinfo" in session
+
+
 def test_attendee_session_is_permanent(
     client_app, configuration, iam_server, iam_client
 ):

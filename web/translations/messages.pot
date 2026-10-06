@@ -528,11 +528,11 @@ msgstr ""
 msgid "Votre session de connexion a expiré, merci de réessayer."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:111 web/b3desk/endpoints/public.py:129
+#: web/b3desk/endpoints/public.py:111 web/b3desk/endpoints/public.py:130
 msgid "La connexion a été annulée."
 msgstr ""
 
-#: web/b3desk/endpoints/public.py:115 web/b3desk/endpoints/public.py:133
+#: web/b3desk/endpoints/public.py:115 web/b3desk/endpoints/public.py:134
 msgid "La connexion a échoué, merci de réessayer plus tard."
 msgstr ""
 

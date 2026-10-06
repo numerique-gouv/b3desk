@@ -115,6 +115,7 @@ def organizer_callback():
         flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
         return redirect(url_for("public.home"))
 
+    clear_userinfo()
     store_userinfo(userinfo, token["id_token"])
     next_url = session.pop("login_next_url", None) or url_for("public.welcome")
     return redirect(next_url)
