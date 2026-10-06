@@ -6,6 +6,7 @@ import pytest
 from b3desk import create_app
 from b3desk.settings import MainSettings
 from b3desk.settings import MeetingLocaleVariant
+from b3desk.settings import default_session_cookie_name
 from flask import url_for
 
 
@@ -252,3 +253,19 @@ def test_create_app_without_authentication(configuration, mocker):
     setup_authlib.assert_not_called()
     with app.app_context():
         assert url_for("public.welcome", _external=True)
+
+
+def test_session_cookie_name_depends_on_minor_version(mocker):
+    """The session cookie name changes with each minor version."""
+    mocker.patch("b3desk.settings.version", return_value="2.3.1")
+
+    assert default_session_cookie_name() == "session_2_3"
+
+
+def test_session_cookie_name_is_used(client_app):
+    """The session cookie is sent with the version dependent name."""
+    response = client_app.get("/home?lang=en")
+
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
+    assert cookie_name == default_session_cookie_name()
+    assert response.headers["Set-Cookie"].startswith(f"{cookie_name}=")

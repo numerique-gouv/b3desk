@@ -26,3 +26,4 @@ Elle est construite à partir de `PREFERRED_URL_SCHEME` et `SERVER_NAME` : `http
 - Lorsque le jeton est expiré, l'API retourne des codes d'erreur HTTP 401.
 - Lorsque l'audience du jeton est incorrecte, l'API retourne des codes d'erreur 401.
 - Lorsque le fournisseur d’identité ne peut pas vérifier le jeton, l’API retourne des codes d’erreur HTTP 503.
+- Le nom du cookie de session dépend de la version mineure de B3Desk, par exemple `session_1_8`. Les utilisateurs sont donc déconnectés à chaque mise à jour mineure. Il est configurable avec `SESSION_COOKIE_NAME`.

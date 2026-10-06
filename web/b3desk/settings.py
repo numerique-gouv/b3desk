@@ -2,10 +2,12 @@ import datetime
 import json
 import warnings
 from enum import StrEnum
+from importlib.metadata import version
 from typing import Annotated
 from typing import Any
 
 from flask_babel import lazy_gettext as _
+from packaging.version import Version
 from pydantic import BeforeValidator
 from pydantic import FilePath
 from pydantic import PositiveInt
@@ -16,6 +18,12 @@ from pydantic import model_validator
 from pydantic_settings import BaseSettings
 from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
+
+
+def default_session_cookie_name():
+    """Return a session cookie name that changes with each minor version."""
+    current_version = Version(version("b3desk"))
+    return f"session_{current_version.major}_{current_version.minor}"
 
 
 def split_comma_separated_strings(value):
@@ -68,6 +76,17 @@ class MainSettings(BaseSettings):
 
     Plus d'infos sur
     https://flask.palletsprojects.com/en/3.0.x/config/#PREFERRED_URL_SCHEME.
+    """
+
+    SESSION_COOKIE_NAME: str = default_session_cookie_name()
+    """Nom du cookie de session.
+
+    Par défaut, il dépend de la version mineure de B3Desk, par exemple
+    ``session_1_8``. Les utilisateurs sont donc déconnectés à chaque mise à jour
+    mineure, ce qui évite de lire des sessions écrites par une version précédente.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_NAME.
     """
 
     LOG_CONFIG: FilePath | None = None
