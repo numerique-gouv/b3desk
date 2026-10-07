@@ -398,6 +398,14 @@ class MainSettings(BaseSettings):
     """Méthode de communication avec le point d’entrée ``token_endpoint`` du
     serveur d’identité des organisateurs."""
 
+    OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
+    """Méthode de communication avec le point d’entrée d’introspection
+    ``token_introspection`` du serveur d’identité des organisateurs.
+
+    ``client_secret_basic`` ou ``client_secret_post``. ProConnect demande
+    ``client_secret_post``.
+    """
+
     # Attendee OIDC Configuration (back to default if empty)
     OIDC_ATTENDEE_ENABLED: bool | None = True
     """Indique si le serveur d’authentification des participants est activé ou

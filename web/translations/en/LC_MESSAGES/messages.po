@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-06 15:46+0200\n"
+"POT-Creation-Date: 2026-10-07 14:58+0200\n"
 "PO-Revision-Date: 2026-05-05 10:03+0000\n"
 "Last-Translator: Éloi Rivard <eloi.rivard@nubla.fr>\n"
 "Language: en\n"
@@ -303,27 +303,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:580 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:588 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:584
+#: web/b3desk/settings.py:592
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:597
+#: web/b3desk/settings.py:605
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:600
+#: web/b3desk/settings.py:608
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:603
+#: web/b3desk/settings.py:611
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:607
+#: web/b3desk/settings.py:615
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"

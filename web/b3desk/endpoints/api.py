@@ -20,6 +20,21 @@ bp = Blueprint("api", __name__)
 require_oauth = ResourceProtector()
 
 
+def introspection_request(token_string):
+    """Build the introspection request with the configured client authentication method."""
+    client_id = current_app.config["OIDC_CLIENT_ID"]
+    client_secret = current_app.config["OIDC_CLIENT_SECRET"]
+    if current_app.config["OIDC_INTROSPECTION_AUTH_METHOD"] == "client_secret_post":
+        return {
+            "data": {
+                "token": token_string,
+                "client_id": client_id,
+                "client_secret": client_secret,
+            }
+        }
+    return {"data": {"token": token_string}, "auth": (client_id, client_secret)}
+
+
 class OIDCIntrospectTokenValidator(IntrospectTokenValidator):
     def introspect_token(self, token_string):
         try:
@@ -27,12 +42,7 @@ class OIDCIntrospectTokenValidator(IntrospectTokenValidator):
                 "introspection_endpoint"
             ]
             response = http_client().post(
-                introspection_endpoint,
-                data={"token": token_string},
-                auth=(
-                    current_app.config["OIDC_CLIENT_ID"],
-                    current_app.config["OIDC_CLIENT_SECRET"],
-                ),
+                introspection_endpoint, **introspection_request(token_string)
             )
             response.raise_for_status()
         except (requests.RequestException, httpx2.HTTPError) as exc:

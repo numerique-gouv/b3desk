@@ -102,6 +102,28 @@ def test_api_meetings_invalid_token(client_app):
     )
 
 
+@pytest.mark.parametrize("auth_method", ["client_secret_basic", "client_secret_post"])
+def test_api_introspection_auth_method(client_app, iam_token, mocker, auth_method):
+    """The token introspection uses the configured client authentication method."""
+    client_app.app.config["OIDC_INTROSPECTION_AUTH_METHOD"] = auth_method
+    post = mocker.spy(httpx2.Client, "post")
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status="*",
+    )
+
+    request = post.call_args.kwargs
+    credentials = {"client_id": "client_id", "client_secret": "client_secret"}
+    if auth_method == "client_secret_post":
+        assert credentials.items() <= request["data"].items()
+        assert "auth" not in request
+    else:
+        assert request["auth"] == ("client_id", "client_secret")
+        assert "client_secret" not in request["data"]
+
+
 def test_api_meetings_introspection_endpoint_unreachable(
     client_app, iam_token, mocker, caplog
 ):
