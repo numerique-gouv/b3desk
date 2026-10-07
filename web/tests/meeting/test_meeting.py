@@ -1263,7 +1263,9 @@ def test_generate_existing_pin(
     res.mustcontain("222222222")
 
 
-def test_edit_meeting_without_change_anything(client_app, meeting, authenticated_user):
+def test_edit_meeting_without_change_anything(
+    client_app, meeting, authenticated_user, mock_meeting_is_not_running
+):
     """Test that meeting can be saved without making any changes."""
     res = client_app.get(f"/meeting/edit/{meeting.id}", status=200)
     res = res.forms[0].submit()
