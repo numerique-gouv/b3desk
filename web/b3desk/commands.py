@@ -252,15 +252,21 @@ class RunningConfigDotEnvGenerator(DotEnvGenerator):
 
 
 @bp.cli.command("config-dump")
-def config_dump():
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default="web.env.dump",
+    show_default=True,
+    help="Path and name for the exported dotenv file.",
+)
+def config_dump(output):
     """Export the running configuration to a dotenv file."""
     running_settings = MainSettings.model_construct(
         **{name: current_app.config[name] for name in MainSettings.model_fields}
     )
     settings = PSESettings(project_dir=Path("./"), root_dir=Path("./"))
     generators = [
-        RunningConfigDotEnvGenerator(
-            settings, DotEnvSettings(paths=[Path("web.env.dump")])
-        ),
+        RunningConfigDotEnvGenerator(settings, DotEnvSettings(paths=[output])),
     ]
     Exporter(settings, generators).run_all(running_settings)
