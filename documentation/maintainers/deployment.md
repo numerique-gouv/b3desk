@@ -74,6 +74,16 @@ cp web.env.example web.env
 
 Adapter les valeurs du fichiers de configuration à partir des indications du chapitre sur la {ref}`Configuration de B3Desk<maintainers/settings:B3Desk>`.
 
+Lorsqu'un conteneur B3Desk est en fonctionnement, il est possible d'éxécuter la commande suivante pour exporter la configuration courante, incluant les descriptions des différentes variables d'environnement et les valeurs par défaut en commentaire dans le fichier.
+
+```bash
+# Exporte un fichier web.env.dump dans le dossier de l'application B3Desk
+docker exec -it web flask config-dump
+
+# Exporte le fichier de configuration avec le nom de votre choix, dans le dossier de votre choix
+docker exec -it web flask config-dump --output ./nouveau-dossier/nomdufichier.env
+```
+
 ### Serveur web
 
 Paramétrer le chargement des pages d’erreurs statique sur le serveur web frontal à partir des indications du chapitre sur la {ref}`Configuration de Nginx<maintainers/settings:Nginx>`.
