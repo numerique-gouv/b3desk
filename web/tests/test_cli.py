@@ -1,5 +1,6 @@
 import pathlib
 
+import pytest
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
@@ -77,8 +78,9 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
 
-def test_config_dump(tmp_path, monkeypatch):
-    """Export a fixed configuration and compare it with the reference dotenv file."""
+@pytest.fixture
+def config_dump_app(monkeypatch):
+    """Build a minimal app with a fixed configuration for config-dump tests."""
     # Ignore any environment variable that could alter the settings on the dev machine
     for name in MainSettings.model_fields:
         monkeypatch.delenv(name, raising=False)
@@ -99,10 +101,14 @@ def test_config_dump(tmp_path, monkeypatch):
     app = Flask(__name__)
     app.config.from_object(settings)
     Babel(app)
+    return app
 
+
+def test_config_dump(config_dump_app, tmp_path, monkeypatch):
+    """Export a fixed configuration and compare it with the reference dotenv file."""
     monkeypatch.chdir(tmp_path)
-    with app.app_context():
-        res = app.test_cli_runner(catch_exceptions=False).invoke(
+    with config_dump_app.app_context():
+        res = config_dump_app.test_cli_runner(catch_exceptions=False).invoke(
             bp.cli, ["config-dump"]
         )
     assert res.exit_code == 0, res.output
@@ -112,3 +118,18 @@ def test_config_dump(tmp_path, monkeypatch):
         pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
     ).read_text()
     assert exported_config == expected_config
+
+
+def test_config_dump_output(config_dump_app, tmp_path):
+    """Export the configuration to a custom location."""
+    output = tmp_path / "subdir" / "custom.env"
+    with config_dump_app.app_context():
+        res = config_dump_app.test_cli_runner(catch_exceptions=False).invoke(
+            bp.cli, ["config-dump", "--output", str(output)]
+        )
+    assert res.exit_code == 0, res.output
+
+    expected_config = (
+        pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
+    ).read_text()
+    assert output.read_text() == expected_config
