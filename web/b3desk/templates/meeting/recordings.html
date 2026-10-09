@@ -75,7 +75,7 @@
                                 <td style="vertical-align: middle">
                                     <div class="fr-grid-row fr-grid-row--gutters btn-actions">
                                         <a class="fr-btn fr-btn--primary" target="_blank" rel="noopener" href="{{ playback.url }}" title="{% trans %}Voir l'enregistrement{% endtrans %}"><span class="fr-icon-play-line"></span></a>
-                                        <button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line" id="meeting-{{ meeting.id }}-recording-link-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-link-copy', '{{ playback.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                        <button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line copy-button" id="meeting-{{ meeting.id }}-recording-link-copy" data-copy-text="{{ playback.url }}" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
                                         </button>
                                         {% if recording.playbacks.get("video") %}
                                             <a class="fr-btn fr-btn--primary fr-ml-2w" target="_blank" rel="noopener" href="{{ recording.playbacks['video'].url }}" title="{% trans %}Voir l'enregistrement mp4{% endtrans %}"><span class="fr-icon-film-line"></span></a>
@@ -229,7 +229,7 @@
                                         {% if recording.playbacks.video.get("direct_link") %}
                                             <div class="fr-grid-row fr-grid-row--center">
                                                 <input class="fr-input fr-col-9" type="text" readonly value="{{ recording.playbacks.video.direct_link }}">
-                                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-recording-media-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-media-copy', '{{ recording.playbacks.video.direct_link }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-recording-media-copy" data-copy-text="{{ recording.playbacks.video.direct_link }}" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
                                                     <span></span>
                                                 </button>
                                             </div>
@@ -254,4 +254,6 @@
             </a>
         {% endif %}
     </div>
+
+    <script src="{{ url_for('static', filename='js/copy-in-clipboard.js') }}"></script>
 {% endblock %}

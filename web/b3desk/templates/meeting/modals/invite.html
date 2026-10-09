@@ -28,7 +28,7 @@
                                 <p class="visio-code fr-px-4v fr-py-3v fr-mb-0" id="meeting-{{ meeting.id }}-moderator-url"><b>{{ meeting.visio_code }}</b></p>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-visio-code-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-visio-code-copy', '{{ meeting.visio_code }}');" title="{% trans %}Copier le code de connexion dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-moderator-visio-code-copy" data-copy-text="{{ meeting.visio_code }}" title="{% trans %}Copier le code de connexion dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -44,7 +44,7 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-copy', '{{ moderator_url }}');" title="{% trans %}Copier le lien modérateur dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-moderator-copy" data-copy-text="{{ moderator_url }}" title="{% trans %}Copier le lien modérateur dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -62,7 +62,7 @@
                                     </div>
                                 </section>
                                 <div>
-                                    <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-moderator-sip-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-moderator-sip-copy', '{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}');" title="{% trans %}Copier le lien SIP dans le presse-papiers{% endtrans %}">
+                                    <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-moderator-sip-copy" data-copy-text="{{ meeting.visio_code }}@{{ config.get('FQDN_SIP_SERVER') }}" title="{% trans %}Copier le lien SIP dans le presse-papiers{% endtrans %}">
                                         <span></span>
                                     </button>
                                 </div>
@@ -81,7 +81,7 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-attendee-copy', '{{ attendee_url }}');" title="{% trans %}Copier le lien participant dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-attendee-copy" data-copy-text="{{ attendee_url }}" title="{% trans %}Copier le lien participant dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -97,7 +97,7 @@
                                 </div>
                             </section>
                             <div>
-                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-authenticated-attendee-copy', '{{ authenticated_url }}');" title="{% trans %}Copier le lien participant authentifié dans le presse-papiers{% endtrans %}">
+                                <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-authenticated-attendee-copy" data-copy-text="{{ authenticated_url }}" title="{% trans %}Copier le lien participant authentifié dans le presse-papiers{% endtrans %}">
                                     <span></span>
                                 </button>
                             </div>
@@ -115,7 +115,7 @@
                                     </div>
                                 </section>
                                 <div>
-                                    <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right" id="meeting-{{ meeting.id }}-phone-info-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-phone-info-copy', 'n° de téléphone : {{ config.get("BIGBLUEBUTTON_DIALNUMBER") }}, code PIN : {{ meeting.voiceBridge }}');" title="{% trans %}Copier les informations dans le presse-papiers{% endtrans %}">
+                                    <button type="button" class="btn-copy fr-btn fr-btn--primary fr-icon-clipboard-line fr-btn--icon-right copy-button" id="meeting-{{ meeting.id }}-phone-info-copy" data-copy-text="n° de téléphone : {{ config.get('BIGBLUEBUTTON_DIALNUMBER') }}, code PIN : {{ meeting.voiceBridge }}" title="{% trans %}Copier les informations dans le presse-papiers{% endtrans %}">
                                         <span></span>
                                     </button>
                                 </div>

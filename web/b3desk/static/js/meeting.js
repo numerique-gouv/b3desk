@@ -1,5 +1,13 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
+const nc_locator = document.currentScript.dataset.ncLocator;
+const nc_login = document.currentScript.dataset.ncLogin;
+const nc_token = document.currentScript.dataset.ncToken;
+const meeting_files_url_base = document.currentScript.dataset.meetingFilesUrlBase;
+const add_meeting_files_url = document.currentScript.dataset.addMeetingFilesUrl;
+const delete_meeting_file_url = document.currentScript.dataset.deleteMeetingFileUrl;
+const accepted_files = document.currentScript.dataset.acceptedFiles;
+
 Dropzone.autoDiscover = false;
 
 function toggleIsDownloadable(e){
@@ -161,7 +169,7 @@ function append_file_to_fileslist(title, id, date) {
     input.setAttribute('value', id);
     form.setAttribute('action', delete_meeting_file_url);
     form.setAttribute('method', 'POST');
-    form.setAttribute('onsubmit', 'deleteFile(event)');
+    form.addEventListener('submit', deleteFile);
 
 
     form.appendChild(input);
@@ -260,10 +268,6 @@ function link_file_to_meeting(value, from) {
     })
 }
 
-function openNCFilePicker(e) {
-    ncfilepicker.getFilesPath();
-}
-
 
 function createNCFilePicker() {
     let ncPickerParams = {
@@ -327,6 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var form_files = document.getElementById('meeting-form');
 
+    var delete_files = document.querySelectorAll(".js-delete-file");
+    delete_files.forEach((delete_file) => {
+        delete_file.addEventListener('submit', deleteFile);
+    });
+
     form_files.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -340,3 +349,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createNCFilePicker()
 })
+
+
+const openNCFilePickerButton = document.getElementById("openNCFilePickerButton")
+if (openNCFilePickerButton) {
+    openNCFilePickerButton.addEventListener('click', (e) => {
+        ncfilepicker.getFilesPath();
+    })
+}
+
+
+const toggleIsDownloadableBoxes = document.querySelectorAll(".js-toggle-downloadable")
+toggleIsDownloadableBoxes.forEach((box) => {
+    box.addEventListener("click", (e) => {
+        toggleIsDownloadable(e);
+    });
+});

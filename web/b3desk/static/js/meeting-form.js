@@ -1,9 +1,11 @@
+const visioCodeUrl = document.currentScript.dataset.visioCodeUrl
+
 document.addEventListener("DOMContentLoaded", () => {
     let buttons = document.getElementsByClassName("visio-code-button");
     for (let button of buttons){
         button.addEventListener("click", async (event) => {
             let visioCodeInput = document.getElementById(event.target.dataset.fieldName)
-            const response = await fetch(window.visioCodeUrl, {
+            const response = await fetch(visioCodeUrl, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -34,4 +36,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+});
+
+const generateButtons = document.querySelectorAll(".js-generate-button");
+generateButtons.forEach((button) => {
+    const fieldName = button.dataset.fieldName;
+    const passwordField = document.getElementById(fieldName);
+    button.addEventListener("click", (e) => {
+        if (passwordField) {passwordField.value=generatePassWord(10)};
+    });
 });

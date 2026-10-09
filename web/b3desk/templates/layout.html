@@ -61,18 +61,7 @@
             {# Scampi Modal en attendant la modale GouvFr #}
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}
-                <script>
-                    var _paq = window._paq = window._paq || [];
-                    _paq.push(['trackPageView']);
-                    _paq.push(['enableLinkTracking']);
-                    (function() {
-                        var u="{{ config.get("MATOMO_URL") }}";
-                        _paq.push(['setTrackerUrl', u+'piwik.php']);
-                        _paq.push(['setSiteId', '{{ config.get("MATOMO_SITE_ID") }}']);
-                        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                        g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-                    })();
-                </script>
+                <script src="{{ url_for('static', filename='js/matomo.js')}}" data-url="{{ config.get('MATOMO_URL') }}" data-site-id="{{ config.get('MATOMO_SITE_ID') }}"></script>
             {% endif %}
             {% if config.get("ENABLE_LASUITENUMERIQUE") %}
                 <script id="lasuite-gaufre-script" async defer src="https://integration.lasuite.numerique.gouv.fr/api/v1/gaufre.js"></script>

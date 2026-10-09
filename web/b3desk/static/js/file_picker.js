@@ -1,3 +1,10 @@
+const nc_locator = document.currentScript.dataset.ncLocator;
+const nc_login = document.currentScript.dataset.ncLogin;
+const nc_token = document.currentScript.dataset.ncToken;
+const insert_documents_url = document.currentScript.dataset.insertDocumentsUrl;
+const file_picker_wrapper_url = document.currentScript.dataset.filePickerWrapperUrl;
+
+
 function createNCFilePicker() {
     let ncPickerParams = {
         url: nc_locator,
