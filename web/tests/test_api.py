@@ -1,5 +1,11 @@
 import datetime
 
+import httpx2
+import pytest
+import requests
+from authlib.oauth2.rfc6750 import InvalidTokenError
+from b3desk import oauth
+from b3desk.endpoints.api import OIDCIntrospectTokenValidator
 from b3desk.models import db
 from b3desk.models.meetings import Meeting
 
@@ -90,14 +96,84 @@ def test_api_meetings_no_token(client_app):
 
 
 def test_api_meetings_invalid_token(client_app):
-    """Test that API returns 403 with invalid authentication token."""
+    """Test that API returns 401 with invalid authentication token."""
     client_app.get(
-        "/api/meetings", headers={"Authorization": "Bearer invalid-token"}, status=403
+        "/api/meetings", headers={"Authorization": "Bearer invalid-token"}, status=401
     )
 
 
+@pytest.mark.parametrize("auth_method", ["client_secret_basic", "client_secret_post"])
+def test_api_introspection_auth_method(client_app, iam_token, mocker, auth_method):
+    """The token introspection uses the configured client authentication method."""
+    client_app.app.config["OIDC_INTROSPECTION_AUTH_METHOD"] = auth_method
+    post = mocker.spy(httpx2.Client, "post")
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status="*",
+    )
+
+    request = post.call_args.kwargs
+    credentials = {"client_id": "client_id", "client_secret": "client_secret"}
+    if auth_method == "client_secret_post":
+        assert credentials.items() <= request["data"].items()
+        assert "auth" not in request
+    else:
+        assert request["auth"] == ("client_id", "client_secret")
+        assert "client_secret" not in request["data"]
+
+
+def test_api_meetings_introspection_endpoint_unreachable(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the identity provider cannot introspect the token."""
+    http_client = mocker.patch("b3desk.endpoints.api.http_client")
+    http_client.return_value.post.side_effect = httpx2.ConnectError("unreachable")
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not introspect the API token" in caplog.text
+
+
+def test_api_meetings_introspection_endpoint_error(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the introspection endpoint answers with an error."""
+    http_client = mocker.patch("b3desk.endpoints.api.http_client")
+    http_client.return_value.post.return_value = httpx2.Response(
+        500, request=httpx2.Request("POST", "https://iam.test/introspect")
+    )
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not introspect the API token" in caplog.text
+
+
+def test_api_meetings_userinfo_endpoint_unreachable(
+    client_app, iam_token, mocker, caplog
+):
+    """The API returns 503 when the identity provider cannot return the userinfo."""
+    mocker.patch.object(
+        oauth.default, "userinfo", side_effect=requests.ConnectionError("unreachable")
+    )
+
+    client_app.get(
+        "/api/meetings",
+        headers={"Authorization": f"Bearer {iam_token.access_token}"},
+        status=503,
+    )
+    assert "Could not fetch the API token userinfo" in caplog.text
+
+
 def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user, user):
-    """Test that API returns 403 with expired authentication token."""
+    """Test that API returns 401 with expired authentication token."""
     iam_token = iam_server.random_token(
         client=iam_client,
         subject=iam_user,
@@ -107,7 +183,7 @@ def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user
     client_app.get(
         "/api/meetings",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
-        status=403,
+        status=401,
     )
 
     iam_server.backend.delete(iam_token)
@@ -116,30 +192,84 @@ def test_api_meetings_token_expired(client_app, iam_server, iam_client, iam_user
 def test_api_meetings_client_id_missing_in_token_audience(
     client_app, iam_server, iam_client, iam_user, user
 ):
-    """Test that API returns 403 when client ID is missing in token audience."""
-    iam_token = iam_server.models.Token(
+    """Test that API returns 401 when client ID is missing in token audience."""
+    iam_token = iam_server.random_token(
         client=iam_client,
         subject=iam_user,
-        audience="some-other-audience",
+        audience=[],
     )
 
     client_app.get(
         "/api/meetings",
         headers={"Authorization": f"Bearer {iam_token.access_token}"},
-        status=403,
+        status=401,
     )
 
     iam_server.backend.delete(iam_token)
+
+
+def test_introspect_token_validator_rejects_wrong_audience(client_app):
+    """The audience check must be exercised directly here, not through the API.
+
+    The canaille test server refuses to introspect a token whose audience
+    doesn't include the requesting client (see
+    test_api_meetings_client_id_missing_in_token_audience above), so this
+    custom check can't be reached through a real HTTP call in tests.
+    """
+    validator = OIDCIntrospectTokenValidator()
+    token = {"active": True, "aud": ["some-other-client"], "scope": "openid"}
+
+    with client_app.app.app_context(), pytest.raises(InvalidTokenError):
+        validator.validate_token(token, ["openid"], request=None)
+
+
+def test_introspect_token_validator_accepts_matching_audience(client_app):
+    """A token whose audience includes our client_id and has the required scope is accepted."""
+    validator = OIDCIntrospectTokenValidator()
+
+    with client_app.app.app_context():
+        token = {
+            "active": True,
+            "aud": [client_app.app.config["OIDC_CLIENT_ID"]],
+            "scope": "openid",
+        }
+        validator.validate_token(token, ["openid"], request=None)
+
+
+def test_introspect_token_validator_accepts_matching_string_audience(
+    client_app,
+):
+    """Some providers return a single audience as a bare string rather than a list."""
+    validator = OIDCIntrospectTokenValidator()
+
+    with client_app.app.app_context():
+        token = {
+            "active": True,
+            "aud": client_app.app.config["OIDC_CLIENT_ID"],
+            "scope": "openid",
+        }
+        validator.validate_token(token, ["openid"], request=None)
+
+
+def test_introspect_token_validator_rejects_wrong_string_audience(
+    client_app,
+):
+    """A bare-string audience that doesn't match our client_id must be rejected too."""
+    validator = OIDCIntrospectTokenValidator()
+    token = {"active": True, "aud": "some-other-client", "scope": "openid"}
+
+    with client_app.app.app_context(), pytest.raises(InvalidTokenError):
+        validator.validate_token(token, ["openid"], request=None)
 
 
 def test_api_meetings_missing_scope_in_token(
     client_app, iam_server, iam_client, iam_user, user
 ):
     """Test that API returns 403 when required scope is missing in token."""
-    iam_token = iam_server.models.Token(
+    iam_token = iam_server.random_token(
         client=iam_client,
         subject=iam_user,
-        scope=["openid"],
+        scope=["profile"],
     )
 
     client_app.get(
