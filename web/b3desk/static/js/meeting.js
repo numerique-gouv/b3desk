@@ -268,10 +268,6 @@ function link_file_to_meeting(value, from) {
     })
 }
 
-function openNCFilePicker(e) {
-    ncfilepicker.getFilesPath();
-}
-
 
 function createNCFilePicker() {
     let ncPickerParams = {
