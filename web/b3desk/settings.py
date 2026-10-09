@@ -975,6 +975,12 @@ class MainSettings(BaseSettings):
     Number of attempts to enter the visio-code before submitting a captcha
     """
 
+    VISIO_CODE_RATE_LIMIT: PositiveInt = 120
+    """Maximum visio-code requests per IP or user in one window."""
+
+    VISIO_CODE_RATE_WINDOW: PositiveInt = 60
+    """Duration of the visio-code counter window, in seconds."""
+
     MAXIMUM_MEETING_DELEGATES: int | None = 15
     """Maximum meeting delegates
 

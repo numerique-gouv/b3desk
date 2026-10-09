@@ -6,7 +6,7 @@ from b3desk.endpoints.captcha import captcha_validation
 from b3desk.endpoints.captcha import captchetat_service_status
 from b3desk.endpoints.captcha import get_captchetat_token
 from b3desk.session import should_display_captcha
-from flask import session
+from b3desk.session import visio_code_attempt_counter_increment
 
 
 class Access_token_response:
@@ -246,8 +246,9 @@ def test_home_when_captchetat_is_unreachable(access_token, client_app, mocker):
         "httpx2.Client.get", side_effect=httpx2.ConnectError("connection refused")
     )
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     response = client_app.get("/home", status=200)
     response.mustcontain('id="captcha-container" style="display: none;"')
@@ -303,11 +304,11 @@ def test_join_with_visio_code_with_wrong_visio_code_and_wrong_captcha(
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = False
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     with client_app.app.test_request_context("/"):
-        session.update(sess)
         response = client_app.post(
             "/meeting/visio_code",
             params={
@@ -343,11 +344,11 @@ def test_join_with_visio_code_with_wrong_visio_code_and_valid_captcha(
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = True
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     with client_app.app.test_request_context("/"):
-        session.update(sess)
         response = client_app.post(
             "/meeting/visio_code",
             params={
@@ -379,12 +380,11 @@ def test_join_with_visio_code_with_valid_visio_code_and_wrong_captcha(
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = False
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     with client_app.app.test_request_context("/"):
-        session.update(sess)
-
         response = client_app.post(
             "/meeting/visio_code",
             params={
@@ -419,12 +419,11 @@ def test_join_with_visio_code_with_valid_visio_code_and_valid_captcha(
     access_token.return_value = "valid-access-token"
     captcha_validation.return_value = True
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     with client_app.app.test_request_context("/"):
-        session.update(sess)
-
         response = client_app.post(
             "/meeting/visio_code",
             params={
@@ -466,12 +465,11 @@ def test_should_display_captcha_with_no_token(client_app, caplog):
     """Test that captcha is not displayed when captchetat service is down."""
     client_app.app.config["CAPTCHA_NUMBER_ATTEMPTS"] = 1
 
-    with client_app.session_transaction() as sess:
-        sess["visio_code_attempt_counter"] = 2
+    with client_app.app.test_request_context("/"):
+        visio_code_attempt_counter_increment()
+        visio_code_attempt_counter_increment()
 
     with client_app.app.test_request_context("/"):
-        session.update(sess)
-
         result = should_display_captcha()
         assert not result
         assert "captcha error : Captchetat service is down" in caplog.text

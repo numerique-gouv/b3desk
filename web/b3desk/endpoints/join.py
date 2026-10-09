@@ -25,6 +25,7 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.rate_limit import visio_code_rate_limit
 from b3desk.session import visio_code_attempt_counter_increment
 from b3desk.session import visio_code_attempt_counter_reset
 from b3desk.utils import check_oidc_connection
@@ -309,6 +310,7 @@ def get_visio_code_from_form():
 
 @bp.route("/meeting/visio_code", methods=["POST"])
 @check_oidc_connection(auth)
+@visio_code_rate_limit
 def visio_code_connection():
     """Process visio code form submission and redirect to meeting if valid."""
     visio_code = get_visio_code_from_form()
@@ -335,6 +337,7 @@ def visio_code_connection():
 
 @bp.route("/meeting/visio_code_form", methods=["POST"])
 @check_oidc_connection(auth)
+@visio_code_rate_limit
 def visio_code_form_validation():
     """Validate the visio-code from from the front."""
     visio_code = get_visio_code_from_form()

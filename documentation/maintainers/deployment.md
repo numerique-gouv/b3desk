@@ -80,6 +80,13 @@ Paramétrer le chargement des pages d’erreurs statique sur le serveur web fron
 
 Faire attention à ne pas mettre en cache les pages dynamiques de B3Desk.
 
+Les vérifications de codes de réunion nécessitent un cache Redis partagé :
+`REDIS_URL` doit être configuré. `VISIO_CODE_RATE_LIMIT` (120) et
+`VISIO_CODE_RATE_WINDOW` (60 secondes) limitent les requêtes par IP et utilisateur,
+sur les deux routes de vérification. Une panne Redis renvoie 503, un dépassement
+429 avec `Retry-After`. Le compteur utilise `remote_addr` : le proxy doit transmettre
+l’IP réelle par un mécanisme de confiance, sans accepter des en-têtes falsifiables.
+
 ## Lancement des conteneurs
 
 Enfin lorsque la bonne branche est chargée et que l’application est correctement configurée, on peut lancer les conteneurs avec les commandes suivantes :
