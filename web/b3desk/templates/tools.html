@@ -19,7 +19,7 @@
                 <a href="{{ account_management_url }}" class="fr-link fr-fi-lock-line fr-link--icon-left" target="_self">{{ g.user.fullname }}</a>
                 </li>
                 {% endif %} -->
-                {% if g.user.admin %}
+                {% if config.get("ENABLE_ADMIN_MANAGEMENT") and g.user.admin %}
                     <li>
                         <a class="fr-btn fr-btn--delete fr-btn--admin" href="{{ url_for("admin.home") }}" title="{% trans %}Ouvrir la page d'administration{% endtrans %}">
                             {% trans %}Admin{% endtrans %}

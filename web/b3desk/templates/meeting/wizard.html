@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    {% if admin_mode %}
+    {% if admin_mode and config.get("ENABLE_ADMIN_MANAGEMENT") %}
         {{ breadcrumb([
         {'href': url_for('admin.home'), 'label': _('Menu Admin')},
         {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},

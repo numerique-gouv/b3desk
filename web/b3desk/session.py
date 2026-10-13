@@ -37,7 +37,11 @@ def admin_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not g.user or not g.user.admin:
+        if (
+            not current_app.config["ENABLE_ADMIN_MANAGEMENT"]
+            or not g.user
+            or not g.user.admin
+        ):
             abort(403)
 
         return view_function(*args, **kwargs)
@@ -47,7 +51,12 @@ def admin_needed(view_function):
 
 def is_admin_mode():
     """Whether admin mode is requested by an actual admin (display hint, not access control)."""
-    return "admin_mode" in request.args and bool(g.user) and g.user.admin
+    return (
+        current_app.config["ENABLE_ADMIN_MANAGEMENT"]
+        and "admin_mode" in request.args
+        and bool(g.user)
+        and g.user.admin
+    )
 
 
 def user_needed(view_function):
@@ -77,7 +86,9 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user or g.user.admin:
+            if meeting.owner == g.user or (
+                g.user.admin and current_app.config["ENABLE_ADMIN_MANAGEMENT"]
+            ):
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

@@ -992,3 +992,9 @@ class MainSettings(BaseSettings):
 
     Allow AI summary generation on records
     """
+
+    ENABLE_ADMIN_MANAGEMENT: bool | None = False
+    """Enable Admin Management
+
+    Allow admin account to access admin interfaces
+    """
