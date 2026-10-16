@@ -66,6 +66,14 @@ def setup_configuration(app, config=None):
     config_obj = MainSettings(**config) if config else MainSettings()
     app.config.from_object(config_obj)
 
+    # https://flask.palletsprojects.com/en/stable/web-security/#set-cookie-options
+    # SameSite=Strict would drop the cookie when coming back from the OIDC provider
+    app.config.update(
+        SESSION_COOKIE_SECURE=app.config["PREFERRED_URL_SCHEME"] == "https",
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+    )
+
     # Flask reads the FLASK_DEBUG environment var
     # This avoids the app.debug parameter to be overwritten by configuration defaults
     if debug:

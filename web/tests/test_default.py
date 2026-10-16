@@ -1,5 +1,6 @@
 import httpx2
 from b3desk import cache
+from b3desk import create_app
 from flask import abort
 from flask import url_for
 from flask_webtest import TestApp
@@ -113,6 +114,25 @@ def test_change_language_rejects_invalid_locales(app):
 
     res = client_app.get("/faq?lang='\"efx", status=200)
     assert res.session["lang"] == "fr"
+
+
+def test_session_cookie_options(app):
+    """Test that the session cookie is HttpOnly and SameSite=Lax, but not Secure over http."""
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    cookie = res.headers["Set-Cookie"]
+    assert "HttpOnly" in cookie
+    assert "SameSite=Lax" in cookie
+    assert "Secure" not in cookie
+
+
+def test_session_cookie_secure_over_https(configuration):
+    """Test that the session cookie is Secure when the application is served over https."""
+    configuration["PREFERRED_URL_SCHEME"] = "https"
+    app = create_app(configuration)
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert "Secure" in res.headers["Set-Cookie"]
 
 
 def test_language_selector_renders_active_language(app):
