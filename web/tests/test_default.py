@@ -2,7 +2,11 @@ import httpx2
 from b3desk import cache
 from b3desk import create_app
 from flask import abort
+from flask import flash
 from flask import url_for
+from flask_babel import lazy_gettext
+from flask_session.cachelib import CacheLibSessionInterface
+from flask_session.redis import RedisSessionInterface
 from flask_webtest import TestApp
 
 
@@ -133,6 +137,41 @@ def test_session_cookie_secure_over_https(configuration):
     client_app = TestApp(app)
     res = client_app.get("/faq?lang=fr", status=200)
     assert "Secure" in res.headers["Set-Cookie"]
+
+
+def test_session_backend_defaults_to_redis(configuration):
+    """Test that sessions are stored in redis when REDIS_URL is configured."""
+    del configuration["SESSION_TYPE"]
+    del configuration["SESSION_REDIS"]
+    configuration["REDIS_URL"] = "localhost:6379"
+    app = create_app(configuration)
+    assert isinstance(app.session_interface, RedisSessionInterface)
+
+
+def test_session_backend_falls_back_on_filesystem(configuration):
+    """Test that sessions are stored on the filesystem without REDIS_URL."""
+    del configuration["SESSION_TYPE"]
+    del configuration["SESSION_REDIS"]
+    configuration["REDIS_URL"] = None
+    app = create_app(configuration)
+    assert isinstance(app.session_interface, CacheLibSessionInterface)
+
+
+def test_session_stores_lazy_flash_messages(app):
+    """Test that flash messages built with lazy_gettext can be stored in redis."""
+
+    def flash_message():
+        flash(lazy_gettext("Lien invalide"), "error")
+        return ""
+
+    app.add_url_rule("/flash-message", view_func=flash_message)
+    client_app = TestApp(app)
+    client_app.get("/flash-message", status=200)
+
+    with client_app.session_transaction() as session:
+        assert [list(flashed) for flashed in session["_flashes"]] == [
+            ["error", "Lien invalide"]
+        ]
 
 
 def test_language_selector_renders_active_language(app):

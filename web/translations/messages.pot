@@ -355,7 +355,7 @@ msgstr ""
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:179
+#: web/b3desk/endpoints/join.py:179 web/tests/test_default.py:164
 msgid "Lien invalide"
 msgstr ""
 
