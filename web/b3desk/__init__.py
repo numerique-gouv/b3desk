@@ -491,6 +491,7 @@ def setup_secure_headers(app):
     matomo_url = base_url(app.config["MATOMO_URL"])
     bbb_url = base_url(app.config["BIGBLUEBUTTON_ENDPOINT"])
     satisfaction_poll_url = base_url(app.config["SATISFACTION_POLL_URL"])
+    lasuite_numérique_url = "https://integration.lasuite.numerique.gouv.fr"
 
     @app.after_request
     def add_security_headers(response: Response) -> Response:
@@ -504,7 +505,11 @@ def setup_secure_headers(app):
             .frame_src("'self'")
             .frame_src("https://podeduc.apps.education.fr")
             .img_src("'self'")
+            # Inline images: CaptchEtat (base64 PNG) and SVGs on the welcome page.
+            .img_src("data:")
             .connect_src("'self'")
+            .font_src("'self'")
+            .style_src("'self'")
         )
 
         if nc_locator:
@@ -514,8 +519,16 @@ def setup_secure_headers(app):
         if satisfaction_poll_url:
             csp.frame_src(satisfaction_poll_url)
         if enable_lasuite:
-            csp.img_src("https://integration.lasuite.numerique.gouv.fr").script_src(
-                "https://integration.lasuite.numerique.gouv.fr"
+            (
+                csp.img_src(lasuite_numérique_url)
+                .script_src(lasuite_numérique_url)
+                .connect_src(lasuite_numérique_url)
+                .font_src(lasuite_numérique_url)
+                .style_src(lasuite_numérique_url)
+                # Third-party scripts inject inline styles that can't be hashed
+                # or nonced: La Suite gaufre (<style> elements in gaufre.js)
+                # and CaptchEtat (style="" attributes in captchetat-js.js).
+                .style_src("'unsafe-inline'")
             )
         if bbb_url:
             csp.img_src(bbb_url)
