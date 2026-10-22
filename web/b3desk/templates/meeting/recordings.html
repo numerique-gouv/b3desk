@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    {% if admin_mode %}
+    {% if admin_mode and config.get("ENABLE_ADMIN_MANAGEMENT") %}
         {{ breadcrumb([
         {'href': url_for('admin.home'), 'label': _('Menu Admin')},
         {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
@@ -16,7 +16,7 @@
     <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Enregistrements de <em>{{meeting_name }}{% endtrans %}</em></h1>
 
     <div class="fr-mt-4w">
-        {% if not admin_mode %}
+        {% if not admin_mode or (admin_mode and not config.get("ENABLE_ADMIN_MANAGEMENT")) %}
             <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
         {% else %}
             <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
@@ -245,7 +245,7 @@
         {% endfor %}
     </div>
     <div class="fr-mt-4w">
-        {% if not admin_mode %}
+        {% if not admin_mode or (admin_mode and not config.get("ENABLE_ADMIN_MANAGEMENT")) %}
             <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
         {% else %}
             <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">

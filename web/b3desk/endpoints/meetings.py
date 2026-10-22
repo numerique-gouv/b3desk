@@ -310,7 +310,10 @@ def delete_meeting(meeting: Meeting, user: User):
     if meeting.is_shadow:
         abort(403)
 
-    if meeting.owner_id != user.id and not user.admin:
+    if meeting.owner_id != user.id and (
+        not user.admin
+        or (g.user.admin and not current_app.config["ENABLE_ADMIN_MANAGEMENT"])
+    ):
         flash(_("Vous ne pouvez pas supprimer cet élément"), "error")
         return redirection
 

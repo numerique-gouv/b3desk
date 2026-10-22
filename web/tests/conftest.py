@@ -349,6 +349,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
         "ENABLE_AI_SUMMARY": True,
+        "ENABLE_ADMIN_MANAGEMENT": True,
     }
 
     if "smtpd" in request.fixturenames:

@@ -27,7 +27,7 @@
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-    {% if not admin_mode %}
+    {% if not admin_mode or (admin_mode and not config.get("ENABLE_ADMIN_MANAGEMENT")) %}
         <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
     {% else %}
         <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
@@ -209,7 +209,7 @@
 </div>
 
 <div class="fr-container fr-mt-4w">
-    {% if not admin_mode %}
+    {% if not admin_mode or (admin_mode and not config.get("ENABLE_ADMIN_MANAGEMENT")) %}
         <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
     {% else %}
         <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">

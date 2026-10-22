@@ -70,3 +70,12 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
     assert res.exit_code != 0
     assert "only available in development" in res.output
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
+
+
+def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):
+    """Test CLI user-to-admin does nothing when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    assert res.output_bytes == b"Admin management is disabled.\n"
+    db.session.refresh(user)
+    assert not user.admin
