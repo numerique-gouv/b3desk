@@ -42,6 +42,14 @@ def test_user_authentication(
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
 
+    # 5. the OIDC tokens are stored server-side, the cookie only holds the session id
+    session_id = client_app.cookies["session"]
+    assert client_app.app.config["SESSION_REDIS"].exists(f"session:{session_id}")
+    with client_app.session_transaction() as session:
+        assert session["access_token"]
+        assert session["access_token"] not in session_id
+        assert session["userinfo"]["email"] == iam_user.emails[0]
+
 
 def test_lasuite_user_authentication(
     client_app,

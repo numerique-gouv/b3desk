@@ -15,6 +15,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from babel import Locale
+from cachelib.file import FileSystemCache
 from celery import Celery
 from celery import Task
 from flask import Flask
@@ -29,10 +30,12 @@ from flask_babel import get_locale
 from flask_caching import Cache
 from flask_migrate import Migrate
 from flask_pyoidc import OIDCAuthentication
+from flask_session import Session
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
 from packaging.version import Version
+from redis import Redis
 
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
@@ -47,6 +50,7 @@ LANGUAGES = ["fr", "en"]
 
 babel = Babel()
 cache = Cache()
+server_session = Session()
 csrf = CSRFProtect()
 auth = OIDCAuthentication({"default": None, "attendee": None})
 migrate = Migrate()
@@ -65,6 +69,14 @@ def setup_configuration(app, config=None):
 
     config_obj = MainSettings(**config) if config else MainSettings()
     app.config.from_object(config_obj)
+
+    # https://flask.palletsprojects.com/en/stable/web-security/#set-cookie-options
+    # SameSite=Strict would drop the cookie when coming back from the OIDC provider
+    app.config.update(
+        SESSION_COOKIE_SECURE=app.config["PREFERRED_URL_SCHEME"] == "https",
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+    )
 
     # Flask reads the FLASK_DEBUG environment var
     # This avoids the app.debug parameter to be overwritten by configuration defaults
@@ -120,6 +132,34 @@ def setup_cache(app):
         }
 
     cache.init_app(app, config=config)
+
+
+def setup_session(app):
+    """Store session data server-side (Redis or FileSystem) so the cookie only holds an id."""
+    if not app.config.get("SESSION_TYPE"):
+        if app.config.get("REDIS_URL"):
+            app.config["SESSION_TYPE"] = "redis"
+            app.config["SESSION_REDIS"] = Redis.from_url(
+                f"redis://{app.config['REDIS_URL']}"
+            )
+
+        else:
+            app.config["SESSION_TYPE"] = "cachelib"
+            app.config["SESSION_CACHELIB"] = FileSystemCache("/tmp/flask-session")
+
+    app.config.setdefault("SESSION_PERMANENT", False)
+    server_session.init_app(app)
+
+    @app.after_request
+    def translate_flashed_messages(response):
+        """Translate lazy_gettext flash messages, that the session serializer cannot store."""
+        from flask import session
+
+        if "_flashes" in session:
+            session["_flashes"] = [
+                (category, str(message)) for category, message in session["_flashes"]
+            ]
+        return response
 
 
 def setup_sentry(app):  # pragma: no cover
@@ -477,6 +517,7 @@ def create_app(test_config=None, authentication=True):
     sentry_sdk = setup_sentry(app)
     try:
         setup_cache(app)
+        setup_session(app)
         setup_logging(app)
         setup_i18n(app)
         setup_csrf(app)

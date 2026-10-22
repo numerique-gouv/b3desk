@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:344 web/b3desk/endpoints/meeting_files.py:141
+#: web/b3desk/__init__.py:384 web/b3desk/endpoints/meeting_files.py:141
 #: web/b3desk/endpoints/meeting_files.py:206
 #: web/b3desk/endpoints/meeting_files.py:313
 #: web/b3desk/endpoints/meeting_files.py:520
@@ -7,7 +7,7 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/__init__.py:418
+#: web/b3desk/__init__.py:458
 msgid "Votre session est invalide, merci de vous reconnecter."
 msgstr ""
 
@@ -281,27 +281,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:659 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:663 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:663
+#: web/b3desk/settings.py:667
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:676
+#: web/b3desk/settings.py:680
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:679
+#: web/b3desk/settings.py:683
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:682
+#: web/b3desk/settings.py:686
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:686
+#: web/b3desk/settings.py:690
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -355,7 +355,7 @@ msgstr ""
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:179
+#: web/b3desk/endpoints/join.py:179 web/tests/test_default.py:164
 msgid "Lien invalide"
 msgstr ""
 

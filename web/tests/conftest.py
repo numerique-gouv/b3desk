@@ -8,6 +8,7 @@ import wsgiref
 from pathlib import Path
 
 import b3desk.utils
+import fakeredis
 import portpicker
 import psycopg
 import pytest
@@ -332,6 +333,8 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Overwrite the web.env values for tests running in docker
         "STATS_URL": None,
         "CACHE_TYPE": "SimpleCache",
+        "SESSION_TYPE": "redis",
+        "SESSION_REDIS": fakeredis.FakeRedis(server=fakeredis.FakeServer()),
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
