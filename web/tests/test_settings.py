@@ -6,6 +6,7 @@ import pytest
 from b3desk import create_app
 from b3desk.settings import MainSettings
 from b3desk.settings import MeetingLocaleVariant
+from b3desk.settings import default_session_cookie_name
 from flask import url_for
 
 
@@ -245,10 +246,41 @@ def test_meeting_locale_variant_takes_precedence_over_legacy(configuration):
 
 def test_create_app_without_authentication(configuration, mocker):
     """Celery processes skip OIDC, but still build the URLs their mails carry."""
-    setup_oidc = mocker.patch("b3desk.setup_oidc")
+    setup_authlib = mocker.patch("b3desk.setup_authlib")
 
     app = create_app(configuration, authentication=False)
 
-    setup_oidc.assert_not_called()
+    setup_authlib.assert_not_called()
     with app.app_context():
         assert url_for("public.welcome", _external=True)
+
+
+def test_oidc_issuer_with_trailing_slash(configuration, mocker):
+    """The discovery URL has no double slash when the issuer ends with a slash."""
+    configuration["OIDC_ISSUER"] = "https://idp.test/realm/"
+    configuration["OIDC_ATTENDEE_ISSUER"] = "https://attendee-idp.test/realm/"
+    register = mocker.patch("b3desk.oauth.register")
+
+    create_app(configuration)
+
+    urls = [call.kwargs["server_metadata_url"] for call in register.call_args_list]
+    assert urls == [
+        "https://idp.test/realm/.well-known/openid-configuration",
+        "https://attendee-idp.test/realm/.well-known/openid-configuration",
+    ]
+
+
+def test_session_cookie_name_depends_on_minor_version(mocker):
+    """The session cookie name changes with each minor version."""
+    mocker.patch("b3desk.settings.version", return_value="2.3.1")
+
+    assert default_session_cookie_name() == "session_2_3"
+
+
+def test_session_cookie_name_is_used(client_app):
+    """The session cookie is sent with the version dependent name."""
+    response = client_app.get("/home?lang=en")
+
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
+    assert cookie_name == default_session_cookie_name()
+    assert response.headers["Set-Cookie"].startswith(f"{cookie_name}=")

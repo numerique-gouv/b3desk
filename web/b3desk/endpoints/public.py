@@ -1,20 +1,36 @@
+from urllib.parse import urlencode
+
 import httpx2
+import requests
+from authlib.common.security import generate_token
+from authlib.integrations.base_client import MismatchingStateError
+from authlib.integrations.base_client import OAuthError
 from flask import Blueprint
+from flask import abort
 from flask import current_app
+from flask import flash
 from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
+from flask_babel import lazy_gettext as _
+from joserfc.errors import JoseError
 
 from b3desk.utils import http_client
 
-from .. import auth
 from .. import cache
+from .. import oauth
+from ..oidc import fetch_userinfo
+from ..session import clear_userinfo
 from ..session import has_user_session
+from ..session import is_local_url
+from ..session import login_required
 from ..session import should_display_captcha
+from ..session import store_attendee_userinfo
+from ..session import store_userinfo
 from ..templates.content import FAQ_CONTENT
-from ..utils import check_oidc_connection
 from ..utils import check_private_key
 from .meetings import meeting_mailto_params
 
@@ -55,6 +71,76 @@ def index():
     return redirect(url_for("public.home"))
 
 
+def oidc_redirect_uri():
+    """Return the URL the identity providers redirect to after authentication."""
+    return url_for(
+        "public.oidc_callback",
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+
+
+@bp.route("/login")
+def login():
+    next_url = request.args.get("next", "")
+    session["login_next_url"] = (
+        next_url if is_local_url(next_url) else url_for("public.welcome")
+    )
+    return oauth.default.authorize_redirect(oidc_redirect_uri())
+
+
+@bp.route("/oidc_callback")
+def oidc_callback():
+    """Complete the OIDC authentication of an organizer or an attendee."""
+    state = request.args.get("state")
+    if oauth.attendee.framework.get_state_data(session, state):
+        return attendee_callback()
+    return organizer_callback()
+
+
+def organizer_callback():
+    try:
+        token = oauth.default.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.default, token)
+    except MismatchingStateError as exc:
+        current_app.logger.warning("OIDC authorization state mismatch: %s", exc)
+        flash(_("Votre session de connexion a expiré, merci de réessayer."), "error")
+        return redirect(url_for("public.home"))
+    except OAuthError as exc:
+        current_app.logger.warning("OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.home"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.home"))
+
+    clear_userinfo()
+    store_userinfo(userinfo, token["id_token"])
+    next_url = session.pop("login_next_url", None) or url_for("public.welcome")
+    return redirect(next_url)
+
+
+def attendee_callback():
+    try:
+        token = oauth.attendee.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.attendee, token)
+    except OAuthError as exc:
+        current_app.logger.warning("Attendee OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.index"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("Attendee OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.index"))
+
+    store_attendee_userinfo(userinfo)
+    meeting_id = session.pop("attendee_next_meeting_id", None) or abort(404)
+    return redirect(
+        url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
+    )
+
+
 @bp.route("/home")
 @check_private_key()
 def home():
@@ -72,8 +158,7 @@ def home():
 
 
 @bp.route("/welcome")
-@check_oidc_connection(auth)
-@auth.oidc_auth("default")
+@login_required
 @check_private_key()
 def welcome():
     """Render the authenticated user's welcome page with their meetings."""
@@ -182,10 +267,32 @@ def documentation():
 
 
 @bp.route("/logout")
-@check_oidc_connection(auth)
-@auth.oidc_logout
 def logout():
-    """Log out the current user and redirect to the index page."""
+    """Log out the current user locally, and from the OIDC provider if it supports it."""
+    id_token = session.get("id_token")
+    clear_userinfo()
+    if not id_token:
+        return redirect(url_for("public.index"))
+
+    try:
+        metadata = oauth.default.load_server_metadata()
+    except requests.RequestException as exc:
+        current_app.logger.warning("Could not reach the OIDC provider: %s", exc)
+        return redirect(url_for("public.index"))
+
+    end_session_endpoint = metadata.get("end_session_endpoint")
+    if end_session_endpoint:
+        params = {
+            "id_token_hint": id_token,
+            "state": generate_token(32),
+            "post_logout_redirect_uri": url_for(
+                "public.logout",
+                _external=True,
+                _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+            ),
+        }
+        return redirect(f"{end_session_endpoint}?{urlencode(params)}")
+
     return redirect(url_for("public.index"))
 
 

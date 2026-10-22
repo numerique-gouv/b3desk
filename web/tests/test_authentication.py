@@ -1,5 +1,11 @@
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
+
+import pytest
+import requests
 from b3desk.models import db
 from b3desk.models.users import User
+from flask import url_for
 
 
 def test_user_authentication(
@@ -16,26 +22,19 @@ def test_user_authentication(
 
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
-    res = client_app.get("/home")
-    res.mustcontain("S’identifier")
-    res.mustcontain(no="se déconnecter")
+    response = client_app.get("/home")
+    response.mustcontain("S’identifier")
+    response.mustcontain(no="se déconnecter")
 
-    # 1. attempt to access a protected page
-    res1 = client_app.get("/welcome", status=302)
+    response = client_app.get("/welcome", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+    assert response.status_code == 302
 
-    # 2. authorization code request
-    res2 = iam_server.test_client.get(res1.location)
-    assert res2.status_code == 302
-
-    # 3. load your application authorization endpoint
-    # pyoidc produces a useless error message there
-    # https://github.com/CZ-NIC/pyoidc/issues/824
-    res3 = client_app.get(res2.headers["Location"], status=302, expect_errors=True)
-
-    # 4. redirect to the protected page
-    res4 = res3.follow(status=200)
-    res4.mustcontain(no="S’identifier")
-    res4.mustcontain("se déconnecter")
+    response = client_app.get(response.headers["Location"], status=302)
+    response = response.follow(status=200)
+    response.mustcontain(no="S’identifier")
+    response.mustcontain("se déconnecter")
 
     user = db.session.get(User, 1)
     assert user.email == iam_user.emails[0]
@@ -57,26 +56,19 @@ def test_lasuite_user_authentication(
 
     assert db.session.scalar(db.select(db.func.count()).select_from(User)) == 0
 
-    res = client_app.get("/home")
-    res.mustcontain("Se connecter ou créer un compte")
-    res.mustcontain(no="se déconnecter")
+    response = client_app.get("/home")
+    response.mustcontain("Se connecter ou créer un compte")
+    response.mustcontain(no="se déconnecter")
 
-    # 1. attempt to access a protected page
-    res1 = client_app.get("/welcome", status=302)
+    response = client_app.get("/welcome", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+    assert response.status_code == 302
 
-    # 2. authorization code request
-    res2 = iam_server.test_client.get(res1.location)
-    assert res2.status_code == 302
-
-    # 3. load your application authorization endpoint
-    # pyoidc produces a useless error message there
-    # https://github.com/CZ-NIC/pyoidc/issues/824
-    res3 = client_app.get(res2.headers["Location"], status=302, expect_errors=True)
-
-    # 4. redirect to the protected page
-    res4 = res3.follow(status=200)
-    res4.mustcontain(no="Se connecter ou créer un compte")
-    res4.mustcontain("se déconnecter")
+    response = client_app.get(response.headers["Location"], status=302)
+    response = response.follow(status=200)
+    response.mustcontain(no="Se connecter ou créer un compte")
+    response.mustcontain("se déconnecter")
 
     user = db.session.get(User, 1)
     assert user.email == iam_user.emails[0]
@@ -84,11 +76,292 @@ def test_lasuite_user_authentication(
     assert user.family_name == iam_user.family_name
 
 
+def test_login_session_is_permanent(client_app, configuration, iam_server, iam_client):
+    """The session cookie outlives the browser session after login."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    cookie = response.headers["Set-Cookie"]
+    assert cookie.startswith(f"{client_app.app.config['SESSION_COOKIE_NAME']}=")
+    assert "Expires=" in cookie
+
+
+def test_login_forgets_the_previous_attendee(
+    client_app, configuration, iam_server, iam_client
+):
+    """An organizer login forgets the attendee identity of a previous user."""
+    with client_app.session_transaction() as session:
+        session["attendee_userinfo"] = {"given_name": "Alice", "family_name": "Cooper"}
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    client_app.get(response.headers["Location"], status=302)
+
+    with client_app.session_transaction() as session:
+        assert "attendee_userinfo" not in session
+        assert "userinfo" in session
+
+
+def test_attendee_session_is_permanent(
+    client_app, configuration, iam_server, iam_client
+):
+    """The session cookie outlives the browser session after attendee authentication."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert "Expires=" in response.headers["Set-Cookie"]
+
+
+def test_user_goes_back_to_requested_page_after_login(
+    client_app, configuration, iam_server, iam_client
+):
+    """After login, users land on the page they requested before authenticating."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/new?type=quick", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert response.location == "/meeting/new?type=quick"
+
+
+@pytest.mark.parametrize(
+    "next_url",
+    [
+        "https://evil.test/",
+        "//evil.test/",
+        "/\\evil.test/",
+        "/\t/evil.test/",
+        "/\n/evil.test/",
+        "evil.test",
+    ],
+)
+def test_login_ignores_external_next_url(
+    client_app, configuration, iam_server, iam_client, next_url
+):
+    """External URLs in the next parameter are ignored, and users land on the welcome page."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", params={"next": next_url}, status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+
+    assert response.location == "/welcome"
+
+
+def test_clear_session_after_logout(
+    client_app,
+    configuration,
+    iam_server,
+    iam_client,
+    iam_token,
+):
+    """Test logout clear user session."""
+    with client_app.session_transaction() as session:
+        session["id_token"] = ""
+        session["userinfo"] = {
+            "email": "alice@domain.tld",
+            "family_name": "Cooper",
+            "given_name": "Alice",
+            "preferred_username": "alice",
+        }
+        session["attendee_userinfo"] = {"given_name": "Bob", "family_name": "Dylan"}
+    client_app.get("/logout")
+
+    with client_app.session_transaction() as session:
+        assert "id_token" not in session
+        assert "userinfo" not in session
+        assert "attendee_userinfo" not in session
+
+
+def test_authorize_tampered_state_redirects_home(
+    client_app, configuration, iam_server, iam_client
+):
+    """A tampered OIDC state on callback must redirect to home with a flash error."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/welcome", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+
+    tampered_location = response.headers["Location"].replace("state=", "state=wrong-")
+    response = client_app.get(tampered_location, status=302)
+
+    assert response.location.endswith("/home")
+    response.follow().mustcontain(
+        "Votre session de connexion a expiré, merci de réessayer."
+    )
+
+
+def test_authorize_oauth_error_redirects_home(
+    client_app, configuration, iam_server, iam_client
+):
+    """A refused consent on oauth authorize must redirect to home."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/welcome", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+
+    location = response.headers["Location"].replace(
+        "code=", "error=access_denied&code="
+    )
+    response = client_app.get(location, status=302)
+
+    assert response.location.endswith("/home")
+    response.follow().mustcontain("La connexion a été annulée.")
+
+
+def test_attendee_tampered_state_redirects_home(
+    client_app, configuration, iam_server, iam_client
+):
+    """A tampered OIDC state after an attendee authentication redirects to home."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+
+    tampered_location = response.headers["Location"].replace("state=", "state=wrong-")
+    response = client_app.get(tampered_location, status=302)
+
+    assert response.location.endswith("/home")
+    response.follow().mustcontain(
+        "Votre session de connexion a expiré, merci de réessayer."
+    )
+
+
+def test_attendee_callback_oauth_error_redirects_home(
+    client_app, configuration, iam_server, iam_client
+):
+    """A refused consent on the attendee callback must redirect to home."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+
+    location = response.headers["Location"].replace(
+        "code=", "error=access_denied&code="
+    )
+    response = client_app.get(location, status=302)
+
+    assert response.location.endswith("/")
+    response.follow(status=302).follow().mustcontain("La connexion a été annulée.")
+
+
+def test_organizer_and_attendee_share_the_redirect_uri(
+    client_app, configuration, iam_server, iam_client
+):
+    """Organizers and attendees are redirected to /oidc_callback after authentication."""
+    response = client_app.get("/login", status=302)
+    params = parse_qs(urlparse(response.location).query)
+    assert params["redirect_uri"] == ["http://b3desk.test/oidc_callback"]
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    params = parse_qs(urlparse(response.location).query)
+    assert params["redirect_uri"] == ["http://b3desk.test/oidc_callback"]
+
+
+def test_attendee_authentication(client_app, configuration, iam_server, iam_client):
+    """Attendees go back to the meeting after authenticating through /oidc_callback."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = iam_server.test_client.get(response.location)
+    assert response.headers["Location"].startswith("http://b3desk.test/oidc_callback")
+
+    response = client_app.get(response.headers["Location"], status=302)
+    assert response.location == "/meeting/join/1/authenticated"
+
+    with client_app.session_transaction() as session:
+        assert session["attendee_userinfo"]["sub"] == iam_user.user_name
+        assert "userinfo" not in session
+
+
+def test_logout_redirects_to_end_session_endpoint(
+    client_app, configuration, iam_server, iam_client
+):
+    """A logout with an active id_token must redirect to the IdP's end_session_endpoint."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/welcome", status=302)
+    response = client_app.get(response.location, status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+    response.follow(status=200)
+
+    with client_app.session_transaction() as session:
+        id_token = session["id_token"]
+
+    response = client_app.get("/logout", status=302)
+
+    parsed = urlparse(response.location)
+    assert (
+        f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+        == f"{iam_server.url}oauth/end_session"
+    )
+
+    params = parse_qs(parsed.query)
+    assert params["id_token_hint"] == [id_token]
+    assert len(params["state"][0]) >= 32
+
+    with client_app.app.test_request_context():
+        expected_redirect = url_for("public.logout", _external=True)
+    assert params["post_logout_redirect_uri"] == [expected_redirect]
+
+
+def test_logout_when_the_identity_provider_is_unreachable(
+    client_app, configuration, iam_server, iam_client, mocker, caplog
+):
+    """Users are logged out locally and redirected home when the identity provider is down."""
+    mocker.patch(
+        "b3desk.oauth.default.load_server_metadata",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+    with client_app.session_transaction() as session:
+        session["id_token"] = "id-token"
+        session["userinfo"] = {"email": "alice@domain.tld"}
+
+    response = client_app.get("/logout", status=302)
+
+    assert response.location == "/"
+    with client_app.session_transaction() as session:
+        assert "userinfo" not in session
+    assert "Could not reach the OIDC provider" in caplog.text
+
+
 def test_unusable_claims_clear_the_session(client_app, caplog):
     """A session whose claims cannot build a user is cleared instead of breaking every page."""
     with client_app.session_transaction() as session:
-        session["current_provider"] = "default"
-        session["last_authenticated"] = "true"
         session["userinfo"] = {"given_name": "Alice", "family_name": "Cooper"}
 
     res = client_app.get("/welcome", status=302)
@@ -97,6 +370,5 @@ def test_unusable_claims_clear_the_session(client_app, caplog):
 
     with client_app.session_transaction() as session:
         assert "userinfo" not in session
-        assert "last_authenticated" not in session
 
     assert "Could not build a user from the OIDC claims" in caplog.text
