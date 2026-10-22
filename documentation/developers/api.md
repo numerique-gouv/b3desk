@@ -70,6 +70,31 @@ On peut tester le bon fonctionnement de l'API comme ceci (*en renseignant au pr�
 curl -s -H "Authorization:Bearer $TOKEN" https://example.tld/api/meetings
 ```
 
+### Utiliser l'API en local (développement)
+
+En développement local, le serveur d'identité est le Keycloak fourni par `docker-compose.override.yml`, avec un client `bbb-visio` (voir [CONTRIBUTING.md](../../CONTRIBUTING.md) pour les comptes de test disponibles).
+
+Ce client doit avoir un mapper d'audience configuré dans Keycloak, sans quoi l'API répond `401` (voir la section [Mauvaise audience du jeton](#mauvaise-audience-du-jeton) ci-dessous) :
+
+- Clients → `bbb-visio` → Mappers → Create
+- Name: `bbb-visio-audience`
+- Mapper Type: `Audience`
+- Included Custom Audience: `bbb-visio`
+
+Récupérer un jeton via le grant `password` (compte de test `bbb-visio-user` / `Pa55w0rd`), et appeler l'API dans la même commande :
+
+```bash
+export TOKEN=$(curl -s -X POST http://keycloak.localhost:8080/auth/realms/apps/protocol/openid-connect/token \
+    -d grant_type=password -d client_id=bbb-visio \
+    -d client_secret=e873443f-47cd-43a4-bae1-07ee1ade68c6 \
+    -d username=bbb-visio-user -d password=Pa55w0rd -d scope=openid \
+    | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+curl -s -H "Authorization: Bearer $TOKEN" http://b3desk.localhost:5000/api/meetings
+```
+
+Le jeton expire après quelques minutes ; au-delà, il faut relancer la première commande pour en générer un nouveau.
+
 ### Problèmes de connexion
 
 #### Jeton manquant
