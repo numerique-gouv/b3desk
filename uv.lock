@@ -140,6 +140,7 @@ dependencies = [
     { name = "psycopg2" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "pydantic-settings-export" },
     { name = "python-slugify" },
     { name = "redis" },
     { name = "sentry-sdk" },
@@ -208,6 +209,7 @@ requires-dist = [
     { name = "psycopg2", specifier = ">=2.9.3,<3.0.0" },
     { name = "pydantic", specifier = ">=2.12.0,<3.0.0" },
     { name = "pydantic-settings", specifier = ">=2.14.2,<3.0.0" },
+    { name = "pydantic-settings-export", specifier = ">=1.1.3" },
     { name = "python-slugify", specifier = ">=8.0.4,<9.0.0" },
     { name = "redis", specifier = ">=7.0.0,<8.0.0" },
     { name = "sentry-sdk", specifier = ">=2.3.1,<3.0.0" },
@@ -1640,6 +1642,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/68/ca/31c57507b13119d7d3cfa1576dad2911a4861e3be07b579395f4e9d393f9/pydantic_settings-2.15.0.tar.gz", hash = "sha256:694b793e84f766ba76a90ebdefc01d0a9a045dab0382bee70393da93712ad117", size = 261253, upload-time = "2026-08-07T09:24:57.419Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/30/a4/2bffa9f8e804325a09867f0e9d30795c80ea9f8d62560bd1b6ad6220eb2f/pydantic_settings-2.15.0-py3-none-any.whl", hash = "sha256:0ba092c291c94baceb5eff768aa0d56400a457585bc0175925a5a5510303da42", size = 69413, upload-time = "2026-08-07T09:24:55.839Z" },
+]
+
+[[package]]
+name = "pydantic-settings-export"
+version = "1.1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/96/dd/da1b80d160272d25c3f5a0bb5fb8c8db9adabc7c9c198e6962e505bc54c5/pydantic_settings_export-1.1.3.tar.gz", hash = "sha256:dba2460fd4312f161bc2569df21a326988c23f750a768821c6eefdaf298db86e", size = 138537, upload-time = "2026-06-24T23:27:44.173Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/0e/83b8cf23754e4007fb10b1889ea3871fd539485c0d7dbda8230bd470644e/pydantic_settings_export-1.1.3-py3-none-any.whl", hash = "sha256:b5b8bdd661037cf1e2c948122ccadffbad179d650dbd060bf4bd8bcee6e1e10d", size = 45686, upload-time = "2026-06-24T23:27:42.913Z" },
 ]
 
 [[package]]
