@@ -169,19 +169,10 @@
                                 </div>
                                 <div class="fr-modal__content">
                                     {% call form_tag(form, method="POST", action=url_for('meetings.update_recording_name', meeting=meeting, recording_id=recording.recordID)) %}
-                                        <div class="fr-input-group">
-                                            {{ form.name.label(class_="fr-label") }}
-                                            <p class="fr-hint-text">{{ form.name.description }}</p>
-                                            {% if form.name.errors %}
-                                                {% for error in form.name.errors %}
-                                                    <p class="fr-error-text">{{ error }}</p>
-                                                {% endfor %}
-                                            {% endif %}
-                                            {{ form.name(value=recording_name, class_="fr-input") }}
-                                            {% if meeting in g.user.get_all_delegated_meetings %}
-                                                <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
-                                            {% endif %}
-                                        </div>
+                                        {{ form.name(value=recording_name) }}
+                                        {% if meeting in g.user.get_all_delegated_meetings %}
+                                            <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
+                                        {% endif %}
                                         <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                             <li>
                                                 {{ form.rename(id="update-recording-" ~ recording.recordID, class_="fr-btn fr-btn--primary fr-mt-1w", title=_("Modifier le nom de l'enregistrement")) }}

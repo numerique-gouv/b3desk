@@ -14,8 +14,7 @@
     <br>
     <br>
     {% call form_tag(form, class="fr-search-bar", id="groupSearchForm", name="search_group", role="search", action=url_for("admin.manage_groups"), method="get") %}
-        {{ form.search.label(class_="fr-label") }}
-        {{ form.search(class_="fr-input")  }}
+        {{ form.search() }}
         {{ form.find(class_="fr-btn", title=_("Rechercher un groupe")) }}
     {% endcall %}
     <br>

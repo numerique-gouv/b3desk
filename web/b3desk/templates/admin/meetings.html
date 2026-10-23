@@ -8,8 +8,7 @@
     {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
     ]) }}
     {% call form_tag(form, class="fr-search-bar", id="meetingSearchForm", name="search_meeting", role="search", action=url_for("admin.manage_meetings"), method="get") %}
-        {{ form.search.label(class_="fr-label") }}
-        {{ form.search(class_="fr-input")  }}
+        {{ form.search() }}
         {{ form.find(class_="fr-btn", title=_("Rechercher une réunion")) }}
     {% endcall %}
     <br>

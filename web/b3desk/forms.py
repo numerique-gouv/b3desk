@@ -3,6 +3,7 @@ from datetime import timedelta
 from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
+from markupsafe import Markup
 from wtforms import BooleanField
 from wtforms import ButtonField
 from wtforms import EmailField
@@ -28,9 +29,33 @@ MAX_LOGOUTURL_LENGTH = 250
 MAX_MEETING_NAME_LENGTH = 150
 DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
 MAX_MEETING_DURATION = timedelta(minutes=999)
+BARE_FIELD_TYPES = {"HiddenField", "CSRFTokenField", "SubmitField", "ButtonField"}
 
 
-class ConfirmForm(FlaskForm):
+class B3DeskForm(FlaskForm):
+    """Render every field through a Jinja template.
+
+    Hidden fields and buttons render bare.
+    """
+
+    class Meta:
+        field_template = "_field.html"
+        field_class = ""
+
+        def render_field(self, field, render_kw):
+            render_kw = {**(field.render_kw or {}), **render_kw}
+            if (
+                field.type in BARE_FIELD_TYPES
+                or isinstance(field.widget, HiddenInput)
+                or render_kw.get("type") == "hidden"
+            ):
+                return field.widget(field, **render_kw)
+
+            template = current_app.jinja_env.get_template(self.field_template)
+            return Markup(template.render(field=field, render_kw=render_kw))
+
+
+class ConfirmForm(B3DeskForm):
     """A CSRF token and a button, for forms that only trigger an action."""
 
     confirm = ButtonField()
@@ -40,12 +65,18 @@ class DeleteRecordingForm(ConfirmForm):
     recordID = HiddenField()
 
 
-class AddGroupMembersForm(FlaskForm):
+class AddGroupMembersForm(B3DeskForm):
     add_members = ButtonField(_("Ajouter les utilisateurs sélectionnés"))
 
 
-class JoinMeetingForm(FlaskForm):
-    fullname = StringField(label=_("Votre nom"))
+class JoinMeetingForm(B3DeskForm):
+    fullname = StringField(
+        label=_("Votre nom"),
+        description=_(
+            "Vous pouvez également préciser votre service ou votre fonction."
+        ),
+        render_kw={"required": True},
+    )
     meeting_id = HiddenField()
     secret_key = HiddenField()
     fullname_suffix = HiddenField()
@@ -73,7 +104,10 @@ class MeetingFilesForm(FlaskForm):
     )
 
 
-class MeetingForm(FlaskForm):
+class MeetingForm(B3DeskForm):
+    class Meta:
+        field_class = "fr-col-12 fr-py-2w"
+
     name = StringField(
         label=_(
             "Nom de la réunion",
@@ -88,6 +122,7 @@ class MeetingForm(FlaskForm):
             validators.DataRequired(),
             validators.length(max=MAX_MEETING_NAME_LENGTH),
         ],
+        render_kw={"pattern": "[^\\x22]+"},
     )
     welcome = TextAreaField(
         label=_("Texte de bienvenue"),
@@ -188,7 +223,10 @@ class MeetingForm(FlaskForm):
         ),
         default=current_app.config["MEETING_LOGOUT_URL"],
         validators=[validators.length(max=MAX_LOGOUTURL_LENGTH)],
-        render_kw={"placeholder": current_app.config["MEETING_LOGOUT_URL"]},
+        render_kw={
+            "placeholder": current_app.config["MEETING_LOGOUT_URL"],
+            "pattern": "[^\\x22]+",
+        },
     )
     moderatorPW = StringField(
         label=_("Renouveler le lien modérateur"),
@@ -196,7 +234,7 @@ class MeetingForm(FlaskForm):
             "Ce code vous permet si vous le changez de bloquer les anciens liens."
         ),
         default="Pa55W0rd1",
-        render_kw={"readonly": True},
+        render_kw={"readonly": True, "generate_button": True},
         validators=[validators.DataRequired()],
     )
     attendeePW = StringField(
@@ -205,7 +243,7 @@ class MeetingForm(FlaskForm):
             "Ce code vous permet si vous le changez de bloquer les anciens liens."
         ),
         default="Pa55W0rd2",
-        render_kw={"readonly": True},
+        render_kw={"readonly": True, "generate_button": True},
         validators=[validators.DataRequired()],
     )
     voiceBridge = StringField(
@@ -237,13 +275,15 @@ class MeetingForm(FlaskForm):
             if current_app.config["ENABLE_SIP"]
             else "",
         ),
-        render_kw={"readonly": True},
+        render_kw={"readonly": True, "reset_visio_code_button": True},
     )
     save = ButtonField()
 
     def __init__(self, *args, meeting=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.meeting = meeting
+        if meeting is not None:
+            self.name.render_kw = {**self.name.render_kw, "disabled": True}
         self.logoutUrl.default = current_app.config["MEETING_LOGOUT_URL"]
 
 
@@ -281,14 +321,17 @@ class MeetingWithRecordForm(MeetingForm):
             )
 
 
-class RecordingForm(FlaskForm):
+class RecordingForm(B3DeskForm):
     name = StringField(
         validators=[validators.DataRequired()], label=_("Nom de l'enregistrement")
     )
     rename = ButtonField(_("Renommer"))
 
 
-class DelegationSearchForm(FlaskForm):
+class DelegationSearchForm(B3DeskForm):
+    class Meta:
+        field_template = "_search_field.html"
+
     search = EmailField(
         label=_("Ajout d'utilisateur"),
         render_kw={
@@ -299,11 +342,12 @@ class DelegationSearchForm(FlaskForm):
     add_delegate = ButtonField("")
 
 
-class SearchForm(FlaskForm):
+class SearchForm(B3DeskForm):
     """A search bar, sent as a GET request."""
 
     class Meta:
         csrf = False
+        field_template = "_search_field.html"
 
     find = ButtonField("")
 
@@ -335,7 +379,10 @@ def nullable_bool(value):
     return value in (True, "True")
 
 
-class GroupForm(FlaskForm):
+class GroupForm(B3DeskForm):
+    class Meta:
+        field_template = "admin/_field.html"
+
     name = StringField(
         label=_(
             "Nom du groupe",
@@ -391,6 +438,11 @@ class GroupForm(FlaskForm):
             if current_app.config["ENABLE_SIP"]
             else _("Désactivé par défaut")
         )
+        if not current_app.config["FQDN_SIP_SERVER"]:
+            self.enable_sip.description = _(
+                "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
+            )
+            self.enable_sip.render_kw = {"disabled": True}
         self.enable_file_sharing.description = (
             _("Activé par défaut")
             if current_app.config["FILE_SHARING"]

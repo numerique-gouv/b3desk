@@ -12,12 +12,10 @@
         {{ form.meeting_id() }}
         {{ form.secret_key() }}
 
-        <div class="fr-input-group">
+        <div>
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col">
-                    <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
-                    <p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>
-                    {{ form.fullname(class_="fr-input", required=True) }}
+                    {{ form.fullname() }}
                 </div>
             </div>
 
