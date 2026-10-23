@@ -301,7 +301,12 @@ def test_owner_can_remove_delegation(
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
-    response = client_app.get(f"/meeting/remove-delegation/{meeting.id}/2", status=302)
+    remove_form = next(
+        form
+        for form in response.forms.values()
+        if form.action.startswith(f"/meeting/remove-delegation/{meeting.id}/2")
+    )
+    response = remove_form.submit(status=302)
     assert (
         "success",
         "L'utilisateur a été retiré des délégataires",
@@ -323,18 +328,25 @@ def test_flash_message_when_delete_wrong_delegation(
     user_2,
 ):
     """Test there is a flash message when owner delete a wrong delegation."""
-    response = client_app.get(f"/meeting/remove-delegation/{meeting.id}/2")
+    response = client_app.post(f"/meeting/remove-delegation/{meeting.id}/2")
     assert (
         "error",
         "L'utilisateur ne fait pas partie des délégataires",
     ) in response.flashes
 
 
+def test_remove_delegation_rejects_get(
+    client_app, authenticated_user, user, meeting, bbb_response, user_2
+):
+    """Test that a GET request cannot remove a delegate."""
+    client_app.get(f"/meeting/remove-delegation/{meeting.id}/2", status=405)
+
+
 def test_delegate_cannot_remove_delegation(
     client_app, authenticated_user, user, meeting_1_user_2, bbb_response, user_2
 ):
     """Test that delegate cannot remove delegation."""
-    client_app.get(f"/meeting/remove-delegation/{meeting_1_user_2.id}/1", status=403)
+    client_app.post(f"/meeting/remove-delegation/{meeting_1_user_2.id}/1", status=403)
     assert user in meeting_1_user_2.get_all_delegates
 
 
