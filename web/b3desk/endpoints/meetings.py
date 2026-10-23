@@ -459,7 +459,9 @@ def manage_delegation(meeting: Meeting, user: User):
     )
 
 
-@bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
+@bp.route(
+    "/meeting/remove-delegation/<meeting:meeting>/<user:delegate>", methods=["POST"]
+)
 @check_oidc_connection(auth)
 @auth.oidc_auth("default")
 @meeting_access_required()

@@ -514,15 +514,15 @@ msgstr ""
 msgid "L'utilisateur a été ajouté aux délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:468
+#: web/b3desk/endpoints/meetings.py:470
 msgid "L'utilisateur ne fait pas partie des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:471
+#: web/b3desk/endpoints/meetings.py:473
 msgid "L'utilisateur a été retiré des délégataires"
 msgstr ""
 
-#: web/b3desk/endpoints/meetings.py:506
+#: web/b3desk/endpoints/meetings.py:508
 #, python-format
 msgid "%(owner_name)s est le nouveau propriétaire de %(meeting_name)s"
 msgstr ""
@@ -2593,11 +2593,11 @@ msgstr ""
 msgid "Transférer"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:44
+#: web/b3desk/templates/meeting/delegation-management.html:46
 msgid "Retirer le délégataire"
 msgstr ""
 
-#: web/b3desk/templates/meeting/delegation-management.html:47
+#: web/b3desk/templates/meeting/delegation-management.html:50
 #, python-format
 msgid "Transférer %(meeting_name)s"
 msgstr ""
