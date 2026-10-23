@@ -930,7 +930,7 @@ msgstr ""
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:46 web/b3desk/templates/tools.html:52
+#: web/b3desk/templates/meeting/join.html:35 web/b3desk/templates/tools.html:52
 msgid "S’identifier"
 msgstr ""
 
@@ -2789,27 +2789,11 @@ msgstr ""
 msgid "Vous pouvez également préciser votre service ou votre fonction."
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:27
-msgid "Informations facultatives"
-msgstr ""
-
-#: web/b3desk/templates/meeting/join.html:28
-msgid "Si ce champ est rempli, il sera affiché dans BBB."
-msgstr ""
-
-#: web/b3desk/templates/meeting/join.html:32
-msgid "Le nom affiché sera «"
-msgstr ""
-
-#: web/b3desk/templates/meeting/join.html:32
-msgid "»."
-msgstr ""
-
-#: web/b3desk/templates/meeting/join.html:37
+#: web/b3desk/templates/meeting/join.html:26
 msgid "Rejoindre"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:44
+#: web/b3desk/templates/meeting/join.html:33
 msgid "Vous êtes propriétaire de cette salle ?"
 msgstr ""
 
