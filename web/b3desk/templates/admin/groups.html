@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 {% from 'admin/macros.html' import breadcrumb %}
 
 {% block main %}
@@ -12,11 +13,11 @@
     </a>
     <br>
     <br>
-    <form class="fr-search-bar" id="groupSearchForm" name="search_group" role="search" action="{{ url_for("admin.manage_groups") }}" method="get">
+    {% call form_tag(form, class="fr-search-bar", id="groupSearchForm", name="search_group", role="search", action=url_for("admin.manage_groups"), method="get") %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Rechercher un groupe{% endtrans %}" type="submit" class="fr-btn"></button>
-    </form>
+        {{ form.find(class_="fr-btn", title=_("Rechercher un groupe")) }}
+    {% endcall %}
     <br>
     {% set groups = groups_page.items %}
     {% if not groups %}

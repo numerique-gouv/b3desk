@@ -80,8 +80,17 @@ def signin_meeting(
 
         return redirect(url_for("public.index"))
 
+    form = JoinMeetingForm(
+        formdata=None,
+        data={
+            "meeting_id": meeting_id,
+            "secret_key": secret_key,
+            "fullname": g.user.fullname if g.user else None,
+        },
+    )
     return render_template(
         "meeting/join.html",
+        form=form,
         meeting_id=meeting_id,
         secret_key=secret_key,
         role=role,
@@ -158,14 +167,21 @@ def waiting_meeting(
         meeting.name,
         seconds_before_refresh,
     )
+    form = JoinMeetingForm(
+        formdata=None,
+        data={
+            "meeting_id": meeting_id,
+            "secret_key": secret_key,
+            "fullname": fullname,
+            "fullname_suffix": fullname_suffix,
+            "seconds_before_refresh": seconds_before_refresh,
+        },
+    )
     return render_template(
         "meeting/wait.html",
-        meeting_id=meeting_id,
-        secret_key=secret_key,
-        role=role,
+        form=form,
         fullname=fullname,
-        fullname_suffix=fullname_suffix,
-        seconds_before_refresh=seconds_before_refresh,
+        role=role,
         meeting_name=meeting.name,
     )
 

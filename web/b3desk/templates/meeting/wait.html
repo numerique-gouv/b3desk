@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 
 {% block main %}
     <div class="fr-mt-4w fr-grid-row fr-grid-row--center">
@@ -28,14 +29,13 @@
                 {% endif %}
             </p>
 
-            <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
-                {% include 'meeting/csrf.html' %}
-                <input type="hidden" id="meetingID" name="meeting_id" value="{{ meeting_id }}" />
-                <input type="hidden" id="secret_key" name="secret_key" value="{{ secret_key }}" />
-                <input type="hidden" id="fullname" name="fullname" value="{{ fullname }}" />
-                <input type="hidden" id="fullname_suffix" name="fullname_suffix" value="{{ fullname_suffix }}" />
-                <input type="hidden" id="seconds_before_refresh" name="seconds_before_refresh" value="{{ seconds_before_refresh }}" />
-            </form>
+            {% call form_tag(form, id="joinMeetingForm", action=url_for("join.join_meeting"), method="POST") %}
+                {{ form.meeting_id() }}
+                {{ form.secret_key() }}
+                {{ form.fullname(type="hidden") }}
+                {{ form.fullname_suffix() }}
+                {{ form.seconds_before_refresh() }}
+            {% endcall %}
         </div>
     </div>
 {% endblock %}

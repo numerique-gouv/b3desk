@@ -48,7 +48,6 @@
     </div>
 {% endmacro %}
 {% from 'admin/macros.html' import yesno, value %}
-{% include 'meeting/csrf.html' %}
 {% if form.errors %}
     <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
 {% endif %}

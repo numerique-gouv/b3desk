@@ -1,3 +1,4 @@
+{% from 'forms.html' import form_tag %}
 {% macro render_field(field, generate_button=False, reset_visio_code_button=False) %}
   {% if field.type == "BooleanField" %}
     <li>
@@ -54,12 +55,11 @@
   <h1 class="fr-h2">{% trans %}Créer une réunion{% endtrans %}</h1>
 {% endif %}
 
-<form id="meeting-form" method="POST">
+{% call form_tag(form, id="meeting-form", method="POST") %}
   {% if form.errors %}
     <p class="fr-error-text">{% trans %}Enregistrement impossible car certains champs sont mal renseignés.{% endtrans %}</p>
   {% endif %}
 
-  {% include 'meeting/csrf.html' %}
   {% set name_disabled = meeting is not none %}
   {{ render_field(form.name, pattern="[^\\x22]+", disabled=name_disabled) }}
   <br><br>
@@ -172,9 +172,9 @@
   </div>
   <div class="fr-mt-4w">
     {% if meeting is not none %}
-      <button type="submit" class="fr-btn fr-btn--primary {{ 'need-confirm' if meeting in g.user.get_all_delegated_meetings }}">{% trans %}Enregistrer{% endtrans %}</button>
+      {{ form.save(label=_("Enregistrer"), class_="fr-btn fr-btn--primary" ~ (" need-confirm" if meeting in g.user.get_all_delegated_meetings else "")) }}
     {% else %}
-      <button type="submit" class="fr-btn">{% trans %}Créer la salle{% endtrans %}</button>
+      {{ form.save(label=_("Créer la salle"), class_="fr-btn") }}
     {% endif %}
     {% if not admin_mode %}
       <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
@@ -182,7 +182,7 @@
       <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">{% trans %}Annuler{% endtrans %}</a>
     {% endif %}
   </div>
-</form>
+{% endcall %}
 
 {% block js %}
   <script src="{{ url_for('static', filename='js/meeting-form.js')}}" data-visio-code-url="{{ url_for('meetings.get_available_visio_code') }}"></script>

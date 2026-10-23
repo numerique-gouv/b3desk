@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 {% from 'admin/macros.html' import breadcrumb %}
 
 {% block main %}
@@ -20,11 +21,11 @@
             {% endtrans %}
         </p>
     {% endif %}
-    <form class="fr-search-bar" id="userSearchForm" name="search_user" role="search" action="{{ url_for("admin.add_group_members", group=group) }}" method="get">
+    {% call form_tag(form, class="fr-search-bar", id="userSearchForm", name="search_user", role="search", action=url_for("admin.add_group_members", group=group), method="get") %}
         {{ form.search.label(class_="fr-label") }}
         {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
-    </form>
+        {{ form.find(class_="fr-btn", title=_("Rechercher un utilisateur")) }}
+    {% endcall %}
     <br>
     {% set users = users_page.items %}
     {% if not users %}
@@ -74,18 +75,17 @@
                 </div>
             </div>
         </form>
-        <form method="post" action="{{ url_for('admin.add_group_members', group=group) }}">
-            {% include 'meeting/csrf.html' %}
+        {% call form_tag(add_members_form, method="post", action=url_for('admin.add_group_members', group=group)) %}
             {% if data %}<input type="hidden" name="search" value="{{ data }}">{% endif %}
             {% if select_all %}<input id="select-all-scope" type="hidden" name="select_all" value="1">{% endif %}
             <div class="fr-grid-row fr-grid-row--center fr-mt-2w">
-                <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
+                {{ add_members_form.add_members(id=False, class_="fr-btn") }}
             </div>
             {% include 'admin/user_table.html' %}
             <div class="fr-grid-row fr-grid-row--center">
-                <button type="submit" class="fr-btn">{% trans %}Ajouter les utilisateurs sélectionnés{% endtrans %}</button>
+                {{ add_members_form.add_members(id=False, class_="fr-btn") }}
             </div>
-        </form>
+        {% endcall %}
         <br>
         {% include 'admin/paging.html' %}
     {% endif %}

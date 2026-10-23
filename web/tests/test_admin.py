@@ -13,6 +13,8 @@ from b3desk.models.meetings import assign_unique_codes
 from b3desk.models.users import User
 from flask import url_for
 
+from tests.helpers import form_with_action
+
 
 def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_user):
     """Test admin can enter admin page."""
@@ -326,7 +328,8 @@ def test_admin_can_remove_member_from_group(
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    res = client_app.post("/admin/manage-group-members/1/1", status=302)
+    res = client_app.get("/admin/manage-group-members/1")
+    res = form_with_action(res, "/admin/manage-group-members/1/1").submit(status=302)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
     assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
 
@@ -408,7 +411,8 @@ def test_admin_can_remove_group(
 ):
     """Test admin can remove group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/confirm-delete-group/1", status=302)
+    res = client_app.get("/admin/delete-group/1")
+    res = form_with_action(res, "/admin/confirm-delete-group/1").submit(status=302)
     assert ("success", "Le groupe a été supprimé") in res.flashes
     assert "Groupe 1 Group 1 deleted" in caplog.text
     groups = db.session.scalars(db.select(Group)).all()

@@ -21,7 +21,9 @@ from flask import request
 from flask import url_for
 from flask_babel import gettext as _
 
+from b3desk.forms import ConfirmForm
 from b3desk.forms import DelegationSearchForm
+from b3desk.forms import DeleteRecordingForm
 from b3desk.forms import MeetingForm
 from b3desk.forms import MeetingWithRecordForm
 from b3desk.forms import RecordingForm
@@ -89,6 +91,7 @@ def show_meeting_recording(meeting: Meeting, user: User):
         meeting_mailto_params=meeting_mailto_params,
         meeting=meeting,
         form=form,
+        delete_recording_form=DeleteRecordingForm(),
         admin_mode=is_admin_mode(),
     )
 
@@ -272,6 +275,7 @@ def edit_meeting(meeting: Meeting, user: User):
         return render_template(
             "meeting/end.html",
             meeting=meeting,
+            confirm_form=ConfirmForm(),
         )
 
     if admin_mode:
@@ -399,6 +403,7 @@ def manage_delegation(meeting: Meeting, user: User):
             "meeting/delegation.html",
             meeting=meeting,
             form=form,
+            confirm_form=ConfirmForm(),
             admin_mode=admin_mode,
         )
 
@@ -444,6 +449,7 @@ def manage_delegation(meeting: Meeting, user: User):
         "meeting/delegation.html",
         meeting=meeting,
         form=form,
+        confirm_form=ConfirmForm(),
         admin_mode=admin_mode,
     )
 

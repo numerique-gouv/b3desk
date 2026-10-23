@@ -4,8 +4,10 @@ from flask import current_app
 from flask_babel import lazy_gettext as _
 from flask_wtf import FlaskForm
 from wtforms import BooleanField
+from wtforms import ButtonField
 from wtforms import EmailField
 from wtforms import FloatField
+from wtforms import HiddenField
 from wtforms import IntegerField
 from wtforms import SelectChoice
 from wtforms import SelectField
@@ -13,6 +15,7 @@ from wtforms import StringField
 from wtforms import TextAreaField
 from wtforms import ValidationError
 from wtforms import validators
+from wtforms.widgets import HiddenInput
 
 from b3desk.models.meetings import DEFAULT_MAX_PARTICIPANTS
 from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
@@ -27,12 +30,27 @@ DEFAULT_MEETING_DURATION = timedelta(hours=4, minutes=40)
 MAX_MEETING_DURATION = timedelta(minutes=999)
 
 
+class ConfirmForm(FlaskForm):
+    """A CSRF token and a button, for forms that only trigger an action."""
+
+    confirm = ButtonField()
+
+
+class DeleteRecordingForm(ConfirmForm):
+    recordID = HiddenField()
+
+
+class AddGroupMembersForm(FlaskForm):
+    add_members = ButtonField(_("Ajouter les utilisateurs sélectionnés"))
+
+
 class JoinMeetingForm(FlaskForm):
-    fullname = StringField()
-    meeting_id = StringField()
-    secret_key = StringField()
-    fullname_suffix = StringField()
-    seconds_before_refresh = FloatField()
+    fullname = StringField(label=_("Votre nom"))
+    meeting_id = HiddenField()
+    secret_key = HiddenField()
+    fullname_suffix = HiddenField()
+    seconds_before_refresh = FloatField(widget=HiddenInput())
+    join = ButtonField(_("Rejoindre"))
 
 
 class ChunkUploadForm(FlaskForm):
@@ -221,6 +239,7 @@ class MeetingForm(FlaskForm):
         ),
         render_kw={"readonly": True},
     )
+    save = ButtonField()
 
     def __init__(self, *args, meeting=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -266,6 +285,7 @@ class RecordingForm(FlaskForm):
     name = StringField(
         validators=[validators.DataRequired()], label=_("Nom de l'enregistrement")
     )
+    rename = ButtonField(_("Renommer"))
 
 
 class DelegationSearchForm(FlaskForm):
@@ -276,23 +296,33 @@ class DelegationSearchForm(FlaskForm):
         },
         validators=[validators.DataRequired()],
     )
+    add_delegate = ButtonField("")
 
 
-class UserSearchForm(FlaskForm):
+class SearchForm(FlaskForm):
+    """A search bar, sent as a GET request."""
+
+    class Meta:
+        csrf = False
+
+    find = ButtonField("")
+
+
+class UserSearchForm(SearchForm):
     search = StringField(
         label=_("Rechercher un utilisateur"),
         render_kw={"placeholder": "Saisir l'une des informations du tableau"},
     )
 
 
-class MeetingSearchForm(FlaskForm):
+class MeetingSearchForm(SearchForm):
     search = StringField(
         label=_("Rechercher une réunion"),
         render_kw={"placeholder": "Saisir l'une des informations du tableau"},
     )
 
 
-class GroupSearchForm(FlaskForm):
+class GroupSearchForm(SearchForm):
     search = StringField(
         label=_("Rechercher un groupe"),
         render_kw={"placeholder": "Saisir l'une des informations du tableau"},
@@ -352,6 +382,7 @@ class GroupForm(FlaskForm):
         coerce=nullable_bool,
         default="None",
     )
+    save = ButtonField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
