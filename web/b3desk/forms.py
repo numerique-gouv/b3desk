@@ -6,7 +6,6 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField
 from wtforms import EmailField
 from wtforms import FloatField
-from wtforms import Form
 from wtforms import IntegerField
 from wtforms import SelectField
 from wtforms import StringField
@@ -35,10 +34,6 @@ class JoinMeetingForm(FlaskForm):
     seconds_before_refresh = FloatField()
 
 
-class ShowMeetingForm(Form):
-    meeting_id = IntegerField()
-
-
 class ChunkUploadForm(FlaskForm):
     """Dropzone chunk metadata."""
 
@@ -56,13 +51,6 @@ class MeetingFilesForm(FlaskForm):
         validators=[
             validators.length(max=MAX_URL_LENGTH, message=_("Le texte est trop long"))
         ],
-    )
-    guestPolicy = BooleanField(
-        label=_("Salle d'attente"),
-        description=_(
-            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement."
-        ),
-        default=False,
     )
 
 
