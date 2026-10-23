@@ -104,7 +104,8 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
     if not form.validate():
-        abort(403)
+        flash(_("Impossible de renommer l'enregistrement"), "error")
+        return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
     bbb = BBB(meeting.bbb_meeting_id)
     if not bbb.get_recording(recording_id):
