@@ -1177,7 +1177,7 @@ msgstr ""
 #: web/b3desk/templates/admin/meeting_table.html:11
 #: web/b3desk/templates/admin/user_infos.html:32
 #: web/b3desk/templates/admin/user_table.html:14
-#: web/b3desk/templates/footer/donnees_personnelles.html:54
+#: web/b3desk/templates/footer/donnees_personnelles.html:47
 msgid "Nom"
 msgstr ""
 
@@ -1407,7 +1407,7 @@ msgid "Sélectionner"
 msgstr ""
 
 #: web/b3desk/templates/admin/user_table.html:15
-#: web/b3desk/templates/footer/donnees_personnelles.html:55
+#: web/b3desk/templates/footer/donnees_personnelles.html:48
 msgid "Prénom"
 msgstr ""
 
@@ -2023,15 +2023,15 @@ msgstr ""
 msgid "Contrôle du volume"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:106
+#: web/b3desk/templates/footer/documentation.html:99
 msgid "Liste des serveurs BigBlueButton pour l'Éducation"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:107
+#: web/b3desk/templates/footer/documentation.html:100
 msgid "Liste des serveurs BigBlueButton pour le Webinaire de l'État"
 msgstr ""
 
-#: web/b3desk/templates/footer/documentation.html:108
+#: web/b3desk/templates/footer/documentation.html:101
 msgid "Liste des serveurs BigBlueButton pour l'ensemble des BigBlueButton"
 msgstr ""
 
@@ -2170,81 +2170,81 @@ msgstr ""
 msgid "Quels sont les traitements de données mis en œuvre ?"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:45
+#: web/b3desk/templates/footer/donnees_personnelles.html:38
 msgid "Finalité du traitement"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:46
+#: web/b3desk/templates/footer/donnees_personnelles.html:39
 msgid "Base légale du traitement"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:47
+#: web/b3desk/templates/footer/donnees_personnelles.html:40
 msgid "Catégorie de données personnelles traitées"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:48
+#: web/b3desk/templates/footer/donnees_personnelles.html:41
 msgid "Durée de conservation"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:51
+#: web/b3desk/templates/footer/donnees_personnelles.html:44
 msgid "Gestion des comptes des organisateurs de webinaires"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:52
-#: web/b3desk/templates/footer/donnees_personnelles.html:61
-#: web/b3desk/templates/footer/donnees_personnelles.html:67
+#: web/b3desk/templates/footer/donnees_personnelles.html:45
+#: web/b3desk/templates/footer/donnees_personnelles.html:54
+#: web/b3desk/templates/footer/donnees_personnelles.html:60
 msgid "Article 6-1(e) RGPD : exécution d’une mission de service public"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:53
+#: web/b3desk/templates/footer/donnees_personnelles.html:46
 msgid "Données d’identification :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:56
+#: web/b3desk/templates/footer/donnees_personnelles.html:49
 msgid "Adresse électronique"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:57
+#: web/b3desk/templates/footer/donnees_personnelles.html:50
 msgid ""
 "Les données sont supprimées après une période de 12 mois d’inactivité du "
 "compte ou au moment de la désactivation du compte (1ère moe planifiée au "
 "plus tard en 12/22)."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:60
+#: web/b3desk/templates/footer/donnees_personnelles.html:53
 msgid ""
 "Enregistrement des visio-conférences à des fins de partage et de "
 "rediffusion"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:62
+#: web/b3desk/templates/footer/donnees_personnelles.html:55
 msgid "Enregistrement vidéo des visio-conférences"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:63
+#: web/b3desk/templates/footer/donnees_personnelles.html:56
 msgid ""
 "Les données d’enregistrement peuvent être supprimées à tout moment par "
 "l’organisateur. Elles sont automatiquement supprimées 12 mois après la "
 "date de la visio-conférences."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:66
+#: web/b3desk/templates/footer/donnees_personnelles.html:59
 msgid "Outils de chat et de vote en ligne"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:68
+#: web/b3desk/templates/footer/donnees_personnelles.html:61
 msgid "Échanges écrits entre participants et résultats des votes en lignes"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:69
+#: web/b3desk/templates/footer/donnees_personnelles.html:62
 msgid "Les données sont supprimées à l’issue de la session de visio-conférence."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:72
+#: web/b3desk/templates/footer/donnees_personnelles.html:65
 msgid "Gestion de la sécurité de la visio-conférence"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:73
+#: web/b3desk/templates/footer/donnees_personnelles.html:66
 msgid ""
 "(Loi n° 2004-575 du 25 juin 2005 pour la confiance dans l’économie "
 "numérique, Décret n° 2021-1362 du 20 octobre 2021 relatif à la "
@@ -2252,19 +2252,19 @@ msgid ""
 "contribué à la création d’un contenu en ligne)"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:74
+#: web/b3desk/templates/footer/donnees_personnelles.html:67
 msgid "Données de connexion des utilisateurs du service (logs, adresse IP)"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:75
+#: web/b3desk/templates/footer/donnees_personnelles.html:68
 msgid "12 mois"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:79
+#: web/b3desk/templates/footer/donnees_personnelles.html:72
 msgid "Quels sont les destinataires de vos données ?"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:80
+#: web/b3desk/templates/footer/donnees_personnelles.html:73
 msgid ""
 "Les destinataires de vos données personnelles sont les agents et "
 "salariées dûment habilitées de la, respectivement, DNE ou DINUM et de nos"
@@ -2272,90 +2272,90 @@ msgid ""
 " service."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:81
+#: web/b3desk/templates/footer/donnees_personnelles.html:74
 msgid ""
 "Nous nous sommes assurés de la mise en œuvre par nos sous-traitants de "
 "garanties adéquates et du respect de conditions strictes de "
 "confidentialité, d’usage et de protection des données."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:82
+#: web/b3desk/templates/footer/donnees_personnelles.html:75
 msgid ""
 "Les données collectées sur la visio-conférence ne sont pas transférées en"
 " dehors de l’Union européenne."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:83
+#: web/b3desk/templates/footer/donnees_personnelles.html:76
 msgid "Quels sont vos droits ?"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:84
+#: web/b3desk/templates/footer/donnees_personnelles.html:77
 msgid ""
 "Vous disposez d’un droit d’accès et de rectification des données à "
 "caractère personnel qui vous concernent. Vous disposez également d’un "
 "droit d’opposition et de limitation du traitement de vos données."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:85
+#: web/b3desk/templates/footer/donnees_personnelles.html:78
 msgid ""
 "Pour exercer vos droits ou pour toute question sur le traitement de vos "
 "données, vous pouvez nous écrire, respectivement, aux adresses : "
 "contact@apps.education.fr ou contact@webinaire.numerique.gouv.fr."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:86
+#: web/b3desk/templates/footer/donnees_personnelles.html:79
 msgid ""
 "Vous pouvez également, dans le cas du Webinaire de l'État, contacter le "
 "délégué à la protection des données (DPD) des services du Premier "
 "Ministre :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:87
+#: web/b3desk/templates/footer/donnees_personnelles.html:80
 msgid "par mail à dpd@pm.gouv.fr"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:88
+#: web/b3desk/templates/footer/donnees_personnelles.html:81
 msgid "ou par courrier à l’adresse suivante :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:89
+#: web/b3desk/templates/footer/donnees_personnelles.html:82
 msgid "Services du Premier Ministre"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:90
+#: web/b3desk/templates/footer/donnees_personnelles.html:83
 msgid ""
 "À l’attention du délégué à la protection des données (DPD)<br>\n"
 "            56 rue de Varenne <br>\n"
 "            75007 Paris"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:93
+#: web/b3desk/templates/footer/donnees_personnelles.html:86
 msgid ""
 "Si vous estimez, après nous avoir contactés, que vos droits Informatiques"
 " et Libertés ne sont pas respectés vous pouvez adresser une réclamation à"
 " la CNIL :"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:94
+#: web/b3desk/templates/footer/donnees_personnelles.html:87
 msgid ""
 "Commission nationale informatique et libertés <br>\n"
 "            3 place de Fontenoy – TSA 80715 – <br>\n"
 "            75334 PARIS CEDEX 07"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:98
+#: web/b3desk/templates/footer/donnees_personnelles.html:91
 msgid ""
 "Les modalités de réclamation sont précisées sur le site de la CNIL : "
 "www.cnil.fr."
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:100
+#: web/b3desk/templates/footer/donnees_personnelles.html:93
 msgid ""
 "Contactez le Délégué à la protection des données pour les services "
 "Écoles/Colléges/Lycées/Agents"
 msgstr ""
 
-#: web/b3desk/templates/footer/donnees_personnelles.html:101
+#: web/b3desk/templates/footer/donnees_personnelles.html:94
 msgid ""
 "Pour ce faire, envoyez un courriel à "
 "<strong>dpd[chez]education.gouv.fr</strong>"

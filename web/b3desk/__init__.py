@@ -470,6 +470,78 @@ def setup_oidc(app):
         app.logger.error("OIDC service is not ready: %s", exc)
 
 
+def setup_secure_headers(app):
+    from urllib.parse import urlsplit
+
+    from flask import Response
+    from flask import g
+    from secure import ContentSecurityPolicy
+    from secure import Secure
+    from secure import StrictTransportSecurity
+    from secure import XFrameOptions
+
+    def base_url(url):
+        if url:
+            split_url = urlsplit(url)
+        else:
+            return None
+        return f"{split_url.scheme}://{split_url.netloc}"
+
+    enable_lasuite = app.config["ENABLE_LASUITENUMERIQUE"]
+    matomo_url = base_url(app.config["MATOMO_URL"])
+    bbb_url = base_url(app.config["BIGBLUEBUTTON_ENDPOINT"])
+    satisfaction_poll_url = base_url(app.config["SATISFACTION_POLL_URL"])
+    lasuite_numérique_url = "https://integration.lasuite.numerique.gouv.fr"
+
+    @app.after_request
+    def add_security_headers(response: Response) -> Response:
+        nc_locator = base_url(getattr(g.user, "nc_locator", None))
+
+        csp = (
+            ContentSecurityPolicy()
+            .frame_ancestors("'self'")
+            .default_src("'self'")
+            .script_src("'self'")
+            .frame_src("'self'")
+            .frame_src("https://podeduc.apps.education.fr")
+            .img_src("'self'")
+            # Inline images: CaptchEtat (base64 PNG) and SVGs on the welcome page.
+            .img_src("data:")
+            .connect_src("'self'")
+            .font_src("'self'")
+            .style_src("'self'")
+        )
+
+        if nc_locator:
+            csp.connect_src(nc_locator)
+        if matomo_url:
+            csp.connect_src(matomo_url).script_src(matomo_url).img_src(matomo_url)
+        if satisfaction_poll_url:
+            csp.frame_src(satisfaction_poll_url)
+        if enable_lasuite:
+            (
+                csp.img_src(lasuite_numérique_url)
+                .script_src(lasuite_numérique_url)
+                .connect_src(lasuite_numérique_url)
+                .font_src(lasuite_numérique_url)
+                .style_src(lasuite_numérique_url)
+                # Third-party scripts inject inline styles that can't be hashed
+                # or nonced: La Suite gaufre (<style> elements in gaufre.js)
+                # and CaptchEtat (style="" attributes in captchetat-js.js).
+                .style_src("'unsafe-inline'")
+            )
+        if bbb_url:
+            csp.img_src(bbb_url)
+
+        Secure(
+            csp=csp,
+            hsts=StrictTransportSecurity().max_age(63072000),
+            xfo=XFrameOptions().sameorigin(),
+        ).set_headers(response)
+
+        return response
+
+
 def create_app(test_config=None, authentication=True):
     """Flask application factory - creates and configures the application instance."""
     app = Flask(__name__)
@@ -490,6 +562,7 @@ def create_app(test_config=None, authentication=True):
             setup_oidc(app)
         setup_debug_host_redirect(app)
         setup_user_session(app)
+        setup_secure_headers(app)
     except Exception as exc:  # pragma: no cover
         if sentry_sdk:
             sentry_sdk.capture_exception(exc)

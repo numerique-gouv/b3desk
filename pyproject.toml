@@ -37,6 +37,7 @@ dependencies = [
     "webdavclient3==3.14.6",
     "httpx2>=2.13.0",
     "packaging>=26.0,<27.0",
+    "secure>=2.0.1",
 ]
 
 [tool.uv]
