@@ -196,11 +196,15 @@ def edit_meeting(meeting: Meeting, user: User):
     admin_mode = is_admin_mode()
     form = (
         MeetingWithRecordForm(
-            request.form if request.method == "POST" else None, obj=meeting
+            request.form if request.method == "POST" else None,
+            obj=meeting,
+            meeting=meeting,
         )
         if current_app.config["RECORDING"]
         else MeetingForm(
-            request.form if request.method == "POST" else None, obj=meeting
+            request.form if request.method == "POST" else None,
+            obj=meeting,
+            meeting=meeting,
         )
     )
 
@@ -223,7 +227,6 @@ def edit_meeting(meeting: Meeting, user: User):
             admin_mode=admin_mode,
         )
 
-    del form.id
     del form.name
     if hasattr(form, "ai_summary") and not meeting.owner.can_use_ai_summary:
         del form.ai_summary

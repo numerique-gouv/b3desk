@@ -55,7 +55,6 @@ class MeetingFilesForm(FlaskForm):
 
 
 class MeetingForm(FlaskForm):
-    id = IntegerField()
     name = StringField(
         label=_(
             "Nom de la réunion",
@@ -222,8 +221,9 @@ class MeetingForm(FlaskForm):
         render_kw={"readonly": True},
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, meeting=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.meeting = meeting
         self.logoutUrl.default = current_app.config["MEETING_LOGOUT_URL"]
 
 
