@@ -146,6 +146,7 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "sqlalchemy-utils" },
     { name = "webdavclient3" },
+    { name = "wtforms" },
 ]
 
 [package.dev-dependencies]
@@ -214,6 +215,7 @@ requires-dist = [
     { name = "sqlalchemy", specifier = ">=2.0.44,<2.1.0" },
     { name = "sqlalchemy-utils", specifier = ">=0.42.1,<0.50.0" },
     { name = "webdavclient3", specifier = "==3.14.6" },
+    { name = "wtforms", specifier = ">=3.3.0,<4.0.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -2505,12 +2507,12 @@ wheels = [
 
 [[package]]
 name = "wtforms"
-version = "3.3.0b3"
+version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markupsafe" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/cb/cc93833812d9dda59d3e3a0290a856d038377d694dc2028bba481497408c/wtforms-3.3.0b3.tar.gz", hash = "sha256:a11c56a355dba743b345414bf2490fc3fe715026ad90dc591812dab185d9437d", size = 168361, upload-time = "2026-06-15T12:25:09.87Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/42/db38b45b7d791f608d7f1afbb9176dfef4a0dec415eb435b07cd44eb96cf/wtforms-3.3.0.tar.gz", hash = "sha256:efbc626b0b68d3bcb77822e0eceb995f56c5e9d0aeb4220b9dc2fc9f03e7e1ed", size = 171987, upload-time = "2026-10-23T14:43:11.152Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/0b/e5910c6624212dd86be716947822df95f1b43a287547566831c362d767c4/wtforms-3.3.0b3-py3-none-any.whl", hash = "sha256:4dc5b277cd67a1da04e206f66436852156b41c91bb1543eebb43eb934555fc52", size = 171248, upload-time = "2026-06-15T12:25:08.579Z" },
+    { url = "https://files.pythonhosted.org/packages/01/99/e6eef415617529fe9479b4a0ea1a4fa360afece3b3a0c58a6904de3621b8/wtforms-3.3.0-py3-none-any.whl", hash = "sha256:eaf2f7649bedbee0bad74bb068dca8bfec8b00d04fd44c1735682c1fe33acfa7", size = 171960, upload-time = "2026-10-23T14:43:09.699Z" },
 ]

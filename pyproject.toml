@@ -35,6 +35,7 @@ dependencies = [
     "sqlalchemy>=2.0.44,<2.1.0",
     "sqlalchemy-utils>=0.42.1,<0.50.0",
     "webdavclient3==3.14.6",
+    "wtforms>=3.3.0,<4.0.0",
     "httpx2>=2.13.0",
     "packaging>=26.0,<27.0",
 ]
