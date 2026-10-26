@@ -7,6 +7,7 @@ from wtforms import BooleanField
 from wtforms import EmailField
 from wtforms import FloatField
 from wtforms import IntegerField
+from wtforms import SelectChoice
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
@@ -319,7 +320,11 @@ class GroupForm(FlaskForm):
         label=_(
             "SIP",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )
@@ -327,7 +332,11 @@ class GroupForm(FlaskForm):
         label=_(
             "Ajout de document",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )
@@ -335,7 +344,11 @@ class GroupForm(FlaskForm):
         label=_(
             "Génération de résumé (IA)",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )
