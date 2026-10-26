@@ -1308,8 +1308,8 @@ def test_generate_existing_pin(
     # Mock returns existing PINs first, then a free one
     # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (shadow)
     mocker.patch(
-        "b3desk.models.meetings.random.randint",
-        side_effect=[111111111, 111111112, 111111113, 222222222],
+        "b3desk.models.meetings.generate_random_pin",
+        side_effect=["111111111", "111111112", "111111113", "222222222"],
     )
     res = client_app.get("/meeting/new")
     res.mustcontain("222222222")
