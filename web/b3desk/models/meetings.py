@@ -149,7 +149,7 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
 class Meeting(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     bbb_meeting_id: Mapped[str] = mapped_column(
-        String(255), unique=True, default=lambda: str(uuid.uuid7())
+        String(255), unique=True, default=secrets.token_urlsafe
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped[User] = relationship(back_populates="meetings")

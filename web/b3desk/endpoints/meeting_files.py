@@ -511,7 +511,7 @@ def ncdownload(token, user, ncpath):
 
     tmp_download_dir = Path(current_app.config["TMP_DOWNLOAD_DIR"])
     tmp_download_dir.mkdir(parents=True, exist_ok=True)
-    uniqfile = str(uuid.uuid4())
+    uniqfile = secrets.token_urlsafe(32)
     tmp_name = tmp_download_dir / uniqfile
 
     if not is_nextcloud_available(user):
