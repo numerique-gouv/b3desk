@@ -8,7 +8,7 @@
 #   This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.
-import random
+import secrets
 import uuid
 from datetime import date
 from datetime import datetime
@@ -135,7 +135,7 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     )
     role: Mapped[str | None] = mapped_column(String(255))
     secret_key: Mapped[str] = mapped_column(
-        String(255), unique=True, default=lambda: str(uuid.uuid7())
+        String(255), unique=True, default=secrets.token_urlsafe
     )
     legacy_secret_keys: Mapped[list[str]] = mapped_column(
         JSON, default=list
@@ -149,7 +149,7 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
 class Meeting(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     bbb_meeting_id: Mapped[str] = mapped_column(
-        String(255), unique=True, default=lambda: str(uuid.uuid7())
+        String(255), unique=True, default=secrets.token_urlsafe
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped[User] = relationship(back_populates="meetings")
@@ -272,7 +272,7 @@ class Meeting(db.Model):
                 MeetingSecretKey.role == role.name,
             )
         ).one()
-        meeting_secret_key.secret_key = str(uuid.uuid7())
+        meeting_secret_key.secret_key = secrets.token_urlsafe()
         meeting_secret_key.legacy_secret_keys = []
 
     def transfer_ownership(self, previous_owner, new_owner):
@@ -382,7 +382,7 @@ def get_meeting_from_bbb_meeting_id(bbb_meeting_id):
 
 def generate_random_pin():
     """Generate a random 9-digit PIN."""
-    return str(random.randint(MIN_PIN, MAX_PIN))
+    return str(MIN_PIN + secrets.randbelow(MAX_PIN - MIN_PIN + 1))
 
 
 def pin_exists(pin):

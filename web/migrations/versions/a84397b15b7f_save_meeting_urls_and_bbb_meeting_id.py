@@ -7,7 +7,7 @@ Create Date: 2026-07-27 13:43:31.892476
 """
 
 import hashlib
-import uuid
+import secrets
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -116,7 +116,7 @@ def upgrade():
                 {
                     "meeting_id": meeting_id,
                     "role": role,
-                    "secret_key": str(uuid.uuid7()),
+                    "secret_key": secrets.token_urlsafe(),
                     "legacy_secret_keys": legacy_secret_keys(
                         bbb_meeting_id, attendee_pw, name, role
                     ),
