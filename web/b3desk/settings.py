@@ -45,7 +45,8 @@ class MainSettings(BaseSettings):
     model_config = SettingsConfigDict(extra="allow")
 
     SECRET_KEY: str
-    """Clé secrète utilisée notamment pour la signature des cookies. Cette clé
+    """Clé secrète utilisée notamment pour la protection CSRF et la signature
+    des liens d'invitation. Cette clé
     DOIT être différente pour TOUTES les instances de B3Desk, et être tenue
     secrète. Peut être générée avec ``python -c 'import secrets;
     print(secrets.token_hex())'``
@@ -176,7 +177,10 @@ class MainSettings(BaseSettings):
     """
 
     REDIS_URL: str | None = None
-    """L’URL du serveur redis utilisé pour les tâches asynchrones.
+    """L’URL du serveur redis utilisé pour les tâches asynchrones, le cache et
+    les sessions. Si non renseigné, le cache et les sessions sont stockés sur
+    le système de fichiers local, qui n'est pas partagé entre plusieurs
+    serveurs.
 
     Par exemple ``localhost:6379``.
     """

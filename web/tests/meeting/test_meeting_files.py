@@ -914,7 +914,7 @@ def test_download_meeting_file_from_url_too_slow(
     """A URL trickling data past DOWNLOAD_MAX_DURATION is not downloaded."""
     meeting_file = add_url_meeting_file(meeting)
     httpx2_mock.route(method="GET").respond(200, content=b"first chunk")
-    mocker.patch("b3desk.utils.time.monotonic", side_effect=[0, 1000])
+    mocker.patch("b3desk.utils.DOWNLOAD_MAX_DURATION", -1)
 
     response = download_url_meeting_file(client_app, meeting, meeting_file, status=302)
 
