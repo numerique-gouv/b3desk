@@ -252,3 +252,22 @@ def test_create_app_without_authentication(configuration, mocker):
     setup_oidc.assert_not_called()
     with app.app_context():
         assert url_for("public.welcome", _external=True)
+
+
+def test_session_cookie_secure_need_https_url_scheme(configuration):
+    """Test that preferred url scheme setting is https if session cookie secure is activated."""
+    configuration["SESSION_COOKIE_SECURE"] = True
+
+    with pytest.raises(
+        ValueError,
+        match="SESSION_COOKIE_SECURE configuration required https PREFERRED_URL_SCHEME",
+    ):
+        MainSettings.model_validate(configuration)
+
+
+def test_session_cookie_secure_raised_no_error_with_https_url_scheme(configuration):
+    """Test settings raised no error when PREFERRED_URL_SCHEME is https."""
+    configuration["SESSION_COOKIE_SECURE"] = True
+    configuration["PREFERRED_URL_SCHEME"] = "https"
+
+    MainSettings.model_validate(configuration)

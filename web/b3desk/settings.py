@@ -992,3 +992,34 @@ class MainSettings(BaseSettings):
 
     Allow AI summary generation on records
     """
+
+    SESSION_COOKIE_SECURE: bool | None = True
+    """Session Cookie Secure
+
+    Limite les cookies en https
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/stable/config/#SESSION_COOKIE_SECURE
+    """
+
+    @field_validator("SESSION_COOKIE_SECURE", mode="after")
+    def get_session_cookie_secure(
+        cls,
+        session_cookie_secure: bool | None,
+        info: ValidationInfo,
+    ) -> bool:
+        """Validate that PREFERRED_URL_SCHEME is `https` when SESSION_COOKIE_SECURE is enabled."""
+        if session_cookie_secure and info.data["PREFERRED_URL_SCHEME"] != "https":
+            raise ValueError(
+                "SESSION_COOKIE_SECURE configuration required https PREFERRED_URL_SCHEME"
+            )
+        return session_cookie_secure
+
+    SESSION_COOKIE_SAMESITE: str | None = "Lax"
+    """
+    Session Cookie Samesite
+
+    Restreint les requêtes de cookies par les sites externes
+    peut être `Strict`, `Lax` ou `None`
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/stable/config/#SESSION_COOKIE_SAMESITE
+    """

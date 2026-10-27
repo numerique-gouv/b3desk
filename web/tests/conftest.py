@@ -305,6 +305,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "SECRET_KEY": "test-secret-key",
         "SERVER_NAME": "b3desk.test",
         "PREFERRED_URL_SCHEME": "http",
+        "SESSION_COOKIE_SECURE": False,
         "SQLALCHEMY_DATABASE_URI": db,
         "WTF_CSRF_ENABLED": False,
         "TESTING": True,
