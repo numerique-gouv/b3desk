@@ -1,6 +1,7 @@
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+import pytest
 from b3desk.join import get_meeting_secret_key
 from b3desk.models.roles import Role
 from flask import url_for
@@ -562,3 +563,13 @@ def test_visio_code_form_validation_with_missing_fields(client_app, meeting):
     """Test that a partial visio code form does not raise an error."""
     response = client_app.post("/meeting/visio_code_form", params={})
     assert response.json == {"visioCode": False, "shouldDisplayCaptcha": False}
+
+
+@pytest.mark.parametrize("path", ["/meeting/visio_code", "/meeting/visio_code_form"])
+def test_visio_code_routes_share_limit(client_app, mocker, path):
+    client_app.app.config["VISIO_CODE_RATE_LIMIT"] = 1
+    client_app.post("/meeting/visio_code_form", params={})
+    lookup = mocker.patch("b3desk.endpoints.join.get_meeting_by_visio_code")
+    response = client_app.post(path, params={}, status=429)
+    assert 1 <= int(response.headers["Retry-After"]) <= 60
+    lookup.assert_not_called()

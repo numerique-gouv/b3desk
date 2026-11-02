@@ -96,13 +96,17 @@ def meeting_access_required(level=None):
 
 
 def visio_code_attempt_counter_increment():
-    """Increment the visio code attempt counter in session."""
-    visio_code_attempt_counter = session.setdefault("visio_code_attempt_counter", 0)
-    session["visio_code_attempt_counter"] = visio_code_attempt_counter + 1
+    """Increment the server-side visio code attempt counter."""
+    from b3desk.rate_limit import visio_code_counter
+
+    visio_code_counter("failures", increment=True)
 
 
 def visio_code_attempt_counter_reset():
-    """Reset the visio code attempt counter in session."""
+    """Reset failed attempts without resetting the request rate limit."""
+    from b3desk.rate_limit import visio_code_counter
+
+    visio_code_counter("failures", reset=True)
     session.pop("visio_code_attempt_counter", None)
 
 
@@ -110,6 +114,7 @@ def should_display_captcha(check_service_status=True):
     """Determine if CAPTCHA should be displayed based on attempt count and configuration."""
     from b3desk.endpoints.captcha import captcha_error
     from b3desk.endpoints.captcha import captchetat_service_status
+    from b3desk.rate_limit import visio_code_counter
 
     if (
         not current_app.config["PISTE_OAUTH_CLIENT_ID"]
@@ -119,7 +124,7 @@ def should_display_captcha(check_service_status=True):
     ):
         return False
 
-    if session.get("visio_code_attempt_counter", 0) <= current_app.config.get(
+    if visio_code_counter("failures") <= current_app.config.get(
         "CAPTCHA_NUMBER_ATTEMPTS"
     ):
         return False
