@@ -19,7 +19,6 @@ from b3desk.join import create_bbb_quick_meeting
 from b3desk.join import get_join_url
 from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_role
-from b3desk.models import db
 from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import get_meeting_by_visio_code
@@ -73,7 +72,11 @@ def signin_meeting(
 
     if role == Role.authenticated:
         return redirect(
-            url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
+            url_for(
+                "join.join_meeting_as_authenticated",
+                meeting_id=meeting_id,
+                secret_key=secret_key,
+            )
         )
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
@@ -249,26 +252,29 @@ def join_meeting():
 
 
 # Cannot use a flask converter here because the meeting may not be persisted yet
-@bp.route("/meeting/join/<meeting_id>/authenticated")
-def join_meeting_as_authenticated(meeting_id):
-    """Join a meeting with authenticated attendee role using OIDC."""
-    # TODO: Not sure this endpoint is really useful as it is only called in 'signin_meeting'.
-    # We should look if we can delete it.
-    if not meeting_id.isdigit():
-        abort(404)
+@bp.route("/meeting/join/<meeting_id>/authenticated/hash/<secret_key>")
+def join_meeting_as_authenticated(meeting_id, secret_key):
+    """Authenticate the attendee via OIDC, then send them to the waiting room.
+
+    The secret key of the authenticated invitation link is required, so that
+    knowing a meeting id is not enough to join it.
+    """
+    meeting = get_meeting_from_meeting_id(meeting_id)
+    if meeting is None or get_role(meeting, secret_key, g.user) != Role.authenticated:
+        flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
+        return redirect(url_for("public.index"))
 
     if not has_attendee_session():
         session["attendee_next_meeting_id"] = meeting_id
+        session["attendee_next_secret_key"] = secret_key
         return redirect_to_provider(oauth.attendee, "public.index")
 
-    meeting = db.session.get(Meeting, meeting_id) or abort(404)
-    role = Role.authenticated
     fullname = get_authenticated_attendee_fullname()
     return redirect(
         url_for(
             "join.waiting_meeting",
             meeting_id=meeting_id,
-            secret_key=get_meeting_secret_key(meeting, role),
+            secret_key=secret_key,
             fullname=fullname,
             seconds_before_refresh=0,  # Authenticated user must go through the waiting room, but attempts a connection without delay.
         )

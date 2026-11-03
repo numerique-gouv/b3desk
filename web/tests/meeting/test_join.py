@@ -2,6 +2,8 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from b3desk.join import get_meeting_secret_key
+from b3desk.join import get_quick_meeting_secret_key
+from b3desk.models.meetings import get_quick_meeting_from_meeting_id
 from b3desk.models.roles import Role
 from flask import url_for
 from joserfc import jwt
@@ -69,7 +71,10 @@ def test_signin_meeting_with_authenticated_attendee(client_app, meeting):
         url, extra_environ={"REMOTE_ADDR": "127.0.0.1"}, status=302
     )
 
-    assert response.location == f"/meeting/join/{meeting.id}/authenticated"
+    assert (
+        response.location
+        == f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
+    )
 
 
 def test_signin_meeting_updates_last_connection_for_attendee_link(
@@ -166,7 +171,8 @@ def test_join_meeting_as_authenticated_attendee(
     client_app, meeting, authenticated_attendee
 ):
     """Test joining meeting as authenticated attendee."""
-    url = f"/meeting/join/{meeting.id}/authenticated"
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    url = f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
     response = client_app.get(url, status=302)
 
     assert f"/meeting/wait/{meeting.id}/hash/" in response.location
@@ -177,13 +183,46 @@ def test_join_meeting_as_authenticated_attendee(
     assert response.form["fullname"].value == "Bob Dylan"
 
 
-def test_join_meeting_as_authenticated_attendee_with_quick_meeting_id(
+def test_join_meeting_as_authenticated_attendee_with_quick_meeting(
     client_app, authenticated_attendee
 ):
-    """Quick meetings are not persisted, so their identifier reaches no meeting."""
-    client_app.get(
-        "/meeting/join/0198f4f2-1234-7abc-8def-0123456789ab/authenticated", status=404
+    """Authenticated attendees can join quick meetings with the authenticated link."""
+    quick_meeting = get_quick_meeting_from_meeting_id()
+    meeting_hash = get_quick_meeting_secret_key(quick_meeting, Role.authenticated)
+    response = client_app.get(
+        f"/meeting/join/{quick_meeting.id}/authenticated/hash/{meeting_hash}",
+        status=302,
     )
+
+    assert f"/meeting/wait/{quick_meeting.id}/hash/{meeting_hash}" in response.location
+
+
+def test_join_meeting_as_authenticated_attendee_requires_secret_key(
+    client_app, meeting, authenticated_attendee
+):
+    """Knowing the meeting id is not enough to join it as an authenticated attendee."""
+    client_app.get(f"/meeting/join/{meeting.id}/authenticated", status=404)
+
+
+def test_join_meeting_as_authenticated_attendee_with_invalid_secret_key(
+    client_app, meeting, authenticated_attendee
+):
+    """Wrong or other-role secret keys are rejected."""
+    for secret_key in (
+        "invalid",
+        get_meeting_secret_key(meeting, Role.attendee),
+        get_meeting_secret_key(meeting, Role.moderator),
+    ):
+        response = client_app.get(
+            f"/meeting/join/{meeting.id}/authenticated/hash/{secret_key}",
+            status=302,
+        )
+        assert "/meeting/wait/" not in response.location
+        assert response.location == url_for("public.index")
+        assert (
+            "error",
+            "Le lien d'invitation que vous avez utilisé est invalide.",
+        ) in response.flashes
 
 
 def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
@@ -201,7 +240,8 @@ def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
             "email": user.email,
         }
 
-    url = f"/meeting/join/{meeting.id}/authenticated"
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    url = f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
     response = client_app.get(url, status=302)
 
     assert f"/meeting/wait/{meeting.id}/hash/" in response.location
@@ -216,7 +256,10 @@ def test_join_meeting_as_authenticated_attendee_with_fullname_suffix(
     client_app, meeting, authenticated_attendee, bbb_response
 ):
     """Test that authenticated attendee can add suffix to fullname."""
-    response = client_app.get(f"/meeting/join/{meeting.id}/authenticated").follow()
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    response = client_app.get(
+        f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
+    ).follow()
     response.form["fullname_suffix"] = "Service"
     response = response.form.submit(status=302)
 
@@ -231,7 +274,10 @@ def test_join_meeting_as_authenticated_attendee_with_modified_fullname(
     client_app, meeting, authenticated_attendee, bbb_response
 ):
     """Test that modified fullname is ignored for authenticated attendee."""
-    response = client_app.get(f"/meeting/join/{meeting.id}/authenticated").follow()
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    response = client_app.get(
+        f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
+    ).follow()
     response.form["fullname"] = "toto"
     response = response.form.submit()
 
