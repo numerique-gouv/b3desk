@@ -1,29 +1,78 @@
+import time
 from functools import wraps
 
 from flask import abort
 from flask import current_app
 from flask import g
+from flask import redirect
 from flask import request
 from flask import session
-from flask_pyoidc.user_session import UserSession
+from flask import url_for
+
+
+def store_userinfo(userinfo, id_token):
+    """Add the organizer userinfo and id_token in session."""
+    session.permanent = True
+    session["userinfo"] = userinfo
+    session["id_token"] = id_token
+    session["last_authenticated"] = time.time()
+
+
+def store_attendee_userinfo(userinfo):
+    """Add the attendee userinfo in session."""
+    session.permanent = True
+    session["attendee_userinfo"] = userinfo
+    session["last_authenticated"] = time.time()
+
+
+def clear_userinfo():
+    """Remove the organizer and attendee identities from session, logging out the current user locally."""
+    session.pop("userinfo", None)
+    session.pop("id_token", None)
+    session.pop("attendee_userinfo", None)
+    session.pop("last_authenticated", None)
+    permanent = current_app.config["SESSION_PERMANENT"]
+    if session.permanent != permanent:
+        session.permanent = permanent
 
 
 def has_user_session():
     """Check if user has an active authenticated session."""
-    user_session = UserSession(dict(session), "default")
-    return user_session.is_authenticated()
+    return "userinfo" in session
 
 
-def clear_user_session():
-    """Remove every OIDC key from the session, logging the user out locally."""
-    for key in UserSession.KEYS:
-        session.pop(key, None)
+def has_attendee_session():
+    """Check if an attendee has an active authenticated session."""
+    return "attendee_userinfo" in session
+
+
+def is_local_url(url):
+    """Check that the URL is a path on this site, and not an external URL."""
+    return (
+        url.isprintable()
+        and url.startswith("/")
+        and not url.startswith("//")
+        and "\\" not in url
+    )
+
+
+def login_required(view_function):
+    """Require that the user is authenticated, redirecting to login otherwise."""
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not has_user_session():
+            next_url = request.full_path if request.query_string else request.path
+            return redirect(url_for("public.login", next=next_url))
+
+        return view_function(*args, **kwargs)
+
+    return decorator
 
 
 def get_authenticated_attendee_fullname():
     """Extract and return full name from authenticated attendee session."""
-    attendee_session = UserSession(session)
-    attendee_info = attendee_session.userinfo
+    attendee_info = session.get("attendee_userinfo", {})
     mapping = current_app.config["OIDC_ATTENDEE_CLAIMS_MAPPING"]
     given_name = attendee_info.get(mapping.get("given_name", "given_name"), "").title()
     family_name = attendee_info.get(
@@ -37,7 +86,7 @@ def admin_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not g.user or not g.user.admin:
+        if not g.user or not g.user.has_admin_rights:
             abort(403)
 
         return view_function(*args, **kwargs)
@@ -47,7 +96,7 @@ def admin_needed(view_function):
 
 def is_admin_mode():
     """Whether admin mode is requested by an actual admin (display hint, not access control)."""
-    return "admin_mode" in request.args and bool(g.user) and g.user.admin
+    return "admin_mode" in request.args and bool(g.user) and g.user.has_admin_rights
 
 
 def user_needed(view_function):
@@ -77,7 +126,7 @@ def meeting_access_required(level=None):
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user or g.user.admin:
+            if meeting.owner == g.user or g.user.has_admin_rights:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

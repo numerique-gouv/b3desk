@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 
 from flask import current_app
 from flask import render_template
@@ -15,6 +16,11 @@ def get_quick_meeting_secret_key(meeting, role: Role) -> str:
     name = meeting.name or str(current_app.config["QUICK_MEETING_DEFAULT_NAME"])
     s = f"{meeting.bbb_meeting_id}|{meeting.attendeePW}|{name}|{role}"
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
+def secret_keys_match(given, expected) -> bool:
+    """Compare two secret keys in constant time."""
+    return hmac.compare_digest((given or "").encode(), expected.encode())
 
 
 def get_meeting_secret_key(meeting, role: Role) -> str:
@@ -38,11 +44,17 @@ def get_role(meeting, secret_key, user=None) -> Role | None:
         return Role.moderator
 
     if meeting.quick:
-        if secret_key == get_quick_meeting_secret_key(meeting, Role.attendee):
+        if secret_keys_match(
+            secret_key, get_quick_meeting_secret_key(meeting, Role.attendee)
+        ):
             return Role.attendee
-        if secret_key == get_quick_meeting_secret_key(meeting, Role.moderator):
+        if secret_keys_match(
+            secret_key, get_quick_meeting_secret_key(meeting, Role.moderator)
+        ):
             return Role.moderator
-        if secret_key == get_quick_meeting_secret_key(meeting, Role.authenticated):
+        if secret_keys_match(
+            secret_key, get_quick_meeting_secret_key(meeting, Role.authenticated)
+        ):
             return (
                 Role.authenticated
                 if current_app.config["OIDC_ATTENDEE_ENABLED"]
@@ -67,7 +79,10 @@ def get_role(meeting, secret_key, user=None) -> Role | None:
                         MeetingSecretKey.meeting_id == meeting.id
                     )
                 )
-                if secret_key in msk.legacy_secret_keys
+                if any(
+                    secret_keys_match(secret_key, legacy_secret_key)
+                    for legacy_secret_key in msk.legacy_secret_keys
+                )
             ),
             None,
         )

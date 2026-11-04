@@ -133,3 +133,14 @@ def test_config_dump_output(config_dump_app, tmp_path):
         pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
     ).read_text()
     assert output.read_text() == expected_config
+
+
+def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):
+    """Test CLI user-to-admin grants admin rights when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
+    assert res.exit_code == 0
+    assert "Admin management is disabled." in res.output
+    db.session.refresh(user)
+    assert user.admin
+    assert not user.has_admin_rights
