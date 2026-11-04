@@ -260,20 +260,19 @@ def dotenv_value(field_info, value):
 
 
 class RunningConfigDotEnvGenerator(DotEnvGenerator):
-    """Export the settings values, commenting the defaults and adding docstrings."""
+    """Export the running settings, commenting the ones that were not set."""
 
     name = "running-dotenv"
 
-    def __init__(self, running_settings, fields_set):
+    def __init__(self, fields_set):
         super().__init__()
-        self.running_settings = running_settings
         self.fields_set = fields_set
 
     def _process_field(self, settings_info, field, *args):
         field_info = MainSettings.model_fields[field.name]
         is_set = field.name in self.fields_set
         value = (
-            getattr(self.running_settings, field.name)
+            current_app.config[field.name]
             if is_set
             else field_info.get_default(call_default_factory=True)
         )
@@ -298,13 +297,8 @@ class RunningConfigDotEnvGenerator(DotEnvGenerator):
 )
 def config_dump(output):
     """Export the running configuration to a dotenv file."""
-    running_settings = MainSettings.model_construct(
-        **{name: current_app.config[name] for name in MainSettings.model_fields}
-    )
     fields_set = current_app.extensions["b3desk_settings_fields_set"]
-    generator = RunningConfigDotEnvGenerator(running_settings, fields_set)
-    content = generator.generate(
-        SettingsInfoModel.from_settings_model(running_settings)
-    )
+    generator = RunningConfigDotEnvGenerator(fields_set)
+    content = generator.generate(SettingsInfoModel.from_settings_model(MainSettings))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(content, encoding="utf-8")
