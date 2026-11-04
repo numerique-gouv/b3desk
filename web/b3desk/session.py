@@ -1,3 +1,4 @@
+import time
 from functools import wraps
 
 from flask import abort
@@ -14,12 +15,14 @@ def store_userinfo(userinfo, id_token):
     session.permanent = True
     session["userinfo"] = userinfo
     session["id_token"] = id_token
+    session["last_authenticated"] = time.time()
 
 
 def store_attendee_userinfo(userinfo):
     """Add the attendee userinfo in session."""
     session.permanent = True
     session["attendee_userinfo"] = userinfo
+    session["last_authenticated"] = time.time()
 
 
 def clear_userinfo():
@@ -27,6 +30,7 @@ def clear_userinfo():
     session.pop("userinfo", None)
     session.pop("id_token", None)
     session.pop("attendee_userinfo", None)
+    session.pop("last_authenticated", None)
 
 
 def has_user_session():
