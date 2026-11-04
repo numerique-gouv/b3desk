@@ -84,6 +84,15 @@ def setup_configuration(app, config=None):
         app.debug = True
 
 
+def redis_url(app):
+    """Return REDIS_URL as a full URL, adding the redis:// scheme when it is missing."""
+    url = app.config["REDIS_URL"]
+    if not url or "://" in url:
+        return url
+
+    return f"redis://{url}"
+
+
 def setup_celery(app):
     """Create the Celery application and run its tasks within an app context."""
 
@@ -96,8 +105,8 @@ def setup_celery(app):
 
     app.config.from_mapping(
         CELERY={
-            "broker_url": f"redis://{app.config['REDIS_URL']}",
-            "result_backend": f"redis://{app.config['REDIS_URL']}",
+            "broker_url": redis_url(app),
+            "result_backend": redis_url(app),
             "imports": ("b3desk.tasks",),
             "task_always_eager": app.testing,
             "task_ignore_result": True,
@@ -118,11 +127,9 @@ def setup_cache(app):
         config = None
 
     elif app.config.get("REDIS_URL"):
-        host, port = app.config.get("REDIS_URL").split(":")
         config = {
             "CACHE_TYPE": "RedisCache",
-            "CACHE_REDIS_HOST": host,
-            "CACHE_REDIS_PORT": port,
+            "CACHE_REDIS_URL": redis_url(app),
         }
 
     else:
@@ -139,9 +146,7 @@ def setup_session(app):
     if not app.config.get("SESSION_TYPE"):
         if app.config.get("REDIS_URL"):
             app.config["SESSION_TYPE"] = "redis"
-            app.config["SESSION_REDIS"] = Redis.from_url(
-                f"redis://{app.config['REDIS_URL']}"
-            )
+            app.config["SESSION_REDIS"] = Redis.from_url(redis_url(app))
 
         else:
             app.config["SESSION_TYPE"] = "cachelib"

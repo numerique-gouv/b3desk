@@ -1,6 +1,7 @@
 import httpx2
 from b3desk import cache
 from b3desk import create_app
+from b3desk import redis_url
 from flask import abort
 from flask import url_for
 from flask_session.cachelib import CacheLibSessionInterface
@@ -153,6 +154,15 @@ def test_session_backend_falls_back_on_filesystem(configuration):
     configuration["REDIS_URL"] = None
     app = create_app(configuration)
     assert isinstance(app.session_interface, CacheLibSessionInterface)
+
+
+def test_redis_url(app):
+    """Test that REDIS_URL accepts a host and port or a full URL."""
+    app.config["REDIS_URL"] = "broker:6379"
+    assert redis_url(app) == "redis://broker:6379"
+
+    app.config["REDIS_URL"] = "rediss://:secret@broker:6379/1"
+    assert redis_url(app) == "rediss://:secret@broker:6379/1"
 
 
 def test_language_selector_renders_active_language(app):

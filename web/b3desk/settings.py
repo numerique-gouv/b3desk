@@ -182,7 +182,8 @@ class MainSettings(BaseSettings):
     le système de fichiers local, qui n'est pas partagé entre plusieurs
     serveurs.
 
-    Par exemple ``localhost:6379``.
+    Par exemple ``localhost:6379``, ou une URL complète comme
+    ``rediss://:motdepasse@redis.example.org:6379/0``.
     """
 
     NC_LOGIN_TIMEDELTA_DAYS: int = 30
