@@ -2,8 +2,9 @@ import httpx2
 from b3desk import cache
 from b3desk import create_app
 from b3desk import redis_url
+from b3desk.session import clear_userinfo
+from b3desk.session import store_userinfo
 from flask import abort
-from flask import session as flask_session
 from flask import url_for
 from flask_session.cachelib import CacheLibSessionInterface
 from flask_session.redis import RedisSessionInterface
@@ -189,17 +190,18 @@ def test_session_id_changes_on_login_and_logout(app, user):
     """Test that the session id and the CSRF token change when the user logs in or out."""
 
     def login():
-        flask_session["current_provider"] = "default"
-        flask_session["last_authenticated"] = 1
-        flask_session["userinfo"] = {
-            "email": user.email,
-            "given_name": user.given_name,
-            "family_name": user.family_name,
-        }
+        store_userinfo(
+            {
+                "email": user.email,
+                "given_name": user.given_name,
+                "family_name": user.family_name,
+            },
+            "id-token",
+        )
         return ""
 
     def logout():
-        del flask_session["last_authenticated"]
+        clear_userinfo()
         return ""
 
     app.add_url_rule("/fake-login", view_func=login)

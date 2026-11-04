@@ -1,3 +1,4 @@
+import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -186,7 +187,6 @@ def test_clear_session_after_logout(
     configuration,
     iam_server,
     iam_client,
-    iam_token,
 ):
     """Test logout clear user session."""
     with client_app.session_transaction() as session:
@@ -198,12 +198,23 @@ def test_clear_session_after_logout(
             "preferred_username": "alice",
         }
         session["attendee_userinfo"] = {"given_name": "Bob", "family_name": "Dylan"}
+        session["last_authenticated"] = time.time()
+        session["lang"] = "fr"
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
+    authenticated_session_id = client_app.cookies[cookie_name]
+
     client_app.get("/logout")
 
+    assert client_app.cookies[cookie_name] != authenticated_session_id
+    assert not client_app.app.config["SESSION_REDIS"].exists(
+        f"session:{authenticated_session_id}"
+    )
     with client_app.session_transaction() as session:
         assert "id_token" not in session
         assert "userinfo" not in session
         assert "attendee_userinfo" not in session
+        assert "last_authenticated" not in session
+        assert session["lang"] == "fr"
 
 
 def test_logout_session_is_not_permanent(
@@ -328,12 +339,18 @@ def test_attendee_authentication(client_app, configuration, iam_server, iam_clie
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
 
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
     response = client_app.get("/meeting/join/1/authenticated", status=302)
+    anonymous_session_id = client_app.cookies[cookie_name]
     response = iam_server.test_client.get(response.location)
     assert response.headers["Location"].startswith("http://b3desk.test/oidc_callback")
 
     response = client_app.get(response.headers["Location"], status=302)
     assert response.location == "/meeting/join/1/authenticated"
+    assert client_app.cookies[cookie_name] != anonymous_session_id
+    assert not client_app.app.config["SESSION_REDIS"].exists(
+        f"session:{anonymous_session_id}"
+    )
 
     with client_app.session_transaction() as session:
         assert session["attendee_userinfo"]["sub"] == iam_user.user_name
@@ -397,13 +414,18 @@ def test_logout_when_the_identity_provider_is_unreachable(
 def test_unusable_claims_clear_the_session(client_app, caplog):
     """A session whose claims cannot build a user is cleared instead of breaking every page."""
     with client_app.session_transaction() as session:
+        session["last_authenticated"] = time.time()
         session["userinfo"] = {"given_name": "Alice", "family_name": "Cooper"}
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
+    authenticated_session_id = client_app.cookies[cookie_name]
 
     res = client_app.get("/welcome", status=302)
     assert res.location.endswith("/home")
+    assert client_app.cookies[cookie_name] != authenticated_session_id
     res.follow(status=200).mustcontain("Votre session est invalide")
 
     with client_app.session_transaction() as session:
         assert "userinfo" not in session
+        assert "last_authenticated" not in session
 
     assert "Could not build a user from the OIDC claims" in caplog.text
