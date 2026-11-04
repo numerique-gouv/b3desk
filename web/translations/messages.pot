@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:384 web/b3desk/endpoints/meeting_files.py:141
+#: web/b3desk/__init__.py:373 web/b3desk/endpoints/meeting_files.py:141
 #: web/b3desk/endpoints/meeting_files.py:206
 #: web/b3desk/endpoints/meeting_files.py:313
 #: web/b3desk/endpoints/meeting_files.py:520
@@ -7,7 +7,7 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/__init__.py:458
+#: web/b3desk/__init__.py:447
 msgid "Votre session est invalide, merci de vous reconnecter."
 msgstr ""
 
@@ -355,7 +355,7 @@ msgstr ""
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:179 web/tests/test_default.py:164
+#: web/b3desk/endpoints/join.py:179
 msgid "Lien invalide"
 msgstr ""
 
@@ -3436,37 +3436,37 @@ msgstr ""
 msgid "Vous deviendrez délégataire de cette réunion."
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:184
+#: web/b3desk/utils/__init__.py:185
 #, python-brace-format
 msgid "Transfert de {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:197
+#: web/b3desk/utils/__init__.py:198
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:205
+#: web/b3desk/utils/__init__.py:206
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:211
+#: web/b3desk/utils/__init__.py:212
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:213
+#: web/b3desk/utils/__init__.py:214
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:215
+#: web/b3desk/utils/__init__.py:216
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:246
+#: web/b3desk/utils/__init__.py:247
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:373
+#: web/b3desk/utils/__init__.py:374
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"

@@ -150,17 +150,6 @@ def setup_session(app):
     app.config.setdefault("SESSION_PERMANENT", False)
     server_session.init_app(app)
 
-    @app.after_request
-    def translate_flashed_messages(response):
-        """Translate lazy_gettext flash messages, that the session serializer cannot store."""
-        from flask import session
-
-        if "_flashes" in session:
-            session["_flashes"] = [
-                (category, str(message)) for category, message in session["_flashes"]
-            ]
-        return response
-
 
 def setup_sentry(app):  # pragma: no cover
     """Initialize Sentry error tracking if DSN is configured."""
@@ -342,7 +331,7 @@ def setup_error_pages(app):
     from flask import flash
     from flask import g
     from flask import jsonify
-    from flask_babel import lazy_gettext as _
+    from flask_babel import gettext as _
     from webdav3.exceptions import WebDavException
 
     from b3desk.nextcloud import is_nextcloud_unavailable_error
@@ -436,7 +425,7 @@ def setup_user_session(app):
     from flask import flash
     from flask import g
     from flask import session
-    from flask_babel import lazy_gettext as _
+    from flask_babel import gettext as _
     from flask_pyoidc.user_session import UserSession
 
     from b3desk import session as b3desk_session

@@ -16,6 +16,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_babel import format_datetime
+from flask_babel import gettext
 from flask_babel import lazy_gettext as _
 from flask_pyoidc.pyoidc_facade import PyoidcFacade
 from itsdangerous import BadSignature
@@ -369,7 +370,7 @@ def check_private_key():
                 current_app.config["ENABLE_SIP"]
                 and not current_app.config["PRIVATE_KEY"]
             ):
-                message = _(
+                message = gettext(
                     "La clé privée n'a pas été configurée dans les paramètres "
                     "B3Desk pour sécuriser la connexion SIPMediaGW"
                 )
