@@ -3,6 +3,7 @@ from b3desk import cache
 from b3desk import create_app
 from b3desk import redis_url
 from flask import abort
+from flask import session as flask_session
 from flask import url_for
 from flask_session.cachelib import CacheLibSessionInterface
 from flask_session.redis import RedisSessionInterface
@@ -182,6 +183,47 @@ def test_unchanged_session_is_not_saved_again(app, mocker):
     upsert = mocker.spy(app.session_interface, "_upsert_session")
     client_app.get("/faq", status=200)
     upsert.assert_not_called()
+
+
+def test_session_id_changes_on_login_and_logout(app, user):
+    """Test that the session id and the CSRF token change when the user logs in or out."""
+
+    def login():
+        flask_session["current_provider"] = "default"
+        flask_session["last_authenticated"] = 1
+        flask_session["userinfo"] = {
+            "email": user.email,
+            "given_name": user.given_name,
+            "family_name": user.family_name,
+        }
+        return ""
+
+    def logout():
+        del flask_session["last_authenticated"]
+        return ""
+
+    app.add_url_rule("/fake-login", view_func=login)
+    app.add_url_rule("/fake-logout", view_func=logout)
+    store = app.config["SESSION_REDIS"]
+    client_app = TestApp(app)
+
+    client_app.get("/faq?lang=fr", status=200)
+    with client_app.session_transaction() as session:
+        session["csrf_token"] = "anonymous-token"
+    anonymous_id = client_app.cookies["session"]
+
+    client_app.get("/fake-login", status=200)
+    authenticated_id = client_app.cookies["session"]
+    assert authenticated_id != anonymous_id
+    assert not store.exists(f"session:{anonymous_id}")
+    with client_app.session_transaction() as session:
+        assert session.get("csrf_token") != "anonymous-token"
+
+    client_app.get("/fake-logout", status=200)
+    assert client_app.cookies["session"] != authenticated_id
+    assert not store.exists(f"session:{authenticated_id}")
+    with client_app.session_transaction() as session:
+        assert session["lang"] == "fr"
 
 
 def test_redis_url(app):

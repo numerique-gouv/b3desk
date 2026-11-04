@@ -19,6 +19,7 @@ from cachelib.file import FileSystemCache
 from celery import Celery
 from celery import Task
 from flask import Flask
+from flask import g
 from flask import has_app_context
 from flask import has_request_context
 from flask import redirect
@@ -147,6 +148,22 @@ def setup_session(app):
     app.config.setdefault("SESSION_PERMANENT", False)
     app.config["SESSION_REFRESH_EACH_REQUEST"] = False
     server_session.init_app(app)
+
+    from flask import session
+
+    @app.before_request
+    def remember_authentication_time():
+        g.last_authenticated = session.get("last_authenticated")
+
+    @app.after_request
+    def regenerate_session_id(response):
+        """Give the session a new id and a new CSRF token when the user logs in or out."""
+        if session.get("last_authenticated") == g.get("last_authenticated"):
+            return response
+
+        session.pop(app.config["WTF_CSRF_FIELD_NAME"], None)
+        app.session_interface.regenerate(session)
+        return response
 
 
 def setup_sentry(app):  # pragma: no cover
@@ -327,7 +344,6 @@ def setup_flask(app):
 def setup_error_pages(app):
     """Register HTTP error handlers for common error codes."""
     from flask import flash
-    from flask import g
     from flask import jsonify
     from flask_babel import gettext as _
     from webdav3.exceptions import WebDavException
@@ -421,7 +437,6 @@ def setup_debug_host_redirect(app):
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
     from flask import flash
-    from flask import g
     from flask import session
     from flask_babel import gettext as _
     from flask_pyoidc.user_session import UserSession
