@@ -3,11 +3,13 @@ import pathlib
 import pytest
 from b3desk import setup_configuration
 from b3desk.commands import bp
+from b3desk.commands import dotenv_quote
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
 from b3desk.models.users import User
 from b3desk.settings import MainSettings
+from dotenv import dotenv_values
 from flask import Flask
 from flask_babel import Babel
 
@@ -148,20 +150,22 @@ def test_config_dump_output(config_dump_config, tmp_path):
     assert exported_config == expected_config
 
 
-def test_config_dump_reload(config_dump_config, tmp_path):
+def test_config_dump_reload(config_dump_config, tmp_path, monkeypatch):
     """Load the exported file back and get the same settings."""
     log_config = tmp_path / "logging.toml"
     log_config.write_text("version = 1\n")
     config = {
         **config_dump_config,
-        "SERVICE_TITLE": 'Webinaire de l’État "test" \\ ok',
+        "SERVICE_TITLE": 'Webinaire de l’État "test"',
         "OIDC_SCOPES": ["openid", "email", "usual_name"],
         "RIE_NETWORK_IPS": ["10.0.0.0/8", "192.168.0.0/16"],
         "ALLOWED_MIME_TYPES_SERVER_SIDE": ["application/pdf", "image/png"],
         "OIDC_CLAIMS_MAPPING": {"family_name": "usual_name"},
-        "VIDEO_STREAMING_LINKS": {"Vidéo l'État": "https://video.test/a\\b"},
+        "VIDEO_STREAMING_LINKS": {"Vidéo l'État": "https://video.test/a"},
         "RECORDING_DURATION": "P30D",
         "RECORDING_EXPECTED_FORMATS": [],
+        "BIGBLUEBUTTON_SECRET": "pa$$word${HOME}",
+        "PRIVATE_KEY": "-----BEGIN KEY-----\nabc\n-----END KEY-----",
         "MAX_MEETINGS_PER_USER": 3,
         "FILE_SHARING": True,
         "LOG_CONFIG": str(log_config),
@@ -170,10 +174,26 @@ def test_config_dump_reload(config_dump_config, tmp_path):
     output = tmp_path / "web.env.dump"
     dump_config(app, output)
 
+    for name, value in dotenv_values(output, interpolate=False).items():
+        monkeypatch.setenv(name, value)
     with app.app_context():
-        reloaded = MainSettings(_env_file=output)
+        reloaded = MainSettings()
         assert reloaded.model_dump() == MainSettings(**config).model_dump()
         assert reloaded.model_fields_set == MainSettings(**config).model_fields_set
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("pa$word${HOME}", "'pa$word${HOME}'"),
+        ("it's", "'it\\'s'"),
+        ("a\\b", "'a\\b'"),
+        ('"q"\nl2', "'\"q\"\nl2'"),
+    ],
+)
+def test_dotenv_quote(value, expected):
+    """Docker Compose reads single-quoted values as is, except for escaped quotes."""
+    assert dotenv_quote(value) == expected
 
 
 def test_config_dump_comments_computed_values(config_dump_config, tmp_path):

@@ -236,6 +236,12 @@ def is_comma_separated(field_info):
     )
 
 
+def dotenv_quote(value):
+    """Quote a string so that Docker Compose reads it back as is from an env_file."""
+    escaped = value.replace("'", "\\'")
+    return f"'{escaped}'"
+
+
 def dotenv_value(field_info, value):
     """Format a setting value so that MainSettings can read it back from a dotenv file."""
     if isinstance(value, LazyString):
@@ -253,10 +259,8 @@ def dotenv_value(field_info, value):
             value = ",".join(value)
         else:
             value = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-            if "'" not in value and "\\" not in value:
-                return f"'{value}'"
 
-    return json.dumps(value, ensure_ascii=False)
+    return dotenv_quote(value)
 
 
 class RunningConfigDotEnvGenerator(DotEnvGenerator):
