@@ -6,7 +6,8 @@ from importlib.metadata import version
 from typing import Annotated
 from typing import Any
 
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext
+from flask_babel.speaklater import LazyString
 from packaging.version import Version
 from pydantic import BeforeValidator
 from pydantic import FilePath
@@ -15,9 +16,26 @@ from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
 from pydantic import model_validator
+from pydantic_core import core_schema
 from pydantic_settings import BaseSettings
 from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
+
+
+class LazySettingString(LazyString):
+    """Translatable setting default that pydantic can serialize as a string."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source, handler):
+        return core_schema.no_info_plain_validator_function(
+            lambda value: value,
+            serialization=core_schema.plain_serializer_function_ser_schema(str),
+        )
+
+
+def _(text):
+    """Return a lazy translatable string usable as a setting default."""
+    return LazySettingString(gettext, text)
 
 
 def default_session_cookie_name():

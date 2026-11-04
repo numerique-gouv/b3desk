@@ -8,7 +8,6 @@ from flask import Blueprint
 from flask import current_app
 from flask_babel.speaklater import LazyString
 from pydantic import TypeAdapter
-from pydantic_core import core_schema
 from pydantic_settings import NoDecode
 from pydantic_settings_export import SettingsInfoModel
 from pydantic_settings_export.generators.dotenv import DotEnvGenerator
@@ -227,15 +226,6 @@ def admin_to_user(email):
         )
     except ValueError as e:
         print(f"Admin to User result: {e}")
-
-
-# Some settings defaults are lazy_gettext strings, which pydantic cannot serialize
-LazyString.__get_pydantic_core_schema__ = classmethod(
-    lambda cls, source, handler: core_schema.no_info_plain_validator_function(
-        lambda value: value,
-        serialization=core_schema.plain_serializer_function_ser_schema(str),
-    )
-)
 
 
 def is_comma_separated(field_info):
