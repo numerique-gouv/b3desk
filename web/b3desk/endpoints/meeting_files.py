@@ -428,7 +428,7 @@ def delete_meeting_file():
 
     if (
         meeting_file.meeting.owner_id != g.user.id
-        and not g.user.admin
+        and not g.user.has_admin_rights
         and meeting_file.meeting not in g.user.get_all_delegated_meetings
     ):
         return {

@@ -954,3 +954,11 @@ class MainSettings(BaseSettings):
 
     Allow AI summary generation on records
     """
+
+    ENABLE_ADMIN_MANAGEMENT: bool | None = False
+    """Enable the admin backoffice.
+
+    When off, admin users have the same rights as other users.
+    They cannot open the admin pages.
+    They cannot access or delete meetings they do not own.
+    """

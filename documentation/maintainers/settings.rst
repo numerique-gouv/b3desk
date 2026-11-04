@@ -144,6 +144,11 @@ Il suffira de transmettre ce token au matériel SIP qui devra le joindre dans le
 Gestion des administrateurs
 ===========================
 
+Le backoffice est désactivé par défaut.
+Pour l’activer, définissez ``ENABLE_ADMIN_MANAGEMENT=on``.
+Tant qu’il est désactivé, les administrateurs ont les mêmes droits que les autres utilisateurs.
+Vous pouvez donner ou retirer les droits admin dans les deux cas.
+
 Donner les droits admin
 -----------------------
 
