@@ -156,6 +156,34 @@ def test_session_backend_falls_back_on_filesystem(configuration):
     assert isinstance(app.session_interface, CacheLibSessionInterface)
 
 
+def test_session_cookie_secure_can_be_disabled(configuration):
+    """Test that SESSION_COOKIE_SECURE overrides the value deduced from PREFERRED_URL_SCHEME."""
+    configuration["PREFERRED_URL_SCHEME"] = "https"
+    configuration["SESSION_COOKIE_SECURE"] = False
+    app = create_app(configuration)
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert "Secure" not in res.headers["Set-Cookie"]
+
+
+def test_session_lifetime(app):
+    """Test that sessions are kept seven days in redis."""
+    client_app = TestApp(app)
+    client_app.get("/faq?lang=fr", status=200)
+    session_id = client_app.cookies["session"]
+    ttl = app.config["SESSION_REDIS"].ttl(f"session:{session_id}")
+    assert 7 * 24 * 3600 - 60 < ttl <= 7 * 24 * 3600
+
+
+def test_unchanged_session_is_not_saved_again(app, mocker):
+    """Test that a request that does not change the session does not write it again."""
+    client_app = TestApp(app)
+    client_app.get("/faq?lang=fr", status=200)
+    upsert = mocker.spy(app.session_interface, "_upsert_session")
+    client_app.get("/faq", status=200)
+    upsert.assert_not_called()
+
+
 def test_redis_url(app):
     """Test that REDIS_URL accepts a host and port or a full URL."""
     app.config["REDIS_URL"] = "broker:6379"
