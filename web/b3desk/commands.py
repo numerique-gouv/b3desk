@@ -192,16 +192,17 @@ def remove_admin_rights(email):
 @click.argument("email")
 def user_to_admin(email):
     """CLI command to grant administrator rights to a user."""
-    if current_app.config["ENABLE_ADMIN_MANAGEMENT"]:
-        try:
-            user = grant_admin_rights(email)
+    try:
+        user = grant_admin_rights(email)
+        print(
+            f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+        )
+        if not current_app.config["ENABLE_ADMIN_MANAGEMENT"]:
             print(
-                f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
+                "Admin management is disabled. Set ENABLE_ADMIN_MANAGEMENT=on to enable admin rights."
             )
-        except ValueError as e:
-            print(f"User to Admin result: {e}")
-    else:
-        print("Admin management is disabled.")
+    except ValueError as e:
+        print(f"User to Admin result: {e}")
 
 
 @bp.cli.command("admin-to-user")
