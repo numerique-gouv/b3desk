@@ -385,7 +385,11 @@ def app(configuration, jinja_cache_directory):
         Migrate(app, db, compare_type=True)
         db.create_all()
 
-    return app
+    yield app
+
+    with app.app_context():
+        for engine in db.engines.values():
+            engine.dispose()
 
 
 @pytest.fixture
