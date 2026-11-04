@@ -36,7 +36,7 @@ from ..session import has_attendee_session
 from ..session import login_required
 from ..session import meeting_access_required
 from ..session import should_display_captcha
-from .public import oidc_redirect_uri
+from .public import redirect_to_provider
 
 bp = Blueprint("join", __name__)
 
@@ -243,7 +243,7 @@ def join_meeting_as_authenticated(meeting_id):
 
     if not has_attendee_session():
         session["attendee_next_meeting_id"] = meeting_id
-        return oauth.attendee.authorize_redirect(oidc_redirect_uri())
+        return redirect_to_provider(oauth.attendee, "public.index")
 
     meeting = db.session.get(Meeting, meeting_id) or abort(404)
     role = Role.authenticated

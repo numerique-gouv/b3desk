@@ -411,6 +411,42 @@ def test_logout_when_the_identity_provider_is_unreachable(
     assert "Could not reach the OIDC provider" in caplog.text
 
 
+def test_login_when_the_identity_provider_is_unreachable(client_app, mocker, caplog):
+    """Users go back home with an error message when the identity provider is down."""
+    mocker.patch(
+        "b3desk.oauth.default.load_server_metadata",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+
+    response = client_app.get("/login", status=302)
+
+    assert response.location == "/home"
+    assert (
+        "error",
+        "La connexion a échoué, merci de réessayer plus tard.",
+    ) in response.flashes
+    assert "OIDC provider error for default: unreachable" in caplog.text
+
+
+def test_attendee_login_when_the_identity_provider_is_unreachable(
+    client_app, mocker, caplog
+):
+    """Attendees go back to the index with an error message when the identity provider is down."""
+    mocker.patch(
+        "b3desk.oauth.attendee.load_server_metadata",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+
+    response = client_app.get("/meeting/join/1/authenticated", status=302)
+
+    assert response.location == "/"
+    assert (
+        "error",
+        "La connexion a échoué, merci de réessayer plus tard.",
+    ) in response.flashes
+    assert "OIDC provider error for attendee: unreachable" in caplog.text
+
+
 def test_unusable_claims_clear_the_session(client_app, caplog):
     """A session whose claims cannot build a user is cleared instead of breaking every page."""
     with client_app.session_transaction() as session:

@@ -80,13 +80,23 @@ def oidc_redirect_uri():
     )
 
 
+def redirect_to_provider(client, error_endpoint):
+    """Redirect to the identity provider, or to error_endpoint when it cannot be reached."""
+    try:
+        return client.authorize_redirect(oidc_redirect_uri())
+    except requests.RequestException as exc:
+        current_app.logger.warning("OIDC provider error for %s: %s", client.name, exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for(error_endpoint))
+
+
 @bp.route("/login")
 def login():
     next_url = request.args.get("next", "")
     session["login_next_url"] = (
         next_url if is_local_url(next_url) else url_for("public.welcome")
     )
-    return oauth.default.authorize_redirect(oidc_redirect_uri())
+    return redirect_to_provider(oauth.default, "public.home")
 
 
 @bp.route("/oidc_callback")
