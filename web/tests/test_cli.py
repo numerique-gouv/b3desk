@@ -161,6 +161,7 @@ def test_config_dump_reload(config_dump_config, tmp_path):
         "OIDC_CLAIMS_MAPPING": {"family_name": "usual_name"},
         "VIDEO_STREAMING_LINKS": {"Vidéo l'État": "https://video.test/a\\b"},
         "RECORDING_DURATION": "P30D",
+        "RECORDING_EXPECTED_FORMATS": [],
         "MAX_MEETINGS_PER_USER": 3,
         "FILE_SHARING": True,
         "LOG_CONFIG": str(log_config),

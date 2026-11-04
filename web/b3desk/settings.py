@@ -31,6 +31,9 @@ def split_comma_separated_strings(value):
     if not isinstance(value, str):
         return value
 
+    if not value.strip():
+        return []
+
     return map(str.strip, value.split(","))
 
 
