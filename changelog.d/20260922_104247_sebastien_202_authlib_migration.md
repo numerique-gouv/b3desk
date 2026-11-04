@@ -17,6 +17,8 @@ Les paramètres suivants sont supprimés :
 - OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD
 - OIDC_ATTENDEE_USERINFO_HTTP_METHOD
 
+Les informations utilisateur sont désormais toujours demandées au point d’entrée *userinfo* avec la méthode `GET`, pour les organisateurs comme pour les participants. Auparavant, `POST` était la méthode par défaut. Un fournisseur d’identité qui n’accepte pas `GET` sur ce point d’entrée ne permet plus de se connecter. La spécification impose pourtant de prendre en charge `GET` (OpenID Connect Core §5.3).
+
 `OIDC_ATTENDEE_SERVICE_NAME` ne prend plus la valeur de `OIDC_SERVICE_NAME` par défaut. Il faut le renseigner pour afficher le nom du service d’authentification dans la modale d’invitation.
 
 Les ID tokens et les réponses *userinfo* signés en HS256, HS384 ou HS512 ne sont plus pris en charge. Le client doit être enregistré avec un algorithme asymétrique, par exemple RS256 ou ES256.
