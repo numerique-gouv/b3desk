@@ -15,9 +15,11 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from babel import Locale
+from cachelib.file import FileSystemCache
 from celery import Celery
 from celery import Task
 from flask import Flask
+from flask import g
 from flask import has_app_context
 from flask import has_request_context
 from flask import redirect
@@ -28,10 +30,12 @@ from flask_babel import Babel
 from flask_babel import get_locale
 from flask_caching import Cache
 from flask_migrate import Migrate
+from flask_session import Session
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import StrictUndefined
 from packaging.version import Version
+from redis import Redis
 
 from b3desk.settings import MainSettings
 from b3desk.utils import is_rie
@@ -47,6 +51,7 @@ LANGUAGES = ["fr", "en"]
 
 babel = Babel()
 cache = Cache()
+server_session = Session()
 csrf = CSRFProtect()
 oauth = OIDCOAuth()
 migrate = Migrate()
@@ -72,6 +77,15 @@ def setup_configuration(app, config=None):
         app.debug = True
 
 
+def redis_url(app):
+    """Return REDIS_URL as a full URL, adding the redis:// scheme when it is missing."""
+    url = app.config["REDIS_URL"]
+    if not url or "://" in url:
+        return url
+
+    return f"redis://{url}"
+
+
 def setup_celery(app):
     """Create the Celery application and run its tasks within an app context."""
 
@@ -84,8 +98,8 @@ def setup_celery(app):
 
     app.config.from_mapping(
         CELERY={
-            "broker_url": f"redis://{app.config['REDIS_URL']}",
-            "result_backend": f"redis://{app.config['REDIS_URL']}",
+            "broker_url": redis_url(app),
+            "result_backend": redis_url(app),
             "imports": ("b3desk.tasks",),
             "task_always_eager": app.testing,
             "task_ignore_result": True,
@@ -106,11 +120,9 @@ def setup_cache(app):
         config = None
 
     elif app.config.get("REDIS_URL"):
-        host, port = app.config.get("REDIS_URL").split(":")
         config = {
             "CACHE_TYPE": "RedisCache",
-            "CACHE_REDIS_HOST": host,
-            "CACHE_REDIS_PORT": port,
+            "CACHE_REDIS_URL": redis_url(app),
         }
 
     else:
@@ -120,6 +132,38 @@ def setup_cache(app):
         }
 
     cache.init_app(app, config=config)
+
+
+def setup_session(app):
+    """Store session data server-side (Redis or FileSystem) so the cookie only holds an id."""
+    if not app.config.get("SESSION_TYPE"):
+        if app.config.get("REDIS_URL"):
+            app.config["SESSION_TYPE"] = "redis"
+            app.config["SESSION_REDIS"] = Redis.from_url(redis_url(app))
+
+        else:
+            app.config["SESSION_TYPE"] = "cachelib"
+            app.config["SESSION_CACHELIB"] = FileSystemCache("/tmp/flask-session")
+
+    app.config.setdefault("SESSION_PERMANENT", False)
+    app.config["SESSION_REFRESH_EACH_REQUEST"] = False
+    server_session.init_app(app)
+
+    from flask import session
+
+    @app.before_request
+    def remember_authentication_time():
+        g.last_authenticated = session.get("last_authenticated")
+
+    @app.after_request
+    def regenerate_session_id(response):
+        """Give the session a new id and a new CSRF token when the user logs in or out."""
+        if session.get("last_authenticated") == g.get("last_authenticated"):
+            return response
+
+        session.pop(app.config["WTF_CSRF_FIELD_NAME"], None)
+        app.session_interface.regenerate(session)
+        return response
 
 
 def setup_sentry(app):  # pragma: no cover
@@ -300,9 +344,8 @@ def setup_flask(app):
 def setup_error_pages(app):
     """Register HTTP error handlers for common error codes."""
     from flask import flash
-    from flask import g
     from flask import jsonify
-    from flask_babel import lazy_gettext as _
+    from flask_babel import gettext as _
     from webdav3.exceptions import WebDavException
 
     from b3desk.nextcloud import is_nextcloud_unavailable_error
@@ -394,9 +437,8 @@ def setup_debug_host_redirect(app):
 def setup_user_session(app):
     """Initialize g.user on each request based on authentication status."""
     from flask import flash
-    from flask import g
     from flask import session
-    from flask_babel import lazy_gettext as _
+    from flask_babel import gettext as _
 
     from b3desk import session as b3desk_session
     from b3desk.models.users import get_or_create_user
@@ -449,6 +491,7 @@ def create_app(test_config=None, authentication=True):
     sentry_sdk = setup_sentry(app)
     try:
         setup_cache(app)
+        setup_session(app)
         setup_logging(app)
         setup_i18n(app)
         setup_csrf(app)

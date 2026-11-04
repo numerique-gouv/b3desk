@@ -15,7 +15,7 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext as _
 from joserfc.errors import JoseError
 
 from b3desk.utils import http_client

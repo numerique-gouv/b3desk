@@ -26,8 +26,10 @@ def test_user_authentication(
     response.mustcontain("S’identifier")
     response.mustcontain(no="se déconnecter")
 
+    cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
     response = client_app.get("/welcome", status=302)
     response = client_app.get(response.location, status=302)
+    anonymous_session_id = client_app.cookies[cookie_name]
     response = iam_server.test_client.get(response.location)
     assert response.status_code == 302
 
@@ -40,6 +42,18 @@ def test_user_authentication(
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
+
+    # 5. the OIDC tokens are stored server-side, the cookie only holds the session id
+    session_id = client_app.cookies[cookie_name]
+    assert client_app.app.config["SESSION_REDIS"].exists(f"session:{session_id}")
+    assert session_id != anonymous_session_id
+    assert not client_app.app.config["SESSION_REDIS"].exists(
+        f"session:{anonymous_session_id}"
+    )
+    with client_app.session_transaction() as session:
+        assert session["id_token"]
+        assert session["id_token"] not in session_id
+        assert session["userinfo"]["email"] == iam_user.emails[0]
 
 
 def test_lasuite_user_authentication(

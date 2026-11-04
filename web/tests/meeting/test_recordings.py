@@ -341,6 +341,24 @@ def test_update_recording_name(
     assert f"meeting/recordings/{meeting.id}" in response.location
 
 
+def test_update_recording_with_a_blank_name(
+    client_app, authenticated_user, meeting, bbb_getRecordings_response
+):
+    """Test that a recording name made of spaces shows an error."""
+    recording_id = meeting.bbb.get_recordings()[0]["recordID"]
+
+    response = client_app.post(
+        f"/meeting/{meeting.id}/recordings/{recording_id}",
+        {"name": "   "},
+        status=302,
+    )
+
+    assert ("error", "Impossible de renommer l'enregistrement") in response.flashes
+    assert f"meeting/recordings/{meeting.id}" in response.location
+    bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
+    assert "updateRecordings" not in bbb_url
+
+
 def test_update_name_of_an_unknown_recording(
     client_app, authenticated_user, meeting, bbb_getRecordings_response
 ):
@@ -490,7 +508,7 @@ def test_open_recordings_page(
     html = response.body.decode("utf-8")
     assert (
         html.count(
-            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line"'
+            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line copy-button"'
         )
         == 2
     )

@@ -441,8 +441,8 @@ def pin_is_unique_validator(form, field):
 
     # Check if PIN exists in other meetings (excluding current meeting if editing)
     query = db.select(Meeting).where(Meeting.voiceBridge == pin)
-    if form.id.data:
-        query = query.where(Meeting.id != form.id.data)
+    if form.meeting is not None:
+        query = query.where(Meeting.id != form.meeting.id)
     if db.session.scalar(db.select(query.exists())):
         raise ValidationError(_("Ce code PIN est déjà utilisé"))
 

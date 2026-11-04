@@ -635,7 +635,7 @@ def test_admin_can_open_recordings_page(
     html = response.body.decode("utf-8")
     assert (
         html.count(
-            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line"'
+            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line copy-button"'
         )
         == 2
     )

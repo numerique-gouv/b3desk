@@ -6,8 +6,8 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField
 from wtforms import EmailField
 from wtforms import FloatField
-from wtforms import Form
 from wtforms import IntegerField
+from wtforms import SelectChoice
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
@@ -35,10 +35,6 @@ class JoinMeetingForm(FlaskForm):
     seconds_before_refresh = FloatField()
 
 
-class ShowMeetingForm(Form):
-    meeting_id = IntegerField()
-
-
 class ChunkUploadForm(FlaskForm):
     """Dropzone chunk metadata."""
 
@@ -57,17 +53,9 @@ class MeetingFilesForm(FlaskForm):
             validators.length(max=MAX_URL_LENGTH, message=_("Le texte est trop long"))
         ],
     )
-    guestPolicy = BooleanField(
-        label=_("Salle d'attente"),
-        description=_(
-            "Placer les participants dans une salle d'attente lorsqu'ils rejoignent la réunion. L'organisateur ou le modérateur devra les accepter individuellement."
-        ),
-        default=False,
-    )
 
 
 class MeetingForm(FlaskForm):
-    id = IntegerField()
     name = StringField(
         label=_(
             "Nom de la réunion",
@@ -234,8 +222,9 @@ class MeetingForm(FlaskForm):
         render_kw={"readonly": True},
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, meeting=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.meeting = meeting
         self.logoutUrl.default = current_app.config["MEETING_LOGOUT_URL"]
 
 
@@ -331,7 +320,11 @@ class GroupForm(FlaskForm):
         label=_(
             "SIP",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )
@@ -339,7 +332,11 @@ class GroupForm(FlaskForm):
         label=_(
             "Ajout de document",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )
@@ -347,7 +344,11 @@ class GroupForm(FlaskForm):
         label=_(
             "Génération de résumé (IA)",
         ),
-        choices=[("None", "---"), ("True", "Activé"), ("False", "Désactivé")],
+        choices=[
+            SelectChoice("None", "---"),
+            SelectChoice("True", _("Activé")),
+            SelectChoice("False", _("Désactivé")),
+        ],
         coerce=nullable_bool,
         default="None",
     )

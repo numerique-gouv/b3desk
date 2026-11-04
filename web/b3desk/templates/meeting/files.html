@@ -1,4 +1,4 @@
-{% macro render_field(field, generate_button=False) %}
+{% macro render_field(field) %}
     <div class="fr-col-sm-10 fr-col-lg-9">
         {% if field.type == "BooleanField" %}
             <div class="fr-checkbox-group">
@@ -15,18 +15,7 @@
                         <p class="fr-error-text">{{ error }}</p>
                     {% endfor %}
                 {% endif %}
-                {% if generate_button %}
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-6">
-                            {{ field(class_="fr-input") }}
-                        </div>
-                        <div class="fr-col-2">
-                            <button type="button" class="fr-btn fr-btn--secondary" onclick="document.getElementById('{{ field.name }}').value = generatePassWord(10)"><i class="ri-refresh-fill"></i></button>
-                        </div>
-                    </div>
-                {% else %}
-                    {{ field(class_="fr-input", **kwargs) }}
-                {% endif %}
+                {{ field(class_="fr-input", **kwargs) }}
             </div>
         {% endif %}
     </div>
@@ -34,7 +23,6 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='js/dropzone.css') }}"/>
 <script src="{{ url_for('static', filename='js/dropzone-min.js') }}"></script>
-<script>Dropzone.autoDiscover = false;</script>
 
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
@@ -110,19 +98,17 @@
         </div>
     {% endif %}
     <div class="fr-grid-row">
-
         <ul id="addFileButtonsHolder" class="fr-btns-group fr-btns-group--inline fr-btns-group--center">
             <li>
                 <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">{% trans %}depuis une URL{% endtrans %}</button>
             </li>
             <li>
-                <button {% if g.is_nextcloud_available %}onClick=openNCFilePicker(event){% else %}disabled{% endif %} class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
+                <button id="openNCFilePickerButton" {% if not g.is_nextcloud_available %}disabled{% endif %} class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
             </li>
             <li>
                 <button {% if g.is_nextcloud_available %}data-fr-opened="false" aria-controls="upload-modal"{% else %}disabled{% endif %} class="fr-btn" title="{% trans %}téléversement{% endtrans %}">{% trans %}par Téléversement{% endtrans %}</button>
             </li>
         </ul>
-
     </div>
 </div>
 
@@ -149,7 +135,7 @@
                                 {% endif %}
                             </div>
                             <div class="fr-modal__footer">
-                                <form class="delete" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST" onsubmit="deleteFile(event)">
+                                <form class="delete js-delete-file" action="{{ url_for("meeting_files.delete_meeting_file") }}" method="POST">
                                     <input class="fr-input" type="hidden" name="id" value="{{ file.id }}" />
                                     <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--right">
                                         <li>
@@ -191,10 +177,10 @@
                                     <td>
                                         <div class="fr-toggle">
                                             {% if file.is_downloadable %}
-                                                <input onclick=toggleIsDownloadable(event) checked type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <input checked type="checkbox" class="fr-toggle__input js-toggle-downloadable" id="toggle-{{ file.id }}">
                                                 <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                             {% else %}
-                                                <input onclick=toggleIsDownloadable(event) type="checkbox" class="fr-toggle__input" id="toggle-{{ file.id }}">
+                                                <input type="checkbox" class="fr-toggle__input js-toggle-downloadable" id="toggle-{{ file.id }}">
                                                 <label class="fr-toggle__label" for="toggle-{{ file.id }}" data-fr-checked-label="{% trans %}Oui{% endtrans %}" data-fr-unchecked-label="{% trans %}Non{% endtrans %}"></label>
                                             {% endif %}
                                         </div>

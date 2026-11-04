@@ -5,14 +5,14 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </div>
 
-    <script>
-        const nc_locator = "{{ g.user.nc_locator }}";
-        const nc_login = "{{ g.user.nc_login }}";
-        const nc_token = "{{ g.user.nc_token }}";
-        const insert_documents_url = "{{ url_for("meeting_files.file_picker_callback", bbb_meeting_id=bbb_meeting_id) }}";
-        const file_picker_wrapper_url = "{{ url_for('static', filename='nextcloud/filePickerWrapper.js') }}";
-    </script>
-    <script src="{{ url_for('static', filename='js/file_picker.js')}}"></script>
+    <script
+        src="{{ url_for('static', filename='js/file_picker.js')}}"
+        data-nc-locator="{{ g.user.nc_locator }}"
+        data-nc-login="{{ g.user.nc_login }}"
+        data-nc-token="{{ g.user.nc_token }}"
+        data-insert-documents-url="{{ url_for('meeting_files.file_picker_callback', bbb_meeting_id=bbb_meeting_id) }}"
+        data-file-picker-wrapper-url="{{ url_for('static', filename='nextcloud/filePickerWrapper.js') }}"
+    ></script>
 {% else %}
     <!doctype html>
     <html lang="{{ current_lang }}">

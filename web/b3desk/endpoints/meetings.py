@@ -100,7 +100,8 @@ def update_recording_name(meeting: Meeting, recording_id, user: User):
     """Update the name of a meeting recording."""
     form = RecordingForm(request.form)
     if not form.validate():
-        abort(403)
+        flash(_("Impossible de renommer l'enregistrement"), "error")
+        return redirect(url_for("meetings.show_meeting_recording", meeting=meeting))
 
     bbb = BBB(meeting.bbb_meeting_id)
     if not bbb.get_recording(recording_id):
@@ -190,11 +191,15 @@ def edit_meeting(meeting: Meeting, user: User):
     admin_mode = is_admin_mode()
     form = (
         MeetingWithRecordForm(
-            request.form if request.method == "POST" else None, obj=meeting
+            request.form if request.method == "POST" else None,
+            obj=meeting,
+            meeting=meeting,
         )
         if current_app.config["RECORDING"]
         else MeetingForm(
-            request.form if request.method == "POST" else None, obj=meeting
+            request.form if request.method == "POST" else None,
+            obj=meeting,
+            meeting=meeting,
         )
     )
 
@@ -217,7 +222,6 @@ def edit_meeting(meeting: Meeting, user: User):
             admin_mode=admin_mode,
         )
 
-    del form.id
     del form.name
     if hasattr(form, "ai_summary") and not meeting.owner.can_use_ai_summary:
         del form.ai_summary
@@ -444,7 +448,9 @@ def manage_delegation(meeting: Meeting, user: User):
     )
 
 
-@bp.route("/meeting/remove-delegation/<meeting:meeting>/<user:delegate>")
+@bp.route(
+    "/meeting/remove-delegation/<meeting:meeting>/<user:delegate>", methods=["POST"]
+)
 @login_required
 @meeting_access_required()
 def remove_delegate(meeting: Meeting, user: User, delegate: User):

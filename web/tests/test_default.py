@@ -1,7 +1,12 @@
 import httpx2
 from b3desk import cache
+from b3desk import create_app
+from b3desk import redis_url
 from flask import abort
+from flask import session as flask_session
 from flask import url_for
+from flask_session.cachelib import CacheLibSessionInterface
+from flask_session.redis import RedisSessionInterface
 from flask_webtest import TestApp
 
 
@@ -113,6 +118,121 @@ def test_change_language_rejects_invalid_locales(app):
 
     res = client_app.get("/faq?lang='\"efx", status=200)
     assert res.session["lang"] == "fr"
+
+
+def test_session_cookie_options(app):
+    """Test that the session cookie is HttpOnly and SameSite=Lax, but not Secure over http."""
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    cookie = res.headers["Set-Cookie"]
+    assert "HttpOnly" in cookie
+    assert "SameSite=Lax" in cookie
+    assert "Secure" not in cookie
+
+
+def test_session_cookie_secure_over_https(configuration):
+    """Test that the session cookie is Secure when the application is served over https."""
+    configuration["PREFERRED_URL_SCHEME"] = "https"
+    app = create_app(configuration)
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert "Secure" in res.headers["Set-Cookie"]
+
+
+def test_session_backend_defaults_to_redis(configuration):
+    """Test that sessions are stored in redis when REDIS_URL is configured."""
+    del configuration["SESSION_TYPE"]
+    del configuration["SESSION_REDIS"]
+    configuration["REDIS_URL"] = "localhost:6379"
+    app = create_app(configuration)
+    assert isinstance(app.session_interface, RedisSessionInterface)
+
+
+def test_session_backend_falls_back_on_filesystem(configuration):
+    """Test that sessions are stored on the filesystem without REDIS_URL."""
+    del configuration["SESSION_TYPE"]
+    del configuration["SESSION_REDIS"]
+    configuration["REDIS_URL"] = None
+    app = create_app(configuration)
+    assert isinstance(app.session_interface, CacheLibSessionInterface)
+
+
+def test_session_cookie_secure_can_be_disabled(configuration):
+    """Test that SESSION_COOKIE_SECURE overrides the value deduced from PREFERRED_URL_SCHEME."""
+    configuration["PREFERRED_URL_SCHEME"] = "https"
+    configuration["SESSION_COOKIE_SECURE"] = False
+    app = create_app(configuration)
+    client_app = TestApp(app)
+    res = client_app.get("/faq?lang=fr", status=200)
+    assert "Secure" not in res.headers["Set-Cookie"]
+
+
+def test_session_lifetime(app):
+    """Test that sessions are kept seven days in redis."""
+    client_app = TestApp(app)
+    client_app.get("/faq?lang=fr", status=200)
+    session_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
+    ttl = app.config["SESSION_REDIS"].ttl(f"session:{session_id}")
+    assert 7 * 24 * 3600 - 60 < ttl <= 7 * 24 * 3600
+
+
+def test_unchanged_session_is_not_saved_again(app, mocker):
+    """Test that a request that does not change the session does not write it again."""
+    client_app = TestApp(app)
+    client_app.get("/faq?lang=fr", status=200)
+    upsert = mocker.spy(app.session_interface, "_upsert_session")
+    client_app.get("/faq", status=200)
+    upsert.assert_not_called()
+
+
+def test_session_id_changes_on_login_and_logout(app, user):
+    """Test that the session id and the CSRF token change when the user logs in or out."""
+
+    def login():
+        flask_session["current_provider"] = "default"
+        flask_session["last_authenticated"] = 1
+        flask_session["userinfo"] = {
+            "email": user.email,
+            "given_name": user.given_name,
+            "family_name": user.family_name,
+        }
+        return ""
+
+    def logout():
+        del flask_session["last_authenticated"]
+        return ""
+
+    app.add_url_rule("/fake-login", view_func=login)
+    app.add_url_rule("/fake-logout", view_func=logout)
+    store = app.config["SESSION_REDIS"]
+    client_app = TestApp(app)
+
+    client_app.get("/faq?lang=fr", status=200)
+    with client_app.session_transaction() as session:
+        session["csrf_token"] = "anonymous-token"
+    anonymous_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
+
+    client_app.get("/fake-login", status=200)
+    authenticated_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
+    assert authenticated_id != anonymous_id
+    assert not store.exists(f"session:{anonymous_id}")
+    with client_app.session_transaction() as session:
+        assert session.get("csrf_token") != "anonymous-token"
+
+    client_app.get("/fake-logout", status=200)
+    assert client_app.cookies[app.config["SESSION_COOKIE_NAME"]] != authenticated_id
+    assert not store.exists(f"session:{authenticated_id}")
+    with client_app.session_transaction() as session:
+        assert session["lang"] == "fr"
+
+
+def test_redis_url(app):
+    """Test that REDIS_URL accepts a host and port or a full URL."""
+    app.config["REDIS_URL"] = "broker:6379"
+    assert redis_url(app) == "redis://broker:6379"
+
+    app.config["REDIS_URL"] = "rediss://:secret@broker:6379/1"
+    assert redis_url(app) == "rediss://:secret@broker:6379/1"
 
 
 def test_language_selector_renders_active_language(app):

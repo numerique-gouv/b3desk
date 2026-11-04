@@ -53,7 +53,8 @@ class MainSettings(BaseSettings):
     model_config = SettingsConfigDict(extra="allow")
 
     SECRET_KEY: str
-    """Clé secrète utilisée notamment pour la signature des cookies. Cette clé
+    """Clé secrète utilisée notamment pour la protection CSRF et la signature
+    des liens d'invitation. Cette clé
     DOIT être différente pour TOUTES les instances de B3Desk, et être tenue
     secrète. Peut être générée avec ``python -c 'import secrets;
     print(secrets.token_hex())'``
@@ -88,6 +89,34 @@ class MainSettings(BaseSettings):
     Plus d'infos sur
     https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_NAME.
     """
+
+    SESSION_COOKIE_SECURE: bool | None = None
+    """Ajoute l'attribut ``Secure`` au cookie de session : le navigateur ne
+    l'envoie alors qu'en HTTPS. Par défaut, il est ajouté si
+    ``PREFERRED_URL_SCHEME`` vaut ``https``.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_SECURE.
+    """
+
+    SESSION_COOKIE_SAMESITE: str | None = "Lax"
+    """Valeur de l'attribut ``SameSite`` du cookie de session. ``Strict``
+    empêche le retour depuis le fournisseur d'identité.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_SAMESITE.
+    """
+
+    PERMANENT_SESSION_LIFETIME: int = 7 * 24 * 3600
+    """Durée de vie d'une session en secondes. Elle court à partir de la
+    connexion et n'est pas prolongée par l'activité.
+    """
+
+    @model_validator(mode="after")
+    def _secure_session_cookie_over_https(self):
+        if self.SESSION_COOKIE_SECURE is None:
+            self.SESSION_COOKIE_SECURE = self.PREFERRED_URL_SCHEME == "https"
+        return self
 
     LOG_CONFIG: FilePath | None = None
     """Chemin vers un fichier de configuration de logs Python.
@@ -195,9 +224,13 @@ class MainSettings(BaseSettings):
     """
 
     REDIS_URL: str | None = None
-    """L’URL du serveur redis utilisé pour les tâches asynchrones.
+    """L’URL du serveur redis utilisé pour les tâches asynchrones, le cache et
+    les sessions. Si non renseigné, le cache et les sessions sont stockés sur
+    le système de fichiers local, qui n'est pas partagé entre plusieurs
+    serveurs.
 
-    Par exemple ``localhost:6379``.
+    Par exemple ``localhost:6379``, ou une URL complète comme
+    ``rediss://:motdepasse@redis.example.org:6379/0``.
     """
 
     NC_LOGIN_TIMEDELTA_DAYS: int = 30

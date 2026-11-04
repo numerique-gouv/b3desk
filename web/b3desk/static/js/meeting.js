@@ -1,5 +1,13 @@
 // ALL FUNCTIONS FOR JS, NO EXECUTION HAPPNING RIGHT THERE, JUMP TO 'STARTJSEXEC' IF YOU WISH TO SEE JSS CODE EXECUTION
 
+const nc_locator = document.currentScript.dataset.ncLocator;
+const nc_login = document.currentScript.dataset.ncLogin;
+const nc_token = document.currentScript.dataset.ncToken;
+const meeting_files_url_base = document.currentScript.dataset.meetingFilesUrlBase;
+const add_meeting_files_url = document.currentScript.dataset.addMeetingFilesUrl;
+const delete_meeting_file_url = document.currentScript.dataset.deleteMeetingFileUrl;
+const accepted_files = document.currentScript.dataset.acceptedFiles;
+
 Dropzone.autoDiscover = false;
 
 function toggleIsDownloadable(e){
@@ -108,8 +116,8 @@ function append_file_to_fileslist(title, id, date) {
     divIsDl.appendChild(inputIsDl);
     divIsDl.appendChild(labelIsDl);
     tdIsDownloadable.appendChild(divIsDl);
-    tdTitle.innerHTML=title;
-    tdDate.innerHTML=date;
+    tdTitle.textContent = title;
+    tdDate.textContent = date;
 
     tr.appendChild(tdIsDownloadable);
     tr.appendChild(tdTitle);
@@ -150,18 +158,18 @@ function append_file_to_fileslist(title, id, date) {
 
     button2.setAttribute('type', 'submit');
     button2.classList.add('fr-btn','fr-btn--primary');
-    button2.innerHTML = 'Supprimer';
+    button2.textContent = 'Supprimer';
     button3.setAttribute('type', 'reset');
     button3.setAttribute('aria-controls', modalId);
     button3.classList.add('fr-btn','fr-btn--secondary');
-    button3.innerHTML = 'Annuler';
+    button3.textContent = 'Annuler';
     input.classList.add('fr-input');
     input.setAttribute('type', 'hidden');
     input.setAttribute('name', 'id');
     input.setAttribute('value', id);
     form.setAttribute('action', delete_meeting_file_url);
     form.setAttribute('method', 'POST');
-    form.setAttribute('onsubmit', 'deleteFile(event)');
+    form.addEventListener('submit', deleteFile);
 
 
     form.appendChild(input);
@@ -169,7 +177,7 @@ function append_file_to_fileslist(title, id, date) {
     form.appendChild(button3);
 
     div5a.appendChild(button);
-    p.innerHTML = 'Voulez-vous vraiment supprimer le fichier '+title+' ?';
+    p.textContent = 'Voulez-vous vraiment supprimer le fichier '+title+' ?';
     div5b.appendChild(p);
     div5b.appendChild(form);
     div4.appendChild(div5a);
@@ -198,8 +206,8 @@ function printout_message(msg){
     let p=document.createElement('p');
     div.classList.add('fr-alert','fr-alert--'+msg.type);
     h3.classList.add('fr-alert__title');
-    h3.innerHTML=msg.title;
-    p.innerHTML=msg.data;
+    h3.textContent = msg.title;
+    p.textContent = msg.data;
 
     div.appendChild(h3);
     div.appendChild(p);
@@ -258,10 +266,6 @@ function link_file_to_meeting(value, from) {
         printout_message({ type: 'error', title: 'Erreur Document', data: data.msg});
         close_open_modal();
     })
-}
-
-function openNCFilePicker(e) {
-    ncfilepicker.getFilesPath();
 }
 
 
@@ -327,6 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var form_files = document.getElementById('meeting-form');
 
+    var delete_files = document.querySelectorAll(".js-delete-file");
+    delete_files.forEach((delete_file) => {
+        delete_file.addEventListener('submit', deleteFile);
+    });
+
     form_files.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -340,3 +349,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createNCFilePicker()
 })
+
+
+const openNCFilePickerButton = document.getElementById("openNCFilePickerButton")
+if (openNCFilePickerButton) {
+    openNCFilePickerButton.addEventListener('click', (e) => {
+        ncfilepicker.getFilesPath();
+    })
+}
+
+
+const toggleIsDownloadableBoxes = document.querySelectorAll(".js-toggle-downloadable")
+toggleIsDownloadableBoxes.forEach((box) => {
+    box.addEventListener("click", (e) => {
+        toggleIsDownloadable(e);
+    });
+});

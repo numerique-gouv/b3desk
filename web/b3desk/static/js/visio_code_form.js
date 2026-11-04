@@ -1,3 +1,6 @@
+window.shouldDisplayCaptcha = document.currentScript.dataset.shouldDisplayCaptcha === "true"
+window.visioCodeFormValidationUrl = document.currentScript.dataset.visioCodeFormValidationUrl
+
 const inputs = document.querySelectorAll(".visio-code-container .visio-code-input-container input");
 
 
