@@ -112,42 +112,28 @@ def make_config_dump_app(config):
     return app
 
 
-def dump_config(app, output):
-    """Run config-dump and return the exported content."""
+def dump_config(app, output=None):
+    """Run config-dump and return the path of the exported file."""
+    args = ["config-dump"]
+    if output:
+        args += ["--output", str(output)]
     with app.app_context():
-        res = app.test_cli_runner(catch_exceptions=False).invoke(
-            bp.cli, ["config-dump", "--output", str(output)]
-        )
+        res = app.test_cli_runner(catch_exceptions=False).invoke(bp.cli, args)
     assert res.exit_code == 0, res.output
-    return output.read_text()
+    return pathlib.Path(output or "web.env.dump")
 
 
-def test_config_dump(config_dump_config, tmp_path, monkeypatch):
+@pytest.mark.parametrize("output", [None, "subdir/custom.env"])
+def test_config_dump(config_dump_config, tmp_path, monkeypatch, output):
     """Export a fixed configuration and compare it with the reference dotenv file."""
     monkeypatch.chdir(tmp_path)
     app = make_config_dump_app(config_dump_config)
-    with app.app_context():
-        res = app.test_cli_runner(catch_exceptions=False).invoke(
-            bp.cli, ["config-dump"]
-        )
-    assert res.exit_code == 0, res.output
-
-    exported_config = (tmp_path / "web.env.dump").read_text()
-    expected_config = (
-        pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
-    ).read_text()
-    assert exported_config == expected_config
-
-
-def test_config_dump_output(config_dump_config, tmp_path):
-    """Export the configuration to a custom location."""
-    app = make_config_dump_app(config_dump_config)
-    exported_config = dump_config(app, tmp_path / "subdir" / "custom.env")
+    exported_file = dump_config(app, output)
 
     expected_config = (
         pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
     ).read_text()
-    assert exported_config == expected_config
+    assert exported_file.read_text() == expected_config
 
 
 def test_config_dump_reload(config_dump_config, tmp_path, monkeypatch):
@@ -203,7 +189,9 @@ def test_config_dump_comments_computed_values(config_dump_config, tmp_path):
     assert app.config["SESSION_COOKIE_SECURE"] is True
     assert app.config["OIDC_ATTENDEE_CLIENT_SECRET"] == "test-client-secret"
 
-    exported_config = dump_config(app, tmp_path / "web.env.dump").splitlines()
+    exported_config = (
+        dump_config(app, tmp_path / "web.env.dump").read_text().splitlines()
+    )
 
     assert "# SESSION_COOKIE_SECURE=" in exported_config
     assert "# OIDC_ATTENDEE_CLIENT_SECRET=" in exported_config
