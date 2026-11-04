@@ -956,7 +956,9 @@ class MainSettings(BaseSettings):
     """
 
     ENABLE_ADMIN_MANAGEMENT: bool | None = False
-    """Enable Admin Management
+    """Enable the admin backoffice.
 
-    Allow admin account to access admin interfaces
+    When off, admin users have the same rights as other users.
+    They cannot open the admin pages.
+    They cannot access or delete meetings they do not own.
     """
