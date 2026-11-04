@@ -202,6 +202,29 @@ def test_config_dump_comments_computed_values(config_dump_config, tmp_path):
     )
 
 
+def test_config_dump_comments_empty_attendee_settings(
+    config_dump_config, tmp_path, monkeypatch
+):
+    """Empty attendee settings follow the main OIDC settings and stay commented."""
+    for name in (
+        "OIDC_ATTENDEE_ISSUER",
+        "OIDC_ATTENDEE_CLIENT_ID",
+        "OIDC_ATTENDEE_CLIENT_SECRET",
+        "OIDC_ATTENDEE_CLIENT_AUTH_METHOD",
+        "OIDC_ATTENDEE_SCOPES",
+    ):
+        monkeypatch.setenv(name, "")
+    app = make_config_dump_app(config_dump_config)
+    assert app.config["OIDC_ATTENDEE_CLIENT_SECRET"] == "test-client-secret"
+    assert app.config["OIDC_ATTENDEE_SCOPES"] == ["openid", "email", "profile"]
+
+    exported_config = (
+        dump_config(app, tmp_path / "web.env.dump").read_text().splitlines()
+    )
+
+    assert not any(line.startswith("OIDC_ATTENDEE_") for line in exported_config)
+
+
 def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):
     """Test CLI user-to-admin grants admin rights when admin management is disabled."""
     client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False

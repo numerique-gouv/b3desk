@@ -544,6 +544,26 @@ class MainSettings(BaseSettings):
     SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: str | None = None
     """Secret du client B3desk dans ce serveur d'identité."""
 
+    @model_validator(mode="before")
+    @classmethod
+    def _ignore_empty_attendee_settings(cls, values):
+        """Treat empty attendee settings as unset, so they keep following the main OIDC settings."""
+        if not isinstance(values, dict):
+            return values
+
+        derived_settings = {
+            "OIDC_ATTENDEE_ISSUER",
+            "OIDC_ATTENDEE_CLIENT_ID",
+            "OIDC_ATTENDEE_CLIENT_SECRET",
+            "OIDC_ATTENDEE_CLIENT_AUTH_METHOD",
+            "OIDC_ATTENDEE_SCOPES",
+        }
+        return {
+            name: value
+            for name, value in values.items()
+            if not (name in derived_settings and value == "")
+        }
+
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
         """Return OIDC_ISSUER if attendee issuer is not specified."""
