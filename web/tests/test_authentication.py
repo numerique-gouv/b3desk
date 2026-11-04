@@ -22,6 +22,7 @@ def test_user_authentication(
 
     # 1. attempt to access a protected page
     res1 = client_app.get("/welcome", status=302)
+    anonymous_session_id = client_app.cookies["session"]
 
     # 2. authorization code request
     res2 = iam_server.test_client.get(res1.location)
@@ -41,6 +42,18 @@ def test_user_authentication(
     assert user.email == iam_user.emails[0]
     assert user.given_name == iam_user.given_name
     assert user.family_name == iam_user.family_name
+
+    # 5. the OIDC tokens are stored server-side, the cookie only holds the session id
+    session_id = client_app.cookies["session"]
+    assert client_app.app.config["SESSION_REDIS"].exists(f"session:{session_id}")
+    assert session_id != anonymous_session_id
+    assert not client_app.app.config["SESSION_REDIS"].exists(
+        f"session:{anonymous_session_id}"
+    )
+    with client_app.session_transaction() as session:
+        assert session["access_token"]
+        assert session["access_token"] not in session_id
+        assert session["userinfo"]["email"] == iam_user.emails[0]
 
 
 def test_lasuite_user_authentication(

@@ -1,4 +1,4 @@
-#: web/b3desk/__init__.py:344 web/b3desk/endpoints/meeting_files.py:141
+#: web/b3desk/__init__.py:387 web/b3desk/endpoints/meeting_files.py:141
 #: web/b3desk/endpoints/meeting_files.py:206
 #: web/b3desk/endpoints/meeting_files.py:313
 #: web/b3desk/endpoints/meeting_files.py:520
@@ -7,7 +7,7 @@ msgid ""
 "réessayer dans quelques minutes."
 msgstr ""
 
-#: web/b3desk/__init__.py:418
+#: web/b3desk/__init__.py:460
 msgid "Votre session est invalide, merci de vous reconnecter."
 msgstr ""
 
@@ -292,27 +292,27 @@ msgstr ""
 msgid "Désactivé par défaut"
 msgstr ""
 
-#: web/b3desk/settings.py:659 web/b3desk/templates/meeting/list.html:4
+#: web/b3desk/settings.py:692 web/b3desk/templates/meeting/list.html:4
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:663
+#: web/b3desk/settings.py:696
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:676
+#: web/b3desk/settings.py:709
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:679
+#: web/b3desk/settings.py:712
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:682
+#: web/b3desk/settings.py:715
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:686
+#: web/b3desk/settings.py:719
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -3425,37 +3425,37 @@ msgstr ""
 msgid "Vous deviendrez délégataire de cette réunion."
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:184
+#: web/b3desk/utils/__init__.py:185
 #, python-brace-format
 msgid "Transfert de {meeting_name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:197
+#: web/b3desk/utils/__init__.py:198
 msgid "Présentation interactive"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:205
+#: web/b3desk/utils/__init__.py:206
 msgid "Vidéo (téléchargement direct)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:211
+#: web/b3desk/utils/__init__.py:212
 msgid "Compte-rendu (HTML)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:213
+#: web/b3desk/utils/__init__.py:214
 msgid "Compte-rendu (PDF)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:215
+#: web/b3desk/utils/__init__.py:216
 msgid "Compte-rendu (Markdown)"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:246
+#: web/b3desk/utils/__init__.py:247
 #, python-brace-format
 msgid "Votre enregistrement pour {name}"
 msgstr ""
 
-#: web/b3desk/utils/__init__.py:373
+#: web/b3desk/utils/__init__.py:374
 msgid ""
 "La clé privée n'a pas été configurée dans les paramètres B3Desk pour "
 "sécuriser la connexion SIPMediaGW"
