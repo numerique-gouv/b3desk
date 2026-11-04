@@ -130,6 +130,7 @@ def test_config_dump(config_dump_config, tmp_path, monkeypatch, output):
     app = make_config_dump_app(config_dump_config)
     exported_file = dump_config(app, output)
 
+    assert exported_file.stat().st_mode & 0o777 == 0o600
     expected_config = (
         pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
     ).read_text()

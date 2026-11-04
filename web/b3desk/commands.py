@@ -305,4 +305,6 @@ def config_dump(output):
     generator = RunningConfigDotEnvGenerator(fields_set)
     content = generator.generate(SettingsInfoModel.from_settings_model(MainSettings))
     output.parent.mkdir(parents=True, exist_ok=True)
+    output.touch(mode=0o600)
+    output.chmod(0o600)
     output.write_text(content, encoding="utf-8")
