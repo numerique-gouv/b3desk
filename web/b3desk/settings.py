@@ -548,9 +548,6 @@ class MainSettings(BaseSettings):
     @classmethod
     def _ignore_empty_attendee_settings(cls, values):
         """Treat empty attendee settings as unset, so they keep following the main OIDC settings."""
-        if not isinstance(values, dict):
-            return values
-
         derived_settings = {
             "OIDC_ATTENDEE_ISSUER",
             "OIDC_ATTENDEE_CLIENT_ID",
