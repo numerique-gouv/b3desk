@@ -2,8 +2,9 @@ import httpx2
 from b3desk import cache
 from b3desk import create_app
 from b3desk import redis_url
+from b3desk.session import clear_userinfo
+from b3desk.session import store_userinfo
 from flask import abort
-from flask import session as flask_session
 from flask import url_for
 from flask_session.cachelib import CacheLibSessionInterface
 from flask_session.redis import RedisSessionInterface
@@ -171,7 +172,7 @@ def test_session_lifetime(app):
     """Test that sessions are kept seven days in redis."""
     client_app = TestApp(app)
     client_app.get("/faq?lang=fr", status=200)
-    session_id = client_app.cookies["session"]
+    session_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
     ttl = app.config["SESSION_REDIS"].ttl(f"session:{session_id}")
     assert 7 * 24 * 3600 - 60 < ttl <= 7 * 24 * 3600
 
@@ -189,17 +190,18 @@ def test_session_id_changes_on_login_and_logout(app, user):
     """Test that the session id and the CSRF token change when the user logs in or out."""
 
     def login():
-        flask_session["current_provider"] = "default"
-        flask_session["last_authenticated"] = 1
-        flask_session["userinfo"] = {
-            "email": user.email,
-            "given_name": user.given_name,
-            "family_name": user.family_name,
-        }
+        store_userinfo(
+            {
+                "email": user.email,
+                "given_name": user.given_name,
+                "family_name": user.family_name,
+            },
+            "id-token",
+        )
         return ""
 
     def logout():
-        del flask_session["last_authenticated"]
+        clear_userinfo()
         return ""
 
     app.add_url_rule("/fake-login", view_func=login)
@@ -210,17 +212,17 @@ def test_session_id_changes_on_login_and_logout(app, user):
     client_app.get("/faq?lang=fr", status=200)
     with client_app.session_transaction() as session:
         session["csrf_token"] = "anonymous-token"
-    anonymous_id = client_app.cookies["session"]
+    anonymous_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
 
     client_app.get("/fake-login", status=200)
-    authenticated_id = client_app.cookies["session"]
+    authenticated_id = client_app.cookies[app.config["SESSION_COOKIE_NAME"]]
     assert authenticated_id != anonymous_id
     assert not store.exists(f"session:{anonymous_id}")
     with client_app.session_transaction() as session:
         assert session.get("csrf_token") != "anonymous-token"
 
     client_app.get("/fake-logout", status=200)
-    assert client_app.cookies["session"] != authenticated_id
+    assert client_app.cookies[app.config["SESSION_COOKIE_NAME"]] != authenticated_id
     assert not store.exists(f"session:{authenticated_id}")
     with client_app.session_transaction() as session:
         assert session["lang"] == "fr"
