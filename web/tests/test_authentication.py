@@ -206,6 +206,27 @@ def test_clear_session_after_logout(
         assert "attendee_userinfo" not in session
 
 
+def test_logout_session_is_not_permanent(
+    client_app, configuration, iam_server, iam_client
+):
+    """After logout, the session cookie has no expiration date."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    response = client_app.get(response.headers["Location"], status=302)
+    assert "Expires=" in response.headers["Set-Cookie"]
+    client_app.get("/faq?lang=fr", status=200)
+
+    response = client_app.get("/logout", status=302)
+
+    cookie = response.headers["Set-Cookie"]
+    assert cookie.startswith(f"{client_app.app.config['SESSION_COOKIE_NAME']}=")
+    assert "Expires=" not in cookie
+
+
 def test_authorize_tampered_state_redirects_home(
     client_app, configuration, iam_server, iam_client
 ):

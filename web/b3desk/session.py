@@ -31,6 +31,9 @@ def clear_userinfo():
     session.pop("id_token", None)
     session.pop("attendee_userinfo", None)
     session.pop("last_authenticated", None)
+    permanent = current_app.config["SESSION_PERMANENT"]
+    if session.permanent != permanent:
+        session.permanent = permanent
 
 
 def has_user_session():
