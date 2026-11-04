@@ -1,0 +1,6 @@
+{% macro form_tag(form) -%}
+    <form{{ kwargs|xmlattr }}>
+        {% if form.meta.csrf %}{{ form.csrf_token(id=False) }}{% endif %}
+        {{ caller() }}
+    </form>
+{%- endmacro %}

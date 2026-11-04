@@ -18,6 +18,7 @@ from flask import url_for
 from flask_babel import gettext as _
 from joserfc.errors import JoseError
 
+from b3desk.forms import ConfirmForm
 from b3desk.utils import http_client
 
 from .. import cache
@@ -222,6 +223,7 @@ def welcome():
         order_key=order_key,
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
+        confirm_form=ConfirmForm(),
         admin_mode=False,
     )
 

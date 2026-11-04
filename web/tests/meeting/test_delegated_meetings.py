@@ -4,6 +4,7 @@ from datetime import date
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
 from flask import url_for
+from tests.helpers import form_with_action
 
 
 def test_delegated_meetings_visibility_on_welcome_page(
@@ -301,12 +302,9 @@ def test_owner_can_remove_delegation(
     ) in response.flashes
     assert user_2 in meeting.get_all_delegates
     assert len(smtpd.messages) == 1
-    remove_form = next(
-        form
-        for form in response.forms.values()
-        if form.action.startswith(f"/meeting/remove-delegation/{meeting.id}/2")
-    )
-    response = remove_form.submit(status=302)
+    response = form_with_action(
+        response, f"/meeting/remove-delegation/{meeting.id}/2"
+    ).submit(status=302)
     assert (
         "success",
         "L'utilisateur a été retiré des délégataires",

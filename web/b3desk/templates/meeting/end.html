@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 
 {% block main %}
     <p>
@@ -8,9 +9,8 @@
     {% if meeting in g.user.get_all_delegated_meetings %}
         <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
     {% endif %}
-    <form action="{{ url_for("meetings.end_meeting", meeting=meeting) }}" method="POST">
-        {% include 'meeting/csrf.html' %}
-        <button type="submit" class="fr-btn fr-btn--primary" name="submit_force_renew">{% trans %}Mettre fin à la réunion en cours{% endtrans %}</button>
+    {% call form_tag(confirm_form, action=url_for("meetings.end_meeting", meeting=meeting), method="POST") %}
+        {{ confirm_form.confirm(label=_("Mettre fin à la réunion en cours"), class_="fr-btn fr-btn--primary") }}
         <a href="{{ url_for('public.welcome') }}" class="fr-btn fr-btn--secondary fr-mb-1w">{% trans %}Patienter jusqu'à la fin de la réunion{% endtrans %}</a>
-    </form>
+    {% endcall %}
 {% endblock %}

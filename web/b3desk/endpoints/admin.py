@@ -11,6 +11,8 @@ from flask_babel import ngettext
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
+from b3desk.forms import AddGroupMembersForm
+from b3desk.forms import ConfirmForm
 from b3desk.forms import GroupForm
 from b3desk.forms import GroupSearchForm
 from b3desk.forms import MeetingSearchForm
@@ -177,6 +179,7 @@ def meeting_infos(meeting: Meeting):
         "admin/meeting_infos.html",
         admin_mode=True,
         meeting=meeting,
+        confirm_form=ConfirmForm(),
     )
 
 
@@ -302,6 +305,7 @@ def manage_group_members(group: Group):
         members_page=members_page,
         data=data,
         add_members=False,
+        confirm_form=ConfirmForm(),
     )
 
 
@@ -333,6 +337,7 @@ def delete_group(group: Group):
     return render_template(
         "admin/delete_group.html",
         group=group,
+        confirm_form=ConfirmForm(),
     )
 
 
@@ -408,4 +413,5 @@ def add_group_members(group: Group):
         data=data,
         add_members=True,
         select_all=select_all,
+        add_members_form=AddGroupMembersForm(),
     )

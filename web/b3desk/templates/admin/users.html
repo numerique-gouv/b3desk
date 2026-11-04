@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 {% from 'admin/macros.html' import breadcrumb %}
 
 {% block main %}
@@ -6,11 +7,10 @@
     {'href': url_for('admin.home'), 'label': _('Menu Admin')},
     {'href': url_for('admin.manage_users'), 'label': _('Utilisateurs')},
     ]) }}
-    <form class="fr-search-bar" id="userSearchForm" name="search_user" role="search" action="{{ url_for("admin.manage_users") }}" method="get">
-        {{ form.search.label(class_="fr-label") }}
-        {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Rechercher un utilisateur{% endtrans %}" type="submit" class="fr-btn"></button>
-    </form>
+    {% call form_tag(form, class="fr-search-bar", id="userSearchForm", name="search_user", role="search", action=url_for("admin.manage_users"), method="get") %}
+        {{ form.search() }}
+        {{ form.find(class_="fr-btn", title=_("Rechercher un utilisateur")) }}
+    {% endcall %}
     <br>
     {% set users = users_page.items %}
     {% if not users %}

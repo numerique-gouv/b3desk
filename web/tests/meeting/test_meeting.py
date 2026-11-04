@@ -29,6 +29,7 @@ from b3desk.models.meetings import unique_visio_code_generation
 from b3desk.models.meetings import visio_code_exists
 from b3desk.models.roles import Role
 from flask import url_for
+from tests.helpers import form_with_action
 
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
@@ -972,7 +973,8 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
         db.select(db.func.count()).select_from(MeetingSecretKey)
     ) == len(Role)
 
-    res = client_app.post(f"/meeting/{meeting.id}/delete")
+    res = client_app.get("/welcome")
+    res = form_with_action(res, f"/meeting/{meeting.id}/delete").submit()
     assert ("success", "Élément supprimé") in res.flashes
     assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
     assert (
