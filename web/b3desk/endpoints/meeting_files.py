@@ -428,10 +428,7 @@ def delete_meeting_file():
 
     if (
         meeting_file.meeting.owner_id != g.user.id
-        and (
-            not g.user.admin
-            or (g.user.admin and not current_app.config["ENABLE_ADMIN_MANAGEMENT"])
-        )
+        and not g.user.has_admin_rights
         and meeting_file.meeting not in g.user.get_all_delegated_meetings
     ):
         return {
