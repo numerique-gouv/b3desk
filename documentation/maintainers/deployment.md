@@ -74,14 +74,22 @@ cp web.env.example web.env
 
 Adapter les valeurs du fichiers de configuration à partir des indications du chapitre sur la {ref}`Configuration de B3Desk<maintainers/settings:B3Desk>`.
 
-Lorsqu'un conteneur B3Desk est en fonctionnement, il est possible d'éxécuter la commande suivante pour exporter la configuration courante, incluant les descriptions des différentes variables d'environnement et les valeurs par défaut en commentaire dans le fichier.
+Lorsqu'un conteneur B3Desk est en fonctionnement, la commande `flask config-dump` exporte la configuration courante dans un fichier au format `web.env`.
+Chaque variable y est précédée de sa description.
+Les variables que vous avez renseignées sont actives, les autres sont en commentaire avec leur valeur par défaut.
+Les valeurs déduites d'autres variables, comme `OIDC_ATTENDEE_CLIENT_SECRET` ou `SESSION_COOKIE_SECURE`, restent en commentaire.
+Le fichier peut donc servir de `web.env`.
 
 ```bash
-# Exporte un fichier web.env.dump dans le dossier de l'application B3Desk
-docker exec -it web flask config-dump
+# Exporte le fichier dans web/conf/web.env.dump sur l'hôte
+docker exec web flask config-dump --output conf/web.env.dump
+```
 
-# Exporte le fichier de configuration avec le nom de votre choix, dans le dossier de votre choix
-docker exec -it web flask config-dump --output ./nouveau-dossier/nomdufichier.env
+Sans l'option `--output`, le fichier `web.env.dump` est écrit dans le dossier de l'application, à l'intérieur du conteneur.
+Ce dossier n'est pas monté sur l'hôte : le fichier disparaît quand le conteneur est recréé.
+
+```{warning}
+Le fichier exporté contient tous les secrets de la configuration en clair.
 ```
 
 ### Serveur web
