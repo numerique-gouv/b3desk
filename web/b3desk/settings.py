@@ -6,7 +6,8 @@ from importlib.metadata import version
 from typing import Annotated
 from typing import Any
 
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext
+from flask_babel.speaklater import LazyString
 from packaging.version import Version
 from pydantic import BeforeValidator
 from pydantic import FilePath
@@ -15,9 +16,26 @@ from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
 from pydantic import model_validator
+from pydantic_core import core_schema
 from pydantic_settings import BaseSettings
 from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
+
+
+class LazySettingString(LazyString):
+    """Translatable setting default that pydantic can serialize as a string."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source, handler):
+        return core_schema.no_info_plain_validator_function(
+            lambda value: value,
+            serialization=core_schema.plain_serializer_function_ser_schema(str),
+        )
+
+
+def _(text):
+    """Return a lazy translatable string usable as a setting default."""
+    return LazySettingString(gettext, text)
 
 
 def default_session_cookie_name():
@@ -30,6 +48,9 @@ def split_comma_separated_strings(value):
     """Convert a comma-separated string into a list of stripped strings."""
     if not isinstance(value, str):
         return value
+
+    if not value.strip():
+        return []
 
     return map(str.strip, value.split(","))
 
@@ -50,7 +71,7 @@ class MeetingLocaleVariant(StrEnum):
 class MainSettings(BaseSettings):
     """Paramètres de configuration du frontal B3Desk."""
 
-    model_config = SettingsConfigDict(extra="allow")
+    model_config = SettingsConfigDict(extra="allow", use_attribute_docstrings=True)
 
     SECRET_KEY: str
     """Clé secrète utilisée notamment pour la protection CSRF et la signature
@@ -112,11 +133,13 @@ class MainSettings(BaseSettings):
     connexion et n'est pas prolongée par l'activité.
     """
 
-    @model_validator(mode="after")
-    def _secure_session_cookie_over_https(self):
-        if self.SESSION_COOKIE_SECURE is None:
-            self.SESSION_COOKIE_SECURE = self.PREFERRED_URL_SCHEME == "https"
-        return self
+    @field_validator("SESSION_COOKIE_SECURE")
+    def _secure_session_cookie_over_https(
+        cls, session_cookie_secure: bool | None, info: ValidationInfo
+    ) -> bool:
+        if session_cookie_secure is None:
+            return info.data.get("PREFERRED_URL_SCHEME") == "https"
+        return session_cookie_secure
 
     LOG_CONFIG: FilePath | None = None
     """Chemin vers un fichier de configuration de logs Python.
@@ -520,6 +543,23 @@ class MainSettings(BaseSettings):
 
     SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: str | None = None
     """Secret du client B3desk dans ce serveur d'identité."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _ignore_empty_attendee_settings(cls, values):
+        """Treat empty attendee settings as unset, so they keep following the main OIDC settings."""
+        derived_settings = {
+            "OIDC_ATTENDEE_ISSUER",
+            "OIDC_ATTENDEE_CLIENT_ID",
+            "OIDC_ATTENDEE_CLIENT_SECRET",
+            "OIDC_ATTENDEE_CLIENT_AUTH_METHOD",
+            "OIDC_ATTENDEE_SCOPES",
+        }
+        return {
+            name: value
+            for name, value in values.items()
+            if not (name in derived_settings and value == "")
+        }
 
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
