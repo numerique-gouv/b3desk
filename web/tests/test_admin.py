@@ -675,7 +675,7 @@ def test_admin_cannot_enter_admin_page_with_admin_management_disabled(
     user.admin = True
     db.session.commit()
     res = client_app.get("/home").follow()
-    assert "Admin" not in res.text
+    assert url_for("admin.home") not in res.text
     client_app.get("/admin/home", status=403)
 
 
@@ -744,3 +744,31 @@ def test_delegate_admin_cannot_delete_meeting_with_admin_management_disabled(
     res = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
     assert ("error", "Vous ne pouvez pas supprimer cet élément") in res.flashes
     assert db.session.get(Meeting, meeting_1_user_2.id)
+
+
+def test_admin_cannot_transfer_meeting_ownership_with_admin_management_disabled(
+    user, user_2, meeting_2_user_2, client_app, authenticated_user
+):
+    """Test admin cannot transfer other user meeting when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    client_app.post(
+        f"/meeting/transfert-meeting-ownership/{meeting_2_user_2.id}/{user.id}",
+        status=403,
+    )
+    assert meeting_2_user_2.owner is user_2
+
+
+def test_admin_mode_parameter_is_ignored_with_admin_management_disabled(
+    user, meeting, client_app, authenticated_user
+):
+    """Test the admin_mode parameter has no effect when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    res = client_app.get(
+        url_for("meeting_files.edit_meeting_files", meeting=meeting, admin_mode=True)
+    )
+    assert url_for("public.welcome") in res.text
+    assert url_for("admin.meeting_infos", meeting=meeting) not in res.text
