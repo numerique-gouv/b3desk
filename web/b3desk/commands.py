@@ -1,16 +1,17 @@
+import json
 from pathlib import Path
+from typing import get_args
 
 import click
 import httpx2
 from flask import Blueprint
 from flask import current_app
 from flask_babel.speaklater import LazyString
+from pydantic import TypeAdapter
 from pydantic_core import core_schema
-from pydantic_settings_export import Exporter
-from pydantic_settings_export import PSESettings
+from pydantic_settings import NoDecode
+from pydantic_settings_export import SettingsInfoModel
 from pydantic_settings_export.generators.dotenv import DotEnvGenerator
-from pydantic_settings_export.generators.dotenv import DotEnvSettings
-from pydantic_settings_export.models import value_repr
 
 from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
@@ -237,16 +238,57 @@ LazyString.__get_pydantic_core_schema__ = classmethod(
 )
 
 
+def is_comma_separated(field_info):
+    """Tell whether a setting is read from a comma-separated string."""
+    return NoDecode in field_info.metadata or any(
+        NoDecode in getattr(arg, "__metadata__", ())
+        for arg in get_args(field_info.annotation)
+    )
+
+
+def dotenv_value(field_info, value):
+    """Format a setting value so that MainSettings can read it back from a dotenv file."""
+    if isinstance(value, LazyString):
+        value = str(value)
+    value = TypeAdapter(field_info.annotation).dump_python(value, mode="json")
+
+    if value is None:
+        return ""
+
+    if isinstance(value, bool | int | float):
+        return json.dumps(value)
+
+    if isinstance(value, list | dict):
+        if is_comma_separated(field_info):
+            value = ",".join(value)
+        else:
+            value = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+            if "'" not in value and "\\" not in value:
+                return f"'{value}'"
+
+    return json.dumps(value, ensure_ascii=False)
+
+
 class RunningConfigDotEnvGenerator(DotEnvGenerator):
     """Export the settings values, commenting the defaults and adding docstrings."""
 
     name = "running-dotenv"
 
+    def __init__(self, running_settings, fields_set):
+        super().__init__()
+        self.running_settings = running_settings
+        self.fields_set = fields_set
+
     def _process_field(self, settings_info, field, *args):
-        name = field.env_names[0] if field.env_names else field.name
-        value = field.value if field.has_value else field.default
-        line = f"{name}={value_repr(value)}"
-        if not field.has_value:
+        field_info = MainSettings.model_fields[field.name]
+        is_set = field.name in self.fields_set
+        value = (
+            getattr(self.running_settings, field.name)
+            if is_set
+            else field_info.get_default(call_default_factory=True)
+        )
+        line = f"{field.name}={dotenv_value(field_info, value)}"
+        if not is_set:
             line = f"# {line}"
         description = "".join(
             f"# {doc_line}".rstrip() + "\n"
@@ -269,8 +311,10 @@ def config_dump(output):
     running_settings = MainSettings.model_construct(
         **{name: current_app.config[name] for name in MainSettings.model_fields}
     )
-    settings = PSESettings(project_dir=Path("./"), root_dir=Path("./"))
-    generators = [
-        RunningConfigDotEnvGenerator(settings, DotEnvSettings(paths=[output])),
-    ]
-    Exporter(settings, generators).run_all(running_settings)
+    fields_set = current_app.extensions["b3desk_settings_fields_set"]
+    generator = RunningConfigDotEnvGenerator(running_settings, fields_set)
+    content = generator.generate(
+        SettingsInfoModel.from_settings_model(running_settings)
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content, encoding="utf-8")

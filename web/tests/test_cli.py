@@ -1,6 +1,7 @@
 import pathlib
 
 import pytest
+from b3desk import setup_configuration
 from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
@@ -79,36 +80,52 @@ def test_populate_refuses_outside_development(cli_runner, client_app, app, monke
 
 
 @pytest.fixture
-def config_dump_app(monkeypatch):
-    """Build a minimal app with a fixed configuration for config-dump tests."""
+def config_dump_config(monkeypatch):
+    """Return a minimal fixed configuration for config-dump tests."""
     # Ignore any environment variable that could alter the settings on the dev machine
     for name in MainSettings.model_fields:
         monkeypatch.delenv(name, raising=False)
 
-    settings = MainSettings(
-        SECRET_KEY="test-secret-key",
-        SERVER_NAME="b3desk.test",
-        PREFERRED_URL_SCHEME="http",
-        SQLALCHEMY_DATABASE_URI="postgresql://user:password@postgres/b3desk",
-        UPLOAD_DIR="/tmp/b3desk/upload",
-        TMP_DOWNLOAD_DIR="/tmp/b3desk/download",
-        BIGBLUEBUTTON_ENDPOINT="https://bbb.test",
-        BIGBLUEBUTTON_SECRET="test-bbb-secret",
-        OIDC_ISSUER="https://iam.test",
-        OIDC_CLIENT_ID="test-client-id",
-        OIDC_CLIENT_SECRET="test-client-secret",
-    )
+    return {
+        "SECRET_KEY": "test-secret-key",
+        "SERVER_NAME": "b3desk.test",
+        "PREFERRED_URL_SCHEME": "http",
+        "SESSION_COOKIE_NAME": "session",
+        "SQLALCHEMY_DATABASE_URI": "postgresql://user:password@postgres/b3desk",
+        "UPLOAD_DIR": "/tmp/b3desk/upload",
+        "TMP_DOWNLOAD_DIR": "/tmp/b3desk/download",
+        "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
+        "BIGBLUEBUTTON_SECRET": "test-bbb-secret",
+        "OIDC_ISSUER": "https://iam.test",
+        "OIDC_CLIENT_ID": "test-client-id",
+        "OIDC_CLIENT_SECRET": "test-client-secret",
+    }
+
+
+def make_config_dump_app(config):
+    """Build a minimal app configured like the real one."""
     app = Flask(__name__)
-    app.config.from_object(settings)
+    setup_configuration(app, config)
     Babel(app)
     return app
 
 
-def test_config_dump(config_dump_app, tmp_path, monkeypatch):
+def dump_config(app, output):
+    """Run config-dump and return the exported content."""
+    with app.app_context():
+        res = app.test_cli_runner(catch_exceptions=False).invoke(
+            bp.cli, ["config-dump", "--output", str(output)]
+        )
+    assert res.exit_code == 0, res.output
+    return output.read_text()
+
+
+def test_config_dump(config_dump_config, tmp_path, monkeypatch):
     """Export a fixed configuration and compare it with the reference dotenv file."""
     monkeypatch.chdir(tmp_path)
-    with config_dump_app.app_context():
-        res = config_dump_app.test_cli_runner(catch_exceptions=False).invoke(
+    app = make_config_dump_app(config_dump_config)
+    with app.app_context():
+        res = app.test_cli_runner(catch_exceptions=False).invoke(
             bp.cli, ["config-dump"]
         )
     assert res.exit_code == 0, res.output
@@ -120,19 +137,59 @@ def test_config_dump(config_dump_app, tmp_path, monkeypatch):
     assert exported_config == expected_config
 
 
-def test_config_dump_output(config_dump_app, tmp_path):
+def test_config_dump_output(config_dump_config, tmp_path):
     """Export the configuration to a custom location."""
-    output = tmp_path / "subdir" / "custom.env"
-    with config_dump_app.app_context():
-        res = config_dump_app.test_cli_runner(catch_exceptions=False).invoke(
-            bp.cli, ["config-dump", "--output", str(output)]
-        )
-    assert res.exit_code == 0, res.output
+    app = make_config_dump_app(config_dump_config)
+    exported_config = dump_config(app, tmp_path / "subdir" / "custom.env")
 
     expected_config = (
         pathlib.Path(__file__).parent / "fixtures" / "web.env.test"
     ).read_text()
-    assert output.read_text() == expected_config
+    assert exported_config == expected_config
+
+
+def test_config_dump_reload(config_dump_config, tmp_path):
+    """Load the exported file back and get the same settings."""
+    log_config = tmp_path / "logging.toml"
+    log_config.write_text("version = 1\n")
+    config = {
+        **config_dump_config,
+        "SERVICE_TITLE": 'Webinaire de l’État "test" \\ ok',
+        "OIDC_SCOPES": ["openid", "email", "usual_name"],
+        "RIE_NETWORK_IPS": ["10.0.0.0/8", "192.168.0.0/16"],
+        "ALLOWED_MIME_TYPES_SERVER_SIDE": ["application/pdf", "image/png"],
+        "OIDC_CLAIMS_MAPPING": {"family_name": "usual_name"},
+        "VIDEO_STREAMING_LINKS": {"Vidéo l'État": "https://video.test/a\\b"},
+        "RECORDING_DURATION": "P30D",
+        "MAX_MEETINGS_PER_USER": 3,
+        "FILE_SHARING": True,
+        "LOG_CONFIG": str(log_config),
+    }
+    app = make_config_dump_app(config)
+    output = tmp_path / "web.env.dump"
+    dump_config(app, output)
+
+    with app.app_context():
+        reloaded = MainSettings(_env_file=output)
+        assert reloaded.model_dump() == MainSettings(**config).model_dump()
+        assert reloaded.model_fields_set == MainSettings(**config).model_fields_set
+
+
+def test_config_dump_comments_computed_values(config_dump_config, tmp_path):
+    """Values computed from other settings are not exported as explicit settings."""
+    config = {**config_dump_config, "PREFERRED_URL_SCHEME": "https"}
+    app = make_config_dump_app(config)
+    assert app.config["SESSION_COOKIE_SECURE"] is True
+    assert app.config["OIDC_ATTENDEE_CLIENT_SECRET"] == "test-client-secret"
+
+    exported_config = dump_config(app, tmp_path / "web.env.dump").splitlines()
+
+    assert "# SESSION_COOKIE_SECURE=" in exported_config
+    assert "# OIDC_ATTENDEE_CLIENT_SECRET=" in exported_config
+    assert not any(
+        line.startswith(("SESSION_COOKIE_SECURE=", "OIDC_ATTENDEE_"))
+        for line in exported_config
+    )
 
 
 def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):

@@ -70,6 +70,7 @@ def setup_configuration(app, config=None):
 
     config_obj = MainSettings(**config) if config else MainSettings()
     app.config.from_object(config_obj)
+    app.extensions["b3desk_settings_fields_set"] = config_obj.model_fields_set
 
     # Flask reads the FLASK_DEBUG environment var
     # This avoids the app.debug parameter to be overwritten by configuration defaults

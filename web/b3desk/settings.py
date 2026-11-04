@@ -112,11 +112,13 @@ class MainSettings(BaseSettings):
     connexion et n'est pas prolongée par l'activité.
     """
 
-    @model_validator(mode="after")
-    def _secure_session_cookie_over_https(self):
-        if self.SESSION_COOKIE_SECURE is None:
-            self.SESSION_COOKIE_SECURE = self.PREFERRED_URL_SCHEME == "https"
-        return self
+    @field_validator("SESSION_COOKIE_SECURE")
+    def _secure_session_cookie_over_https(
+        cls, session_cookie_secure: bool | None, info: ValidationInfo
+    ) -> bool:
+        if session_cookie_secure is None:
+            return info.data.get("PREFERRED_URL_SCHEME") == "https"
+        return session_cookie_secure
 
     LOG_CONFIG: FilePath | None = None
     """Chemin vers un fichier de configuration de logs Python.
