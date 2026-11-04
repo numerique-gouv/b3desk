@@ -60,7 +60,6 @@
   {% endif %}
 
   {% include 'meeting/csrf.html' %}
-  {% include 'meeting/id.html' %}
   {% set name_disabled = meeting is not none %}
   {{ render_field(form.name, pattern="[^\\x22]+", disabled=name_disabled) }}
   <br><br>

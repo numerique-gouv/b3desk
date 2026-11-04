@@ -57,7 +57,7 @@
 
             {# DSFR JavaScript #}
             <script src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.module.min.js')}}"></script>
-            <script type="text/javascript" nomodule href="dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js" ></script>
+            <script nomodule src="{{ url_for('static', filename='dsfr-v1.14.0/dsfr/dsfr.nomodule.min.js')}}"></script>
             {# Scampi Modal en attendant la modale GouvFr #}
             <script src="{{ url_for('static', filename='js/scampi-modal.js')}}"></script>
             {% if config.get("MATOMO_SITE_ID") and config.get("MATOMO_URL") %}

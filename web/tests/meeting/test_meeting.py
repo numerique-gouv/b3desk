@@ -1257,6 +1257,41 @@ def test_create_meeting_with_wrong_PIN(
     res.mustcontain("Ce code PIN est déjà utilisé")
 
 
+def test_create_meeting_ignores_submitted_id(
+    client_app, authenticated_user, mock_meeting_is_not_running
+):
+    """Test that a client cannot choose the id of the meeting it creates."""
+    res = client_app.get("/meeting/new")
+    res.forms[0]["name"] = "Mon meeting de test"
+    fields = [*res.forms[0].submit_fields(), ("id", "4242")]
+    client_app.post("/meeting/new", fields, status=302)
+
+    meeting = db.session.scalar(db.select(Meeting))
+    assert meeting.id != 4242
+
+
+def test_edit_meeting_pin_uniqueness_ignores_submitted_id(
+    client_app,
+    meeting,
+    meeting_2,
+    authenticated_user,
+    mock_meeting_is_not_running,
+):
+    """Test that a submitted id does not let a meeting take the PIN of another one."""
+    client_app.app.config["ENABLE_PIN_MANAGEMENT"] = True
+
+    res = client_app.get(f"/meeting/edit/{meeting.id}")
+    res.forms[0]["voiceBridge"] = meeting_2.voiceBridge
+    fields = [
+        *(field for field in res.forms[0].submit_fields() if field[0] != "id"),
+        ("id", str(meeting_2.id)),
+    ]
+    res = client_app.post(f"/meeting/edit/{meeting.id}", fields)
+
+    res.mustcontain("Ce code PIN est déjà utilisé")
+    assert meeting.voiceBridge == "111111111"
+
+
 def test_generate_existing_pin(
     client_app,
     meeting,
@@ -1316,7 +1351,6 @@ def test_delete_old_voiceBridges_with_form(
     mock_meeting_is_not_running,
     bbb_response,
     user,
-    iam_token,
     iam_server,
     iam_user,
 ):
@@ -1340,20 +1374,14 @@ def test_delete_old_voiceBridges_with_form(
     time_machine.move_to(one_year_after)
 
     with client_app.session_transaction() as session:
-        session["access_token"] = iam_token.access_token
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "default"
         session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
+        session["last_authenticated"] = time.time()
         session["userinfo"] = {
             "email": "alice@domain.tld",
             "family_name": "Cooper",
             "given_name": "Alice",
             "preferred_username": "alice",
         }
-        session["refresh_token"] = ""
 
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
