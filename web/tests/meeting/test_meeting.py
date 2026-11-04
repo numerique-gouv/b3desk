@@ -7,6 +7,7 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+import pytest
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_quick_meeting_secret_key
@@ -1308,8 +1309,8 @@ def test_generate_existing_pin(
     # Mock returns existing PINs first, then a free one
     # Fixtures use: 111111111, 111111112, 111111113 (meetings) and 511111111 (shadow)
     mocker.patch(
-        "b3desk.models.meetings.random.randint",
-        side_effect=[111111111, 111111112, 111111113, 222222222],
+        "b3desk.models.meetings.generate_random_pin",
+        side_effect=["111111111", "111111112", "111111113", "222222222"],
     )
     res = client_app.get("/meeting/new")
     res.mustcontain("222222222")
@@ -1639,6 +1640,19 @@ def test_get_role_for_quick_meeting_invalid_secret_key(client_app):
     """get_role must return None for a secret key matching no role of a quick meeting."""
     quick_meeting = get_quick_meeting_from_meeting_id()
     assert get_role(quick_meeting, "invalid-secret-key") is None
+
+
+@pytest.mark.parametrize("secret_key", [None, "", "clé-invalide"])
+def test_get_role_unusual_secret_key(client_app, meeting, secret_key):
+    """get_role must return None for a missing or non-ASCII secret key."""
+    meeting_secret_key = db.session.scalars(
+        db.select(MeetingSecretKey).where(MeetingSecretKey.meeting_id == meeting.id)
+    ).first()
+    meeting_secret_key.legacy_secret_keys = ["old-hash"]
+    db.session.commit()
+
+    assert get_role(meeting, secret_key) is None
+    assert get_role(get_quick_meeting_from_meeting_id(), secret_key) is None
 
 
 def test_url_for_role_returns_none_without_secret_key(client_app, meeting):

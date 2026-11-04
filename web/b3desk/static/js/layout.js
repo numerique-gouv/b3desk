@@ -1,9 +1,13 @@
 function generatePassWord(n){
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < n; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const limit = 256 - (256 % characters.length);
+    const byte = new Uint8Array(1);
+    let result = '';
+    while (result.length < n) {
+        crypto.getRandomValues(byte);
+        if (byte[0] < limit) {
+            result += characters[byte[0] % characters.length];
+        }
     }
     return result;
 }
