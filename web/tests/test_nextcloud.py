@@ -1,8 +1,10 @@
 import shutil
 from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 import httpx2
+import pytest
 from b3desk import cache
 from b3desk.models import db
 from b3desk.models.meetings import MeetingFiles
@@ -19,6 +21,8 @@ from b3desk.nextcloud import user_auth_breaker
 from webdav3.exceptions import NoConnection
 from webdav3.exceptions import ResponseErrorCode
 from webdav3.exceptions import WebDavException
+
+FROZEN_TIME = pytest.mark.time_machine(datetime(2025, 1, 1), tick=False)
 
 
 def test_check_connection_success(client_app, user, mocker):
@@ -167,6 +171,7 @@ def test_is_auth_error_rejects_other_exceptions(client_app):
     assert is_auth_error(error) is False
 
 
+@FROZEN_TIME
 def test_user_auth_backoff_cycle(app, client_app, user):
     """User auth backoff marks user as blocked then clears."""
     db.session.add(user)
@@ -181,6 +186,7 @@ def test_user_auth_backoff_cycle(app, client_app, user):
     assert user_auth_breaker.is_blocked(user.id) is False
 
 
+@FROZEN_TIME
 def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker):
     """Connection check returns False immediately when user is blocked."""
     user.nc_login = "alice"
@@ -199,6 +205,7 @@ def test_check_connection_skips_when_user_auth_blocked(client_app, user, mocker)
     list_mock.assert_not_called()
 
 
+@FROZEN_TIME
 def test_check_connection_marks_user_on_auth_error_after_retry(
     app, client_app, user, mocker
 ):
@@ -222,6 +229,7 @@ def test_check_connection_marks_user_on_auth_error_after_retry(
         assert cache.get(f"nc_auth_failed:{user.id}") is not None
 
 
+@FROZEN_TIME
 def test_check_connection_clears_backoff_on_success(app, client_app, user, mocker):
     """Connection check clears user auth backoff on success."""
     user.nc_login = "alice"
@@ -244,6 +252,7 @@ def test_check_connection_clears_backoff_on_success(app, client_app, user, mocke
         assert cache.get(f"nc_auth_failed:{user.id}") is None
 
 
+@FROZEN_TIME
 def test_update_credentials_marks_blocked_on_failure(app, client_app, user, mocker):
     """Credentials fetch failure marks user in backoff."""
     user.nc_login = None
@@ -288,6 +297,7 @@ def test_update_credentials_does_not_log_token_on_failure(
     assert "token123" not in caplog.text
 
 
+@FROZEN_TIME
 def test_update_credentials_skips_when_blocked(app, client_app, user, mocker):
     """Credentials fetch is skipped when user is in backoff."""
     user.nc_login = None
@@ -426,6 +436,7 @@ def test_webdav_error_handler_html_branch(
     )
 
 
+@FROZEN_TIME
 def test_is_nextcloud_available_when_nextcloud_breaker_blocked(client_app, user):
     """is_nextcloud_available returns False when nextcloud breaker is blocked."""
     user.nc_login = "alice"
