@@ -1351,7 +1351,6 @@ def test_delete_old_voiceBridges_with_form(
     mock_meeting_is_not_running,
     bbb_response,
     user,
-    iam_token,
     iam_server,
     iam_user,
 ):
@@ -1375,20 +1374,14 @@ def test_delete_old_voiceBridges_with_form(
     time_machine.move_to(one_year_after)
 
     with client_app.session_transaction() as session:
-        session["access_token"] = iam_token.access_token
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "default"
         session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
+        session["last_authenticated"] = time.time()
         session["userinfo"] = {
             "email": "alice@domain.tld",
             "family_name": "Cooper",
             "given_name": "Alice",
             "preferred_username": "alice",
         }
-        session["refresh_token"] = ""
 
     iam_server.login(iam_user)
     iam_server.consent(iam_user)
