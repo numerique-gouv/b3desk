@@ -134,6 +134,20 @@ services:
         - 1025:1025
         - 8025:8025
 
+  canaille:
+      hostname: canaille.localhost
+      image: yaalcoop/canaille:0.3.6
+      command: ["run", "--bind", "0.0.0.0:8880"]
+      ports:
+        - 8880:8880
+      volumes:
+        - ./data:/data
+      environment:
+        - CANAILLE_BROKER_URL=redis://broker:6379
+        - AUTHLIB_INSECURE_TRANSPORT=1  # allow http issuer on canaille.localhost
+      depends_on:
+        - broker
+
 networks:
   # Shared with a standalone BigBlueButton container so web/worker keep reaching
   # it across `docker compose down`. Must be created once: `docker network create bbb-shared`.

@@ -457,12 +457,27 @@ def setup_oidc(app):
         ),
         auth_request_params={"scope": app.config["OIDC_ATTENDEE_SCOPES"]},
     )
+    admin_provider_configuration = ProviderConfiguration(
+        issuer=app.config["OIDC_ADMIN_ISSUER"],
+        userinfo_http_method=app.config["OIDC_ADMIN_USERINFO_HTTP_METHOD"],
+        client_metadata=ClientMetadata(
+            client_id=app.config["OIDC_ADMIN_CLIENT_ID"],
+            client_secret=app.config["OIDC_ADMIN_CLIENT_SECRET"],
+            token_endpoint_auth_method=app.config["OIDC_ADMIN_CLIENT_AUTH_METHOD"],
+            introspection_endpoint_auth_method=app.config[
+                "OIDC_ADMIN_INTROSPECTION_AUTH_METHOD"
+            ],
+            post_logout_redirect_uris=[logout_url],
+        ),
+        auth_request_params={"scope": app.config["OIDC_ADMIN_SCOPES"]},
+    )
 
     # This is a hack to be able to initialize flask-oidc in two steps
     # https://github.com/zamzterz/Flask-pyoidc/issues/171
     auth._provider_configurations = {
         "default": user_provider_configuration,
         "attendee": attendee_provider_configuration,
+        "admin": admin_provider_configuration,
     }
     try:
         auth.init_app(app)

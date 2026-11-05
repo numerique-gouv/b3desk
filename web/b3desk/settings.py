@@ -512,6 +512,41 @@ class MainSettings(BaseSettings):
         OIDC_ATTENDEE_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name"}'
     """
 
+    OIDC_ADMIN_ISSUER: str | None = None
+    """URL du serveur d’identité des admins.
+
+    Par exemple : https://auth.example.com
+    """
+
+    OIDC_ADMIN_USERINFO_HTTP_METHOD: str | None = None
+    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
+    d’entrée *UserInfo* du serveur d’identité des admins.
+
+    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
+    """
+
+    OIDC_ADMIN_CLIENT_ID: str | None = None
+    """ID du client auprès du serveur d’identité des admins."""
+
+    OIDC_ADMIN_CLIENT_SECRET: str | None = None
+    """Secret permettant d’identifier le client auprès du serveur d’identité
+    des admins."""
+
+    OIDC_ADMIN_CLIENT_AUTH_METHOD: str | None = "client_secret_post"
+    """Méthode de communication avec le point d’entrée ``token_endpoint`` du
+    serveur d’identité des admins."""
+
+    OIDC_ADMIN_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
+    """Méthode de communication avec le point d’entrée d’introspection
+    ``token_introspection`` du serveur d’identité des admins."""
+
+    OIDC_ADMIN_SCOPES: ListOfStrings | None = None
+    """Liste des scopes OpenID Connect pour lesquels une autorisation sera
+    demandée au serveur d’identité des admins, séparés par des virgules.
+
+    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
+    """
+
     SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
     Nextcloud est activée.
