@@ -1,11 +1,21 @@
+import json
+from pathlib import Path
+from typing import get_args
+
 import click
 import httpx2
 from flask import Blueprint
 from flask import current_app
+from flask_babel.speaklater import LazyString
+from pydantic import TypeAdapter
+from pydantic_settings import NoDecode
+from pydantic_settings_export import SettingsInfoModel
+from pydantic_settings_export.generators.dotenv import DotEnvGenerator
 
 from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
 from b3desk.models.users import User
+from b3desk.settings import MainSettings
 
 bp = Blueprint("commands", __name__, cli_group=None)
 
@@ -197,6 +207,10 @@ def user_to_admin(email):
         print(
             f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
         )
+        if not current_app.config["ENABLE_ADMIN_MANAGEMENT"]:
+            print(
+                "Admin management is disabled. Set ENABLE_ADMIN_MANAGEMENT=on to enable admin rights."
+            )
     except ValueError as e:
         print(f"User to Admin result: {e}")
 
@@ -212,3 +226,85 @@ def admin_to_user(email):
         )
     except ValueError as e:
         print(f"Admin to User result: {e}")
+
+
+def is_comma_separated(field_info):
+    """Tell whether a setting is read from a comma-separated string."""
+    return NoDecode in field_info.metadata or any(
+        NoDecode in getattr(arg, "__metadata__", ())
+        for arg in get_args(field_info.annotation)
+    )
+
+
+def dotenv_quote(value):
+    """Quote a string so that Docker Compose reads it back as is from an env_file."""
+    escaped = value.replace("'", "\\'")
+    return f"'{escaped}'"
+
+
+def dotenv_value(field_info, value):
+    """Format a setting value so that MainSettings can read it back from a dotenv file."""
+    if isinstance(value, LazyString):
+        value = str(value)
+    value = TypeAdapter(field_info.annotation).dump_python(value, mode="json")
+
+    if value is None:
+        return ""
+
+    if isinstance(value, bool | int | float):
+        return json.dumps(value)
+
+    if isinstance(value, list | dict):
+        if is_comma_separated(field_info):
+            value = ",".join(value)
+        else:
+            value = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+    return dotenv_quote(value)
+
+
+class RunningConfigDotEnvGenerator(DotEnvGenerator):
+    """Export the running settings, commenting the ones that were not set."""
+
+    name = "running-dotenv"
+
+    def __init__(self, fields_set):
+        super().__init__()
+        self.fields_set = fields_set
+
+    def _process_field(self, settings_info, field, *args):
+        field_info = MainSettings.model_fields[field.name]
+        is_set = field.name in self.fields_set
+        value = (
+            current_app.config[field.name]
+            if is_set
+            else field_info.get_default(call_default_factory=True)
+        )
+        line = f"{field.name}={dotenv_value(field_info, value)}"
+        if not is_set:
+            line = f"# {line}"
+        description = "".join(
+            f"# {doc_line}".rstrip() + "\n"
+            for doc_line in (field.description or "").splitlines()
+        )
+        return description + line + "\n"
+
+
+@bp.cli.command("config-dump")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default="web.env.dump",
+    show_default=True,
+    help="Path and name for the exported dotenv file.",
+)
+def config_dump(output):
+    """Export the running configuration to a dotenv file."""
+    fields_set = current_app.extensions["b3desk_settings_fields_set"]
+    generator = RunningConfigDotEnvGenerator(fields_set)
+    content = generator.generate(SettingsInfoModel.from_settings_model(MainSettings))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.touch(mode=0o600)
+    output.chmod(0o600)
+    output.write_text(content, encoding="utf-8")

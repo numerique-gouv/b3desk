@@ -8,6 +8,7 @@ import wsgiref
 from pathlib import Path
 
 import b3desk.utils
+import fakeredis
 import portpicker
 import psycopg
 import pytest
@@ -266,7 +267,9 @@ def iam_client(iam_server):
     iam_client = iam_server.models.Client(
         client_id="client_id",
         client_secret="client_secret",
-        redirect_uris=["http://b3desk.test/oidc_callback"],
+        redirect_uris=[
+            "http://b3desk.test/oidc_callback",
+        ],
         token_endpoint_auth_method="client_secret_post",
         post_logout_redirect_uris=["http://b3desk.test/logout"],
         grant_types=["authorization_code"],
@@ -311,12 +314,10 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "BIGBLUEBUTTON_ENDPOINT": "https://bbb.test",
         "BIGBLUEBUTTON_SECRET": "test-bbb-secret",
         "OIDC_ISSUER": iam_server.url,
-        "OIDC_REDIRECT_URI": iam_client.redirect_uris[0],
         "OIDC_CLIENT_ID": iam_client.client_id,
         "OIDC_CLIENT_SECRET": iam_client.client_secret,
         "OIDC_CLIENT_AUTH_METHOD": iam_client.token_endpoint_auth_method,
         "OIDC_SCOPES": iam_client.scope,
-        "OIDC_USERINFO_HTTP_METHOD": "GET",
         "SECONDARY_IDENTITY_PROVIDER_ENABLED": False,
         "UPLOAD_DIR": str(tmp_path),
         "TMP_DOWNLOAD_DIR": str(tmp_path),
@@ -332,6 +333,8 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         # Overwrite the web.env values for tests running in docker
         "STATS_URL": None,
         "CACHE_TYPE": "SimpleCache",
+        "SESSION_TYPE": "redis",
+        "SESSION_REDIS": fakeredis.FakeRedis(server=fakeredis.FakeServer()),
         # Disable cache in unit tests
         "CACHE_DEFAULT_TIMEOUT": 0,
         "BIGBLUEBUTTON_API_CACHE_DURATION": 0,
@@ -349,6 +352,7 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
         "ENABLE_AI_SUMMARY": True,
+        "ENABLE_ADMIN_MANAGEMENT": True,
     }
 
     if "smtpd" in request.fixturenames:
@@ -381,7 +385,11 @@ def app(configuration, jinja_cache_directory):
         Migrate(app, db, compare_type=True)
         db.create_all()
 
-    return app
+    yield app
+
+    with app.app_context():
+        for engine in db.engines.values():
+            engine.dispose()
 
 
 @pytest.fixture
@@ -727,22 +735,16 @@ def previous_voiceBridge(client_app):
 
 
 @pytest.fixture
-def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
+def authenticated_user(client_app, user, iam_server, iam_user):
     with client_app.session_transaction() as session:
-        session["access_token"] = iam_token.access_token
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "default"
         session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
+        session["last_authenticated"] = time.time()
         session["userinfo"] = {
             "email": "alice@domain.tld",
             "family_name": "Cooper",
             "given_name": "Alice",
             "preferred_username": "alice",
         }
-        session["refresh_token"] = ("",)
         session["visio_code_attempt_counter"] = 0
 
     iam_server.login(iam_user)
@@ -752,22 +754,16 @@ def authenticated_user(client_app, user, iam_token, iam_server, iam_user):
 
 
 @pytest.fixture
-def authenticated_user_2(client_app, user_2, iam_token, iam_server, iam_user_2):
+def authenticated_user_2(client_app, user_2, iam_server, iam_user_2):
     with client_app.session_transaction() as session:
-        session["access_token"] = iam_token.access_token
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "default"
         session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
+        session["last_authenticated"] = time.time()
         session["userinfo"] = {
             "email": "berenice@domain.tld",
             "family_name": "Cooler",
             "given_name": "Berenice",
             "preferred_username": "berenice",
         }
-        session["refresh_token"] = ""
 
     iam_server.login(iam_user_2)
     iam_server.consent(iam_user_2)
@@ -778,19 +774,11 @@ def authenticated_user_2(client_app, user_2, iam_token, iam_server, iam_user_2):
 @pytest.fixture
 def authenticated_attendee(client_app, user, mocker):
     with client_app.session_transaction() as session:
-        session["access_token"] = ""
-        session["access_token_expires_at"] = ""
-        session["current_provider"] = "attendee"
-        session["id_token"] = ""
-        session["id_token_jwt"] = ""
-        session["last_authenticated"] = "true"
-        session["last_session_refresh"] = time.time()
-        session["userinfo"] = {
+        session["attendee_userinfo"] = {
             "email": "bob@domain.tld",
             "family_name": "Dylan",
             "given_name": "Bob",
         }
-        session["refresh_token"] = ""
 
     yield user
 

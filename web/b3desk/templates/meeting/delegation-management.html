@@ -1,3 +1,4 @@
+{% from 'forms.html' import form_tag %}
 <div class="fr-container">
     <h1 class="fr-h2">
         {% trans meeting_name=meeting.name %}Délégation de la réunion <em>{{ meeting_name }}</em>{% endtrans %}
@@ -16,12 +17,10 @@
         {% endif %}
     </div>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
-    <form class="fr-search-bar" id="delegationSearchForm" name="search_by_email" role="search" action="{{ url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None) }}" method="post">
-        {% include 'meeting/csrf.html' %}
-        {{ form.search.label(class_="fr-label") }}
-        {{ form.search(class_="fr-input")  }}
-        <button title="{% trans %}Ajouter l'utilisateur comme délégataire{% endtrans %}" type="submit" class="fr-btn"></button>
-    </form>
+    {% call form_tag(form, class="fr-search-bar", id="delegationSearchForm", name="search_by_email", role="search", action=url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None), method="post") %}
+        {{ form.search() }}
+        {{ form.add_delegate(class_="fr-btn", title=_("Ajouter l'utilisateur comme délégataire")) }}
+    {% endcall %}
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="fr-table fr-table--no-caption" id="delegation-component">
@@ -41,10 +40,9 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                <form method="post" action="{{ url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None) }}">
-                                                    {% include 'meeting/csrf.html' %}
-                                                    <button type="submit" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Retirer le délégataire{% endtrans %}"></button>
-                                                </form>
+                                                {% call form_tag(confirm_form, method="post", action=url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None)) %}
+                                                    {{ confirm_form.confirm(label="", id=False, class_="fr-btn fr-btn--secondary fr-fi-delete-line", title=_("Retirer le délégataire")) }}
+                                                {% endcall %}
                                             </td>
                                             <td class="fr-col--xs fr-cell--center">
                                                 <button class="fr-btn fr-icon-share-forward-line fr-btn--delete" data-fr-opened="false" aria-controls="transfert-ownership-confirmation-{{ delegate.id }}" title="{% trans meeting_name=meeting.name %}Transférer {{ meeting_name }}{% endtrans %}"></button>

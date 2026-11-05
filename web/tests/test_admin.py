@@ -13,6 +13,8 @@ from b3desk.models.meetings import assign_unique_codes
 from b3desk.models.users import User
 from flask import url_for
 
+from tests.helpers import form_with_action
+
 
 def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_user):
     """Test admin can enter admin page."""
@@ -326,7 +328,8 @@ def test_admin_can_remove_member_from_group(
     """Test admin can remove member from group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    res = client_app.post("/admin/manage-group-members/1/1", status=302)
+    res = client_app.get("/admin/manage-group-members/1")
+    res = form_with_action(res, "/admin/manage-group-members/1/1").submit(status=302)
     assert ("success", "L'utilisateur a été retiré du groupe") in res.flashes
     assert "alice@domain.tld member removed from group 1 Group 1" in caplog.text
 
@@ -408,7 +411,8 @@ def test_admin_can_remove_group(
 ):
     """Test admin can remove group."""
     cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/confirm-delete-group/1", status=302)
+    res = client_app.get("/admin/delete-group/1")
+    res = form_with_action(res, "/admin/confirm-delete-group/1").submit(status=302)
     assert ("success", "Le groupe a été supprimé") in res.flashes
     assert "Groupe 1 Group 1 deleted" in caplog.text
     groups = db.session.scalars(db.select(Group)).all()
@@ -665,3 +669,110 @@ def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
         status=302,
     )
     assert ("warning", "Vous ne pouvez pas modifier cet élément") in res.flashes
+
+
+def test_admin_cannot_enter_admin_page_with_admin_management_disabled(
+    user, client_app, authenticated_user
+):
+    """Test admin cannot enter admin page when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    res = client_app.get("/home").follow()
+    assert url_for("admin.home") not in res.text
+    client_app.get("/admin/home", status=403)
+
+
+def test_admin_cannot_edit_meeting_for_other_user_with_admin_management_disabled(
+    user, user_2, meeting_2_user_2, client_app, authenticated_user
+):
+    """Test admin cannot edit other user meeting when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    client_app.get(f"/meeting/edit/{meeting_2_user_2.id}?admin_mode=True", status=403)
+
+
+def test_admin_cannot_delete_meeting_for_other_user_with_admin_management_disabled(
+    user, user_2, meeting_2_user_2, client_app, authenticated_user
+):
+    """Test admin cannot delete other user meeting when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    client_app.post(f"/meeting/{meeting_2_user_2.id}/delete", status=403)
+    assert db.session.get(Meeting, meeting_2_user_2.id)
+
+
+def test_admin_cannot_delete_meeting_file_with_admin_management_disabled(
+    user, client_app, authenticated_user
+):
+    """Test admin cannot delete other user meeting file when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    other_user = User(email="other@example.com")
+    db.session.add(other_user)
+    db.session.flush()
+
+    other_meeting = Meeting(name="Other meeting", owner=other_user)
+    db.session.add(other_meeting)
+    assign_unique_codes(other_meeting)
+    db.session.commit()
+
+    meeting_file = MeetingFiles(
+        url="https://example.com/doc.pdf",
+        title="doc.pdf",
+        created_at=date.today(),
+        meeting_id=other_meeting.id,
+        owner=other_user,
+    )
+    db.session.add(meeting_file)
+    db.session.commit()
+
+    client_app.post(
+        url_for("meeting_files.delete_meeting_file"),
+        params=json.dumps({"id": meeting_file.id}),
+        headers={"Content-Type": "application/json"},
+        status=403,
+    )
+    assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 1
+
+
+def test_delegate_admin_cannot_delete_meeting_with_admin_management_disabled(
+    user, meeting_1_user_2, client_app, authenticated_user, bbb_response
+):
+    """Test delegate admin cannot delete meeting when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    res = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
+    assert ("error", "Vous ne pouvez pas supprimer cet élément") in res.flashes
+    assert db.session.get(Meeting, meeting_1_user_2.id)
+
+
+def test_admin_cannot_transfer_meeting_ownership_with_admin_management_disabled(
+    user, user_2, meeting_2_user_2, client_app, authenticated_user
+):
+    """Test admin cannot transfer other user meeting when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    client_app.post(
+        f"/meeting/transfert-meeting-ownership/{meeting_2_user_2.id}/{user.id}",
+        status=403,
+    )
+    assert meeting_2_user_2.owner is user_2
+
+
+def test_admin_mode_parameter_is_ignored_with_admin_management_disabled(
+    user, meeting, client_app, authenticated_user
+):
+    """Test the admin_mode parameter has no effect when admin management is disabled."""
+    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    user.admin = True
+    db.session.commit()
+    res = client_app.get(
+        url_for("meeting_files.edit_meeting_files", meeting=meeting, admin_mode=True)
+    )
+    assert url_for("public.welcome") in res.text
+    assert url_for("admin.meeting_infos", meeting=meeting) not in res.text

@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'forms.html' import form_tag %}
 
 {% block main %}
     {% if meeting_name %}
@@ -7,23 +8,20 @@
         <h1 class="fr-h2">{% trans %}Rejoindre la réunion{% endtrans %}</h1>
     {% endif %}
 
-    <form id="joinMeetingForm" action="{{ url_for("join.join_meeting") }}" method="POST">
-        {% include 'meeting/csrf.html' %}
-        <input type="hidden" id="meetingID" name="meeting_id" value="{{ meeting_id }}" />
-        <input type="hidden" id="secret_key" name="secret_key" value="{{ secret_key }}" />
+    {% call form_tag(form, id="joinMeetingForm", action=url_for("join.join_meeting"), method="POST") %}
+        {{ form.meeting_id() }}
+        {{ form.secret_key() }}
 
-        <div class="fr-input-group">
+        <div>
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col">
-                    <label for="fullname" class="fr-label" aria-describedby="text-input-desc">{% trans %}Votre nom{% endtrans %}</label>
-                    <p class="fr-hint-text" id="text-input-desc">{% trans %}Vous pouvez également préciser votre service ou votre fonction.{% endtrans %}</p>
-                    <input type="text" required class="fr-input" id="fullname" name="fullname" {% if g.user %}value="{{ g.user.fullname }}"{% endif %} />
+                    {{ form.fullname() }}
                 </div>
             </div>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col">
-                    <button type="submit" class="fr-btn fr-btn-primary" >{% trans %}Rejoindre{% endtrans %}</button>
+                    {{ form.join(class_="fr-btn fr-btn-primary") }}
                 </div>
             </div>
 
@@ -38,6 +36,6 @@
                 </div>
             {% endif %}
         </div>
-    </form>
+    {% endcall %}
 
 {% endblock %}

@@ -3,6 +3,7 @@ from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import MeetingAccess
 from b3desk.models.meetings import MeetingSecretKey
 from b3desk.models.roles import Role
+from tests.helpers import form_with_action
 
 
 def test_owner_can_transfer_ownership_to_delegate(
@@ -16,7 +17,8 @@ def test_owner_can_transfer_ownership_to_delegate(
     )
     db.session.add(new_access)
     db.session.commit()
-    client_app.post("/meeting/transfert-meeting-ownership/1/2", status=302)
+    res = client_app.get(f"/meeting/manage-delegation/{meeting.id}")
+    form_with_action(res, "/meeting/transfert-meeting-ownership/1/2").submit(status=302)
     assert meeting.owner is user_2
     assert user in meeting.get_all_delegates
     assert len(smtpd.messages) == 2
