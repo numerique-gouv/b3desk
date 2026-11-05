@@ -675,7 +675,7 @@ def test_admin_cannot_enter_admin_page_with_admin_management_disabled(
     user, client_app, authenticated_user
 ):
     """Test admin cannot enter admin page when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     res = client_app.get("/home").follow()
@@ -687,7 +687,7 @@ def test_admin_cannot_edit_meeting_for_other_user_with_admin_management_disabled
     user, user_2, meeting_2_user_2, client_app, authenticated_user
 ):
     """Test admin cannot edit other user meeting when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     client_app.get(f"/meeting/edit/{meeting_2_user_2.id}?admin_mode=True", status=403)
@@ -697,7 +697,7 @@ def test_admin_cannot_delete_meeting_for_other_user_with_admin_management_disabl
     user, user_2, meeting_2_user_2, client_app, authenticated_user
 ):
     """Test admin cannot delete other user meeting when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     client_app.post(f"/meeting/{meeting_2_user_2.id}/delete", status=403)
@@ -708,7 +708,7 @@ def test_admin_cannot_delete_meeting_file_with_admin_management_disabled(
     user, client_app, authenticated_user
 ):
     """Test admin cannot delete other user meeting file when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     other_user = User(email="other@example.com")
     db.session.add(other_user)
@@ -742,7 +742,7 @@ def test_delegate_admin_cannot_delete_meeting_with_admin_management_disabled(
     user, meeting_1_user_2, client_app, authenticated_user, bbb_response
 ):
     """Test delegate admin cannot delete meeting when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     res = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
@@ -754,7 +754,7 @@ def test_admin_cannot_transfer_meeting_ownership_with_admin_management_disabled(
     user, user_2, meeting_2_user_2, client_app, authenticated_user
 ):
     """Test admin cannot transfer other user meeting when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     client_app.post(
@@ -768,7 +768,7 @@ def test_admin_mode_parameter_is_ignored_with_admin_management_disabled(
     user, meeting, client_app, authenticated_user
 ):
     """Test the admin_mode parameter has no effect when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     user.admin = True
     db.session.commit()
     res = client_app.get(

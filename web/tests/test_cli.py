@@ -227,7 +227,7 @@ def test_config_dump_comments_empty_attendee_settings(
 
 def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):
     """Test CLI user-to-admin grants admin rights when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
     res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     assert res.exit_code == 0
     assert "Admin management is disabled." in res.output

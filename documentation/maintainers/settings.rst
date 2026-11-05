@@ -145,7 +145,7 @@ Gestion des administrateurs
 ===========================
 
 Le backoffice est désactivé par défaut.
-Pour l’activer, définissez ``ENABLE_ADMIN_MANAGEMENT=on``.
+Pour l’activer, définissez ``OIDC_ADMIN_ENABLED=on``.
 Tant qu’il est désactivé, les administrateurs ont les mêmes droits que les autres utilisateurs.
 Vous pouvez donner ou retirer les droits admin dans les deux cas.
 

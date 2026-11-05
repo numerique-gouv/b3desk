@@ -522,17 +522,17 @@ class MainSettings(BaseSettings):
         OIDC_ATTENDEE_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name"}'
     """
 
+    # Admin OIDC Configuration
+    OIDC_ADMIN_ENABLED: bool | None = False
+    """Enable the admin backoffice.
+
+    When on, admin can login.
+    """
+
     OIDC_ADMIN_ISSUER: str | None = None
     """URL du serveur d’identité des admins.
 
     Par exemple : https://auth.example.com
-    """
-
-    OIDC_ADMIN_USERINFO_HTTP_METHOD: str | None = None
-    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
-    d’entrée *UserInfo* du serveur d’identité des admins.
-
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
     OIDC_ADMIN_CLIENT_ID: str | None = None
@@ -545,10 +545,6 @@ class MainSettings(BaseSettings):
     OIDC_ADMIN_CLIENT_AUTH_METHOD: str | None = "client_secret_post"
     """Méthode de communication avec le point d’entrée ``token_endpoint`` du
     serveur d’identité des admins."""
-
-    OIDC_ADMIN_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
-    """Méthode de communication avec le point d’entrée d’introspection
-    ``token_introspection`` du serveur d’identité des admins."""
 
     OIDC_ADMIN_SCOPES: ListOfStrings | None = None
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
@@ -1028,12 +1024,4 @@ class MainSettings(BaseSettings):
     """Enable AI summary
 
     Allow AI summary generation on records
-    """
-
-    ENABLE_ADMIN_MANAGEMENT: bool | None = False
-    """Enable the admin backoffice.
-
-    When off, admin users have the same rights as other users.
-    They cannot open the admin pages.
-    They cannot access or delete meetings they do not own.
     """

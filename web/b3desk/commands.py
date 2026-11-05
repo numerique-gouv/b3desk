@@ -207,9 +207,9 @@ def user_to_admin(email):
         print(
             f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
         )
-        if not current_app.config["ENABLE_ADMIN_MANAGEMENT"]:
+        if not current_app.config["OIDC_ADMIN_ENABLED"]:
             print(
-                "Admin management is disabled. Set ENABLE_ADMIN_MANAGEMENT=on to enable admin rights."
+                "Admin management is disabled. Set OIDC_ADMIN_ENABLED=on to enable admin rights."
             )
     except ValueError as e:
         print(f"User to Admin result: {e}")

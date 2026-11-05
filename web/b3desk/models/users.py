@@ -136,7 +136,7 @@ class User(db.Model):
     @property
     def has_admin_rights(self):
         """Check if user is admin and admin management is enabled."""
-        return bool(self.admin and current_app.config["ENABLE_ADMIN_MANAGEMENT"])
+        return bool(self.admin and current_app.config["OIDC_ADMIN_ENABLED"])
 
     @property
     def has_nc_credentials(self):
