@@ -74,7 +74,6 @@ def generate_users(faker, count, admin_ratio=ADMIN_RATIO):
                 last_connection_utc_datetime=faker.date_time_between(
                     start_date=created_at
                 ),
-                admin=random.random() < admin_ratio,
             )
         )
     db.session.add_all(users)
@@ -181,7 +180,6 @@ def populate(n_users, n_meetings, locale=DEFAULT_LOCALE, seed=None):
     groups = generate_groups(faker, users) if users else []
     return {
         "users": len(users),
-        "admins": sum(user.admin for user in users),
         "meetings": len(meetings),
         "delegations": delegations,
         "favorites": favorites,
