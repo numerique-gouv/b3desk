@@ -25,11 +25,19 @@ def store_attendee_userinfo(userinfo):
     session["last_authenticated"] = time.time()
 
 
+def store_admin_userinfo(userinfo):
+    """Add the admin userinfo in session."""
+    session.permanent = True
+    session["admin_userinfo"] = userinfo
+    session["last_authenticated"] = time.time()
+
+
 def clear_userinfo():
     """Remove the organizer and attendee identities from session, logging out the current user locally."""
     session.pop("userinfo", None)
     session.pop("id_token", None)
     session.pop("attendee_userinfo", None)
+    session.pop("admin_userinfo", None)
     session.pop("last_authenticated", None)
     permanent = current_app.config["SESSION_PERMANENT"]
     if session.permanent != permanent:
