@@ -523,12 +523,6 @@ class MainSettings(BaseSettings):
     """
 
     # Admin OIDC Configuration
-    OIDC_ADMIN_ENABLED: bool | None = False
-    """Enable the admin backoffice.
-
-    When on, admin can login.
-    """
-
     OIDC_ADMIN_ISSUER: str | None = None
     """URL du serveur d’identité des admins.
 
@@ -552,6 +546,25 @@ class MainSettings(BaseSettings):
 
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
+
+    OIDC_ADMIN_ENABLED: bool | None = False
+    """Enable the admin backoffice.
+
+    When on, admin can login.
+    """
+
+    @field_validator("OIDC_ADMIN_ENABLED", mode="after")
+    def oidc_admin_issuer_required(
+        cls,
+        oidc_admin_enabled: bool | None,
+        info: ValidationInfo,
+    ) -> bool:
+        """Validate that OIDC_ADMIN_ISSUER is set when ADMIN is enabled."""
+        if oidc_admin_enabled and not info.data["OIDC_ADMIN_ISSUER"]:
+            raise ValueError(
+                "OIDC_ADMIN_ISSUER configuration required when enabling ADMIN"
+            )
+        return oidc_admin_enabled
 
     SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
