@@ -547,6 +547,10 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
+    OIDC_ADMIN_GROUP: str = "admin"
+    """Nom du groupe d'administration
+    Les comptes appartenant à ce groupe auront les droits d'administration."""
+
     OIDC_ADMIN_ENABLED: bool | None = False
     """Enable the admin backoffice.
 

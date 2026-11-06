@@ -314,27 +314,27 @@ msgstr ""
 msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
 msgstr ""
 
-#: web/b3desk/settings.py:705 web/b3desk/templates/meeting/list.html:5
+#: web/b3desk/settings.py:709 web/b3desk/templates/meeting/list.html:5
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:709
+#: web/b3desk/settings.py:713
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:722
+#: web/b3desk/settings.py:726
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:725
+#: web/b3desk/settings.py:729
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:728
+#: web/b3desk/settings.py:732
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:732
+#: web/b3desk/settings.py:736
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"

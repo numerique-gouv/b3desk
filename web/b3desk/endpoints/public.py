@@ -178,7 +178,7 @@ def admin_callback():
         current_app.logger.warning("Admin OIDC provider error: %s", exc)
         flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
         return redirect(url_for("public.index"))
-    if "admin" in userinfo["groups"]:
+    if current_app.config["OIDC_ADMIN_GROUP"] in userinfo["groups"]:
         store_admin_userinfo(userinfo)
         flash(_("Vous êtes connecté en tant qu'administrateur."), "success")
         current_app.logger.info(

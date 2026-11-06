@@ -97,7 +97,10 @@ def admin_needed(view_function):
         if not current_app.config["OIDC_ADMIN_ENABLED"]:
             abort(403)
         admin_info = session.get("admin_userinfo", {})
-        if "admin" not in admin_info["groups"]:
+        if (
+            not admin_info
+            or current_app.config["OIDC_ADMIN_GROUP"] not in admin_info["groups"]
+        ):
             abort(403)
         return view_function(*args, **kwargs)
 
