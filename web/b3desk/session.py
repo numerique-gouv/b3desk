@@ -94,9 +94,11 @@ def admin_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not g.user or not g.user.has_admin_rights:
+        if not current_app.config["OIDC_ADMIN_ENABLED"]:
             abort(403)
-
+        admin_info = session.get("admin_userinfo", {})
+        if "admin" not in admin_info["groups"]:
+            abort(403)
         return view_function(*args, **kwargs)
 
     return decorator
