@@ -94,22 +94,26 @@ def admin_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not current_app.config["OIDC_ADMIN_ENABLED"]:
-            abort(403)
-        admin_info = session.get("admin_userinfo", {})
-        if (
-            not admin_info
-            or current_app.config["OIDC_ADMIN_GROUP"] not in admin_info["groups"]
-        ):
+        if not admin_logged():
             abort(403)
         return view_function(*args, **kwargs)
 
     return decorator
 
 
+def admin_logged():
+    admin_userinfo = session.get("admin_userinfo")
+    return bool(
+        current_app.config["OIDC_ADMIN_ENABLED"]
+        and admin_userinfo
+        and admin_userinfo["groups"]
+        and current_app.config["OIDC_ADMIN_GROUP"] in admin_userinfo["groups"]
+    )
+
+
 def is_admin_mode():
     """Whether admin mode is requested by an actual admin (display hint, not access control)."""
-    return "admin_mode" in request.args and bool(g.user) and g.user.has_admin_rights
+    return "admin_mode" in request.args and admin_logged()
 
 
 def user_needed(view_function):
