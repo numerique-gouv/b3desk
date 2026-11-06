@@ -605,7 +605,7 @@ msgstr ""
 #: web/b3desk/templates/brand.html:17 web/b3desk/templates/brand.html:19
 #: web/b3desk/templates/header-lasuite.html:35
 #: web/b3desk/templates/header-lasuite.html:37
-#: web/b3desk/templates/tools.html:42 web/b3desk/templates/tools.html:44
+#: web/b3desk/templates/tools.html:35 web/b3desk/templates/tools.html:37
 msgid "Les services de La Suite numérique"
 msgstr ""
 
@@ -968,19 +968,11 @@ msgstr ""
 msgid "Modalités d'accès"
 msgstr ""
 
-#: web/b3desk/templates/tools.html:24
-msgid "Ouvrir la page d'administration"
-msgstr ""
-
-#: web/b3desk/templates/tools.html:25
-msgid "Admin"
-msgstr ""
-
-#: web/b3desk/templates/tools.html:33
+#: web/b3desk/templates/tools.html:26
 msgid "se déconnecter"
 msgstr ""
 
-#: web/b3desk/templates/meeting/join.html:33 web/b3desk/templates/tools.html:52
+#: web/b3desk/templates/meeting/join.html:33 web/b3desk/templates/tools.html:45
 msgid "S’identifier"
 msgstr ""
 
