@@ -29,6 +29,7 @@ from ..session import has_user_session
 from ..session import is_local_url
 from ..session import login_required
 from ..session import should_display_captcha
+from ..session import store_admin_userinfo
 from ..session import store_attendee_userinfo
 from ..session import store_userinfo
 from ..templates.content import FAQ_CONTENT
@@ -100,12 +101,25 @@ def login():
     return redirect_to_provider(oauth.default, "public.home")
 
 
+@bp.route("/admin/login")
+def admin_login():
+    next_url = request.args.get("next", "")
+    session["login_next_url"] = (
+        next_url if is_local_url(next_url) else url_for("public.welcome")
+    )
+    return redirect_to_provider(oauth.admin, "public.home")
+
+
 @bp.route("/oidc_callback")
 def oidc_callback():
     """Complete the OIDC authentication of an organizer or an attendee."""
     state = request.args.get("state")
     if oauth.attendee.framework.get_state_data(session, state):
         return attendee_callback()
+    if current_app.config["OIDC_ADMIN_ISSUER"] and oauth.admin.framework.get_state_data(
+        session, state
+    ):
+        return admin_callback()
     return organizer_callback()
 
 
@@ -150,6 +164,35 @@ def attendee_callback():
     return redirect(
         url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
     )
+
+
+def admin_callback():
+    try:
+        token = oauth.admin.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.admin, token)
+    except OAuthError as exc:
+        current_app.logger.warning("Admin OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.index"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("Admin OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.index"))
+    if "admin" in userinfo["groups"]:
+        store_admin_userinfo(userinfo)
+        flash(_("Vous êtes connecté en tant qu'administrateur."), "success")
+        current_app.logger.info(
+            "Admin %s, %s logged", userinfo["email"], userinfo["name"]
+        )
+    else:
+        current_app.logger.warning(
+            "Admin connection aborted: %s, %s is not admin",
+            userinfo["email"],
+            userinfo["name"],
+        )
+        flash(_("Vous n'avez pas les droits administrateur."), "error")
+        return redirect(url_for("public.index"))
+    return redirect(url_for("admin.home"))
 
 
 @bp.route("/home")
