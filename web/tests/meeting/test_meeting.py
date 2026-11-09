@@ -209,11 +209,11 @@ def test_save_existing_meeting_display_options(
 ):
     """Test that the BBB display options are read from the form and persisted."""
     assert meeting.showPresentationOnJoin is True
-    assert meeting.showSessionDetailsOnJoin is True
+    assert meeting.showSessionDetailsOnJoin is False
 
     res = client_app.get(f"/meeting/edit/{meeting.id}")
     res.forms[0]["showPresentationOnJoin"] = False
-    res.forms[0]["showSessionDetailsOnJoin"] = False
+    res.forms[0]["showSessionDetailsOnJoin"] = True
     res = res.forms[0].submit()
     assert ("success", "meeting modifications prises en compte") in res.flashes
 
@@ -221,7 +221,7 @@ def test_save_existing_meeting_display_options(
     assert meeting.showPresentationOnJoin is False
     assert meeting.showParticipantsOnLogin is True
     assert meeting.showPublicChatOnLogin is True
-    assert meeting.showSessionDetailsOnJoin is False
+    assert meeting.showSessionDetailsOnJoin is True
 
 
 def test_edit_meeting_moderatorPW_change_renews_moderator_secret_key(

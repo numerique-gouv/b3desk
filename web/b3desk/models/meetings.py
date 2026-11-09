@@ -198,7 +198,7 @@ class Meeting(db.Model):
     showPresentationOnJoin: Mapped[bool] = mapped_column(default=True)
     showParticipantsOnLogin: Mapped[bool] = mapped_column(default=True)
     showPublicChatOnLogin: Mapped[bool] = mapped_column(default=True)
-    showSessionDetailsOnJoin: Mapped[bool] = mapped_column(default=True)
+    showSessionDetailsOnJoin: Mapped[bool] = mapped_column(default=False)
     ai_summary: Mapped[bool] = mapped_column(default=False)
     guestPolicy: Mapped[bool | None] = mapped_column(default=True)
     logo: Mapped[str | None] = mapped_column(Unicode(200))
