@@ -61,7 +61,7 @@ def populate(n_users, n_meetings, seed):
 
     summary = populate_database(n_users=n_users, n_meetings=n_meetings, seed=seed)
     click.echo(
-        "Created {users} users ({admins} admins), {meetings} meetings, "
+        "Created {users} users, {meetings} meetings, "
         "{delegations} delegations, {favorites} favorites and {groups} groups.".format(
             **summary
         )
