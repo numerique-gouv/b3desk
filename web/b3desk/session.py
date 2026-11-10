@@ -105,10 +105,19 @@ def admin_needed(view_function):
 
 
 def admin_logged():
+    """Check if admin has an authenticated session available."""
     admin_userinfo = session.get("admin_userinfo")
+    last_authenticated = session.get("last_authenticated")
+    if not admin_userinfo:
+        return False
+    if (
+        current_app.config["OIDC_ADMIN_SESSION_LIFETIME"] + last_authenticated
+        < time.time()
+    ):
+        clear_userinfo()
+        return False
     return bool(
         current_app.config["OIDC_ADMIN_ENABLED"]
-        and admin_userinfo
         and admin_userinfo["groups"]
         and current_app.config["OIDC_ADMIN_GROUP"] in admin_userinfo["groups"]
     )

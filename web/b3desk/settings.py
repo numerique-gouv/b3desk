@@ -557,6 +557,11 @@ class MainSettings(BaseSettings):
     When on, admin can login.
     """
 
+    OIDC_ADMIN_SESSION_LIFETIME: int = 3600
+    """Durée de vie de la session admin en secondes. Elle court à partir de la
+    connexion et n'est pas prolongée par l'activité.
+    """
+
     @field_validator("OIDC_ADMIN_ENABLED", mode="after")
     def oidc_admin_issuer_required(
         cls,
