@@ -1,4 +1,4 @@
-{% if not admin_mode %}
+{% if not admin_logged %}
     <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
 {% else %}
     <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">

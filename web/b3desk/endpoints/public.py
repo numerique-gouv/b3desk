@@ -25,6 +25,7 @@ from .. import cache
 from .. import oauth
 from ..oidc import fetch_userinfo
 from ..session import clear_userinfo
+from ..session import has_admin_session
 from ..session import has_user_session
 from ..session import is_local_url
 from ..session import login_required
@@ -70,6 +71,8 @@ def index():
     """Redirect to welcome page if authenticated, otherwise to home page."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
+    if has_admin_session():
+        return redirect(url_for("admin.home"))
     return redirect(url_for("public.home"))
 
 
@@ -103,10 +106,9 @@ def login():
 
 @bp.route("/admin/login")
 def admin_login():
-    next_url = request.args.get("next", "")
-    session["login_next_url"] = (
-        next_url if is_local_url(next_url) else url_for("public.welcome")
-    )
+    """Redirect to the admin identity provider."""
+    if not current_app.config["OIDC_ADMIN_ENABLED"]:
+        abort(404)
     return redirect_to_provider(oauth.admin, "public.home")
 
 
@@ -202,6 +204,9 @@ def home():
     if has_user_session():
         return redirect(url_for("public.welcome"))
 
+    if has_admin_session():
+        return redirect(url_for("admin.home"))
+
     stats = get_meetings_stats()
     return render_template(
         "index.html",
@@ -267,7 +272,6 @@ def welcome():
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
         confirm_form=ConfirmForm(),
-        admin_mode=False,
     )
 
 

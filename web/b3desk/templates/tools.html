@@ -38,6 +38,15 @@
                         </button>
                     </li>
                 {% endif %}
+            {% elif admin_logged %}
+                <li>
+                    <a class="fr-btn" href="{{ url_for("public.logout") }}">
+                        <div>
+                            <span aria-hidden="true" class="ri-account-circle-line fr-mr-1w"></span>{{ session.get("admin_userinfo")["name"] }}
+                            <br><small>{% trans %}se déconnecter{% endtrans %}</small>
+                        </div>
+                    </a>
+                </li>
             {% else %}
                 <li>
                     <a class="fr-btn" href="{{ url_for("public.welcome") }}">

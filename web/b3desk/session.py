@@ -57,6 +57,11 @@ def has_attendee_session():
     return "attendee_userinfo" in session
 
 
+def has_admin_session():
+    """Check if an admin has an active authenticated session."""
+    return "admin_userinfo" in session
+
+
 def is_local_url(url):
     """Check that the URL is a path on this site, and not an external URL."""
     return (
@@ -67,14 +72,18 @@ def is_local_url(url):
     )
 
 
+def go_to_user_login_page():
+    next_url = request.full_path if request.query_string else request.path
+    return redirect(url_for("public.login", next=next_url))
+
+
 def login_required(view_function):
     """Require that the user is authenticated, redirecting to login otherwise."""
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
         if not has_user_session():
-            next_url = request.full_path if request.query_string else request.path
-            return redirect(url_for("public.login", next=next_url))
+            return go_to_user_login_page()
 
         return view_function(*args, **kwargs)
 
@@ -123,9 +132,11 @@ def admin_logged():
     )
 
 
-def is_admin_mode():
-    """Whether admin mode is requested by an actual admin (display hint, not access control)."""
-    return "admin_mode" in request.args and admin_logged()
+def get_current_email():
+    """Return the email of the logged user, or of the logged admin."""
+    if g.user:
+        return g.user.email
+    return session["admin_userinfo"]["email"]
 
 
 def user_needed(view_function):
@@ -142,7 +153,7 @@ def user_needed(view_function):
 
 
 def meeting_access_required(level=None):
-    """Require that the user owns the meeting or has at least the given access level."""
+    """Require that an admin is logged, or that the user owns the meeting or has at least the given access level."""
     from b3desk.models import db
     from b3desk.models.meetings import Meeting
     from b3desk.models.meetings import MeetingAccess
@@ -150,12 +161,16 @@ def meeting_access_required(level=None):
     def wrapper(view_function):
         @wraps(view_function)
         def decorator(*args, meeting, **kwargs):
-            if not g.user:
-                abort(403)
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user or g.user.has_admin_rights:
+            if admin_logged():
+                return view_function(*args, user=None, meeting=meeting, **kwargs)
+
+            if not g.user:
+                return go_to_user_login_page()
+
+            if meeting.owner == g.user:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

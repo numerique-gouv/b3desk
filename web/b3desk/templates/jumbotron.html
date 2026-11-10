@@ -1,4 +1,4 @@
-{% if g.user %}
+{% if admin_logged or g.user %}
     {% if stats is defined and stats %}
         <div class="fr-py-1w">
             <div class="fr-container">

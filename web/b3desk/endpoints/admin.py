@@ -135,7 +135,6 @@ def manage_users():
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/users.html",
-        admin_mode=True,
         users_page=users_page,
         form=form,
         data=data,
@@ -150,7 +149,6 @@ def user_infos(user: User):
     """Display user infos."""
     return render_template(
         "admin/user_infos.html",
-        admin_mode=True,
         user=user,
     )
 
@@ -164,7 +162,6 @@ def manage_meetings():
     meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/meetings.html",
-        admin_mode=True,
         meetings_page=meetings_page,
         form=form,
         data=data,
@@ -177,7 +174,6 @@ def meeting_infos(meeting: Meeting):
     """Display meeting infos of admin page."""
     return render_template(
         "admin/meeting_infos.html",
-        admin_mode=True,
         meeting=meeting,
         confirm_form=ConfirmForm(),
     )

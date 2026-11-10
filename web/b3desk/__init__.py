@@ -305,6 +305,8 @@ def setup_jinja(app):
 
     @app.context_processor
     def global_processor():
+        from b3desk.session import admin_logged
+
         locale = get_locale()
         return {
             "debug": app.debug,
@@ -321,6 +323,7 @@ def setup_jinja(app):
             "lang_url": lang_url,
             "language_name": language_name,
             "Role": Role,
+            "admin_logged": admin_logged(),
         }
 
 
