@@ -46,7 +46,7 @@ services:
 
   broker:
     container_name: broker
-    image: redis:6-alpine
+    image: redis:7.2-alpine
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
       start_period: 5s
