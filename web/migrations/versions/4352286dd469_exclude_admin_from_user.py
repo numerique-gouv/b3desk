@@ -22,5 +22,5 @@ def upgrade():
 def downgrade():
     with op.batch_alter_table("user", schema=None) as batch_op:
         batch_op.add_column(
-            sa.Column("admin", sa.BOOLEAN(), autoincrement=False, nullable=False)
+            sa.Column("admin", sa.Boolean(), nullable=False, server_default=sa.false())
         )
