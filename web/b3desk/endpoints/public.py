@@ -24,6 +24,7 @@ from b3desk.utils import http_client
 from .. import cache
 from .. import oauth
 from ..oidc import fetch_userinfo
+from ..session import admin_logged
 from ..session import clear_userinfo
 from ..session import has_admin_session
 from ..session import has_user_session
@@ -71,7 +72,7 @@ def index():
     """Redirect to welcome page if authenticated, otherwise to home page."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
-    if has_admin_session():
+    if admin_logged():
         return redirect(url_for("admin.home"))
     return redirect(url_for("public.home"))
 
@@ -204,7 +205,7 @@ def home():
     if has_user_session():
         return redirect(url_for("public.welcome"))
 
-    if has_admin_session():
+    if admin_logged():
         return redirect(url_for("admin.home"))
 
     stats = get_meetings_stats()
