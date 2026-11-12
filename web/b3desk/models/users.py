@@ -104,7 +104,6 @@ class User(db.Model):
     nc_last_auto_enroll: Mapped[datetime | None]
     last_connection_utc_datetime: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
-    admin: Mapped[bool] = mapped_column(default=False)
 
     meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
     favorites: Mapped[list[Meeting]] = relationship(
