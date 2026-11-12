@@ -13,6 +13,7 @@ from flask import url_for
 def store_userinfo(userinfo, id_token):
     """Add the organizer userinfo and id_token in session."""
     session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.permanent = True
     session["userinfo"] = userinfo
     session["id_token"] = id_token
@@ -22,16 +23,18 @@ def store_userinfo(userinfo, id_token):
 def store_attendee_userinfo(userinfo):
     """Add the attendee userinfo in session."""
     session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.permanent = True
     session["attendee_userinfo"] = userinfo
     session["last_authenticated"] = time.time()
 
 
-def store_admin_userinfo(userinfo):
-    """Add the admin userinfo in session."""
+def store_admin_userinfo(userinfo, id_token):
+    """Add the admin userinfo and id_token in session."""
     clear_userinfo()
     session.permanent = True
     session["admin_userinfo"] = userinfo
+    session["admin_id_token"] = id_token
     session["last_authenticated"] = time.time()
 
 
@@ -41,6 +44,7 @@ def clear_userinfo():
     session.pop("id_token", None)
     session.pop("attendee_userinfo", None)
     session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.pop("last_authenticated", None)
     permanent = current_app.config["SESSION_PERMANENT"]
     if session.permanent != permanent:

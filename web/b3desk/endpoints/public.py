@@ -181,7 +181,7 @@ def admin_callback():
         flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
         return redirect(url_for("public.index"))
     if current_app.config["OIDC_ADMIN_GROUP"] in userinfo["groups"]:
-        store_admin_userinfo(userinfo)
+        store_admin_userinfo(userinfo, token["id_token"])
         flash(_("Vous êtes connecté en tant qu'administrateur."), "success")
         current_app.logger.info(
             "Admin %s, %s logged", userinfo["email"], userinfo["name"]
@@ -327,14 +327,17 @@ def documentation():
 
 @bp.route("/logout")
 def logout():
-    """Log out the current user locally, and from the OIDC provider if it supports it."""
-    id_token = session.get("id_token")
+    """Log out the current user or admin locally, and from the OIDC provider if it supports it."""
+    if has_admin_session():
+        client, id_token = oauth.admin, session.get("admin_id_token")
+    else:
+        client, id_token = oauth.default, session.get("id_token")
     clear_userinfo()
     if not id_token:
         return redirect(url_for("public.index"))
 
     try:
-        metadata = oauth.default.load_server_metadata()
+        metadata = client.load_server_metadata()
     except requests.RequestException as exc:
         current_app.logger.warning("Could not reach the OIDC provider: %s", exc)
         return redirect(url_for("public.index"))
