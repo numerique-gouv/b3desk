@@ -59,9 +59,8 @@ def edit_meeting_files(meeting: Meeting, user: User):
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    files_owner = meeting.owner if admin_logged() else user
-    g.is_nextcloud_available = is_nextcloud_available(
-        files_owner, verify=True, retry_on_auth_error=True
+    g.is_nextcloud_available = not admin_logged() and is_nextcloud_available(
+        user, verify=True, retry_on_auth_error=True
     )
     db.session.commit()
 
@@ -85,16 +84,17 @@ def add_meeting_files(meeting: Meeting, user: User):
     if origin not in ("nextcloud", "URL", "upload") or not isinstance(value, str):
         return {"msg": "no file provided"}, 400
 
-    if origin == "nextcloud":
-        if admin_logged():
-            return {"msg": _("Requête invalide")}, 403
-        return add_meeting_file_nextcloud(value, meeting.id, user)
-
-    files_owner = meeting.owner if admin_logged() else user
     if origin == "URL":
+        files_owner = meeting.owner if admin_logged() else user
         return add_meeting_file_URL(value, meeting.id, files_owner)
 
-    return add_meeting_file_from_upload(secure_filename(value), meeting.id, files_owner)
+    if admin_logged():
+        return {"msg": _("Requête invalide")}, 403
+
+    if origin == "nextcloud":
+        return add_meeting_file_nextcloud(value, meeting.id, user)
+
+    return add_meeting_file_from_upload(secure_filename(value), meeting.id, user)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
@@ -298,9 +298,9 @@ def add_meeting_file_URL(url, meeting_id, owner):
     }
 
 
-def add_meeting_file_nextcloud(path, meeting_id, owner):
+def add_meeting_file_nextcloud(path, meeting_id, user):
     """Add a meeting file from a Nextcloud path."""
-    if (client := create_webdav_client(owner)) is None:
+    if (client := create_webdav_client(user)) is None:
         return {
             "msg": _(
                 "Le service de fichiers est temporairement indisponible. "
@@ -325,7 +325,7 @@ def add_meeting_file_nextcloud(path, meeting_id, owner):
         created_at=date.today(),
         meeting_id=meeting_id,
         nc_path=path,
-        owner=owner,
+        owner=user,
     )
 
     try:
@@ -360,15 +360,16 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 @meeting_access_required(AccessLevel.DELEGATE)
 def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
+    if admin_logged():
+        return {"msg": _("Requête invalide")}, 403
     form = ChunkUploadForm()
     if not form.validate() or "dropzoneFiles" not in request.files:
         return {"msg": _("Requête invalide")}, 400
     file = request.files["dropzoneFiles"]
-    files_owner = meeting.owner if admin_logged() else user
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
     save_path = upload_chunk_dir / secure_filename(
-        f"{files_owner.id}-{meeting.id}-{file.filename}"
+        f"{user.id}-{meeting.id}-{file.filename}"
     )
     current_chunk = form.dzchunkindex.data
 

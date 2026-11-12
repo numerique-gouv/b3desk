@@ -103,7 +103,7 @@
                 <button data-fr-opened="false" aria-controls="url" class="fr-btn" title="URL">{% trans %}depuis une URL{% endtrans %}</button>
             </li>
             <li>
-                <button id="openNCFilePickerButton" {% if admin_logged or not g.is_nextcloud_available %}disabled{% endif %} class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
+                <button id="openNCFilePickerButton" {% if not g.is_nextcloud_available %}disabled{% endif %} class="fr-btn" title="{% trans %}nuage{% endtrans %}">{% trans %}depuis le Nuage{% endtrans %}</button>
             </li>
             <li>
                 <button {% if g.is_nextcloud_available %}data-fr-opened="false" aria-controls="upload-modal"{% else %}disabled{% endif %} class="fr-btn" title="{% trans %}téléversement{% endtrans %}">{% trans %}par Téléversement{% endtrans %}</button>
