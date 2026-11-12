@@ -55,7 +55,7 @@ def edit_meeting_files(meeting: Meeting, user: User):
 
     form = MeetingFilesForm()
 
-    if not admin_logged() and not meeting.owner.can_use_file_sharing:
+    if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
