@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import current_app
 from flask import flash
-from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -23,6 +22,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.users import User
 
 from ..session import admin_needed
+from ..session import get_current_email
 
 bp = Blueprint("admin", __name__)
 
@@ -210,7 +210,7 @@ def create_group():
         "Group %s %s was created by %s",
         group.name,
         group.id,
-        g.user.email,
+        get_current_email(),
     )
     flash(
         _("{group_name} a bien été créé(e)").format(group_name=group.name),
@@ -276,7 +276,7 @@ def edit_group(group: Group):
         "Group %s %s was updated by %s. Updated fields : %s",
         group.name,
         group.id,
-        g.user.email,
+        get_current_email(),
         updated_data,
     )
     flash(
