@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 
 import pytest
 import respx
-from b3desk.commands import bp
 from defusedxml import ElementTree
 
 
@@ -595,19 +594,17 @@ def test_build_recording_links_ai_summary():
     ]
 
 
-def test_open_recordings_page_ai_summary(
-    cli_runner,
+def test_admin_can_open_recordings_page_ai_summary(
     client_app,
-    authenticated_user,
+    authenticated_admin,
     mocker,
     meeting,
     bbb_response,
     bbb_getRecordings_ai_summary,
     group,
 ):
-    """The recordings page shows the ai-summary report links (HTML/PDF/Markdown)."""
+    """Admin can open the recordings page showing the ai-summary report links (HTML/PDF/Markdown)."""
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     response = client_app.post(
         "/admin/add-group-members/1", {"user_ids": [1]}, status=302
     )

@@ -4,7 +4,6 @@ from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-from b3desk.commands import bp
 from b3desk.models import db
 from b3desk.models.groups import Group
 from b3desk.models.meetings import Meeting
@@ -16,12 +15,32 @@ from flask import url_for
 from tests.helpers import form_with_action
 
 
-def test_admin_can_enter_admin_page(cli_runner, user, client_app, authenticated_user):
+def test_admin_can_enter_admin_page(user, client_app, authenticated_admin):
     """Test admin can enter admin page."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/home").follow()
     assert "Admin" in res.text
     client_app.get("/admin/home", status=200)
+
+
+def test_expired_admin_session_is_not_redirected_to_admin_page(
+    client_app, authenticated_admin
+):
+    """Test an expired admin session shows the public home page."""
+    with client_app.session_transaction() as session:
+        session["last_authenticated"] = 0
+    res = client_app.get("/home", status=200)
+    assert res.template == "index.html"
+    with client_app.session_transaction() as session:
+        assert "admin_userinfo" not in session
+
+
+def test_admin_is_not_redirected_to_admin_page_with_admin_management_disabled(
+    client_app, authenticated_admin
+):
+    """Test an admin session shows the public home page when admin management is disabled."""
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
+    res = client_app.get("/home", status=200)
+    assert res.template == "index.html"
 
 
 def test_user_cannot_enter_admin_page(cli_runner, user, client_app, authenticated_user):
@@ -32,10 +51,9 @@ def test_user_cannot_enter_admin_page(cli_runner, user, client_app, authenticate
 
 
 def test_admin_page_display_all_users(
-    cli_runner, user, user_2, user_3, client_app, authenticated_user
+    user, user_2, user_3, client_app, authenticated_admin
 ):
     """Test admin page list all users."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users", status=200)
     assert res.text.count("alice@domain.tld") == 1
     assert res.text.count("berenice@domain.tld") == 1
@@ -43,10 +61,9 @@ def test_admin_page_display_all_users(
 
 
 def test_research_bar_with_letters_in_user_list_in_admin_page(
-    cli_runner, user, user_2, user_3, client_app, authenticated_user
+    user, user_2, user_3, client_app, authenticated_admin
 ):
     """Test research bar in user list with 'ber'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "ber"
@@ -57,10 +74,9 @@ def test_research_bar_with_letters_in_user_list_in_admin_page(
 
 
 def test_research_bar_with_digit_in_user_list_in_admin_page(
-    cli_runner, user, user_2, user_3, client_app, authenticated_user
+    user, user_2, user_3, client_app, authenticated_admin
 ):
     """Test research bar in user list with '1'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "1"
@@ -71,10 +87,9 @@ def test_research_bar_with_digit_in_user_list_in_admin_page(
 
 
 def test_research_bar_with_no_result_in_user_list_in_admin_page(
-    cli_runner, user, user_2, user_3, client_app, authenticated_user
+    user, user_2, user_3, client_app, authenticated_admin
 ):
     """Test research bar in user list with 'zzzzzzzzzzzzzzzzz'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users", status=200)
     form = res.form
     form["search"] = "zzzzzzzzzzzzzzzzz"
@@ -86,12 +101,11 @@ def test_research_bar_with_no_result_in_user_list_in_admin_page(
 
 
 def test_research_bar_is_kept_through_pagination_in_user_list_in_admin_page(
-    cli_runner, user, user_2, user_3, client_app, authenticated_user, mocker
+    user, user_2, user_3, client_app, authenticated_admin, mocker
 ):
     """The search criteria must survive when navigating to another page."""
     # 'li' matches Alice (page 1) and Charlie (page 2), but not Berenice.
     mocker.patch("b3desk.endpoints.admin.PER_PAGE", 1)
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/users?search=li&page=2", status=200)
     assert res.text.count("charlie@domain.tld") == 1
     assert res.text.count("alice@domain.tld") == 0
@@ -99,18 +113,15 @@ def test_research_bar_is_kept_through_pagination_in_user_list_in_admin_page(
 
 
 def test_admin_can_read_user_infos_with_no_meeting(
-    cli_runner, user, user_2, client_app, authenticated_user
+    user, user_2, client_app, authenticated_admin
 ):
     """Test read user infos for a user without meeting created."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/2", status=200)
     assert res.text.count("berenice@domain.tld") == 1
-    assert res.text.count('fr-badge fr-badge--error">Non</p>') == 1
     assert "<em>Berenice Cooler</em> n'a pas créé de réunion." in res.text
 
 
 def test_admin_can_read_user_infos_with_meeting(
-    cli_runner,
     user,
     user_2,
     meeting,
@@ -119,10 +130,9 @@ def test_admin_can_read_user_infos_with_meeting(
     meeting_1_user_2,
     shadow_meeting,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test read user infos for a user having meetings."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/user/1", status=200)
     assert res.text.count("alice@domain.tld") == 1
     assert res.text.count("Liste des réunions déléguées") == 1
@@ -134,7 +144,6 @@ def test_admin_can_read_user_infos_with_meeting(
 
 
 def test_research_bar_with_letters_in_meeting_list_in_admin_page(
-    cli_runner,
     user,
     user_2,
     meeting,
@@ -143,10 +152,9 @@ def test_research_bar_with_letters_in_meeting_list_in_admin_page(
     meeting_1_user_2,
     shadow_meeting,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test admin page list all meetings."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/meetings", status=200)
     form = res.form
     form["search"] = "del"
@@ -160,7 +168,6 @@ def test_research_bar_with_letters_in_meeting_list_in_admin_page(
 
 
 def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
-    cli_runner,
     user,
     user_2,
     meeting,
@@ -169,10 +176,9 @@ def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
     meeting_1_user_2,
     shadow_meeting,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test research bar in meeting list with '511111111'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/meetings", status=200)
     form = res.form
     form["search"] = "511111111"
@@ -189,7 +195,6 @@ def test_research_bar_with_visio_code_in_meeting_list_in_admin_page(
 
 
 def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
-    cli_runner,
     user,
     user_2,
     meeting,
@@ -198,10 +203,9 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
     meeting_1_user_2,
     shadow_meeting,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test research bar in meeting list with 'zzzzzzzzzzzzzzzzz'."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/meetings", status=200)
     form = res.form
     form["search"] = "zzzzzzzzzzzzzzzzz"
@@ -216,19 +220,15 @@ def test_research_bar_with_no_result_in_meeting_list_in_admin_page(
 
 
 def test_admin_can_edit_meeting_for_other_user(
-    cli_runner,
     user,
     user_2,
     meeting_1_user_2,
     client_app,
-    authenticated_user,
+    authenticated_admin,
     mock_meeting_is_not_running,
 ):
     """Test admin can edit meeting owned by an other user."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.get(
-        f"/meeting/edit/{meeting_1_user_2.id}?admin_mode=True", status=200
-    )
+    res = client_app.get(f"/meeting/edit/{meeting_1_user_2.id}?", status=200)
     assert res.template == "meeting/wizard.html"
     res.forms[0]["logoutUrl"] = ""
     res = res.forms[0].submit()
@@ -240,13 +240,11 @@ def test_admin_can_edit_meeting_for_other_user(
 
 
 def test_admin_can_create_group(
-    cli_runner,
     user,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test admin can create group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/create-group", status=200)
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
@@ -260,23 +258,20 @@ def test_admin_can_create_group(
 
 
 def test_create_group_have_a_condition_on_sip(
-    cli_runner,
     user,
     client_app,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test creation group have a condition on enable sip parameter."""
     client_app.app.config["FQDN_SIP_SERVER"] = None
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/create-group", status=200)
     assert "disabled" in res.form["enable_sip"].attrs
 
 
 def test_admin_cannot_create_group_with_existing_name(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test group name is a unique value."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/create-group", status=200)
     res.form["name"] = "Group 1"
     res.form["enable_sip"] = None
@@ -287,20 +282,16 @@ def test_admin_cannot_create_group_with_existing_name(
     assert db.session.scalar(db.select(db.func.count()).select_from(Group)) == 1
 
 
-def test_admin_can_display_groups(
-    cli_runner, user, client_app, authenticated_user, group
-):
+def test_admin_can_display_groups(user, client_app, authenticated_admin, group):
     """Test admin can display groups."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/groups", status=200)
     assert "Group 1" in res.text
 
 
 def test_admin_can_add_member_in_group(
-    cli_runner, user, client_app, authenticated_user, group, caplog
+    user, client_app, authenticated_admin, group, caplog
 ):
     """Test admin can add a user in a group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     assert len(group.members) == 1
     assert ("success", "1 membre ajouté au groupe") in res.flashes
@@ -309,10 +300,9 @@ def test_admin_can_add_member_in_group(
 
 
 def test_admin_cannot_add_member_already_in_group(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test adding an already-member user again does not duplicate them."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     category, message = res.flashes[0]
@@ -323,10 +313,9 @@ def test_admin_cannot_add_member_already_in_group(
 
 
 def test_admin_can_remove_member_from_group(
-    cli_runner, user, client_app, authenticated_user, group, caplog
+    user, client_app, authenticated_admin, group, caplog
 ):
     """Test admin can remove member from group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     res = client_app.get("/admin/manage-group-members/1")
     res = form_with_action(res, "/admin/manage-group-members/1/1").submit(status=302)
@@ -335,10 +324,9 @@ def test_admin_can_remove_member_from_group(
 
 
 def test_admin_can_read_information_removing_non_member_user(
-    cli_runner, user, user_2, client_app, authenticated_user, group
+    user, user_2, client_app, authenticated_admin, group
 ):
     """Test admin can read inforamtion removing non member user."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/manage-group-members/1", status=200)
     res.form["search"] = "alice@domain.tld"
     res = res.form.submit()
@@ -347,19 +335,17 @@ def test_admin_can_read_information_removing_non_member_user(
 
 
 def test_admin_can_read_group_infos_before_confirm_group_removing(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test admin can read group infos before confirm group removing."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/delete-group/1", status=200)
     assert res.template == "admin/delete_group.html"
 
 
 def test_research_bar_with_no_result_in_group_list_in_admin_page(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test search with no result in groups."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/groups", status=200)
     res.form["search"] = "zzz"
     res = res.form.submit()
@@ -367,10 +353,9 @@ def test_research_bar_with_no_result_in_group_list_in_admin_page(
 
 
 def test_research_bar_with_digit_in_group_list_in_admin_page(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test search with digit in groups."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/groups", status=200)
     res.form["search"] = "1"
     res = res.form.submit()
@@ -378,10 +363,9 @@ def test_research_bar_with_digit_in_group_list_in_admin_page(
 
 
 def test_research_bar_with_letters_in_group_list_in_admin_page(
-    cli_runner, user, client_app, authenticated_user, group
+    user, client_app, authenticated_admin, group
 ):
     """Test search with letters in groups."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/groups", status=200)
     res.form["search"] = "gro"
     res = res.form.submit()
@@ -389,7 +373,7 @@ def test_research_bar_with_letters_in_group_list_in_admin_page(
 
 
 def test_research_bar_is_kept_through_pagination_in_group_list_in_admin_page(
-    cli_runner, user, client_app, authenticated_user, mocker
+    user, client_app, authenticated_admin, mocker
 ):
     """The group search criteria must survive when navigating to another page."""
     # 'team' matches Team-x (page 1) and Team-y (page 2) but not Squad, so
@@ -398,7 +382,6 @@ def test_research_bar_is_kept_through_pagination_in_group_list_in_admin_page(
         db.session.add(Group(name=name, created_at=datetime(2024, 1, 1 + i)))
     db.session.commit()
     mocker.patch("b3desk.endpoints.admin.PER_PAGE", 1)
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/groups?search=team&page=2", status=200)
     groups_table = res.pyquery("table#groups").text()
     assert "Team-y" in groups_table
@@ -406,11 +389,8 @@ def test_research_bar_is_kept_through_pagination_in_group_list_in_admin_page(
     assert "Squad" not in groups_table
 
 
-def test_admin_can_remove_group(
-    cli_runner, user, client_app, authenticated_user, group, caplog
-):
+def test_admin_can_remove_group(user, client_app, authenticated_admin, group, caplog):
     """Test admin can remove group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/delete-group/1")
     res = form_with_action(res, "/admin/confirm-delete-group/1").submit(status=302)
     assert ("success", "Le groupe a été supprimé") in res.flashes
@@ -419,11 +399,8 @@ def test_admin_can_remove_group(
     assert len(groups) == 0
 
 
-def test_admin_can_edit_group(
-    cli_runner, user, client_app, authenticated_user, group, caplog
-):
+def test_admin_can_edit_group(user, client_app, authenticated_admin, group, caplog):
     """Test admin can edit group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/edit-group/1", status=200)
     res.form["name"] = "Group 2"
     res.form["enable_sip"] = None
@@ -431,16 +408,15 @@ def test_admin_can_edit_group(
     res.form["enable_ai_summary"] = None
     res.form.submit()
     assert (
-        "Group Group 2 1 was updated by alice@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_ai_summary': None}"
+        "Group Group 2 1 was updated by admin@domain.tld. Updated fields : {'name': 'Group 2', 'enable_sip': None, 'enable_file_sharing': None, 'enable_ai_summary': None}"
         in caplog.text
     )
     group = db.session.get(Group, 1)
     assert group.name == "Group 2"
 
 
-def test_edit_group_invalid_form(cli_runner, client_app, authenticated_user, group):
+def test_edit_group_invalid_form(client_app, authenticated_admin, group):
     """Test group edition form dipsplay message if not validated."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get(f"/admin/edit-group/{group.id}", status=200)
     res.form["name"] = ""
     res = res.form.submit()
@@ -449,10 +425,9 @@ def test_edit_group_invalid_form(cli_runner, client_app, authenticated_user, gro
 
 
 def test_admin_can_toggledownload_meeting_file_not_owner_meeting(
-    cli_runner, client_app, authenticated_user, meeting
+    client_app, authenticated_admin, meeting
 ):
     """Test admin can toggle download meeting file."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     other_user = User(email="other@example.com")
     db.session.add(other_user)
     db.session.flush()
@@ -489,11 +464,8 @@ def test_admin_can_toggledownload_meeting_file_not_owner_meeting(
     assert meeting_file.is_downloadable is True
 
 
-def test_admin_can_delete_meeting_file(
-    cli_runner, client_app, authenticated_user, meeting
-):
+def test_admin_can_delete_meeting_file(client_app, authenticated_admin, meeting):
     """Test admin can delete meeting file."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     other_user = User(email="other@example.com")
     db.session.add(other_user)
     db.session.flush()
@@ -527,11 +499,9 @@ def test_admin_can_delete_meeting_file(
 
 
 def test_admin_can_update_recording_name(
-    cli_runner, client_app, authenticated_user, bbb_getRecordings_response
+    client_app, authenticated_admin, bbb_getRecordings_response
 ):
     """Test admin can update recording name."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-
     other_user = User(email="other@example.com")
     db.session.add(other_user)
     db.session.flush()
@@ -566,17 +536,14 @@ def test_admin_can_update_recording_name(
 
 
 def test_admin_can_delete_recordings(
-    cli_runner,
     mocker,
     client_app,
-    authenticated_user,
+    authenticated_admin,
     bbb_getRecordings_response,
     caplog,
 ):
     """Test admin can delete recordings."""
     from b3desk.models.bbb import BBB
-
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
 
     other_user = User(email="other@example.com")
     db.session.add(other_user)
@@ -602,23 +569,20 @@ def test_admin_can_delete_recordings(
     )
 
     assert (
-        f"Meeting Other meeting {other_meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
+        f"Meeting Other meeting {other_meeting.id} record {first_recording_id} was deleted by admin@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
 
 
 def test_admin_can_open_recordings_page(
-    cli_runner,
     client_app,
-    authenticated_user,
+    authenticated_admin,
     mocker,
     bbb_response,
     bbb_getRecordings_response,
 ):
     """Test admin can open recordings page."""
     from b3desk.models.bbb import BBB
-
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
 
     other_user = User(email="other@example.com")
     db.session.add(other_user)
@@ -647,10 +611,9 @@ def test_admin_can_open_recordings_page(
 
 
 def test_admin_can_read_meeting_infos(
-    cli_runner, user, meeting_2_user_2, client_app, authenticated_user
+    user, meeting_2_user_2, client_app, authenticated_admin
 ):
     """Test admin can read meeting infos."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get(f"/admin/meeting/{meeting_2_user_2.id}", status=200)
     assert res.text.count("922222221") == 5
     assert res.text.count("222222221") == 3
@@ -658,11 +621,12 @@ def test_admin_can_read_meeting_infos(
 
 
 def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
-    cli_runner, client_app, authenticated_user, user_2, meeting_2_user_2, group_2
+    client_app, authenticated_admin, user_2, meeting_2_user_2, group_2
 ):
     """Test admin cannot edit meeting files if owner cannot use file sharing."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/add-group-members/1", {"user_ids": [2]}, status=302)
+    res = client_app.post(
+        f"/admin/add-group-members/{group_2.id}", {"user_ids": [user_2.id]}, status=302
+    )
     assert user_2.groups[0].name == "Group 2"
     res = client_app.get(
         url_for("meeting_files.edit_meeting_files", meeting=meeting_2_user_2),
@@ -672,44 +636,37 @@ def test_admin_cannot_edit_files_if_meeting_owner_cannot_use_file_sharing(
 
 
 def test_admin_cannot_enter_admin_page_with_admin_management_disabled(
-    user, client_app, authenticated_user
+    client_app, authenticated_admin
 ):
     """Test admin cannot enter admin page when admin management is disabled."""
     client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
-    res = client_app.get("/home").follow()
-    assert url_for("admin.home") not in res.text
     client_app.get("/admin/home", status=403)
 
 
 def test_admin_cannot_edit_meeting_for_other_user_with_admin_management_disabled(
-    user, user_2, meeting_2_user_2, client_app, authenticated_user
+    user_2, meeting_2_user_2, client_app, authenticated_admin
 ):
-    """Test admin cannot edit other user meeting when admin management is disabled."""
+    """Test admin is sent to the user login page when admin management is disabled."""
     client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
-    client_app.get(f"/meeting/edit/{meeting_2_user_2.id}?admin_mode=True", status=403)
+    res = client_app.get(f"/meeting/edit/{meeting_2_user_2.id}", status=302)
+    assert res.location.startswith(url_for("public.login"))
 
 
 def test_admin_cannot_delete_meeting_for_other_user_with_admin_management_disabled(
-    user, user_2, meeting_2_user_2, client_app, authenticated_user
+    user_2, meeting_2_user_2, client_app, authenticated_admin
 ):
     """Test admin cannot delete other user meeting when admin management is disabled."""
     client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
-    client_app.post(f"/meeting/{meeting_2_user_2.id}/delete", status=403)
+    res = client_app.post(f"/meeting/{meeting_2_user_2.id}/delete", status=302)
+    assert res.location.startswith(url_for("public.login"))
     assert db.session.get(Meeting, meeting_2_user_2.id)
 
 
 def test_admin_cannot_delete_meeting_file_with_admin_management_disabled(
-    user, client_app, authenticated_user
+    client_app, authenticated_admin
 ):
     """Test admin cannot delete other user meeting file when admin management is disabled."""
     client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
     other_user = User(email="other@example.com")
     db.session.add(other_user)
     db.session.flush()
@@ -738,41 +695,37 @@ def test_admin_cannot_delete_meeting_file_with_admin_management_disabled(
     assert db.session.scalar(db.select(db.func.count()).select_from(MeetingFiles)) == 1
 
 
-def test_delegate_admin_cannot_delete_meeting_with_admin_management_disabled(
-    user, meeting_1_user_2, client_app, authenticated_user, bbb_response
-):
-    """Test delegate admin cannot delete meeting when admin management is disabled."""
-    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
-    res = client_app.post(f"/meeting/{meeting_1_user_2.id}/delete")
-    assert ("error", "Vous ne pouvez pas supprimer cet élément") in res.flashes
-    assert db.session.get(Meeting, meeting_1_user_2.id)
-
-
 def test_admin_cannot_transfer_meeting_ownership_with_admin_management_disabled(
-    user, user_2, meeting_2_user_2, client_app, authenticated_user
+    user_2, meeting_2_user_2, client_app, authenticated_admin
 ):
     """Test admin cannot transfer other user meeting when admin management is disabled."""
     client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
     client_app.post(
-        f"/meeting/transfert-meeting-ownership/{meeting_2_user_2.id}/{user.id}",
-        status=403,
+        f"/meeting/transfert-meeting-ownership/{meeting_2_user_2.id}/{user_2.id}",
+        status=302,
     )
     assert meeting_2_user_2.owner is user_2
 
 
-def test_admin_mode_parameter_is_ignored_with_admin_management_disabled(
-    user, meeting, client_app, authenticated_user
+def test_admin_cannot_add_favorite(
+    client_app,
+    authenticated_admin,
+    user,
+    meeting,
+    bbb_response,
 ):
-    """Test the admin_mode parameter has no effect when admin management is disabled."""
-    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
-    user.admin = True
-    db.session.commit()
-    res = client_app.get(
-        url_for("meeting_files.edit_meeting_files", meeting=meeting, admin_mode=True)
+    """Test that admin cannot add favorite."""
+    response = client_app.post(
+        f"/meeting/{meeting.id}/favorite?order_key=created_at&reverse_order=true&favorite_filter=true"
     )
-    assert url_for("public.welcome") in res.text
-    assert url_for("admin.meeting_infos", meeting=meeting) not in res.text
+    assert ("error", "L'administrateur n'a pas de favori") in response.flashes
+    assert response.location == f"/admin/meeting/{meeting.id}"
+
+
+def test_admin_login_route_send_404_when_admin_disabled(
+    client_app,
+):
+    client_app.app.config["OIDC_ADMIN_ENABLED"] = False
+    response = client_app.get("/admin/login", status=404)
+    print(response)
+    assert "Cette page n'existe pas." in response
