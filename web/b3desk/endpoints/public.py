@@ -115,7 +115,7 @@ def admin_login():
 
 @bp.route("/oidc_callback")
 def oidc_callback():
-    """Complete the OIDC authentication of an organizer or an attendee."""
+    """Complete the OIDC authentication of an admin, an organizer or an attendee."""
     state = request.args.get("state")
     if oauth.attendee.framework.get_state_data(session, state):
         return attendee_callback()
