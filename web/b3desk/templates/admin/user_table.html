@@ -1,3 +1,4 @@
+{% from 'forms.html' import form_tag %}
 <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
         <div class="fr-table fr-table--no-caption" id="users-component">
@@ -50,10 +51,9 @@
                                         </td>
                                         {% if group and not add_members %}
                                             <td class="fr-col--xs fr-cell--center">
-                                                <form method="post" action="{{ url_for("admin.remove_member", group=group, member=user, search=search) }}">
-                                                    {% include 'meeting/csrf.html' %}
-                                                    <button type="submit" class="fr-btn fr-btn--secondary fr-fi-delete-line" title="{% trans %}Supprimer le membre{% endtrans %}"></button>
-                                                </form>
+                                                {% call form_tag(confirm_form, method="post", action=url_for("admin.remove_member", group=group, member=user, search=search)) %}
+                                                    {{ confirm_form.confirm(label="", id=False, class_="fr-btn fr-btn--secondary fr-fi-delete-line", title=_("Supprimer le membre")) }}
+                                                {% endcall %}
                                             </td>
                                         {% endif %}
                                     </tr>

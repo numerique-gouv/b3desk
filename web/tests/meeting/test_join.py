@@ -195,9 +195,7 @@ def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     user.family_name = "LENNON"
     user.email = "john@lennon.test"
     with client_app.session_transaction() as session:
-        session["current_provider"] = "attendee"
-        session["last_authenticated"] = "true"
-        session["userinfo"] = {
+        session["attendee_userinfo"] = {
             "given_name": user.given_name,
             "family_name": user.family_name,
             "email": user.email,
@@ -287,9 +285,9 @@ def test_join_meeting_as_role__not_attendee_or_moderator(
 def test_join_meeting_as_role_with_no_user(
     client_app, authenticated_user, meeting, bbb_response, mocker
 ):
-    """Test that joining meeting with no user returns 403."""
+    """Test that joining meeting with no user redirects to login."""
     mocker.patch("b3desk.session.has_user_session", return_value=False)
-    client_app.get(f"/meeting/join/{meeting.id}/invite", status=403)
+    client_app.get(f"/meeting/join/{meeting.id}/invite", status=302)
 
 
 def test_waiting_meeting_with_a_fullname_containing_a_slash(client_app, meeting):

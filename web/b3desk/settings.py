@@ -2,10 +2,13 @@ import datetime
 import json
 import warnings
 from enum import StrEnum
+from importlib.metadata import version
 from typing import Annotated
 from typing import Any
 
-from flask_babel import lazy_gettext as _
+from flask_babel import gettext
+from flask_babel.speaklater import LazyString
+from packaging.version import Version
 from pydantic import BeforeValidator
 from pydantic import FilePath
 from pydantic import PositiveInt
@@ -13,15 +16,41 @@ from pydantic import ValidationInfo
 from pydantic import computed_field
 from pydantic import field_validator
 from pydantic import model_validator
+from pydantic_core import core_schema
 from pydantic_settings import BaseSettings
 from pydantic_settings import NoDecode
 from pydantic_settings import SettingsConfigDict
+
+
+class LazySettingString(LazyString):
+    """Translatable setting default that pydantic can serialize as a string."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source, handler):
+        return core_schema.no_info_plain_validator_function(
+            lambda value: value,
+            serialization=core_schema.plain_serializer_function_ser_schema(str),
+        )
+
+
+def _(text):
+    """Return a lazy translatable string usable as a setting default."""
+    return LazySettingString(gettext, text)
+
+
+def default_session_cookie_name():
+    """Return a session cookie name that changes with each minor version."""
+    current_version = Version(version("b3desk"))
+    return f"session_{current_version.major}_{current_version.minor}"
 
 
 def split_comma_separated_strings(value):
     """Convert a comma-separated string into a list of stripped strings."""
     if not isinstance(value, str):
         return value
+
+    if not value.strip():
+        return []
 
     return map(str.strip, value.split(","))
 
@@ -42,10 +71,11 @@ class MeetingLocaleVariant(StrEnum):
 class MainSettings(BaseSettings):
     """Paramètres de configuration du frontal B3Desk."""
 
-    model_config = SettingsConfigDict(extra="allow")
+    model_config = SettingsConfigDict(extra="allow", use_attribute_docstrings=True)
 
     SECRET_KEY: str
-    """Clé secrète utilisée notamment pour la signature des cookies. Cette clé
+    """Clé secrète utilisée notamment pour la protection CSRF et la signature
+    des liens d'invitation. Cette clé
     DOIT être différente pour TOUTES les instances de B3Desk, et être tenue
     secrète. Peut être générée avec ``python -c 'import secrets;
     print(secrets.token_hex())'``
@@ -69,6 +99,47 @@ class MainSettings(BaseSettings):
     Plus d'infos sur
     https://flask.palletsprojects.com/en/3.0.x/config/#PREFERRED_URL_SCHEME.
     """
+
+    SESSION_COOKIE_NAME: str = default_session_cookie_name()
+    """Nom du cookie de session.
+
+    Par défaut, il dépend de la version mineure de B3Desk, par exemple
+    ``session_1_8``. Les utilisateurs sont donc déconnectés à chaque mise à jour
+    mineure, ce qui évite de lire des sessions écrites par une version précédente.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_NAME.
+    """
+
+    SESSION_COOKIE_SECURE: bool | None = None
+    """Ajoute l'attribut ``Secure`` au cookie de session : le navigateur ne
+    l'envoie alors qu'en HTTPS. Par défaut, il est ajouté si
+    ``PREFERRED_URL_SCHEME`` vaut ``https``.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_SECURE.
+    """
+
+    SESSION_COOKIE_SAMESITE: str | None = "Lax"
+    """Valeur de l'attribut ``SameSite`` du cookie de session. ``Strict``
+    empêche le retour depuis le fournisseur d'identité.
+
+    Plus d'infos sur
+    https://flask.palletsprojects.com/en/3.0.x/config/#SESSION_COOKIE_SAMESITE.
+    """
+
+    PERMANENT_SESSION_LIFETIME: int = 7 * 24 * 3600
+    """Durée de vie d'une session en secondes. Elle court à partir de la
+    connexion et n'est pas prolongée par l'activité.
+    """
+
+    @field_validator("SESSION_COOKIE_SECURE")
+    def _secure_session_cookie_over_https(
+        cls, session_cookie_secure: bool | None, info: ValidationInfo
+    ) -> bool:
+        if session_cookie_secure is None:
+            return info.data.get("PREFERRED_URL_SCHEME") == "https"
+        return session_cookie_secure
 
     LOG_CONFIG: FilePath | None = None
     """Chemin vers un fichier de configuration de logs Python.
@@ -176,9 +247,13 @@ class MainSettings(BaseSettings):
     """
 
     REDIS_URL: str | None = None
-    """L’URL du serveur redis utilisé pour les tâches asynchrones.
+    """L’URL du serveur redis utilisé pour les tâches asynchrones, le cache et
+    les sessions. Si non renseigné, le cache et les sessions sont stockés sur
+    le système de fichiers local, qui n'est pas partagé entre plusieurs
+    serveurs.
 
-    Par exemple ``localhost:6379``.
+    Par exemple ``localhost:6379``, ou une URL complète comme
+    ``rediss://:motdepasse@redis.example.org:6379/0``.
     """
 
     NC_LOGIN_TIMEDELTA_DAYS: int = 30
@@ -326,24 +401,9 @@ class MainSettings(BaseSettings):
     Plus d’infos sur https://docs.dropzone.dev/configuration/basics/configuration-options
     """
 
-    OIDC_ID_TOKEN_COOKIE_SECURE: bool = False
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_REQUIRE_VERIFIED_EMAIL: bool = False
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_USER_INFO_ENABLED: bool = True
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_OPENID_REALM: str = "apps"
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
     OIDC_SCOPES: ListOfStrings = ["openid", "email", "profile"]
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
     demandée au serveur d’identité, séparés par des virgules.
-
-    Passé en paramètre ``auth_request_params`` de flask-pyoidc.
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
 
     .. code-block:: toml
         :caption: Exemple dans un fichier de configuration TOML
@@ -354,14 +414,6 @@ class MainSettings(BaseSettings):
         :caption: Exemple en variable d’environnement
 
         OIDC_SCOPES="openid,email,profile,siret,usual_name"
-    """
-
-    OIDC_USERINFO_HTTP_METHOD: str = "POST"
-    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
-    d’entrée *UserInfo* du serveur d’identité.
-
-    Plus d’infos sur
-    https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
     """
 
     OIDC_CLAIMS_MAPPING: dict[str, str] = {}
@@ -391,15 +443,6 @@ class MainSettings(BaseSettings):
     Par exemple : https://auth.example.com
     """
 
-    OIDC_AUTH_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_USERINFO_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
-    OIDC_TOKEN_URI: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé."""
-
     OIDC_CLIENT_ID: str | None = None
     """ID du client auprès du serveur d’identité des organisateurs."""
 
@@ -413,21 +456,11 @@ class MainSettings(BaseSettings):
 
     OIDC_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
     """Méthode de communication avec le point d’entrée d’introspection
-    ``token_introspection`` du serveur d’identité des organisateurs."""
+    ``token_introspection`` du serveur d’identité des organisateurs.
 
-    # TODO: replace by OIDCAuthentication.redirect_uri_config
-    OIDC_REDIRECT_URI: str | None = None
-    """URL de B3Desk vers laquelle le serveur d’identité redirige les
-    utilisateurs après authentification.
-
-    Par exemple ``https://visio-test.education.fr/oidc_callback``
-
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/configuration.html?highlight=OIDC_REDIRECT_URI#static-client-registration
+    ``client_secret_basic`` ou ``client_secret_post``. ProConnect demande
+    ``client_secret_post``.
     """
-
-    OIDC_SERVICE_NAME: str | None = None
-    """Probablement un relicat de flask-oidc, semble inutilisé à part en valeur
-    par défaut de ``OIDC_ATTENDEE_SERVICE_NAME``."""
 
     # Attendee OIDC Configuration (back to default if empty)
     OIDC_ATTENDEE_ENABLED: bool | None = True
@@ -454,7 +487,7 @@ class MainSettings(BaseSettings):
     """Secret permettant d’identifier le client auprès du serveur d’identité
     des participants authentifiés.
 
-    Si non renseigné, prend la valeur de ``OIDC_CLIENT_ID``.
+    Si non renseigné, prend la valeur de ``OIDC_CLIENT_SECRET``.
     """
 
     OIDC_ATTENDEE_CLIENT_AUTH_METHOD: str | None = None
@@ -464,29 +497,9 @@ class MainSettings(BaseSettings):
     Si non renseigné, prend la valeur de ``OIDC_CLIENT_AUTH_METHOD``.
     """
 
-    OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD: str = "client_secret_basic"
-    """Méthode de communication avec le point d’entrée d’introspection
-    ``token_introspection`` du serveur d’identité  des participants
-    authentifiés.
-
-    Si non renseigné, prend la valeur de ``OIDC_INTROSPECTION_AUTH_METHOD``.
-    """
-
-    OIDC_ATTENDEE_USERINFO_HTTP_METHOD: str | None = None
-    """Méthode ``GET`` ou ``POST`` à utiliser pour les requêtes sur le point
-    d’entrée *UserInfo* du serveur d’identité.
-
-    Si non renseigné, prend la valeur de ``OIDC_USERINFO_HTTP_METHOD``.
-
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html?highlight=userinfo_http_method#flask_pyoidc.provider_configuration.ProviderConfiguration
-    """
-
     OIDC_ATTENDEE_SERVICE_NAME: str | None = None
     """Nom du service d’authentification des participants authentifiés. Utilisé
-    pour l’affichage dans la modale d’invitation de participants authentifés.
-
-    Si non renseigné, prend la valeur de ``OIDC_SERVICE_NAME``.
-    """
+    pour l’affichage dans la modale d’invitation de participants authentifés."""
 
     OIDC_ATTENDEE_SCOPES: ListOfStrings | None = None
     """Liste des scopes OpenID Connect pour lesquels une autorisation sera
@@ -494,9 +507,6 @@ class MainSettings(BaseSettings):
     des virgules.
 
     Si non renseigné, prend la valeur de ``OIDC_SCOPES``.
-
-    Passé en paramètre ``auth_request_params`` de flask-pyoidc.
-    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
     """
 
     OIDC_ATTENDEE_CLAIMS_MAPPING: dict[str, str] = {}
@@ -534,6 +544,23 @@ class MainSettings(BaseSettings):
     SECONDARY_IDENTITY_PROVIDER_CLIENT_SECRET: str | None = None
     """Secret du client B3desk dans ce serveur d'identité."""
 
+    @model_validator(mode="before")
+    @classmethod
+    def _ignore_empty_attendee_settings(cls, values):
+        """Treat empty attendee settings as unset, so they keep following the main OIDC settings."""
+        derived_settings = {
+            "OIDC_ATTENDEE_ISSUER",
+            "OIDC_ATTENDEE_CLIENT_ID",
+            "OIDC_ATTENDEE_CLIENT_SECRET",
+            "OIDC_ATTENDEE_CLIENT_AUTH_METHOD",
+            "OIDC_ATTENDEE_SCOPES",
+        }
+        return {
+            name: value
+            for name, value in values.items()
+            if not (name in derived_settings and value == "")
+        }
+
     @field_validator("OIDC_ATTENDEE_ISSUER")
     def get_attendee_issuer(cls, attendee_issuer: str, info: ValidationInfo) -> str:
         """Return OIDC_ISSUER if attendee issuer is not specified."""
@@ -559,31 +586,6 @@ class MainSettings(BaseSettings):
     ) -> str:
         """Return OIDC_CLIENT_AUTH_METHOD if attendee client auth method is not specified."""
         return attendee_client_auth_method or info.data.get("OIDC_CLIENT_AUTH_METHOD")
-
-    @field_validator("OIDC_ATTENDEE_INTROSPECTION_AUTH_METHOD")
-    def get_attendee_introspection_endpoint_auth_method(
-        cls, attendee_introspection_endpoint_auth_method: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_INTROSPECTION_AUTH_METHOD if attendee introspection auth method is not specified."""
-        return attendee_introspection_endpoint_auth_method or info.data.get(
-            "OIDC_INTROSPECTION_AUTH_METHOD"
-        )
-
-    @field_validator("OIDC_ATTENDEE_USERINFO_HTTP_METHOD")
-    def get_attendee_userinfo_http_method(
-        cls, attendee_userinfo_http_method: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_USERINFO_HTTP_METHOD if attendee userinfo HTTP method is not specified."""
-        return attendee_userinfo_http_method or info.data.get(
-            "OIDC_USERINFO_HTTP_METHOD"
-        )
-
-    @field_validator("OIDC_ATTENDEE_SERVICE_NAME")
-    def get_attendee_attendee_service_name(
-        cls, attendee_attendee_service_name: str, info: ValidationInfo
-    ) -> str:
-        """Return OIDC_SERVICE_NAME if attendee service name is not specified."""
-        return attendee_attendee_service_name or info.data.get("OIDC_SERVICE_NAME")
 
     @field_validator("OIDC_ATTENDEE_SCOPES")
     def get_attendee_attendee_scopes(
@@ -993,33 +995,10 @@ class MainSettings(BaseSettings):
     Allow AI summary generation on records
     """
 
-    SESSION_COOKIE_SECURE: bool | None = True
-    """Session Cookie Secure
+    ENABLE_ADMIN_MANAGEMENT: bool | None = False
+    """Enable the admin backoffice.
 
-    Limite les cookies en https
-    Plus d'infos sur
-    https://flask.palletsprojects.com/en/stable/config/#SESSION_COOKIE_SECURE
-    """
-
-    @field_validator("SESSION_COOKIE_SECURE", mode="after")
-    def get_session_cookie_secure(
-        cls,
-        session_cookie_secure: bool | None,
-        info: ValidationInfo,
-    ) -> bool:
-        """Validate that PREFERRED_URL_SCHEME is `https` when SESSION_COOKIE_SECURE is enabled."""
-        if session_cookie_secure and info.data["PREFERRED_URL_SCHEME"] != "https":
-            raise ValueError(
-                "SESSION_COOKIE_SECURE configuration required https PREFERRED_URL_SCHEME"
-            )
-        return session_cookie_secure
-
-    SESSION_COOKIE_SAMESITE: str | None = "Lax"
-    """
-    Session Cookie Samesite
-
-    Restreint les requêtes de cookies par les sites externes
-    peut être `Strict`, `Lax` ou `None`
-    Plus d'infos sur
-    https://flask.palletsprojects.com/en/stable/config/#SESSION_COOKIE_SAMESITE
+    When off, admin users have the same rights as other users.
+    They cannot open the admin pages.
+    They cannot access or delete meetings they do not own.
     """

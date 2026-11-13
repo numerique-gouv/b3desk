@@ -1,0 +1,47 @@
+{% set generate_button = render_kw.pop("generate_button", False) %}
+{% set reset_visio_code_button = render_kw.pop("reset_visio_code_button", False) %}
+{% set described = namespace(ids=[]) %}
+{% if field.description %}{% set described.ids = described.ids + [field.id ~ "-desc"] %}{% endif %}
+{% for error in field.errors %}{% set described.ids = described.ids + [field.id ~ "-error-" ~ loop.index] %}{% endfor %}
+{% if described.ids %}{% set render_kw = dict(render_kw, aria_describedby=described.ids|join(" ")) %}{% endif %}
+{% if field.type == "BooleanField" %}
+  <li id="wrap-{{ field.id }}">
+    <div class="fr-toggle fr-toggle--border-bottom" data-fr-checked-label="{% trans %}Activé{% endtrans %}" data-fr-unchecked-label="{% trans %}Désactivé{% endtrans %}">
+      {{ field.widget(field, value="on", class_="fr-toggle__input", **render_kw) }}
+      {{ field.label(class_="fr-toggle__label", data_fr_checked_label=_("Activé"), data_fr_unchecked_label=_("Désactivé")) }}
+      <p class="fr-hint-text" id="{{ field.id }}-desc">{{ field.description }}</p>
+      {% for error in field.errors %}
+        <p class="fr-error-text" id="{{ field.id }}-error-{{ loop.index }}">{{ error }}</p>
+      {% endfor %}
+    </div>
+  </li>
+{% else %}
+  <div id="wrap-{{ field.id }}"{% if field.meta.field_class %} class="{{ field.meta.field_class }}"{% endif %}>
+    <div class="fr-input-group{% if field.errors %} fr-input-group--error{% endif %}">
+      {{ field.label(class_="fr-label") }}
+      <p class="fr-hint-text" id="{{ field.id }}-desc">{{ field.description }}</p>
+      {% for error in field.errors %}
+        <p class="fr-error-text" id="{{ field.id }}-error-{{ loop.index }}">{{ error }}</p>
+      {% endfor %}
+      {% set input_class = "fr-input fr-input--error" if field.errors else "fr-input" %}
+      {% if generate_button or reset_visio_code_button %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            {{ field.widget(field, class_=input_class, **render_kw) }}
+          </div>
+          <div class="fr-col-2">
+            {% if generate_button %}
+              <button type="button" class="fr-btn fr-btn--secondary js-generate-button" data-field-name="{{ field.name }}"><i class="ri-refresh-fill"></i></button>
+            {% else %}
+              <button type="button" class="fr-btn fr-btn--secondary visio-code-button" data-field-name="{{ field.name }}">
+                <i class="ri-refresh-fill" data-field-name="{{ field.name }}"></i>
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        {{ field.widget(field, class_=input_class, **render_kw) }}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

@@ -1,3 +1,4 @@
+{% from 'forms.html' import form_tag %}
 <div class="list-meeting-rooms">
     <div class="fr-container">
         <div class="list-meeting-rooms-title">
@@ -76,22 +77,17 @@
                             <h3 class="fr-text--lg fr-mt-1-5v">{{ meeting.name }}</h3>
                         </div>
                         <div class="fr-col-offset-3"></div>
-                        <form action="{{ url_for("meetings.meeting_favorite", meeting=meeting, order_key=order_key, reverse_order=reverse_order, favorite_filter=favorite_filter) }}" method="POST">
+                        {% call form_tag(confirm_form, action=url_for("meetings.meeting_favorite", meeting=meeting, order_key=order_key, reverse_order=reverse_order, favorite_filter=favorite_filter), method="POST") %}
                             <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
-                                {% include 'meeting/csrf.html' %}
                                 <div class="fr-col-1">
                                     {% if g.user not in meeting.favorite_of %}
-                                        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line" title="{% trans %}Ajouter aux favoris{% endtrans %}">
-                                            {% trans %}Label bouton{% endtrans %}
-                                        </button>
+                                        {{ confirm_form.confirm(label=_("Label bouton"), id=False, class_="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line", title=_("Ajouter aux favoris")) }}
                                     {% else %}
-                                        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-fill" title="{% trans %}Retirer des favoris{% endtrans %}">
-                                            {% trans %}Label bouton{% endtrans %}
-                                        </button>
+                                        {{ confirm_form.confirm(label=_("Label bouton"), id=False, class_="fr-btn fr-btn--tertiary-no-outline fr-icon-star-fill", title=_("Retirer des favoris")) }}
                                     {% endif %}
                                 </div>
                             </div>
-                        </form>
+                        {% endcall %}
                     </div>
                     {% include 'meeting/row.html' %}
                 </div>
