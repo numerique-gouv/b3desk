@@ -1,31 +1,26 @@
-from b3desk.commands import bp
 from b3desk.join import create_bbb_meeting
 from b3desk.models import db
 
 
 def test_add_group_members_displays_users(
-    cli_runner,
     client_app,
     user,
     group,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that add group members page renders with the user list."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get(f"/admin/add-group-members/{group.id}", status=200)
     assert user.email in res.text
 
 
 def test_add_group_members_filters_by_search(
-    cli_runner,
     client_app,
     user,
     user_2,
     group,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that add group members page filters users by search term."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get(
         f"/admin/add-group-members/{group.id}?search={user.email}", status=200
     )
@@ -34,15 +29,13 @@ def test_add_group_members_filters_by_search(
 
 
 def test_add_group_members_excludes_existing_members(
-    cli_runner,
     client_app,
     user,
     user_2,
     group,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that users already in the group don't appear in the add members list."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     user_2.groups.append(group)
     db.session.commit()
 
@@ -53,20 +46,17 @@ def test_add_group_members_excludes_existing_members(
 
 
 def test_group_infos_page_displays_group_details(
-    cli_runner,
     client_app,
     user,
     group,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that group infos page renders with the correct group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get(f"/admin/group/{group.id}", status=200)
     assert group.name in res.text
 
 
 def test_api_meetings_for_user_can_use_sip_in_group_enable_sip_and_setting_enable_sip(
-    cli_runner,
     client_app,
     user,
     user_2,
@@ -79,10 +69,9 @@ def test_api_meetings_for_user_can_use_sip_in_group_enable_sip_and_setting_enabl
     group,
     group_2,
     group_3,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that API returns SIPMediaGW_url if meeting's owner in group 1: enable sip, 2: disable sip, 3: none able sip and settings enable sip."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.get("/admin/manage-group-members/1", status=200)
     res.form["search"] = "alice@domain.tld"
     res = res.form.submit()
@@ -117,7 +106,6 @@ def test_api_meetings_for_user_can_use_sip_in_group_enable_sip_and_setting_enabl
 
 
 def test_api_meetings_for_delegate_can_use_sip_and_owner_none_able_to_use_sip(
-    cli_runner,
     client_app,
     user,
     user_2,
@@ -130,10 +118,9 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_none_able_to_use_sip(
     group,
     group_2,
     group_3,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: none able sip and settings enable sip."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
     res = client_app.post("/admin/add-group-members/3", {"user_ids": [2]}, status=302)
     assert user_2.groups[0].name == "Group 2"
@@ -169,7 +156,6 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_none_able_to_use_sip(
 
 
 def test_api_meetings_for_delegate_can_use_sip_and_owner_cannot(
-    cli_runner,
     client_app,
     user,
     user_2,
@@ -182,10 +168,9 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_cannot(
     group,
     group_2,
     group_3,
-    authenticated_user,
+    authenticated_admin,
 ):
     """Test that API returns not SIPMediaGW_url if meeting's owner in group 2: disable sip, 3: disable sip and settings enable sip."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
     res = client_app.post("/admin/add-group-members/3", {"user_ids": [2]}, status=302)
     res = client_app.get("/admin/edit-group/3", status=200)
@@ -219,7 +204,6 @@ def test_api_meetings_for_delegate_can_use_sip_and_owner_cannot(
 
 
 def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with_file_sharing_setting_true(
-    cli_runner,
     client_app,
     user,
     user_2,
@@ -234,10 +218,10 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
     authenticated_user,
 ):
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting True."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
-    res = client_app.post("/admin/add-group-members/3", {"user_ids": [3]}, status=302)
+    user.groups.append(group)
+    user_2.groups.append(group_2)
+    user_3.groups.append(group_3)
+    db.session.commit()
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -254,7 +238,6 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
 
 
 def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with_file_sharing_setting_false(
-    cli_runner,
     client_app,
     user,
     user_2,
@@ -270,10 +253,10 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
 ):
     """Test that welcome page displays file sharing icon according to owner ability with file sharing setting False."""
     client_app.app.config["FILE_SHARING"] = False
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
-    res = client_app.post("/admin/add-group-members/2", {"user_ids": [2]}, status=302)
-    res = client_app.post("/admin/add-group-members/3", {"user_ids": [3]}, status=302)
+    user.groups.append(group)
+    user_2.groups.append(group_2)
+    user_3.groups.append(group_3)
+    db.session.commit()
     assert user.groups[0].name == "Group 1"
     assert user.groups[0].enable_file_sharing
     assert user_2.groups[0].name == "Group 2"
@@ -290,10 +273,9 @@ def test_welcome_page_displays_file_sharing_icon_according_to_owner_ability_with
 
 
 def test_admin_can_add_multiple_users_at_once_in_a_group(
-    cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
+    client_app, user, user_2, user_3, group, authenticated_admin, caplog
 ):
     """Test admin can add multiple users at once in a group."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post(
         "/admin/add-group-members/1", {"user_ids": [1, 2, 3]}, status=302
     )
@@ -304,19 +286,15 @@ def test_admin_can_add_multiple_users_at_once_in_a_group(
 
 
 def test_message_displayed_if_admin_did_not_selected_at_least_one_user(
-    cli_runner, client_app, user, group, authenticated_user, caplog
+    client_app, user, group, authenticated_admin, caplog
 ):
     """Test a message is displayed if tha admin has not selected a user to add."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post("/admin/add-group-members/1", {"user_ids": []}, status=302)
     assert ("message", "Vous n'avez pas sélectionné d'utilisateur") in res.flashes
 
 
-def test_non_numeric_user_id_is_ignored(
-    cli_runner, client_app, user, group, authenticated_user
-):
+def test_non_numeric_user_id_is_ignored(client_app, user, group, authenticated_admin):
     """Test a malformed user id does not raise a server error."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post(
         "/admin/add-group-members/1", {"user_ids": ["oops"]}, status=302
     )
@@ -325,10 +303,9 @@ def test_non_numeric_user_id_is_ignored(
 
 
 def test_admin_can_add_multiple_users_filtered_with_search(
-    cli_runner, client_app, user, user_2, user_3, group, authenticated_user, caplog
+    client_app, user, user_2, user_3, group, authenticated_admin, caplog
 ):
     """Test admin adds every user matching the search, and only those."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     res = client_app.post(
         "/admin/add-group-members/1", {"search": "ber", "select_all": "1"}, status=302
     )
@@ -358,18 +335,16 @@ def test_can_use_ai_summary_falls_back_to_config_when_group_has_none(
 
 
 def test_meeting_with_ai_summary_but_owner_lost_authorisation(
-    cli_runner,
     client_app,
     user,
     meeting,
     group,
     group_2,
-    authenticated_user,
+    authenticated_admin,
     mock_meeting_is_not_running,
     bbb_response,
 ):
     """When the owner loses ai-summary authorisation, launching the meeting keeps the stored preference while ai_summary_enabled reflects the loss."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     client_app.post("/admin/add-group-members/1", {"user_ids": [1]}, status=302)
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
     assert user.can_use_ai_summary is True
@@ -383,19 +358,17 @@ def test_meeting_with_ai_summary_but_owner_lost_authorisation(
 
 
 def test_create_bbb_meeting_file_sharing_follows_owner_not_launcher(
-    cli_runner,
     client_app,
     user,
     user_2,
     meeting,
     group,
     group_2,
-    authenticated_user,
+    authenticated_admin,
     mock_meeting_is_not_running,
     mocker,
 ):
     """In delegation, the BBB room file-sharing flag follows the owner's ability, not the launcher's."""
-    cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
     # Owner alice (id 1) in Group 2: file sharing disabled.
     client_app.post("/admin/add-group-members/2", {"user_ids": [1]}, status=302)
     # Launcher berenice (id 2) in Group 1: file sharing enabled.

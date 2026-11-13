@@ -12,9 +12,7 @@ from pydantic_settings import NoDecode
 from pydantic_settings_export import SettingsInfoModel
 from pydantic_settings_export.generators.dotenv import DotEnvGenerator
 
-from b3desk.models import db
 from b3desk.models.meetings import delete_all_old_shadow_meetings
-from b3desk.models.users import User
 from b3desk.settings import MainSettings
 
 bp = Blueprint("commands", __name__, cli_group=None)
@@ -63,7 +61,7 @@ def populate(n_users, n_meetings, seed):
 
     summary = populate_database(n_users=n_users, n_meetings=n_meetings, seed=seed)
     click.echo(
-        "Created {users} users ({admins} admins), {meetings} meetings, "
+        "Created {users} users, {meetings} meetings, "
         "{delegations} delegations, {favorites} favorites and {groups} groups.".format(
             **summary
         )
@@ -176,56 +174,6 @@ def check_sip_token(token):
     else:
         print(errors)
         print("Token provided is not valid.")
-
-
-def grant_admin_rights(email):
-    user = User.get_user_by_email(email)
-    if not user:
-        raise ValueError("No user with this email was found.")
-    user.admin = True
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-def remove_admin_rights(email):
-    user = User.get_user_by_email(email)
-    if not user:
-        raise ValueError("No user with this email was found.")
-    user.admin = False
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-@bp.cli.command("user-to-admin")
-@click.argument("email")
-def user_to_admin(email):
-    """CLI command to grant administrator rights to a user."""
-    try:
-        user = grant_admin_rights(email)
-        print(
-            f"User to Admin result: {user.fullname} {'is' if user.admin else 'is not'} admin."
-        )
-        if not current_app.config["ENABLE_ADMIN_MANAGEMENT"]:
-            print(
-                "Admin management is disabled. Set ENABLE_ADMIN_MANAGEMENT=on to enable admin rights."
-            )
-    except ValueError as e:
-        print(f"User to Admin result: {e}")
-
-
-@bp.cli.command("admin-to-user")
-@click.argument("email")
-def admin_to_user(email):
-    """CLI command to remove administrator rights from a user."""
-    try:
-        user = remove_admin_rights(email)
-        print(
-            f"Admin to User result: {user.fullname} {'is' if user.admin else 'is not'} admin."
-        )
-    except ValueError as e:
-        print(f"Admin to User result: {e}")
 
 
 def is_comma_separated(field_info):

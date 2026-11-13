@@ -259,6 +259,7 @@ def test_oidc_issuer_with_trailing_slash(configuration, mocker):
     """The discovery URL has no double slash when the issuer ends with a slash."""
     configuration["OIDC_ISSUER"] = "https://idp.test/realm/"
     configuration["OIDC_ATTENDEE_ISSUER"] = "https://attendee-idp.test/realm/"
+    configuration["OIDC_ADMIN_ISSUER"] = "https://admin-idp.test/"
     register = mocker.patch("b3desk.oauth.register")
 
     create_app(configuration)
@@ -267,6 +268,7 @@ def test_oidc_issuer_with_trailing_slash(configuration, mocker):
     assert urls == [
         "https://idp.test/realm/.well-known/openid-configuration",
         "https://attendee-idp.test/realm/.well-known/openid-configuration",
+        "https://admin-idp.test/.well-known/openid-configuration",
     ]
 
 
@@ -284,3 +286,14 @@ def test_session_cookie_name_is_used(client_app):
     cookie_name = client_app.app.config["SESSION_COOKIE_NAME"]
     assert cookie_name == default_session_cookie_name()
     assert response.headers["Set-Cookie"].startswith(f"{cookie_name}=")
+
+
+def test_admin_enabled_requires_admin_issuer(configuration):
+    """Enabling the backoffice without an admin issuer is refused."""
+    configuration["OIDC_ADMIN_ENABLED"] = True
+    configuration["OIDC_ADMIN_ISSUER"] = None
+
+    with pytest.raises(
+        ValueError, match="OIDC_ADMIN_ISSUER configuration required when enabling ADMIN"
+    ):
+        MainSettings.model_validate(configuration)

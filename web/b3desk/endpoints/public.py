@@ -24,11 +24,14 @@ from b3desk.utils import http_client
 from .. import cache
 from .. import oauth
 from ..oidc import fetch_userinfo
+from ..session import admin_logged
 from ..session import clear_userinfo
+from ..session import has_admin_session
 from ..session import has_user_session
 from ..session import is_local_url
 from ..session import login_required
 from ..session import should_display_captcha
+from ..session import store_admin_userinfo
 from ..session import store_attendee_userinfo
 from ..session import store_userinfo
 from ..templates.content import FAQ_CONTENT
@@ -69,6 +72,8 @@ def index():
     """Redirect to welcome page if authenticated, otherwise to home page."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
+    if admin_logged():
+        return redirect(url_for("admin.home"))
     return redirect(url_for("public.home"))
 
 
@@ -100,12 +105,24 @@ def login():
     return redirect_to_provider(oauth.default, "public.home")
 
 
+@bp.route("/admin/login")
+def admin_login():
+    """Redirect to the admin identity provider."""
+    if not current_app.config["OIDC_ADMIN_ENABLED"]:
+        abort(404)
+    return redirect_to_provider(oauth.admin, "public.home")
+
+
 @bp.route("/oidc_callback")
 def oidc_callback():
-    """Complete the OIDC authentication of an organizer or an attendee."""
+    """Complete the OIDC authentication of an admin, an organizer or an attendee."""
     state = request.args.get("state")
     if oauth.attendee.framework.get_state_data(session, state):
         return attendee_callback()
+    if current_app.config["OIDC_ADMIN_ISSUER"] and oauth.admin.framework.get_state_data(
+        session, state
+    ):
+        return admin_callback()
     return organizer_callback()
 
 
@@ -152,12 +169,44 @@ def attendee_callback():
     )
 
 
+def admin_callback():
+    try:
+        token = oauth.admin.authorize_access_token()
+        userinfo = fetch_userinfo(oauth.admin, token)
+    except OAuthError as exc:
+        current_app.logger.warning("Admin OIDC authorization error: %s", exc)
+        flash(_("La connexion a été annulée."), "error")
+        return redirect(url_for("public.index"))
+    except (requests.RequestException, JoseError) as exc:
+        current_app.logger.warning("Admin OIDC provider error: %s", exc)
+        flash(_("La connexion a échoué, merci de réessayer plus tard."), "error")
+        return redirect(url_for("public.index"))
+    if current_app.config["OIDC_ADMIN_GROUP"] in userinfo["groups"]:
+        store_admin_userinfo(userinfo, token["id_token"])
+        flash(_("Vous êtes connecté en tant qu'administrateur."), "success")
+        current_app.logger.info(
+            "Admin %s, %s logged", userinfo["email"], userinfo["name"]
+        )
+    else:
+        current_app.logger.warning(
+            "Admin connection aborted: %s, %s is not admin",
+            userinfo["email"],
+            userinfo["name"],
+        )
+        flash(_("Vous n'avez pas les droits administrateur."), "error")
+        return redirect(url_for("public.index"))
+    return redirect(url_for("admin.home"))
+
+
 @bp.route("/home")
 @check_private_key()
 def home():
     """Render the public home page for unauthenticated users."""
     if has_user_session():
         return redirect(url_for("public.welcome"))
+
+    if admin_logged():
+        return redirect(url_for("admin.home"))
 
     stats = get_meetings_stats()
     return render_template(
@@ -224,7 +273,6 @@ def welcome():
         favorite_filter=favorite_filter and bool(favorite_meetings),
         should_display_captcha=should_display_captcha(),
         confirm_form=ConfirmForm(),
-        admin_mode=False,
     )
 
 
@@ -280,14 +328,17 @@ def documentation():
 
 @bp.route("/logout")
 def logout():
-    """Log out the current user locally, and from the OIDC provider if it supports it."""
-    id_token = session.get("id_token")
+    """Log out the current user or admin locally, and from the OIDC provider if it supports it."""
+    if has_admin_session():
+        client, id_token = oauth.admin, session.get("admin_id_token")
+    else:
+        client, id_token = oauth.default, session.get("id_token")
     clear_userinfo()
     if not id_token:
         return redirect(url_for("public.index"))
 
     try:
-        metadata = oauth.default.load_server_metadata()
+        metadata = client.load_server_metadata()
     except requests.RequestException as exc:
         current_app.logger.warning("Could not reach the OIDC provider: %s", exc)
         return redirect(url_for("public.index"))

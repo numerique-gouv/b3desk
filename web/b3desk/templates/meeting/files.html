@@ -27,7 +27,7 @@
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
 <div class="fr-mt-4w fr-mb-4w">
-    {% if not admin_mode %}
+    {% if not admin_logged %}
         <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
     {% else %}
         <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">
@@ -91,7 +91,7 @@
 
 <div class="fr-container fr-mt-2w">
     <h2 class="fr-h3">{% trans %}Vous pouvez ajouter un fichier :{% endtrans %}</h2>
-    {% if g.user.has_nc_credentials and not g.is_nextcloud_available %}
+    {% if g.user and g.user.has_nc_credentials and not g.is_nextcloud_available %}
         <div class="fr-alert fr-alert--warning fr-mb-2w">
             <h3 class="fr-alert__title">{% trans %}Nuage temporairement indisponible{% endtrans %}</h3>
             <p>{% trans %}Un problème technique empêche l'accès au Nuage. Certaines fonctionnalités sont momentanément désactivées. Veuillez réessayer dans quelques minutes.{% endtrans %}</p>
@@ -130,7 +130,7 @@
                                     {% trans %}Supprimer{% endtrans %}
                                 </h1>
                                 <p class="padbot">{% trans file_title=file.short_title %}Voulez-vous vraiment supprimer le fichier <em>{{ file_title }}</em> ?{% endtrans %}</p>
-                                {% if meeting in g.user.get_all_delegated_meetings %}
+                                {% if g.user and meeting in g.user.get_all_delegated_meetings %}
                                     <p><i>{% trans meeting_name=meeting.name %}Vous n'êtes pas propriétaire de "{{ meeting_name }}"{% endtrans %}</i></p>
                                 {% endif %}
                             </div>
@@ -209,7 +209,7 @@
 </div>
 
 <div class="fr-container fr-mt-4w">
-    {% if not admin_mode %}
+    {% if not admin_logged %}
         <a href="{{ url_for("public.welcome") }}"><span aria-hidden="true" class="fr-fi-arrow-left-line"></span>{% trans %}Retour à mes réunions{% endtrans %}</a>
     {% else %}
         <a href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">

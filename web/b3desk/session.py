@@ -12,6 +12,8 @@ from flask import url_for
 
 def store_userinfo(userinfo, id_token):
     """Add the organizer userinfo and id_token in session."""
+    session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.permanent = True
     session["userinfo"] = userinfo
     session["id_token"] = id_token
@@ -20,16 +22,29 @@ def store_userinfo(userinfo, id_token):
 
 def store_attendee_userinfo(userinfo):
     """Add the attendee userinfo in session."""
+    session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.permanent = True
     session["attendee_userinfo"] = userinfo
     session["last_authenticated"] = time.time()
 
 
+def store_admin_userinfo(userinfo, id_token):
+    """Add the admin userinfo and id_token in session."""
+    clear_userinfo()
+    session.permanent = True
+    session["admin_userinfo"] = userinfo
+    session["admin_id_token"] = id_token
+    session["last_authenticated"] = time.time()
+
+
 def clear_userinfo():
-    """Remove the organizer and attendee identities from session, logging out the current user locally."""
+    """Remove the organizer and attendee ans admin identities from session, logging out the current user locally."""
     session.pop("userinfo", None)
     session.pop("id_token", None)
     session.pop("attendee_userinfo", None)
+    session.pop("admin_userinfo", None)
+    session.pop("admin_id_token", None)
     session.pop("last_authenticated", None)
     permanent = current_app.config["SESSION_PERMANENT"]
     if session.permanent != permanent:
@@ -46,6 +61,11 @@ def has_attendee_session():
     return "attendee_userinfo" in session
 
 
+def has_admin_session():
+    """Check if an admin has an active authenticated session."""
+    return "admin_userinfo" in session
+
+
 def is_local_url(url):
     """Check that the URL is a path on this site, and not an external URL."""
     return (
@@ -56,14 +76,18 @@ def is_local_url(url):
     )
 
 
+def go_to_user_login_page():
+    next_url = request.full_path if request.query_string else request.path
+    return redirect(url_for("public.login", next=next_url))
+
+
 def login_required(view_function):
     """Require that the user is authenticated, redirecting to login otherwise."""
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
         if not has_user_session():
-            next_url = request.full_path if request.query_string else request.path
-            return redirect(url_for("public.login", next=next_url))
+            return go_to_user_login_page()
 
         return view_function(*args, **kwargs)
 
@@ -86,17 +110,37 @@ def admin_needed(view_function):
 
     @wraps(view_function)
     def decorator(*args, **kwargs):
-        if not g.user or not g.user.has_admin_rights:
+        if not admin_logged():
             abort(403)
-
         return view_function(*args, **kwargs)
 
     return decorator
 
 
-def is_admin_mode():
-    """Whether admin mode is requested by an actual admin (display hint, not access control)."""
-    return "admin_mode" in request.args and bool(g.user) and g.user.has_admin_rights
+def admin_logged():
+    """Check if admin has an authenticated session available."""
+    admin_userinfo = session.get("admin_userinfo")
+    last_authenticated = session.get("last_authenticated")
+    if not admin_userinfo:
+        return False
+    if (
+        current_app.config["OIDC_ADMIN_SESSION_LIFETIME"] + last_authenticated
+        < time.time()
+    ):
+        clear_userinfo()
+        return False
+    return bool(
+        current_app.config["OIDC_ADMIN_ENABLED"]
+        and admin_userinfo["groups"]
+        and current_app.config["OIDC_ADMIN_GROUP"] in admin_userinfo["groups"]
+    )
+
+
+def get_current_email():
+    """Return the email of the logged user, or of the logged admin."""
+    if g.user:
+        return g.user.email
+    return session["admin_userinfo"]["email"]
 
 
 def user_needed(view_function):
@@ -113,7 +157,7 @@ def user_needed(view_function):
 
 
 def meeting_access_required(level=None):
-    """Require that the user owns the meeting or has at least the given access level."""
+    """Require that an admin is logged, or that the user owns the meeting or has at least the given access level."""
     from b3desk.models import db
     from b3desk.models.meetings import Meeting
     from b3desk.models.meetings import MeetingAccess
@@ -121,12 +165,16 @@ def meeting_access_required(level=None):
     def wrapper(view_function):
         @wraps(view_function)
         def decorator(*args, meeting, **kwargs):
-            if not g.user:
-                abort(403)
 
             meeting = db.session.get(Meeting, meeting.id)
 
-            if meeting.owner == g.user or g.user.has_admin_rights:
+            if admin_logged():
+                return view_function(*args, user=None, meeting=meeting, **kwargs)
+
+            if not g.user:
+                return go_to_user_login_page()
+
+            if meeting.owner == g.user:
                 return view_function(*args, user=g.user, meeting=meeting, **kwargs)
 
             if level is not None:

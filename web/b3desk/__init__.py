@@ -305,6 +305,8 @@ def setup_jinja(app):
 
     @app.context_processor
     def global_processor():
+        from b3desk.session import admin_logged
+
         locale = get_locale()
         return {
             "debug": app.debug,
@@ -321,6 +323,7 @@ def setup_jinja(app):
             "lang_url": lang_url,
             "language_name": language_name,
             "Role": Role,
+            "admin_logged": admin_logged(),
         }
 
 
@@ -481,6 +484,18 @@ def setup_authlib(app):
             "default_timeout": 5,
         },
     )
+    if app.config["OIDC_ADMIN_ISSUER"]:
+        oauth.register(
+            "admin",
+            client_id=app.config["OIDC_ADMIN_CLIENT_ID"],
+            client_secret=app.config["OIDC_ADMIN_CLIENT_SECRET"],
+            token_endpoint_auth_method=app.config["OIDC_ADMIN_CLIENT_AUTH_METHOD"],
+            server_metadata_url=f"{app.config['OIDC_ADMIN_ISSUER'].rstrip('/')}/.well-known/openid-configuration",
+            client_kwargs={
+                "scope": app.config["OIDC_ADMIN_SCOPES"],
+                "default_timeout": 5,
+            },
+        )
 
     oauth.init_app(app)
 

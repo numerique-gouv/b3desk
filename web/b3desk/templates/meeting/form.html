@@ -122,11 +122,11 @@
   </div>
   <div class="fr-mt-4w">
     {% if meeting is not none %}
-      {{ form.save(label=_("Enregistrer"), class_="fr-btn fr-btn--primary" ~ (" need-confirm" if meeting in g.user.get_all_delegated_meetings else "")) }}
+      {{ form.save(label=_("Enregistrer"), class_="fr-btn fr-btn--primary" ~ (" need-confirm" if (g.user and meeting in g.user.get_all_delegated_meetings) else "")) }}
     {% else %}
       {{ form.save(label=_("Créer la salle"), class_="fr-btn") }}
     {% endif %}
-    {% if not admin_mode %}
+    {% if not admin_logged %}
       <a class="fr-btn fr-btn--secondary" href="{{ url_for("public.welcome") }}">{% trans %}Annuler{% endtrans %}</a>
     {% else %}
       <a class="fr-btn fr-btn--secondary" href="{{ url_for("admin.meeting_infos", meeting=meeting) }}">{% trans %}Annuler{% endtrans %}</a>

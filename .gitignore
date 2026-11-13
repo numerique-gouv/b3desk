@@ -9,6 +9,8 @@ nextcloud/html/*
 !nextcloud/html/.keep
 nextcloud/conf/*
 
+/data/
+
 web/conf/*
 web/logs/*
 web/upload/*

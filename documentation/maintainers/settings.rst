@@ -144,21 +144,71 @@ Il suffira de transmettre ce token au matériel SIP qui devra le joindre dans le
 Gestion des administrateurs
 ===========================
 
+Les administrateurs ne sont pas des utilisateurs de B3Desk : ils ne sont pas enregistrés en base de données.
+Ils se connectent au backoffice via un serveur d’identité OpenID Connect dédié, par exemple `Canaille <https://canaille.readthedocs.io>`_, distinct de celui des utilisateurs.
+
 Le backoffice est désactivé par défaut.
-Pour l’activer, définissez ``ENABLE_ADMIN_MANAGEMENT=on``.
-Tant qu’il est désactivé, les administrateurs ont les mêmes droits que les autres utilisateurs.
-Vous pouvez donner ou retirer les droits admin dans les deux cas.
+Tant qu’il est désactivé, la page ``/admin/login`` renvoie une erreur 404 et aucun administrateur ne peut se connecter.
 
-Donner les droits admin
------------------------
+Configurer le serveur d’identité des admins
+-------------------------------------------
+
+Dans Canaille :
+
+1. créez un client OpenID Connect pour B3Desk avec :
+
+   - l’URL de redirection ``https://<instance_b3desk>/oidc_callback`` ;
+   - l’URL de redirection après déconnexion ``https://<instance_b3desk>/logout`` ;
+   - les scopes ``openid``, ``profile``, ``email`` et ``groups`` ;
+
+2. créez un groupe d’administration, nommé ``admin`` par défaut ;
+3. créez un compte pour chaque administrateur et ajoutez-le à ce groupe.
+
+Créez les comptes administrateurs sans mot de passe, pour ne pas en laisser dans l’historique du shell.
+Aucun mail n’est envoyé à la création : à sa première connexion, l’administrateur saisit son identifiant et Canaille lui propose de recevoir par mail un lien pour définir son mot de passe.
+Canaille doit pour cela être configuré avec un serveur SMTP ; sans SMTP, un compte sans mot de passe ne peut pas se connecter.
+Le SMTP se configure dans la section ``[CANAILLE.SMTP]`` du fichier de configuration de Canaille, ou par variables d’environnement :
 
 .. code-block:: bash
 
-   docker exec -it <CONTAINER_ID/NAME> flask user-to-admin <email>
+   CANAILLE__SMTP__HOST=smtp.example.com
+   CANAILLE__SMTP__PORT=587
+   CANAILLE__SMTP__TLS=true
+   CANAILLE__SMTP__LOGIN=<login>
+   CANAILLE__SMTP__PASSWORD=<mot_de_passe>
+   CANAILLE__SMTP__FROM_ADDR=admin@example.com
 
-Retirer les droits admin
-------------------------
+Consultez la `documentation de Canaille <https://canaille.readthedocs.io>`_ pour la création des clients, groupes et comptes.
+La :doc:`documentation de contribution <../developers/contributing>`, section « Se connecter en administrateur avec Canaille », donne un exemple complet de ces commandes sur l’instance Canaille locale de développement.
+
+Configurer B3Desk
+-----------------
 
 .. code-block:: bash
 
-   docker exec -it <CONTAINER_ID/NAME> flask admin-to-user <email>
+   OIDC_ADMIN_ENABLED=on
+   OIDC_ADMIN_ISSUER=https://<instance_canaille>
+   OIDC_ADMIN_CLIENT_ID=<client_id>
+   OIDC_ADMIN_CLIENT_SECRET=<client_secret>
+   OIDC_ADMIN_SCOPES=openid, profile, email, groups
+   OIDC_ADMIN_GROUP=admin
+   OIDC_ADMIN_SESSION_LIFETIME=3600
+
+B3Desk refuse de démarrer si ``OIDC_ADMIN_ENABLED`` est activé sans ``OIDC_ADMIN_ISSUER``.
+Le détail de chaque paramètre est décrit dans la section `B3Desk`_.
+
+Connexion des administrateurs
+-----------------------------
+
+Les administrateurs se connectent sur ``https://<instance_b3desk>/admin/login``.
+Seuls les comptes membres du groupe ``OIDC_ADMIN_GROUP`` obtiennent l’accès au backoffice.
+
+- une session administrateur et une session utilisateur ne peuvent pas coexister : se connecter avec l’une ferme l’autre ;
+- la session administrateur expire après ``OIDC_ADMIN_SESSION_LIFETIME`` secondes, sans être prolongée par l’activité ;
+- la déconnexion ferme aussi la session sur le serveur d’identité des admins.
+
+Donner ou retirer les droits admin
+----------------------------------
+
+Les droits admin se gèrent uniquement dans le serveur d’identité : ajoutez ou retirez le compte du groupe ``OIDC_ADMIN_GROUP``.
+Un retrait prend effet à la prochaine connexion de l’administrateur, ou au plus tard à l’expiration de sa session.
