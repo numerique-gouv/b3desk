@@ -250,7 +250,7 @@ def test_home_when_captchetat_is_unreachable(access_token, client_app, mocker):
         sess["visio_code_attempt_counter"] = 2
 
     response = client_app.get("/home", status=200)
-    response.mustcontain('id="captcha-container" style="display: none;"')
+    response.mustcontain('class="captcha-container fr-hidden" id="captcha-container"')
 
 
 @mock.patch("b3desk.endpoints.captcha.get_captchetat_token")
