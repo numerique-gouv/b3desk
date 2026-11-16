@@ -81,15 +81,17 @@ Ce client doit avoir un mapper d'audience configuré dans Keycloak, sans quoi l'
 - Mapper Type: `Audience`
 - Included Custom Audience: `bbb-visio`
 
-Récupérer un jeton via le grant `password` (compte de test `bbb-visio-user` / `Pa55w0rd`), et appeler l'API dans la même commande :
-
+Récupérer un jeton via le grant `password` (compte de test `bbb-visio-user` / `Pa55w0rd`) :
 ```bash
 export TOKEN=$(curl -s -X POST http://keycloak.localhost:8080/auth/realms/apps/protocol/openid-connect/token \
     -d grant_type=password -d client_id=bbb-visio \
     -d client_secret=e873443f-47cd-43a4-bae1-07ee1ade68c6 \
     -d username=bbb-visio-user -d password=Pa55w0rd -d scope=openid \
     | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+```
 
+Appeler l'API :
+```bash
 curl -s -H "Authorization: Bearer $TOKEN" http://b3desk.localhost:5000/api/meetings
 ```
 
