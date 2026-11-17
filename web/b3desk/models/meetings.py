@@ -17,8 +17,9 @@ from enum import IntEnum
 
 from flask import current_app
 from flask_babel import lazy_gettext as _
+from itsdangerous import BadSignature
 from itsdangerous import Signer
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import JSON
 from sqlalchemy import Column
 from sqlalchemy import Date
@@ -77,10 +78,23 @@ PASSWORD_HASH_LENGTH = 16
 
 
 def get_meeting_file_hash(*args):
-    serializer = URLSafeSerializer(
+    serializer = URLSafeTimedSerializer(
         current_app.config["SECRET_KEY"], salt="meeting-file"
     )
     return serializer.dumps(args)
+
+
+def get_nextcloud_token_info(token):
+    serializer = URLSafeTimedSerializer(
+        current_app.config["SECRET_KEY"], salt="meeting-file"
+    )
+    try:
+        return serializer.loads(
+            token, max_age=current_app.config["NEXTCLOUD_TOKEN_MAX_AGE"]
+        )
+    except BadSignature as exc:
+        current_app.logger.error("Error on nextcloud token : %s", exc)
+    return None
 
 
 class BaseMeetingFiles:
