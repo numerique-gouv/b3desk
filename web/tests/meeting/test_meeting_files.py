@@ -1317,3 +1317,68 @@ def test_upload_file_chunks_with_csrf_enabled(
     )
 
     assert response.json["msg"] == "ok"
+
+
+def test_admin_can_add_url_file_as_meeting_owner(
+    client_app, authenticated_admin, user, meeting, httpx2_mock
+):
+    """Test that admin can add url file as meeting owner."""
+    httpx2_mock.route(method="HEAD").respond(200, headers={"content-length": "1000"})
+
+    response = client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "URL", "value": "https://example.com/doc.pdf"}),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_int == 200
+    assert response.json["title"] == "doc.pdf"
+
+    file_id = response.json["id"]
+    file = db.session.get(MeetingFiles, file_id)
+    assert file.owner_id == user.id
+
+
+def test_admin_canot_add_upload_file(
+    client_app, authenticated_admin, user, meeting, httpx2_mock
+):
+    """Test that admin cannot add upload file."""
+    client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "upload", "value": "file.jpg"}),
+        headers={"Content-Type": "application/json"},
+        status=403,
+    )
+
+
+def test_admin_canot_add_nextcloud_file(
+    client_app, authenticated_admin, user, meeting, httpx2_mock
+):
+    """Test that admin cannot add nextcloud file."""
+    client_app.post(
+        url_for("meeting_files.add_meeting_files", meeting=meeting),
+        params=json.dumps({"from": "nextcloud", "value": "file.jpg"}),
+        headers={"Content-Type": "application/json"},
+        status=403,
+    )
+
+
+def test_admin_cannot_add_dropzone_file(
+    client_app, authenticated_admin, user, meeting, jpg_file_content, tmp_path
+):
+    """Test admin cannot uploading a file via dropzone chunked upload."""
+    res = client_app.post(
+        f"/meeting/files/{meeting.id}/upload",
+        {
+            "dzchunkindex": 0,
+            "dzchunkbyteoffset": 0,
+            "dztotalchunkcount": 1,
+            "dztotalfilesize": 134,
+        },
+        upload_files=[("dropzoneFiles", "file.jpg", jpg_file_content)],
+        status=403,
+    )
+
+    assert res.json["msg"] == "Requête invalide"
+
+    assert len(db.session.scalars(db.select(MeetingFiles)).all()) == 0

@@ -20,37 +20,6 @@ def test_get_apps_id(cli_runner, user):
     assert res.exit_code == 0, res.output
 
 
-def test_user_to_admin(cli_runner, user):
-    """Test CLI user-to-admin."""
-    res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    assert res.output_bytes == b"User to Admin result: Alice Cooper is admin.\n"
-
-
-def test_admin_to_user(cli_runner, user):
-    """Test CLI admin-to-user."""
-    res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    res = cli_runner.invoke(bp.cli, ["admin-to-user", "alice@domain.tld"])
-    assert res.output_bytes == b"Admin to User result: Alice Cooper is not admin.\n"
-
-
-def test_user_to_admin_with_wrong_email(cli_runner, user):
-    """Test CLI user-to-admin with a wrong email."""
-    res = cli_runner.invoke(bp.cli, ["user-to-admin", "wrong_email@domain.tld"])
-    assert (
-        res.output_bytes
-        == b"User to Admin result: No user with this email was found.\n"
-    )
-
-
-def test_admin_to_user_with_wrong_email(cli_runner, user):
-    """Test CLI admin-to-user with a wrong email."""
-    res = cli_runner.invoke(bp.cli, ["admin-to-user", "wrong_email@domain.tld"])
-    assert (
-        res.output_bytes
-        == b"Admin to User result: No user with this email was found.\n"
-    )
-
-
 def test_populate(cli_runner, client_app):
     """Test CLI populate generates the requested amount of data."""
     res = cli_runner.invoke(
@@ -223,14 +192,3 @@ def test_config_dump_comments_empty_attendee_settings(
     )
 
     assert not any(line.startswith("OIDC_ATTENDEE_") for line in exported_config)
-
-
-def test_user_to_admin_with_admin_management_disabled(cli_runner, client_app, user):
-    """Test CLI user-to-admin grants admin rights when admin management is disabled."""
-    client_app.app.config["ENABLE_ADMIN_MANAGEMENT"] = False
-    res = cli_runner.invoke(bp.cli, ["user-to-admin", "alice@domain.tld"])
-    assert res.exit_code == 0
-    assert "Admin management is disabled." in res.output
-    db.session.refresh(user)
-    assert user.admin
-    assert not user.has_admin_rights

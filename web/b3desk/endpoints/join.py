@@ -26,6 +26,7 @@ from b3desk.models.meetings import get_meeting_by_visio_code
 from b3desk.models.meetings import get_meeting_from_meeting_id
 from b3desk.models.roles import Role
 from b3desk.models.users import User
+from b3desk.session import admin_logged
 from b3desk.session import visio_code_attempt_counter_increment
 from b3desk.session import visio_code_attempt_counter_reset
 from b3desk.utils import check_token_errors
@@ -276,20 +277,22 @@ def join_meeting_as_authenticated(meeting_id):
 
 
 @bp.route("/meeting/join/<meeting:meeting>/<role:role>")
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def join_meeting_as_role(meeting: Meeting, role: Role, user: User):
     """Join a meeting as the owner with a specific role."""
+    admin_userinfo = session.get("admin_userinfo")
     if role == Role.moderator:
-        created = create_bbb_meeting(meeting, g.user)
+        launcher = meeting.owner if admin_logged() else user
+        created = create_bbb_meeting(meeting, launcher)
         waiting_room = not created
     else:
         waiting_room = True
+    fullname = user.fullname if user else admin_userinfo["name"]
     return redirect(
         get_join_url(
             meeting,
             role,
-            user.fullname,
+            fullname,
             waiting_room=waiting_room,
         )
     )

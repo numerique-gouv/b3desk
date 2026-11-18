@@ -391,6 +391,25 @@ def test_logout_redirects_to_end_session_endpoint(
     assert params["post_logout_redirect_uri"] == [expected_redirect]
 
 
+def test_admin_logout_redirects_to_admin_end_session_endpoint(client_app, iam_server):
+    """An admin logout must end the session on the admin identity provider."""
+    with client_app.session_transaction() as session:
+        session["admin_userinfo"] = {"email": "admin@domain.tld", "groups": ["admins"]}
+        session["admin_id_token"] = "admin-id-token"
+
+    response = client_app.get("/logout", status=302)
+
+    parsed = urlparse(response.location)
+    assert (
+        f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+        == f"{iam_server.url}oauth/end_session"
+    )
+    assert parse_qs(parsed.query)["id_token_hint"] == ["admin-id-token"]
+    with client_app.session_transaction() as session:
+        assert "admin_userinfo" not in session
+        assert "admin_id_token" not in session
+
+
 def test_logout_when_the_identity_provider_is_unreachable(
     client_app, configuration, iam_server, iam_client, mocker, caplog
 ):
@@ -465,3 +484,100 @@ def test_unusable_claims_clear_the_session(client_app, caplog):
         assert "last_authenticated" not in session
 
     assert "Could not build a user from the OIDC claims" in caplog.text
+
+
+def admin_callback_location(client_app, iam_server):
+    """Go through the admin identity provider and return the callback URL."""
+    iam_user = iam_server.random_user()
+    iam_server.login(iam_user)
+    iam_server.consent(iam_user)
+
+    response = client_app.get("/admin/login", status=302)
+    response = iam_server.test_client.get(response.location)
+    return response.headers["Location"]
+
+
+def test_admin_authentication(
+    client_app, configuration, iam_server, iam_client, mocker
+):
+    """Members of the admin group are logged in the backoffice."""
+    mocker.patch(
+        "b3desk.endpoints.public.fetch_userinfo",
+        return_value={
+            "email": "admin@domain.tld",
+            "name": "Admin",
+            "groups": ["admin"],
+        },
+    )
+
+    response = client_app.get(
+        admin_callback_location(client_app, iam_server), status=302
+    )
+
+    assert response.location == "/admin/home"
+    assert (
+        "success",
+        "Vous êtes connecté en tant qu'administrateur.",
+    ) in response.flashes
+    with client_app.session_transaction() as session:
+        assert session["admin_userinfo"]["email"] == "admin@domain.tld"
+        assert session["admin_id_token"]
+        assert "userinfo" not in session
+
+    assert client_app.get("/", status=302).location == "/admin/home"
+
+
+def test_non_admin_cannot_log_in_the_backoffice(
+    client_app, configuration, iam_server, iam_client, mocker
+):
+    """Users outside the admin group are refused."""
+    mocker.patch(
+        "b3desk.endpoints.public.fetch_userinfo",
+        return_value={"email": "alice@domain.tld", "name": "Alice", "groups": []},
+    )
+
+    response = client_app.get(
+        admin_callback_location(client_app, iam_server), status=302
+    )
+
+    assert response.location == "/"
+    assert (
+        "error",
+        "Vous n'avez pas les droits administrateur.",
+    ) in response.flashes
+    with client_app.session_transaction() as session:
+        assert "admin_userinfo" not in session
+
+
+def test_admin_callback_oauth_error_redirects_home(
+    client_app, configuration, iam_server, iam_client
+):
+    """A refused consent on the admin callback redirects to the index."""
+    location = admin_callback_location(client_app, iam_server).replace(
+        "code=", "error=access_denied&code="
+    )
+
+    response = client_app.get(location, status=302)
+
+    assert response.location == "/"
+    assert ("error", "La connexion a été annulée.") in response.flashes
+
+
+def test_admin_callback_provider_error_redirects_home(
+    client_app, configuration, iam_server, iam_client, mocker
+):
+    """An unreachable admin identity provider redirects to the index."""
+    mocker.patch(
+        "b3desk.endpoints.public.fetch_userinfo",
+        side_effect=requests.ConnectionError("unreachable"),
+    )
+
+    response = client_app.get(
+        admin_callback_location(client_app, iam_server), status=302
+    )
+
+    assert response.location == "/"
+    assert (
+        "error",
+        "La connexion a échoué, merci de réessayer plus tard.",
+    ) in response.flashes

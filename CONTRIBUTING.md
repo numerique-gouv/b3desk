@@ -11,6 +11,7 @@ Vous trouverez ici les quelques indications qui permettront à B3Desk de grandir
 Pour lancer l'application et coller au plus proche des conditions de production, un certain nombre de conteneurs doivent être lancés pour pouvoir s'assurer que l'ensemble reste fonctionnel. Les différents services sont dans les fichiers `docker-compose.yml` et `docker-compose.override.yml` qui vient surcharger le premier :
 - web : le cœur de l'application, la surcouche à BigBlueButton qui permet de gérer les visioconférences
 - keycloak : le service d'authentification avec un utilisateur `bbb-visio-user` instancié
+- canaille : le service d'authentification des administrateurs (persistance des données dans `data`)
 - nextcloud : un des moyens disponibles pour partager des fichiers en visioconférence (persistance de l'installation dans `nextcloud/html`)
 - postgres : la base de données qui va persister les données des services Nextcloud, keycloak et web (persistance des données dans `postgres/data`)
 - worker : le worker celery permettant de gérer l'upload de fichiers de façon asynchrone
@@ -45,6 +46,53 @@ SMTP_HOST=mailpit
 SMTP_PORT=1025
 ```
 Les mails captés sont consultables sur http://mailpit.localhost:8025/.
+
+Le service `canaille` est déjà configuré pour envoyer ses mails à mailpit, par exemple le lien d'initialisation du mot de passe d'un compte admin créé sans `--password`.
+
+#### Se connecter en administrateur avec Canaille
+
+Les administrateurs se connectent via le service `canaille`, distinct de keycloak.
+Il faut y créer un compte, le groupe d'administration et le client OIDC de B3Desk.
+Les valeurs de `--client-id` et `--client-secret` doivent correspondre à `OIDC_ADMIN_CLIENT_ID` et `OIDC_ADMIN_CLIENT_SECRET` dans `web.env` :
+
+```bash
+docker compose up -d canaille
+
+docker compose exec canaille canaille create user \
+    --user-name admin \
+    --password admin \
+    --emails admin@mydomain.example \
+    --given-name George \
+    --family-name Abitbol \
+    --formatted-name "George Abitbol"
+
+docker compose exec canaille canaille create group \
+    --display-name admin \
+    --members admin
+
+docker compose exec canaille canaille create client \
+    --client-id b3desk \
+    --client-secret b3desk \
+    --client-name "b3desk" \
+    --client-uri http://b3desk.localhost:5000 \
+    --contacts admin@mydomain.example \
+    --redirect-uris http://b3desk.localhost:5000/oidc_callback \
+    --post-logout-redirect-uris http://b3desk.localhost:5000/logout \
+    --grant-types authorization_code \
+    --response-types code \
+    --scope openid --scope profile --scope email --scope groups \
+    --token-endpoint-auth-method client_secret_post
+```
+
+Les données de Canaille sont stockées dans `data/`, qui ne doit pas être commité.
+
+Dans `web.env`, activer le backoffice ; les autres variables `OIDC_ADMIN_*` de `web.env.example` correspondent déjà au client créé ci-dessus :
+```
+OIDC_ADMIN_ENABLED=on
+```
+
+Se connecter ensuite sur http://b3desk.localhost:5000/admin/login avec le compte `admin`, mot de passe `admin`.
+Ces identifiants ne sont destinés qu'au développement local.
 
 ### Environnement de développement
 

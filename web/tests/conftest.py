@@ -352,7 +352,10 @@ def configuration(tmp_path, iam_server, iam_client, request, private_key, db):
         "PISTE_OAUTH_CLIENT_ID": "client-id",
         "PISTE_OAUTH_CLIENT_SECRET": "client-secret",
         "ENABLE_AI_SUMMARY": True,
-        "ENABLE_ADMIN_MANAGEMENT": True,
+        "OIDC_ADMIN_ENABLED": True,
+        "OIDC_ADMIN_ISSUER": iam_server.url,
+        "OIDC_ADMIN_CLIENT_ID": iam_client.client_id,
+        "OIDC_ADMIN_CLIENT_SECRET": iam_client.client_secret,
     }
 
     if "smtpd" in request.fixturenames:
@@ -769,6 +772,17 @@ def authenticated_user_2(client_app, user_2, iam_server, iam_user_2):
     iam_server.consent(iam_user_2)
 
     yield user_2
+
+
+@pytest.fixture
+def authenticated_admin(client_app):
+    with client_app.session_transaction() as session:
+        session["last_authenticated"] = time.time()
+        session["admin_userinfo"] = {
+            "email": "admin@domain.tld",
+            "name": "Admin",
+            "groups": ["admin"],
+        }
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@
         {% trans meeting_name=meeting.name %}Délégation de la réunion <em>{{ meeting_name }}</em>{% endtrans %}
     </h1>
     <div class="fr-my-4v">
-        {% if not admin_mode %}
+        {% if not admin_logged %}
             <a href="{{ url_for("public.welcome") }}">
                 <span aria-hidden="true" class="fr-fi-arrow-left-line"></span>
                 {% trans %}Retour à mes réunions{% endtrans %}
@@ -17,7 +17,7 @@
         {% endif %}
     </div>
     <h6>{% trans %} Ajouter des délégataires {% endtrans %}</h6>
-    {% call form_tag(form, class="fr-search-bar", id="delegationSearchForm", name="search_by_email", role="search", action=url_for("meetings.manage_delegation", meeting=meeting, admin_mode=admin_mode or None), method="post") %}
+    {% call form_tag(form, class="fr-search-bar", id="delegationSearchForm", name="search_by_email", role="search", action=url_for("meetings.manage_delegation", meeting=meeting), method="post") %}
         {{ form.search() }}
         {{ form.add_delegate(class_="fr-btn", title=_("Ajouter l'utilisateur comme délégataire")) }}
     {% endcall %}
@@ -40,7 +40,7 @@
                                         <tr class="">
                                             <td class="fr-col--lg fr-cell--center"> {{delegate.fullname}} </td>
                                             <td class="fr-col--xs fr-cell--center">
-                                                {% call form_tag(confirm_form, method="post", action=url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate, admin_mode=admin_mode or None)) %}
+                                                {% call form_tag(confirm_form, method="post", action=url_for("meetings.remove_delegate", meeting=meeting, delegate=delegate)) %}
                                                     {{ confirm_form.confirm(label="", id=False, class_="fr-btn fr-btn--secondary fr-fi-delete-line", title=_("Retirer le délégataire")) }}
                                                 {% endcall %}
                                             </td>
