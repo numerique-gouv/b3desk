@@ -55,7 +55,7 @@ const formIsValid = async () => {
     if ("shouldDisplayCaptcha" in data && data.shouldDisplayCaptcha && !window.shouldDisplayCaptcha) {
         window.shouldDisplayCaptcha = true;
         const captchaContainer = document.getElementById("captcha-container");
-        captchaContainer.style.display = "block";
+        captchaContainer.classList.remove("fr-hidden");
 
         initCaptchaInput();
 
