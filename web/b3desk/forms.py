@@ -279,6 +279,26 @@ class MeetingForm(B3DeskForm):
     )
     save = ButtonField()
 
+    showParticipantsOnLogin = BooleanField(
+        label=_("Liste des participants visible"),
+        default=True,
+    )
+
+    showPublicChatOnLogin = BooleanField(
+        label=_("Chat affiché à l'ouverture"),
+        default=True,
+    )
+
+    showPresentationOnJoin = BooleanField(
+        label=_("Présentation affichée à l'ouverture"),
+        default=True,
+    )
+
+    showSessionDetailsOnJoin = BooleanField(
+        label=_("Informations affichées à l'ouverture"),
+        default=False,
+    )
+
     def __init__(self, *args, meeting=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.meeting = meeting
