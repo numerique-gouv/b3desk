@@ -30,7 +30,7 @@ from b3desk.models.meetings import AccessLevel
 from b3desk.models.meetings import BaseMeetingFiles
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
-from b3desk.models.meetings import get_meeting_file_hash
+from b3desk.models.meetings import get_nextcloud_token_info
 from b3desk.models.users import User
 from b3desk.nextcloud import create_webdav_client
 from b3desk.nextcloud import is_nextcloud_available
@@ -497,7 +497,8 @@ def file_picker_callback(user: User, bbb_meeting_id: str):
 def ncdownload(token, user, ncpath):
     """Download a file from Nextcloud for BBB using a secure token."""
     current_app.logger.info("Service requesting file url %s", ncpath)
-    if token != get_meeting_file_hash(user.id, ncpath):
+    token_infos = get_nextcloud_token_info(token)
+    if token_infos != [user.id, ncpath]:
         abort(404, "Bad token provided, no file matching")
 
     tmp_download_dir = Path(current_app.config["TMP_DOWNLOAD_DIR"])

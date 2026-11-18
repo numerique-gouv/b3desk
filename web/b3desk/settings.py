@@ -282,6 +282,10 @@ class MainSettings(BaseSettings):
     MAX_SIZE_UPLOAD: int = 20000000
     """Taille maximum des fichiers téléversés, en octets."""
 
+    NEXTCLOUD_TOKEN_MAX_AGE: int = 43200
+    """Time limit of nextcloud token in seconds.
+    Default : 12h."""
+
     TIME_FORMAT: str = "%Y-%m-%d"
     """Format des dates utilisées lors des échanges avec l’API de Nextcloud.
 

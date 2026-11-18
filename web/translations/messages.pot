@@ -1,7 +1,7 @@
 #: web/b3desk/__init__.py:388 web/b3desk/endpoints/meeting_files.py:137
 #: web/b3desk/endpoints/meeting_files.py:201
 #: web/b3desk/endpoints/meeting_files.py:308
-#: web/b3desk/endpoints/meeting_files.py:511
+#: web/b3desk/endpoints/meeting_files.py:512
 msgid ""
 "Le service de fichiers est temporairement indisponible. Veuillez "
 "réessayer dans quelques minutes."
@@ -157,7 +157,7 @@ msgstr ""
 msgid "150 caractères max"
 msgstr ""
 
-#: web/b3desk/forms.py:211 web/b3desk/models/meetings.py:461
+#: web/b3desk/forms.py:211 web/b3desk/models/meetings.py:475
 msgid "Bienvenue aux modérateurs"
 msgstr ""
 
@@ -314,27 +314,27 @@ msgstr ""
 msgid "Non disponible : aucun serveur SIP configuré (FQDN_SIP_SERVER)"
 msgstr ""
 
-#: web/b3desk/settings.py:661 web/b3desk/templates/meeting/list.html:5
+#: web/b3desk/settings.py:665 web/b3desk/templates/meeting/list.html:5
 msgid "Mes salles de réunion"
 msgstr ""
 
-#: web/b3desk/settings.py:665
+#: web/b3desk/settings.py:669
 msgid "Invitation à une réunion en ligne immédiate du Webinaire de l’Etat"
 msgstr ""
 
-#: web/b3desk/settings.py:678
+#: web/b3desk/settings.py:682
 msgid "Réunion improvisée"
 msgstr ""
 
-#: web/b3desk/settings.py:681
+#: web/b3desk/settings.py:685
 msgid " Lien Modérateur  "
 msgstr ""
 
-#: web/b3desk/settings.py:684
+#: web/b3desk/settings.py:688
 msgid " Lien Participant  "
 msgstr ""
 
-#: web/b3desk/settings.py:688
+#: web/b3desk/settings.py:692
 msgid ""
 "Bienvenue aux modérateurs. Pour inviter quelqu'un à cette réunion, "
 "envoyez-lui l'un de ces liens :"
@@ -578,16 +578,16 @@ msgstr ""
 msgid "⚠️ Les enregistrements de cette session seront traités par l'IA AlbertAPI"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:440 web/b3desk/models/meetings.py:447
+#: web/b3desk/models/meetings.py:454 web/b3desk/models/meetings.py:461
 msgid "Ce code PIN est déjà utilisé"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:454
+#: web/b3desk/models/meetings.py:468
 #, python-format
 msgid "la réunion de %(fullname)s"
 msgstr ""
 
-#: web/b3desk/models/meetings.py:456
+#: web/b3desk/models/meetings.py:470
 #, python-format
 msgid "Bienvenue dans la réunion de %(fullname)s"
 msgstr ""

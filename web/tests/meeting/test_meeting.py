@@ -680,6 +680,7 @@ def test_create_with_only_a_default_file(
     assert mocked_background_upload.called
 
 
+@pytest.mark.time_machine(datetime.datetime(2025, 1, 1), tick=False)
 def test_create_with_files(
     client_app,
     meeting,
