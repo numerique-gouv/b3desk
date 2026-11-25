@@ -18,6 +18,8 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingSecretKey
+from b3desk.models.meetings import MeetingSession
+from b3desk.models.meetings import SessionAttendee
 from b3desk.models.meetings import assign_unique_voice_bridge
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
@@ -984,6 +986,29 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
+
+
+def test_delete_meeting_with_session_attendees(
+    client_app, authenticated_user, meeting, bbb_response
+):
+    """Test that meeting can be deleted even if its sessions have attendees, and that they are deleted too."""
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        ended_at=datetime.datetime.now(),
+        attendees=[SessionAttendee(name="Alice", moderator=True, duration=33)],
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
+    assert ("success", "Élément supprimé") in res.flashes
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
+    assert (
+        db.session.scalar(db.select(db.func.count()).select_from(MeetingSession)) == 0
+    )
+    assert (
+        db.session.scalar(db.select(db.func.count()).select_from(SessionAttendee)) == 0
+    )
 
 
 def test_delete_meeting_with_meeting_files(

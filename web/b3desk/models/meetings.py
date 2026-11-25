@@ -173,6 +173,7 @@ class MeetingSession(db.Model):
         "SessionAttendee",
         back_populates="session",
         order_by="SessionAttendee.joins.asc()",
+        cascade="all, delete-orphan",
     )
 
     @property
@@ -208,6 +209,7 @@ class Meeting(db.Model):
         "MeetingSession",
         back_populates="meeting",
         order_by="MeetingSession.started_at.desc()",
+        cascade="all, delete-orphan",
     )
 
     # BBB params
@@ -561,8 +563,6 @@ def clean_db_and_delete_meeting(meeting):
     previous_voiceBridge = PreviousVoiceBridge()
     previous_voiceBridge.voiceBridge = meeting.voiceBridge
     db.session.add(previous_voiceBridge)
-    for session in meeting.sessions:
-        db.session.delete(session)
     db.session.delete(meeting)
     db.session.commit()
 
