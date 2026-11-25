@@ -11,7 +11,7 @@
         {'href': url_for('admin.home'), 'label': _('Menu Admin')},
         {'href': url_for('admin.manage_meetings'), 'label': _('Réunions')},
         {'href': url_for('admin.meeting_infos', meeting=meeting), 'label': meeting.name},
-        {'href': url_for('meetings.show_meeting_recording', meeting=meeting, admin_mode=admin_mode or None), 'label': _('Voir les enregistrements de {meeting_name}').format(meeting_name=meeting.name)},
+        {'href': url_for('meetings.show_meeting_session', meeting=meeting, admin_mode=admin_mode or None), 'label': _('Voir les enregistrements de {meeting_name}').format(meeting_name=meeting.name)},
         ]) }}
     {% endif %}
     <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Historique de <em>{{meeting_name }}{% endtrans %}</em></h1>
@@ -55,9 +55,15 @@
                 <p class="fr-mr-3w fr-mb-1w">{% trans %}Filtrer{% endtrans %} :</p>
                 <ul class="fr-tags-group">
                     <li>
-                        <button type="button" class="fr-tag" aria-pressed="{{ 'true' if recording_filter else 'false' }}" onclick="location.href='{{ url_for("meetings.show_meeting_session", meeting=meeting, admin_mode=admin_mode or None, recording_filter=not recording_filter) }}'">
-                            {% trans %}Avec enregistrement seulement{% endtrans %}
-                        </button>
+                        <form method="GET" action="{{ url_for("meetings.show_meeting_session", meeting=meeting) }}">
+                            {% if admin_mode %}
+                                <input type="hidden" name="admin_mode" value="True">
+                            {% endif %}
+                            <input type="hidden" name="recording_filter" value="{{ 'false' if recording_filter else 'true' }}">
+                            <button type="submit" class="fr-tag" aria-pressed="{{ 'true' if recording_filter else 'false' }}">
+                                {% trans %}Avec enregistrement seulement{% endtrans %}
+                            </button>
+                        </form>
                     </li>
                 </ul>
 
@@ -159,7 +165,7 @@
                                 {% if playback %}
                                     <div class="fr-grid-row fr-grid-row--start fr-mb-1v">
                                         <a class="fr-btn fr-btn--sm fr-btn--primary" target="_blank" rel="noopener" href="{{ playback.url }}" title="{% trans %}Voir l'enregistrement{% endtrans %}"><span class="fr-icon-play-line"></span></a>
-                                        <button type="button" class="btn-copy fr-btn--sm fr-btn fr-btn--primary fr-ml-1v fr-mr-2w fr-icon-clipboard-line" id="meeting-{{ meeting.id }}-recording-link-copy" onclick="copyInClipboard('meeting-{{ meeting.id }}-recording-link-copy', '{{ playback.url }}');" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
+                                        <button type="button" class="btn-copy fr-btn--sm fr-btn fr-btn--primary fr-ml-1v fr-mr-2w fr-icon-clipboard-line copy-button" id="meeting-{{ meeting.id }}-recording-link-copy" data-copy-text="{{ playback.url }}" title="{% trans %}Copier le lien de l'enregistrement dans le presse-papiers{% endtrans %}">
                                         </button>
                                         {% set video = session.recording.playbacks.get("video") if session.recording else None %}
                                         {% if video %}

@@ -7,6 +7,7 @@ from unittest import mock
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+import pytest
 from b3desk.endpoints.bbb_callback import get_analytics_callback_url
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_meeting_secret_key

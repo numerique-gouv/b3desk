@@ -354,7 +354,7 @@ def test_update_recording_with_a_blank_name(
     )
 
     assert ("error", "Impossible de renommer l'enregistrement") in response.flashes
-    assert f"meeting/recordings/{meeting.id}" in response.location
+    assert f"meeting/history/{meeting.id}" in response.location
     bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert "updateRecordings" not in bbb_url
 
@@ -506,7 +506,12 @@ def test_open_recordings_page(
 
     response = client_app.get(f"/meeting/history/{meeting.id}")
     html = response.body.decode("utf-8")
-    assert html.count(f'id="meeting-{meeting.id}-recording-link-copy"') == 2
+    assert (
+        html.count(
+            f'copy-button" id="meeting-{meeting.id}-recording-link-copy" data-copy-text="'
+        )
+        == 2
+    )
     assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
 
 
@@ -571,12 +576,23 @@ def test_recording_filter_only_shows_sessions_with_a_recording(
     assert len(sessions) == 3
     assert any(s["recording"] is None for s in sessions)
 
-    filtered_response = client_app.get(
-        f"/meeting/history/{meeting.id}", params={"recording_filter": "true"}
-    )
+    assert 'class="fr-tag" aria-pressed="false"' in response.text
+
+    def filter_form(response):
+        return next(
+            form
+            for form in response.forms.values()
+            if "recording_filter" in form.fields
+        )
+
+    filtered_response = filter_form(response).submit()
     filtered_sessions = filtered_response.context["sessions"]
     assert len(filtered_sessions) == 2
     assert all(s["recording"] is not None for s in filtered_sessions)
+    assert 'class="fr-tag" aria-pressed="true"' in filtered_response.text
+
+    unfiltered_response = filter_form(filtered_response).submit()
+    assert len(unfiltered_response.context["sessions"]) == 3
 
 
 # todo test that multiple meetings with same start and end date are not merged and displayed on the correct page

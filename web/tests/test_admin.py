@@ -637,7 +637,12 @@ def test_admin_can_open_recordings_page(
 
     response = client_app.get(f"/meeting/history/{other_meeting.id}")
     html = response.body.decode("utf-8")
-    assert html.count(f'id="meeting-{other_meeting.id}-recording-link-copy"') == 2
+    assert (
+        html.count(
+            f'copy-button" id="meeting-{other_meeting.id}-recording-link-copy" data-copy-text="'
+        )
+        == 2
+    )
     assert len(BBB(other_meeting.bbb_meeting_id).get_recordings()) == 2
 
 
