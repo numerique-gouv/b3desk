@@ -1,0 +1,48 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@gouvfr/dsfr':
+        specifier: 1.14.0
+        version: 1.14.0
+      captchetat-js:
+        specifier: https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz
+        version: https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz
+      dropzone:
+        specifier: 5.9.3
+        version: 5.9.3
+      remixicon:
+        specifier: 2.5.0
+        version: 2.5.0
+
+packages:
+
+  '@gouvfr/dsfr@1.14.0':
+    resolution: {integrity: sha512-lF02JujHsr4J39gnC7y+qe0LLnh01cb6JwbMIKK2YcNjzvmfb26C0uW0+gyugD41wjFQQcIFWz07g6ynqxjNzA==}
+    engines: {node: '>=22.14.0'}
+
+  captchetat-js@https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz:
+    resolution: {integrity: sha512-nl2EVW5PIUCxJc5dNCVJ8H7otZ8j/44tp23zQmAQKGdO3BHhhEP9Gqq8vjrAkkeFxDv4qbOoC5dRWNG/WXM9sA==, tarball: https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz}
+    version: 1.0.0
+
+  dropzone@5.9.3:
+    resolution: {integrity: sha512-Azk8kD/2/nJIuVPK+zQ9sjKMRIpRvNyqn9XwbBHNq+iNuSccbJS6hwm1Woy0pMST0erSo0u4j+KJaodndDk4vA==}
+
+  remixicon@2.5.0:
+    resolution: {integrity: sha512-q54ra2QutYDZpuSnFjmeagmEiN9IMo56/zz5dDNitzKD23oFRw77cWo4TsrAdmdkPiEn8mxlrTqxnkujDbEGww==}
+
+snapshots:
+
+  '@gouvfr/dsfr@1.14.0': {}
+
+  captchetat-js@https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz: {}
+
+  dropzone@5.9.3: {}
+
+  remixicon@2.5.0: {}

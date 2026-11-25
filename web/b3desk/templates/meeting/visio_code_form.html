@@ -46,7 +46,7 @@
 </div>
 
 {% block js %}
-    <script src="{{ url_for('static', filename='captchetat/captchetat-js.js')}}"></script>
+    <script src="{{ url_for('static', filename='pnpm_imports/captchetat/captchetat-js.js')}}"></script>
     <script
         src="{{ url_for('static', filename='js/visio_code_form.js')}}"
         data-should-display-captcha="{{ should_display_captcha|tojson }}"

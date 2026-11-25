@@ -21,8 +21,8 @@
     </div>
 {% endmacro %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='js/dropzone.css') }}"/>
-<script src="{{ url_for('static', filename='js/dropzone-min.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='pnpm_imports/dropzone/min/dropzone.min.css') }}"/>
+<script src="{{ url_for('static', filename='pnpm_imports/dropzone/min/dropzone.min.js') }}"></script>
 
 <h1 class="fr-h2">{% trans meeting_name=meeting.name %}Gestion des présentations associées à <em>{{ meeting_name }}</em>{% endtrans %}</h1>
 
