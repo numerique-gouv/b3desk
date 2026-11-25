@@ -1,0 +1,11 @@
+services:
+  renovate:
+    image: renovate/renovate:44.252-full
+    profiles: ["renovate"]
+    environment:
+      - RENOVATE_REPOSITORIES=numerique-gouv/b3desk
+      - LOG_LEVEL=info
+    volumes:
+      - ./renovate.jsonc:/repo/renovate.jsonc
+    env_file:
+      - renovate.env
