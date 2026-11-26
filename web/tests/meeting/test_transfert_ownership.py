@@ -88,7 +88,7 @@ def test_transfer_ownership_preserves_previous_owners_recordings_access(
 
     client_app.post("/meeting/transfert-meeting-ownership/1/2", status=302)
 
-    client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
+    client_app.get(f"/meeting/history/{meeting.id}", status=200)
 
 
 def test_transfer_ownership_preserves_new_owners_recordings_access(
@@ -105,4 +105,4 @@ def test_transfer_ownership_preserves_new_owners_recordings_access(
     )
     db.session.commit()
 
-    client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
+    client_app.get(f"/meeting/history/{meeting.id}", status=200)

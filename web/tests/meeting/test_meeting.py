@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 import pytest
+from b3desk.endpoints.bbb_callback import get_analytics_callback_url
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.join import get_meeting_secret_key
 from b3desk.join import get_quick_meeting_secret_key
@@ -17,6 +18,8 @@ from b3desk.models.meetings import MODERATOR_ONLY_MESSAGE_MAXLENGTH
 from b3desk.models.meetings import Meeting
 from b3desk.models.meetings import MeetingFiles
 from b3desk.models.meetings import MeetingSecretKey
+from b3desk.models.meetings import MeetingSession
+from b3desk.models.meetings import SessionAttendee
 from b3desk.models.meetings import assign_unique_voice_bridge
 from b3desk.models.meetings import delete_old_voiceBridges
 from b3desk.models.meetings import generate_random_pin
@@ -34,9 +37,9 @@ from tests.helpers import form_with_action
 
 def test_show_meeting_recording(client_app, authenticated_user, meeting, bbb_response):
     """Test that meeting recordings page displays correctly."""
-    response = client_app.get(f"/meeting/recordings/{meeting.id}", status=200)
+    response = client_app.get(f"/meeting/history/{meeting.id}", status=200)
 
-    assert "meeting/recordings.html" in response.contexts
+    assert "meeting/history.html" in response.contexts
 
 
 def test_new_meeting(client_app, authenticated_user):
@@ -497,7 +500,7 @@ def test_create_no_file(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -640,7 +643,7 @@ def test_create_with_only_a_default_file(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -752,7 +755,7 @@ def test_create_with_files(
         "meetingID": meeting.bbb_meeting_id,
         "name": "My Meeting",
         "meetingKeepEvents": "true",
-        "meta_analytics-callback-url": "https://bbb-analytics.test/v1/post_events",
+        "meta_analytics-callback-url": get_analytics_callback_url(),
         "meta_academy": "domain.tld",
         "attendeePW": "Password1",
         "moderatorPW": "Password2",
@@ -983,6 +986,29 @@ def test_delete_meeting(client_app, authenticated_user, meeting, bbb_response):
     previous_voiceBridges = get_all_previous_voiceBridges()
     assert len(previous_voiceBridges) == 1
     assert previous_voiceBridges[0] == "111111111"
+
+
+def test_delete_meeting_with_session_attendees(
+    client_app, authenticated_user, meeting, bbb_response
+):
+    """Test that meeting can be deleted even if its sessions have attendees, and that they are deleted too."""
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        ended_at=datetime.datetime.now(),
+        attendees=[SessionAttendee(name="Alice", moderator=True, duration=33)],
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    res = client_app.post(f"/meeting/{meeting.id}/delete")
+    assert ("success", "Élément supprimé") in res.flashes
+    assert db.session.scalar(db.select(db.func.count()).select_from(Meeting)) == 0
+    assert (
+        db.session.scalar(db.select(db.func.count()).select_from(MeetingSession)) == 0
+    )
+    assert (
+        db.session.scalar(db.select(db.func.count()).select_from(SessionAttendee)) == 0
+    )
 
 
 def test_delete_meeting_with_meeting_files(

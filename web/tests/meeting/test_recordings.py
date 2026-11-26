@@ -338,7 +338,7 @@ def test_update_recording_name(
     assert bbb_params["meta_name"] == "First recording"
     assert bbb_params["recordID"] == recording_id
 
-    assert f"meeting/recordings/{meeting.id}" in response.location
+    assert f"meeting/history/{meeting.id}" in response.location
 
 
 def test_update_recording_with_a_blank_name(
@@ -354,7 +354,7 @@ def test_update_recording_with_a_blank_name(
     )
 
     assert ("error", "Impossible de renommer l'enregistrement") in response.flashes
-    assert f"meeting/recordings/{meeting.id}" in response.location
+    assert f"meeting/history/{meeting.id}" in response.location
     bbb_url = str(bbb_getRecordings_response.calls.last.request.url)
     assert "updateRecordings" not in bbb_url
 
@@ -410,7 +410,7 @@ def test_delete_recordings(
         f"Meeting meeting {meeting.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
-    assert f"/meeting/recordings/{meeting.id}" in response.location
+    assert f"/meeting/history/{meeting.id}" in response.location
 
 
 def test_delegate_can_delete_recordings(
@@ -441,7 +441,7 @@ def test_delegate_can_delete_recordings(
         f"Meeting delegated meeting {meeting_1_user_2.id} record {first_recording_id} was deleted by alice@domain.tld\n"
     ) in caplog.text
     assert ("success", "Vidéo supprimée") in response.flashes
-    assert f"/meeting/recordings/{meeting_1_user_2.id}" in response.location
+    assert f"/meeting/history/{meeting_1_user_2.id}" in response.location
 
 
 def test_delete_unknown_recording(
@@ -504,15 +504,98 @@ def test_open_recordings_page(
     mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
-    response = client_app.get(f"/meeting/recordings/{meeting.id}")
+    response = client_app.get(f"/meeting/history/{meeting.id}")
     html = response.body.decode("utf-8")
     assert (
         html.count(
-            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line copy-button"'
+            f'copy-button" id="meeting-{meeting.id}-recording-link-copy" data-copy-text="'
         )
         == 2
     )
     assert len(BBB(meeting.bbb_meeting_id).get_recordings()) == 2
+
+
+def test_open_recordings_page_includes_orphan_recordings(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Recordings with no matching MeetingSession (e.g. predating session tracking) get their own row, without duplicating recordings that already have one."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    linked_recording_id = "ffbfc4cc24428694e8b53a4e144f414052431693-1530718721124"
+    orphan_recording_id = "ffbfc4cc24428694e8b53a4e144f414052431693-1530278898111"
+
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 4, 15, 38, 41),
+        ended_at=datetime.datetime(2018, 7, 4, 15, 40, 0),
+        recording_id=linked_recording_id,
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    sessions = response.context["sessions"]
+    recording_ids = [s["recording"]["recordID"] for s in sessions]
+    assert recording_ids == [linked_recording_id, orphan_recording_id]
+    assert len(recording_ids) == len(set(recording_ids))
+
+
+def test_recording_filter_only_shows_sessions_with_a_recording(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """The `recording_filter` query param hides sessions without a recording attached."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    session_without_recording = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 5, 9, 0, 0),
+        ended_at=datetime.datetime(2018, 7, 5, 9, 30, 0),
+    )
+    db.session.add(session_without_recording)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+    sessions = response.context["sessions"]
+    assert len(sessions) == 3
+    assert any(s["recording"] is None for s in sessions)
+
+    assert 'class="fr-tag" aria-pressed="false"' in response.text
+
+    def filter_form(response):
+        return next(
+            form
+            for form in response.forms.values()
+            if "recording_filter" in form.fields
+        )
+
+    filtered_response = filter_form(response).submit()
+    filtered_sessions = filtered_response.context["sessions"]
+    assert len(filtered_sessions) == 2
+    assert all(s["recording"] is not None for s in filtered_sessions)
+    assert 'class="fr-tag" aria-pressed="true"' in filtered_response.text
+
+    unfiltered_response = filter_form(filtered_response).submit()
+    assert len(unfiltered_response.context["sessions"]) == 3
+
+
+# todo test that multiple meetings with same start and end date are not merged and displayed on the correct page
 
 
 def test_parse_ai_summary_playback():
@@ -611,9 +694,85 @@ def test_open_recordings_page_ai_summary(
     response = client_app.post(
         "/admin/add-group-members/1", {"user_ids": [1]}, status=302
     )
-    response = client_app.get(f"/meeting/recordings/{meeting.id}")
+    response = client_app.get(f"/meeting/history/{meeting.id}")
     html = response.body.decode("utf-8")
 
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.html" in html
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.pdf" in html
     assert "https://bbb.test/ai-summary/rec-ai-1/ai-summary.md" in html
+
+
+def test_history_lists_session_attendees(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+    bbb_getRecordings_response,
+):
+    """Each session with attendees gets its own dialog listing them."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+    from b3desk.models.meetings import SessionAttendee
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
+
+    session = MeetingSession(
+        meeting_id=meeting.id,
+        started_at=datetime.datetime(2018, 7, 5, 9, 0, 0),
+        ended_at=datetime.datetime(2018, 7, 5, 10, 0, 0),
+        participant_count=2,
+        attendees=[
+            SessionAttendee(
+                name="Alice",
+                moderator=True,
+                joins=datetime.datetime(2018, 7, 5, 9, 0, 0),
+                leaves=datetime.datetime(2018, 7, 5, 10, 0, 0),
+                duration=3600,
+            ),
+            SessionAttendee(name="Bob", moderator=False),
+        ],
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    dialog = response.pyquery(f"#participants-{session.id}")
+    assert dialog
+    assert response.pyquery(f'button[aria-controls="participants-{session.id}"]')
+    rows = [
+        [td.text_content().replace("\xa0", " ").strip() for td in tr.findall("td")]
+        for tr in dialog("tbody tr")
+    ]
+    # datetimeformat renders naive datetimes as UTC in BABEL_DEFAULT_TIMEZONE
+    assert sorted(rows) == [
+        ["Alice", "Modérateur", "11:00:00", "12:00:00", "1 heure"],
+        ["Bob", "Participant", "", "", ""],
+    ]
+
+
+def test_history_shows_session_not_yet_closed_by_analytics_callback(
+    client_app,
+    authenticated_user,
+    mocker,
+    meeting,
+    bbb_response,
+):
+    """A session BBB has not reported on yet (no end, no attendees) is displayed as ongoing."""
+    from b3desk.models import db
+    from b3desk.models.meetings import MeetingSession
+
+    mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=True)
+    mocker.patch("b3desk.models.bbb.BBB.get_recordings", return_value=[])
+
+    session = MeetingSession(
+        meeting_id=meeting.id, started_at=datetime.datetime(2018, 7, 5, 9, 0, 0)
+    )
+    db.session.add(session)
+    db.session.commit()
+
+    response = client_app.get(f"/meeting/history/{meeting.id}")
+
+    assert "En cours" in response.text
+    assert not response.pyquery(f"#participants-{session.id}")

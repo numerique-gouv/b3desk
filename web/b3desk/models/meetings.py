@@ -146,6 +146,43 @@ class MeetingSecretKey(BaseMeetingSecretKey, db.Model):
     meeting: Mapped[Meeting] = relationship(back_populates="secret_keys")
 
 
+class SessionAttendee(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("meeting_session.id", ondelete="CASCADE")
+    )
+    name: Mapped[str | None] = mapped_column(Unicode(150))
+    moderator: Mapped[bool | None] = mapped_column(default=False)
+    joins: Mapped[datetime | None]
+    leaves: Mapped[datetime | None]
+    duration: Mapped[int | None]
+
+    session = db.relationship("MeetingSession", back_populates="attendees")
+
+
+class MeetingSession(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("meeting.id"))
+    started_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    ended_at: Mapped[datetime | None]
+    recording_id: Mapped[str | None] = mapped_column(Unicode(250))
+    participant_count: Mapped[int | None]
+
+    meeting = db.relationship("Meeting", back_populates="sessions")
+    attendees = db.relationship(
+        "SessionAttendee",
+        back_populates="session",
+        order_by="SessionAttendee.joins.asc()",
+        cascade="all, delete-orphan",
+    )
+
+    @property
+    def duration(self):
+        if not self.ended_at:
+            return None
+        return self.ended_at - self.started_at
+
+
 class Meeting(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     bbb_meeting_id: Mapped[str] = mapped_column(
@@ -163,9 +200,17 @@ class Meeting(db.Model):
         back_populates="meeting", cascade="all, delete-orphan"
     )
     meeting_access: Mapped[list[MeetingAccess]] = relationship(back_populates="meeting")
+
     last_connection_utc_datetime: Mapped[datetime | None]
     is_shadow: Mapped[bool | None] = mapped_column(default=False)
     visio_code: Mapped[str] = mapped_column(Unicode(50), unique=True)
+
+    sessions = db.relationship(
+        "MeetingSession",
+        back_populates="meeting",
+        order_by="MeetingSession.started_at.desc()",
+        cascade="all, delete-orphan",
+    )
 
     # BBB params
     name: Mapped[str | None] = mapped_column(Unicode(150))

@@ -13,6 +13,7 @@ import portpicker
 import psycopg
 import pytest
 import respx
+import stamina
 from b3desk import create_app
 from b3desk.models import db
 from flask import Flask
@@ -29,6 +30,18 @@ from tests.html_validation import ValidatingTestApp
 b3desk.utils.secret_key = lambda: "AZERTY"
 MIGRATIONS_DIR = str(Path(__file__).parent.parent / "migrations")
 TRANSLATIONS_DIR = str(Path(__file__).parent.parent / "translations")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _disable_stamina_backoff():
+    """Skip stamina's real sleep/backoff between retries so retry tests stay fast.
+
+    `cap=True` only caps the attempts instead of overriding them, so decorators'
+    own `attempts=` values are preserved and retry counts stay testable.
+    """
+    stamina.set_testing(True, attempts=10, cap=True)
+    yield
+    stamina.set_testing(False)
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -1050,6 +1063,19 @@ def make_signed_parameters(app):
     def make(payload):
         key = OctKey.import_key(app.config["BIGBLUEBUTTON_SECRET"].encode())
         return jwt.encode({"alg": "HS256"}, payload, key)
+
+    return make
+
+
+@pytest.fixture
+def make_analytics_bearer_token(app):
+    """Sign a token the way BBB signs its analytics callback (HS512)."""
+    from joserfc import jwt
+    from joserfc.jwk import OctKey
+
+    def make(payload):
+        key = OctKey.import_key(app.config["BIGBLUEBUTTON_SECRET"].encode())
+        return jwt.encode({"alg": "HS512"}, payload, key, algorithms=["HS512"])
 
     return make
 

@@ -1,5 +1,8 @@
 import logging
+from datetime import datetime
 
+import requests
+import stamina
 from flask import Blueprint
 from flask import current_app
 from flask import request
@@ -7,10 +10,14 @@ from flask import url_for
 from joserfc import jwt
 from joserfc.errors import BadSignatureError
 from joserfc.errors import DecodeError
+from joserfc.errors import JoseError
 from joserfc.jwk import OctKey
 
 from b3desk import cache
 from b3desk import csrf
+from b3desk.models import db
+from b3desk.models.meetings import MeetingSession
+from b3desk.models.meetings import SessionAttendee
 from b3desk.models.meetings import get_meeting_from_bbb_meeting_id
 from b3desk.tasks import RECORDING_CACHE_TTL
 from b3desk.tasks import recording_notified_key
@@ -29,6 +36,140 @@ def get_recording_status_callback_url():
         _external=True,
         _scheme=current_app.config["PREFERRED_URL_SCHEME"],
     )
+
+
+def get_analytics_callback_url():
+    """Get the URL of the callback used by BBB to send analytics data."""
+    return url_for(
+        "bbb-callback.analytics_callback",
+        _external=True,
+        _scheme=current_app.config["PREFERRED_URL_SCHEME"],
+    )
+
+
+def _parse_bbb_datetime(value):
+    """Parse a BBB analytics ISO-8601 timestamp into naive local time."""
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value).astimezone().replace(tzinfo=None)
+    except TypeError, ValueError:
+        logger.warning("Could not parse BBB analytics timestamp %r", value)
+        return None
+
+
+def _parse_bbb_timestamps(values):
+    """Parse a BBB analytics list of timestamps, skipping invalid entries."""
+    if not isinstance(values, list):
+        values = [values]
+    return [parsed for value in values if (parsed := _parse_bbb_datetime(value))]
+
+
+def _build_session_attendee(attendee):
+    """Build a SessionAttendee from a BBB analytics attendee entry.
+
+    BBB reports ``joins`` and ``leaves`` as lists of timestamps, as an attendee
+    can leave and rejoin a meeting: only the first join and the last leave are kept.
+    """
+    joins = _parse_bbb_timestamps(attendee.get("joins"))
+    leaves = _parse_bbb_timestamps(attendee.get("leaves"))
+    duration = attendee.get("duration")
+    name = attendee.get("name")
+    return SessionAttendee(
+        name=name[:150] if isinstance(name, str) else None,
+        moderator=bool(attendee.get("moderator")),
+        joins=min(joins) if joins else None,
+        leaves=max(leaves) if leaves else None,
+        duration=int(duration) if isinstance(duration, int | float) else None,
+    )
+
+
+@stamina.retry(on=requests.RequestException, attempts=3)
+def _relay_callback(auth_header):
+    analytics_url = current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"]
+    if analytics_url:
+        requests.post(
+            analytics_url,
+            data=request.get_data(),
+            headers={
+                "Content-Type": request.content_type or "application/json",
+                "Authorization": auth_header,
+            },
+            timeout=current_app.config["BIGBLUEBUTTON_REQUEST_TIMEOUT"],
+        )
+
+
+@csrf.exempt
+@bp.route("/bbb-callback/analytics", methods=["POST"])
+def analytics_callback():
+    """Handle BBB's analytics callback (``meta_analytics-callback-url``)."""
+    auth_header = request.headers.get("Authorization", "")
+    token_value = auth_header.removeprefix("Bearer ").strip()
+    if not token_value:
+        logger.error("Missing bearer token in analytics callback")
+        return "", 401
+
+    key = OctKey.import_key(current_app.config["BIGBLUEBUTTON_SECRET"].encode())
+
+    try:
+        # BBB signs this callback with HS512
+        jwt.decode(token_value, key, algorithms=["HS512"])
+    except JoseError as e:
+        logger.error("Invalid signature on analytics callback: %s", e)
+        return "", 401
+
+    payload = request.get_json(silent=True, force=True) or {}
+    bbb_meeting_id = payload.get("meeting_id")
+    meeting = (
+        get_meeting_from_bbb_meeting_id(bbb_meeting_id) if bbb_meeting_id else None
+    )
+
+    if not meeting:
+        logger.warning(
+            "Analytics callback for unknown or missing meetingID=%r", bbb_meeting_id
+        )
+    else:
+        session = (
+            MeetingSession.query.filter_by(meeting_id=meeting.id, ended_at=None)
+            .order_by(MeetingSession.started_at.desc())
+            .first()
+        )
+        if session:
+            data = payload.get("data") or {}
+            started_at = _parse_bbb_datetime(data.get("start"))
+            if started_at:
+                session.started_at = started_at
+            session.ended_at = _parse_bbb_datetime(data.get("finish")) or datetime.now()
+            attendees = data.get("attendees")
+            if isinstance(attendees, list):
+                session.participant_count = len(attendees)
+                session.attendees = [
+                    _build_session_attendee(attendee)
+                    for attendee in attendees
+                    if isinstance(attendee, dict)
+                ]
+            db.session.commit()
+            logger.info(
+                "Analytics callback closed session for meeting %s (meetingID=%s)",
+                meeting.name,
+                bbb_meeting_id,
+            )
+        else:
+            logger.warning(
+                "Analytics callback received for meeting %s (meetingID=%s) "
+                "but no open session found",
+                meeting.name,
+                bbb_meeting_id,
+            )
+    try:
+        _relay_callback(auth_header)
+    except requests.RequestException as e:
+        logger.error(
+            "Failed to relay analytics callback to %s: %s",
+            current_app.config["BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"],
+            e,
+        )
+    return "", 200
 
 
 @csrf.exempt
@@ -75,6 +216,19 @@ def recording_status():
     meeting = get_meeting_from_bbb_meeting_id(bbb_meeting_id)
     if not meeting:
         return "", 410
+
+    already_matched = MeetingSession.query.filter_by(
+        meeting_id=meeting.id, recording_id=bbb_recording_id
+    ).first()
+    if not already_matched:
+        session = (
+            MeetingSession.query.filter_by(meeting_id=meeting.id, recording_id=None)
+            .order_by(MeetingSession.started_at.desc())
+            .first()
+        )
+        if session:
+            session.recording_id = bbb_recording_id
+            db.session.commit()
 
     if cache.get(recording_notified_key(bbb_recording_id)):
         logger.info(

@@ -5,8 +5,10 @@ from flask import current_app
 from flask import render_template
 from flask import url_for
 
+from b3desk.endpoints.bbb_callback import get_analytics_callback_url
 from b3desk.endpoints.bbb_callback import get_recording_status_callback_url
 from b3desk.models import db
+from b3desk.models.meetings import MeetingSession
 from b3desk.models.roles import Role
 from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import utcnow
@@ -205,9 +207,7 @@ def create_bbb_meeting(meeting, user=None) -> bool:
         ],
         moderator_only_message=moderator_only_message,
         meta_academy=meta_academy,
-        analytics_callback_url=current_app.config[
-            "BIGBLUEBUTTON_ANALYTICS_CALLBACK_URL"
-        ],
+        analytics_callback_url=get_analytics_callback_url(),
         meta_bbb_recording_ready_url=meta_bbb_recording_ready_url,
         ai_summary=meeting.ai_summary_enabled,
         file_sharing=meeting.owner.can_use_file_sharing,
@@ -221,6 +221,9 @@ def create_bbb_meeting(meeting, user=None) -> bool:
 
     if not BBB.success(result):
         return False
+
+    db.session.add(MeetingSession(meeting_id=meeting.id))
+    db.session.commit()
 
     if meeting.files:
         bbb.send_meeting_files(meeting.files)

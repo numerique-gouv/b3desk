@@ -559,7 +559,7 @@ def test_admin_can_update_recording_name(
     assert bbb_params["meta_name"] == "First recording"
     assert bbb_params["recordID"] == recording_id
 
-    assert f"meeting/recordings/{other_meeting.id}" in response.location
+    assert f"meeting/history/{other_meeting.id}" in response.location
 
 
 ###
@@ -635,11 +635,11 @@ def test_admin_can_open_recordings_page(
     mocker.patch("httpx2.Client.get", return_value=DirectLinkRecording)
     mocker.patch("b3desk.models.bbb.BBB.is_running", return_value=False)
 
-    response = client_app.get(f"/meeting/recordings/{other_meeting.id}")
+    response = client_app.get(f"/meeting/history/{other_meeting.id}")
     html = response.body.decode("utf-8")
     assert (
         html.count(
-            '<button type="button" class="btn-copy fr-btn fr-btn--primary fr-ml-1v fr-icon-clipboard-line copy-button"'
+            f'copy-button" id="meeting-{other_meeting.id}-recording-link-copy" data-copy-text="'
         )
         == 2
     )
