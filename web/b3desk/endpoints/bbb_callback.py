@@ -53,7 +53,7 @@ def _parse_bbb_datetime(value):
         return None
     try:
         return datetime.fromisoformat(value).astimezone().replace(tzinfo=None)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         logger.warning("Could not parse BBB analytics timestamp %r", value)
         return None
 
