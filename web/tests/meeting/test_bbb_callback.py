@@ -431,6 +431,8 @@ def test_analytics_callback_stores_session_attendees(
         {
             "meeting_id": meeting.bbb_meeting_id,
             "data": {
+                "start": "2026-09-23T10:00:00+00:00",
+                "finish": "2026-09-23T11:00:00+00:00",
                 "attendees": [
                     {
                         "ext_user_id": "w_1",
@@ -455,7 +457,7 @@ def test_analytics_callback_stores_session_attendees(
                         "duration": 1800,
                     },
                     {"ext_user_id": "w_3", "name": "Charlie", "joins": "invalid"},
-                ]
+                ],
             },
         },
         headers={"Authorization": f"Bearer {signed}"},
@@ -466,6 +468,8 @@ def test_analytics_callback_stores_session_attendees(
         return datetime.datetime.fromisoformat(value).astimezone().replace(tzinfo=None)
 
     db.session.refresh(session)
+    assert session.started_at == local("2026-09-23T10:00:00+00:00")
+    assert session.ended_at == local("2026-09-23T11:00:00+00:00")
     assert session.participant_count == 3
     attendees = {attendee.name: attendee for attendee in session.attendees}
     assert attendees.keys() == {"Alice", "Bob", "Charlie"}
