@@ -44,6 +44,17 @@ INCREASE_REFRESH_TIME = 1.5
 MAXIMUM_REFRESH_DELAY = timedelta(seconds=60)
 
 
+def redirect_to_authenticated_join(meeting_id, secret_key):
+    """Send an authenticated link holder through the attendee OIDC authentication."""
+    return redirect(
+        url_for(
+            "join.join_meeting_as_authenticated",
+            meeting_id=meeting_id,
+            secret_key=secret_key,
+        )
+    )
+
+
 # The role needs to appear in the URL, even if it is unused, so user won't
 # mix up invitation links.
 # https://github.com/numerique-gouv/b3desk/issues/93
@@ -71,13 +82,7 @@ def signin_meeting(
     role = get_role(meeting, secret_key, g.user)
 
     if role == Role.authenticated:
-        return redirect(
-            url_for(
-                "join.join_meeting_as_authenticated",
-                meeting_id=meeting_id,
-                secret_key=secret_key,
-            )
-        )
+        return redirect_to_authenticated_join(meeting_id, secret_key)
     if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
 
@@ -162,6 +167,9 @@ def waiting_meeting(
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
 
+    if role == Role.authenticated and not has_attendee_session():
+        return redirect_to_authenticated_join(meeting_id, secret_key)
+
     seconds_before_refresh = request.args.get(
         "seconds_before_refresh", int(INITIAL_REFRESH_DELAY.total_seconds())
     )
@@ -225,6 +233,8 @@ def join_meeting():
     role = get_role(meeting, secret_key, g.user)
     fullname_suffix = form["fullname_suffix"].data
     if role == Role.authenticated:
+        if not has_attendee_session():
+            return redirect_to_authenticated_join(meeting_id, secret_key)
         fullname = get_authenticated_attendee_fullname()
     elif not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")

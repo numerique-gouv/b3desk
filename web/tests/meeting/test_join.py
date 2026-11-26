@@ -225,6 +225,44 @@ def test_join_meeting_as_authenticated_attendee_with_invalid_secret_key(
         ) in response.flashes
 
 
+def test_waiting_meeting_with_authenticated_link_requires_attendee_session(
+    client_app, meeting
+):
+    """The waiting room of an authenticated link sends anonymous visitors to the OIDC authentication."""
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    response = client_app.get(
+        f"/meeting/wait/{meeting.id}/hash/{meeting_hash}/fullname/fullname_suffix/",
+        status=302,
+    )
+
+    assert (
+        response.location
+        == f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
+    )
+
+
+def test_join_meeting_with_authenticated_link_requires_attendee_session(
+    client_app, meeting, bbb_response
+):
+    """Posting the join form with an authenticated link does not bypass the OIDC authentication."""
+    meeting_hash = get_meeting_secret_key(meeting, Role.authenticated)
+    response = client_app.post(
+        "/meeting/join",
+        params={
+            "meeting_id": meeting.id,
+            "secret_key": meeting_hash,
+            "fullname": "Mallory",
+        },
+        status=302,
+    )
+
+    assert (
+        response.location
+        == f"/meeting/join/{meeting.id}/authenticated/hash/{meeting_hash}"
+    )
+    assert not any("/join?" in str(call.request.url) for call in bbb_response.calls)
+
+
 def test_fix_authenticated_attendee_name_case(client_app, meeting, user):
     """The user names coming from the identity provider might be uppercase. In such cases b3desk should correct the display.
 
