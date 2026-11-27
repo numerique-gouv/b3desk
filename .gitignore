@@ -30,7 +30,6 @@ docker-compose-web-auth-local.yml
 web.env
 celery.env
 nextcloud.env
-renovate.env
 web-ecoles.env
 web-colleges.env
 web-lycees.env
