@@ -424,6 +424,15 @@ def meeting(client_app, user):
 
 
 @pytest.fixture
+def authenticated_join_url(meeting):
+    from b3desk.join import get_meeting_secret_key
+    from b3desk.models.roles import Role
+
+    secret_key = get_meeting_secret_key(meeting, Role.authenticated)
+    return f"/meeting/join/{meeting.id}/authenticated/hash/{secret_key}"
+
+
+@pytest.fixture
 def meeting_2(client_app, user):
     from b3desk.models.meetings import Meeting
 
