@@ -525,6 +525,10 @@ def setup_secure_headers(app):
             .connect_src("'self'")
             .font_src("'self'")
             .style_src("'self'")
+            # Third-party scripts inject inline styles: La Suite gaufre and the
+            # Nextcloud file picker add <style> elements, CaptchEtat adds style
+            # attributes.
+            .style_src("'unsafe-inline'")
         )
 
         if nc_locator:
@@ -540,10 +544,6 @@ def setup_secure_headers(app):
                 .connect_src(lasuite_numérique_url)
                 .font_src(lasuite_numérique_url)
                 .style_src(lasuite_numérique_url)
-                # Third-party scripts inject inline styles that can't be hashed
-                # or nonced: La Suite gaufre (<style> elements in gaufre.js)
-                # and CaptchEtat (style="" attributes in captchetat-js.js).
-                .style_src("'unsafe-inline'")
             )
         if bbb_url:
             csp.img_src(bbb_url)

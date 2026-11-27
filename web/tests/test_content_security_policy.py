@@ -7,7 +7,7 @@ def test_security_headers(client_app):
     res = client_app.get("/", status=302)
     assert (
         res.headers["Content-Security-Policy"]
-        == "frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: https://bbb.test; connect-src 'self'; font-src 'self'; style-src 'self'"
+        == "frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: https://bbb.test; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'"
     )
 
 
@@ -17,7 +17,7 @@ def test_security_headers_with_available_nextcloud(
     res = client_app.get("/", status=302)
     assert (
         res.headers["Content-Security-Policy"]
-        == f"frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: https://bbb.test; connect-src 'self' {authenticated_user.nc_locator}; font-src 'self'; style-src 'self'"
+        == f"frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: https://bbb.test; connect-src 'self' {authenticated_user.nc_locator}; font-src 'self'; style-src 'self' 'unsafe-inline'"
     )
 
 
@@ -30,7 +30,7 @@ def test_security_headers_with_matomo_url_in_settings(configuration):
         res = client_app.get("/", status=302)
         assert (
             res.headers["Content-Security-Policy"]
-            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {matomo_url}; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: {matomo_url} https://bbb.test; connect-src 'self' {matomo_url}; font-src 'self'; style-src 'self'"
+            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {matomo_url}; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: {matomo_url} https://bbb.test; connect-src 'self' {matomo_url}; font-src 'self'; style-src 'self' 'unsafe-inline'"
         )
 
 
@@ -43,7 +43,7 @@ def test_security_headers_with_satisfaction_poll_url_in_settings(configuration):
         res = client_app.get("/", status=302)
         assert (
             res.headers["Content-Security-Policy"]
-            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr {satisfaction_poll_url}; img-src 'self' data: https://bbb.test; connect-src 'self'; font-src 'self'; style-src 'self'"
+            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr {satisfaction_poll_url}; img-src 'self' data: https://bbb.test; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'"
         )
 
 
@@ -56,7 +56,7 @@ def test_security_headers_with_enable_lasuite(configuration):
         res = client_app.get("/", status=302)
         assert (
             res.headers["Content-Security-Policy"]
-            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {lasuite_url}; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: {lasuite_url} https://bbb.test; connect-src 'self' {lasuite_url}; font-src 'self' {lasuite_url}; style-src 'self' {lasuite_url} 'unsafe-inline'"
+            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {lasuite_url}; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data: {lasuite_url} https://bbb.test; connect-src 'self' {lasuite_url}; font-src 'self' {lasuite_url}; style-src 'self' 'unsafe-inline' {lasuite_url}"
         )
 
 
@@ -68,7 +68,7 @@ def test_security_headers_without_bbb_url(configuration):
         res = client_app.get("/", status=302)
         assert (
             res.headers["Content-Security-Policy"]
-            == "frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data:; connect-src 'self'; font-src 'self'; style-src 'self'"
+            == "frame-ancestors 'self'; default-src 'self'; script-src 'self'; frame-src 'self' https://podeduc.apps.education.fr; img-src 'self' data:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'"
         )
 
 
@@ -85,7 +85,7 @@ def test_integral_security_headers(configuration):
         res = client_app.get("/", status=302)
         assert (
             res.headers["Content-Security-Policy"]
-            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {matomo_url} {lasuite_url}; frame-src 'self' https://podeduc.apps.education.fr {satisfaction_poll_url}; img-src 'self' data: {matomo_url} {lasuite_url} https://bbb.test; connect-src 'self' {matomo_url} {lasuite_url}; font-src 'self' {lasuite_url}; style-src 'self' {lasuite_url} 'unsafe-inline'"
+            == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {matomo_url} {lasuite_url}; frame-src 'self' https://podeduc.apps.education.fr {satisfaction_poll_url}; img-src 'self' data: {matomo_url} {lasuite_url} https://bbb.test; connect-src 'self' {matomo_url} {lasuite_url}; font-src 'self' {lasuite_url}; style-src 'self' 'unsafe-inline' {lasuite_url}"
         )
 
 
