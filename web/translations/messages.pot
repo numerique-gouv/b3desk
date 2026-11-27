@@ -382,22 +382,22 @@ msgstr[1] ""
 msgid "Vous n'avez pas sélectionné d'utilisateur"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:79 web/b3desk/endpoints/join.py:87
-#: web/b3desk/endpoints/join.py:162 web/b3desk/endpoints/join.py:167
-#: web/b3desk/endpoints/join.py:230 web/b3desk/endpoints/join.py:240
-#: web/b3desk/endpoints/join.py:275
+#: web/b3desk/endpoints/join.py:68 web/b3desk/endpoints/join.py:82
+#: web/b3desk/endpoints/join.py:157 web/b3desk/endpoints/join.py:162
+#: web/b3desk/endpoints/join.py:231 web/b3desk/endpoints/join.py:247
+#: web/b3desk/endpoints/join.py:282
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:208
+#: web/b3desk/endpoints/join.py:209
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:364
+#: web/b3desk/endpoints/join.py:371
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:369
+#: web/b3desk/endpoints/join.py:376
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 
