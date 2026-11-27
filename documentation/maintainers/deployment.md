@@ -113,3 +113,43 @@ docker compose -f docker-compose.yml -f docker-compose.preprod.yml up --build
 L’option `--build` est nécessaire : le code de l’application est embarqué dans l’image et n’est plus monté depuis le dépôt. Sans reconstruction, un `git pull` ne change rien à ce qui s’exécute réellement dans les conteneurs.
 
 Le fichier `run_webserver.sh` est lancé par le `Dockerfile` et migre la base de données automatiquement. Ces docker-compose de production et preproduction peuvent donc être utilisés pour une primo-installation, ou sur une instance existante.
+
+## Mise à jour automatique des dépendances
+
+[Renovate](https://docs.renovatebot.com/) ouvre des pull requests de mise à jour des dépendances Python, JavaScript, des images Docker, des GitHub Actions et des hooks pre-commit.
+Il est auto-hébergé : le service `renovate` est décrit dans `docker-compose.renovate.yml`, et sa configuration dans `renovate.jsonc`.
+
+Renovate lit `renovate.jsonc` sur la branche par défaut du dépôt GitHub, pas dans le dossier local.
+
+### Configuration
+
+Créer le fichier `renovate.env` à partir de `renovate.env.example` :
+
+```bash
+cp renovate.env.example renovate.env
+```
+
+Y renseigner `RENOVATE_TOKEN` avec un [token GitHub *fine-grained*](https://docs.github.com/fr/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) limité au seul dépôt `numerique-gouv/b3desk`, avec les permissions décrites dans la [documentation de Renovate](https://docs.renovatebot.com/modules/platform/github/#running-using-a-fine-grained-token).
+
+```{warning}
+`renovate.env` contient un secret : il est ignoré par git et ne doit jamais être commité.
+```
+
+Pour vérifier la validité de `renovate.jsonc` après une modification :
+
+```bash
+docker compose -f docker-compose.renovate.yml run --rm -w /repo renovate renovate-config-validator
+```
+
+### Lancement périodique
+
+Renovate s'exécute puis s'arrête : il est lancé régulièrement par une tâche cron sur l'hôte.
+Cron s'exécute depuis le dossier personnel de l'utilisateur : la commande doit d'abord se placer dans le dossier du dépôt.
+
+Par exemple, pour un lancement tous les jours à 6 h, ajouter avec `crontab -e` :
+
+```
+0 6 * * * cd /chemin/vers/b3desk && docker compose -f docker-compose.renovate.yml run --rm renovate >> /var/log/renovate.log 2>&1
+```
+
+L'utilisateur de la crontab doit pouvoir lancer `docker` et écrire dans le fichier de log.
