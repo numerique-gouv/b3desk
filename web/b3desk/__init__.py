@@ -510,7 +510,7 @@ def setup_secure_headers(app):
 
     @app.after_request
     def add_security_headers(response: Response) -> Response:
-        nc_locator = base_url(getattr(g.user, "nc_locator", None))
+        nc_locator = base_url(getattr(g.get("user"), "nc_locator", None))
 
         csp = (
             ContentSecurityPolicy()

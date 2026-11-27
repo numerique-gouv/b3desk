@@ -87,3 +87,13 @@ def test_integral_security_headers(configuration):
             res.headers["Content-Security-Policy"]
             == f"frame-ancestors 'self'; default-src 'self'; script-src 'self' {matomo_url} {lasuite_url}; frame-src 'self' https://podeduc.apps.education.fr {satisfaction_poll_url}; img-src 'self' data: {matomo_url} {lasuite_url} https://bbb.test; connect-src 'self' {matomo_url} {lasuite_url}; font-src 'self' {lasuite_url}; style-src 'self' {lasuite_url} 'unsafe-inline'"
         )
+
+
+def test_security_headers_on_debug_host_redirect(configuration):
+    configuration["DEBUG"] = True
+    app = create_app(configuration)
+    with app.test_request_context():
+        client_app = ValidatingTestApp(app)
+        res = client_app.get("/", extra_environ={"HTTP_HOST": "other.test"}, status=302)
+        assert res.location == "http://b3desk.test/"
+        assert "Content-Security-Policy" in res.headers
