@@ -16,5 +16,5 @@
         "copy:dropzone": "cp -rL node_modules/dropzone/dist web/b3desk/static/pnpm_imports/dropzone",
         "copy:captchetat": "cp -rL node_modules/captchetat-js/dist web/b3desk/static/pnpm_imports/captchetat"
     },
-"packageManager": "pnpm@12.23.0"
+    "packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975"
 }

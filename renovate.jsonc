@@ -19,5 +19,6 @@
       }
     ],
     "vulnerabilityAlerts": {"automerge": true, "minimumReleaseAge": "2 days"},
-    "lockFileMaintenance": {"enabled": true}
+    "lockFileMaintenance": {"enabled": true},
+    "pinDigests": true
 }

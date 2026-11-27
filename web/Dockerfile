@@ -1,7 +1,7 @@
 FROM node:24.22.3 AS node
 WORKDIR /home/node/app
 COPY --from=root package.json pnpm-lock.yaml ./
-RUN corepack pnpm install
+RUN corepack pnpm install --frozen-lockfile
 RUN corepack pnpm run init
 
 FROM python:3.14-slim-trixie
