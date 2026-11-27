@@ -522,6 +522,59 @@ class MainSettings(BaseSettings):
         OIDC_ATTENDEE_CLAIMS_MAPPING='{"given_name":"given_name","family_name":"usual_name"}'
     """
 
+    # Admin OIDC Configuration
+    OIDC_ADMIN_ISSUER: str | None = None
+    """URL du serveur d’identité des admins.
+
+    Par exemple : https://auth.example.com
+    """
+
+    OIDC_ADMIN_CLIENT_ID: str | None = None
+    """ID du client auprès du serveur d’identité des admins."""
+
+    OIDC_ADMIN_CLIENT_SECRET: str | None = None
+    """Secret permettant d’identifier le client auprès du serveur d’identité
+    des admins."""
+
+    OIDC_ADMIN_CLIENT_AUTH_METHOD: str | None = "client_secret_post"
+    """Méthode de communication avec le point d’entrée ``token_endpoint`` du
+    serveur d’identité des admins."""
+
+    OIDC_ADMIN_SCOPES: ListOfStrings | None = None
+    """Liste des scopes OpenID Connect pour lesquels une autorisation sera
+    demandée au serveur d’identité des admins, séparés par des virgules.
+
+    Plus d’infos sur https://flask-pyoidc.readthedocs.io/en/latest/api.html#module-flask_pyoidc.provider_configuration
+    """
+
+    OIDC_ADMIN_GROUP: str = "admin"
+    """Nom du groupe d'administration
+    Les comptes appartenant à ce groupe auront les droits d'administration."""
+
+    OIDC_ADMIN_ENABLED: bool | None = False
+    """Enable the admin backoffice.
+
+    When on, admin can login.
+    """
+
+    OIDC_ADMIN_SESSION_LIFETIME: int = 3600
+    """Durée de vie de la session admin en secondes. Elle court à partir de la
+    connexion et n'est pas prolongée par l'activité.
+    """
+
+    @field_validator("OIDC_ADMIN_ENABLED", mode="after")
+    def oidc_admin_issuer_required(
+        cls,
+        oidc_admin_enabled: bool | None,
+        info: ValidationInfo,
+    ) -> bool:
+        """Validate that OIDC_ADMIN_ISSUER is set when ADMIN is enabled."""
+        if oidc_admin_enabled and not info.data["OIDC_ADMIN_ISSUER"]:
+            raise ValueError(
+                "OIDC_ADMIN_ISSUER configuration required when enabling ADMIN"
+            )
+        return oidc_admin_enabled
+
     SECONDARY_IDENTITY_PROVIDER_ENABLED: bool | None = False
     """Indique si un second serveur d'identité pour la connection a un
     Nextcloud est activée.
@@ -993,12 +1046,4 @@ class MainSettings(BaseSettings):
     """Enable AI summary
 
     Allow AI summary generation on records
-    """
-
-    ENABLE_ADMIN_MANAGEMENT: bool | None = False
-    """Enable the admin backoffice.
-
-    When off, admin users have the same rights as other users.
-    They cannot open the admin pages.
-    They cannot access or delete meetings they do not own.
     """

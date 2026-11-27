@@ -32,7 +32,6 @@ from b3desk.models.users import User
 from b3desk.utils import get_random_alphanumeric_string
 
 DEFAULT_LOCALE = "fr_FR"
-ADMIN_RATIO = 0.1
 DELEGATION_RATIO = 0.3
 MAX_DELEGATES_PER_MEETING = 3
 FAVORITE_RATIO = 0.2
@@ -52,8 +51,8 @@ def make_faker(locale=DEFAULT_LOCALE, seed=None):
     return faker
 
 
-def generate_users(faker, count, admin_ratio=ADMIN_RATIO):
-    """Create and commit ``count`` random users, a fraction of them being admins."""
+def generate_users(faker, count):
+    """Create and commit ``count`` random users."""
     users = []
     for _ in range(count):
         given_name = faker.first_name()
@@ -74,7 +73,6 @@ def generate_users(faker, count, admin_ratio=ADMIN_RATIO):
                 last_connection_utc_datetime=faker.date_time_between(
                     start_date=created_at
                 ),
-                admin=random.random() < admin_ratio,
             )
         )
     db.session.add_all(users)
@@ -181,7 +179,6 @@ def populate(n_users, n_meetings, locale=DEFAULT_LOCALE, seed=None):
     groups = generate_groups(faker, users) if users else []
     return {
         "users": len(users),
-        "admins": sum(user.admin for user in users),
         "meetings": len(meetings),
         "delegations": delegations,
         "favorites": favorites,

@@ -37,7 +37,7 @@ from b3desk.nextcloud import is_nextcloud_available
 from b3desk.utils import download_url_to_path
 from b3desk.utils import http_client
 
-from ..session import is_admin_mode
+from ..session import admin_logged
 from ..session import login_required
 from ..session import meeting_access_required
 from ..session import user_needed
@@ -47,19 +47,19 @@ bp = Blueprint("meeting_files", __name__)
 
 
 @bp.route("/meeting/files/<meeting:meeting>")
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def edit_meeting_files(meeting: Meeting, user: User):
     """Display the meeting files management page."""
     if meeting.is_shadow:
         abort(403)
+
     form = MeetingFilesForm()
 
     if not meeting.owner.can_use_file_sharing:
         flash(_("Vous ne pouvez pas modifier cet élément"), "warning")
         return redirect(url_for("public.welcome"))
 
-    g.is_nextcloud_available = is_nextcloud_available(
+    g.is_nextcloud_available = not admin_logged() and is_nextcloud_available(
         user, verify=True, retry_on_auth_error=True
     )
     db.session.commit()
@@ -68,12 +68,10 @@ def edit_meeting_files(meeting: Meeting, user: User):
         "meeting/filesform.html",
         meeting=meeting,
         form=form,
-        admin_mode=is_admin_mode(),
     )
 
 
 @bp.route("/meeting/files/<meeting:meeting>", methods=["POST"])
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def add_meeting_files(meeting: Meeting, user: User):
     """Add a file to a meeting from Nextcloud, URL, or file upload."""
@@ -86,17 +84,20 @@ def add_meeting_files(meeting: Meeting, user: User):
     if origin not in ("nextcloud", "URL", "upload") or not isinstance(value, str):
         return {"msg": "no file provided"}, 400
 
-    if origin == "nextcloud":
-        return add_meeting_file_nextcloud(value, meeting.id)
-
     if origin == "URL":
-        return add_meeting_file_URL(value, meeting.id)
+        files_owner = meeting.owner if admin_logged() else user
+        return add_meeting_file_URL(value, meeting.id, files_owner)
 
-    return add_meeting_file_from_upload(secure_filename(value), meeting.id)
+    if admin_logged():
+        return {"msg": _("Requête invalide")}, 403
+
+    if origin == "nextcloud":
+        return add_meeting_file_nextcloud(value, meeting.id, user)
+
+    return add_meeting_file_from_upload(secure_filename(value), meeting.id, user)
 
 
 @bp.route("/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/download")
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Download a meeting file from URL or Nextcloud."""
@@ -150,7 +151,6 @@ def download_meeting_files(meeting: Meeting, meeting_file: MeetingFiles, user: U
     "/meeting/files/<meeting:meeting>/<meetingfiles:meeting_file>/toggledownload",
     methods=["POST"],
 )
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def toggledownload(meeting: Meeting, meeting_file: MeetingFiles, user: User):
     """Toggle the downloadable status of a meeting file."""
@@ -173,11 +173,11 @@ def remove_uploaded_file(absolute_path):
     Path(absolute_path).unlink()
 
 
-def add_meeting_file_from_upload(title, meeting_id):
+def add_meeting_file_from_upload(title, meeting_id, owner):
     """Upload a file to Nextcloud and associate it with a meeting."""
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
-    upload_path = upload_chunk_dir / f"{g.user.id}-{meeting_id}-{title}"
+    upload_path = upload_chunk_dir / f"{owner.id}-{meeting_id}-{title}"
     if not upload_path.is_file():
         return {"msg": _("Aucun fichier téléversé pour ce nom")}, 400
 
@@ -192,10 +192,8 @@ def add_meeting_file_from_upload(title, meeting_id):
             )
         }, 413
 
-    if (client := create_webdav_client(g.user)) is None:
-        current_app.logger.warning(
-            "WebDAV error: User %s has no credentials", g.user.id
-        )
+    if (client := create_webdav_client(owner)) is None:
+        current_app.logger.warning("WebDAV error: User %s has no credentials", owner.id)
         return {
             "msg": _(
                 "Le service de fichiers est temporairement indisponible. "
@@ -213,7 +211,7 @@ def add_meeting_file_from_upload(title, meeting_id):
         title=title,
         created_at=date.today(),
         meeting_id=meeting_id,
-        owner=g.user,
+        owner=owner,
     )
 
     try:
@@ -239,7 +237,7 @@ def add_meeting_file_from_upload(title, meeting_id):
     }
 
 
-def add_meeting_file_URL(url, meeting_id):
+def add_meeting_file_URL(url, meeting_id, owner):
     """Add a meeting file from an external URL."""
     title = url.rsplit("/", 1)[-1]
 
@@ -280,7 +278,7 @@ def add_meeting_file_URL(url, meeting_id):
         created_at=date.today(),
         meeting_id=meeting_id,
         url=url,
-        owner=g.user,
+        owner=owner,
     )
 
     try:
@@ -300,9 +298,9 @@ def add_meeting_file_URL(url, meeting_id):
     }
 
 
-def add_meeting_file_nextcloud(path, meeting_id):
+def add_meeting_file_nextcloud(path, meeting_id, user):
     """Add a meeting file from a Nextcloud path."""
-    if (client := create_webdav_client(g.user)) is None:
+    if (client := create_webdav_client(user)) is None:
         return {
             "msg": _(
                 "Le service de fichiers est temporairement indisponible. "
@@ -327,7 +325,7 @@ def add_meeting_file_nextcloud(path, meeting_id):
         created_at=date.today(),
         meeting_id=meeting_id,
         nc_path=path,
-        owner=g.user,
+        owner=user,
     )
 
     try:
@@ -359,14 +357,14 @@ def create_external_meeting_file(path, owner, meeting_id=None):
 
 
 @bp.route("/meeting/files/<meeting:meeting>/upload", methods=["POST"])
-@login_required
 @meeting_access_required(AccessLevel.DELEGATE)
 def upload_file_chunks(meeting: Meeting, user: User):
     """Handle chunked file uploads."""
+    if admin_logged():
+        return {"msg": _("Requête invalide")}, 403
     form = ChunkUploadForm()
     if not form.validate() or "dropzoneFiles" not in request.files:
         return {"msg": _("Requête invalide")}, 400
-
     file = request.files["dropzoneFiles"]
     upload_chunk_dir = Path(current_app.config["UPLOAD_DIR"]) / "chunks"
     upload_chunk_dir.mkdir(parents=True, exist_ok=True)
@@ -410,7 +408,6 @@ def upload_file_chunks(meeting: Meeting, user: User):
 
 
 @bp.route("/meeting/files/delete", methods=["POST"])
-@login_required
 def delete_meeting_file():
     """Delete a meeting file."""
     data = request.get_json(silent=True)
@@ -426,11 +423,15 @@ def delete_meeting_file():
     if meeting_file is None:
         return {"id": meeting_file_id, "msg": _("Fichier introuvable")}, 404
 
-    if (
-        meeting_file.meeting.owner_id != g.user.id
-        and not g.user.has_admin_rights
-        and meeting_file.meeting not in g.user.get_all_delegated_meetings
-    ):
+    meeting = meeting_file.meeting
+    can_delete = admin_logged() or (
+        g.user is not None
+        and (
+            meeting.owner_id == g.user.id
+            or meeting in g.user.get_all_delegated_meetings
+        )
+    )
+    if not can_delete:
         return {
             "id": data["id"],
             "msg": _("Vous ne pouvez pas supprimer cet élément"),

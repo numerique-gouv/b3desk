@@ -104,7 +104,6 @@ class User(db.Model):
     nc_last_auto_enroll: Mapped[datetime | None]
     last_connection_utc_datetime: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
-    admin: Mapped[bool] = mapped_column(default=False)
 
     meetings: Mapped[list[Meeting]] = relationship(back_populates="owner")
     favorites: Mapped[list[Meeting]] = relationship(
@@ -132,11 +131,6 @@ class User(db.Model):
     def can_create_meetings(self):
         """Check if user has not reached the maximum number of meetings allowed."""
         return len(self.meetings) < current_app.config["MAX_MEETINGS_PER_USER"]
-
-    @property
-    def has_admin_rights(self):
-        """Check if user is admin and admin management is enabled."""
-        return bool(self.admin and current_app.config["ENABLE_ADMIN_MANAGEMENT"])
 
     @property
     def has_nc_credentials(self):

@@ -98,6 +98,14 @@ Paramétrer le chargement des pages d’erreurs statique sur le serveur web fron
 
 Faire attention à ne pas mettre en cache les pages dynamiques de B3Desk.
 
+### Serveur d’identité des administrateurs
+
+Le backoffice nécessite un serveur d’identité OpenID Connect dédié aux administrateurs, par exemple [Canaille](https://canaille.readthedocs.io).
+Comme le serveur d’identité des utilisateurs et la base de données, il n’est pas fourni par les fichiers `docker-compose` de production : il est à déployer séparément.
+Le service `canaille` de `docker-compose.override.yml` est réservé au développement et ne doit pas être utilisé en production.
+
+La configuration du serveur d’identité et de B3Desk est décrite dans le chapitre sur la {ref}`Gestion des administrateurs<maintainers/settings:Gestion des administrateurs>`.
+
 ## Lancement des conteneurs
 
 Enfin lorsque la bonne branche est chargée et que l’application est correctement configurée, on peut lancer les conteneurs avec les commandes suivantes :

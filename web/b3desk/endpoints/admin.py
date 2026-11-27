@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import current_app
 from flask import flash
-from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -23,6 +22,7 @@ from b3desk.models.meetings import Meeting
 from b3desk.models.users import User
 
 from ..session import admin_needed
+from ..session import get_current_email
 
 bp = Blueprint("admin", __name__)
 
@@ -135,7 +135,6 @@ def manage_users():
     users_page = get_users_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/users.html",
-        admin_mode=True,
         users_page=users_page,
         form=form,
         data=data,
@@ -150,7 +149,6 @@ def user_infos(user: User):
     """Display user infos."""
     return render_template(
         "admin/user_infos.html",
-        admin_mode=True,
         user=user,
     )
 
@@ -164,7 +162,6 @@ def manage_meetings():
     meetings_page = get_meetings_paginate(per_page=PER_PAGE, data=data)
     return render_template(
         "admin/meetings.html",
-        admin_mode=True,
         meetings_page=meetings_page,
         form=form,
         data=data,
@@ -177,7 +174,6 @@ def meeting_infos(meeting: Meeting):
     """Display meeting infos of admin page."""
     return render_template(
         "admin/meeting_infos.html",
-        admin_mode=True,
         meeting=meeting,
         confirm_form=ConfirmForm(),
     )
@@ -214,7 +210,7 @@ def create_group():
         "Group %s %s was created by %s",
         group.name,
         group.id,
-        g.user.email,
+        get_current_email(),
     )
     flash(
         _("{group_name} a bien été créé(e)").format(group_name=group.name),
@@ -280,7 +276,7 @@ def edit_group(group: Group):
         "Group %s %s was updated by %s. Updated fields : %s",
         group.name,
         group.id,
-        g.user.email,
+        get_current_email(),
         updated_data,
     )
     flash(
