@@ -234,7 +234,7 @@ def test_login_when_the_userinfo_endpoint_fails(client_app, iam_server, mocker):
 
 
 def test_attendee_authentication_when_the_userinfo_endpoint_fails(
-    client_app, iam_server, mocker
+    authenticated_join_url, client_app, iam_server, mocker
 ):
     """Attendee authentication fails without error page when the userinfo endpoint is unreachable."""
     iam_user = iam_server.random_user()
@@ -246,7 +246,7 @@ def test_attendee_authentication_when_the_userinfo_endpoint_fails(
         side_effect=requests.ConnectionError("unreachable"),
     )
 
-    response = client_app.get("/meeting/join/1/authenticated", status=302)
+    response = client_app.get(authenticated_join_url, status=302)
     response = iam_server.test_client.get(response.location)
     response = client_app.get(response.headers["Location"], status=302)
 

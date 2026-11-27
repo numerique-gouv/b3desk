@@ -164,8 +164,13 @@ def attendee_callback():
 
     store_attendee_userinfo(userinfo)
     meeting_id = session.pop("attendee_next_meeting_id", None) or abort(404)
+    secret_key = session.pop("attendee_next_secret_key", None) or abort(404)
     return redirect(
-        url_for("join.join_meeting_as_authenticated", meeting_id=meeting_id)
+        url_for(
+            "join.join_meeting_as_authenticated",
+            meeting_id=meeting_id,
+            secret_key=secret_key,
+        )
     )
 
 

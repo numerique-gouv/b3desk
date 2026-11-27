@@ -128,11 +128,11 @@ services:
       retries: 5
 
   mailpit:
-      hostname: mailpit.localhost
-      image: axllent/mailpit
-      ports:
-        - 1025:1025
-        - 8025:8025
+    hostname: mailpit.localhost
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025
 
   canaille:
       hostname: canaille.localhost
