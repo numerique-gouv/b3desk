@@ -10,10 +10,11 @@
     {
         "init": "corepack pnpm run removeFolder && corepack pnpm run createFolder && corepack pnpm run /^copy:/",
         "removeFolder": "rm -fr web/b3desk/static/pnpm_imports",
-        "createFolder": "mkdir web/b3desk/static/pnpm_imports",
+        "createFolder": "mkdir -p web/b3desk/static/pnpm_imports",
         "copy:dsfr": "cp -rL node_modules/@gouvfr/dsfr/dist web/b3desk/static/pnpm_imports/dsfr",
         "copy:remixicon": "cp -rL node_modules/remixicon/fonts web/b3desk/static/pnpm_imports/remixicon",
         "copy:dropzone": "cp -rL node_modules/dropzone/dist web/b3desk/static/pnpm_imports/dropzone",
         "copy:captchetat": "cp -rL node_modules/captchetat-js/dist web/b3desk/static/pnpm_imports/captchetat"
-    }
+    },
+"packageManager": "pnpm@12.23.0"
 }

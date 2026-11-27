@@ -5,7 +5,8 @@
             "docker-compose",
             "dockerfile",
             "github-actions",
-            "pre-commit"
+            "pre-commit",
+            "npm"
         ],
     "pre-commit": {
         "enabled": true
@@ -17,5 +18,6 @@
         "minimumReleaseAge": "7 days"
       }
     ],
-    "vulnerabilityAlerts": {"automerge": true, "minimumReleaseAge": "2 days"}
+    "vulnerabilityAlerts": {"automerge": true, "minimumReleaseAge": "2 days"},
+    "lockFileMaintenance": {"enabled": true}
 }

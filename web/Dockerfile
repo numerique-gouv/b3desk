@@ -1,3 +1,9 @@
+FROM node:24.22.3 AS node
+WORKDIR /home/node/app
+COPY --from=root package.json pnpm-lock.yaml ./
+RUN corepack pnpm install
+RUN corepack pnpm run init
+
 FROM python:3.14-slim-trixie
 
 COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /uvx /bin/
@@ -20,6 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # into site-packages, so the image carries the application and importlib can
 # read its version.
 COPY b3desk /opt/web/b3desk
+COPY --from=node /home/node/app/web/b3desk/static/pnpm_imports /opt/web/b3desk/static/pnpm_imports
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-editable --directory /opt --python /usr/local/bin/python && \
     rm -rf /opt/web
