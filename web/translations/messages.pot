@@ -385,7 +385,7 @@ msgstr ""
 #: web/b3desk/endpoints/join.py:79 web/b3desk/endpoints/join.py:87
 #: web/b3desk/endpoints/join.py:162 web/b3desk/endpoints/join.py:167
 #: web/b3desk/endpoints/join.py:230 web/b3desk/endpoints/join.py:240
-#: web/b3desk/endpoints/join.py:274
+#: web/b3desk/endpoints/join.py:275
 msgid "Le lien d'invitation que vous avez utilisé est invalide."
 msgstr ""
 
@@ -393,11 +393,11 @@ msgstr ""
 msgid "Lien invalide"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:354
+#: web/b3desk/endpoints/join.py:364
 msgid "Le captcha saisi est erroné"
 msgstr ""
 
-#: web/b3desk/endpoints/join.py:359
+#: web/b3desk/endpoints/join.py:369
 msgid "Le code de connexion saisi est erroné"
 msgstr ""
 

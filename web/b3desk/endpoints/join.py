@@ -270,9 +270,19 @@ def join_meeting_as_authenticated(meeting_id, secret_key):
     knowing a meeting id is not enough to join it.
     """
     meeting = get_meeting_from_meeting_id(meeting_id)
-    if meeting is None or get_role(meeting, secret_key, g.user) != Role.authenticated:
+    role = get_role(meeting, secret_key, g.user) if meeting else None
+    if not role:
         flash(_("Le lien d'invitation que vous avez utilisé est invalide."), "error")
         return redirect(url_for("public.index"))
+
+    if role != Role.authenticated:
+        return redirect(
+            url_for(
+                "join.signin_meeting",
+                meeting_id=meeting_id,
+                secret_key=secret_key,
+            )
+        )
 
     if not has_attendee_session():
         session["attendee_next_meeting_id"] = meeting_id

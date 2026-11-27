@@ -207,22 +207,45 @@ def test_join_meeting_as_authenticated_attendee_requires_secret_key(
 def test_join_meeting_as_authenticated_attendee_with_invalid_secret_key(
     client_app, meeting, authenticated_attendee
 ):
-    """Wrong or other-role secret keys are rejected."""
-    for secret_key in (
-        "invalid",
-        get_meeting_secret_key(meeting, Role.attendee),
-        get_meeting_secret_key(meeting, Role.moderator),
-    ):
+    """Wrong secret keys are rejected."""
+    response = client_app.get(
+        f"/meeting/join/{meeting.id}/authenticated/hash/invalid",
+        status=302,
+    )
+    assert response.location == url_for("public.index")
+    assert (
+        "error",
+        "Le lien d'invitation que vous avez utilisé est invalide.",
+    ) in response.flashes
+
+
+def test_join_meeting_as_authenticated_attendee_with_other_role_secret_key(
+    client_app, meeting, authenticated_attendee
+):
+    """Secret keys of other roles go to the regular sign-in page."""
+    for role in (Role.attendee, Role.moderator):
+        secret_key = get_meeting_secret_key(meeting, role)
         response = client_app.get(
             f"/meeting/join/{meeting.id}/authenticated/hash/{secret_key}",
             status=302,
         )
-        assert "/meeting/wait/" not in response.location
-        assert response.location == url_for("public.index")
-        assert (
-            "error",
-            "Le lien d'invitation que vous avez utilisé est invalide.",
-        ) in response.flashes
+        assert response.location == f"/meeting/signin/{meeting.id}/hash/{secret_key}"
+
+
+def test_join_meeting_as_authenticated_with_owner(
+    client_app, meeting, authenticated_user
+):
+    """The owner opening an authenticated link goes to the sign-in page as moderator."""
+    secret_key = get_meeting_secret_key(meeting, Role.authenticated)
+    response = client_app.get(
+        f"/meeting/join/{meeting.id}/authenticated/hash/{secret_key}",
+        status=302,
+    )
+    assert response.location == f"/meeting/signin/{meeting.id}/hash/{secret_key}"
+    assert not response.flashes
+
+    response = response.follow()
+    assert response.form["fullname"].value == "Alice Cooper"
 
 
 def test_waiting_meeting_with_authenticated_link_requires_attendee_session(
