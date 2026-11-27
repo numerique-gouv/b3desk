@@ -15,6 +15,7 @@ from b3desk.models.users import User
 from b3desk.session import user_needed
 from flask import g
 from flask import url_for
+from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import exc
 from webdav3.exceptions import WebDavException
 
@@ -163,6 +164,32 @@ def test_ncdownload_with_bad_token_abort_404(
     nc_path = "folder/file1.pdf"
     client_app.get(
         f"/ncdownload/invalid-token/{meeting.owner.id}/{nc_path}",
+        status=404,
+    )
+
+
+def test_ncdownload_with_expired_token_abort_404(
+    client_app, authenticated_user, meeting, time_machine
+):
+    time_machine.move_to(datetime(2025, 1, 1), tick=False)
+    nc_path = "folder/file1.pdf"
+    token = get_meeting_file_hash(meeting.owner.id, nc_path)
+
+    time_machine.shift(client_app.app.config["NEXTCLOUD_TOKEN_MAX_AGE"] + 1)
+    client_app.get(
+        f"/ncdownload/{token}/{meeting.owner.id}/{nc_path}",
+        status=404,
+    )
+
+
+def test_ncdownload_with_forged_token_abort_404(
+    client_app, authenticated_user, meeting
+):
+    nc_path = "folder/file1.pdf"
+    serializer = URLSafeTimedSerializer("wrong-secret-key", salt="meeting-file")
+    token = serializer.dumps([meeting.owner.id, nc_path])
+    client_app.get(
+        f"/ncdownload/{token}/{meeting.owner.id}/{nc_path}",
         status=404,
     )
 
