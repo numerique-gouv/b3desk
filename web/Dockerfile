@@ -33,4 +33,6 @@ RUN pybabel compile --directory /opt/bbb-visio/translations
 RUN chmod u+x /opt/bbb-visio/run_webserver.sh
 
 WORKDIR /opt/bbb-visio/
+RUN adduser b3desk
+USER b3desk
 ENTRYPOINT ["/opt/bbb-visio/run_webserver.sh"]
