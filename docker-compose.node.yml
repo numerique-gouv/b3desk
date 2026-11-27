@@ -1,0 +1,8 @@
+services:
+  node:
+    image: 'node:24.22.3'
+    user: 'node'
+    working_dir: /home/node/app
+    volumes:
+      - ./:/home/node/app
+    command: ['corepack', 'pnpm', 'install']

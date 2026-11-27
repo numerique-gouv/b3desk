@@ -41,3 +41,6 @@ dev-*.env
 
 messages.mo
 .tox
+
+node_modules/*
+web/b3desk/static/pnpm_imports/*

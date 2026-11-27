@@ -1,0 +1,20 @@
+{
+"dependencies":
+    {
+        "@gouvfr/dsfr": "1.14.0",
+        "remixicon": "2.5.0",
+        "dropzone": "5.9.3",
+        "captchetat-js": "https://static.piste.gouv.fr/captchEtat/libraries/captchetat-js-1.0.0.tgz"
+    },
+"scripts":
+    {
+        "init": "corepack pnpm run removeFolder && corepack pnpm run createFolder && corepack pnpm run /^copy:/",
+        "removeFolder": "rm -fr web/b3desk/static/pnpm_imports",
+        "createFolder": "mkdir -p web/b3desk/static/pnpm_imports",
+        "copy:dsfr": "cp -rL node_modules/@gouvfr/dsfr/dist web/b3desk/static/pnpm_imports/dsfr",
+        "copy:remixicon": "cp -rL node_modules/remixicon/fonts web/b3desk/static/pnpm_imports/remixicon",
+        "copy:dropzone": "cp -rL node_modules/dropzone/dist web/b3desk/static/pnpm_imports/dropzone",
+        "copy:captchetat": "cp -rL node_modules/captchetat-js/dist web/b3desk/static/pnpm_imports/captchetat"
+    },
+    "packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975"
+}

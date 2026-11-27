@@ -13,7 +13,7 @@ on:
 jobs:
   test-local:
     name: Run unit tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       FORCE_COLOR: 1
     strategy:
@@ -53,7 +53,7 @@ jobs:
 
   healthy-containers:
     name: Check containers run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       FORCE_COLOR: 1
     steps:

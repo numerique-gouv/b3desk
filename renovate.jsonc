@@ -1,0 +1,24 @@
+{
+    "enabledManagers":
+        [
+            "pep621",
+            "docker-compose",
+            "dockerfile",
+            "github-actions",
+            "pre-commit",
+            "npm"
+        ],
+    "pre-commit": {
+        "enabled": true
+    }, // pre-commit functionality is currently in beta testing : https://docs.renovatebot.com/modules/manager/pre-commit/
+    "packageRules": [
+      {
+        "matchUpdateTypes": ["patch"],
+        "automerge": true,
+        "minimumReleaseAge": "7 days"
+      }
+    ],
+    "vulnerabilityAlerts": {"automerge": true, "minimumReleaseAge": "2 days"},
+    "lockFileMaintenance": {"enabled": true},
+    "pinDigests": true
+}

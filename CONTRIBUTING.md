@@ -23,14 +23,23 @@ Vous trouverez plus d'informations concernant la persistance des données pour c
 Pour que les liens vers le service BBB fonctionne, il est nécessaire de configurer les variables d'environnement BIGBLUEBUTTON_ENDPOINT et BIGBLUEBUTTON_SECRET.
 **Si une seule variable d'environnement manque, toute ou partie de l'application dysfonctionne.** Si vous n'avez pas d'instance BBB à disposition, vous pouvez lancer votre propre instance localement en suivant le chapitre `bigbluebutton <bigbluebutton>`.
 
-2. Démarrer l'application web, la base de données postgresql et le serveur d'authentification oidc keycloak préconfiguré avec docker-compose et attendre que les 3 soient prêts à accepter des connections (l'application web ne démarre pas correctement tant que les deux autres ne sont pas prêts et redémarre automatiquement jusqu'à ce qu'elle réussisse)
+2. Installer les dépendances front-end (DSFR, Remix Icon, Dropzone, CaptchEtat) déclarées dans `package.json`. Elles sont copiées dans `web/b3desk/static/pnpm_imports`, qui n'est pas versionné. Relancer ces commandes à chaque modification de `package.json` :
+
+```bash
+docker compose -f docker-compose.node.yml run --rm node
+docker compose -f docker-compose.node.yml run --rm node corepack pnpm run init
+```
+
+En production, cette étape est faite lors de la construction de l'image par le `Dockerfile`.
+
+3. Démarrer l'application web, la base de données postgresql et le serveur d'authentification oidc keycloak préconfiguré avec docker-compose et attendre que les 3 soient prêts à accepter des connections (l'application web ne démarre pas correctement tant que les deux autres ne sont pas prêts et redémarre automatiquement jusqu'à ce qu'elle réussisse)
 
 ```bash
 docker compose up  # ou docker-compose up
 # docker compose down pour tout couper
 ```
 
-3. Tester l'accès [http://b3desk.localhost:5000] puis se connecter.
+4. Tester l'accès [http://b3desk.localhost:5000] puis se connecter.
 Le compte d'accès est `bbb-visio-user`, mot de passe `Pa55w0rd`.
 Des comptes supplémentaires `bbb-visio-user1` à `bbb-visio-user5` sont disponibles (mot de passe = username).
 Si nécessaire, tester l'accès au keycloak [http://keycloak.localhost:8080] via l'interface d'administration. Le compte d'accès admin est `admin` (mot de passe unique dans les fichiers d'environnement).
